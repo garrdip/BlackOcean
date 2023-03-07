@@ -8,10 +8,13 @@ public class GamePlayer : NetworkBehaviour
 {
     [SyncVar]
     int HP;
+
     [SyncVar]
     Character character;
-    SyncList<Artifact> artifacts;
-    SyncList<Card> deck;
+
+    SyncList<Artifact> artifacts = new SyncList<Artifact>();
+
+    SyncList<Card> deck =  new SyncList<Card>();
 
 
 }
