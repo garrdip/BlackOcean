@@ -14,8 +14,10 @@ public class RoomUI : MonoBehaviour
     public event OnCharacterSelect onCharacterSelect;
 
     // 캐릭터 오브젝트 (인스펙터 창에서 캐릭터 리스트 생성 및 오브젝트 참조 해두는 방법으로 구현)
+    [Header("Select Characters")]
     public List<GameObject> characters;
 
+    [Header("View Components")]
     public VerticalLayoutGroup participantsLayout;
     public Button buttonStart;
     public Button buttonReady;
@@ -50,6 +52,7 @@ public class RoomUI : MonoBehaviour
 
     void Start()
     {
+        buttonReady.onClick.AddListener(() => HandleRadeyState());
         buttonStart.onClick.AddListener(() => HandleChangeGameScene());
         buttonSend.onClick.AddListener(() => SendChatMessage(messageInput.text));
     }
@@ -58,6 +61,22 @@ public class RoomUI : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return)){
             SendChatMessage(messageInput.text);
+        }
+    }
+
+    // 레디 상태 제어 : 부모클래스인 NetworkRoomPlayer클래스의 멤버 변수, 함수를 사용
+    public void HandleRadeyState()
+    {
+        if (NetworkClient.connection != null){
+            RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.gameObject.GetComponent<RoomPlayer>();
+            if (roomPlayer.readyToBegin)
+            {
+                roomPlayer.CmdChangeReadyState(false);
+            }
+            else
+            {
+                roomPlayer.CmdChangeReadyState(true);
+            }
         }
     }
 
@@ -87,15 +106,16 @@ public class RoomUI : MonoBehaviour
         }
     }
 
+    // 채팅 메시지 추가
     public void AppendMessage(string message)
     {
-        StartCoroutine(ScrollToBottom(message));
+        chatMessage.text += message + "\n";
+        StartCoroutine(ScrollToBottom());
     }
 
-    IEnumerator ScrollToBottom(string message)
+    // 스크롤 이동
+    IEnumerator ScrollToBottom()
     {
-        chatMessage.text += message + "\n";
-
         // it takes 2 frames for the UI to update ?!?!
         yield return null;
         yield return null;

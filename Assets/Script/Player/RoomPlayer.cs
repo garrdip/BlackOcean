@@ -11,15 +11,11 @@ public class RoomPlayer : NetworkRoomPlayer
     [SyncVar(hook = nameof(OnSelectCharacterChanged))]
     public Character character = Character.NONE;
 
-    [SyncVar(hook = nameof(OnReadyStatusChanged))]
-    public bool isReady = false;
-
 
     // 로컬 플레이어로 시작 시 RoomUI의 레디 상태 변경 버튼이벤트 리스너 할당
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-        InitReadyButton();
         RoomUI.instance.onCharacterSelect += OnCharacterSelected; // 캐릭터 선택 델리게이트 연결
     }
 
@@ -29,28 +25,8 @@ public class RoomPlayer : NetworkRoomPlayer
         base.OnStartClient();
         if(RoomUI.instance != null){
             transform.SetParent(RoomUI.instance.participantsLayout.transform);
+            transform.localScale = new Vector3(1, 1, 1);
         }
-    }
-
-    // 레디 상태 변경 버튼 클릭 이벤트
-    // 커스텀 레디 상태 커맨드와 부모클래스인 NetworkRoomManger 클래스의 레디 상태 커맨드 함수 병행 사용 
-    // 이유 : OnRoomServerPlayersReady, OnRoomServerPlayersNotReady 콜백함수 사용하기 위해
-    private void InitReadyButton()
-    {
-        RoomUI.instance.buttonReady.onClick.AddListener(() => {
-            if(isLocalPlayer){
-                if (base.readyToBegin)
-                {
-                    CmdChangeReadyStatus(false);
-                    base.CmdChangeReadyState(false);
-                }
-                else
-                {
-                    CmdChangeReadyStatus(true);
-                    base.CmdChangeReadyState(true);
-                }
-            }
-        });
     }
 
     // RoomPlayer오브젝트의 뷰 요소들 초기 세팅
@@ -105,18 +81,11 @@ public class RoomPlayer : NetworkRoomPlayer
         }
     }
 
-    // 커스텀 레디 상태 이벤트 송신
-    [Command]
-    private void CmdChangeReadyStatus(bool readyStatus)
-    {
-        isReady = readyStatus;
-    }
-
-    // 커스텀 레디 상태 이벤트 수신
-    private void OnReadyStatusChanged(bool oldStatus, bool newStatus)
+    // 부모 클래스인 NetworkRoomPlayer에 구현된 syncvar hook 가상함수를 ovveride하여 사용
+    public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
         TextMeshProUGUI readyStateText = gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-        if (newStatus)
+        if (newReadyState)
         {
             if(isLocalPlayer){
                 RoomUI.instance.buttonReady.transform.GetChild(0).GetComponent<TextMeshProUGUI>().color = Color.red;
