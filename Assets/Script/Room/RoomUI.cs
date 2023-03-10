@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using ProjectD;
 
 public class RoomUI : MonoBehaviour
 {
     public static RoomUI instance = null;
 
     // 캐릭터 선택 이벤트
-    public delegate void OnCharacterSelect(GameObject gameObject);
+    public delegate void OnCharacterSelect(Character character);
     public event OnCharacterSelect onCharacterSelect;
 
     // 캐릭터 오브젝트 (인스펙터 창에서 캐릭터 리스트 생성 및 오브젝트 참조 해두는 방법으로 구현)
@@ -88,10 +89,10 @@ public class RoomUI : MonoBehaviour
     }
 
     // 캐릭터 선택 이벤트 송신
-    public void EmitCharacterSelectEvent(GameObject gameObject)
+    public void EmitCharacterSelectEvent(Character character)
     {
         if(onCharacterSelect != null){
-            onCharacterSelect.Invoke(gameObject);
+            onCharacterSelect.Invoke(character);
         }
     }
 
@@ -107,9 +108,9 @@ public class RoomUI : MonoBehaviour
     }
 
     // 채팅 메시지 추가
-    public void AppendMessage(string message)
+    public void AppendMessage(string playerName, string message)
     {
-        chatMessage.text += message + "\n";
+        chatMessage.text += playerName + " : " + message + "\n";
         StartCoroutine(ScrollToBottom());
     }
 

@@ -234,9 +234,9 @@ RectTransform:
   m_Father: {fileID: 966860160}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 10, y: -10}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &84619836
@@ -472,7 +472,7 @@ GameObject:
   - component: {fileID: 136396383}
   - component: {fileID: 136396386}
   m_Layer: 5
-  m_Name: Eris
+  m_Name: ERIS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -513,7 +513,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverScale: 0.3
   characterLabel: {fileID: 220699007}
-  character: 0
+  character: 2
 --- !u!114 &136396384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1020,7 +1020,7 @@ GameObject:
   - component: {fileID: 423536889}
   - component: {fileID: 423536892}
   m_Layer: 5
-  m_Name: Danhyang
+  m_Name: HONGDANHYANG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1061,7 +1061,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverScale: 0.3
   characterLabel: {fileID: 460988057}
-  character: 0
+  character: 3
 --- !u!114 &423536890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1293,7 +1293,7 @@ GameObject:
   - component: {fileID: 537142531}
   - component: {fileID: 537142534}
   m_Layer: 5
-  m_Name: Geork
+  m_Name: GEORK
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1334,7 +1334,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverScale: 0.3
   characterLabel: {fileID: 1601168133}
-  character: 0
+  character: 1
 --- !u!114 &537142532
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -16,7 +16,10 @@ public class RoomPlayer : NetworkRoomPlayer
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-        RoomUI.instance.onCharacterSelect += OnCharacterSelected; // 캐릭터 선택 델리게이트 연결
+        if(RoomUI.instance != null){
+            RoomUI.instance.onCharacterSelect += OnCharacterSelected; // 캐릭터 선택 델리게이트 연결
+            transform.GetComponent<Image>().color = Color.yellow;
+        }
     }
 
     // 클라 + 호스트 시작 시 RoomPlayer오브젝트를 참가자 목록 레이아웃 하위로 설정해 리스트 되도록 세팅
@@ -40,43 +43,22 @@ public class RoomPlayer : NetworkRoomPlayer
     }
 
     // RoomUI 클래스로부터 캐릭터 선택 델리게이트 이벤트를 수신하여, 선택한 캐릭터 정보 서버에 송신
-    public void OnCharacterSelected(GameObject selectedGameObject)
+    public void OnCharacterSelected(Character character)
     {
         if(isLocalPlayer){
-            switch(selectedGameObject.name){
-                case "Geork":
-                    CmdChangeCharacter(Character.GEORK);
-                    break;
-                case "Eris":
-                    CmdChangeCharacter(Character.ERIS);
-                    break;
-                case "Danhyang":
-                    CmdChangeCharacter(Character.HONGDANHYANG);
-                    break;
-                default:
-                    break;
-            }
+            CmdChangeCharacter(character);
         }
     }
 
     private void SetDisableAlradySelectedCharacter(Character character)
     {
         if(RoomUI.instance != null){
-            switch(character){
-                case Character.GEORK:
-                    RoomUI.instance.characters.Find((character) => character.name.Equals("Geork")).SetActive(false);
-                    break;
-                case Character.ERIS:
-                    RoomUI.instance.characters.Find((character) => character.name.Equals("Eris")).SetActive(false);
-                    break;
-                case Character.HONGDANHYANG:
-                    RoomUI.instance.characters.Find((character) => character.name.Equals("Danhyang")).SetActive(false);
-                    break;
-                default:
-                    RoomUI.instance.characters.Find((character) => character.name.Equals("Geork")).SetActive(true);
-                    RoomUI.instance.characters.Find((character) => character.name.Equals("Eris")).SetActive(true);
-                    RoomUI.instance.characters.Find((character) => character.name.Equals("Danhyang")).SetActive(true);
-                break;
+           M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            List<NetworkRoomPlayer> players = M_NetworkRoomManager.roomSlots;
+            foreach(RoomPlayer roomPlayer in players){
+                if(roomPlayer.character.Equals(character)){
+                    // TODO: 이벤트 수신 시 다른 플레이어가 선택한 캐릭터는 비활성화, 나머지는 활성화 되어 보이도록 해야함
+                }
             }
         }
     }
@@ -123,7 +105,7 @@ public class RoomPlayer : NetworkRoomPlayer
     public void CmdSend(string message, NetworkConnectionToClient sender = null)
     {
         if (!string.IsNullOrWhiteSpace(message))
-            RpcReceive("테스트", message.Trim());
+            RpcReceive("PlayerName", message.Trim());
     }
 
     [ClientRpc]
@@ -131,7 +113,7 @@ public class RoomPlayer : NetworkRoomPlayer
     {
         Debug.Log(playerName + "의 메시지 : "+ message);
         if(RoomUI.instance != null){
-            RoomUI.instance.AppendMessage(message);
+            RoomUI.instance.AppendMessage(playerName, message);
         }
     }
 

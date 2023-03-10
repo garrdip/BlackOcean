@@ -10,7 +10,8 @@ using ProjectD;
 public class CharacterSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public static CharacterSelector instance = null;
-    public float hoverScale = 0.3f; // 마우스 Enter 또는  Exit시 커지는 사이즈 값
+    public float originScale; // 원래의 오브젝트 사이즈 값
+    public float hoverScale; // 마우스 Enter 또는  Exit시 변화되는 사이즈 값
     public TextMeshProUGUI characterLabel;
     public Character character;
 
@@ -38,38 +39,38 @@ public class CharacterSelector : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     void Start()
     {
-        RoomUI.instance.onCharacterSelect += OnCharacterSelected;
+        originScale = 1f;
+        hoverScale = 0.1f;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x + hoverScale, gameObject.transform.localScale.y + hoverScale, 0);
+        gameObject.transform.localScale = new Vector3(originScale + hoverScale, originScale + hoverScale, 0);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x - hoverScale, gameObject.transform.localScale.y - hoverScale, 0);
+        gameObject.transform.localScale = new Vector3(originScale - hoverScale, originScale - hoverScale, 0);
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(NetworkClient.connection != null){
-            GameObject currentPlayer = NetworkClient.connection.identity.gameObject;
-            RoomPlayer roomPlayer = currentPlayer.GetComponent<RoomPlayer>();
-            Debug.Log(roomPlayer.name);
+        if(RoomUI.instance != null && !CheckCharacterIsAlreadySelected()){
+            RoomUI.instance.EmitCharacterSelectEvent(character);
         }
-        if(RoomUI.instance != null){
-            RoomUI.instance.EmitCharacterSelectEvent(eventData.pointerCurrentRaycast.gameObject);
-        }  
     }
 
-    // 캐릭터 선택 이벤트 수신 : 이벤트를 수신받아 선택한 캐릭터의 텍스트는 빨간색 나머지는 흰색으로 변경
-    public void OnCharacterSelected(GameObject selectedGameObject)
+    // 현재 방에 참가한 플레이어들의 character값들을 순회하여 로컬플레이어가 선택하려하는 캐릭터를 이미 다른 플레이어가 선택했는지 체크
+    public bool CheckCharacterIsAlreadySelected()
     {
-        if(selectedGameObject.name.Equals(gameObject.name)){
-            characterLabel.color = Color.red;
-        }else{
-            characterLabel.color = Color.white;
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        List<NetworkRoomPlayer> players = M_NetworkRoomManager.roomSlots;
+        foreach(RoomPlayer roomPlayer in players){
+            if(!roomPlayer.isLocalPlayer && roomPlayer.character.Equals(character)){
+                Debug.Log("이미 다른사람이 선택한 캐릭터 입니다");
+                return true;
+            }
         }
+        return false;
     }
 }
