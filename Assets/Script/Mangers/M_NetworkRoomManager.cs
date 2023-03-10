@@ -31,5 +31,16 @@ public class M_NetworkRoomManager : NetworkRoomManager
             RoomUI.instance.gameObject.SetActive(false);
         }
     }
+
+    // 룸씬에서 클라연결 종료 시 룸씬의 UI들 비활성화
+    // OnClientChangeScene 콜백함수가 룸씬에서 클라연결 종료이벤트를 통해 메뉴씬으로 이동시에는 호출되지 않기때문에 클라연결 종료 시 메인화면으로 가는 경우에도 룸씬의 UI들 비활성화
+    public override void OnRoomStopClient()
+    {
+        base.OnRoomStopClient();
+
+        if(RoomUI.instance != null){
+            RoomUI.instance.gameObject.SetActive(false);
+        }
+    }
 }
 
