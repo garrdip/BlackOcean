@@ -10,6 +10,7 @@ public class M_LanguageManager : MonoBehaviour
 
     public delegate void LanguageChanged();
     public static LanguageChanged languageChangedCallback;
+    public static bool isLanguageLoadDone = false;
 
     void Awake()
     {
