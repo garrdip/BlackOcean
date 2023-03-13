@@ -39,6 +39,7 @@ public class LanguageLoader : MonoBehaviour
         FontLoader(data["Font"]);
 
         M_LanguageManager.currentLanguage = data;
+        M_LanguageManager.isLanguageLoadDone = true;
     }
 
     void FontLoader(string fontFileName)

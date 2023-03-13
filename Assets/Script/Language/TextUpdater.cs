@@ -12,11 +12,19 @@ public class TextUpdater : MonoBehaviour
         M_LanguageManager.languageChangedCallback += LanguageChanged;
     }
 
-    void LanguageChanged()
+    public void LanguageChanged()
     {
         thisText = GetComponent<TextMeshProUGUI>();
         thisText.text = M_LanguageManager.currentLanguage[thisText.name];
         thisText.font = M_LanguageManager.currnetFont;
     }
 
+    IEnumerator InitialLanguageUpdate()
+    {
+        while(M_LanguageManager.isLanguageLoadDone == false)
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+        LanguageChanged();
+    }
 }
