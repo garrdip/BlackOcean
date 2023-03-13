@@ -24,8 +24,8 @@ public class CharacterSelector : MonoBehaviour, IPointerEnterHandler, IPointerEx
     {
         originScale = 1f;
         hoverScale = 0.1f;
-        RoomUI.Instance.onCharacterSelect += OnCharacterSelected;
-        RoomUI.Instance.onCharacterSelectcancel += OnCharacterSelectCanceled;
+        RoomUI.instance.onCharacterSelect += OnCharacterSelected;
+        RoomUI.instance.onCharacterSelectcancel += OnCharacterSelectCanceled;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -40,7 +40,7 @@ public class CharacterSelector : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        RoomUI.Instance.EmitCharacterSelectEvent(character);
+        RoomUI.instance.EmitCharacterSelectEvent(character);
     }
 
     // 캐릭터 선택 델리게이트 수신(선택된 캐릭터 이름 텍스트 붉은색 변경)

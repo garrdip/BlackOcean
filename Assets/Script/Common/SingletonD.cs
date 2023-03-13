@@ -5,35 +5,35 @@ using UnityEngine;
 // 공통 싱글톤 클래스
 public class SingletonD<T> : MonoBehaviour where T : MonoBehaviour
 {
-    private static T instance;
+    private static T Instance;
 
-    public static T Instance
+    public static T instance
     {
         get
         {
-            if (instance == null)
+            if (Instance == null)
             {
-                instance = FindObjectOfType<T>();
+                Instance = FindObjectOfType<T>();
 
-                if (instance == null)
+                if (Instance == null)
                 {
                     GameObject singletonObject = new GameObject();
-                    instance = singletonObject.AddComponent<T>();
+                    Instance = singletonObject.AddComponent<T>();
                     singletonObject.name = typeof(T).ToString() + " (Singleton)";
 
                     DontDestroyOnLoad(singletonObject);
                 }
             }
 
-            return instance;
+            return Instance;
         }
     }
 
     protected virtual void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this as T;
+            Instance = this as T;
             DontDestroyOnLoad(gameObject);
         }
         else

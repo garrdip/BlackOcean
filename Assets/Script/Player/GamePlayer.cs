@@ -7,14 +7,14 @@ using ProjectD;
 public class GamePlayer : NetworkBehaviour
 {
     [SyncVar]
-    int HP;
+    public int HP;
 
     [SyncVar]
-    Character character;
+    public Character character;
 
-    SyncList<Artifact> artifacts = new SyncList<Artifact>();
+    public SyncList<Artifact> artifacts = new SyncList<Artifact>();
 
-    SyncList<Card> deck =  new SyncList<Card>();
+    public SyncList<Card> deck =  new SyncList<Card>();
 
 
 }
