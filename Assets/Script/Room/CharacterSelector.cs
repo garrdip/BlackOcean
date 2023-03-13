@@ -40,23 +40,7 @@ public class CharacterSelector : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(!CheckCharacterIsAlreadySelected()){
-            RoomUI.Instance.EmitCharacterSelectEvent(character);
-        }
-    }
-
-    // 현재 방에 참가한 플레이어들의 character값들을 순회하여 로컬플레이어가 선택하려하는 캐릭터를 이미 다른 플레이어가 선택했는지 체크
-    public bool CheckCharacterIsAlreadySelected()
-    {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        List<NetworkRoomPlayer> players = M_NetworkRoomManager.roomSlots;
-        foreach(RoomPlayer roomPlayer in players){
-            if(!roomPlayer.isLocalPlayer && roomPlayer.character.Equals(character)){
-                Debug.Log("이미 다른사람이 선택한 캐릭터 입니다");
-                return true;
-            }
-        }
-        return false;
+        RoomUI.Instance.EmitCharacterSelectEvent(character);
     }
 
     // 캐릭터 선택 델리게이트 수신(선택된 캐릭터 이름 텍스트 붉은색 변경)

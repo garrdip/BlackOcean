@@ -36,28 +36,6 @@ public class RoomPlayer : NetworkRoomPlayer
         }
     }
 
-    // 선택된 캐릭터 뷰 컴포넌트 활성화, 비활성화 변경
-    private void ChangeSelectedCharacterActiveState(Character character)
-    {
-        // 매 이벤트 수신 시 모든 캐릭터 이미지, 버튼 활성화
-        RoomUI.Instance.characters[0].GetComponent<Image>().color = new Color(1f, 1f, 1f);
-        RoomUI.Instance.characters[1].GetComponent<Image>().color = new Color(1f, 1f, 1f);
-        RoomUI.Instance.characters[2].GetComponent<Image>().color = new Color(1f, 1f, 1f);
-        RoomUI.Instance.characters[0].GetComponent<Button>().interactable = true;
-        RoomUI.Instance.characters[1].GetComponent<Button>().interactable = true;
-        RoomUI.Instance.characters[2].GetComponent<Button>().interactable = true;
-        // 현재 방에 참가한 유저들이 선택한 캐릭터 이미지, 버튼은 비활성화
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        List<NetworkRoomPlayer> players = M_NetworkRoomManager.roomSlots;
-        foreach(RoomPlayer roomPlayer in players){
-            GameObject gameObject = RoomUI.Instance.characters.Find((obj) => obj.name.Equals(roomPlayer.character.ToString()));
-            if(gameObject != null){
-                gameObject.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f);
-                gameObject.GetComponent<Button>().interactable = false;
-            }
-        }
-    }
-
     // 부모 클래스인 NetworkRoomPlayer에 구현된 syncvar hook 가상함수를 override하여 사용
     public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
@@ -93,7 +71,6 @@ public class RoomPlayer : NetworkRoomPlayer
         TextMeshProUGUI selectedCharacterNameText = gameObject.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>();
         selectedCharacterNameText.text = newCharacter.ToString();
         Debug.Log("선택된 캐릭터 :" + newCharacter);
-        ChangeSelectedCharacterActiveState(newCharacter);
     }
 
     // 채팅 메시지 이벤트 송신
