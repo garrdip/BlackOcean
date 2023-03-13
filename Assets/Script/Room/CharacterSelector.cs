@@ -9,38 +9,23 @@ using ProjectD;
 
 public class CharacterSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    public static CharacterSelector instance = null;
+    [Header("Character Selector Object Size")]
     public float originScale; // 원래의 오브젝트 사이즈 값
     public float hoverScale; // 마우스 Enter 또는  Exit시 변화되는 사이즈 값
+
+    [Header("View Components")]
     public TextMeshProUGUI characterLabel;
+
+    [Header("Character")]
     public Character character;
 
-    public static CharacterSelector Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<CharacterSelector>();
-                if (instance == null)
-                {
-                    GameObject container = new GameObject("CharacterSelectorSingleton");
-                    instance = container.AddComponent<CharacterSelector>();
-                }
-            }
-            return instance;
-        }
-    }
-
-    void Awake()
-    {
-        instance = this;
-    }
 
     void Start()
     {
         originScale = 1f;
         hoverScale = 0.1f;
+        RoomUI.Instance.onCharacterSelect += OnCharacterSelected;
+        RoomUI.Instance.onCharacterSelectcancel += OnCharacterSelectCanceled;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -55,8 +40,8 @@ public class CharacterSelector : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(RoomUI.instance != null && !CheckCharacterIsAlreadySelected()){
-            RoomUI.instance.EmitCharacterSelectEvent(character);
+        if(!CheckCharacterIsAlreadySelected()){
+            RoomUI.Instance.EmitCharacterSelectEvent(character);
         }
     }
 
@@ -72,5 +57,21 @@ public class CharacterSelector : MonoBehaviour, IPointerEnterHandler, IPointerEx
             }
         }
         return false;
+    }
+
+    // 캐릭터 선택 델리게이트 수신(선택된 캐릭터 이름 텍스트 붉은색 변경)
+    public void OnCharacterSelected(Character selectedCharacter)
+    {
+        if(character.Equals(selectedCharacter)){
+            characterLabel.color = Color.red;
+        }else{
+            characterLabel.color = Color.white;
+        }
+    }
+
+    // 캐릭터 선택 취소 델리게이트 수신(취소된 캐릭터 이름 텍스트 원상태로 변경)
+    public void OnCharacterSelectCanceled()
+    {
+        characterLabel.color = Color.white;
     }
 }

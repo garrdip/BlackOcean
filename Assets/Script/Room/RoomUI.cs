@@ -6,13 +6,15 @@ using Mirror;
 using TMPro;
 using ProjectD;
 
-public class RoomUI : MonoBehaviour
+public class RoomUI : SingletonD<RoomUI>
 {
-    public static RoomUI instance = null;
-
     // 캐릭터 선택 이벤트
     public delegate void OnCharacterSelect(Character character);
     public event OnCharacterSelect onCharacterSelect;
+
+    // 캐릭터 선택 취소 이벤트
+    public delegate void OnCharacterSelectCancel();
+    public event OnCharacterSelectCancel onCharacterSelectcancel;
 
     // 캐릭터 오브젝트 (인스펙터 창에서 캐릭터 리스트 생성 및 오브젝트 참조 해두는 방법으로 구현)
     [Header("Select Characters")]
@@ -22,39 +24,17 @@ public class RoomUI : MonoBehaviour
     public VerticalLayoutGroup participantsLayout;
     public Button buttonStart;
     public Button buttonReady;
+    public Button buttonCancel;
     public Button buttonSend;
     public TMP_InputField messageInput;
     public Scrollbar scrollbar;
     public TextMeshProUGUI chatMessage;
 
-
-    public static RoomUI Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<RoomUI>();
-                if (instance == null)
-                {
-                    GameObject container = new GameObject("RoomUISingleton");
-                    instance = container.AddComponent<RoomUI>();
-                }
-            }
-            return instance;
-        }
-    }
-
-    void Awake()
-    {
-        instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
-
     void Start()
     {
         buttonReady.onClick.AddListener(() => HandleRadeyState());
         buttonStart.onClick.AddListener(() => HandleChangeGameScene());
+        buttonCancel.onClick.AddListener(() => HandleResetCharacterSelect());
         buttonSend.onClick.AddListener(() => SendChatMessage(messageInput.text));
     }
 
@@ -69,7 +49,7 @@ public class RoomUI : MonoBehaviour
     public void HandleRadeyState()
     {
         if (NetworkClient.connection != null){
-            RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.gameObject.GetComponent<RoomPlayer>();
+            RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.GetComponent<RoomPlayer>();
             if (roomPlayer.readyToBegin)
             {
                 roomPlayer.CmdChangeReadyState(false);
@@ -88,6 +68,18 @@ public class RoomUI : MonoBehaviour
         M_NetworkRoomManager.ServerChangeScene(M_NetworkRoomManager.GameplayScene);
     }
 
+    // 캐릭터 선택 취소 이벤트 송신
+    public void HandleResetCharacterSelect()
+    {
+        if (NetworkClient.connection != null){
+            RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.GetComponent<RoomPlayer>();
+            roomPlayer.CmdChangeCharacter(Character.NONE);
+            if(onCharacterSelectcancel != null){
+                onCharacterSelectcancel.Invoke();
+            }
+        }
+    }
+
     // 캐릭터 선택 이벤트 송신
     public void EmitCharacterSelectEvent(Character character)
     {
@@ -100,7 +92,7 @@ public class RoomUI : MonoBehaviour
     public void SendChatMessage(string input)
     {
         if (NetworkClient.connection != null && !string.IsNullOrWhiteSpace(messageInput.text)){
-            RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.gameObject.GetComponent<RoomPlayer>();
+            RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.GetComponent<RoomPlayer>();
             roomPlayer.CmdSend(messageInput.text.Trim());
             messageInput.ActivateInputField();
             messageInput.text = string.Empty;;
