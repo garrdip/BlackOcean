@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MenuUi : MonoBehaviour
+public class MenuUI : MonoBehaviour
 {
     public Button buttonSinglePlay;
     public Button buttonMultiPlay;
