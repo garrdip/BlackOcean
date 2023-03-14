@@ -7,4 +7,11 @@ Main_Settings,환경설정
 Main_Quit,게임종료
 Settings_Full_Screen,전체 화면
 Settings_Apply,적용
-LabelGeork,게오르ㅋ
+LabelGeork,게오르크
+LabelEris,에리스
+LabelDanhyang,단향
+Room_Ready,준비
+Room_Select_Cancel,취소
+Room_Start,시작
+Room_Send,전송
+Room_Placeholder,메세지를 입력하세요.
