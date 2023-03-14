@@ -55,6 +55,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
         RoomUI.instance.gameObject.SetActive(false);
     }
 
+
     // 룸씬에서 게임씬으로 넘어갈때 룸씬의 플레이어 오브젝트와 게임씬의 플레이어 오브젝트의 정보들을 동기화
     public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject gamePlayer)
     {
@@ -89,4 +90,5 @@ public class M_NetworkRoomManager : NetworkRoomManager
         return instantiatedGameObject;
     }
     */
+
 }

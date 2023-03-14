@@ -10,6 +10,7 @@ public class TextUpdater : MonoBehaviour
     {
         thisText = GetComponent<TextMeshProUGUI>();       
         M_LanguageManager.languageChangedCallback += LanguageChanged;
+        StartCoroutine(nameof(InitialLanguageUpdate));
     }
 
     public void LanguageChanged()
