@@ -8,45 +8,30 @@ public class M_MapManager : NetworkBehaviour
     public static M_MapManager Instance = null; 
     [SyncVar]
     public Vector2 currentLocation = new Vector2(0,0);
-    public Transform floors;
-    public GameObject mapRoom;
+    [SyncVar]
+    public int turnsLeft = 10;
     public Camera mainCam;
     //방정보는 서버만 관리 (No SyncVar)
     public List<MapRoom> rooms = new List<MapRoom>();
-    public int number = 0;
-
     public static M_MapManager instance
     {
         get
         {
-            // 객체 직접 생성 대신 게임오브젝트&컴포넌트 생성
             if (Instance == null)
             {
-                // 씬 전체에서 탐색
                 Instance = FindObjectOfType<M_MapManager>();
-
-                // 그래도 없는 경우, 새로 생성
-                if (Instance == null)
-                {
-                    GameObject container = new GameObject("M_MapManager");
-                    Instance = container.AddComponent<M_MapManager>();
-                }
             }
             return Instance;
         }
     }
 
-    void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
     [Server]
     public void GenerateFloor()
     {
+        //싱글톤 네트워크 매니저
         var netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         //최초 방 좌표
-        (int,int)[] loc = {(0,0),(1,0),(-1,0),(0,1),(0,-1)};
+        Vector2[] loc = {new Vector2(0,0),new Vector2(1,0),new Vector2(-1,0),new Vector2(0,1),new Vector2(0,-1)};
         //모든 방 정보 삭제
         foreach(MapRoom room in rooms)
         {
@@ -55,12 +40,79 @@ public class M_MapManager : NetworkBehaviour
         //새로운 방 5개 생성 
         for(int i = 0 ;i < 5 ;i ++)
         {
-            GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3(loc[i].Item1,loc[i].Item2,0),Quaternion.identity);
-            newRoom.GetComponent<MapRoom>().number = number;
-            number++;
+            //각 방의 좌표값 * 1.2 위치에 방 생성 (방간격)
+            GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3(loc[i].x*1.2f,loc[i].y*1.2f,0),Quaternion.identity);
+            newRoom.GetComponent<MapRoom>().location = loc[i];
+            // Vector2 형식의 좌표 절대값의 합을 위험도로 지정 
+            newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(loc[i].x) + (int)Mathf.Abs(loc[i].y);
             NetworkServer.Spawn(newRoom);
             rooms.Add(newRoom.GetComponent<MapRoom>());
         }
     }
 
+    [Server]
+    public void MoveToRoom(Vector2 tar)
+    {
+        if(Vector2.Distance(currentLocation,tar) > 1)
+        {
+            return;
+        }
+        else
+        {
+            Debug.Log(" 다음 위치로 방 이동 " + tar);
+
+            foreach(MapRoom room in rooms)
+            {
+                if(room.location == currentLocation)
+                {
+                   room.SetSprite(new Color(1,0,0));
+                }
+            }
+            foreach(MapRoom room in rooms)
+            {
+                if(room.location == tar)
+                {
+                    room.SetSprite(new Color(0,0,1));
+                }
+            }
+            currentLocation = tar;
+            GenerateNextRoom();
+            MoveCameraPositionToRoom(tar);
+            return;
+        }
+    }
+
+    [Server]
+    public void GenerateNextRoom()
+    {
+        var netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        Vector2[] loc = {new Vector2(1,0),new Vector2(-1,0),new Vector2(0,1),new Vector2(0,-1)};
+        for(int i = 0 ;i < 4 ;i ++)
+        {
+            bool isEmpty = true;
+            foreach(MapRoom room in rooms)
+            {
+                if(room.location == (currentLocation + loc[i]))
+                {
+                    isEmpty = false;
+                    break;
+                }
+            }
+            if(isEmpty)
+            {
+                GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3((currentLocation.x + loc[i].x)*1.2f,(currentLocation.y + loc[i].y)*1.2f,0),Quaternion.identity);
+                newRoom.GetComponent<MapRoom>().location = new Vector2(currentLocation.x + loc[i].x, currentLocation.y + loc[i].y);
+                newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(currentLocation.x + loc[i].x) + (int)Mathf.Abs(currentLocation.y + loc[i].y);
+                NetworkServer.Spawn(newRoom);
+                rooms.Add(newRoom.GetComponent<MapRoom>());
+            }
+        }
+    }
+
+    // 방이동후 카메라 전환
+    [ClientRpc]
+    public void MoveCameraPositionToRoom(Vector2 tar)
+    {
+        mainCam.transform.position = new Vector3(tar.x,tar.y,mainCam.transform.position.z);
+    }
 }

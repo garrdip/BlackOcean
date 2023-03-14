@@ -25,8 +25,6 @@ public class GamePlayer : NetworkBehaviour
         {
             Debug.Log("Generate Floor");
             M_MapManager.instance.GenerateFloor();
-            M_MapManager.instance.GenerateFloor();
-            M_MapManager.instance.GenerateFloor();
         }
     }
 
