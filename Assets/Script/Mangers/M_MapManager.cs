@@ -6,13 +6,25 @@ using Mirror;
 public class M_MapManager : NetworkBehaviour
 {  
     public static M_MapManager Instance = null; 
+    
     [SyncVar]
     public Vector2 currentLocation = new Vector2(0,0);
+    
     [SyncVar]
     public int turnsLeft = 10;
+    
+    [Header("Main Camera")]
     public Camera mainCam;
+
     //방정보는 서버만 관리 (No SyncVar)
+    [Header("Room List")]
     public List<MapRoom> rooms = new List<MapRoom>();
+
+    // 맵 UI에 사용될 Gameplayer를 참조하는 커스텀 캐릭터 프리팹
+    [Header("MapPlayerForUI Prefab")]
+    public GameObject mapPlayerForUI;
+
+    
     public static M_MapManager instance
     {
         get

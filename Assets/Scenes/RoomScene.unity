@@ -2819,7 +2819,6 @@ GameObject:
   - component: {fileID: 1547681069}
   - component: {fileID: 1547681068}
   - component: {fileID: 1547681067}
-  - component: {fileID: 1547681070}
   m_Layer: 5
   m_Name: ButtonCancleSelect
   m_TagString: Untagged
@@ -2930,19 +2929,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1547681065}
   m_CullTransparentMesh: 1
---- !u!114 &1547681070
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1547681065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09ecd846b096d234db652576e6b7de1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  thisText: {fileID: 0}
 --- !u!1 &1565426952
 GameObject:
   m_ObjectHideFlags: 0
@@ -3743,7 +3729,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 691604886}
   m_HandleRect: {fileID: 691604885}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

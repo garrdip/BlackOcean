@@ -657,7 +657,7 @@ GameObject:
   - component: {fileID: 1612448494}
   - component: {fileID: 1612448493}
   m_Layer: 5
-  m_Name: Characters
+  m_Name: CharacterInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -695,7 +695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0910a9fc686ff7409b8d2734906b298, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabMapPlayer: {fileID: 5678142405827003429, guid: 6dd6d54b28b6baf418bb5cb38e93941f, type: 3}
+  gamePlayerListLayout: {fileID: 1612448494}
 --- !u!114 &1612448494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -794,12 +794,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   currentLocation: {x: 0, y: 0}
-  currentFloor: 1
-  floors: {fileID: 0}
-  mapRoom: {fileID: 236292617071855439, guid: c4189fbed6a5ff646831faac1cf861cb, type: 3}
+  turnsLeft: 10
   mainCam: {fileID: 842314909}
   rooms: []
-  number: 0
+  prefabMapPlayer: {fileID: 5678142405827003429, guid: 6dd6d54b28b6baf418bb5cb38e93941f, type: 3}
 --- !u!4 &1913121864
 Transform:
   m_ObjectHideFlags: 0
