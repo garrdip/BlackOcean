@@ -37,11 +37,19 @@ public class GamePlayer : NetworkBehaviour
     {
         base.OnStartClient();
 
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        GameObject user = Instantiate(M_MapManager.instance.mapPlayerForUI);
-        user.transform.SetParent(CharacterInfoUI.instance.gamePlayerListLayout.transform);
-        user.transform.localScale = new Vector3(1, 1, 1);
-        user.GetComponent<MapPlayerForUI>().netID =  GetComponent<NetworkIdentity>();
-        user.GetComponent<MapPlayerForUI>().gamePlayer = this;
+        if(CharacterInfoUI.instance.gamePlayerListLayout.transform != null){
+            M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            GameObject user = Instantiate(M_MapManager.instance.mapPlayerForUI);
+            user.transform.SetParent(CharacterInfoUI.instance.gamePlayerListLayout.transform);
+            user.transform.localScale = new Vector3(1, 1, 1);
+            user.GetComponent<MapPlayerForUI>().netID =  GetComponent<NetworkIdentity>();
+            user.GetComponent<MapPlayerForUI>().gamePlayer = this;
+
+            for(int i=0; i<5; i++){
+                GameObject card = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "Card"));
+                NetworkServer.Spawn(card);
+                
+            }
+        }
     }
 }

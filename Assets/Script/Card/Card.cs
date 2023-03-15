@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 
-public class Card
+public class Card : NetworkBehaviour
 {
-    string name;
+    public string cardName;
 
 }
