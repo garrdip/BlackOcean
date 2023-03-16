@@ -13,6 +13,7 @@ public class MenuUI : MonoBehaviour
     public Button buttonQuit;
 
     public GameObject panelSettings;
+    public GameObject multiplayPanel;
 
     void Start()
     {
@@ -31,7 +32,7 @@ public class MenuUI : MonoBehaviour
 
     public void HandleMultiPlay()
     {
-
+        multiplayPanel.SetActive(true);
     }
 
     public void HandleDeckBook()
