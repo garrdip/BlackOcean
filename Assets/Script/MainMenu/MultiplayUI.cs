@@ -19,7 +19,6 @@ public class MultiplayUI : MonoBehaviour
     void HandleCloseWindow()
     {
         gameObject.SetActive(false);
-        steamManager.GetLobbyList();
     }
 
     void HandleCreateRoom()

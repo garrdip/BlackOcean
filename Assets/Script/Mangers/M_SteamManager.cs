@@ -35,17 +35,13 @@ public class M_SteamManager : MonoBehaviour
         {
             return;
         }
-
+        //Mirror Server Start
         networkManager.StartHost();
+        //Steam Lobby Data 수정 
         SteamMatchmaking.SetLobbyData(
             new CSteamID(callback.m_ulSteamIDLobby),
             HostAddressKey,
             SteamUser.GetSteamID().ToString());
-        
-        SteamMatchmaking.SetLobbyData(
-            new CSteamID(callback.m_ulSteamIDLobby),
-            PasswordKey,
-            "12321"); 
     }
 
     private void OnGameLobbyJoinRequeseted(GameLobbyJoinRequested_t callback)

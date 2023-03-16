@@ -15,6 +15,7 @@ public class SettingsUI : MonoBehaviour
     public Toggle toggleFullScreen;
 
     public Button buttonApply;
+    public Button buttonCloseSettingsUI;
 
     public int resolutionNum;
 
@@ -22,6 +23,7 @@ public class SettingsUI : MonoBehaviour
     {
         initDropdown();
         buttonApply.onClick.AddListener(() => HandleClickApply());
+        buttonCloseSettingsUI.onClick.AddListener(() => HandleCloseSettingsUI());
         resolutionDropdown.onValueChanged.AddListener(DropdownValueChange);
         toggleFullScreen.onValueChanged.AddListener(HandleFullScreen);
         toggleFullScreen.isOn = Screen.fullScreenMode.Equals(FullScreenMode.FullScreenWindow) ? true : false;
@@ -67,5 +69,10 @@ public class SettingsUI : MonoBehaviour
     public void HandleFullScreen(bool isFull)
     {
         fullScreenMode = isFull ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
+    }
+
+    public void HandleCloseSettingsUI()
+    {
+        gameObject.SetActive(false);
     }
 }
