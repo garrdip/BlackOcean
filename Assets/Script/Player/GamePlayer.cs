@@ -45,11 +45,33 @@ public class GamePlayer : NetworkBehaviour
             user.GetComponent<MapPlayerForUI>().netID =  GetComponent<NetworkIdentity>();
             user.GetComponent<MapPlayerForUI>().gamePlayer = this;
 
-            for(int i=0; i<5; i++){
-                GameObject card = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "Card"));
+            // 카트 네트워크 오브젝트 6개 생성
+            for(int i=0; i<6; i++){
+                GameObject card = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("Card")));
                 NetworkServer.Spawn(card);
-                
+                card.GetComponent<Card>().index = i;
+                card.transform.SetParent(DeckUI.instance.DeckListPanel.transform);
+                card.transform.localScale = new Vector3(1, 1, 1);
             }
         }
+    }
+
+    // 카드 컨트롤 화살표 인디케이터 생성(네트워크 오브젝트)
+    [Command]
+    public void CmdSpawnArrowEmitter(Vector3 cardPosition)
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        GameObject cardEmitter = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")));
+        NetworkServer.Spawn(cardEmitter);
+        cardEmitter.transform.SetParent(DeckUI.instance.DeckListPanel.transform);
+        cardEmitter.transform.localScale = new Vector3(1, 1, 1);
+        cardEmitter.transform.position = cardPosition;
+    }
+
+    // 카드 컨트롤 화살표 인디케이터 제거(네트워크 오브젝트)
+    [Command]
+    public void CmdDestroyArrowEmitter(GameObject cardEmitter)
+    {
+        NetworkServer.Destroy(cardEmitter);
     }
 }

@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
 
+// 화살표 사라지는 조건 : 
+// 1. 화살표 소환상태에서 마우스 우클릭
+// 2. 
 public class CardCtrlArrow : NetworkBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
     public GameObject arrowHeadPrefab;
@@ -71,7 +74,22 @@ public class CardCtrlArrow : NetworkBehaviour, IPointerClickHandler, IBeginDragH
 
         // The first arrow node's rotation
         this.arrowNodes[0].transform.rotation = this.arrowNodes[1].transform.rotation;
-    } 
+
+        RemoveArrowOnMouseRightClicked();
+    }
+
+
+    // 마우스 오른쪽 버튼 클릭 시 화살표 제거
+    public void RemoveArrowOnMouseRightClicked()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            if(NetworkClient.connection != null){
+                GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
+                gamePlayer.CmdDestroyArrowEmitter(this.gameObject);
+            }
+        }
+    }
 
     public void OnPointerClick(PointerEventData eventData)
     {
