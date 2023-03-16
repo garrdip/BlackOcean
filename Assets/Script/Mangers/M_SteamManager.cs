@@ -12,6 +12,8 @@ public class M_SteamManager : MonoBehaviour
     protected Callback<LobbyEnter_t> lobbyEntered;
     protected Callback<LobbyMatchList_t> lobbyList;
     private const string HostAddressKey = "HostAddress";
+    private const string PasswordKey = "Password";
+    private const string LobbyNameKey = "LobbyName";
     public M_NetworkRoomManager networkManager;
 
     private void Start()
@@ -24,8 +26,7 @@ public class M_SteamManager : MonoBehaviour
     }
     public void HostLobby()
     {
-        SteamMatchmaking.CreateLobby(Steamworks.ELobbyType.k_ELobbyTypePublic,networkManager.maxConnections);
-        
+        SteamMatchmaking.CreateLobby(Steamworks.ELobbyType.k_ELobbyTypePublic,3);
     }
 
     private void OnLobbyCreated(LobbyCreated_t callback)
@@ -40,6 +41,11 @@ public class M_SteamManager : MonoBehaviour
             new CSteamID(callback.m_ulSteamIDLobby),
             HostAddressKey,
             SteamUser.GetSteamID().ToString());
+        
+        SteamMatchmaking.SetLobbyData(
+            new CSteamID(callback.m_ulSteamIDLobby),
+            PasswordKey,
+            "12321"); 
     }
 
     private void OnGameLobbyJoinRequeseted(GameLobbyJoinRequested_t callback)
@@ -51,7 +57,7 @@ public class M_SteamManager : MonoBehaviour
     {
         if(NetworkServer.active){ return;}
         string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby),HostAddressKey);
-
+        
         networkManager.networkAddress = hostAddress;
         networkManager.StartClient();
     }
@@ -79,8 +85,10 @@ public class M_SteamManager : MonoBehaviour
         for (int i = 0; i < pCallback.m_nLobbiesMatching; i++)
         {
             CSteamID lobbyId = SteamMatchmaking.GetLobbyByIndex(i);
+            
+            
             int numMembers = SteamMatchmaking.GetNumLobbyMembers(lobbyId);
-            Debug.Log(lobbyId + " / " + numMembers);
+            Debug.Log(SteamMatchmaking.GetLobbyData(lobbyId,PasswordKey));
             // Do something with the lobby ID
         }
     }
