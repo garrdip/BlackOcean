@@ -708,7 +708,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1408884459
 Transform:
   m_ObjectHideFlags: 0
@@ -982,6 +982,8 @@ MonoBehaviour:
   mainCam: {fileID: 842314909}
   rooms: []
   mapPlayerForUI: {fileID: 5678142405827003429, guid: 6dd6d54b28b6baf418bb5cb38e93941f, type: 3}
+  roommaps: {fileID: 1240218218}
+  game: {fileID: 1408884458}
 --- !u!4 &1913121864
 Transform:
   m_ObjectHideFlags: 0

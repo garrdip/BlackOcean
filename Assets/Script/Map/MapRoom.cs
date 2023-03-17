@@ -13,7 +13,6 @@ public class MapRoom : NetworkBehaviour
     [SyncVar]
     public bool isComplete = false;
     SpriteRenderer testSprite;
-
     void Awake()
     {
         testSprite = GetComponent<SpriteRenderer>();

@@ -24,7 +24,12 @@ public class M_MapManager : NetworkBehaviour
     [Header("MapPlayerForUI Prefab")]
     public GameObject mapPlayerForUI;
 
-    
+    [Header("Map Scene")]
+    public GameObject roommaps;
+
+    [Header("Game Scene")]
+    public GameObject game;
+
     public static M_MapManager instance
     {
         get
@@ -71,8 +76,10 @@ public class M_MapManager : NetworkBehaviour
         }
         else
         {
-            Debug.Log(" 다음 위치로 방 이동 " + tar);
+            Debug.Log(" 다음 위치로 방 이동 및 전투 시작 " + tar);
 
+            StartBattle();
+            //현재 위치의 방 파란색으로 변경
             foreach(MapRoom room in rooms)
             {
                 if(room.location == currentLocation)
@@ -80,6 +87,7 @@ public class M_MapManager : NetworkBehaviour
                    room.SetSprite(new Color(1,0,0));
                 }
             }
+            //기존 방 빨간색으로 변경 
             foreach(MapRoom room in rooms)
             {
                 if(room.location == tar)
@@ -94,6 +102,14 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void StartBattle()
+    {
+        roommaps.SetActive(false);
+        game.SetActive(true);
+    }
+
+    // East/West/South/North 방이 있는지 검색하고 없으면 생성 - for문이 쥰내 들어감 괜찮은지
     [Server]
     public void GenerateNextRoom()
     {
@@ -121,7 +137,7 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
-    // 방이동후 카메라 전환
+    // 방이동후 카메라 전환 (자유 이동으로 할지)
     [ClientRpc]
     public void MoveCameraPositionToRoom(Vector2 tar)
     {
