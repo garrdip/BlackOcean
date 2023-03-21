@@ -33,27 +33,73 @@ public class GamePlayer : NetworkBehaviour
         }
         if(isLocalPlayer)
         {
-            M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-            GameObject user = Instantiate(M_MapManager.instance.mapPlayerForUI);
-            user.transform.SetParent(CharacterInfoUI.instance.gamePlayerListLayout.transform);
-            user.transform.localScale = new Vector3(1, 1, 1);
-            user.GetComponent<MapPlayerForUI>().netID =  GetComponent<NetworkIdentity>();
-            user.GetComponent<MapPlayerForUI>().gamePlayer = this;
-             for(int i = 0 ; i < 8 ;i++)
-            {
-                Card initialCard = new Card(){name  = "i"};
-                deck.Add(initialCard);
-            }
+            SetInitialValue();
+            isInitializeDone = true;
+            Debug.Log("다른 플레이어 기다림 시작!");
+            StartCoroutine(nameof(WaitPlayerList));
         }
     }
 
-
-    // Host, Client 시작 시 맵 UI 사용될 커스텀 MapPlayer생성해서 플레이어 참가 목록UI에 세팅
-    public override void OnStartClient()
+    public void SetInitialValue()
     {
-        base.OnStartClient();
-            //초반 카드덱 제공
-            
+        for(int i = 0 ; i < 8 ;i++)
+        {
+            Card initialCard = new Card(){name  = "i"};
+            deck.Add(initialCard);
+        }
+    }
+
+    IEnumerator WaitPlayerList()
+    {
+        M_NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        //GamePlayer가 모두 로드 될때까지 기다림
+        while(true)
+        {
+            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+            if(users.Length == netManger.roomSlots.Count) break;
+            yield return new WaitForSeconds(0.01f);
+        }
+        //GamePlayer가 모두 Initial Value 초기화 될때까지 기다림
+        while(true)
+        {
+            int cnt = 0;
+            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+            foreach(GamePlayer user in users)
+            {
+                if(user.isInitializeDone) cnt++;
+            }
+            if(cnt == netManger.roomSlots.Count) break;
+            yield return new WaitForSeconds(0.01f);
+        }
+        SetUserStatusUI();
+    }
+
+    public void SetUserStatusUI()
+    {
+        GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+        //자신의 UI를 최상단에 표시
+        foreach( GamePlayer user in users )
+        {
+            if(user.isLocalPlayer)
+            {
+                GameObject userUI = Instantiate(M_MapManager.instance.mapPlayerForUI);
+                userUI.transform.SetParent(CharacterInfoUI.instance.gamePlayerListLayout.transform);
+                userUI.transform.localScale = new Vector3(1, 1, 1);
+                userUI.GetComponent<MapPlayerForUI>().netID =  user.GetComponent<NetworkIdentity>();
+                userUI.GetComponent<MapPlayerForUI>().gamePlayer = user;
+            }
+        }
+        foreach( GamePlayer user in users )
+        {
+            if(!user.isLocalPlayer)
+            {
+                GameObject userUI = Instantiate(M_MapManager.instance.mapPlayerForUI);
+                userUI.transform.SetParent(CharacterInfoUI.instance.gamePlayerListLayout.transform);
+                userUI.transform.localScale = new Vector3(1, 1, 1);
+                userUI.GetComponent<MapPlayerForUI>().netID =  user.GetComponent<NetworkIdentity>();
+                userUI.GetComponent<MapPlayerForUI>().gamePlayer = user;
+            }
+        }
     }
 
     // 카드 컨트롤 화살표 인디케이터 생성(네트워크 오브젝트)
