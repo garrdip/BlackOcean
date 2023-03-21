@@ -17,12 +17,27 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public bool isInitializeDone = false;
 
+    public int defaultCardOnHandCount = 10;
+    public int maxCardOnHandCount = 12;
+
     public SyncList<Artifact> artifacts = new SyncList<Artifact>();
 
     public SyncList<Card> deck =  new SyncList<Card>();
     
     public SyncList<Item> items = new SyncList<Item>();
 
+    // 서버 시작 시에 플레이어수 만큼 최대갯수 카드 오브젝트 미리 생성
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        for(int i=0; i<maxCardOnHandCount; i++){
+            // 네트워크 오브젝트 생성. 초기 위치는 화면에서 벗어난 x좌표 -20
+            M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            GameObject cardOnHand = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")));
+            cardOnHand.GetComponent<CardOnHand>().isTargetAble = maxCardOnHandCount % 2 == 0 ? true : false;
+            NetworkServer.Spawn(cardOnHand, connectionToClient);
+        }
+    }
 
     public override void OnStartLocalPlayer()
     {
@@ -109,7 +124,7 @@ public class GamePlayer : NetworkBehaviour
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         GameObject cardEmitter = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")));
         NetworkServer.Spawn(cardEmitter);
-        cardEmitter.transform.SetParent(DeckUI.instance.DeckListPanel.transform);
+        cardEmitter.transform.SetParent(DeckUI.instance.GameCanvas.transform);
         cardEmitter.transform.localScale = new Vector3(1, 1, 1);
         cardEmitter.transform.position = cardPosition;
     }

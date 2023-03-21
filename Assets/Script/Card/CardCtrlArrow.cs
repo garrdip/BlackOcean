@@ -8,7 +8,7 @@ using Mirror;
 // 화살표 사라지는 조건 : 
 // 1. 화살표 소환상태에서 마우스 우클릭
 // 2. 
-public class CardCtrlArrow : NetworkBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
     public GameObject arrowHeadPrefab;
     public GameObject arrowNodePrefab;
@@ -21,7 +21,7 @@ public class CardCtrlArrow : NetworkBehaviour, IPointerClickHandler, IBeginDragH
     private List<Vector2> controlPoints = new List<Vector2>();
     private readonly List<Vector2> controlPointFactors = new List<Vector2>{ new Vector2(-0.3f, 0.8f), new Vector2(0.1f, 1.4f) };
 
-    void Awake()
+    void Start()
     {
         this.origin = this.GetComponent<RectTransform>();
         for(int i=0; i<this.arrowNodeNum; i++){

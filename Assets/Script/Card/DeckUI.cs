@@ -7,13 +7,15 @@ using Mirror;
 public class DeckUI : SingletonD<DeckUI>
 {
     public GameObject DeckListPanel;
+    public GameObject GameCanvas;
 
     public delegate void OnCardHoverForAction(int cardIndex);
     public event OnCardHoverForAction onCardHoverForAction;
 
     void Start()
     {
-        onCardHoverForAction += OnCardHovered;
+        // onCardHoverForAction += OnCardHovered;
+        transform.localPosition = new Vector3(0f, -3.8f, 0f); // 부모 오브젝트 기준으로 Y축 -4.5위치
     }
 
     // 카드 Hover Delegate 송신
