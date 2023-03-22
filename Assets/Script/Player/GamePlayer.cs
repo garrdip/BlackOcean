@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 using ProjectD;
 
@@ -14,11 +15,15 @@ public class GamePlayer : NetworkBehaviour
 
     [SyncVar]
     public Character character;
+
     [SyncVar]
     public bool isInitializeDone = false;
-
     public int defaultCardOnHandCount = 10;
+
     public int maxCardOnHandCount = 12;
+
+    [SyncVar (hook = nameof(OnChangedSelectOrder))]
+    public int selectOrder = 0;
 
     public SyncList<Artifact> artifacts = new SyncList<Artifact>();
 
@@ -26,19 +31,18 @@ public class GamePlayer : NetworkBehaviour
     
     public SyncList<Item> items = new SyncList<Item>();
 
-    // 서버 시작 시에 플레이어수 만큼 최대갯수 카드 오브젝트 미리 생성
-    public override void OnStartServer()
+
+    public void SetOrderByUI(int num)
     {
-        base.OnStartServer();
-        for(int i=0; i<maxCardOnHandCount; i++){
-            // 네트워크 오브젝트 생성. 초기 위치는 화면에서 벗어난 x좌표 -20
-            M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-            GameObject cardOnHand = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")));
-            cardOnHand.GetComponent<CardOnHand>().isTargetAble = maxCardOnHandCount % 2 == 0 ? true : false;
-            NetworkServer.Spawn(cardOnHand, connectionToClient);
-        }
+        if(isLocalPlayer)
+            selectOrder = num;
     }
 
+    public void OnChangedSelectOrder(int oldVal,int newVal)
+    {
+        if(isServer)
+            M_TurnManager.instance.OnChangedPlayerOrder();
+    }
     public override void OnStartLocalPlayer()
     {
         // Server Loading 종료 후 1층 데이터 생성
@@ -87,6 +91,10 @@ public class GamePlayer : NetworkBehaviour
             yield return new WaitForSeconds(0.01f);
         }
         SetUserStatusUI();
+        M_TurnManager.instance.SetOrderButtonListener();
+        // 플레이어 로딩이 끝나면 턴매니저로 플레이어 리스트를 전달함
+        if(isServer)
+            M_TurnManager.instance.InitiateGamePlayerList();
     }
 
     public void SetUserStatusUI()
@@ -124,7 +132,7 @@ public class GamePlayer : NetworkBehaviour
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         GameObject cardEmitter = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")));
         NetworkServer.Spawn(cardEmitter);
-        cardEmitter.transform.SetParent(DeckUI.instance.GameCanvas.transform);
+        cardEmitter.transform.SetParent(DeckUI.instance.DeckListPanel.transform);
         cardEmitter.transform.localScale = new Vector3(1, 1, 1);
         cardEmitter.transform.position = cardPosition;
     }

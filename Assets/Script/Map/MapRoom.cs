@@ -13,6 +13,8 @@ public class MapRoom : NetworkBehaviour
     [SyncVar]
     public bool isComplete = false;
     SpriteRenderer testSprite;
+    [SyncVar]
+    public Transform parent;
     void Awake()
     {
         testSprite = GetComponent<SpriteRenderer>();
@@ -29,6 +31,11 @@ public class MapRoom : NetworkBehaviour
                 OnButtonClick();
             }
         }
+    }
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        transform.parent = parent;
     }
 
     void OnButtonClick()

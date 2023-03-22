@@ -52,6 +52,11 @@ MonoBehaviour:
   MaxHP: 0
   character: 0
   isInitializeDone: 0
+  roomSelectOrder: 0
+  selectOrderButtons:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &7240602821872156436
 MonoBehaviour:
   m_ObjectHideFlags: 0

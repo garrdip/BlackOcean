@@ -58,10 +58,11 @@ public class M_MapManager : NetworkBehaviour
         for(int i = 0 ;i < 5 ;i ++)
         {
             //각 방의 좌표값 * 1.2 위치에 방 생성 (방간격)
-            GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3(loc[i].x*1.2f,loc[i].y*1.2f,0),Quaternion.identity);
+            GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3(loc[i].x*1.2f,loc[i].y*1.2f,0),Quaternion.identity,roommaps.transform);
             newRoom.GetComponent<MapRoom>().location = loc[i];
             // Vector2 형식의 좌표 절대값의 합을 위험도로 지정 
             newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(loc[i].x) + (int)Mathf.Abs(loc[i].y);
+            newRoom.GetComponent<MapRoom>().parent = roommaps.transform;
             NetworkServer.Spawn(newRoom);
             rooms.Add(newRoom.GetComponent<MapRoom>());
         }
@@ -70,35 +71,45 @@ public class M_MapManager : NetworkBehaviour
     [Server]
     public void MoveToRoom(Vector2 tar)
     {
-        if(Vector2.Distance(currentLocation,tar) > 1)
+        if(Vector2.Distance(currentLocation,tar) > 1 || M_TurnManager.instance.isOrderSelect)
         {
             return;
         }
         else
         {
-            Debug.Log(" 다음 위치로 방 이동 및 전투 시작 " + tar);
-
-            StartBattle();
-            //현재 위치의 방 파란색으로 변경
-            foreach(MapRoom room in rooms)
-            {
-                if(room.location == currentLocation)
-                {
-                   room.SetSprite(new Color(1,0,0));
-                }
-            }
-            //기존 방 빨간색으로 변경 
-            foreach(MapRoom room in rooms)
-            {
-                if(room.location == tar)
-                {
-                    room.SetSprite(new Color(0,0,1));
-                }
-            }
+            PopUpOrderUI();
+            SetRoomColor(tar);
             currentLocation = tar;
             GenerateNextRoom();
             MoveCameraPositionToRoom(tar);
             return;
+        }
+    }
+
+    [Server]
+    public void PopUpOrderUI()
+    {
+        M_TurnManager.instance.PopUpOrderUI();
+    }
+
+    [Server]
+    public void SetRoomColor(Vector2 tar)
+    {
+        //현재 위치의 방 파란색으로 변경
+        foreach(MapRoom room in rooms)
+        {
+            if(room.location == currentLocation)
+            {
+               room.SetSprite(new Color(1,0,0));
+            }
+        }
+        //기존 방 빨간색으로 변경 
+        foreach(MapRoom room in rooms)
+        {
+            if(room.location == tar)
+            {
+                room.SetSprite(new Color(0,0,1));
+            }
         }
     }
 
@@ -131,6 +142,7 @@ public class M_MapManager : NetworkBehaviour
                 GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3((currentLocation.x + loc[i].x)*1.2f,(currentLocation.y + loc[i].y)*1.2f,0),Quaternion.identity);
                 newRoom.GetComponent<MapRoom>().location = new Vector2(currentLocation.x + loc[i].x, currentLocation.y + loc[i].y);
                 newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(currentLocation.x + loc[i].x) + (int)Mathf.Abs(currentLocation.y + loc[i].y);
+                newRoom.GetComponent<MapRoom>().parent = roommaps.transform;
                 NetworkServer.Spawn(newRoom);
                 rooms.Add(newRoom.GetComponent<MapRoom>());
             }
