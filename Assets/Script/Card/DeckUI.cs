@@ -15,7 +15,7 @@ public class DeckUI : SingletonD<DeckUI>
     void Start()
     {
         // onCardHoverForAction += OnCardHovered;
-        transform.localPosition = new Vector3(0f, -3.8f, 0f); // 부모 오브젝트 기준으로 Y축 -4.5위치
+        transform.localPosition = new Vector3(0f, -4.5f, 0f);
     }
 
     // 카드 Hover Delegate 송신

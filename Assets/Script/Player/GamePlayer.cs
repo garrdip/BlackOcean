@@ -25,12 +25,13 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedSelectOrder))]
     public int selectOrder = 0;
 
-    public SyncList<Artifact> artifacts = new SyncList<Artifact>();
+    public readonly SyncList<Artifact> artifacts = new SyncList<Artifact>();
 
-    public SyncList<Card> deck =  new SyncList<Card>();
+    public readonly SyncList<Card> deck =  new SyncList<Card>();
     
-    public SyncList<Item> items = new SyncList<Item>();
+    public readonly SyncList<Item> items = new SyncList<Item>();
 
+    public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>();
 
     public void SetOrderByUI(int num)
     {
@@ -122,6 +123,34 @@ public class GamePlayer : NetworkBehaviour
                 userUI.GetComponent<MapPlayerForUI>().netID =  user.GetComponent<NetworkIdentity>();
                 userUI.GetComponent<MapPlayerForUI>().gamePlayer = user;
             }
+        }
+    }
+
+    // 카드 생성 요청
+    [Command]
+    public void CmdSpawnCardOnHand()
+    {
+        for(int i=0; i<maxCardOnHandCount; i++){
+            // 네트워크 오브젝트 생성. 초기 위치는 화면에서 벗어난 x좌표 -20
+            M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            GameObject cardOnHand = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+                new Vector3(-20f, 0f, 0f),
+                Quaternion.identity
+            );
+            //cardOnHand.GetComponent<CardOnHand>().isTargetAble = maxCardOnHandCount % 2 == 0 ? true : false;
+            cardOnHand.GetComponent<CardOnHand>().index = i;
+            NetworkServer.Spawn(cardOnHand, connectionToClient);
+            RpcSpawnCardOnHand(cardOnHand.GetComponent<CardOnHand>());
+        }
+    }
+
+    // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
+    [ClientRpc]
+    public void RpcSpawnCardOnHand(CardOnHand cardOnHand)
+    {
+        if(cardOnHand.isOwned){
+            cardOnHands.Add(cardOnHand);
         }
     }
 
