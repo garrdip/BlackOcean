@@ -13,11 +13,11 @@ public class MapRoom : NetworkBehaviour
     [SyncVar]
     public bool isComplete = false;
     SpriteRenderer testSprite;
-    [SyncVar]
-    public Transform parent;
+
     void Awake()
     {
         testSprite = GetComponent<SpriteRenderer>();
+        gameObject.transform.SetParent(Floor.instance.transform);
     }
 
     void Update()
@@ -31,11 +31,6 @@ public class MapRoom : NetworkBehaviour
                 OnButtonClick();
             }
         }
-    }
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        transform.parent = parent;
     }
 
     void OnButtonClick()

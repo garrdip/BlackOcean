@@ -62,7 +62,6 @@ public class M_MapManager : NetworkBehaviour
             newRoom.GetComponent<MapRoom>().location = loc[i];
             // Vector2 형식의 좌표 절대값의 합을 위험도로 지정 
             newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(loc[i].x) + (int)Mathf.Abs(loc[i].y);
-            newRoom.GetComponent<MapRoom>().parent = roommaps.transform;
             NetworkServer.Spawn(newRoom);
             rooms.Add(newRoom.GetComponent<MapRoom>());
         }
@@ -144,7 +143,6 @@ public class M_MapManager : NetworkBehaviour
                 GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3((currentLocation.x + loc[i].x)*1.2f,(currentLocation.y + loc[i].y)*1.2f,0),Quaternion.identity);
                 newRoom.GetComponent<MapRoom>().location = new Vector2(currentLocation.x + loc[i].x, currentLocation.y + loc[i].y);
                 newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(currentLocation.x + loc[i].x) + (int)Mathf.Abs(currentLocation.y + loc[i].y);
-                newRoom.GetComponent<MapRoom>().parent = roommaps.transform;
                 NetworkServer.Spawn(newRoom);
                 rooms.Add(newRoom.GetComponent<MapRoom>());
             }
