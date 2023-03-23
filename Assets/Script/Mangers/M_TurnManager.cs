@@ -45,10 +45,22 @@ public class M_TurnManager : NetworkBehaviour
         startButton.GetComponent<Button>().onClick.AddListener(() =>HandleStartBattle());
     }
 
-    [Server]
+    [Command(requiresAuthority = false)]
     public void SetNextTurn()
     {
-        
+        if(currentPlayer == playerOrder[playerOrder.Count -1])
+            currentPlayer = playerOrder[0];
+        else
+        {
+            for(int i = 0 ; i < playerOrder.Count ; i ++)        
+            {
+                if(currentPlayer == playerOrder[i])
+                {
+                    currentPlayer = playerOrder[i+1];
+                    break;
+                }
+            }
+        }
     }
 
     [Server]
@@ -56,7 +68,12 @@ public class M_TurnManager : NetworkBehaviour
     {
         foreach(GamePlayer player in players)
         {
-            playerOrder[player.selectOrder - 1] = player;
+            int order = 0;
+            for(int i = 0 ; i < players.Count ; i ++)
+            {
+                if(player.selectOrder > players[i].selectOrder) order++;
+            }
+            playerOrder[order] = player;
         }
         currentPlayer = playerOrder[0];
         M_MapManager.instance.StartBattle();
@@ -74,7 +91,6 @@ public class M_TurnManager : NetworkBehaviour
 
     public void SelectOrder(int num)
     {
-        Debug.Log("버튼 클릭!");
         NetworkClient.localPlayer.GetComponent<GamePlayer>().SetOrderByUI(num);
     }
 
