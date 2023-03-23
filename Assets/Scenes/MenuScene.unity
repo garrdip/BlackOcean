@@ -4449,7 +4449,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 832995213}
   m_HandleRect: {fileID: 811470587}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5682,6 +5682,7 @@ MonoBehaviour:
   - {fileID: 6935118939728155846, guid: c4189fbed6a5ff646831faac1cf861cb, type: 3}
   - {fileID: 2153712344633156845, guid: 4fc3aa0dc4717124e88a0e2274161e50, type: 3}
   - {fileID: 7890103397803786951, guid: 55410096cea25a141a0fab1ec1440eb8, type: 3}
+  - {fileID: 2438374660219488752, guid: 211b011cd7a3b6845aff5b3d9ce65a69, type: 3}
   timeInterpolationGui: 0
   showRoomGUI: 1
   minPlayers: 1

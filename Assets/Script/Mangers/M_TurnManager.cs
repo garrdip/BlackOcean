@@ -25,6 +25,8 @@ public class M_TurnManager : NetworkBehaviour
     public List<Button> selectOrderButtons;
 
     public GameObject startButton;
+
+    public Transform playerSpawnLocation;
     
     public static M_TurnManager instance
     {
@@ -77,6 +79,19 @@ public class M_TurnManager : NetworkBehaviour
         }
         currentPlayer = playerOrder[0];
         M_MapManager.instance.StartBattle();
+        GeneratePlayerUnit();
+    }
+
+    [Server]
+    public void GeneratePlayerUnit()
+    {
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        for(int i = 0 ;i < playerOrder.Count ; i ++)
+        {
+            GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),playerSpawnLocation.GetChild(i).transform.position,Quaternion.identity);
+            avatar.GetComponent<TargetObject>().player = playerOrder[i];
+            NetworkServer.Spawn(avatar);
+        }
     }
 
     [Server]
@@ -105,7 +120,7 @@ public class M_TurnManager : NetworkBehaviour
     public void OnChangedPlayerOrder()
     {
         //모두가 다른 순서로 선택 완료했는지 체크
-        int[] temp = new int[]{0,0};
+        int[] temp = new int[]{0,0,0};
         int sequence = 0;
         foreach(GamePlayer user in players)
         {
