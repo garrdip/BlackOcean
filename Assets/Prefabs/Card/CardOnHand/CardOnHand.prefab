@@ -134,7 +134,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   target: {fileID: 2153712344633156844}
-  clientAuthority: 1
+  clientAuthority: 0
   syncPosition: 1
   syncRotation: 1
   syncScale: 1
@@ -165,3 +165,12 @@ MonoBehaviour:
   index: 0
   cardName: 
   isTargetAble: 0
+  spriteRenderer: {fileID: 0}
+  originSortOrder: 0
+  originScale: {x: 0, y: 0, z: 0}
+  targetScale: {x: 0, y: 0, z: 0}
+  originPosition: {x: 0, y: 0, z: 0}
+  targetPosition: {x: 0, y: 0, z: 0}
+  hoveredPositionY: 1.5
+  originRotation: {x: 0, y: 0, z: 0}
+  targetRotation: {x: 0, y: 0, z: 0}

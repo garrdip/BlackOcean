@@ -13,14 +13,15 @@ public class M_TurnManager : NetworkBehaviour
 
     // 서버에서 관리하지만 유저도 쓸지 몰라서 일단 SyncList
     [SyncVar]
-    public SyncList<GamePlayer> playerOrder = new SyncList<GamePlayer>();
+    public readonly SyncList<GamePlayer> playerOrder = new SyncList<GamePlayer>();
 
-    [SyncVar]
+    [SyncVar(hook = nameof(OnTurnChanged))]
     public GamePlayer currentPlayer;
 
     public GameObject orderUI;
 
     public bool isOrderSelect = false;
+    public bool isMyTurn = false;
 
     public List<Button> selectOrderButtons;
 
@@ -137,5 +138,16 @@ public class M_TurnManager : NetworkBehaviour
             sequence++;
         }
         startButton.SetActive(true);
+    }
+
+    public void OnTurnChanged(GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
+    {
+        if(NetworkClient.connection != null){
+            GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
+            if(newGamePlayer == gamePlayer){
+                Debug.Log("당신 턴입니다 :" + newGamePlayer.character);
+                isMyTurn = true;
+            }
+        }
     }
 }
