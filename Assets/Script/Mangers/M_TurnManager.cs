@@ -27,7 +27,10 @@ public class M_TurnManager : NetworkBehaviour
 
     public GameObject startButton;
 
+    [Header("Spwan Object Transfrom Group")]
     public Transform playerSpawnLocation;
+    public Transform monsterSpawnLocation;
+    List<TargetObject> spawnedList = new List<TargetObject>();
     
     public static M_TurnManager instance
     {
@@ -81,6 +84,7 @@ public class M_TurnManager : NetworkBehaviour
         currentPlayer = playerOrder[0];
         M_MapManager.instance.StartBattle();
         GeneratePlayerUnit();
+        GenerateMonster();
     }
 
     [Server]
@@ -90,10 +94,37 @@ public class M_TurnManager : NetworkBehaviour
         for(int i = 0 ;i < playerOrder.Count ; i ++)
         {
             GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),playerSpawnLocation.GetChild(i).transform.position,Quaternion.identity);
-            avatar.GetComponent<TargetObject>().player = playerOrder[i];
             NetworkServer.Spawn(avatar);
+            avatar.GetComponent<TargetObject>().player = playerOrder[i];
+            avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+            spawnedList.Add(avatar.GetComponent<TargetObject>());
         }
     }
+
+    [Server]
+    public void GenerateMonster()
+    {
+        int num;
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        while(true)
+        {
+            //위험도 일치하는 선에서 랜덤한 몹 찾아야함
+            num = Random.Range(0,M_MonsterManager.monsterGroups.Count - 1);
+            break;
+        }
+        for(int i = 0 ; i < M_MonsterManager.monsterGroups[num].monsters.Count ; i ++)
+        {
+            var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "SpawnedMonster"),monsterSpawnLocation.GetChild(i).transform.position,Quaternion.identity).GetComponent<SpawnedMonster>();
+            NetworkServer.Spawn(monster.gameObject);
+            monster.monsterData = M_MonsterManager.monsterGroups[num].monsters[i];
+            var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),monsterSpawnLocation.GetChild(i).transform.position,Quaternion.identity);
+            NetworkServer.Spawn(avatar);
+            avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+            avatar.GetComponent<TargetObject>().monster = monster;
+            spawnedList.Add(avatar.GetComponent<TargetObject>());
+        }
+    }
+
 
     [Server]
     public void InitiateGamePlayerList()

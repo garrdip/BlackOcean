@@ -55,6 +55,9 @@ MonoBehaviour:
   - {fileID: 4899987475605225879, guid: d547f9af7596d4f4e9c8bba8024996e3, type: 3}
   - {fileID: 5817053353496438955, guid: 06fa60deeb982604db4b07b2f3338044, type: 3}
   - {fileID: 8907893385436738934, guid: 2ef12f5410fbc23488ddbc23a5f8276d, type: 3}
+  monsters:
+  - {fileID: 5618053439420854590, guid: 39a9f77f4b23d62458b5dc2eb9696cb1, type: 3}
+  - {fileID: 546911306462619370, guid: 90531be2a9a74b942b7f76a7159f5122, type: 3}
 --- !u!114 &457687340931919250
 MonoBehaviour:
   m_ObjectHideFlags: 0
