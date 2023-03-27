@@ -1406,6 +1406,7 @@ MonoBehaviour:
   DeckListPanel: {fileID: 823382814}
   GameCanvas: {fileID: 701132273}
   buttonEndTurn: {fileID: 751923116}
+  cardPockets: []
 --- !u!1 &842314907
 GameObject:
   m_ObjectHideFlags: 0

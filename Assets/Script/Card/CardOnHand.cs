@@ -6,6 +6,7 @@ using Mirror;
 
 public class CardOnHand : NetworkBehaviour
 {
+    [SyncVar]
     public int index;
     public string cardName;
     public bool isTargetAble;
@@ -22,17 +23,17 @@ public class CardOnHand : NetworkBehaviour
     // 위치값
     public Vector3 originPosition;
     public Vector3 targetPosition;
-    public float hoveredPositionY = 1.5f;
+    public float hoveredPositionY;
 
     // 회전값
     public Vector3 originRotation;
     public Vector3 targetRotation;
 
     // 마우스가 오브젝트 위에 있는지 여부
-    private bool isMouseOver = false; 
+    public bool isMouseOver = false; 
 
     // 오브젝트가 드래그 상태인지 여부
-    private bool isDrag = false;
+    public bool isDrag = false;
 
     private Vector3 mousePosition;
 
@@ -41,46 +42,27 @@ public class CardOnHand : NetworkBehaviour
 
     void Start()
     {
-        transform.SetParent(DeckUI.instance.DeckListPanel.transform);
-        transform.GetComponent<SpriteRenderer>().sortingOrder = index;
         transform.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
         originScale = transform.localScale;
         targetScale = originScale + new Vector3(1f, 1.5f, 0f);
+        hoveredPositionY = 0.8f;
     }
 
     void FixedUpdate()
     {
-        if(!isDrag){
-            if (isMouseOver)
-            {
+        if(isOwned){
+            if(isMouseOver){
                 transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * 10f);
                 targetPosition = new Vector3(transform.localPosition.x, hoveredPositionY, transform.localPosition.z);
                 transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, Time.deltaTime * 10f);
                 transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                DeckUI.instance.EmitCardHoverAction(index);
-            }
-            else
-            {
+            }else{
                 SetCardOfHandPositionSymmetry(index);  
             }
-        }    
+        }
     }
 
-    // 오브젝트에 마우스가 진입할 때
-    private void OnMouseEnter()
-    {
-        isMouseOver = true;
-        originSortOrder = GetComponent<SpriteRenderer>().sortingOrder;
-        transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
-    }
-
-    // 오브젝트에서 마우스가 벗어날 때
-    private void OnMouseExit()
-    {
-        isMouseOver = false;
-        transform.GetComponent<SpriteRenderer>().sortingOrder = originSortOrder;
-    }
-
+/*
     // 오브젝트에 마우스 왼쪽버튼 땠을 때
     private void OnMouseUp()
     {
@@ -123,11 +105,12 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트를 마우스로 드래그 중일 때
     private void OnMouseDrag()
     {
-        if(!isTargetAble){
+        if(!isTargetAble && isDrag){
             mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             transform.position = new Vector2(mousePosition.x, mousePosition.y);
         }
     }
+    */
 
     // 카드 대칭 위치값, 회전값, 크기값 지정
     private void SetCardOfHandPositionSymmetry(int index)
