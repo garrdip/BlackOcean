@@ -40,17 +40,28 @@ public class TargetObject : NetworkBehaviour
     }
     public void InitTargetObjectEmemy(SpawnedMonster oldVal, SpawnedMonster newVal)
     {
-        if(objectType == ObjectType.ENEMY)
+        StartCoroutine(nameof(EmemyTargetObjectGenerator));
+    }
+
+    IEnumerator EmemyTargetObjectGenerator()
+    {
+        while(true)
         {
-            switch(monster.monsterData.name)
+            if(objectType == ObjectType.ENEMY && monster.monsterData != null)
             {
-                case "Monster_Goblin" :
-                    Instantiate(monsters.Find(prefab => prefab.name == "Goblin"),transform.position,Quaternion.identity,transform);
-                break;
-                case "Monster_Troll" :
-                    Instantiate(monsters.Find(prefab => prefab.name == "Troll"),transform.position,Quaternion.identity,transform);
+                switch(monster.monsterData.name)
+                {
+                    case "Monster_Goblin" :
+                        Instantiate(monsters.Find(prefab => prefab.name == "Goblin"),transform.position,Quaternion.identity,transform);
+                    break;
+                    case "Monster_Troll" :
+                        Instantiate(monsters.Find(prefab => prefab.name == "Troll"),transform.position,Quaternion.identity,transform);
+                    break;
+                }
                 break;
             }
+            yield return new WaitForSeconds(0.01f);
         }
     }
+
 }

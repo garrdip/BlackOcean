@@ -17,17 +17,22 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar]
     public MonsterAction nextAction;
     
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChangedMonsterData))]
     public MonsterData monsterData;
 
+    readonly public SyncList<Buff> buffs = new SyncList<Buff>();
 
-    public override void OnStartClient()
+
+    public  void OnChangedMonsterData(MonsterData oldVal , MonsterData newVal)
     {
-        base.OnStartClient();
         name = monsterData.name;
         MAXHP = monsterData.MAXHP;
-        HP = monsterData.HP;
         actionList = monsterData.actionList;
-        nextAction = actionList[0];
+        //SyncVar Data는 서버에서 관리
+        if(isServer)
+        {
+            HP = monsterData.HP;
+            nextAction = actionList[0];
+        }
     }
 }

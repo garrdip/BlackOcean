@@ -60,8 +60,6 @@ public class M_SteamManager : MonoBehaviour
 
     public void GetLobbyList()
     {
-        // Request a list of lobbies
-        Debug.Log("Request lobby list");
         //로비 검색 필터는 이곳에 추가 RequestLobbyList 호출전에 추가되어야함
         SteamMatchmaking.AddRequestLobbyListDistanceFilter(ELobbyDistanceFilter.k_ELobbyDistanceFilterDefault);
         SteamMatchmaking.RequestLobbyList();
@@ -70,7 +68,6 @@ public class M_SteamManager : MonoBehaviour
 
     private void OnLobbyMatchList(LobbyMatchList_t pCallback)
     {
-        Debug.Log("Call Back");
         if (pCallback.m_nLobbiesMatching == 0)
         {
             // Handle error
