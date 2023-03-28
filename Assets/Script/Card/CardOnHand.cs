@@ -59,17 +59,56 @@ public class CardOnHand : NetworkBehaviour
             }else{
                 SetCardOfHandPositionSymmetry(index);  
             }
+        }   
+    }
+
+    // 카드에 마우스 진입할 시 이벤트
+    public void OnCardMouseIn()
+    {
+        if(isOwned){
+            isMouseOver = true;
+            originSortOrder = index;
+            transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
+        }
+    }
+
+    // 마우스가 카드에서 벗어날 시 이벤트
+    public void OnCardMouseOut()
+    {
+        if(isOwned){
+            isMouseOver = false;
+            transform.GetComponent<SpriteRenderer>().sortingOrder = originSortOrder;
+        }
+    }
+
+    // 카드 드래그 시작 시 이벥트
+    public void OnCardDragStart()
+    {
+        if(isOwned){
+            isDrag = true;
+        }
+    }
+
+    // 카드 드래그 진행 중 이벤트
+    public void OnCardDrag()
+    {
+        if(isOwned){
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            transform.position = new Vector2(mousePosition.x, mousePosition.y);
+            transform.localScale = targetScale;
+            transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        }
+    }
+
+    // 카드 드래그 종료 시 이벤트
+    public void OnCardDragEnd()
+    {
+        if(isOwned){
+            isDrag = false;
         }
     }
 
 /*
-    // 오브젝트에 마우스 왼쪽버튼 땠을 때
-    private void OnMouseUp()
-    {
-        isDrag = false;
-        isMouseOver = false;
-    }
-
     // 오브젝트에 마우스 왼쪽버튼 누를 때
     private void OnMouseDown()
     {
@@ -97,15 +136,6 @@ public class CardOnHand : NetworkBehaviour
             }
         }else{  
             isDrag = true;
-            mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            transform.position = new Vector2(mousePosition.x, mousePosition.y);
-        }
-    }
-
-    // 오브젝트를 마우스로 드래그 중일 때
-    private void OnMouseDrag()
-    {
-        if(!isTargetAble && isDrag){
             mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             transform.position = new Vector2(mousePosition.x, mousePosition.y);
         }
