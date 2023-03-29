@@ -25,6 +25,9 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedSelectOrder))]
     public int selectOrder = 0;
 
+    [SyncVar (hook = nameof(OnChangeCurrentDeckCount))]
+    public int currentDeckCount = 0;
+
     public readonly SyncList<Artifact> artifacts = new SyncList<Artifact>();
 
     public readonly SyncList<Card> deck =  new SyncList<Card>(); // 카드 총량(시작갯수 8개)
@@ -46,6 +49,12 @@ public class GamePlayer : NetworkBehaviour
         if(isServer)
             M_TurnManager.instance.OnChangedPlayerOrder();
     }
+
+    public void OnChangeCurrentDeckCount(int oldCount, int newCount)
+    {
+        Debug.Log("현재 댁 갯수 변경 :" + newCount);
+    }
+    
     public override void OnStartLocalPlayer()
     {
         // Server Loading 종료 후 1층 데이터 생성
@@ -64,10 +73,55 @@ public class GamePlayer : NetworkBehaviour
 
     public void SetInitialValue()
     {
-        for(int i = 0 ; i < 8 ;i++)
-        {
-            Card initialCard = new Card(){name  = "i"};
-            deck.Add(initialCard);
+        if(isOwned){
+            currentDeckCount = 5;
+            switch(character){
+            case Character.GEORK:
+                for(int i = 0 ; i <8 ;i++)
+                {
+                    if(i % 2 == 0){
+                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Attack"));
+                        deck.Add(attackCard);
+                        prefareDeck.Add(attackCard);
+                    }else{
+                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Defense"));
+                        deck.Add(defenseCard);
+                        prefareDeck.Add(defenseCard);
+                    }
+                    
+                }
+                break;
+            case Character.ERIS:
+                for(int i = 0 ; i <8 ;i++)
+                {
+                    if(i % 2 == 0){
+                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Attack"));
+                        deck.Add(attackCard);
+                        prefareDeck.Add(attackCard);
+                    }else{
+                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Heal"));
+                        deck.Add(defenseCard);
+                        prefareDeck.Add(defenseCard);
+                    }
+                    
+                }
+                break;
+            case Character.HONGDANHYANG:
+                for(int i = 0 ; i <8 ;i++)
+                {
+                    if(i % 2 == 0){
+                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Attack"));
+                        deck.Add(attackCard);
+                        prefareDeck.Add(attackCard);
+                    }else{
+                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Defense"));
+                        deck.Add(defenseCard);
+                        prefareDeck.Add(defenseCard);
+                    }
+                    
+                }
+                break;
+            }
         }
     }
 
@@ -141,11 +195,11 @@ public class GamePlayer : NetworkBehaviour
         );
         NetworkServer.Spawn(cardPocket, connectionToClient);
 
-        for(int i=0; i<maxCardOnHandCount; i++){
+        for(int i=0; i<currentDeckCount; i++){
             // 대칭 위치값 계산
-            int leftCount = (maxCardOnHandCount - 1) / 2;
-            int rightCount = maxCardOnHandCount - leftCount - 1;
-            float symmetryPosition = (maxCardOnHandCount % 2 == 0) ? ((i - leftCount) * 1.5f - 0.75f) : ((i - leftCount) * 1.5f + 0f);
+            int leftCount = (currentDeckCount - 1) / 2;
+            int rightCount = currentDeckCount - leftCount - 1;
+            float symmetryPosition = (currentDeckCount % 2 == 0) ? ((i - leftCount) * 1.5f - 0.75f) : ((i - leftCount) * 1.5f + 0f);
             
             // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
             Vector3 position = new Vector3(symmetryPosition - 20f, -Mathf.Abs(symmetryPosition) * 0.15f, 0f);
@@ -164,6 +218,9 @@ public class GamePlayer : NetworkBehaviour
             cardOnHand.GetComponent<CardOnHand>().index = i;
 
             cardPocket.GetComponent<CardPocket>().cards.Add(cardOnHand.GetComponent<CardOnHand>());
+            cardOnHand.GetComponent<CardOnHand>().card = prefareDeck[i];
+            cardOnHand.GetComponent<CardOnHand>().card.isTargetable = i % 2 == 0 ? true : false;
+
             RpcSpawnCardOnHand(
                 cardOnHand.GetComponent<CardOnHand>(),
                 cardPocket.GetComponent<CardPocket>()
@@ -187,10 +244,8 @@ public class GamePlayer : NetworkBehaviour
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         GameObject cardEmitter = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")));
-        NetworkServer.Spawn(cardEmitter);
-        cardEmitter.transform.SetParent(DeckUI.instance.DeckListPanel.transform);
-        cardEmitter.transform.localScale = new Vector3(1, 1, 1);
-        cardEmitter.transform.position = cardPosition;
+        NetworkServer.Spawn(cardEmitter, connectionToClient);
+        cardEmitter.GetComponent<CardCtrlArrow>().RpcPosition(cardPosition);
     }
 
     // 카드 컨트롤 화살표 인디케이터 제거(네트워크 오브젝트)

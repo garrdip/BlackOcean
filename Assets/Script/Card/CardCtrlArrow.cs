@@ -36,6 +36,19 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
         }
     }
 
+    public override void OnStartClient()
+    {
+        transform.SetParent(DeckUI.instance.GameCanvas.transform);
+        transform.localScale = new Vector3(1, 1, 1);
+        transform.position = new Vector3(0f, 0f, 0f);
+    }
+
+    [ClientRpc]
+    public void RpcPosition(Vector3 position)
+    {
+        transform.localPosition = position;
+    }
+
     void Update()
     {
         // P0 is at the arrow emitter point

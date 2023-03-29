@@ -1,8 +1,8 @@
 Character,Card_Name,Grade,Cost,HPCost,IsTargetable,Effect,,,EnhancedEffect,,,UltimateEffect,,,Attribute,AttributeEffect,Belief,characteristic
 HONGDANHYANG,Normal_Attack,NORMAL ,1,0,Y,4 Damage to Ememy,SINGLEATTACK ,4,6 Damage to Ememy,SINGLEATTACK ,6,,,,,,,
-HONGDANHYANG,Normall_Defense,NORMAL ,1,0,N,Gain 6 Depense,SELFDEFENSE ,6,Gain 8 Depense,SELFDEFENSE ,8,,,,,,,
+HONGDANHYANG,Normal_Defense,NORMAL ,1,0,N,Gain 6 Depense,SELFDEFENSE ,6,Gain 8 Depense,SELFDEFENSE ,8,,,,,,,
 GEORK,Normal_Attack,NORMAL ,1,0,Y,7 Damage to Ememy,SINGLEATTACK ,7,10 Damage to Ememy,SINGLEATTACK ,10,13 Damage to Ememy,SINGLEATTACK ,13,,,1,
-GEORK,Normall_Defense,NORMAL ,1,0,N,Gain 7 Depense,SELFDEFENSE ,7,Gain 10 Depense,SELFDEFENSE ,10,Gain 13 Depense,,,,,1,
+GEORK,Normal_Defense,NORMAL ,1,0,N,Gain 7 Depense,SELFDEFENSE ,7,Gain 10 Depense,SELFDEFENSE ,10,Gain 13 Depense,,,,,1,
 ERIS,Normal_Attack,NORMAL ,1,1,Y,8 Damage to Ememy,SINGLEATTACK ,8,10 Damage to Ememy,SINGLEATTACK ,10,,,,DESTROY,2,,
-ERIS,Normall_Heal,NORMAL ,1,0,N,Heal 2 point ,SELFHEAL ,2,Heal 3 point ,SELFHEAL ,3,,,,CREATION,1,,
+ERIS,Normal_Heal,NORMAL ,1,0,N,Heal 2 point ,SELFHEAL ,2,Heal 3 point ,SELFHEAL ,3,,,,CREATION,1,,
 EndOfData,,,,,,,,,,,,,,,,,,

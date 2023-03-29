@@ -83,6 +83,7 @@ public class CardPocket : NetworkBehaviour
     private void HandleCardDragStart()
     {
         if(Input.GetMouseButtonDown(0)){
+            dragTarget = null;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit)){

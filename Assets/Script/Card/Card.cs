@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectD;
 
+[System.Serializable]
 public class Card
 {
     public Character character;
     public string name;
+    public int index;
     public CardGrade grade;
     public int cost;
     public int hpCost;
