@@ -18,9 +18,6 @@ public class GamePlayer : NetworkBehaviour
 
     [SyncVar]
     public bool isInitializeDone = false;
-    public int defaultCardOnHandCount = 10;
-
-    public int maxCardOnHandCount = 12;
 
     [SyncVar (hook = nameof(OnChangedSelectOrder))]
     public int selectOrder = 0;
@@ -28,15 +25,23 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeCurrentDeckCount))]
     public int currentDeckCount = 0;
 
+    public bool isArrowSpawned = false; // 화살표는 한개만 생성되어야하므로 이미 생성되어 있는지 체크용 변수
+
+    public int arrowNodeNum = 12; // 카드 컨트롤 화살표 몸통 개수
+
+    public int defaultCardOnHandCount = 10; // 카드 오브젝트 기본 개수
+
+    public int maxCardOnHandCount = 12; // 카드 오브젝트 최대 개수
+
     public readonly SyncList<Artifact> artifacts = new SyncList<Artifact>();
 
-    public readonly SyncList<Card> deck =  new SyncList<Card>(); // 카드 총량(시작갯수 8개)
+    public readonly SyncList<Card> deck =  new SyncList<Card>(); // 카드 총량(시작 8개)
 
-    public readonly  SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 카드(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 갯수)
+    public readonly  SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 카드(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
     
     public readonly SyncList<Item> trashDeck = new SyncList<Item>(); // 버릴 카드(사용된 카드 + 턴 종료될때 내 손에 있는 카드)
 
-    public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>();
+    public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 실제 컨트롤 하는 플레이어 소유의 카드 네트워크 오브젝트 리스트
 
     public void SetOrderByUI(int num)
     {
@@ -243,9 +248,23 @@ public class GamePlayer : NetworkBehaviour
     public void CmdSpawnArrowEmitter(Vector3 cardPosition)
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        // 화살표 인디케이터 오브젝트 생성
         GameObject cardEmitter = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")));
         NetworkServer.Spawn(cardEmitter, connectionToClient);
-        cardEmitter.GetComponent<CardCtrlArrow>().RpcPosition(cardPosition);
+        cardEmitter.GetComponent<CardCtrlArrow>().RpcArrowInit(cardPosition);
+
+        // 화살표 인디케이터 몸체 생성
+        for(int i=0; i<arrowNodeNum; i++){
+            GameObject arrowNode = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowNode")));
+            NetworkServer.Spawn(arrowNode, connectionToClient);
+            cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowNode(arrowNode);
+        }
+
+        // 화살표 인디케이터 머리 생성
+        GameObject arrowHead = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowHead")));
+        NetworkServer.Spawn(arrowHead, connectionToClient);
+        cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowHead(arrowHead);
+        isArrowSpawned = true;
     }
 
     // 카드 컨트롤 화살표 인디케이터 제거(네트워크 오브젝트)
@@ -253,5 +272,6 @@ public class GamePlayer : NetworkBehaviour
     public void CmdDestroyArrowEmitter(GameObject cardEmitter)
     {
         NetworkServer.Destroy(cardEmitter);
+        isArrowSpawned = false;
     }
 }

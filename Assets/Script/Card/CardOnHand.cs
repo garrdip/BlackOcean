@@ -87,9 +87,9 @@ public class CardOnHand : NetworkBehaviour
     // 카드 드래그 시작 시 이벥트
     public void OnCardDragStart()
     {
-        if(isOwned){
-            if(card.isTargetable){
-                if(NetworkClient.connection != null){
+        if(NetworkClient.connection != null && isOwned){
+            GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
+            if(card.isTargetable && !gamePlayer.isArrowSpawned){
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if(Physics.Raycast(ray, out RaycastHit raycastHit)){
                     RectTransform canvaasRectTransform = DeckUI.instance.GameCanvas.GetComponent<RectTransform>(); // 게임 화면의 Canvas객체
@@ -104,10 +104,8 @@ public class CardOnHand : NetworkBehaviour
                     RectTransformUtility.ScreenPointToLocalPointInRectangle(canvaasRectTransform, screenPosition, null, out canvasPosition);
                     
                     // 게임월드와 UI의 동일한 클릭위치(클릭한 카드의 위치)에 화살표 인디케이터 생성 
-                    GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
                     gamePlayer.CmdSpawnArrowEmitter(canvasPosition);
                 }
-            }
             }else{
                 isDrag = true;
             }
