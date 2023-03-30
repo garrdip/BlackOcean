@@ -93,18 +93,9 @@ public class CardOnHand : NetworkBehaviour
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if(Physics.Raycast(ray, out RaycastHit raycastHit)){
                     RectTransform canvaasRectTransform = DeckUI.instance.GameCanvas.GetComponent<RectTransform>(); // 게임 화면의 Canvas객체
-                    // 클릭한 카드의 중앙 좌표
+                    // 클릭한 카드의 중앙 좌표에 화살표 인디케이터 생성 요청
                     Vector3 cardCenterPosition = raycastHit.collider.bounds.center;
-                    
-                    // 월드 좌표를 UI 좌표로 변환
-                    Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(Camera.main, cardCenterPosition);
-
-                    // UI 좌표를 캔버스 좌표로 변환후 canvasPosition에 저장
-                    Vector2 canvasPosition;
-                    RectTransformUtility.ScreenPointToLocalPointInRectangle(canvaasRectTransform, screenPosition, null, out canvasPosition);
-                    
-                    // 게임월드와 UI의 동일한 클릭위치(클릭한 카드의 위치)에 화살표 인디케이터 생성 
-                    gamePlayer.CmdSpawnArrowEmitter(canvasPosition);
+                    gamePlayer.CmdSpawnArrowEmitter(cardCenterPosition);
                 }
             }else{
                 isDrag = true;

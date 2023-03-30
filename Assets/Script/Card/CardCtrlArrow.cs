@@ -13,15 +13,15 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
 
     public float scaleFactor = 1f;
 
-    private RectTransform origin;
-    private List<RectTransform> arrowNodes = new List<RectTransform>();
+    private Transform origin;
+    public List<Transform> arrowNodes = new List<Transform>();
     private List<Vector2> controlPoints = new List<Vector2>();
     private readonly List<Vector2> controlPointFactors = new List<Vector2>{ new Vector2(-0.3f, 0.8f), new Vector2(0.1f, 1.4f) };
 
     void Start()
     {
-        origin = GetComponent<RectTransform>();
-        this.arrowNodes.ForEach(a => a.GetComponent<RectTransform>().position = new Vector2(-1000, -1000));
+        origin = GetComponent<Transform>();
+        this.arrowNodes.ForEach(a => a.GetComponent<Transform>().position = new Vector2(-1000, -1000));
         for(int i=0; i<4; i++){
             this.controlPoints.Add(Vector2.zero);
         }
@@ -31,7 +31,10 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
     {
         if(isOwned){          
             // P3 is at the mouse position
-            this.controlPoints[3] = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            Vector3 mousePosition = Input.mousePosition; // 마우스 좌표 가져오기
+            mousePosition.z = Camera.main.nearClipPlane; // 카메라가 바라보는 위치로 설정
+            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition); // 화면 좌표를 월드 좌표로 변환
+            this.controlPoints[3] = worldPosition;
         }
 
         // P0 is at the arrow emitter point
@@ -62,8 +65,10 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
                     this.arrowNodes[i].rotation = Quaternion.Euler(euler);
                 }
                 // Calculate scales for each arrow node
-                var scale = this.scaleFactor * (1f - 0.03f * (this.arrowNodes.Count -1 -i));
-                this.arrowNodes[i].localScale = new Vector3(scale, scale, 1f);
+                var scale = this.scaleFactor * (0.5f - 0.02f * (this.arrowNodes.Count -1 -i));
+                this.arrowNodes[i].localScale = (i == (arrowNodes.Count-1)) 
+                    ? new Vector3(scale + 0.2f, scale + 0.2f, 0f) // Arrow Head Scale
+                    : new Vector3(scale, scale - 0.2f, 0f); // Arrow Node Scale
             }
             // The first arrow node's rotation
             this.arrowNodes[0].transform.rotation = this.arrowNodes[1].transform.rotation;
@@ -74,15 +79,15 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
     // 클라이언트에 화살표 오브젝트 생성 시 오브젝트의 부모오브젝트를 GameCanvas로 설정
     public override void OnStartClient()
     {
-        transform.SetParent(DeckUI.instance.GameCanvas.transform);
+        transform.SetParent(DeckUI.instance.DeckListPanel.transform);
     }
 
     // 화살표 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅
     [ClientRpc]
     public void RpcArrowInit(Vector3 position)
     {
-        transform.localPosition = position;
-        transform.localScale = new Vector3(2f, 2f, 2f);
+        transform.position = position;
+        //transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
     // 화살표 머리 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅 및 소유 권한 구분용 색상 변경
@@ -90,8 +95,8 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
     public void RpcSetArrowHead(GameObject arrowHead)
     {
         arrowHead.transform.SetParent(transform);
-        arrowNodes.Add(arrowHead.GetComponent<RectTransform>());
-        arrowHead.GetComponent<Image>().color = isOwned ? Color.red : Color.white;
+        arrowNodes.Add(arrowHead.GetComponent<Transform>());
+        arrowHead.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
     }
     
     // 화살표 몸통 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅 및 소유 권한 구분용 색상 변경
@@ -99,8 +104,8 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
     public void RpcSetArrowNode(GameObject arrowNode)
     {
         arrowNode.transform.SetParent(transform);
-        arrowNodes.Add(arrowNode.GetComponent<RectTransform>());
-        arrowNode.GetComponent<Image>().color = isOwned ? Color.red : Color.white;
+        arrowNodes.Add(arrowNode.GetComponent<Transform>());
+        arrowNode.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
     }
 
     // 마우스 오른쪽 버튼 클릭 시 화살표 제거

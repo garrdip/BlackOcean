@@ -27,11 +27,11 @@ public class GamePlayer : NetworkBehaviour
 
     public bool isArrowSpawned = false; // 화살표는 한개만 생성되어야하므로 이미 생성되어 있는지 체크용 변수
 
-    public int arrowNodeNum = 12; // 카드 컨트롤 화살표 몸통 개수
+    public const int arrowNodeNum = 13; // 카드 컨트롤 화살표 몸통 개수
 
-    public int defaultCardOnHandCount = 10; // 카드 오브젝트 기본 개수
+    public const int defaultCardOnHandCount = 10; // 카드 오브젝트 기본 개수
 
-    public int maxCardOnHandCount = 12; // 카드 오브젝트 최대 개수
+    public const int maxCardOnHandCount = 12; // 카드 오브젝트 최대 개수
 
     public readonly SyncList<Artifact> artifacts = new SyncList<Artifact>();
 
