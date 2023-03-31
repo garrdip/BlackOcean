@@ -25,6 +25,7 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeCurrentDeckCount))]
     public int currentDeckCount = 0;
 
+    [SyncVar]
     public bool isArrowSpawned = false; // 화살표는 한개만 생성되어야하므로 이미 생성되어 있는지 체크용 변수
 
     public const int arrowNodeNum = 13; // 카드 컨트롤 화살표 몸통 개수
@@ -247,24 +248,26 @@ public class GamePlayer : NetworkBehaviour
     [Command]
     public void CmdSpawnArrowEmitter(Vector3 cardPosition)
     {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        // 화살표 인디케이터 오브젝트 생성
-        GameObject cardEmitter = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")));
-        NetworkServer.Spawn(cardEmitter, connectionToClient);
-        cardEmitter.GetComponent<CardCtrlArrow>().RpcArrowInit(cardPosition);
+        if(!isArrowSpawned){
+            M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            // 화살표 인디케이터 오브젝트 생성
+            GameObject cardEmitter = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")));
+            NetworkServer.Spawn(cardEmitter, connectionToClient);
+            cardEmitter.GetComponent<CardCtrlArrow>().RpcArrowInit(cardPosition);
 
-        // 화살표 인디케이터 몸체 생성
-        for(int i=0; i<arrowNodeNum; i++){
-            GameObject arrowNode = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowNode")));
-            NetworkServer.Spawn(arrowNode, connectionToClient);
-            cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowNode(arrowNode);
+            // 화살표 인디케이터 몸체 생성
+            for(int i=0; i<arrowNodeNum; i++){
+                GameObject arrowNode = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowNode")));
+                NetworkServer.Spawn(arrowNode, connectionToClient);
+                cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowNode(arrowNode);
+            }
+
+            // 화살표 인디케이터 머리 생성
+            GameObject arrowHead = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowHead")));
+            NetworkServer.Spawn(arrowHead, connectionToClient);
+            cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowHead(arrowHead);
+            isArrowSpawned = true;
         }
-
-        // 화살표 인디케이터 머리 생성
-        GameObject arrowHead = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowHead")));
-        NetworkServer.Spawn(arrowHead, connectionToClient);
-        cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowHead(arrowHead);
-        isArrowSpawned = true;
     }
 
     // 카드 컨트롤 화살표 인디케이터 제거(네트워크 오브젝트)

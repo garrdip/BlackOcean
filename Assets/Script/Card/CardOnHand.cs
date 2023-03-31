@@ -89,7 +89,7 @@ public class CardOnHand : NetworkBehaviour
     {
         if(NetworkClient.connection != null && isOwned){
             GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
-            if(card.isTargetable && !gamePlayer.isArrowSpawned){
+            if(card.isTargetable){
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if(Physics.Raycast(ray, out RaycastHit raycastHit)){
                     RectTransform canvaasRectTransform = DeckUI.instance.GameCanvas.GetComponent<RectTransform>(); // 게임 화면의 Canvas객체

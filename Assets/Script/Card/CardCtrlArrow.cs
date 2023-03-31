@@ -65,7 +65,7 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
                     this.arrowNodes[i].rotation = Quaternion.Euler(euler);
                 }
                 // Calculate scales for each arrow node
-                var scale = this.scaleFactor * (0.5f - 0.02f * (this.arrowNodes.Count -1 -i));
+                var scale = this.scaleFactor * (0.4f - 0.02f * (this.arrowNodes.Count -1 -i));
                 this.arrowNodes[i].localScale = (i == (arrowNodes.Count-1)) 
                     ? new Vector3(scale + 0.2f, scale + 0.2f, 0f) // Arrow Head Scale
                     : new Vector3(scale, scale - 0.2f, 0f); // Arrow Node Scale
@@ -97,6 +97,7 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
         arrowHead.transform.SetParent(transform);
         arrowNodes.Add(arrowHead.GetComponent<Transform>());
         arrowHead.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
+        arrowHead.GetComponent<SpriteRenderer>().sortingOrder = 2;
     }
     
     // 화살표 몸통 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅 및 소유 권한 구분용 색상 변경
@@ -106,6 +107,7 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
         arrowNode.transform.SetParent(transform);
         arrowNodes.Add(arrowNode.GetComponent<Transform>());
         arrowNode.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
+        arrowNode.GetComponent<SpriteRenderer>().sortingOrder = 2;
     }
 
     // 마우스 오른쪽 버튼 클릭 시 화살표 제거
