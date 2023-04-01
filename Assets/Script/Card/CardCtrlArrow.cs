@@ -116,8 +116,8 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
         if (Input.GetMouseButtonDown(1))
         {
             if(NetworkClient.connection != null){
-                GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
-                gamePlayer.CmdDestroyArrowEmitter(this.gameObject);
+                GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject);
             }
         }
     }

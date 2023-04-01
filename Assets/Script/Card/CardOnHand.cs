@@ -36,8 +36,8 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트가 드래그 상태인지 여부
     private bool isDrag = false;
 
-    // 현재 게임 플레이어
-    public GamePlayer currentPlayer;
+    // 현재 게임 플레이어의 GamePlayerDeck 클래스 참조값
+    public GamePlayerDeck currentPlayerDeck;
 
 
     void Start()
@@ -54,7 +54,7 @@ public class CardOnHand : NetworkBehaviour
             if(isMouseOver){
                 SetCardOfHandPositionOrigin();
             }else{
-                SetCardOfHandPositionSymmetry(currentPlayer.currentDeckCount, index);  
+                SetCardOfHandPositionSymmetry(currentPlayerDeck.currentDeckCount, index);  
             }
         }   
     }
@@ -62,7 +62,9 @@ public class CardOnHand : NetworkBehaviour
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
     public override void OnStartClient()
     {
-        currentPlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
+        if(NetworkClient.connection != null){
+            currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+        }
     }
 
     // 카드에 마우스 진입할 시 이벤트
@@ -87,15 +89,14 @@ public class CardOnHand : NetworkBehaviour
     // 카드 드래그 시작 시 이벥트
     public void OnCardDragStart()
     {
-        if(NetworkClient.connection != null && isOwned){
-            GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
+        if(isOwned){
             if(card.isTargetable){
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if(Physics.Raycast(ray, out RaycastHit raycastHit)){
                     RectTransform canvaasRectTransform = DeckUI.instance.GameCanvas.GetComponent<RectTransform>(); // 게임 화면의 Canvas객체
                     // 클릭한 카드의 중앙 좌표에 화살표 인디케이터 생성 요청
                     Vector3 cardCenterPosition = raycastHit.collider.bounds.center;
-                    gamePlayer.CmdSpawnArrowEmitter(cardCenterPosition);
+                    currentPlayerDeck.CmdSpawnArrowEmitter(cardCenterPosition);
                 }
             }else{
                 isDrag = true;

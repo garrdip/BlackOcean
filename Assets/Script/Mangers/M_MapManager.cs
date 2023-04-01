@@ -117,8 +117,8 @@ public class M_MapManager : NetworkBehaviour
     {
         roommaps.SetActive(false);
         game.SetActive(true);
-        GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
-        gamePlayer.CmdSpawnCardOnHand();
+        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+        gamePlayerDeck.CmdSpawnCardOnHand();
     }
 
     // East/West/South/North 방이 있는지 검색하고 없으면 생성 - for문이 쥰내 들어감 괜찮은지
