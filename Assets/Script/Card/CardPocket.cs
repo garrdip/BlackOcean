@@ -7,27 +7,20 @@ public class CardPocket : NetworkBehaviour
 {
     private Vector3 hidePosition;
     private Vector3 showPosition;
-
-    public Vector3 mousePosition;
-    public Vector3 targetPosition;
-
-    public Vector3 targetScale;
-    public float hoveredPositionY;
     public Camera mainCamera;
-
-    public readonly SyncList<CardOnHand> cards = new SyncList<CardOnHand>();
-
     public GameObject dragTarget;
+    public GamePlayerDeck currentPlayerDeck;
 
 
     void Start()
     {
         transform.SetParent(DeckUI.instance.DeckListPanel.transform);
         hidePosition = transform.localPosition + new Vector3(-20f, -3.5f, 0f);
-        showPosition = transform.localPosition + new Vector3(20f, -3.5f, 0f);
-        targetScale = new Vector3(3f, 4f, 0f) + new Vector3(1f, 1.5f, 0f);
+        showPosition = transform.localPosition + new Vector3(0, -3.5f, 0f);
         mainCamera = Camera.main;
-        hoveredPositionY = 0.8f;
+        if(NetworkClient.connection != null){
+            currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+        }
     }
 
     void Update()
@@ -41,6 +34,7 @@ public class CardPocket : NetworkBehaviour
 
     void FixedUpdate()
     {
+        SetCardOfHandPositionSymmetry();
         ChangePocketPositionByTurn();
         Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(mousePos + new Vector3(0f, 0f, -1f), new Vector3(0f, 0f, 1f));
@@ -64,7 +58,7 @@ public class CardPocket : NetworkBehaviour
         if (closestCollider != null){
             GameObject collisionGameObject = closestCollider.gameObject;
             collisionGameObject.GetComponent<CardOnHand>().OnCardMouseIn();
-            foreach(CardOnHand cardOnHand in cards){
+            foreach(CardOnHand cardOnHand in currentPlayerDeck.cardOnHands){
                 if(collisionGameObject.GetComponent<CardOnHand>() == cardOnHand){
                     cardOnHand.OnCardMouseIn();
                     dragTarget = collisionGameObject; // Update의 드래그 이벤트용 raycast가 안먹는 경우가 있어서, 임시로 마우스 진입할때도 드래그 타겟 설정
@@ -73,8 +67,41 @@ public class CardPocket : NetworkBehaviour
                 }
             }
         }else{
-            foreach(CardOnHand cardOnHand in cards){
+            foreach(CardOnHand cardOnHand in currentPlayerDeck.cardOnHands){
                 cardOnHand.OnCardMouseOut();
+            }
+        }
+    }
+
+    // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
+    public void SetCardOfHandPositionSymmetry()
+    {
+        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+        int count = gamePlayerDeck.cardOnHands.Count;
+        for(int i=0; i<count; i++){      
+            CardOnHand cardOnHand =  gamePlayerDeck.cardOnHands[i];
+            if(cardOnHand.isMouseOver){
+                Vector3 targetPosition = new Vector3(cardOnHand.transform.localPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
+                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
+                cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOnHand.targetScale, Time.deltaTime * 10f);
+            }else{
+                // 대칭 위치값 계산
+                int leftCount = (count - 1) / 2;
+                int rightCount = count - leftCount - 1;
+                float symmetryPosition = (count % 2 == 0) ? ((i - leftCount) * 1.5f - 0.75f) : ((i - leftCount) * 1.5f + 0f);
+
+                // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
+                Vector3 position = new Vector3(symmetryPosition, -Mathf.Abs(symmetryPosition) * 0.15f, 0f);
+                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, position, Time.deltaTime * 10f);
+
+                // 회전값
+                Quaternion rotation = Quaternion.Euler(0f, 0f, -symmetryPosition);
+                cardOnHand.transform.localRotation = rotation;
+                cardOnHand.originRotation = new Vector3(0f, 0f, -symmetryPosition * 1.5f);
+
+                // 크기값
+                cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOnHand.originScale, Time.deltaTime * 10f);  
             }
         }
     }

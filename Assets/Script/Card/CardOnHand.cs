@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using Mirror;
+using DG.Tweening;
 
 public class CardOnHand : NetworkBehaviour
 {
@@ -31,13 +32,20 @@ public class CardOnHand : NetworkBehaviour
     public Vector3 targetRotation;
 
     // 마우스가 오브젝트 위에 있는지 여부
-    private bool isMouseOver = false; 
+    public bool isMouseOver = false; 
 
     // 오브젝트가 드래그 상태인지 여부
-    private bool isDrag = false;
+    public bool isDrag = false;
+
+    // 오브젝트가 회전 상태인지 여부
+    public bool isRotating = false;
 
     // 현재 게임 플레이어의 GamePlayerDeck 클래스 참조값
     public GamePlayerDeck currentPlayerDeck;
+
+    private Vector3 trashCardStartPoint;
+
+    private Vector3 trashCardEndPoint;
 
 
     void Start()
@@ -46,17 +54,6 @@ public class CardOnHand : NetworkBehaviour
         originScale = transform.localScale;
         targetScale = originScale + new Vector3(1f, 1.5f, 0f);
         hoveredPositionY = 0.8f;
-    }
-
-    void FixedUpdate()
-    {
-        if(NetworkClient.connection != null && isOwned){
-            if(isMouseOver){
-                SetCardOfHandPositionOrigin();
-            }else{
-                SetCardOfHandPositionSymmetry(currentPlayerDeck.currentDeckCount, index);  
-            }
-        }   
     }
 
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
@@ -121,37 +118,31 @@ public class CardOnHand : NetworkBehaviour
     {
         if(isOwned){
             isDrag = false;
+            if (!isRotating && (Input.mousePosition.y > Screen.height / 2))
+            {
+                Vector3 dropPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector3[] points = new Vector3[]{
+                    dropPosition,
+                    //transform.localPosition,
+                    //transform.localPosition,
+                    Camera.main.ViewportToWorldPoint(new Vector3(1f, 0.5f, 0f))
+                };
+                transform
+                    .DOMove(points[1], 1f)
+                    .SetEase(Ease.InOutCirc)
+                    .OnComplete(() => CmdDestroyCardOnHand());
+                //transform.DOLocalPath(points, 1f, PathType.CatmullRom, PathMode.Full3D, 10, Color.white);
+            }
         }
     }
 
-    // 카드 대칭 위치값, 회전값, 크기값 초기화
-    private void SetCardOfHandPositionOrigin()
+    // CardOnHand 오브젝트 파괴 및 리스트에서 제거, 댁 카운트 감소
+    [Command]
+    public void CmdDestroyCardOnHand()
     {
-        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * 10f);
-        targetPosition = new Vector3(transform.localPosition.x, hoveredPositionY, transform.localPosition.z);
-        transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, Time.deltaTime * 10f);
-        transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-    }
-
-    // 카드 대칭 위치값, 회전값, 크기값 지정
-    private void SetCardOfHandPositionSymmetry(int count, int index)
-    {
-        // 대칭 위치값 계산
-        int leftCount = (count - 1) / 2;
-        int rightCount = count - leftCount - 1;
-        float symmetryPosition = (count % 2 == 0) ? ((index - leftCount) * 1.5f - 0.75f) : ((index - leftCount) * 1.5f + 0f);
-        
-        // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
-        Vector3 position = new Vector3(symmetryPosition, -Mathf.Abs(symmetryPosition) * 0.15f, 0f);
-        transform.localPosition = Vector3.Lerp(transform.localPosition, position, Time.deltaTime * 10f);
-        originPosition = position;
-
-        // 회전값
-        Quaternion rotation = Quaternion.Euler(0f, 0f, -symmetryPosition);
-        transform.localRotation = rotation;
-        originRotation = new Vector3(0f, 0f, -symmetryPosition * 1.5f);
-
-        // 크기값
-        transform.localScale = Vector3.Lerp(transform.localScale, originScale, Time.deltaTime * 10f);  
+        NetworkServer.Destroy(this.gameObject);
+        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+        gamePlayerDeck.cardOnHands.Remove(this);
+        gamePlayerDeck.currentDeckCount--;
     }
 }

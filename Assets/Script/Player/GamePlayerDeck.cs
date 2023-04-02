@@ -105,40 +105,16 @@ public class GamePlayerDeck : NetworkBehaviour
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         
         // CardPocket 생성
-        GameObject cardPocket = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")),
-            new Vector3(-20f, 0f, 0f),
-            Quaternion.identity
-        );
+        GameObject cardPocket = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")));
         NetworkServer.Spawn(cardPocket, connectionToClient);
 
         // CardOnHand 생성
         for(int i=0; i<currentDeckCount; i++){
-            // 대칭 위치값 계산
-            int leftCount = (currentDeckCount - 1) / 2;
-            int rightCount = currentDeckCount - leftCount - 1;
-            float symmetryPosition = (currentDeckCount % 2 == 0) ? ((i - leftCount) * 1.5f - 0.75f) : ((i - leftCount) * 1.5f + 0f);
-            
-            // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
-            Vector3 position = new Vector3(symmetryPosition - 20f, -Mathf.Abs(symmetryPosition) * 0.15f, 0f);
-
-            // 회전값
-            Quaternion rotation = Quaternion.Euler(0f, 0f, -symmetryPosition);
-
-            // 네트워크 오브젝트 생성. 초기 위치는 화면에서 벗어난 x좌표 -20
-            GameObject cardOnHand = Instantiate(
-                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
-                position,
-                rotation
-            );
+            GameObject cardOnHand = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")));
             NetworkServer.Spawn(cardOnHand, connectionToClient);
-            
-            cardPocket.GetComponent<CardPocket>().cards.Add(cardOnHand.GetComponent<CardOnHand>());
-            
             cardOnHand.GetComponent<CardOnHand>().index = i;
             cardOnHand.GetComponent<CardOnHand>().card = prefareDeck[i];
             cardOnHand.GetComponent<CardOnHand>().card.isTargetable = i % 2 == 0 ? true : false;
-
             cardOnHands.Add(cardOnHand.GetComponent<CardOnHand>()); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
             
             RpcSpawnCardOnHand(
