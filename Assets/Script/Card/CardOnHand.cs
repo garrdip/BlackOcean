@@ -48,20 +48,16 @@ public class CardOnHand : NetworkBehaviour
     private Vector3 trashCardEndPoint;
 
 
-    void Start()
-    {
-        transform.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
-        originScale = transform.localScale;
-        targetScale = originScale + new Vector3(1f, 1.5f, 0f);
-        hoveredPositionY = 0.8f;
-    }
-
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
     public override void OnStartClient()
     {
         if(NetworkClient.connection != null){
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         }
+        transform.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
+        originScale = new Vector3(2.5f, 3f, 0f);
+        targetScale = originScale + new Vector3(1f, 1.5f, 0f);
+        hoveredPositionY = 0.8f;
     }
 
     // 카드에 마우스 진입할 시 이벤트
@@ -129,20 +125,10 @@ public class CardOnHand : NetworkBehaviour
                 };
                 transform
                     .DOMove(points[1], 1f)
-                    .SetEase(Ease.InOutCirc)
-                    .OnComplete(() => CmdDestroyCardOnHand());
+                    .SetEase(Ease.InOutCirc);
+          
                 //transform.DOLocalPath(points, 1f, PathType.CatmullRom, PathMode.Full3D, 10, Color.white);
             }
         }
-    }
-
-    // CardOnHand 오브젝트 파괴 및 리스트에서 제거, 댁 카운트 감소
-    [Command]
-    public void CmdDestroyCardOnHand()
-    {
-        NetworkServer.Destroy(this.gameObject);
-        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-        gamePlayerDeck.cardOnHands.Remove(this);
-        gamePlayerDeck.currentDeckCount--;
     }
 }

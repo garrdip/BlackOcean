@@ -29,13 +29,54 @@ public class CardPocket : NetworkBehaviour
             HandleCardDragStart();
             HandleCardDrag();
             HandleCardDragEnd();
+            HandleMouseInOut();
         }
     }
 
     void FixedUpdate()
     {
-        SetCardOfHandPositionSymmetry();
-        ChangePocketPositionByTurn();
+        if(isOwned){
+            SetCardOfHandPositionSymmetry();
+            ChangePocketPositionByTurn();
+        }
+    }
+
+    // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
+    public void SetCardOfHandPositionSymmetry()
+    {
+        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+        int count = gamePlayerDeck.cardOnHands.Count;
+        for(int i=0; i<count; i++){      
+            CardOnHand cardOnHand =  gamePlayerDeck.cardOnHands[i];
+            if(cardOnHand.isMouseOver){
+                Vector3 targetPosition = new Vector3(cardOnHand.transform.localPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
+                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
+                cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOnHand.targetScale, Time.deltaTime * 10f);
+            }else{
+                // 대칭 위치값 계산
+                int leftCount = (count - 1) / 2;
+                int rightCount = count - leftCount - 1;
+                float symmetryPosition = (count % 2 == 0) ? ((i - leftCount) * 1.5f - 0.75f) : ((i - leftCount) * 1.5f + 0f);
+
+                // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
+                Vector3 position = new Vector3(symmetryPosition, -Mathf.Abs(symmetryPosition) * 0.15f, 0f);
+                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, position, Time.deltaTime * 10f);
+
+                // 회전값
+                Quaternion rotation = Quaternion.Euler(0f, 0f, -symmetryPosition);
+                cardOnHand.transform.localRotation = rotation;
+                cardOnHand.originRotation = new Vector3(0f, 0f, -symmetryPosition * 1.5f);
+
+                // 크기값
+                cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOnHand.originScale, Time.deltaTime * 10f);  
+            }
+        }
+    }
+
+    // 마우스 In, Out 이벤트
+    private void HandleMouseInOut()
+    {
         Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(mousePos + new Vector3(0f, 0f, -1f), new Vector3(0f, 0f, 1f));
 
@@ -69,39 +110,6 @@ public class CardPocket : NetworkBehaviour
         }else{
             foreach(CardOnHand cardOnHand in currentPlayerDeck.cardOnHands){
                 cardOnHand.OnCardMouseOut();
-            }
-        }
-    }
-
-    // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
-    public void SetCardOfHandPositionSymmetry()
-    {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-        int count = gamePlayerDeck.cardOnHands.Count;
-        for(int i=0; i<count; i++){      
-            CardOnHand cardOnHand =  gamePlayerDeck.cardOnHands[i];
-            if(cardOnHand.isMouseOver){
-                Vector3 targetPosition = new Vector3(cardOnHand.transform.localPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
-                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
-                cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOnHand.targetScale, Time.deltaTime * 10f);
-            }else{
-                // 대칭 위치값 계산
-                int leftCount = (count - 1) / 2;
-                int rightCount = count - leftCount - 1;
-                float symmetryPosition = (count % 2 == 0) ? ((i - leftCount) * 1.5f - 0.75f) : ((i - leftCount) * 1.5f + 0f);
-
-                // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
-                Vector3 position = new Vector3(symmetryPosition, -Mathf.Abs(symmetryPosition) * 0.15f, 0f);
-                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, position, Time.deltaTime * 10f);
-
-                // 회전값
-                Quaternion rotation = Quaternion.Euler(0f, 0f, -symmetryPosition);
-                cardOnHand.transform.localRotation = rotation;
-                cardOnHand.originRotation = new Vector3(0f, 0f, -symmetryPosition * 1.5f);
-
-                // 크기값
-                cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOnHand.originScale, Time.deltaTime * 10f);  
             }
         }
     }
