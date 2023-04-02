@@ -102,7 +102,6 @@ public class CardPocket : NetworkBehaviour
             foreach(CardOnHand cardOnHand in currentPlayerDeck.cardOnHands){
                 if(collisionGameObject.GetComponent<CardOnHand>() == cardOnHand){
                     cardOnHand.OnCardMouseIn();
-                    dragTarget = collisionGameObject; // Update의 드래그 이벤트용 raycast가 안먹는 경우가 있어서, 임시로 마우스 진입할때도 드래그 타겟 설정
                 }else{
                     cardOnHand.OnCardMouseOut();
                 }
@@ -126,7 +125,7 @@ public class CardPocket : NetworkBehaviour
                     CardOnHand cardOnHand = hit.collider.gameObject.GetComponent<CardOnHand>();
                     if(cardOnHand.isOwned){
                         dragTarget = hit.collider.gameObject;
-                        dragTarget.GetComponent<CardOnHand>().OnCardDragStart();
+                        dragTarget.GetComponent<CardOnHand>().OnCardDragStart(hit.collider.bounds.center);
                     }  
                 }
             }

@@ -80,17 +80,12 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // 카드 드래그 시작 시 이벥트
-    public void OnCardDragStart()
+    public void OnCardDragStart(Vector3 cardCenterPosition)
     {
         if(isOwned){
             if(card.isTargetable){
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if(Physics.Raycast(ray, out RaycastHit raycastHit)){
-                    RectTransform canvaasRectTransform = DeckUI.instance.GameCanvas.GetComponent<RectTransform>(); // 게임 화면의 Canvas객체
-                    // 클릭한 카드의 중앙 좌표에 화살표 인디케이터 생성 요청
-                    Vector3 cardCenterPosition = raycastHit.collider.bounds.center;
-                    currentPlayerDeck.CmdSpawnArrowEmitter(cardCenterPosition);
-                }
+                // 타겟팅 카드면 화살표 생성
+                currentPlayerDeck.CmdSpawnArrowEmitter(cardCenterPosition);
             }else{
                 isDrag = true;
             }
