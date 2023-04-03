@@ -155,13 +155,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5500579e96f14104e95992a47c038648, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
+  syncDirection: 1
   syncMode: 0
   syncInterval: 0.1
   showRoomGUI: 1
   readyToBegin: 0
   index: 0
   character: 0
+  order: 3
+  isReady: 0
 --- !u!1 &5712702226319657176
 GameObject:
   m_ObjectHideFlags: 0

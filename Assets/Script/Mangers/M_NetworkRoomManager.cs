@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectD;
 using Mirror;
 
 public class M_NetworkRoomManager : NetworkRoomManager
@@ -13,19 +14,6 @@ public class M_NetworkRoomManager : NetworkRoomManager
 
     [Header("Player Start Position")]
     Vector3 startPosition;
-
-
-    // 모든 플레이어가 레디상태면 시작버튼 활성화 (called only server user)
-    public override void OnRoomServerPlayersReady()
-    {
-        RoomUI.instance.buttonStart.gameObject.SetActive(true);
-    }
-
-    // 모든 플레이어가 레디상태가 아니면 시작버튼 비활성화 (called only server user)
-    public override void OnRoomServerPlayersNotReady()
-    {
-        RoomUI.instance.buttonStart.gameObject.SetActive(false);
-    }
 
     // 클라이언트에서 호출되는 씬 전환 이벤트 콜백함수
     public override void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling)
@@ -52,7 +40,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
     {
         base.OnRoomStopClient();
         
-        RoomUI.instance.gameObject.SetActive(false);
+        //RoomUI.instance.gameObject.SetActive(false);
     }
 
 
@@ -60,35 +48,31 @@ public class M_NetworkRoomManager : NetworkRoomManager
     public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject gamePlayer)
     {
         gamePlayer.GetComponent<GamePlayer>().character = roomPlayer.GetComponent<RoomPlayer>().character;
+        gamePlayer.GetComponent<GamePlayer>().selectOrder = (int)roomPlayer.GetComponent<RoomPlayer>().order; //int => PlayOder Type으로 변경 필요
         return true;
     }
 
-    // 룸씬에서 게임씬으로 넘어갈때 룸씬의 character값에 따라 오브젝트 분류 생성
-    /*
-    public override GameObject OnRoomServerCreateGamePlayer(NetworkConnectionToClient conn, GameObject roomPlayer)
+    public override GameObject OnRoomServerCreateRoomPlayer(NetworkConnectionToClient conn)
     {
-        GameObject instantiatedGameObject;
-        switch(roomPlayer.GetComponent<RoomPlayer>().character)
-        {
-            case Character.GEORK :
-                Debug.Log("GEORK 생성");
-                instantiatedGameObject = Instantiate(spawnPrefabs[1],startPosition,Quaternion.identity);
-                break;
-            case Character.ERIS :
-                Debug.Log("ERIS 생성");
-                instantiatedGameObject = Instantiate(spawnPrefabs[2],startPosition,Quaternion.identity);
-                break;
-            case Character.HONGDANHYANG :
-                Debug.Log("HONGDANHYANG 생성");
-                instantiatedGameObject = Instantiate(spawnPrefabs[2],startPosition,Quaternion.identity);
-                break;
-            default :
-                instantiatedGameObject = Instantiate(spawnPrefabs[1],startPosition,Quaternion.identity);
-                break;
+        NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        RoomPlayer[] roomPlayers = FindObjectsOfType<RoomPlayer>();
+        GameObject roomPlayer = Instantiate(netManger.spawnPrefabs.Find(pref => pref.name == "RoomPlayer"));
+        NetworkServer.Spawn(roomPlayer,conn);
+        if(roomPlayers.Length == 0){
+            roomPlayer.GetComponent<RoomPlayer>().order = PlayOrder.FIRST;
         }
-        NetworkServer.Spawn(instantiatedGameObject, conn); 
-        return instantiatedGameObject;
+        // Play Order 겹치지 않도록 새로운 RoomPlayer에게 배정
+        for(int i = 0 ;i < 3 ;i ++)
+        for(int j = 0 ; j < roomPlayers.Length ; j++)
+        {
+            if(roomPlayers[j].order == (PlayOrder)i)
+                break;
+            else if(j == roomPlayers.Length - 1){
+                roomPlayer.GetComponent<RoomPlayer>().order = (PlayOrder)i;
+                i = 3;
+                break;
+            }
+        }
+        return roomPlayer;
     }
-    */
-
 }

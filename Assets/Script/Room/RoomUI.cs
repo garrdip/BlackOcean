@@ -6,58 +6,49 @@ using Mirror;
 using TMPro;
 using ProjectD;
 
-public class RoomUI : SingletonD<RoomUI>
+public class RoomUI : InstanceD<RoomUI>
 {
-    // 캐릭터 선택 이벤트
-    public delegate void OnCharacterSelect(Character character);
-    public event OnCharacterSelect onCharacterSelect;
-
-    // 캐릭터 선택 취소 이벤트
-    public delegate void OnCharacterSelectCancel();
-    public event OnCharacterSelectCancel onCharacterSelectcancel;
-
     // 캐릭터 오브젝트 (인스펙터 창에서 캐릭터 리스트 생성 및 오브젝트 참조 해두는 방법으로 구현)
     [Header("Select Characters")]
-    public List<GameObject> characters;
-
-    [Header("View Components")]
-    public VerticalLayoutGroup participantsLayout;
-    public Button buttonStart;
     public Button buttonReady;
-    public Button buttonCancel;
-    public Button buttonSend;
     public TMP_InputField messageInput;
     public Scrollbar scrollbar;
     public TextMeshProUGUI chatMessage;
+    public List<GameObject> orderEffector;
 
+    public TextMeshProUGUI readyButton;
+
+    public void SetReadyButton(string str)
+    {
+        readyButton.text = str;
+    }
     void Start()
     {
         buttonReady.onClick.AddListener(() => HandleRadeyState());
-        buttonStart.onClick.AddListener(() => HandleChangeGameScene());
-        buttonCancel.onClick.AddListener(() => HandleResetCharacterSelect());
-        buttonSend.onClick.AddListener(() => SendChatMessage(messageInput.text));
     }
 
     void Update()
-    {
+    { 
         if (Input.GetKeyDown(KeyCode.Return)){
             SendChatMessage(messageInput.text);
+            messageInput.ActivateInputField();       
         }
     }
 
-    // 레디 상태 제어 : 부모클래스인 NetworkRoomPlayer클래스의 멤버 변수, 함수를 사용
+    // 레디 상태 제어 
     public void HandleRadeyState()
     {
         if (NetworkClient.connection != null){
             RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.GetComponent<RoomPlayer>();
-            if (roomPlayer.readyToBegin)
-            {
-                roomPlayer.CmdChangeReadyState(false);
+            if(roomPlayer.character != Character.NONE){
+                if(!roomPlayer.isServer) //클라이언트만 레디
+                    roomPlayer.isReady = !roomPlayer.isReady;
+                else //서버 케이스
+                {
+                    if(readyButton.text == "START" )HandleChangeGameScene();
+                }
             }
-            else
-            {
-                roomPlayer.CmdChangeReadyState(true);
-            }
+            
         }
     }
 
@@ -68,25 +59,6 @@ public class RoomUI : SingletonD<RoomUI>
         M_NetworkRoomManager.ServerChangeScene(M_NetworkRoomManager.GameplayScene);
     }
 
-    // 캐릭터 선택 취소 이벤트 송신
-    public void HandleResetCharacterSelect()
-    {
-        if (NetworkClient.connection != null){
-            RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.GetComponent<RoomPlayer>();
-            roomPlayer.CmdChangeCharacter(Character.NONE);
-            if(onCharacterSelectcancel != null){
-                onCharacterSelectcancel.Invoke();
-            }
-        }
-    }
-
-    // 캐릭터 선택 이벤트 송신
-    public void EmitCharacterSelectEvent(Character character)
-    {
-        if(onCharacterSelect != null){
-            onCharacterSelect.Invoke(character);
-        }
-    }
 
     // 채팅 메시지 전송
     public void SendChatMessage(string input)
@@ -114,5 +86,27 @@ public class RoomUI : SingletonD<RoomUI>
         yield return null;
 
         scrollbar.value = 0;
+    }
+
+    // 순서 바뀜에 따른 자리 표시
+    public void SetActiveSelectedOrderMark(PlayOrder order)
+    {
+        orderEffector[0].SetActive((int)order == 0 ? true : false);
+        orderEffector[1].SetActive((int)order == 1 ? true : false);
+        orderEffector[2].SetActive((int)order == 2 ? true : false);
+    }
+
+    [Server]
+    public void CMDReadyCheck()
+    {
+        int num = 0;
+        RoomPlayer[] players = FindObjectsOfType<RoomPlayer>();
+        for(int i = 0 ;i < players.Length ; i++)
+        {
+            if(players[i].isReady) num++;
+            if(players[i].character == Character.NONE) num--;
+        }
+        if( num == players.Length - 1 ) RoomUI.instance.SetReadyButton("START");
+        else RoomUI.instance.SetReadyButton("");
     }
 }
