@@ -15,23 +15,7 @@ public class DeckUI : SingletonD<DeckUI>
 
     void Start()
     {
-        // onCardHoverForAction += OnCardHovered;
-        transform.localPosition = new Vector3(0f, -4.5f, 0f);
         buttonEndTurn.onClick.AddListener(HandleEndTurn);
-    }
-
-    // 카드 Hover Delegate 송신
-    public void EmitCardHoverAction(int cardIndex)
-    {
-        if(onCardHoverForAction != null){
-            onCardHoverForAction.Invoke(cardIndex);
-        }
-    }
-
-    // 카드 Hover Delegate 수신
-    public void OnCardHovered(int cardIndex)
-    {
-        Debug.Log(cardIndex + "번째 카드위에 마우스 올려짐");
     }
 
     // 턴 넘김
@@ -40,6 +24,18 @@ public class DeckUI : SingletonD<DeckUI>
         if(M_TurnManager.instance.currentPlayer == NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>()){
             M_TurnManager.instance.SetNextTurn();
             M_TurnManager.instance.isMyTurn = false;
+            RemoveAllCurrentPlayerDeck();
+        }
+    }
+
+    // 내 턴 종료시 손에있는 모든 카드 제거
+    private void RemoveAllCurrentPlayerDeck()
+    {
+        if(NetworkClient.connection != null){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdDestroyAllCardOnHand();
+            }
         }
     }
 }

@@ -37,9 +37,6 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트가 드래그 상태인지 여부
     public bool isDrag = false;
 
-    // 오브젝트가 회전 상태인지 여부
-    public bool isRotating = false;
-
     // 현재 게임 플레이어의 GamePlayerDeck 클래스 참조값
     public GamePlayerDeck currentPlayerDeck;
 
@@ -55,15 +52,17 @@ public class CardOnHand : NetworkBehaviour
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         }
         transform.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
-        originScale = new Vector3(2.5f, 3f, 0f);
-        targetScale = originScale + new Vector3(1f, 1.5f, 0f);
+        transform.localPosition = new Vector3(-20f, 0f, 0f);
+        originPosition = transform.localPosition;
+        originScale = new Vector3(2f, 3f, 0f);
+        targetScale = originScale + new Vector3(1f, 1f, 0f);
         hoveredPositionY = 0.8f;
     }
 
     // 카드에 마우스 진입할 시 이벤트
-    public void OnCardMouseIn()
+    public void OnCardMouseIn(CardOnHand cardOnHand)
     {
-        if(isOwned){
+        if(isOwned && cardOnHand != null){
             isMouseOver = true;
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
@@ -71,9 +70,9 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // 마우스가 카드에서 벗어날 시 이벤트
-    public void OnCardMouseOut()
+    public void OnCardMouseOut(CardOnHand cardOnHand)
     {
-        if(isOwned){
+        if(isOwned && cardOnHand != null){
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder = originSortOrder;
         }
@@ -86,6 +85,7 @@ public class CardOnHand : NetworkBehaviour
             if(card.isTargetable){
                 // 타겟팅 카드면 화살표 생성
                 currentPlayerDeck.CmdSpawnArrowEmitter(cardCenterPosition);
+                isDrag = false;
             }else{
                 isDrag = true;
             }
@@ -96,33 +96,43 @@ public class CardOnHand : NetworkBehaviour
     public void OnCardDrag()
     {
         if(isOwned){
-            isDrag = true;
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            transform.position = new Vector2(mousePosition.x, mousePosition.y);
-            transform.localScale = targetScale;
-            transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            if(isDrag){
+                Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                transform.position = new Vector2(mousePosition.x, mousePosition.y);
+                transform.localScale = targetScale;
+                transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            }
         }
     }
 
     // 카드 드래그 종료 시 이벤트
-    public void OnCardDragEnd()
+    public void OnCardDragEnd(CardOnHand cardOnHand)
     {
         if(isOwned){
-            isDrag = false;
-            if (!isRotating && (Input.mousePosition.y > Screen.height / 2))
+            if(isDrag && (Input.mousePosition.y > Screen.height / 2))
             {
-                Vector3 dropPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                Vector3[] points = new Vector3[]{
-                    dropPosition,
-                    //transform.localPosition,
-                    //transform.localPosition,
-                    Camera.main.ViewportToWorldPoint(new Vector3(1f, 0.5f, 0f))
-                };
-                transform
-                    .DOMove(points[1], 1f)
-                    .SetEase(Ease.InOutCirc);
-          
-                //transform.DOLocalPath(points, 1f, PathType.CatmullRom, PathMode.Full3D, 10, Color.white);
+                // Dotween 애니매이션 시퀀스 생성
+                Sequence sequence = DOTween.Sequence();
+
+                // 시퀸스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 중앙 0.5f위쪽 위치로 이동 애니매이션 추가
+                sequence.Append(transform.DOScale(new Vector3(1f, 1.5f, 0f), 0.5f));
+                sequence.Join(transform.DORotate(new Vector3(0f, 0f, -90f), 0.5f));
+                sequence.Join(transform.DOMove(new Vector3(0f, 0.5f, 0f), 0.5f).SetEase(Ease.OutSine));
+
+                // 시퀀스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 화면의 우측하단 방향으로 포물선 이동 애니매이션 추가
+                sequence.Append(transform.DOScale(new Vector3(1f, 1.5f, 0f), 0.5f));
+                sequence.Join(transform.DORotate(new Vector3(0f, 0f, -90f), 0.5f));
+                sequence.Join(transform.DOMove(Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f)), 0.5f).SetEase(Ease.InOutCirc));
+                sequence.OnComplete(() =>
+                {
+                    // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행   
+                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                    if (gamePlayerDeck.isLocalPlayer)
+                    {
+                        gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
+                        isDrag = false;
+                    }
+                });
             }
         }
     }

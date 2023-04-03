@@ -26,7 +26,7 @@ public class GamePlayerDeck : NetworkBehaviour
 
     public readonly  SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 카드(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
     
-    public readonly SyncList<Item> trashDeck = new SyncList<Item>(); // 버릴 카드(사용된 카드 + 턴 종료될때 내 손에 있는 카드)
+    public readonly SyncList<Card> trashDeck = new SyncList<Card>(); // 버릴 카드(사용된 카드 + 턴 종료될때 내 손에 있는 카드)
 
     public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 실제 컨트롤 하는 플레이어 소유의 카드 네트워크 오브젝트 리스트
 
@@ -164,6 +164,28 @@ public class GamePlayerDeck : NetworkBehaviour
     {
         NetworkServer.Destroy(cardEmitter);
         isArrowSpawned = false;
+    }
+
+    // 카드 리스트에서 삭제, 댁카운트 감소, 카드 오브젝트 삭제, 사용된 댁에 추가
+    [Command]
+    public void CmdDestroyCardOnHand(CardOnHand cardOnHand)
+    {
+        cardOnHands.Remove(cardOnHand);
+        trashDeck.Add(cardOnHand.card);
+        currentDeckCount--;
+        NetworkServer.Destroy(cardOnHand.gameObject);
+    }
+
+    // 손에 든 모든 카드 제거 및 댁카운트 0으로 초기화, 리스트 초기화, 사용된 댁에 추가
+    [Command]
+    public void CmdDestroyAllCardOnHand()
+    {
+        foreach(CardOnHand cardOnHand in cardOnHands){
+            trashDeck.Add(cardOnHand.card);
+            NetworkServer.Destroy(cardOnHand.gameObject);
+        }
+        currentDeckCount = 0;
+        cardOnHands.Clear();
     }
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
