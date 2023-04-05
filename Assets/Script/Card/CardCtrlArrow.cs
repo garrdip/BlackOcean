@@ -13,6 +13,7 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
 
     public float scaleFactor = 1f;
 
+    private const int arrowSortingOrder = 1000; // 카드 Hover상태의 경우 카드의 sortingOrder는 999, 따라서 화살표는 그보다 항상 위
     private Transform origin;
     public List<Transform> arrowNodes = new List<Transform>();
     private List<Vector2> controlPoints = new List<Vector2>();
@@ -87,7 +88,6 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
     public void RpcArrowInit(Vector3 position)
     {
         transform.position = position;
-        //transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
     // 화살표 머리 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅 및 소유 권한 구분용 색상 변경
@@ -97,7 +97,7 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
         arrowHead.transform.SetParent(transform);
         arrowNodes.Add(arrowHead.GetComponent<Transform>());
         arrowHead.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
-        arrowHead.GetComponent<SpriteRenderer>().sortingOrder = 2;
+        arrowHead.GetComponent<SpriteRenderer>().sortingOrder = arrowSortingOrder;
     }
     
     // 화살표 몸통 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅 및 소유 권한 구분용 색상 변경
@@ -107,7 +107,7 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
         arrowNode.transform.SetParent(transform);
         arrowNodes.Add(arrowNode.GetComponent<Transform>());
         arrowNode.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
-        arrowNode.GetComponent<SpriteRenderer>().sortingOrder = 2;
+        arrowNode.GetComponent<SpriteRenderer>().sortingOrder = arrowSortingOrder;
     }
 
     // 마우스 오른쪽 버튼 클릭 시 화살표 제거

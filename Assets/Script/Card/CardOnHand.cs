@@ -54,8 +54,9 @@ public class CardOnHand : NetworkBehaviour
         transform.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
         transform.localPosition = new Vector3(-20f, 0f, 0f);
         originPosition = transform.localPosition;
-        originScale = new Vector3(2f, 3f, 0f);
-        targetScale = originScale + new Vector3(1f, 1f, 0f);
+        originScale = transform.localScale;
+        targetScale = originScale + new Vector3(0.5f, 0.5f, 0f);
+        originSortOrder = index + 1;
         hoveredPositionY = 0.8f;
     }
 
@@ -64,8 +65,8 @@ public class CardOnHand : NetworkBehaviour
     {
         if(isOwned && cardOnHand != null){
             isMouseOver = true;
-            originSortOrder = index;
-            transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
+            originSortOrder = index + 1;
+            cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
         }
     }
 
@@ -74,14 +75,14 @@ public class CardOnHand : NetworkBehaviour
     {
         if(isOwned && cardOnHand != null){
             isMouseOver = false;
-            transform.GetComponent<SpriteRenderer>().sortingOrder = originSortOrder;
+            cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = originSortOrder;
         }
     }
 
     // 카드 드래그 시작 시 이벥트
     public void OnCardDragStart(Vector3 cardCenterPosition)
     {
-        if(isOwned){
+        if(isOwned && currentPlayerDeck.isLocalPlayer){
             if(card.isTargetable){
                 // 타겟팅 카드면 화살표 생성
                 currentPlayerDeck.CmdSpawnArrowEmitter(cardCenterPosition);
@@ -111,16 +112,17 @@ public class CardOnHand : NetworkBehaviour
         if(isOwned){
             if(isDrag && (Input.mousePosition.y > Screen.height / 2))
             {
+                DeckUI.instance.buttonEndTurn.interactable = false;
                 // Dotween 애니매이션 시퀀스 생성
                 Sequence sequence = DOTween.Sequence();
 
                 // 시퀸스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 중앙 0.5f위쪽 위치로 이동 애니매이션 추가
-                sequence.Append(transform.DOScale(new Vector3(1f, 1.5f, 0f), 0.5f));
+                sequence.Append(transform.DOScale(new Vector3(0.5f, 1f, 0f), 0.5f));
                 sequence.Join(transform.DORotate(new Vector3(0f, 0f, -90f), 0.5f));
                 sequence.Join(transform.DOMove(new Vector3(0f, 0.5f, 0f), 0.5f).SetEase(Ease.OutSine));
 
                 // 시퀀스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 화면의 우측하단 방향으로 포물선 이동 애니매이션 추가
-                sequence.Append(transform.DOScale(new Vector3(1f, 1.5f, 0f), 0.5f));
+                sequence.Append(transform.DOScale(new Vector3(0.5f, 1f, 0f), 0.5f));
                 sequence.Join(transform.DORotate(new Vector3(0f, 0f, -90f), 0.5f));
                 sequence.Join(transform.DOMove(Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f)), 0.5f).SetEase(Ease.InOutCirc));
                 sequence.OnComplete(() =>
@@ -131,6 +133,7 @@ public class CardOnHand : NetworkBehaviour
                     {
                         gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
                         isDrag = false;
+                        DeckUI.instance.buttonEndTurn.interactable = true;
                     }
                 });
             }

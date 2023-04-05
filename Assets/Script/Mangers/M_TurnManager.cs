@@ -178,9 +178,21 @@ public class M_TurnManager : NetworkBehaviour
                 Debug.Log("당신 턴입니다 :" + newGamePlayer.selectOrder);
                 isMyTurn = true;
                 DeckUI.instance.buttonEndTurn.gameObject.SetActive(true);
+                GetCardFromPrefareDeck();
             }else{
                 isMyTurn = false;
                 DeckUI.instance.buttonEndTurn.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    // prefareDeck에서 카드 가져와서 생성
+    private void GetCardFromPrefareDeck()
+    {
+        if(NetworkClient.connection != null){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdSpawnCardOnHand();
             }
         }
     }
