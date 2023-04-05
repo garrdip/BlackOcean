@@ -101,20 +101,6 @@ public class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 현재 플레이어의 CardOnHand 오브젝트를 자식으로 붙일 CardPocket 오브젝트 생성
-    [Command]
-    public void CmdSpawnCardPocket()
-    {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        
-        // CardPocket 생성
-        GameObject cardPocket = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")));
-        NetworkServer.Spawn(cardPocket, connectionToClient);
-        
-        // 현재 플레이어 소유의 CardPocket 참조 SyncVar 변수 설정
-        currentPlayerCardPocket = cardPocket.GetComponent<CardPocket>();
-    }
-
     // 현재 플레이어의 CardOnHand 오브젝트 생성
     // prefareDeck에서 랜덤으로 가져옴. prefareDeck이 0개일 경우 trashDeck에서 가져온뒤 뽑음
     [Command]
@@ -142,21 +128,9 @@ public class GamePlayerDeck : NetworkBehaviour
             // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
             cardOnHand.GetComponent<CardOnHand>().card = prefareDeck[randomIndex];
             prefareDeck.RemoveAt(randomIndex); 
-
-            RpcSpawnCardOnHand(
-                cardOnHand.GetComponent<CardOnHand>()
-            );
         }
     }
 
-    // 카드가 생성되면 CardOnHand오브젝트를 CardPocket의 하위오브젝트로 설정
-    [ClientRpc]
-    public void RpcSpawnCardOnHand(CardOnHand cardOnHand)
-    {
-        if(currentPlayerCardPocket != null){
-            cardOnHand.gameObject.transform.SetParent(currentPlayerCardPocket.transform);
-        }
-    }
 
     // 카드 컨트롤 화살표 인디케이터 생성(네트워크 오브젝트)
     [Command]

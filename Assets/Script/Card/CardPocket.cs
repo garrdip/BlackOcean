@@ -15,8 +15,7 @@ public class CardPocket : NetworkBehaviour
     void Start()
     {
         transform.SetParent(DeckUI.instance.DeckListPanel.transform);
-        hidePosition = transform.localPosition + new Vector3(-20f, -4f, 0f);
-        showPosition = transform.localPosition + new Vector3(0, -4f, 0f);
+        transform.localPosition = new Vector3(0f, 1f, 0f);
         if(NetworkClient.connection != null){
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         }
@@ -24,20 +23,15 @@ public class CardPocket : NetworkBehaviour
 
     void Update()
     {   
-        if(isOwned){
-            HandleCardDragStart();
-            HandleCardDrag();
-            HandleCardDragEnd();
-            HandleMouseInOut();
-        }
+        HandleCardDragStart();
+        HandleCardDrag();
+        HandleCardDragEnd();
+        HandleMouseInOut();
     }
 
     void FixedUpdate()
     {
-        if(isOwned){
-            SetCardOfHandPositionSymmetry();
-            ChangePocketPositionByTurn();
-        }
+        SetCardOfHandPositionSymmetry();
     }
 
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
@@ -161,16 +155,6 @@ public class CardPocket : NetworkBehaviour
                     dragTarget = null; 
                 }
             }  
-        }
-    }
-
-    // 턴값에 따라 로컬 유저의 카드 더미 위치 변경
-    private void ChangePocketPositionByTurn()
-    {
-        if(M_TurnManager.instance.isMyTurn){
-            transform.localPosition = showPosition;
-        }else{
-            transform.localPosition = hidePosition;
         }
     }
 }

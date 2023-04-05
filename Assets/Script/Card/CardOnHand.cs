@@ -51,8 +51,8 @@ public class CardOnHand : NetworkBehaviour
         if(NetworkClient.connection != null){
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         }
+        transform.SetParent(DeckUI.instance.CardPocket.transform);
         transform.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
-        transform.localPosition = new Vector3(-20f, 0f, 0f);
         originPosition = transform.localPosition;
         originScale = transform.localScale;
         targetScale = originScale + new Vector3(0.5f, 0.5f, 0f);

@@ -8,6 +8,7 @@ public class DeckUI : SingletonD<DeckUI>
 {
     public GameObject DeckListPanel;
     public GameObject GameCanvas;
+    public GameObject CardPocket;
     public Button buttonEndTurn;
 
     public delegate void OnCardHoverForAction(int cardIndex);
