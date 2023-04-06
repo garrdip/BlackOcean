@@ -14,29 +14,35 @@ public class MapRoom : NetworkBehaviour
     public bool isComplete = false;
     SpriteRenderer testSprite;
 
+    Camera mainCamera;
+
     void Awake()
     {
         testSprite = GetComponent<SpriteRenderer>();
         gameObject.transform.SetParent(Floor.instance.transform);
+        mainCamera = Camera.main;
     }
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Collider2D hitCollider = Physics2D.OverlapPoint(mousePosition);
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = -mainCamera.transform.position.z;
+            Vector3 worldPos = mainCamera.ScreenToWorldPoint(mousePos);
+            Collider2D hitCollider = Physics2D.OverlapPoint(worldPos);
             if (hitCollider == GetComponent<Collider2D>())
             {
-                OnButtonClick();
+                //OnButtonClick();
             }
         }
     }
 
-    void OnButtonClick()
+    void  OnMouseDown()
     {
-        M_MapManager.instance.MoveToRoom(location);
+        M_MapManager.instance.MoveToRoom(location,transform.position);
     }
+
 
     [ClientRpc]
     public void SetSprite(Color color)

@@ -58,7 +58,8 @@ public class M_MapManager : NetworkBehaviour
         for(int i = 0 ;i < 5 ;i ++)
         {
             //각 방의 좌표값 * 1.2 위치에 방 생성 (방간격)
-            GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3(loc[i].x*1.2f,loc[i].y*1.2f,0),Quaternion.identity,roommaps.transform);
+            GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3(loc[i].x*1.2f,loc[i].y*1.2f,0),Quaternion.Euler(40,0,0),roommaps.transform);
+            newRoom.transform.localPosition = new Vector3(loc[i].x*1.2f,loc[i].y*1.2f,0);
             newRoom.GetComponent<MapRoom>().location = loc[i];
             // Vector2 형식의 좌표 절대값의 합을 위험도로 지정 
             newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(loc[i].x) + (int)Mathf.Abs(loc[i].y);
@@ -68,7 +69,7 @@ public class M_MapManager : NetworkBehaviour
     }
 
     [Server]
-    public void MoveToRoom(Vector2 tar)
+    public void MoveToRoom(Vector2 tar, Vector3 pos)
     {
         if(Vector2.Distance(currentLocation,tar) > 1 || M_TurnManager.instance.isOrderSelect)
         {
@@ -80,7 +81,7 @@ public class M_MapManager : NetworkBehaviour
             SetRoomColor(tar);
             currentLocation = tar;
             GenerateNextRoom();
-            MoveCameraPositionToRoom(tar);
+            MoveCameraPositionToRoom(pos);
             return;
         }
     }
@@ -123,6 +124,7 @@ public class M_MapManager : NetworkBehaviour
     [Server]
     public void GenerateNextRoom()
     {
+        Debug.Log("Generate Room");
         var netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         Vector2[] loc = {new Vector2(1,0),new Vector2(-1,0),new Vector2(0,1),new Vector2(0,-1)};
         for(int i = 0 ;i < 4 ;i ++)
@@ -138,7 +140,8 @@ public class M_MapManager : NetworkBehaviour
             }
             if(isEmpty)
             {
-                GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3((currentLocation.x + loc[i].x)*1.2f,(currentLocation.y + loc[i].y)*1.2f,0),Quaternion.identity);
+                GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3((currentLocation.x + loc[i].x)*1.2f,(currentLocation.y + loc[i].y)*1.2f,0),Quaternion.Euler(40,0,0));
+                newRoom.transform.localPosition = new Vector3((currentLocation.x + loc[i].x)*1.2f,(currentLocation.y + loc[i].y)*1.2f,0);
                 newRoom.GetComponent<MapRoom>().location = new Vector2(currentLocation.x + loc[i].x, currentLocation.y + loc[i].y);
                 newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(currentLocation.x + loc[i].x) + (int)Mathf.Abs(currentLocation.y + loc[i].y);
                 NetworkServer.Spawn(newRoom);
@@ -149,8 +152,8 @@ public class M_MapManager : NetworkBehaviour
 
     // 방이동후 카메라 전환 (자유 이동으로 할지)
     [ClientRpc]
-    public void MoveCameraPositionToRoom(Vector2 tar)
+    public void MoveCameraPositionToRoom(Vector3 pos)
     {
-        mainCam.transform.position = new Vector3(tar.x,tar.y,mainCam.transform.position.z);
+        mainCam.transform.position = pos + new Vector3(0,0,-10);
     }
 }

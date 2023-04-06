@@ -81,29 +81,6 @@ public class GamePlayer : NetworkBehaviour
 
     public void SetUserStatusUI()
     {
-        GamePlayer[] users = FindObjectsOfType<GamePlayer>();
-        //자신의 UI를 최상단에 표시
-        foreach( GamePlayer user in users )
-        {
-            if(user.isLocalPlayer)
-            {
-                GameObject userUI = Instantiate(M_MapManager.instance.mapPlayerForUI);
-                userUI.transform.SetParent(CharacterInfoUI.instance.gamePlayerListLayout.transform);
-                userUI.transform.localScale = new Vector3(1, 1, 1);
-                userUI.GetComponent<MapPlayerForUI>().netID =  user.GetComponent<NetworkIdentity>();
-                userUI.GetComponent<MapPlayerForUI>().gamePlayer = user;
-            }
-        }
-        foreach( GamePlayer user in users )
-        {
-            if(!user.isLocalPlayer)
-            {
-                GameObject userUI = Instantiate(M_MapManager.instance.mapPlayerForUI);
-                userUI.transform.SetParent(CharacterInfoUI.instance.gamePlayerListLayout.transform);
-                userUI.transform.localScale = new Vector3(1, 1, 1);
-                userUI.GetComponent<MapPlayerForUI>().netID =  user.GetComponent<NetworkIdentity>();
-                userUI.GetComponent<MapPlayerForUI>().gamePlayer = user;
-            }
-        }
+        //변경 필요
     }
 }
