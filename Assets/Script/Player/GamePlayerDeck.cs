@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using ProjectD;
+using DG.Tweening;
 
 
 public class GamePlayerDeck : NetworkBehaviour
@@ -199,24 +200,19 @@ public class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<CardOnHand>.Operation.OP_ADD:
-                // index is where it was added into the list
-                // newItem is the new item
+                newCardOnHand.CardOnHandDrawSequence(newCardOnHand, index);
                 break;
             case SyncList<CardOnHand>.Operation.OP_INSERT:
-                // index is where it was inserted into the list
-                // newItem is the new item
+                
                 break;
             case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
-                // index is where it was removed from the list
-                // oldItem is the item that was removed
+
                 break;
             case SyncList<CardOnHand>.Operation.OP_SET:
-                // index is of the item that was changed
-                // oldItem is the previous value for the item at the index
-                // newItem is the new value for the item at the index
+                
                 break;
             case SyncList<CardOnHand>.Operation.OP_CLEAR:
-                // list got cleared
+                
                 break;
         }
     }

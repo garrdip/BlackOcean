@@ -35,7 +35,9 @@ public class DeckUI : SingletonD<DeckUI>
         if(NetworkClient.connection != null){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdDestroyAllCardOnHand();
+                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                    cardOnHand.CardOnHandThrowAwaySequence(cardOnHand);
+                }
             }
         }
     }

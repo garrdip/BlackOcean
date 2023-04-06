@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using DG.Tweening;
 
 public class CardPocket : NetworkBehaviour
 {
@@ -43,7 +42,7 @@ public class CardPocket : NetworkBehaviour
             if(count > 0){
                 for(int i=0; i<count; i++){      
                     CardOnHand cardOnHand =  gamePlayerDeck.cardOnHands[i];
-                    if(cardOnHand != null){
+                    if(cardOnHand != null && !cardOnHand.isMoving){
                         if(cardOnHand.isMouseOver){
                             Vector3 targetPosition = new Vector3(cardOnHand.transform.localPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
                             cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
