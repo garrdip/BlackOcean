@@ -123,7 +123,7 @@ public class CardPocket : NetworkBehaviour
                     CardOnHand cardOnHand = hit.collider.gameObject.GetComponent<CardOnHand>();
                     if(cardOnHand.isOwned){
                         dragTarget = hit.collider.gameObject;
-                        dragTarget.GetComponent<CardOnHand>().OnCardDragStart(hit.collider.bounds.center);
+                        dragTarget.GetComponent<CardOnHand>().OnCardDragStart(hit.collider.bounds.center, cardOnHand);
                     }  
                 }
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
+using DG.Tweening;
 
 public class DeckUI : SingletonD<DeckUI>
 {
@@ -26,6 +27,7 @@ public class DeckUI : SingletonD<DeckUI>
             M_TurnManager.instance.SetNextTurn();
             M_TurnManager.instance.isMyTurn = false;
             RemoveAllCurrentPlayerDeck();
+            RemoveAllCurrentPlayerArrow();
         }
     }
 
@@ -36,7 +38,21 @@ public class DeckUI : SingletonD<DeckUI>
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                    cardOnHand.CardOnHandThrowAwaySequence(cardOnHand);
+                    cardOnHand.CardOnHandAllThrowAwaySequence(cardOnHand);
+                }
+            }
+        }
+    }
+
+    // 내 턴 종료시 카드 제어 화살표 제거
+    private void RemoveAllCurrentPlayerArrow()
+    {
+         if(NetworkClient.connection != null){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                CardCtrlArrow[] cardCtrlArrows = FindObjectsOfType<CardCtrlArrow>();
+                foreach(CardCtrlArrow cardCtrlArrow in cardCtrlArrows){
+                    gamePlayerDeck.CmdDestroyArrowEmitter(cardCtrlArrow.gameObject);
                 }
             }
         }

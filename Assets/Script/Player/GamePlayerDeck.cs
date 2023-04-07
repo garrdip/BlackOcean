@@ -44,6 +44,7 @@ public class GamePlayerDeck : NetworkBehaviour
     public override void OnStartClient()
     {
         cardOnHands.Callback += OnCardOnHandsUpdated;
+        prefareDeck.Callback += OnPrefareDeckUpdated;
     }
 
     // 플레이어 댁 정보 초기화
@@ -135,7 +136,7 @@ public class GamePlayerDeck : NetworkBehaviour
 
     // 카드 컨트롤 화살표 인디케이터 생성(네트워크 오브젝트)
     [Command]
-    public void CmdSpawnArrowEmitter(Vector3 cardPosition)
+    public void CmdSpawnArrowEmitter(Vector3 cardPosition, CardOnHand cardOnHand)
     {
         if(!isArrowSpawned){
             M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
@@ -143,6 +144,7 @@ public class GamePlayerDeck : NetworkBehaviour
             GameObject cardEmitter = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")));
             NetworkServer.Spawn(cardEmitter, connectionToClient);
             cardEmitter.GetComponent<CardCtrlArrow>().RpcArrowInit(cardPosition);
+            cardEmitter.GetComponent<CardCtrlArrow>().arrowOwnedCardOnHand = cardOnHand; // 화살표를 소환한 카드를 화살표 주인으로 설정
 
             // 화살표 인디케이터 몸체 생성
             for(int i=0; i<arrowNodeNum; i++){
@@ -188,6 +190,22 @@ public class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Clear();
     }
 
+    // 화살표의 타겟에게 액션 수행
+    [Command]
+    public void CmdActionToTarget(TargetObject targetObject, CardOnHand cardOnHand)
+    {
+        targetObject.TakeDamage(targetObject, cardOnHand.card.effectValue);
+    }
+
+    // 모든 타겟에게 액션 수행
+    [Command]
+    public void CmdActionToAllTarget(CardOnHand cardOnHand)
+    {
+        foreach(TargetObject targetObject in FindObjectsOfType<TargetObject>()){
+            targetObject.TakeDamage(targetObject, cardOnHand.card.effectValue); 
+        }
+    }
+
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
     public void OnChangeCurrentDeckCount(int oldCount, int newCount)
     {
@@ -195,12 +213,14 @@ public class GamePlayerDeck : NetworkBehaviour
     }
 
     // -------------------------------------------------SyncList Callback ---------------------------------------------------//
+    
+    // CardOnHand Callback
     void OnCardOnHandsUpdated(SyncList<CardOnHand>.Operation op, int index, CardOnHand oldCardOnHand, CardOnHand newCardOnHand)
     {
         switch (op)
         {
             case SyncList<CardOnHand>.Operation.OP_ADD:
-                newCardOnHand.CardOnHandDrawSequence(newCardOnHand, index);
+                newCardOnHand.CardOnHandDrawSequence(newCardOnHand);
                 break;
             case SyncList<CardOnHand>.Operation.OP_INSERT:
                 
@@ -212,6 +232,29 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
             case SyncList<CardOnHand>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
+    // PrefareDeck Callback
+    void OnPrefareDeckUpdated(SyncList<Card>.Operation op, int index, Card oldPrefareDeck, Card newPrefareDeck)
+    {
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+                
+                break;
+            case SyncList<Card>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<Card>.Operation.OP_SET:
+                
+                break;
+            case SyncList<Card>.Operation.OP_CLEAR:
                 
                 break;
         }

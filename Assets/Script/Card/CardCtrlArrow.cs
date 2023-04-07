@@ -6,8 +6,11 @@ using UnityEngine.EventSystems;
 using Mirror;
 
 
-public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
 {
+    [SyncVar]
+    public CardOnHand arrowOwnedCardOnHand; // 현재 소환된 화살표의 주인 카드
+
     public GameObject arrowHeadPrefab;
     public GameObject arrowNodePrefab;
 
@@ -36,6 +39,8 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
             mousePosition.z = Camera.main.nearClipPlane; // 카메라가 바라보는 위치로 설정
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition); // 화면 좌표를 월드 좌표로 변환
             this.controlPoints[3] = worldPosition;
+            HandleArrowAction();
+            HandleArrowRemove();
         }
 
         // P0 is at the arrow emitter point
@@ -74,7 +79,6 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
             // The first arrow node's rotation
             this.arrowNodes[0].transform.rotation = this.arrowNodes[1].transform.rotation;
         }
-        RemoveArrowOnMouseRightClicked();
     }
 
     // 클라이언트에 화살표 오브젝트 생성 시 오브젝트의 부모오브젝트를 GameCanvas로 설정
@@ -111,10 +115,9 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
     }
 
     // 마우스 오른쪽 버튼 클릭 시 화살표 제거
-    public void RemoveArrowOnMouseRightClicked()
+    public void HandleArrowRemove()
     {
-        if (Input.GetMouseButtonDown(1))
-        {
+        if(Input.GetMouseButtonDown(1)){
             if(NetworkClient.connection != null){
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                 gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject);
@@ -122,32 +125,23 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>, IPointerClickHand
         }
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    // 마우스 왼쪽버튼 뗄때 마우스로 타겟팅한 오브젝트에게 액션 수행
+    private void HandleArrowAction()
     {
-        
-    }
-
-    // 드래그 시작
-    public void OnBeginDrag(PointerEventData eventData)
-    {   
-        
-    }
-
-    // 드래그 진행중
-    public void OnDrag(PointerEventData eventData)
-    {
-        
-    }
-
-    // 드래그 종료
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        
-    }
-
-    // 드랍 이벤트
-    public void OnDrop(PointerEventData eventData)
-    {
-        
+        if(Input.GetMouseButtonUp(0)){
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit)){
+                if(hit.collider != null && NetworkClient.connection != null && hit.collider.tag.Equals("TargetObject")){
+                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                    if(gamePlayerDeck.isLocalPlayer){
+                        TargetObject targetObject = hit.collider.gameObject.GetComponent<TargetObject>();
+                        gamePlayerDeck.CmdActionToTarget(targetObject, arrowOwnedCardOnHand); // 화살표 타겟에 액션 수행
+                        gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject); // 화살표 삭제
+                        arrowOwnedCardOnHand.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
+                    }
+                }
+            }
+        }
     }
 }

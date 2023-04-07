@@ -64,4 +64,21 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
+
+    [ClientRpc]
+    public void TakeDamage(TargetObject targetObject, int damamge)
+    {
+        Debug.Log("테이크 데미지");
+        // TODO : 플레이어 또는 몬스터의 데미지만큼의 체력 SyncVar값 변경
+        switch(targetObject.objectType){
+            case ObjectType.PLAYER:
+                break;
+            case ObjectType.BOSS:
+                break;
+            case ObjectType.ENEMY:
+                break;
+            default:
+                break;
+        }
+    }
 }
