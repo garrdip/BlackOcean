@@ -140,14 +140,22 @@ public class CardOnHand : NetworkBehaviour
     {
         cardOnHand.isMoving = true;
         Transform cardTransform = cardOnHand.gameObject.transform;
-        cardTransform.localPosition = new Vector3(-20f, 0f, 0f);
-        cardTransform
-            .DOMove(cardOnHand.gameObject.transform.localPosition, 0.2f)
+        cardTransform.localRotation = Quaternion.Euler(0f, 0f, -90f);
+        // buttonPrefareDeck 월드상 좌표
+        cardTransform.localPosition = GetElementWorldPoint(DeckUI.instance.buttonPrefareDeck.GetComponent<RectTransform>());
+
+        // Dotween 애니매이션 시퀀스 생성
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.5f, 0.8f, 0f), 0.2f));
+        sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f));
+        sequence.Join(cardTransform
+            .DOMove(cardTransform.localPosition, 0.2f)
             .SetDelay(cardOnHand.index * 0.1f)
             .SetEase(Ease.OutSine)
             .OnComplete(() => {
                 cardOnHand.isMoving = false;
-            });
+            })
+        );
     }
 
     // CardOnHand 오브젝트 멀어지는 애니매이션 + 오브젝트 파괴 커맨드 호출
@@ -156,7 +164,8 @@ public class CardOnHand : NetworkBehaviour
         DeckUI.instance.buttonEndTurn.interactable = false;        
         cardOnHand.isMoving = true;
         float duration = 0.3f;
-
+        // buttonTrashDeck 월드상 좌표
+        Vector3 trashDeckPosition = Camera.main.ScreenToWorldPoint(DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position);
         // Dotween 애니매이션 시퀀스 생성
         Sequence sequence = DOTween.Sequence();
         
@@ -170,7 +179,7 @@ public class CardOnHand : NetworkBehaviour
         sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.5f, 0.8f, 0f), duration));
         sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
         sequence.Join(cardOnHand.transform
-                            .DOMove(Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f)), duration)
+                            .DOMove(trashDeckPosition, duration)
                             .SetEase(Ease.InOutCirc));
         sequence.OnComplete(() =>
         {
@@ -193,11 +202,13 @@ public class CardOnHand : NetworkBehaviour
         GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         if(gamePlayerDeck.isLocalPlayer){
             float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
+            // buttonTrashDeck 월드상 좌표
+            Vector3 trashDeckPosition = Camera.main.ScreenToWorldPoint(DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position);
             cardOnHand.isMoving = true;
             cardOnHand.transform.DOScale(new Vector3(0.5f, 0.8f, 0f), 0.3f);
             cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), 0.3f);
             cardOnHand.transform
-                    .DOMove(Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f)), 0.3f)
+                    .DOMove(trashDeckPosition, 0.3f)
                     .SetEase(Ease.OutCirc)
                     .SetDelay(delay)
                     .OnComplete(() => {
@@ -206,5 +217,25 @@ public class CardOnHand : NetworkBehaviour
                         DeckUI.instance.buttonEndTurn.interactable = true;
                     });
         }    
+    }
+
+    // UI 요소의 캔버스 좌표를 월드좌표로 변환하여 반환
+    // TODO :
+    // 1. 왜 카드 생성시점에는 Camera.main.ScreenToWorldPoint가 작동하지 않는것인가.
+    // 2. 아래 함수를 이용해도 정확한 좌표는 반환되지 않음. 좌표계에 대해 더 알아봐야함.
+    private Vector3 GetElementWorldPoint(RectTransform rectTransform)
+    {
+        // 스크린 좌표를 UI 요소의 로컬 좌표로 변환
+        Vector2 woldPoint;
+        RectTransform parentRectTransForm = rectTransform.parent.GetComponent<RectTransform>();
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRectTransForm, rectTransform.localPosition, Camera.main, out woldPoint);
+        // 부모 객체의 월드 좌표를 구하고, 이를 카메라 좌표계에서의 좌표로 변환
+        Vector3 parentWorldPos = rectTransform.parent.TransformPoint(woldPoint);
+        Vector3 cameraRelativePoint = Camera.main.transform.InverseTransformPoint(parentWorldPos);
+
+        // 변환된 좌표 사용하기
+        Debug.Log(cameraRelativePoint);
+        return cameraRelativePoint;
     }
 }

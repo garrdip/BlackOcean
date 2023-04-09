@@ -4,20 +4,28 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
+using TMPro;
 
 public class DeckUI : SingletonD<DeckUI>
 {
     public GameObject DeckListPanel;
     public GameObject GameCanvas;
     public GameObject CardPocket;
-    public Button buttonEndTurn;
+    public GameObject PrefareDeck;
+    public GameObject TrashDeck;
 
-    public delegate void OnCardHoverForAction(int cardIndex);
-    public event OnCardHoverForAction onCardHoverForAction;
+    public Button buttonEndTurn;
+    public Button buttonPrefareDeck;
+    public Button buttonTrashDeck;
+    public TextMeshProUGUI textPrefareDeckCount;
+    public TextMeshProUGUI textTrashDeckCount;
+
 
     void Start()
     {
         buttonEndTurn.onClick.AddListener(HandleEndTurn);
+        buttonPrefareDeck.onClick.AddListener(HandleShowPrefareDeck);
+        buttonTrashDeck.onClick.AddListener(HandleShowTrashDeck);
     }
 
     // 턴 넘김
@@ -56,5 +64,15 @@ public class DeckUI : SingletonD<DeckUI>
                 }
             }
         }
+    }
+
+    private void HandleShowPrefareDeck()
+    {
+        
+    }
+
+    private void HandleShowTrashDeck()
+    {
+
     }
 }

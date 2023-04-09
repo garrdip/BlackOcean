@@ -45,6 +45,7 @@ public class GamePlayerDeck : NetworkBehaviour
     {
         cardOnHands.Callback += OnCardOnHandsUpdated;
         prefareDeck.Callback += OnPrefareDeckUpdated;
+        trashDeck.Callback += OnTrashDeckUpdated;
     }
 
     // 플레이어 댁 정보 초기화
@@ -239,6 +240,29 @@ public class GamePlayerDeck : NetworkBehaviour
 
     // PrefareDeck Callback
     void OnPrefareDeckUpdated(SyncList<Card>.Operation op, int index, Card oldPrefareDeck, Card newPrefareDeck)
+    {
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+                
+                break;
+            case SyncList<Card>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<Card>.Operation.OP_SET:
+                
+                break;
+            case SyncList<Card>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
+    // TrashDeck Callback
+    void OnTrashDeckUpdated(SyncList<Card>.Operation op, int index, Card oldTrashDeck, Card newTrashDeck)
     {
         switch (op)
         {
