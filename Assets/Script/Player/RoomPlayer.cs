@@ -16,7 +16,7 @@ public class RoomPlayer : NetworkRoomPlayer
 
     [SyncVar(hook = nameof(ChangeReadyState))]
     public bool isReady = false;
-
+    
     public void ChangeReadyState(bool oldVal, bool newVal)
     {
         if(isServer)

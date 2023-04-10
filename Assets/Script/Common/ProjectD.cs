@@ -8,4 +8,5 @@ namespace ProjectD
     public enum CardAttribute { DESTROY, CREATION } 
     public enum CardCharacteristic { NONE }
     public enum PlayOrder { FIRST = 0, SECOND = 1, THIRD = 2 , UNDEFINED = 3}
+    public enum GameLevel { EASY = 0, NORMAL = 1, HARD = 2 }
 }
