@@ -16,6 +16,8 @@ public class M_SteamManager : MonoBehaviour
     private const string LobbyNameKey = "LobbyName";
     public M_NetworkRoomManager networkManager;
 
+    public static CSteamID enteredLobby;
+
     private void Start()
     {
         if(!SteamManager.Initialized){return;}
@@ -23,6 +25,7 @@ public class M_SteamManager : MonoBehaviour
         gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequeseted);
         lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEnter);
         lobbyList = Callback<LobbyMatchList_t>.Create(OnLobbyMatchList);
+        DontDestroyOnLoad(gameObject);
     }
     public void HostLobby()
     {
@@ -38,6 +41,7 @@ public class M_SteamManager : MonoBehaviour
         //Mirror Server Start
         networkManager.StartHost();
         //Steam Lobby Data 수정 
+        enteredLobby = new CSteamID(callback.m_ulSteamIDLobby);
         SteamMatchmaking.SetLobbyData(
             new CSteamID(callback.m_ulSteamIDLobby),
             HostAddressKey,
@@ -53,9 +57,14 @@ public class M_SteamManager : MonoBehaviour
     {
         if(NetworkServer.active){ return;}
         string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby),HostAddressKey);
-        
+        enteredLobby = new CSteamID(callback.m_ulSteamIDLobby);
         networkManager.networkAddress = hostAddress;
         networkManager.StartClient();
+    }
+
+    public static void LeaveLobby()
+    {
+        SteamMatchmaking.LeaveLobby(enteredLobby);
     }
 
     public void GetLobbyList()
