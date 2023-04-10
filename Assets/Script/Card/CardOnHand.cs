@@ -136,24 +136,31 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // CardOnHand 오브젝트들의 인덱스값에 따라 순차적인 움직임으로 날아오는 애니매이션 + Moving플래그 변수 조정
-    public void CardOnHandDrawSequence(CardOnHand cardOnHand)
+    public void CardOnHandDrawSequence(CardOnHand cardOnHand, int index)
     {
         cardOnHand.isMoving = true;
         Transform cardTransform = cardOnHand.gameObject.transform;
         cardTransform.localRotation = Quaternion.Euler(0f, 0f, -90f);
         // buttonPrefareDeck 월드상 좌표
-        cardTransform.localPosition = GetElementWorldPoint(DeckUI.instance.buttonPrefareDeck.GetComponent<RectTransform>());
+        cardTransform.position = Camera.main.ScreenToWorldPoint(DeckUI.instance.buttonPrefareDeck.GetComponent<RectTransform>().position);
 
         // Dotween 애니매이션 시퀀스 생성
         Sequence sequence = DOTween.Sequence();
         sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.5f, 0.8f, 0f), 0.2f));
         sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f));
         sequence.Join(cardTransform
-            .DOMove(cardTransform.localPosition, 0.2f)
-            .SetDelay(cardOnHand.index * 0.1f)
+            .DOMove(cardTransform.position + new Vector3(0f, 5f, 0f), 0.2f)
+            .SetDelay(index * 0.1f)
             .SetEase(Ease.OutSine)
             .OnComplete(() => {
-                cardOnHand.isMoving = false;
+                cardTransform
+                    .DOMove(cardTransform.position, 0.2f)
+                    .SetDelay(index * 0.1f)
+                    .SetEase(Ease.OutSine)
+                    .OnComplete(() => {
+                        cardOnHand.isMoving = false;
+                    }
+                );
             })
         );
     }
@@ -217,25 +224,5 @@ public class CardOnHand : NetworkBehaviour
                         DeckUI.instance.buttonEndTurn.interactable = true;
                     });
         }    
-    }
-
-    // UI 요소의 캔버스 좌표를 월드좌표로 변환하여 반환
-    // TODO :
-    // 1. 왜 카드 생성시점에는 Camera.main.ScreenToWorldPoint가 작동하지 않는것인가.
-    // 2. 아래 함수를 이용해도 정확한 좌표는 반환되지 않음. 좌표계에 대해 더 알아봐야함.
-    private Vector3 GetElementWorldPoint(RectTransform rectTransform)
-    {
-        // 스크린 좌표를 UI 요소의 로컬 좌표로 변환
-        Vector2 woldPoint;
-        RectTransform parentRectTransForm = rectTransform.parent.GetComponent<RectTransform>();
-
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRectTransForm, rectTransform.localPosition, Camera.main, out woldPoint);
-        // 부모 객체의 월드 좌표를 구하고, 이를 카메라 좌표계에서의 좌표로 변환
-        Vector3 parentWorldPos = rectTransform.parent.TransformPoint(woldPoint);
-        Vector3 cameraRelativePoint = Camera.main.transform.InverseTransformPoint(parentWorldPos);
-
-        // 변환된 좌표 사용하기
-        Debug.Log(cameraRelativePoint);
-        return cameraRelativePoint;
     }
 }

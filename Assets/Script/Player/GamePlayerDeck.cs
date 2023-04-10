@@ -221,7 +221,7 @@ public class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<CardOnHand>.Operation.OP_ADD:
-                newCardOnHand.CardOnHandDrawSequence(newCardOnHand);
+                newCardOnHand.CardOnHandDrawSequence(newCardOnHand, index);
                 break;
             case SyncList<CardOnHand>.Operation.OP_INSERT:
                 
@@ -259,6 +259,9 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
+        // 현재 턴인 플레이어의 PrefareDeck Count 갱신
+        int textPrefareDeckCount = M_TurnManager.instance.currentPlayer.GetComponent<GamePlayerDeck>().prefareDeck.Count;
+        DeckUI.instance.textPrefareDeckCount.text = textPrefareDeckCount.ToString();
     }
 
     // TrashDeck Callback
@@ -282,5 +285,8 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
+        // 현재 턴인 플레이어의 TrashDeck Count 갱신
+        int textTrashDeckCount = M_TurnManager.instance.currentPlayer.GetComponent<GamePlayerDeck>().trashDeck.Count;
+        DeckUI.instance.textTrashDeckCount.text = textTrashDeckCount.ToString();
     }
 }
