@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 using ProjectD;
+using Steamworks;
 
 public class RoomPlayer : NetworkRoomPlayer
 {
@@ -16,6 +17,9 @@ public class RoomPlayer : NetworkRoomPlayer
 
     [SyncVar(hook = nameof(ChangeReadyState))]
     public bool isReady = false;
+
+    [SyncVar]
+    public ulong steamID;
     
     public void ChangeReadyState(bool oldVal, bool newVal)
     {
@@ -29,6 +33,7 @@ public class RoomPlayer : NetworkRoomPlayer
         RoomUI.instance.SetActiveSelectedOrderMark(order);
         if(!isServer)RoomUI.instance.SetReadyButton("READY");
         else RoomUI.instance.SetReadyButton("");
+        steamID = (ulong)SteamUser.GetSteamID();
         base.OnStartLocalPlayer();
     }
 
