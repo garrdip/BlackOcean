@@ -37,6 +37,9 @@ public class RoomProfile : MonoBehaviour
         changeOrderButton.SetActive(false);
         kickButton.SetActive(false);
         characterImage.sprite = characterImages[4];
+        steamID.text = "";
+        steamAvatar.color = new Color(0,0,0,0);
+        
     }
     public void EnableButton()
     {
@@ -110,6 +113,7 @@ public class RoomProfile : MonoBehaviour
         // Avatar
         int imageId = SteamFriends.GetLargeFriendAvatar((CSteamID)player.steamID);
         steamAvatar.texture = GetSteamImageAsTexture(imageId);
+        steamAvatar.color = new Color(1,1,1,1);
     }
 
     public Texture2D GetSteamImageAsTexture(int iImage)

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 using ProjectD;
+using Steamworks;
 
 public class RoomUI : InstanceD<RoomUI>
 {
@@ -17,6 +18,7 @@ public class RoomUI : InstanceD<RoomUI>
     public List<GameObject> orderEffector;
 
     public TextMeshProUGUI readyButton;
+    public Button ExitButton;
 
     public void SetReadyButton(string str)
     {
@@ -25,6 +27,7 @@ public class RoomUI : InstanceD<RoomUI>
     void Start()
     {
         buttonReady.onClick.AddListener(() => HandleRadeyState());
+        ExitButton.onClick.AddListener(() => HandleBackToMainScene());
     }
 
     void Update()
@@ -51,7 +54,14 @@ public class RoomUI : InstanceD<RoomUI>
             
         }
     }
+    public void HandleBackToMainScene()
+    {
+        NetworkServer.Shutdown();
+        NetworkClient.Disconnect();
+        M_SteamManager.LeaveLobby();
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
 
+    }
     // 게임 씬으로 이동
     public void HandleChangeGameScene()
     {
