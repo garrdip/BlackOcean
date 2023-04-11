@@ -25,7 +25,6 @@ public class M_SteamManager : MonoBehaviour
         gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequeseted);
         lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEnter);
         lobbyList = Callback<LobbyMatchList_t>.Create(OnLobbyMatchList);
-        DontDestroyOnLoad(gameObject);
     }
     public void HostLobby()
     {

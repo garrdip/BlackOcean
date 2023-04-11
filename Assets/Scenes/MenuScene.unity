@@ -2343,6 +2343,7 @@ GameObject:
   m_Component:
   - component: {fileID: 797485972}
   - component: {fileID: 797485973}
+  - component: {fileID: 797485974}
   m_Layer: 0
   m_Name: M_SteamManager
   m_TagString: Untagged
@@ -2378,6 +2379,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkManager: {fileID: 862470412}
+--- !u!114 &797485974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797485971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef4bffeda13d7a748973ff9204401c07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &811257527
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5643,7 +5656,6 @@ GameObject:
   - component: {fileID: 862470413}
   - component: {fileID: 862470412}
   - component: {fileID: 862470414}
-  - component: {fileID: 862470415}
   - component: {fileID: 862470416}
   m_Layer: 0
   m_Name: M_NetworkRoomManager
@@ -5728,18 +5740,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: 50
   offsetY: 20
---- !u!114 &862470415
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 862470410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef4bffeda13d7a748973ff9204401c07, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &862470416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5752,7 +5752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Port: 27015
+  Port: 7777
   DualMode: 1
   NoDelay: 1
   Interval: 10

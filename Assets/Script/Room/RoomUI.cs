@@ -56,11 +56,10 @@ public class RoomUI : InstanceD<RoomUI>
     }
     public void HandleBackToMainScene()
     {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
         NetworkServer.Shutdown();
         NetworkClient.Disconnect();
         M_SteamManager.LeaveLobby();
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
-
     }
     // 게임 씬으로 이동
     public void HandleChangeGameScene()
