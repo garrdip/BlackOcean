@@ -144,8 +144,9 @@ public class GamePlayerDeck : NetworkBehaviour
             // 화살표 인디케이터 오브젝트 생성
             GameObject cardEmitter = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")));
             NetworkServer.Spawn(cardEmitter, connectionToClient);
-            cardEmitter.GetComponent<CardCtrlArrow>().RpcArrowInit(cardPosition);
+           
             cardEmitter.GetComponent<CardCtrlArrow>().arrowOwnedCardOnHand = cardOnHand; // 화살표를 소환한 카드를 화살표 주인으로 설정
+            cardEmitter.GetComponent<CardCtrlArrow>().RpcArrowInit(cardPosition, cardOnHand);
 
             // 화살표 인디케이터 몸체 생성
             for(int i=0; i<arrowNodeNum; i++){

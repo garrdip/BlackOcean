@@ -66,9 +66,9 @@ public class CardOnHand : NetworkBehaviour
     // 카드에 마우스 진입할 시 이벤트
     public void OnCardMouseIn(CardOnHand cardOnHand)
     {
-        if(isOwned && cardOnHand != null){
-            isMouseOver = true;
-            originSortOrder = index + 1;
+        if(isOwned && cardOnHand != null && !IsArrowSpawned()){
+            cardOnHand.isMouseOver = true;
+            cardOnHand.originSortOrder = index + 1;
             cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
         }
     }
@@ -76,53 +76,44 @@ public class CardOnHand : NetworkBehaviour
     // 마우스가 카드에서 벗어날 시 이벤트
     public void OnCardMouseOut(CardOnHand cardOnHand)
     {
-        if(isOwned && cardOnHand != null){
-            isMouseOver = false;
-            cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = originSortOrder;
+        if(isOwned && cardOnHand != null && !IsArrowSpawned()){
+            cardOnHand.isMouseOver = false;
+            cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder =  cardOnHand.originSortOrder;
         }
     }
 
     // 카드 드래그 시작 시 이벥트
     public void OnCardDragStart(Vector3 cardCenterPosition, CardOnHand cardOnHand)
     {
-        if(isOwned && currentPlayerDeck.isLocalPlayer){
-            if(card.isTargetable){
-                // 타겟팅 카드면 화살표 생성
-                currentPlayerDeck.CmdSpawnArrowEmitter(cardCenterPosition, cardOnHand);
-                isDrag = false;
-            }else{
-                isDrag = true;
-            }
+        if(isOwned && currentPlayerDeck.isLocalPlayer && !IsArrowSpawned()){
+            cardOnHand.isDrag = true;
+            cardOnHand.originPosition = cardOnHand.transform.position;
         }
     }
 
     // 카드 드래그 진행 중 이벤트
-    public void OnCardDrag()
+    public void OnCardDrag(Vector3 cardCenterPosition, CardOnHand cardOnHand)
     {
-        if(isOwned){
-            if(isDrag){
-                Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                transform.position = new Vector2(mousePosition.x, mousePosition.y);
-                transform.localScale = targetScale;
-                transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-            }
+        if(isOwned && cardOnHand.isDrag && !IsArrowSpawned()){
+            DragCardOnHand(cardOnHand);
+            MovePositionArrowSpawnedCardOnHand(cardOnHand);
         }
     }
 
     // 카드 드래그 종료 시 이벤트
+    // 타겟팅 카드가 아닐 경우, 드래그 종료 위치가 화면의 2분의1을 넘어가면 카드 액션 수행 및 카드 버리기 애니매이션 실행
     public void OnCardDragEnd(CardOnHand cardOnHand)
     {
-        if(isOwned){
-            if(isDrag && (Input.mousePosition.y > Screen.height / 2))
-            {
-                CardActionByType(cardOnHand);
-                cardOnHand.CardOnHandThrowAwaySequence(cardOnHand);
+        if(isOwned && cardOnHand.isDrag && !IsArrowSpawned()){
+            if(!cardOnHand.card.isTargetable && cardOnHand.isDrag && (Input.mousePosition.y > Screen.height / 2)){
+                ActionByCardOnHandType(cardOnHand);
+                CardOnHandThrowAwaySequence(cardOnHand);
             }
         }
     }
 
     // [TEMP]카드 타입에 따라 액션 수행하는 함수
-    public void CardActionByType(CardOnHand cardOnHand)
+    public void ActionByCardOnHandType(CardOnHand cardOnHand)
     {
         // TODO : 카드 타입에 따라 액션 수행
         if(NetworkClient.connection != null){
@@ -194,7 +185,6 @@ public class CardOnHand : NetworkBehaviour
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if (gamePlayerDeck.isLocalPlayer)
             {
-                cardOnHand.isDrag = false;
                 cardOnHand.isMoving = false;
                 gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
                 DeckUI.instance.buttonEndTurn.interactable = true;
@@ -224,5 +214,37 @@ public class CardOnHand : NetworkBehaviour
                         DeckUI.instance.buttonEndTurn.interactable = true;
                     });
         }    
+    }
+
+    // 마우스 좌표에 따라 카드 오브젝트 드래그
+    private void DragCardOnHand(CardOnHand cardOnHand)
+    {
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        cardOnHand.transform.position = new Vector2(mousePosition.x, mousePosition.y);
+        cardOnHand.transform.localScale = targetScale;
+        cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+    }
+
+    // 타겟팅 카드일 경우, 드래그중 위치가 화면 하단부 3분의1을 넘어가면 화살표 생성 후 카드의 위치를 중앙으로 이동
+    private void MovePositionArrowSpawnedCardOnHand(CardOnHand cardOnHand)
+    {
+        if(cardOnHand.card.isTargetable && (Input.mousePosition.y > Screen.height / 3)){
+            cardOnHand.isDrag = false;
+            cardOnHand.isMoving = true;
+            currentPlayerDeck.CmdSpawnArrowEmitter(transform.position, cardOnHand);
+            cardOnHand.transform
+                .DOMove(new Vector3(0f, originPosition.y, originPosition.z), 0.4f)
+                .SetEase(Ease.OutSine);
+        }
+    }
+
+    // 현재 화살표가 소환되어 있는지 여부 확인 함수
+    private bool IsArrowSpawned()
+    {
+        if(NetworkClient.connection != null){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            return gamePlayerDeck.isArrowSpawned;
+        }
+        return false;
     }
 }
