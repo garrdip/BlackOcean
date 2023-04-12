@@ -81,16 +81,11 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
         }
     }
 
-    // 클라이언트에 화살표 오브젝트 생성 시 오브젝트의 부모오브젝트를 GameCanvas로 설정
-    public override void OnStartClient()
-    {
-        transform.SetParent(DeckUI.instance.DeckListPanel.transform);
-    }
-
-    // 화살표 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅
+    // 화살표 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅 및 화살표 오브젝트으 부모를 생성요청한 CardOnHand오브젝트로 설정
     [ClientRpc]
-    public void RpcArrowInit(Vector3 position)
+    public void RpcArrowInit(Vector3 position, CardOnHand cardOnHand)
     {
+        transform.SetParent(cardOnHand.transform);
         transform.position = position;
     }
 
@@ -121,6 +116,8 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
             if(NetworkClient.connection != null){
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                 gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject);
+                arrowOwnedCardOnHand.isDrag = false;
+                arrowOwnedCardOnHand.isMoving = false;
             }
         }
     }

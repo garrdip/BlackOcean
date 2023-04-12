@@ -7,7 +7,7 @@ public class CardPocket : NetworkBehaviour
 {
     private Vector3 hidePosition;
     private Vector3 showPosition;
-    public GameObject dragTarget;
+    public Collider dragTarget;
     public GamePlayerDeck currentPlayerDeck;
 
 
@@ -99,9 +99,9 @@ public class CardPocket : NetworkBehaviour
             collisionCardOnHand.OnCardMouseIn(collisionCardOnHand);
             foreach(CardOnHand cardOnHand in currentPlayerDeck.cardOnHands){
                 if(collisionCardOnHand == cardOnHand){
-                    cardOnHand.OnCardMouseIn(collisionCardOnHand);
+                    cardOnHand.OnCardMouseIn(cardOnHand);
                 }else{
-                    cardOnHand.OnCardMouseOut(collisionCardOnHand);
+                    cardOnHand.OnCardMouseOut(cardOnHand);
                 }
             }
         }else{
@@ -122,8 +122,8 @@ public class CardPocket : NetworkBehaviour
                 if (hit.collider != null && hit.collider.gameObject.GetComponent<CardOnHand>() != null){
                     CardOnHand cardOnHand = hit.collider.gameObject.GetComponent<CardOnHand>();
                     if(cardOnHand.isOwned){
-                        dragTarget = hit.collider.gameObject;
-                        dragTarget.GetComponent<CardOnHand>().OnCardDragStart(hit.collider.bounds.center, cardOnHand);
+                        dragTarget = hit.collider;
+                        dragTarget.gameObject.GetComponent<CardOnHand>().OnCardDragStart(hit.collider.bounds.center, cardOnHand);
                     }  
                 }
             }
@@ -135,9 +135,9 @@ public class CardPocket : NetworkBehaviour
     {
         if(Input.GetMouseButton(0)){
             if(dragTarget != null){
-                CardOnHand cardOnHand = dragTarget.GetComponent<CardOnHand>();
+                CardOnHand cardOnHand = dragTarget.gameObject.GetComponent<CardOnHand>();
                 if(cardOnHand.isOwned){
-                    cardOnHand.OnCardDrag();
+                    cardOnHand.OnCardDrag(dragTarget.bounds.center, cardOnHand);
                 }
             }
         }
@@ -148,7 +148,7 @@ public class CardPocket : NetworkBehaviour
     {
         if(Input.GetMouseButtonUp(0)){
             if(dragTarget != null){
-                CardOnHand cardOnHand = dragTarget.GetComponent<CardOnHand>();
+                CardOnHand cardOnHand = dragTarget.gameObject.GetComponent<CardOnHand>();
                 if(cardOnHand.isOwned){
                     cardOnHand.OnCardDragEnd(cardOnHand);
                     dragTarget = null; 
