@@ -42,3 +42,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: CardOnHand
+    uniqueID: 2834536435
+    locked: 0
+  - name: Arrow
+    uniqueID: 2140435773
+    locked: 0
+  - name: PopUp
+    uniqueID: 1936650549
+    locked: 0
