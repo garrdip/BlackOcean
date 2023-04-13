@@ -47,7 +47,7 @@ public class CardPocket : NetworkBehaviour
                             Vector3 targetPosition = new Vector3(cardOnHand.transform.localPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
                             cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
                             cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                            cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOnHand.targetScale, Time.deltaTime * 10f);
+                            cardOnHand.transform.localScale = cardOnHand.targetScale;
                         }else{
                             // 대칭 위치값 계산
                             int leftCount = (count - 1) / 2;
@@ -59,9 +59,7 @@ public class CardPocket : NetworkBehaviour
                             cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, position, Time.deltaTime * 10f);
 
                             // 회전값
-                            Quaternion rotation = Quaternion.Euler(0f, 0f, -symmetryPosition);
-                            cardOnHand.transform.localRotation = rotation;
-                            cardOnHand.originRotation = new Vector3(0f, 0f, -symmetryPosition * 1.5f);
+                            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, -symmetryPosition * 1.8f);
 
                             // 크기값
                             cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOnHand.originScale, Time.deltaTime * 10f);  

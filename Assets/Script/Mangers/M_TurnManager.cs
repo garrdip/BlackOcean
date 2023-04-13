@@ -177,11 +177,9 @@ public class M_TurnManager : NetworkBehaviour
             if(newGamePlayer.GetComponent<NetworkIdentity>() == NetworkClient.connection.identity){
                 Debug.Log("당신 턴입니다 :" + newGamePlayer.selectOrder);
                 isMyTurn = true;
-                DeckUI.instance.buttonEndTurn.gameObject.SetActive(true);
                 GetCardFromPrefareDeck();
             }else{
                 isMyTurn = false;
-                DeckUI.instance.buttonEndTurn.gameObject.SetActive(false);
             }
         }
     }
