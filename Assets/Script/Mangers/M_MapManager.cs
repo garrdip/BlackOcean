@@ -71,19 +71,11 @@ public class M_MapManager : NetworkBehaviour
     [Server]
     public void MoveToRoom(Vector2 tar, Vector3 pos)
     {
-        if(Vector2.Distance(currentLocation,tar) > 1 || M_TurnManager.instance.isOrderSelect)
-        {
-            return;
-        }
-        else
-        {
-            PopUpOrderUI();
-            SetRoomColor(tar);
-            currentLocation = tar;
-            GenerateNextRoom();
-            MoveCameraPositionToRoom(pos);
-            return;
-        }
+        SetRoomColor(tar);
+        currentLocation = tar;
+        GenerateNextRoom();
+        MoveCameraPositionToRoom(pos);
+        return;
     }
 
     [Server]

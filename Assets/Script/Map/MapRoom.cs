@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
+using ProjectD;
 
 public class MapRoom : NetworkBehaviour
 {
@@ -12,6 +13,8 @@ public class MapRoom : NetworkBehaviour
     public int hazard;
     [SyncVar]
     public bool isComplete = false;
+    [SyncVar]
+    public RoomType roomType;
     SpriteRenderer testSprite;
 
     Camera mainCamera;
@@ -23,24 +26,11 @@ public class MapRoom : NetworkBehaviour
         mainCamera = Camera.main;
     }
 
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Vector3 mousePos = Input.mousePosition;
-            mousePos.z = -mainCamera.transform.position.z;
-            Vector3 worldPos = mainCamera.ScreenToWorldPoint(mousePos);
-            Collider2D hitCollider = Physics2D.OverlapPoint(worldPos);
-            if (hitCollider == GetComponent<Collider2D>())
-            {
-                //OnButtonClick();
-            }
-        }
-    }
-
     void  OnMouseDown()
     {
-        M_MapManager.instance.MoveToRoom(location,transform.position);
+        Debug.Log(" 클릭 !");
+        if( Vector2.Distance(location,M_MapManager.instance.currentLocation) == 1f )
+            NetworkClient.localPlayer.GetComponent<GamePlayer>().destination = location;
     }
 
 

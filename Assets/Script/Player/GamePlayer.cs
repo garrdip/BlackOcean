@@ -8,10 +8,10 @@ using ProjectD;
 public class GamePlayer : NetworkBehaviour
 {
     [SyncVar]
-    public int HP;
+    public int HP = 100;
 
     [SyncVar]
-    public int MaxHP = 0;
+    public int MaxHP = 100;
 
     [SyncVar]
     public Character character;
@@ -22,6 +22,15 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedSelectOrder))]
     public int selectOrder = 0;
 
+    [SyncVar (hook = nameof(OnReadyStateChanged))]
+    public bool isReady = false;
+
+    [SyncVar]
+    public Vector2 destination;
+
+    [SyncVar]
+    public ulong steamID;
+
 
     public void SetOrderByUI(int num)
     {
@@ -31,8 +40,9 @@ public class GamePlayer : NetworkBehaviour
 
     public void OnChangedSelectOrder(int oldVal,int newVal)
     {
-        if(isServer)
-            M_TurnManager.instance.OnChangedPlayerOrder();
+        MapUI.instance.UpdateProfile();
+        if(isLocalPlayer)
+            MapUI.instance.SetOrderIndicator(newVal);
     }
 
     public override void OnStartLocalPlayer()
@@ -44,6 +54,8 @@ public class GamePlayer : NetworkBehaviour
         }
         if(isLocalPlayer)
         {
+            HP = 100;
+            MaxHP = 100;
             isInitializeDone = true;
             Debug.Log("다른 플레이어 기다림 시작!");
             StartCoroutine(nameof(WaitPlayerList));
@@ -77,10 +89,29 @@ public class GamePlayer : NetworkBehaviour
         // 플레이어 로딩이 끝나면 턴매니저로 플레이어 리스트를 전달함
         if(isServer)
             M_TurnManager.instance.InitiateGamePlayerList();
+
+        //UI Update
+        MapUI.instance.UpdateProfile();
+        MapUI.instance.SetOrderIndicator(selectOrder);
     }
 
     public void SetUserStatusUI()
     {
         //변경 필요
+    }
+
+    public void OnReadyStateChanged(bool oldVal, bool newVal)
+    {
+        MapUI.instance.UpdateProfile();
+        if(isServer)
+        {
+            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+            foreach(GamePlayer player in users)
+            {
+                if(!player.isReady) return;
+            }
+            // All Player Ready !
+            M_TurnManager.instance.HandleStartBattle();
+        }
     }
 }
