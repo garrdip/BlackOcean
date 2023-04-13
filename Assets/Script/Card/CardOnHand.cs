@@ -25,12 +25,8 @@ public class CardOnHand : NetworkBehaviour
 
     // 위치값
     public Vector3 originPosition;
-    public Vector3 targetPosition;
     public float hoveredPositionY;
 
-    // 회전값
-    public Vector3 originRotation;
-    public Vector3 targetRotation;
 
     // 마우스가 오브젝트 위에 있는지 여부
     public bool isMouseOver = false; 
@@ -44,10 +40,6 @@ public class CardOnHand : NetworkBehaviour
     // 현재 게임 플레이어의 GamePlayerDeck 클래스 참조값
     public GamePlayerDeck currentPlayerDeck;
 
-    private Vector3 trashCardStartPoint;
-
-    private Vector3 trashCardEndPoint;
-
 
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
     public override void OnStartClient()
@@ -56,11 +48,11 @@ public class CardOnHand : NetworkBehaviour
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         }
         transform.SetParent(DeckUI.instance.CardPocket.transform);
-        transform.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
         originScale = transform.localScale;
-        targetScale = originScale + new Vector3(0.5f, 0.5f, 0f);
+        targetScale = originScale + new Vector3(0.05f, 0.05f, 0f);
+        transform.GetComponent<SpriteRenderer>().sortingOrder = index + 1;
         originSortOrder = index + 1;
-        hoveredPositionY = 0.8f;
+        hoveredPositionY = 1.2f;
     }
 
     // 카드에 마우스 진입할 시 이벤트
@@ -133,11 +125,12 @@ public class CardOnHand : NetworkBehaviour
         Transform cardTransform = cardOnHand.gameObject.transform;
         cardTransform.localRotation = Quaternion.Euler(0f, 0f, -90f);
         // buttonPrefareDeck 월드상 좌표
-        cardTransform.position = Camera.main.ScreenToWorldPoint(DeckUI.instance.buttonPrefareDeck.GetComponent<RectTransform>().position);
+        //cardTransform.position = Camera.main.ScreenToWorldPoint(DeckUI.instance.buttonPrefareDeck.GetComponent<RectTransform>().position);
+        cardTransform.position = DeckUI.instance.buttonPrefareDeck.GetComponent<RectTransform>().position;
 
         // Dotween 애니매이션 시퀀스 생성
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.5f, 0.8f, 0f), 0.2f));
+        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
         sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f));
         sequence.Join(cardTransform
             .DOMove(cardTransform.position + new Vector3(0f, 5f, 0f), 0.2f)
@@ -163,18 +156,19 @@ public class CardOnHand : NetworkBehaviour
         cardOnHand.isMoving = true;
         float duration = 0.3f;
         // buttonTrashDeck 월드상 좌표
-        Vector3 trashDeckPosition = Camera.main.ScreenToWorldPoint(DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position);
+        //Vector3 trashDeckPosition = Camera.main.ScreenToWorldPoint(DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position);
+        Vector3 trashDeckPosition = DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
         // Dotween 애니매이션 시퀀스 생성
         Sequence sequence = DOTween.Sequence();
         
         // 시퀸스에 사이즈 축소, 현재위치에서 중앙 0.5f위쪽 위치로 이동 애니매이션 추가
-        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.5f, 0.8f, 0f), duration));
+        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration));
         sequence.Join(cardOnHand.transform
                             .DOMove(new Vector3(0f, 0.5f, 0f), duration)
                             .SetEase(Ease.OutSine));
 
         // 시퀀스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 화면의 우측하단 방향으로 포물선 이동 애니매이션 추가
-        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.5f, 0.8f, 0f), duration));
+        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration));
         sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
         sequence.Join(cardOnHand.transform
                             .DOMove(trashDeckPosition, duration)
@@ -200,9 +194,10 @@ public class CardOnHand : NetworkBehaviour
         if(gamePlayerDeck.isLocalPlayer){
             float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
             // buttonTrashDeck 월드상 좌표
-            Vector3 trashDeckPosition = Camera.main.ScreenToWorldPoint(DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position);
+            //Vector3 trashDeckPosition = Camera.main.ScreenToWorldPoint(DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position);
+            Vector3 trashDeckPosition = DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
             cardOnHand.isMoving = true;
-            cardOnHand.transform.DOScale(new Vector3(0.5f, 0.8f, 0f), 0.3f);
+            cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.3f);
             cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), 0.3f);
             cardOnHand.transform
                     .DOMove(trashDeckPosition, 0.3f)

@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 2153712344633156845}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 3, z: 0}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -78,12 +78,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 5
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bbaf425d26b7ea84e97c12fc0522cb62, type: 3}
   m_Color: {r: 0.8301887, g: 0.81060874, b: 0.81060874, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 24.802656, y: 35.079998}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -150,9 +150,25 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  card:
+    character: 0
+    name: 
+    index: 0
+    grade: 0
+    cost: 0
+    hpCost: 0
+    isTargetable: 0
+    effect: 0
+    effectValue: 0
+    enhancedEffect: 0
+    enhancedEffectValue: 0
+    ultimateEffect: 0
+    ultimateEffectValue: 0
+    attribute: 0
+    attributeValue: 0
+    Belief: 0
+    characteristic: 0
   index: 0
-  cardName: 
-  isTargetAble: 0
   spriteRenderer: {fileID: 0}
   originSortOrder: 0
   originScale: {x: 0, y: 0, z: 0}
@@ -164,6 +180,8 @@ MonoBehaviour:
   targetRotation: {x: 0, y: 0, z: 0}
   isMouseOver: 0
   isDrag: 0
+  isMoving: 0
+  currentPlayerDeck: {fileID: 0}
 --- !u!65 &7341466356933961868
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -175,7 +193,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 20, y: 30, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &7953820887028559229
 Rigidbody:
