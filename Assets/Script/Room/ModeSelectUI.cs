@@ -13,12 +13,21 @@ public class ModeSelectUI : NetworkBehaviour
 
     //각 레벨 셀렉트 모델의 최상위 오브젝트
     public List<GameObject> levels;
+
+    public List<GameObject> levelSliders;
+
+    public List<GameObject> levelIcons;
+
     public string test;
 
     [SerializeField]
     float moveDuration = 0.7f;
 
     public (int,int,int)[] verticalLocation = {(400,-200,-400),(400,200,-400),(400,200,0)};
+    readonly Vector3 SMALLPOSITION = new Vector3(57,5,0);
+    readonly Vector3 SMALLSCALE = new Vector3(0.3f,0.3f,0.3f);
+    readonly Vector3 LARGESCALE = new Vector3(1f,1f,1f);
+    readonly Vector3 LARGEPOSITION = new Vector3(215,49,0);
 
     void Start()
     {
@@ -43,10 +52,10 @@ public class ModeSelectUI : NetworkBehaviour
 
     public void OnChangedLevel(GameLevel oldVal, GameLevel newVal)
     {
-        levels[0].transform.GetChild(0).gameObject.SetActive(gameLevel == GameLevel.EASY ? false : true);
-        levels[1].transform.GetChild(0).gameObject.SetActive(gameLevel == GameLevel.NORMAL ? false : true);
-        levels[2].transform.GetChild(0).gameObject.SetActive(gameLevel == GameLevel.HARD ? false : true);
+
         levels[(int)oldVal].transform.GetChild(1).gameObject.SetActive(false);
+        ShiftIconScale();
+        LightEffectAdjust(false);
         switch(gameLevel)
         {
             case GameLevel.EASY :
@@ -74,5 +83,33 @@ public class ModeSelectUI : NetworkBehaviour
         levels[0].transform.GetChild(1).gameObject.SetActive(gameLevel == GameLevel.EASY ? true : false);
         levels[1].transform.GetChild(1).gameObject.SetActive(gameLevel == GameLevel.NORMAL ? true : false);     
         levels[2].transform.GetChild(1).gameObject.SetActive(gameLevel == GameLevel.HARD ? true : false);
+        levelSliders[0].transform.DOLocalMove(gameLevel == GameLevel.EASY ? new Vector3(-489,212,0) : new Vector3(-1000,212,0),0.5f).OnComplete(() => LightEffectAdjust(true));
+        levelSliders[1].transform.DOLocalMove(gameLevel == GameLevel.NORMAL ? new Vector3(-489,212,0) : new Vector3(-1000,212,0),0.5f);
+        levelSliders[2].transform.DOLocalMove(gameLevel == GameLevel.HARD ? new Vector3(-489,212,0) : new Vector3(-1000,212,0),0.5f);
+    }
+
+    public void ShiftIconScale()
+    {
+        levelIcons[0].transform.DOScale(gameLevel == GameLevel.EASY ? LARGESCALE : SMALLSCALE,0.5f);
+        levelIcons[1].transform.DOScale(gameLevel == GameLevel.NORMAL ? LARGESCALE : SMALLSCALE,0.5f);
+        levelIcons[2].transform.DOScale(gameLevel == GameLevel.HARD ? LARGESCALE : SMALLSCALE,0.5f);
+        levelIcons[0].transform.DOLocalMove(gameLevel == GameLevel.EASY ? LARGEPOSITION : SMALLPOSITION,0.5f);
+        levelIcons[1].transform.DOLocalMove(gameLevel == GameLevel.NORMAL ? LARGEPOSITION : SMALLPOSITION,0.5f);
+        levelIcons[2].transform.DOLocalMove(gameLevel == GameLevel.HARD ? LARGEPOSITION : SMALLPOSITION,0.5f);
+    }
+    public void LightEffectAdjust(bool onOff)
+    {
+        if(onOff)
+        {
+            levels[0].transform.GetChild(1).GetChild(0).gameObject.SetActive(gameLevel == GameLevel.EASY ? true : false);
+            levels[1].transform.GetChild(1).GetChild(0).gameObject.SetActive(gameLevel == GameLevel.NORMAL ? true : false);
+            levels[2].transform.GetChild(1).GetChild(0).gameObject.SetActive(gameLevel == GameLevel.HARD ? true : false);
+        }
+        else
+        {
+            levels[0].transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
+            levels[1].transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
+            levels[2].transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
+        }
     }
 }
