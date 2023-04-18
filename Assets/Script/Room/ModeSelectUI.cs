@@ -104,12 +104,19 @@ public class ModeSelectUI : NetworkBehaviour
             levels[0].transform.GetChild(1).GetChild(0).gameObject.SetActive(gameLevel == GameLevel.EASY ? true : false);
             levels[1].transform.GetChild(1).GetChild(0).gameObject.SetActive(gameLevel == GameLevel.NORMAL ? true : false);
             levels[2].transform.GetChild(1).GetChild(0).gameObject.SetActive(gameLevel == GameLevel.HARD ? true : false);
+            levels[0].transform.GetChild(1).GetChild(0).DOScale(new Vector3(1,1,1),0.5f);
+            levels[1].transform.GetChild(1).GetChild(0).DOScale(new Vector3(1,1,1),0.5f);
+            levels[2].transform.GetChild(1).GetChild(0).DOScale(new Vector3(1,1,1),0.5f);
         }
         else
         {
             levels[0].transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
             levels[1].transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
             levels[2].transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
+            levels[0].transform.GetChild(1).GetChild(0).localScale = new Vector3(1,0,0);
+            levels[1].transform.GetChild(1).GetChild(0).localScale = new Vector3(1,0,0);
+            levels[2].transform.GetChild(1).GetChild(0).localScale = new Vector3(1,0,0);
         }
     }
+
 }

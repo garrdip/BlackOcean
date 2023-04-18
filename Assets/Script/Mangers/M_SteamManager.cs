@@ -45,6 +45,7 @@ public class M_SteamManager : InstanceD<M_SteamManager>
             new CSteamID(callback.m_ulSteamIDLobby),
             HostAddressKey,
             SteamUser.GetSteamID().ToString());
+
     }
 
     private void OnGameLobbyJoinRequeseted(GameLobbyJoinRequested_t callback)

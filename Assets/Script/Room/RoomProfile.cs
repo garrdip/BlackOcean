@@ -9,6 +9,7 @@ using Steamworks;
 public class RoomProfile : MonoBehaviour
 {
     public RoomPlayer player;
+    public RoomPlayer prePlayer;
 
     [Header("This Position Order")]
     public PlayOrder playOrder;
@@ -49,6 +50,7 @@ public class RoomProfile : MonoBehaviour
 
     public void Update()
     {
+        prePlayer = player;
         RoomPlayer[] players = FindObjectsOfType<RoomPlayer>();
         player = null;
         foreach(RoomPlayer user in players)
