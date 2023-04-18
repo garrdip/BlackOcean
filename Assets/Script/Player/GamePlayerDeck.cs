@@ -196,7 +196,7 @@ public class GamePlayerDeck : NetworkBehaviour
     [Command]
     public void CmdActionToTarget(TargetObject targetObject, CardOnHand cardOnHand)
     {
-        targetObject.TakeDamage(targetObject, cardOnHand.card.effectValue);
+        targetObject.RpcTakeAction(targetObject, cardOnHand.card.effectValue);
     }
 
     // 모든 타겟에게 액션 수행
@@ -204,7 +204,7 @@ public class GamePlayerDeck : NetworkBehaviour
     public void CmdActionToAllTarget(CardOnHand cardOnHand)
     {
         foreach(TargetObject targetObject in FindObjectsOfType<TargetObject>()){
-            targetObject.TakeDamage(targetObject, cardOnHand.card.effectValue); 
+            targetObject.RpcTakeAction(targetObject, cardOnHand.card.effectValue); 
         }
     }
 

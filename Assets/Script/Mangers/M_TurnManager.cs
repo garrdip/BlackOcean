@@ -122,9 +122,15 @@ public class M_TurnManager : NetworkBehaviour
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
             avatar.GetComponent<TargetObject>().monster = monster;
             spawnedList.Add(avatar.GetComponent<TargetObject>());
+            RpcMonsterInit(avatar.GetComponent<TargetObject>(), monster);
         }
     }
 
+    [ClientRpc]
+    public void RpcMonsterInit(TargetObject avatar, SpawnedMonster monster)
+    {
+        monster.transform.SetParent(avatar.transform);
+    }
 
     [Server]
     public void InitiateGamePlayerList()
@@ -173,25 +179,29 @@ public class M_TurnManager : NetworkBehaviour
 
     public void OnTurnChanged(GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
     {
-        if(NetworkClient.connection != null){
-            if(newGamePlayer.GetComponent<NetworkIdentity>() == NetworkClient.connection.identity){
-                Debug.Log("당신 턴입니다 :" + newGamePlayer.selectOrder);
-                isMyTurn = true;
-                GetCardFromPrefareDeck();
-            }else{
-                isMyTurn = false;
-            }
+        if(IsCurrentPlayerTurn(newGamePlayer)){
+            Debug.Log("당신 턴입니다 :" + newGamePlayer.selectOrder);
+            isMyTurn = true;
+            GetCardFromPrefareDeck();
+        }else{
+            isMyTurn = false;
         }
     }
 
     // prefareDeck에서 카드 가져와서 생성
-    private void GetCardFromPrefareDeck()
+    public void GetCardFromPrefareDeck()
     {
-        if(NetworkClient.connection != null){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdSpawnCardOnHand();
-            }
+        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+        if(gamePlayerDeck.isLocalPlayer){
+            gamePlayerDeck.CmdSpawnCardOnHand();
         }
+    }
+
+    // 현재 로컬플레이어의 턴인지 아닌지 bool값 반환
+    public bool IsCurrentPlayerTurn(GamePlayer currentTurnPlayer)
+    {
+        return NetworkClient.connection != null 
+            && NetworkClient.connection.identity == currentTurnPlayer.GetComponent<NetworkIdentity>()
+            && currentTurnPlayer.isLocalPlayer;
     }
 }

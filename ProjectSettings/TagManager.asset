@@ -42,6 +42,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Monster
+    uniqueID: 150335661
+    locked: 0
+  - name: Player
+    uniqueID: 744391573
+    locked: 0
   - name: CardOnHand
     uniqueID: 2834536435
     locked: 0

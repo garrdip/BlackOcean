@@ -113,7 +113,7 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
     public void HandleArrowRemove()
     {
         if(Input.GetMouseButtonDown(1)){
-            if(NetworkClient.connection != null){
+            if(NetworkClient.connection != null && arrowOwnedCardOnHand != null){
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                 gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject);
                 arrowOwnedCardOnHand.isDrag = false;
@@ -131,7 +131,7 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
             if (Physics.Raycast(ray, out hit)){
                 if(hit.collider != null && NetworkClient.connection != null && hit.collider.tag.Equals("TargetObject")){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-                    if(gamePlayerDeck.isLocalPlayer){
+                    if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
                         TargetObject targetObject = hit.collider.gameObject.GetComponent<TargetObject>();
                         gamePlayerDeck.CmdActionToTarget(targetObject, arrowOwnedCardOnHand); // 화살표 타겟에 액션 수행
                         gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject); // 화살표 삭제

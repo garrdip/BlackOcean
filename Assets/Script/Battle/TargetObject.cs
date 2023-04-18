@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 using ProjectD;
 
 public class TargetObject : NetworkBehaviour
 {
+    [Header("HP Slider")]
+    public Slider hpbar;
+
     [SyncVar]
     public ObjectType objectType;
 
@@ -36,11 +40,15 @@ public class TargetObject : NetworkBehaviour
                     Instantiate(characters[0],transform.position,Quaternion.identity,transform);
                 break;
             }
+            hpbar.maxValue = newVal.MaxHP;
+            hpbar.value = newVal.HP;
         }
     }
     public void InitTargetObjectEmemy(SpawnedMonster oldVal, SpawnedMonster newVal)
     {
         StartCoroutine(nameof(EmemyTargetObjectGenerator));
+        hpbar.maxValue = newVal.MAXHP;;
+        hpbar.value = newVal.HP;
     }
 
     IEnumerator EmemyTargetObjectGenerator()
@@ -65,17 +73,17 @@ public class TargetObject : NetworkBehaviour
     }
 
 
+    // 카드의 액션 커맨드를 수신하여 타겟오브젝트의 타입에 따라 필요한 커맨드 수행
     [ClientRpc]
-    public void TakeDamage(TargetObject targetObject, int damamge)
+    public void RpcTakeAction(TargetObject targetObject, int damamge)
     {
-        Debug.Log("테이크 데미지");
-        // TODO : 플레이어 또는 몬스터의 데미지만큼의 체력 SyncVar값 변경
         switch(targetObject.objectType){
             case ObjectType.PLAYER:
                 break;
             case ObjectType.BOSS:
                 break;
             case ObjectType.ENEMY:
+                monster.CmdAttackMonster(damamge);
                 break;
             default:
                 break;

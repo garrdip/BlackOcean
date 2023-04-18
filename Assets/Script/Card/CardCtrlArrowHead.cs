@@ -14,7 +14,7 @@ public class CardCtrlArrowHead : NetworkBehaviour
     private void OnTriggerEnter(Collider collider)
     {
         if(collider != null && collider.tag.Equals("TargetObject")){
-            collider.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
+            // TODO : 화살표가 타겟으로 잡는 오브젝트에 타겟팅 효과 표시
         }
     }
 
@@ -22,7 +22,7 @@ public class CardCtrlArrowHead : NetworkBehaviour
     private void OnTriggerExit(Collider collider)
     {
         if(collider != null && collider.tag.Equals("TargetObject")){
-            collider.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
+            // TODO : 화살표가 타겟으로 잡았던 오브젝트의 타겟팅 효과 제거
         }
     }
 
