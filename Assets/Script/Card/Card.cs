@@ -17,11 +17,11 @@ public class Card
     public int effectValue;
     public CardEffect enhancedEffect;
     public int enhancedEffectValue;
-    public CardEffect ultimateEffect;
-    public int ultimateEffectValue;
+    public CardEffect tranformEffect;
+    public int tranformEffectValue;
     public CardAttribute attribute;
     public int attributeValue;
-    public int Belief;
+    public int belief;
     public CardCharacteristic characteristic;
 
 }

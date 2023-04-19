@@ -8,6 +8,7 @@ using ProjectD;
 public static class CardData
 {
     public static List<Card> cards = new List<Card>();
+    public static List<string> itemName = new List<string>();
 
     public static void LoadCardDataFromDB()
     {
@@ -17,37 +18,78 @@ public static class CardData
             while(true)
             {
                 string[] values = DB.ReadLine().Trim().Split(",");
-                if(values[0] == "Character") continue;
+                if(values[0] == "character"){
+                    foreach(string item in values)
+                    {
+                        itemName.Add(item);
+                    }
+                    continue;
+                }
                 if(values[0] == "EndOfData") break;
                 Card card = new Card();
-                card.character = (Character)Enum.Parse(typeof(Character),values[0]);
-                card.name = values[1];
-                card.grade = (CardGrade)Enum.Parse(typeof(CardGrade),values[2]);
-                card.cost = int.Parse(values[3]);
-                card.hpCost = int.Parse(values[4]);
-                card.isTargetable = (values[5] == "Y") ? true : false;
-                //values[6] 카드 설명 Text Globalization
-                card.effect = (CardEffect)Enum.Parse(typeof(CardEffect),values[7]);
-                card.effectValue = int.Parse(values[8]);
-                //values[9] 카드 설명 Text Globalization
-                card.enhancedEffect = (CardEffect)Enum.Parse(typeof(CardEffect),values[10]);
-                card.enhancedEffectValue = int.Parse(values[11]);
-                //values[12] 카드 설명 Text Globalization
-                if(values[13] != "") //게오르크 전용 카드
+                foreach(string item in values)
                 {
-                    card.ultimateEffect = (CardEffect)Enum.Parse(typeof(CardEffect),values[13]);
-                    card.ultimateEffectValue = int.Parse(values[14]);
+                    // Enum Data Parsing
+                    card.character = GetEnumData<Character>(values,"character");
+                    card.grade = GetEnumData<CardGrade>(values,"grade");
+                    card.effect = GetEnumData<CardEffect>(values,"effect");
+                    card.enhancedEffect = GetEnumData<CardEffect>(values,"enhancedEffect");
+                    card.characteristic = GetEnumData<CardCharacteristic>(values,"characteristic");
+                    // Bool Data Parsing
+                    card.isTargetable = GetBoolData(values,"isTargetable");
+                    // String Data Parsing
+                    card.name = values[GetIndex("name")];
+                    // Int Data Parsing
+                    card.cost = GetIntData(values,"cost");
+                    card.hpCost = GetIntData(values,"hpCost");
+                    card.effectValue = GetIntData(values,"effectValue");
+                    card.enhancedEffectValue = GetIntData(values,"enhancedEffectValue");
+                    // Geork Data
+                    if(card.character == Character.GEORK)
+                    {
+                        card.tranformEffect = GetEnumData<CardEffect>(values,"tranformEffect");
+                        card.tranformEffectValue = GetIntData(values,"tranformEffectValue");
+                        card.belief = GetIntData(values,"belief");
+                    }
+                    // Eris Data
+                    if(card.character == Character.ERIS)
+                    {
+                        card.attribute = GetEnumData<CardAttribute>(values,"attribute");
+                        card.attributeValue = GetIntData(values,"attributeValue");
+                    }
+                    // DanHyang Data
+                    if(card.character == Character.HONGDANHYANG)
+                    {
+
+                    }
                 }
-                if(values[15] != "") //에리스 전용 카드
-                {
-                    card.attribute = (CardAttribute)Enum.Parse(typeof(CardAttribute),values[15]);
-                    card.attributeValue = int.Parse(values[16]);
-                }
-                if(values[17] != "") // 게오르크 전용 카드효과
-                    card.Belief = int.Parse(values[17]);
-                    card.characteristic = CardCharacteristic.NONE; // 소멸 등 추후 추가해야함
                 cards.Add(card);
             }
         }
+    }
+
+    static int GetIntData(string[] values, string name)
+    {
+        return int.Parse(values[GetIndex(name)]);
+    }
+
+    static T GetEnumData<T>(string[] values, string name)
+    {
+        return (T)Enum.Parse(typeof(T),values[GetIndex(name)]);
+    }
+
+    static bool GetBoolData(string[] values, string name)
+    {
+        return values[GetIndex(name)] == "Y" ? true : false;
+    }
+
+    static int GetIndex(string name)
+    {
+        int retVal = -1; //인덱스를 벗어나면 Error가 발생하도록 유도
+        for(int i = 0 ;i < itemName.Count ;i++)
+        {
+            if(itemName[i] == name) return i;
+        }
+        return retVal;
     }
 }
