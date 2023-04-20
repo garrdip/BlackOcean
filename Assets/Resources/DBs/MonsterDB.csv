@@ -5,6 +5,6 @@ Monster_Goblin,30,Monster_Action_Melee_Attack,SINGLEATTACK,10
 Monster_Troll,60,Monster_Action_Melee_Attack,SINGLEATTACK,10
 ,,Monster_Action_Defense,DEFENSE,10
 ,,Monster_Action_BUFF_STR,BUFF_STR,1
-,,Monster_Action_AOE,AREAOFEFFECT,5
+,,Monster_Action_AOE,FULLSCALEATTACK,5
 ,,Monster_Action_DEBUFF_ATK,DEBUFF_ATK,1
 EndOfData,,,,

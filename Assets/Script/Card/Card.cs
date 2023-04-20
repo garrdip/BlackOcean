@@ -13,15 +13,17 @@ public class Card
     public int cost;
     public int hpCost;
     public bool isTargetable;
-    public CardEffect effect;
-    public int effectValue;
-    public CardEffect enhancedEffect;
-    public int enhancedEffectValue;
-    public CardEffect tranformEffect;
-    public int tranformEffectValue;
+    public List<CardEffect> effect = new List<CardEffect>();
+    public List<int> effectValue = new List<int>();
+    public List<int> effectValue2 = new List<int>();
+    public List<CardEffect> enhancedEffect = new List<CardEffect>();
+    public List<int> enhancedEffectValue = new List<int>();
+    public List<int> enhancedEffectValue2 = new List<int>();
+    public List<CardEffect> tranformEffect = new List<CardEffect>();
+    public List<int> tranformEffectValue = new List<int>();
+    public List<int> tranformEffectValue2 = new List<int>();
     public CardAttribute attribute;
     public int attributeValue;
     public int belief;
-    public CardCharacteristic characteristic;
-
+    public List<CardCharacteristic> characteristic = new List<CardCharacteristic>();
 }

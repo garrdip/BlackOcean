@@ -15,26 +15,49 @@ public static class CardData
         TextAsset DBtext = Resources.Load<TextAsset>("DBs/CardDB");
         using (StringReader DB = new StringReader(DBtext.text))
         {
+            Card card = new Card();
+            
             while(true)
             {
                 string[] values = DB.ReadLine().Trim().Split(",");
-                if(values[0] == "character"){
+                if(values[0] == "character"){ // 데이터 시작 및 타이틀 저장
                     foreach(string item in values)
                     {
                         itemName.Add(item);
                     }
                     continue;
                 }
-                if(values[0] == "EndOfData") break;
-                Card card = new Card();
+                if(values[0] == "EndOfData") break; // 데이터 종료
+                if(values[0] == "#") // 카드 다중 효과
+                {
+                    if(values[GetIndex("effect")]!= "") card.effect.Add(GetEnumData<CardEffect>(values,"effect"));
+                    if(values[GetIndex("enhancedEffect")]!= "") card.enhancedEffect.Add(GetEnumData<CardEffect>(values,"enhancedEffect"));
+                    if(values[GetIndex("effectValue")]!= "") card.effectValue.Add(GetIntData(values,"effectValue"));
+                    if(IsAdditionalIntData(values,"effectValue"))card.effectValue2.Add(GetAdditionalIntData(values,"effectValue"));
+                    if(values[GetIndex("enhancedEffectValue")]!= "") card.enhancedEffectValue.Add(GetIntData(values,"enhancedEffectValue"));
+                    if(IsAdditionalIntData(values,"enhancedEffectValue"))card.enhancedEffectValue2.Add(GetAdditionalIntData(values,"enhancedEffectValue"));
+                    if(card.character == Character.GEORK)
+                    {
+                        if(values[GetIndex("tranformEffect")]!= "") card.tranformEffect.Add(GetEnumData<CardEffect>(values,"tranformEffect"));
+                        if(values[GetIndex("tranformEffectValue")]!= "") card.tranformEffectValue.Add(GetIntData(values,"tranformEffectValue"));
+                        if(IsAdditionalIntData(values,"tranformEffectValue"))card.tranformEffectValue2.Add(GetAdditionalIntData(values,"tranformEffectValue"));
+                    }
+                    if(values[GetIndex("characteristic")]!= "") card.characteristic.Add(GetEnumData<CardCharacteristic>(values,"characteristic"));
+                    continue;
+                }
+                else
+                {
+                    cards.Add(card);
+                }
+                card = new Card();
                 foreach(string item in values)
                 {
                     // Enum Data Parsing
                     card.character = GetEnumData<Character>(values,"character");
                     card.grade = GetEnumData<CardGrade>(values,"grade");
-                    card.effect = GetEnumData<CardEffect>(values,"effect");
-                    card.enhancedEffect = GetEnumData<CardEffect>(values,"enhancedEffect");
-                    card.characteristic = GetEnumData<CardCharacteristic>(values,"characteristic");
+                    card.effect.Add(GetEnumData<CardEffect>(values,"effect"));
+                    card.enhancedEffect.Add(GetEnumData<CardEffect>(values,"enhancedEffect"));
+                    card.characteristic.Add(GetEnumData<CardCharacteristic>(values,"characteristic"));
                     // Bool Data Parsing
                     card.isTargetable = GetBoolData(values,"isTargetable");
                     // String Data Parsing
@@ -42,13 +65,16 @@ public static class CardData
                     // Int Data Parsing
                     card.cost = GetIntData(values,"cost");
                     card.hpCost = GetIntData(values,"hpCost");
-                    card.effectValue = GetIntData(values,"effectValue");
-                    card.enhancedEffectValue = GetIntData(values,"enhancedEffectValue");
+                    card.effectValue.Add(GetIntData(values,"effectValue"));
+                    if(IsAdditionalIntData(values,"effectValue"))card.effectValue2.Add(GetAdditionalIntData(values,"effectValue"));
+                    card.enhancedEffectValue.Add(GetIntData(values,"enhancedEffectValue"));
+                    if(IsAdditionalIntData(values,"enhancedEffectValue"))card.enhancedEffectValue2.Add(GetAdditionalIntData(values,"enhancedEffectValue"));
                     // Geork Data
                     if(card.character == Character.GEORK)
                     {
-                        card.tranformEffect = GetEnumData<CardEffect>(values,"tranformEffect");
-                        card.tranformEffectValue = GetIntData(values,"tranformEffectValue");
+                        card.tranformEffect.Add(GetEnumData<CardEffect>(values,"tranformEffect"));
+                        card.tranformEffectValue.Add(GetIntData(values,"tranformEffectValue"));
+                        if(IsAdditionalIntData(values,"tranformEffectValue"))card.tranformEffectValue2.Add(GetAdditionalIntData(values,"tranformEffectValue"));
                         card.belief = GetIntData(values,"belief");
                     }
                     // Eris Data
@@ -63,16 +89,28 @@ public static class CardData
 
                     }
                 }
-                cards.Add(card);
+                
             }
         }
     }
 
     static int GetIntData(string[] values, string name)
     {
-        return int.Parse(values[GetIndex(name)]);
+        string[] splitData = values[GetIndex(name)].Split("#");
+        return int.Parse(splitData[0]);
     }
 
+    static int GetAdditionalIntData(string[] values, string name)
+    {
+        string[] splitData = values[GetIndex(name)].Split("#");
+        return int.Parse(splitData[1]);
+    }
+
+    static bool IsAdditionalIntData(string[] values,string name)
+    {
+        string[] splitData = values[GetIndex(name)].Split("#");
+        return (splitData.Length == 1) ? false : true;
+    }
     static T GetEnumData<T>(string[] values, string name)
     {
         return (T)Enum.Parse(typeof(T),values[GetIndex(name)]);
