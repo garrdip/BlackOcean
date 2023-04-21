@@ -31,6 +31,10 @@ public class M_TurnManager : NetworkBehaviour
     public Transform playerSpawnLocation;
     public Transform monsterSpawnLocation;
     List<TargetObject> spawnedList = new List<TargetObject>();
+
+    public Queue<Card> cardQueue = new Queue<Card>(); // 카드 큐
+
+    public Queue<TargetObject> cardTargetQueue = new Queue<TargetObject>(); // 카드 타겟 큐
     
     // Turn 관리는 서버
     BattleTurn Phase;
@@ -95,6 +99,23 @@ public class M_TurnManager : NetworkBehaviour
         GeneratePlayerUnit();
         GenerateMonster();
         phase = BattleTurn.PLAYER_ORDERSELECT;
+        StartCoroutine(ProcessCardQueue());
+    }
+ 
+    public IEnumerator ProcessCardQueue()
+    {
+        // 무한루프에서 인스턴스 생성시 생기는 가비지 방지를 위해 함수호출에서 미리 인스턴스 생성하여 캐싱후 루프 안에서 사용
+        WaitForSeconds waitForTwoSeconds = new WaitForSeconds(2.0f);
+        WaitForSeconds waitForLoop = new WaitForSeconds(0.01f);
+        while (true)
+        {
+            if(cardQueue.Count != 0){
+                Card card = cardQueue.Dequeue();
+                Debug.Log("카드 이펙트 목록 : " + card.index);
+                yield return waitForTwoSeconds;
+            }
+            yield return waitForLoop;
+        }
     }
 
     [Server]

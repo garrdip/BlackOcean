@@ -192,20 +192,16 @@ public class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Clear();
     }
 
-    // 화살표의 타겟에게 액션 수행
     [Command]
-    public void CmdActionToTarget(TargetObject targetObject, CardOnHand cardOnHand)
+    public void CmdEnQueueCard(Card card)
     {
-        targetObject.RpcTakeAction(targetObject, cardOnHand.card.effectValue[0]); // 수정해줘 (한석)
+        M_TurnManager.instance.cardQueue.Enqueue(card);
     }
 
-    // 모든 타겟에게 액션 수행
     [Command]
-    public void CmdActionToAllTarget(CardOnHand cardOnHand)
+    public void CmdEnQueueTarget(TargetObject targetObject)
     {
-        foreach(TargetObject targetObject in FindObjectsOfType<TargetObject>()){
-            targetObject.RpcTakeAction(targetObject, cardOnHand.card.effectValue[0]); //수정해줘 (한석)
-        }
+        M_TurnManager.instance.cardTargetQueue.Enqueue(targetObject);
     }
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//

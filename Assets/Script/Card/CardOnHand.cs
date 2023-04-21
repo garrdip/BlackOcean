@@ -112,7 +112,8 @@ public class CardOnHand : NetworkBehaviour
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if (gamePlayerDeck.isLocalPlayer){
                 if(!cardOnHand.card.isTargetable){
-                    gamePlayerDeck.CmdActionToAllTarget(cardOnHand);
+                    gamePlayerDeck.CmdEnQueueCard(cardOnHand.card);
+                    // CmdEnQueueTarget을 상황에 따라서 우리편 혹은 나를 타겟으로 큐 추가
                 }
             }
         }

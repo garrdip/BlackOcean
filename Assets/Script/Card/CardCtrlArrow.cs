@@ -133,7 +133,8 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                     if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
                         TargetObject targetObject = hit.collider.gameObject.GetComponent<TargetObject>();
-                        gamePlayerDeck.CmdActionToTarget(targetObject, arrowOwnedCardOnHand); // 화살표 타겟에 액션 수행
+                        gamePlayerDeck.CmdEnQueueCard(arrowOwnedCardOnHand.card); // 카드 큐 추가
+                        gamePlayerDeck.CmdEnQueueTarget(targetObject); // 타겟오브젝트 큐 추가
                         gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject); // 화살표 삭제
                         arrowOwnedCardOnHand.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
                     }
