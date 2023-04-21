@@ -32,9 +32,9 @@ public class M_TurnManager : NetworkBehaviour
     public Transform monsterSpawnLocation;
     List<TargetObject> spawnedList = new List<TargetObject>();
 
-    public Queue<Card> cardQueue = new Queue<Card>(); // 카드 큐
+    // 카드와 타겟을 한쌍으로 저장하는 Dictionary타입의 큐
+    public Queue<Dictionary<Card, TargetObject>> cardTargetPairQueue = new Queue<Dictionary<Card, TargetObject>>();
 
-    public Queue<TargetObject> cardTargetQueue = new Queue<TargetObject>(); // 카드 타겟 큐
     
     // Turn 관리는 서버
     BattleTurn Phase;
@@ -105,14 +105,18 @@ public class M_TurnManager : NetworkBehaviour
     public IEnumerator ProcessCardQueue()
     {
         // 무한루프에서 인스턴스 생성시 생기는 가비지 방지를 위해 함수호출에서 미리 인스턴스 생성하여 캐싱후 루프 안에서 사용
-        WaitForSeconds waitForTwoSeconds = new WaitForSeconds(2.0f);
+        WaitForSeconds waitForDelay = new WaitForSeconds(2.0f);
         WaitForSeconds waitForLoop = new WaitForSeconds(0.01f);
         while (true)
         {
-            if(cardQueue.Count != 0){
-                Card card = cardQueue.Dequeue();
-                Debug.Log("카드 이펙트 목록 : " + card.index);
-                yield return waitForTwoSeconds;
+            if(cardTargetPairQueue.Count != 0){
+                // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
+                Dictionary<Card, TargetObject> pairs = cardTargetPairQueue.Dequeue();
+                foreach(KeyValuePair<Card, TargetObject> pair in pairs){
+                    Debug.Log("카드: " + pair.Key);
+                    Debug.Log("타겟: " + pair.Value);
+                }
+                yield return waitForDelay;
             }
             yield return waitForLoop;
         }
@@ -153,13 +157,20 @@ public class M_TurnManager : NetworkBehaviour
                 PlayerEndTurn();
                 break;
             case BattleTurn.MONSTER_ORDERSELECT :
-                phase = BattleTurn.PLAYER_ORDERSELECT;
+                StartCoroutine(DebugDelay());
                 break;
             case BattleTurn.MONSTER_PREEFFECT :
                 break;
             case BattleTurn.MONSTER_ACTIVE :
                 break;
         }
+    }
+
+    // 디버그 용도로 딜레이 주는 함수(TEMP)
+    IEnumerator DebugDelay()
+    {
+        yield return new WaitForSeconds(1.0f);
+        phase = BattleTurn.PLAYER_ORDERSELECT;
     }
 
     [Server]
@@ -258,7 +269,6 @@ public class M_TurnManager : NetworkBehaviour
     public void OnTurnChanged(GamePlayer newGamePlayer)
     {
         if(IsCurrentPlayerTurn(newGamePlayer)){
-            Debug.Log("당신 턴입니다 :" + newGamePlayer.selectOrder);
             isMyTurn = true;
             GetCardFromPrefareDeck();
         }else{

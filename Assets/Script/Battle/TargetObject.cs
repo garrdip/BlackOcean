@@ -72,21 +72,4 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
-
-    // 카드의 액션 커맨드를 수신하여 타겟오브젝트의 타입에 따라 필요한 커맨드 수행
-    [ClientRpc]
-    public void RpcTakeAction(TargetObject targetObject, int damamge)
-    {
-        switch(targetObject.objectType){
-            case ObjectType.PLAYER:
-                break;
-            case ObjectType.BOSS:
-                break;
-            case ObjectType.ENEMY:
-                monster.CmdAttackMonster(damamge);
-                break;
-            default:
-                break;
-        }
-    }
 }

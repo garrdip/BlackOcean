@@ -192,16 +192,13 @@ public class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Clear();
     }
 
+    // 카드데이터와 카드의 액션수행 대상을 Dictionary로 key, value 쌍으로 묶어 저장
     [Command]
-    public void CmdEnQueueCard(Card card)
+    public void CmdEnQueueCardTargetPair(Card card, TargetObject targetObjects)
     {
-        M_TurnManager.instance.cardQueue.Enqueue(card);
-    }
-
-    [Command]
-    public void CmdEnQueueTarget(TargetObject targetObject)
-    {
-        M_TurnManager.instance.cardTargetQueue.Enqueue(targetObject);
+        Dictionary<Card, TargetObject> cardTargetPair = new Dictionary<Card, TargetObject>();
+        cardTargetPair.Add(card, targetObjects);
+        M_TurnManager.instance.cardTargetPairQueue.Enqueue(cardTargetPair);
     }
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//

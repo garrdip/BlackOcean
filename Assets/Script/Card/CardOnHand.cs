@@ -98,23 +98,13 @@ public class CardOnHand : NetworkBehaviour
     {
         if(isOwned && cardOnHand.isDrag && !IsArrowSpawned()){
             if(!cardOnHand.card.isTargetable && cardOnHand.isDrag && (Input.mousePosition.y > Screen.height / 2)){
-                ActionByCardOnHandType(cardOnHand);
-                CardOnHandThrowAwaySequence(cardOnHand);
-            }
-        }
-    }
-
-    // [TEMP]카드 타입에 따라 액션 수행하는 함수
-    public void ActionByCardOnHandType(CardOnHand cardOnHand)
-    {
-        // TODO : 카드 타입에 따라 액션 수행
-        if(NetworkClient.connection != null){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if (gamePlayerDeck.isLocalPlayer){
-                if(!cardOnHand.card.isTargetable){
-                    gamePlayerDeck.CmdEnQueueCard(cardOnHand.card);
-                    // CmdEnQueueTarget을 상황에 따라서 우리편 혹은 나를 타겟으로 큐 추가
+                if(NetworkClient.connection != null){
+                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                    if (gamePlayerDeck.isLocalPlayer){
+                        gamePlayerDeck.CmdEnQueueCardTargetPair(cardOnHand.card, null);
+                    }
                 }
+                CardOnHandThrowAwaySequence(cardOnHand);
             }
         }
     }
