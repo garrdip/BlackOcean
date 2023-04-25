@@ -81,6 +81,49 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
         }
     }
 
+    // 마우스 오른쪽 버튼 클릭 시 화살표 제거
+    private void HandleArrowRemove()
+    {
+        if(Input.GetMouseButtonDown(1)){
+            RemoveCardCtrlArrow();
+        }
+    }
+
+    // 마우스 왼쪽버튼 뗄때 마우스로 타겟팅한 오브젝트에게 액션 수행
+    private void HandleArrowAction()
+    {
+        if(Input.GetMouseButtonUp(0)){
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit)){
+                if(hit.collider != null && NetworkClient.connection != null && hit.collider.tag.Equals("TargetObject")){
+                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                    if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
+                        TargetObject targetObject = hit.collider.gameObject.GetComponent<TargetObject>();
+                        gamePlayerDeck.CmdEnQueueCardTargetPair(arrowOwnedCardOnHand.card, targetObject); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
+                        gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject); // 화살표 삭제
+                        M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
+                        M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
+                    }
+                }
+            }
+        }
+    }
+
+    // 현재 소환된 카드 타겟 화살표 제거, 화살표 소유 카드의 충돌체 크기 변경 및 상태값 변경,
+    public void RemoveCardCtrlArrow()
+    {
+        if(NetworkClient.connection != null && arrowOwnedCardOnHand != null){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject);
+            arrowOwnedCardOnHand.isDrag = false;
+            arrowOwnedCardOnHand.isMoving = false;
+            arrowOwnedCardOnHand.isMouseOver = false;
+            arrowOwnedCardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = arrowOwnedCardOnHand.originSortOrder;
+            M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
+        }
+    }
+
     // 화살표 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅 및 화살표 오브젝트으 부모를 생성요청한 CardOnHand오브젝트로 설정
     [ClientRpc]
     public void RpcArrowInit(Vector3 position, CardOnHand cardOnHand)
@@ -107,41 +150,5 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
         arrowNodes.Add(arrowNode.GetComponent<Transform>());
         arrowNode.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
         arrowNode.GetComponent<SpriteRenderer>().sortingOrder = arrowSortingOrder;
-    }
-
-    // 마우스 오른쪽 버튼 클릭 시 화살표 제거
-    public void HandleArrowRemove()
-    {
-        if(Input.GetMouseButtonDown(1)){
-            if(NetworkClient.connection != null && arrowOwnedCardOnHand != null){
-                GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-                gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject);
-                arrowOwnedCardOnHand.isDrag = false;
-                arrowOwnedCardOnHand.isMoving = false;
-                arrowOwnedCardOnHand.isMouseOver = false;
-                M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
-            }
-        }
-    }
-
-    // 마우스 왼쪽버튼 뗄때 마우스로 타겟팅한 오브젝트에게 액션 수행
-    private void HandleArrowAction()
-    {
-        if(Input.GetMouseButtonUp(0)){
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit)){
-                if(hit.collider != null && NetworkClient.connection != null && hit.collider.tag.Equals("TargetObject")){
-                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-                    if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
-                        TargetObject targetObject = hit.collider.gameObject.GetComponent<TargetObject>();
-                        gamePlayerDeck.CmdEnQueueCardTargetPair(arrowOwnedCardOnHand.card, targetObject); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
-                        gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject); // 화살표 삭제
-                        M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
-                        M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
-                    }
-                }
-            }
-        }
     }
 }

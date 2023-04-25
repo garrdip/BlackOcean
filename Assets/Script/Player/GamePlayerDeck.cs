@@ -13,7 +13,7 @@ public class GamePlayerDeck : NetworkBehaviour
     public int currentDeckCount = 0; // 현재 플레이어의 카드 카운트
 
     [SyncVar]
-    public CardPocket currentPlayerCardPocket; // 현재 플레이어의 CardPocket
+    public CardCtrlArrow cardCtrlArrow; // 현재 소환된 카드 화살표
 
     [SyncVar]
     public bool isArrowSpawned = false; // 화살표는 한개만 생성되어야하므로 이미 생성되어 있는지 체크용 변수
@@ -162,6 +162,7 @@ public class GamePlayerDeck : NetworkBehaviour
             cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowHead(arrowHead);
 
             isArrowSpawned = true;
+            cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();
         }
     }
 
