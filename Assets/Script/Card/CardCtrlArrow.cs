@@ -118,6 +118,8 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
                 gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject);
                 arrowOwnedCardOnHand.isDrag = false;
                 arrowOwnedCardOnHand.isMoving = false;
+                arrowOwnedCardOnHand.isMouseOver = false;
+                M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
             }
         }
     }
@@ -136,6 +138,7 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
                         gamePlayerDeck.CmdEnQueueCardTargetPair(arrowOwnedCardOnHand.card, targetObject); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
                         gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject); // 화살표 삭제
                         M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
+                        M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
                     }
                 }
             }

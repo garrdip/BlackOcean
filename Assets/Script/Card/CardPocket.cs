@@ -21,14 +21,6 @@ public class CardPocket : NetworkBehaviour
     }
 
     void Update()
-    {   
-        HandleCardDragStart();
-        HandleCardDrag();
-        HandleCardDragEnd();
-        HandleMouseInOut();
-    }
-
-    void FixedUpdate()
     {
         SetCardOfHandPositionSymmetry();
     }
@@ -67,91 +59,6 @@ public class CardPocket : NetworkBehaviour
                     }
                 }
             }
-        }
-    }
-
-    // 마우스 In, Out 이벤트
-    private void HandleMouseInOut()
-    {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit[] hits = Physics.RaycastAll(mousePos + new Vector3(0f, 0f, -1f), new Vector3(0f, 0f, 1f));
-
-        Debug.DrawRay(mousePos + new Vector3(0f, 0f, -1f), new Vector3(0f, 0f, 1f), Color.red);
-        float minDistance = float.MaxValue;
-        Collider closestCollider = null;
-
-        foreach (RaycastHit hit in hits)
-        {
-            if (hit.collider != null && hit.collider.GetComponent<CardOnHand>() != null)
-            {
-                float distance = Vector3.Distance(mousePos, hit.collider.GetComponent<CardOnHand>().originPosition);
-                if (distance < minDistance){
-                    minDistance = distance;
-                    closestCollider = hit.collider;
-                }
-            }
-        }
-
-        if (closestCollider != null){
-            CardOnHand collisionCardOnHand = closestCollider.gameObject.GetComponent<CardOnHand>();
-            collisionCardOnHand.OnCardMouseIn(collisionCardOnHand);
-            foreach(CardOnHand cardOnHand in currentPlayerDeck.cardOnHands){
-                if(collisionCardOnHand == cardOnHand){
-                    cardOnHand.OnCardMouseIn(cardOnHand);
-                }else{
-                    cardOnHand.OnCardMouseOut(cardOnHand);
-                }
-            }
-        }else{
-            foreach(CardOnHand cardOnHand in currentPlayerDeck.cardOnHands){
-                cardOnHand.OnCardMouseOut(cardOnHand);
-            }
-        }
-    }
-
-    // 드래그 시작
-    private void HandleCardDragStart()
-    {
-        if(Input.GetMouseButtonDown(0)){
-            dragTarget = null;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit)){
-                if (hit.collider != null && hit.collider.gameObject.GetComponent<CardOnHand>() != null){
-                    CardOnHand cardOnHand = hit.collider.gameObject.GetComponent<CardOnHand>();
-                    if(cardOnHand.isOwned){
-                        dragTarget = hit.collider;
-                        dragTarget.gameObject.GetComponent<CardOnHand>().OnCardDragStart(hit.collider.bounds.center, cardOnHand);
-                    }  
-                }
-            }
-        }
-    }
-
-    // 드래그 진행중
-    private void HandleCardDrag()
-    {
-        if(Input.GetMouseButton(0)){
-            if(dragTarget != null){
-                CardOnHand cardOnHand = dragTarget.gameObject.GetComponent<CardOnHand>();
-                if(cardOnHand.isOwned){
-                    cardOnHand.OnCardDrag(dragTarget.bounds.center, cardOnHand);
-                }
-            }
-        }
-    }
-
-    // 드래그 종료
-    private void HandleCardDragEnd()
-    {
-        if(Input.GetMouseButtonUp(0)){
-            if(dragTarget != null){
-                CardOnHand cardOnHand = dragTarget.gameObject.GetComponent<CardOnHand>();
-                if(cardOnHand.isOwned){
-                    cardOnHand.OnCardDragEnd(cardOnHand);
-                    dragTarget = null; 
-                }
-            }  
         }
     }
 }

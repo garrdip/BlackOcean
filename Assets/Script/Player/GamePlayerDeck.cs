@@ -130,6 +130,7 @@ public class GamePlayerDeck : NetworkBehaviour
 
             // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
             cardOnHand.GetComponent<CardOnHand>().card = prefareDeck[randomIndex];
+            cardOnHand.GetComponent<CardOnHand>().RpcChangeCardOnHandSortOrder(i);
             prefareDeck.RemoveAt(randomIndex); 
         }
     }

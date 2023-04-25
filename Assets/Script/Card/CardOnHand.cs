@@ -50,61 +50,62 @@ public class CardOnHand : NetworkBehaviour
         transform.SetParent(DeckUI.instance.CardPocket.transform);
         originScale = transform.localScale;
         targetScale = originScale + new Vector3(0.05f, 0.05f, 0f);
-        transform.GetComponent<SpriteRenderer>().sortingOrder = index + 1;
-        originSortOrder = index + 1;
         hoveredPositionY = 1.2f;
     }
 
-    // 카드에 마우스 진입할 시 이벤트
-    public void OnCardMouseIn(CardOnHand cardOnHand)
+    // 오브젝트에 마우스 포인터 진입할 때 이벤트
+    void OnMouseEnter()
     {
-        if(isOwned && cardOnHand != null && !M_CardManager.instance.IsArrowSpawned()){
-            cardOnHand.isMouseOver = true;
-            cardOnHand.originSortOrder = index + 1;
-            cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
+        if(isOwned && !M_CardManager.instance.IsArrowSpawned()){
+            isMouseOver = true;
+            originSortOrder = index;
+            transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
+            M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardNoneCollidableSize);
+            CmdChangeCardOnHandSortOrder(999);
         }
     }
 
-    // 마우스가 카드에서 벗어날 시 이벤트
-    public void OnCardMouseOut(CardOnHand cardOnHand)
+    // 오브젝트에서 마우스 포인터 나갈 때 이벤트
+    void OnMouseExit()
     {
-        if(isOwned && cardOnHand != null && !M_CardManager.instance.IsArrowSpawned()){
-            cardOnHand.isMouseOver = false;
-            cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder =  cardOnHand.originSortOrder;
+        if(isOwned && !M_CardManager.instance.IsArrowSpawned()){
+            isMouseOver = false;
+            transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
+            M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardCollidableSize);
+            CmdChangeCardOnHandSortOrder(originSortOrder);
         }
     }
 
-    // 카드 드래그 시작 시 이벥트
-    public void OnCardDragStart(Vector3 cardCenterPosition, CardOnHand cardOnHand)
+    // 오브젝트에 마우스 왼쪽버튼 누를 때 이벤트
+    void OnMouseDown()
     {
         if(isOwned && currentPlayerDeck.isLocalPlayer && !M_CardManager.instance.IsArrowSpawned()){
-            cardOnHand.isDrag = true;
-            cardOnHand.originPosition = cardOnHand.transform.position;
+            isDrag = true;
+            originPosition = transform.position;
         }
     }
 
-    // 카드 드래그 진행 중 이벤트
-    public void OnCardDrag(Vector3 cardCenterPosition, CardOnHand cardOnHand)
+    // 오브젝트를 마우스로 드래그 할 때 이벤트
+    void OnMouseDrag()
     {
-        if(isOwned && cardOnHand.isDrag && !M_CardManager.instance.IsArrowSpawned()){
-            DragCardOnHand(cardOnHand);
-            MovePositionArrowSpawnedCardOnHand(cardOnHand);
+        if(isOwned && isDrag && !M_CardManager.instance.IsArrowSpawned()){
+            DragCardOnHand(this);
+            MovePositionArrowSpawnedCardOnHand(this);
         }
     }
 
-    // 카드 드래그 종료 시 이벤트
-    // 타겟팅 카드가 아닐 경우, 드래그 종료 위치가 화면의 2분의1을 넘어가면 카드 액션 수행 및 카드 버리기 애니매이션 실행
-    public void OnCardDragEnd(CardOnHand cardOnHand)
+    // 오브젝트에서 마우스 왼쪽버튼 뗄 때 이벤트
+    void OnMouseUp()
     {
-        if(isOwned && cardOnHand.isDrag && !M_CardManager.instance.IsArrowSpawned()){
-            if(!cardOnHand.card.isTargetable && cardOnHand.isDrag && (Input.mousePosition.y > Screen.height / 2)){
+         if(isOwned && isDrag && !M_CardManager.instance.IsArrowSpawned()){
+            if(!card.isTargetable && isDrag && (Input.mousePosition.y > Screen.height / 2)){
                 if(NetworkClient.connection != null){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                     if (gamePlayerDeck.isLocalPlayer){
-                        gamePlayerDeck.CmdEnQueueCardTargetPair(cardOnHand.card, null);
+                        gamePlayerDeck.CmdEnQueueCardTargetPair(card, null);
                     }
                 }
-                M_CardManager.instance.CardOnHandThrowAwaySequence(cardOnHand);
+                M_CardManager.instance.CardOnHandThrowAwaySequence(this);
             }
         }
     }
@@ -129,5 +130,19 @@ public class CardOnHand : NetworkBehaviour
                 .DOMove(new Vector3(0f, originPosition.y, originPosition.z), 0.4f)
                 .SetEase(Ease.OutSine);
         }
+    }
+
+    // 스프라이트 랜더링 정렬값 변경 요청
+    [Command]
+    public void CmdChangeCardOnHandSortOrder(int sortOrder)
+    {
+        RpcChangeCardOnHandSortOrder(sortOrder);
+    }
+
+    // 변경된 스프라이트 랜더링 정렬값에 따라 CardOnHand 랜더링 순서 변경
+    [ClientRpc]
+    public void RpcChangeCardOnHandSortOrder(int sortOrder)
+    {
+        transform.GetComponent<SpriteRenderer>().sortingOrder = sortOrder;
     }
 }

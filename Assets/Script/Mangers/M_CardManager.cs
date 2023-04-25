@@ -7,6 +7,8 @@ using DG.Tweening;
 public class M_CardManager : NetworkBehaviour
 {
     public static M_CardManager Instance = null;
+    public Vector3 cardCollidableSize; // 충돌 판정이 가능한 원래의 충돌체 크기값
+    public Vector3 cardNoneCollidableSize; // 충돌 판정이 되지 않도록 크기를 줄인 충돌체 크기값
 
     public static M_CardManager instance
     {
@@ -18,6 +20,12 @@ public class M_CardManager : NetworkBehaviour
             }
             return Instance;
         }
+    }
+
+    void Start()
+    {
+        cardCollidableSize = new Vector3(22f, 30f, 1f);
+        cardNoneCollidableSize = new Vector3(0f, 0f, 0f);
     }
 
     // CardOnHand 오브젝트들의 인덱스값에 따라 순차적인 움직임으로 날아오는 애니매이션 + Moving플래그 변수 조정
@@ -118,5 +126,18 @@ public class M_CardManager : NetworkBehaviour
             return gamePlayerDeck.isArrowSpawned;
         }
         return false;
+    }
+
+    // 현재 플레이어의 CardOnHand 오브젝트의 충돌체 크기 조정(마우스 오버되지 않은 카드들의 충돌체 사이즈를 줄여서 충돌판정을 받지 않도록 함)
+    public void ChangeCardOnHandColliderSize(CardOnHand mouseOveredCardOnHand, Vector3 size)
+    {
+        if(NetworkClient.connection != null){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                if(cardOnHand != mouseOveredCardOnHand){
+                    cardOnHand.GetComponent<BoxCollider>().size = size;
+                }
+            }
+        }
     }
 }
