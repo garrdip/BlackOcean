@@ -60,7 +60,7 @@ public class DeckUI : SingletonD<DeckUI>
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                    cardOnHand.CardOnHandAllThrowAwaySequence(cardOnHand);
+                    M_CardManager.instance.CardOnHandAllThrowAwaySequence(cardOnHand);
                 }
             }
         }

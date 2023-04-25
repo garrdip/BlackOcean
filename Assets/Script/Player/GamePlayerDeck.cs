@@ -215,7 +215,7 @@ public class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<CardOnHand>.Operation.OP_ADD:
-                newCardOnHand.CardOnHandDrawSequence(newCardOnHand, index);
+                M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
                 break;
             case SyncList<CardOnHand>.Operation.OP_INSERT:
                 
