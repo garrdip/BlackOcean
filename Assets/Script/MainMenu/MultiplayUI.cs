@@ -3,27 +3,77 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 
-public class MultiplayUI : MonoBehaviour
+public class MultiplayUI : InstanceD<MultiplayUI>
 {
     public Button btn_Close;
     public Button btn_CreateRoom;
-    public M_SteamManager steamManager;
+
+    public GameObject createLobbyIcon;
+    public GameObject shadowMaker;
+    
+    public Button backButton;
+    public Button refreshButton;
+    public GameObject popUpUI;
+    int originLocation = 888;
+    int targetLocation = 614;
+    List<GameObject> lobbyList = new List<GameObject>();
+    public GameObject prefabLobbyData;
+    public Transform lobbyListTransform;
+
     void Start()
     {
         btn_Close.onClick.AddListener(()=>HandleCloseWindow());
         btn_CreateRoom.onClick.AddListener(()=>HandleCreateRoom());
+        backButton.onClick.AddListener(()=> HandleBackToLobbyList());
+        refreshButton.onClick.AddListener(()=> HandleRefreshRoom());
+    }
+    
+    void HandleRefreshRoom()
+    {
+        M_SteamManager.instance.GetLobbyList();
+    }
+
+    public void ClearLobbyList()
+    {
+        foreach(GameObject del in lobbyList)
+        {
+            Destroy(del);
+        }
+    }
+
+    public void AddLobbyData(string lobbyName, bool hasPassword)
+    {
+        GameObject newLobby = Instantiate(prefabLobbyData,transform.position,Quaternion.identity,lobbyListTransform);
+        prefabLobbyData.GetComponent<LobbyData>().SetLockState(hasPassword);
+        prefabLobbyData.GetComponent<LobbyData>().SetLobbyName(lobbyName);
+        lobbyList.Add(newLobby);
     }
 
     void HandleCloseWindow()
     {
-        gameObject.SetActive(false);
+        
     }
 
     void HandleCreateRoom()
     {
-        steamManager.HostLobby();
+        shadowMaker.SetActive(true);
+        createLobbyIcon.transform.DOLocalMove(new Vector3(0,targetLocation,0),0.5f).OnComplete(() =>OnCompleteMoveIcon());
     }
 
+    void HandleBackToLobbyList()
+    {
+        if(popUpUI.activeSelf)
+        {
+            popUpUI.SetActive(false);
+            createLobbyIcon.transform.DOLocalMove(new Vector3(0,originLocation,0),0.5f);
+            shadowMaker.SetActive(false);
+        }
+    }
+    void OnCompleteMoveIcon()
+    {
+        popUpUI.SetActive(true);
+    }
 }

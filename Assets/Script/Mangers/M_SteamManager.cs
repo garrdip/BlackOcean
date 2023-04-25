@@ -18,6 +18,9 @@ public class M_SteamManager : InstanceD<M_SteamManager>
 
     public static CSteamID enteredLobby;
 
+    string blobbyName;
+    string bpassword;
+
     private void Start()
     {
         if(!SteamManager.Initialized){return;}
@@ -26,9 +29,11 @@ public class M_SteamManager : InstanceD<M_SteamManager>
         lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEnter);
         lobbyList = Callback<LobbyMatchList_t>.Create(OnLobbyMatchList);
     }
-    public void HostLobby()
+    public void HostLobby(string lobbyName, string password)
     {
         SteamMatchmaking.CreateLobby(Steamworks.ELobbyType.k_ELobbyTypePublic,3);
+        blobbyName = lobbyName;
+        bpassword = password;
     }
 
     private void OnLobbyCreated(LobbyCreated_t callback)
@@ -38,6 +43,7 @@ public class M_SteamManager : InstanceD<M_SteamManager>
             return;
         }
         //Mirror Server Start
+        Debug.Log("방생성 : " + blobbyName + " 비번 " + bpassword);
         networkManager.StartHost();
         //Steam Lobby Data 수정 
         enteredLobby = new CSteamID(callback.m_ulSteamIDLobby);
@@ -45,7 +51,14 @@ public class M_SteamManager : InstanceD<M_SteamManager>
             new CSteamID(callback.m_ulSteamIDLobby),
             HostAddressKey,
             SteamUser.GetSteamID().ToString());
-
+        SteamMatchmaking.SetLobbyData(
+            new CSteamID(callback.m_ulSteamIDLobby),
+            LobbyNameKey,
+            blobbyName);
+        SteamMatchmaking.SetLobbyData(
+            new CSteamID(callback.m_ulSteamIDLobby),
+            PasswordKey,
+            bpassword);
     }
 
     private void OnGameLobbyJoinRequeseted(GameLobbyJoinRequested_t callback)
@@ -82,7 +95,8 @@ public class M_SteamManager : InstanceD<M_SteamManager>
             // Handle error
             return;
         }
-
+        
+        MultiplayUI.instance.ClearLobbyList();
         // m_nLobbiesMatching 검색된 숫자로 반환되며 GetLobby 함수를 이용하여 Get 해야함
         for (int i = 0; i < pCallback.m_nLobbiesMatching; i++)
         {
@@ -90,7 +104,10 @@ public class M_SteamManager : InstanceD<M_SteamManager>
             
             
             int numMembers = SteamMatchmaking.GetNumLobbyMembers(lobbyId);
-            Debug.Log(SteamMatchmaking.GetLobbyData(lobbyId,PasswordKey));
+            string lobbyName = SteamMatchmaking.GetLobbyData(lobbyId,LobbyNameKey);
+            string password = SteamMatchmaking.GetLobbyData(lobbyId,PasswordKey);
+            MultiplayUI.instance.AddLobbyData(lobbyName,(password == "")? false : true);
+            
             // Do something with the lobby ID
         }
     }
