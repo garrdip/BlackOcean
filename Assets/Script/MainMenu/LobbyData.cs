@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Steamworks;
 using TMPro;
 
-public class LobbyData : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class LobbyData : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
+    public CSteamID lobbyId;
     public Sprite onMouseHighLight;
     public Sprite offMouseDim;
     public GameObject passwordIcon;
@@ -30,4 +32,10 @@ public class LobbyData : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         lobbyNameText.text = lobbyName;
     }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        M_SteamManager.instance.EnterLobby(lobbyId);
+    }
+
 }

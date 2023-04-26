@@ -43,7 +43,6 @@ public class M_SteamManager : InstanceD<M_SteamManager>
             return;
         }
         //Mirror Server Start
-        Debug.Log("방생성 : " + blobbyName + " 비번 " + bpassword);
         networkManager.StartHost();
         //Steam Lobby Data 수정 
         enteredLobby = new CSteamID(callback.m_ulSteamIDLobby);
@@ -59,6 +58,8 @@ public class M_SteamManager : InstanceD<M_SteamManager>
             new CSteamID(callback.m_ulSteamIDLobby),
             PasswordKey,
             bpassword);
+
+        Debug.Log("Host Address is " + SteamUser.GetSteamID().ToString());
     }
 
     private void OnGameLobbyJoinRequeseted(GameLobbyJoinRequested_t callback)
@@ -71,6 +72,15 @@ public class M_SteamManager : InstanceD<M_SteamManager>
         if(NetworkServer.active){ return;}
         string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby),HostAddressKey);
         enteredLobby = new CSteamID(callback.m_ulSteamIDLobby);
+        networkManager.networkAddress = hostAddress;
+        networkManager.StartClient();
+    }
+
+    public void EnterLobby(CSteamID lobbyId)
+    {
+        string hostAddress = SteamMatchmaking.GetLobbyData(lobbyId,HostAddressKey);
+        Debug.Log("Entering " + hostAddress);
+        enteredLobby = lobbyId;
         networkManager.networkAddress = hostAddress;
         networkManager.StartClient();
     }
@@ -101,14 +111,10 @@ public class M_SteamManager : InstanceD<M_SteamManager>
         for (int i = 0; i < pCallback.m_nLobbiesMatching; i++)
         {
             CSteamID lobbyId = SteamMatchmaking.GetLobbyByIndex(i);
-            
-            
             int numMembers = SteamMatchmaking.GetNumLobbyMembers(lobbyId);
             string lobbyName = SteamMatchmaking.GetLobbyData(lobbyId,LobbyNameKey);
             string password = SteamMatchmaking.GetLobbyData(lobbyId,PasswordKey);
-            MultiplayUI.instance.AddLobbyData(lobbyName,(password == "")? false : true);
-            
-            // Do something with the lobby ID
+            MultiplayUI.instance.AddLobbyData(lobbyId,lobbyName,(password == "")? false : true);
         }
     }
 
@@ -120,7 +126,6 @@ public class M_SteamManager : InstanceD<M_SteamManager>
         if(isValid)
         {
             byte[] image = new byte[width * height * 4];
-
             isValid = SteamUtils.GetImageRGBA(iImage, image, (int)(width * height * 4));
             
 
