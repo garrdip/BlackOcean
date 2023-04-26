@@ -5078,13 +5078,13 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  cardOnHandsPanel: {fileID: 823382814}
   cardCollidableSize: {x: 0, y: 0, z: 0}
   cardNoneCollidableSize: {x: 0, y: 0, z: 0}
-  cardOnHandsPanel: {fileID: 823382814}
   cardOnHandsPanelPositionY_Range: -4
   symmetryRange: 1.5
-  symmetryPositionX_Range: 1
-  symmetryPositionY_Range: 0.15
+  symmetryPositionX_Range: 1.15
+  symmetryPositionY_Range: 0.2
   symmetryRotationRange: 5
 --- !u!114 &2095118380
 MonoBehaviour:
