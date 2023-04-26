@@ -108,6 +108,8 @@ public class CardOnHand : NetworkBehaviour
                 M_CardManager.instance.CardOnHandThrowAwaySequence(this);
             }
             isDrag = false;
+            isMoving = false;
+            isMouseOver = false;
         }
     }
 

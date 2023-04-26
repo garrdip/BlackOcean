@@ -5,10 +5,11 @@ using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
 using TMPro;
+using Steamworks;
 
 public class DeckUI : SingletonD<DeckUI>
 {
-    [Header("GameObject")]
+    [Header("게임 오브젝트")]
     public GameObject DeckListPanel;
     public GameObject GameUI;
     public GameObject CardPocket;
@@ -17,7 +18,7 @@ public class DeckUI : SingletonD<DeckUI>
     public GameObject DeckListPopUp;
     public GameObject CardOnDeckPrefab;
 
-    [Header("UI Component")]
+    [Header("UI 요소")]
     public Button buttonEndTurn;
     public Button buttonPrefareDeck;
     public Button buttonTrashDeck;
@@ -26,8 +27,11 @@ public class DeckUI : SingletonD<DeckUI>
     public TextMeshProUGUI textPrefareDeckCount;
     public TextMeshProUGUI textTrashDeckCount;
 
-    [Header("Deck List")]
+    [Header("댁 리스트")]
     public List<GameObject> deckList;
+
+    [Header("플레이어 리스트(플레이어 정보 및 턴 정보)")]
+    public List<GameObject> playerOrderList;
 
     private int originSiblingIndex = 0;
     private bool isOpenPrefareDeckPopUp = false;

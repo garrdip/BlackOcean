@@ -412,6 +412,7 @@ GameObject:
   - component: {fileID: 4560673051968515371}
   - component: {fileID: 4560673051968515373}
   - component: {fileID: 4560673051968515372}
+  - component: {fileID: -887393443747926641}
   m_Layer: 5
   m_Name: PlayerOrder
   m_TagString: Untagged
@@ -479,6 +480,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &-887393443747926641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4560673052422256682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb71c6e3350a2974aa63b522e1a034f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerOwnMenu: {fileID: 4800356701991609930}
+  playerCommonMenu: {fileID: 1698565005959687434}
+  textPlayerName: {fileID: 4560673051812913803}
+  costCount: {fileID: 4560673052825975849}
 --- !u!1 &4560673052725627076
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,7 +584,7 @@ GameObject:
   - component: {fileID: 4560673052825975850}
   - component: {fileID: 4560673052825975849}
   m_Layer: 5
-  m_Name: TextPlayerOrderCost
+  m_Name: TextPlayerCostCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using ProjectD;
+using Steamworks;
 
 public class M_TurnManager : NetworkBehaviour
 {
@@ -57,6 +58,12 @@ public class M_TurnManager : NetworkBehaviour
             return Instance;
         }
     }
+
+    public override void OnStartClient()
+    {
+        playerOrder.Callback += OnPlayerOrderUpdated;
+    }
+
     public void SetOrderButtonListener()
     {
         selectOrderButtons[0].onClick.AddListener(() => SelectOrder(1));
@@ -293,4 +300,36 @@ public class M_TurnManager : NetworkBehaviour
             && currentTurnPlayer.isLocalPlayer;
     }
 
+    // 게임화면의 DeckUI에 있는 플레이어 정보 및 턴 정보 뷰 세팅
+    private void SetPlayerOrderView(GamePlayer gamePlayer, int index)
+    {
+        DeckUI.instance.playerOrderList[index].GetComponent<GamePlayerOrder>().textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
+        if(gamePlayer.isLocalPlayer){
+            DeckUI.instance.playerOrderList[index].GetComponent<GamePlayerOrder>().playerOwnMenu.gameObject.SetActive(true);
+        }
+    }
+
+
+    // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
+    private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
+    {
+        switch (op)
+        {
+            case SyncList<GamePlayer>.Operation.OP_ADD:
+                SetPlayerOrderView(newGamePlayer, index);
+                break;
+            case SyncList<GamePlayer>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<GamePlayer>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<GamePlayer>.Operation.OP_SET:
+                // TODO : 인덱스가 바뀔 때
+                break;
+            case SyncList<GamePlayer>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
 }
