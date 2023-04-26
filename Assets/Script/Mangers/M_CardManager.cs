@@ -7,8 +7,33 @@ using DG.Tweening;
 public class M_CardManager : NetworkBehaviour
 {
     public static M_CardManager Instance = null;
+
+    public GameObject cardOnHandsPanel; // 카드 모음 패널 오브젝트
+
     public Vector3 cardCollidableSize; // 충돌 판정이 가능한 원래의 충돌체 크기값
+
     public Vector3 cardNoneCollidableSize; // 충돌 판정이 되지 않도록 크기를 줄인 충돌체 크기값
+
+    [Header("cardOnHandsPanel의 위치 Y값 범위")]
+    [Range(-5.0f, 2.0f)]
+    public float cardOnHandsPanelPositionY_Range = -4.0f;
+
+    [Header("카드 대칭 계산값 변수 범위")]
+    [Range(-2.5f, 2.5f)]
+    public float symmetryRange = 1.5f;
+
+    [Header("카드 대칭 위치 X값 범위")]
+    [Range(0f, 3.0f)]
+    public float symmetryPositionX_Range = 1f;
+
+    [Header("카드 대칭 위치 Y값 범위")]
+    [Range(-0.5f, 0.5f)]
+    public float symmetryPositionY_Range = 0.15f;
+
+    [Header("카드 대칭 회전값 범위")]
+    [Range(-20.0f, 20.0f)]
+    public float symmetryRotationRange = 5.0f;
+
 
     public static M_CardManager instance
     {
@@ -26,6 +51,49 @@ public class M_CardManager : NetworkBehaviour
     {
         cardCollidableSize = new Vector3(22f, 30f, 1f);
         cardNoneCollidableSize = new Vector3(0f, 0f, 0f);
+    }
+
+    void Update()
+    {
+        SetCardOfHandPositionSymmetry();
+    }
+
+    // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
+    public void SetCardOfHandPositionSymmetry()
+    {
+        cardOnHandsPanel.transform.position = new Vector3(0f, cardOnHandsPanelPositionY_Range, 0f); // 카드 모음 패널의 위치       
+        if(NetworkClient.connection != null){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            int count = gamePlayerDeck.cardOnHands.Count;
+            if(count > 0){
+                for(int i=0; i<count; i++){      
+                    CardOnHand cardOnHand =  gamePlayerDeck.cardOnHands[i];
+                    if(cardOnHand != null && !cardOnHand.isMoving){
+                        if(cardOnHand.isMouseOver){
+                            Vector3 targetPosition = new Vector3(cardOnHand.transform.localPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
+                            cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
+                            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                            cardOnHand.transform.localScale = cardOnHand.targetScale;
+                        }else{
+                            // 대칭값 계산
+                            int leftCount = (count - 1) / 2;
+                            int rightCount = count - leftCount - 1;
+                            float symmetryValue = (count % 2 == 0) ? ((i - leftCount) * symmetryRange - 0.75f) : ((i - leftCount) * symmetryRange);
+
+                            // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
+                            Vector3 position = new Vector3(symmetryValue * symmetryPositionX_Range, -Mathf.Abs(symmetryValue) * symmetryPositionY_Range, 0f);
+                            cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, position, Time.deltaTime * 10f);
+
+                            // 회전값
+                            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, -symmetryValue * symmetryRotationRange);
+
+                            // 크기값
+                            cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOnHand.originScale, Time.deltaTime * 10f);  
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // CardOnHand 오브젝트들의 인덱스값에 따라 순차적인 움직임으로 날아오는 애니매이션 + Moving플래그 변수 조정
