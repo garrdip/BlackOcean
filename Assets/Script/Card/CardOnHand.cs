@@ -98,7 +98,7 @@ public class CardOnHand : NetworkBehaviour
     void OnMouseUp()
     {
          if(isOwned && isDrag && !M_CardManager.instance.IsArrowSpawned()){
-            if(!card.isTargetable && isDrag && (Input.mousePosition.y > Screen.height / 2)){
+            if(!card.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
                 if(NetworkClient.connection != null){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                     if (gamePlayerDeck.isLocalPlayer){
@@ -107,6 +107,7 @@ public class CardOnHand : NetworkBehaviour
                 }
                 M_CardManager.instance.CardOnHandThrowAwaySequence(this);
             }
+            isDrag = false;
         }
     }
 
