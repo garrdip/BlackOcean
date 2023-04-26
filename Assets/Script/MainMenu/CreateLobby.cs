@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectD;
 using TMPro;
 
 public class CreateLobby : MonoBehaviour
@@ -17,7 +18,7 @@ public class CreateLobby : MonoBehaviour
 
     void HandleCreateRoom()
     {
-        M_SteamManager.instance.HostLobby(lobbyName.text,password.text);
+       M_SteamManager.instance.HostLobby(lobbyName.text,StringUtils.RemoveZWSP(password.text));
     }
     
 }

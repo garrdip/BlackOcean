@@ -45,7 +45,6 @@ public class ModeSelectUI : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        Debug.Log("스타트");
         OnChangedLevel(GameLevel.EASY, GameLevel.EASY);
         base.OnStartClient();
     }

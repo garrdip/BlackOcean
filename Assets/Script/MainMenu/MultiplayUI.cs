@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using Steamworks;
 
 
 public class MultiplayUI : InstanceD<MultiplayUI>
@@ -44,11 +45,12 @@ public class MultiplayUI : InstanceD<MultiplayUI>
         }
     }
 
-    public void AddLobbyData(string lobbyName, bool hasPassword)
+    public void AddLobbyData(CSteamID lobbyId,string lobbyName, bool hasPassword)
     {
         GameObject newLobby = Instantiate(prefabLobbyData,transform.position,Quaternion.identity,lobbyListTransform);
         prefabLobbyData.GetComponent<LobbyData>().SetLockState(hasPassword);
         prefabLobbyData.GetComponent<LobbyData>().SetLobbyName(lobbyName);
+        prefabLobbyData.GetComponent<LobbyData>().lobbyId = lobbyId;
         lobbyList.Add(newLobby);
     }
 
