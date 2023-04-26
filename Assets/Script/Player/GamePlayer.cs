@@ -65,12 +65,13 @@ public class GamePlayer : NetworkBehaviour
     IEnumerator WaitPlayerList()
     {
         M_NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        WaitForSeconds loopSecond = new WaitForSeconds(0.01f);
         //GamePlayer가 모두 로드 될때까지 기다림
         while(true)
         {
             GamePlayer[] users = FindObjectsOfType<GamePlayer>();
             if(users.Length == netManger.roomSlots.Count) break;
-            yield return new WaitForSeconds(0.01f);
+            yield return loopSecond;
         }
         //GamePlayer가 모두 Initial Value 초기화 될때까지 기다림
         while(true)
@@ -82,7 +83,7 @@ public class GamePlayer : NetworkBehaviour
                 if(user.isInitializeDone) cnt++;
             }
             if(cnt == netManger.roomSlots.Count) break;
-            yield return new WaitForSeconds(0.01f);
+            yield return loopSecond;
         }
         SetUserStatusUI();
         M_TurnManager.instance.SetOrderButtonListener();
