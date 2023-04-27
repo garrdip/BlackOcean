@@ -21,6 +21,8 @@ public class M_SteamManager : InstanceD<M_SteamManager>
     string blobbyName;
     string bpassword;
 
+    bool isFirstRequest = false;
+
     private void Start()
     {
         if(!SteamManager.Initialized){return;}
@@ -105,7 +107,14 @@ public class M_SteamManager : InstanceD<M_SteamManager>
             // Handle error
             return;
         }
-        
+        if( !isFirstRequest )
+        {
+            Debug.Log("First Time Request!! Request Again!");
+            MultiplayUI.instance.ClearLobbyList();
+            isFirstRequest = true;
+            SteamMatchmaking.RequestLobbyList();
+            return;
+        }
         MultiplayUI.instance.ClearLobbyList();
         // m_nLobbiesMatching 검색된 숫자로 반환되며 GetLobby 함수를 이용하여 Get 해야함
         for (int i = 0; i < pCallback.m_nLobbiesMatching; i++)
@@ -113,6 +122,7 @@ public class M_SteamManager : InstanceD<M_SteamManager>
             CSteamID lobbyId = SteamMatchmaking.GetLobbyByIndex(i);
             int numMembers = SteamMatchmaking.GetNumLobbyMembers(lobbyId);
             string lobbyName = SteamMatchmaking.GetLobbyData(lobbyId,LobbyNameKey);
+            Debug.Log(lobbyName);
             string password = SteamMatchmaking.GetLobbyData(lobbyId,PasswordKey);
             MultiplayUI.instance.AddLobbyData(lobbyId,lobbyName,(password == "")? false : true);
         }

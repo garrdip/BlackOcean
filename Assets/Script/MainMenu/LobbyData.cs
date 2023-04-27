@@ -30,6 +30,7 @@ public class LobbyData : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void SetLobbyName(string lobbyName)
     {
+        Debug.Log("SET " +lobbyName);
         lobbyNameText.text = lobbyName;
     }
 
