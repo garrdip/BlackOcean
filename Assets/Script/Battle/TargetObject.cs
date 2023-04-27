@@ -4,11 +4,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using ProjectD;
+using Steamworks;
+using TMPro;
 
 public class TargetObject : NetworkBehaviour
 {
-    [Header("HP Slider")]
+    [Header("HP 슬라이더")]
     public Slider hpbar;
+
+    [Header("타겟 이름")]
+    public TextMeshProUGUI textTargetName;
+
+    [Header("현재 로컬 플레이어 고유의 뷰 요소들")]
+    public GameObject currentPlayerMark;
+    public GameObject currentPlayerTargetCosts;
 
     [SyncVar]
     public ObjectType objectType;
@@ -40,13 +49,20 @@ public class TargetObject : NetworkBehaviour
                     Instantiate(characters[0],transform.position,Quaternion.identity,transform);
                 break;
             }
+            textTargetName.text = SteamFriends.GetFriendPersonaName((CSteamID)newVal.steamID);
             hpbar.maxValue = newVal.MaxHP;
             hpbar.value = newVal.HP;
+            if(newVal.isLocalPlayer){
+                currentPlayerMark.SetActive(true);
+                currentPlayerTargetCosts.SetActive(true);
+            }
         }
     }
+
     public void InitTargetObjectEmemy(SpawnedMonster oldVal, SpawnedMonster newVal)
     {
         StartCoroutine(nameof(EmemyTargetObjectGenerator));
+        textTargetName.text = newVal.monsterData.name;
         hpbar.maxValue = newVal.MAXHP;;
         hpbar.value = newVal.HP;
     }
