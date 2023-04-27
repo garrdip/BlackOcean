@@ -15,10 +15,16 @@ public class TargetObject : NetworkBehaviour
     [Header("타겟 이름")]
     public TextMeshProUGUI textTargetName;
 
-    [Header("현재 로컬 플레이어 고유의 뷰 요소들")]
+    [Header("삼각형 화살표")]
     public GameObject currentPlayerMark;
+
+    [Header("Cost 아이콘")]
     public GameObject currentPlayerTargetCosts;
 
+    [Header("바닥 오오라")]
+    public GameObject currentPlayerGroundIndicator;
+
+    [Header("타겟 오브젝트 타입")]
     [SyncVar]
     public ObjectType objectType;
 
@@ -55,6 +61,10 @@ public class TargetObject : NetworkBehaviour
             if(newVal.isLocalPlayer){
                 currentPlayerMark.SetActive(true);
                 currentPlayerTargetCosts.SetActive(true);
+                currentPlayerGroundIndicator.SetActive(true);
+                float hpbarWidth = hpbar.GetComponent<RectTransform>().rect.width;
+                float hpbarHeight = hpbar.GetComponent<RectTransform>().rect.height;
+                hpbar.GetComponent<RectTransform>().sizeDelta = new Vector2(hpbarWidth + 300f, hpbarHeight + 100f);
             }
         }
     }
@@ -69,6 +79,7 @@ public class TargetObject : NetworkBehaviour
 
     IEnumerator EmemyTargetObjectGenerator()
     {
+        WaitForSeconds loopSecond = new WaitForSeconds(0.01f);
         while(true)
         {
             if(objectType == ObjectType.ENEMY && monster.monsterData != null)
@@ -84,7 +95,7 @@ public class TargetObject : NetworkBehaviour
                 }
                 break;
             }
-            yield return new WaitForSeconds(0.01f);
+            yield return loopSecond;
         }
     }
 
