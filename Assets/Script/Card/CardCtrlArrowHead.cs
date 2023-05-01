@@ -32,7 +32,7 @@ public class CardCtrlArrowHead : NetworkBehaviour
         Vector3 mousePosition = Input.mousePosition;
         if (mousePosition.y < 0f)
         {
-            if(NetworkClient.connection != null){
+            if(NetworkClient.connection != null && NetworkClient.active && isOwned){
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                 CardCtrlArrow cardCtrlArrow = gamePlayerDeck.cardCtrlArrow;
                 cardCtrlArrow.RemoveCardCtrlArrow();

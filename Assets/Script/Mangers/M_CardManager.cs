@@ -73,7 +73,7 @@ public class M_CardManager : NetworkBehaviour
     public void SetCardOfHandPositionSymmetry()
     {
         cardOnHandsPanel.transform.position = new Vector3(0f, cardOnHandsPanelPositionY_Range, 0f); // 카드 모음 패널의 위치       
-        if(NetworkClient.connection != null){
+        if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             int count = gamePlayerDeck.cardOnHands.Count;
             if(count > 0){
@@ -200,7 +200,7 @@ public class M_CardManager : NetworkBehaviour
     // 현재 타겟팅 카드 화살표가 소환되어 있는지 여부 확인 함수
     public bool IsArrowSpawned()
     {
-        if(NetworkClient.connection != null){
+        if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             return gamePlayerDeck.isArrowSpawned;
         }
@@ -210,7 +210,7 @@ public class M_CardManager : NetworkBehaviour
     // 현재 플레이어의 CardOnHand 오브젝트의 충돌체 크기 조정(마우스 오버되지 않은 카드들의 충돌체 사이즈를 줄여서 충돌판정을 받지 않도록 함)
     public void ChangeCardOnHandColliderSize(CardOnHand mouseOveredCardOnHand, Vector3 size)
     {
-        if(NetworkClient.connection != null){
+        if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
                 if(cardOnHand != mouseOveredCardOnHand){

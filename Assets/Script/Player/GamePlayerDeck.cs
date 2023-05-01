@@ -138,30 +138,53 @@ public class GamePlayerDeck : NetworkBehaviour
 
     // 카드 컨트롤 화살표 인디케이터 생성(네트워크 오브젝트)
     [Command]
-    public void CmdSpawnArrowEmitter(Vector3 cardPosition, CardOnHand cardOnHand)
+    public void CmdSpawnArrowEmitter(CardOnHand cardOnHand)
     {
         if(!isArrowSpawned){
             M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
+            // 화살표 생성 위치는 소환한 카드 위치
+            Vector3 arrowSpawnPosition = cardOnHand.transform.position;
+
+            // 화살표 노드들 담을 리스트
+            List<GameObject> arrowNodes = new List<GameObject>();
+                        
             // 화살표 인디케이터 오브젝트 생성
-            GameObject cardEmitter = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")));
+            GameObject cardEmitter = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")),
+                arrowSpawnPosition,
+                Quaternion.identity);
             NetworkServer.Spawn(cardEmitter, connectionToClient);
-           
-            cardEmitter.GetComponent<CardCtrlArrow>().arrowOwnedCardOnHand = cardOnHand; // 화살표를 소환한 카드를 화살표 주인으로 설정
-            cardEmitter.GetComponent<CardCtrlArrow>().RpcArrowInit(cardPosition, cardOnHand);
 
             // 화살표 인디케이터 몸체 생성
             for(int i=0; i<arrowNodeNum; i++){
-                GameObject arrowNode = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowNode")));
+                GameObject arrowNode = Instantiate(
+                    M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowNode")),
+                    arrowSpawnPosition,
+                    Quaternion.identity);
                 NetworkServer.Spawn(arrowNode, connectionToClient);
-                cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowNode(arrowNode);
+                arrowNodes.Add(arrowNode);
             }
 
             // 화살표 인디케이터 머리 생성
-            GameObject arrowHead = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowHead")));
+            GameObject arrowHead = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowHead")),
+                arrowSpawnPosition,
+                Quaternion.identity);
             NetworkServer.Spawn(arrowHead, connectionToClient);
-            cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowHead(arrowHead);
+            arrowNodes.Add(arrowHead);
 
+
+            // 화살표 머리와 몸체가 담긴 노드들을 클라이언트에 전달
+            cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowParts(arrowNodes, cardOnHand);
+
+            // 화살표를 소환한 카드를 화살표 주인으로 설정
+            cardEmitter.GetComponent<CardCtrlArrow>().arrowOwnedCardOnHand = cardOnHand;
+
+            // 화살 소환 상태 변수 설정
             isArrowSpawned = true;
+
+            // 화살 소환한 플레이어에도 참조값 설정
             cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();
         }
     }

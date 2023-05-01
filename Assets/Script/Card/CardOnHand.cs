@@ -128,7 +128,7 @@ public class CardOnHand : NetworkBehaviour
         if(cardOnHand.card.isTargetable && (Input.mousePosition.y > Screen.height / 3)){
             cardOnHand.isDrag = false;
             cardOnHand.isMoving = true;
-            currentPlayerDeck.CmdSpawnArrowEmitter(transform.position, cardOnHand);
+            currentPlayerDeck.CmdSpawnArrowEmitter(cardOnHand);
             cardOnHand.transform
                 .DOMove(new Vector3(0f, originPosition.y, originPosition.z), 0.4f)
                 .SetEase(Ease.OutSine);
