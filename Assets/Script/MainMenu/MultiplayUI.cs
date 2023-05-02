@@ -18,6 +18,9 @@ public class MultiplayUI : InstanceD<MultiplayUI>
     public Button backButton;
     public Button refreshButton;
     public GameObject popUpUI;
+
+    public GameObject multiPlayerUI;
+    public GameObject mainMenuUI;
     int originLocation = 888;
     int targetLocation = 614;
     List<GameObject> lobbyList = new List<GameObject>();
@@ -67,11 +70,16 @@ public class MultiplayUI : InstanceD<MultiplayUI>
 
     void HandleBackToLobbyList()
     {
-        if(popUpUI.activeSelf)
+        if(popUpUI.activeSelf) // 방생성 PopUp UI가 있을경우 PopUp UI만 Disable
         {
             popUpUI.SetActive(false);
             createLobbyIcon.transform.DOLocalMove(new Vector3(0,originLocation,0),0.5f);
             shadowMaker.SetActive(false);
+        }
+        else // 메인메뉴로 돌아감
+        {
+            multiPlayerUI.SetActive(false);
+            mainMenuUI.SetActive(true);
         }
     }
     void OnCompleteMoveIcon()
