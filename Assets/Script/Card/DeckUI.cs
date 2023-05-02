@@ -49,18 +49,20 @@ public class DeckUI : SingletonD<DeckUI>
     // 턴 넘김
     public void HandleEndTurn()
     {
-        if(M_TurnManager.instance.currentPlayer == NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>()){
-            M_TurnManager.instance.SetNextTurn();
-            M_TurnManager.instance.isMyTurn = false;
-            RemoveAllCurrentPlayerDeck();
-            RemoveAllCurrentPlayerArrow();
+        if(NetworkClient.connection != null && NetworkClient.active){
+            if(M_TurnManager.instance.currentPlayer == NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>()){
+                M_TurnManager.instance.SetNextTurn();
+                M_TurnManager.instance.isMyTurn = false;
+                RemoveAllCurrentPlayerDeck();
+                RemoveAllCurrentPlayerArrow();
+            }
         }
     }
 
     // 내 턴 종료시 손에있는 모든 카드 제거
     private void RemoveAllCurrentPlayerDeck()
     {
-        if(NetworkClient.connection != null){
+        if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
@@ -73,7 +75,7 @@ public class DeckUI : SingletonD<DeckUI>
     // 내 턴 종료시 카드 제어 화살표 제거
     private void RemoveAllCurrentPlayerArrow()
     {
-         if(NetworkClient.connection != null){
+         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 CardCtrlArrow[] cardCtrlArrows = FindObjectsOfType<CardCtrlArrow>();

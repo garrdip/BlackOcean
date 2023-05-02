@@ -161,13 +161,15 @@ public class M_CardManager : NetworkBehaviour
                             .SetEase(Ease.InOutCirc));
         sequence.OnComplete(() =>
         {
-            // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행   
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if (gamePlayerDeck.isLocalPlayer)
-            {
-                cardOnHand.isMoving = false;
-                gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
-                DeckUI.instance.buttonEndTurn.interactable = true;
+            // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행
+            if(NetworkClient.connection != null && NetworkClient.active){   
+                GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                if (gamePlayerDeck.isLocalPlayer)
+                {
+                    cardOnHand.isMoving = false;
+                    gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
+                    DeckUI.instance.buttonEndTurn.interactable = true;
+                }
             }
         });
     }
@@ -176,24 +178,26 @@ public class M_CardManager : NetworkBehaviour
     public void CardOnHandAllThrowAwaySequence(CardOnHand cardOnHand)
     {
         DeckUI.instance.buttonEndTurn.interactable = false;
-        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-        if(gamePlayerDeck.isLocalPlayer){
-            float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
-            Vector3 trashDeckPosition = DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
-            cardOnHand.isMoving = true;
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
+                Vector3 trashDeckPosition = DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
+                cardOnHand.isMoving = true;
 
-            cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.3f);
-            cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), 0.3f);
-            cardOnHand.transform
-                    .DOMove(trashDeckPosition, 0.3f)
-                    .SetEase(Ease.OutCirc)
-                    .SetDelay(delay)
-                    .OnComplete(() => {
-                        cardOnHand.isMoving = false;
-                        gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
-                        DeckUI.instance.buttonEndTurn.interactable = true;
-                    });
-        }    
+                cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.3f);
+                cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), 0.3f);
+                cardOnHand.transform
+                        .DOMove(trashDeckPosition, 0.3f)
+                        .SetEase(Ease.OutCirc)
+                        .SetDelay(delay)
+                        .OnComplete(() => {
+                            cardOnHand.isMoving = false;
+                            gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
+                            DeckUI.instance.buttonEndTurn.interactable = true;
+                        });
+            }   
+        } 
     }
 
 

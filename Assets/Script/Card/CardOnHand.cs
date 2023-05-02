@@ -44,7 +44,7 @@ public class CardOnHand : NetworkBehaviour
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
     public override void OnStartClient()
     {
-        if(NetworkClient.connection != null){
+        if(NetworkClient.connection != null && NetworkClient.active){
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         }
         transform.SetParent(DeckUI.instance.CardPocket.transform);
@@ -99,7 +99,7 @@ public class CardOnHand : NetworkBehaviour
     {
          if(isOwned && isDrag && !M_CardManager.instance.IsArrowSpawned()){
             if(!card.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
-                if(NetworkClient.connection != null){
+                if(NetworkClient.connection != null && NetworkClient.active){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                     if (gamePlayerDeck.isLocalPlayer){
                         gamePlayerDeck.CmdEnQueueCardTargetPair(card, null);
