@@ -13,11 +13,14 @@ public class MonsterAction
 
     public int actionValue;
 
-    public MonsterAction(string name, ActionType type,int value)
+    public int actionFrequency;
+
+    public MonsterAction(string name, ActionType type,int value, int freq)
     {
         actionName = name;
         actionType = type;
         actionValue = value;
+        actionFrequency = freq;
     }
     public MonsterAction()
     {

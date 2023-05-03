@@ -31,7 +31,10 @@ public class M_TurnManager : NetworkBehaviour
     [Header("Spwan Object Transfrom Group")]
     public Transform playerSpawnLocation;
     public Transform monsterSpawnLocation;
-    List<TargetObject> spawnedList = new List<TargetObject>();
+
+    public List<TargetObject> spawnedPlayerList = new List<TargetObject>();
+    List<TargetObject> spawnedMonsterList = new List<TargetObject>();
+    List<TargetObject> monsterOrderList = new List<TargetObject>();
 
     // 카드와 타겟을 한쌍으로 저장하는 Dictionary타입의 큐
     public Queue<Dictionary<Card, TargetObject>> cardTargetPairQueue = new Queue<Dictionary<Card, TargetObject>>();
@@ -105,7 +108,7 @@ public class M_TurnManager : NetworkBehaviour
         M_MapManager.instance.StartBattle();
         GeneratePlayerUnit();
         GenerateMonster();
-        phase = BattleTurn.PLAYER_ORDERSELECT;
+        phase = BattleTurn.BATTLE_STANDBY;
         StartCoroutine(ProcessCardQueue());
     }
  
@@ -149,6 +152,9 @@ public class M_TurnManager : NetworkBehaviour
     {
         switch(phase)
         {
+            case BattleTurn.BATTLE_STANDBY :
+                BattleStandby();
+                break;
             case BattleTurn.PLAYER_ORDERSELECT :
                 PlayerOrderSelectPhase();
                 break;
@@ -164,11 +170,14 @@ public class M_TurnManager : NetworkBehaviour
                 PlayerEndTurn();
                 break;
             case BattleTurn.MONSTER_ORDERSELECT :
-                StartCoroutine(DebugDelay());
+                MonsterSetOrder();
+                StartCoroutine(DebugDelay()); // Todo
                 break;
             case BattleTurn.MONSTER_PREEFFECT :
+                MonsterPreEffect();
                 break;
             case BattleTurn.MONSTER_ACTIVE :
+                MonsterActive();
                 break;
         }
     }
@@ -177,7 +186,46 @@ public class M_TurnManager : NetworkBehaviour
     IEnumerator DebugDelay()
     {
         yield return new WaitForSeconds(1.0f);
+        phase = BattleTurn.MONSTER_PREEFFECT;
+    }
+
+    [Server]
+    public void BattleStandby()
+    {
+        foreach(TargetObject monster in spawnedMonsterList)
+        {
+            monster.monster.SetNextAction();
+            monster.monster.SetNextTarget();
+        }
         phase = BattleTurn.PLAYER_ORDERSELECT;
+    }
+
+    [Server]
+    public void MonsterActive()
+    {
+        foreach(TargetObject monster in spawnedMonsterList)
+        {
+            monster.monster.DoAction();
+        }
+        phase = BattleTurn.PLAYER_ORDERSELECT;
+    }
+
+    [Server]
+    public void MonsterSetOrder()
+    {
+        monsterOrderList.Clear();
+        // 일반적으로 전열의 몬스터먼저 행동 // 다른경우 이부분 수정
+        for(int i = 0 ;i < spawnedMonsterList.Count ; i ++)
+        {
+            monsterOrderList.Add(spawnedMonsterList[i]);
+        }
+        //phase = BattleTurn.MONSTER_PREEFFECT;
+    }
+
+    [Server]
+    public void MonsterPreEffect()
+    {
+        phase = BattleTurn.MONSTER_ACTIVE;
     }
 
     [Server]
@@ -215,7 +263,7 @@ public class M_TurnManager : NetworkBehaviour
             NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().player = playerOrder[i];
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
-            spawnedList.Add(avatar.GetComponent<TargetObject>());
+            spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
         }
     }
 
@@ -239,7 +287,7 @@ public class M_TurnManager : NetworkBehaviour
             NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
             avatar.GetComponent<TargetObject>().monster = monster;
-            spawnedList.Add(avatar.GetComponent<TargetObject>());
+            spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
             RpcMonsterInit(avatar.GetComponent<TargetObject>(), monster);
         }
     }
