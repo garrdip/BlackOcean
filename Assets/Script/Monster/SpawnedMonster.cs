@@ -85,11 +85,14 @@ public class SpawnedMonster : NetworkBehaviour
         {
             case ActionType.SINGLEATTACK :
                 nextTarget.player.HP -= nextAction.actionValue;
+                DoAnimation();
                 break;
             case ActionType.DEFENSE :
                 sheild += nextAction.actionValue;
+                DoAnimation();
                 break;
             case ActionType.FULLSCALEATTACK :
+                DoAnimation();
                 foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
                 {
                     target.player.HP -= nextAction.actionValue;
@@ -97,5 +100,11 @@ public class SpawnedMonster : NetworkBehaviour
                 break;
         }
         SetNextAction();
+    }
+
+    [ClientRpc]
+    public void DoAnimation()
+    {
+        transform.parent.GetChild(1).GetComponent<Animator>().SetTrigger("SingleAttack");
     }
 }

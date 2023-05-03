@@ -203,12 +203,18 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void MonsterActive()
     {
+        StartCoroutine(MonsterActionSeuqence());
+    }
+    IEnumerator MonsterActionSeuqence()
+    {
         foreach(TargetObject monster in spawnedMonsterList)
         {
             monster.monster.DoAction();
+            yield return new WaitForSeconds(1f);
         }
         phase = BattleTurn.PLAYER_ORDERSELECT;
     }
+
 
     [Server]
     public void MonsterSetOrder()

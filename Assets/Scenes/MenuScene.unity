@@ -10191,6 +10191,8 @@ MonoBehaviour:
   backButton: {fileID: 87480487}
   refreshButton: {fileID: 1071811038}
   popUpUI: {fileID: 109723654}
+  multiPlayerUI: {fileID: 0}
+  mainMenuUI: {fileID: 0}
   prefabLobbyData: {fileID: 3147464749390584309, guid: fce1f6465b649bc4585279d16af56b39, type: 3}
   lobbyListTransform: {fileID: 667784734}
 --- !u!114 &1716722583
