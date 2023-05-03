@@ -105,6 +105,6 @@ public class SpawnedMonster : NetworkBehaviour
     [ClientRpc]
     public void DoAnimation()
     {
-        transform.parent.GetChild(1).GetComponent<Animator>().SetTrigger("SingleAttack");
+        transform.parent.GetComponentInChildren<Animator>().SetTrigger("SingleAttack");
     }
 }
