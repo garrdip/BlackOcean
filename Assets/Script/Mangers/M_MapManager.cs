@@ -30,6 +30,9 @@ public class M_MapManager : NetworkBehaviour
     [Header("Game Scene")]
     public GameObject game;
 
+    [Header("Map Player List")]
+    public List<GameObject> mapPlayerPieces;
+
     public static M_MapManager instance
     {
         get

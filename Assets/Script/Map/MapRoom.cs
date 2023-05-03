@@ -31,6 +31,7 @@ public class MapRoom : NetworkBehaviour
         Debug.Log(" 클릭 !");
         if( Vector2.Distance(location,M_MapManager.instance.currentLocation) == 1f )
             NetworkClient.localPlayer.GetComponent<GamePlayer>().destination = location;
+            NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeCurrentMapPlayerPosition(location);
     }
 
 

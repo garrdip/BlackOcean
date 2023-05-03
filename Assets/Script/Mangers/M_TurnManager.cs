@@ -306,13 +306,13 @@ public class M_TurnManager : NetworkBehaviour
     // 게임화면의 DeckUI에 있는 플레이어 정보 및 턴 정보 뷰 세팅
     private void SetPlayerOrderView(GamePlayer gamePlayer, int index)
     {
-        GamePlayerOrder gamePlayerOrder =  DeckUI.instance.playerOrderList[index].GetComponent<GamePlayerOrder>();
-        gamePlayerOrder.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
+        OrderUI orderUI =  DeckUI.instance.playerOrderList[index].GetComponent<OrderUI>();
+        orderUI.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
         if(gamePlayer.isLocalPlayer){
-            gamePlayerOrder.playerOwnMenu.gameObject.SetActive(true); // 전용 메뉴 활성화
-            float width = gamePlayerOrder.buttonPlayerOrder.GetComponent<RectTransform>().rect.width;
-            float height = gamePlayerOrder.buttonPlayerOrder.GetComponent<RectTransform>().rect.height;
-            gamePlayerOrder.buttonPlayerOrder.GetComponent<RectTransform>().sizeDelta = new Vector2(width + 30f, height + 30f); // 버튼 크기 크게 변경(변경된 값이 native size)
+            orderUI.playerOwnMenu.gameObject.SetActive(true); // 전용 메뉴 활성화
+            float width = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.width;
+            float height = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.height;
+            orderUI.buttonPlayerOrder.GetComponent<RectTransform>().sizeDelta = new Vector2(width + 30f, height + 30f); // 버튼 크기 크게 변경(변경된 값이 native size)
         }
     }
 
