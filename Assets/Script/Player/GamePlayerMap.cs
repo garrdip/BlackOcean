@@ -12,11 +12,6 @@ public class GamePlayerMap : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeCurrentMapPlayerPosition))]
     public Vector3 currentMapPlayerPosition;
 
-    void Start()
-    {
-        
-    }
-
     public override void OnStartLocalPlayer()
     {
         CmdSpawndMapPlayerPiece();
@@ -50,6 +45,17 @@ public class GamePlayerMap : NetworkBehaviour
     public void CmdChangeCurrentMapPlayerPosition(Vector3 position)
     {
         currentMapPlayerPosition = position;
+    }
+
+    // 맵플레이어가 선택한 MapRoom값을 Dictionary<NetworkIdentity, MapRoom> 형태로 저장
+    [Command]
+    public void CmdSelectMapRoom(MapRoom mapRoom, NetworkIdentity networkIdentity)
+    {
+        if(M_MapManager.instance.playerVoteMapRoom.ContainsKey(networkIdentity)){
+            M_MapManager.instance.playerVoteMapRoom[networkIdentity] = mapRoom;
+        }else{
+            M_MapManager.instance.playerVoteMapRoom.Add(networkIdentity, mapRoom);
+        }
     }
 
     // 맵 플레이어 위치 변경 수신

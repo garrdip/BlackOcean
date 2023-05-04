@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using AYellowpaper.SerializedCollections;
 
 public class M_MapManager : NetworkBehaviour
 {  
@@ -32,6 +33,10 @@ public class M_MapManager : NetworkBehaviour
 
     [Header("Map Player List")]
     public List<GameObject> mapPlayerPieces;
+
+    [Header("Map Player Select MapRoom")]
+    [SerializedDictionary("NetworkIdentity", "MapRoom")]
+    public SerializedDictionary<NetworkIdentity, MapRoom> playerVoteMapRoom = new SerializedDictionary<NetworkIdentity, MapRoom>();
 
     public static M_MapManager instance
     {
@@ -72,12 +77,12 @@ public class M_MapManager : NetworkBehaviour
     }
 
     [Server]
-    public void MoveToRoom(Vector2 tar, Vector3 pos)
+    public void MoveToRoom(Vector2 to, Vector3 from)
     {
-        SetRoomColor(tar);
-        currentLocation = tar;
+        SetRoomColor(to);
+        currentLocation = to;
         GenerateNextRoom();
-        MoveCameraPositionToRoom(pos);
+        MoveCameraPositionToRoom(from);
         return;
     }
 
@@ -114,6 +119,7 @@ public class M_MapManager : NetworkBehaviour
         roommaps.SetActive(false);
         game.SetActive(true);
         DeckUI.instance.GameUI.gameObject.SetActive(true);
+        DeckUI.instance.GameBackGround.gameObject.SetActive(true);
         Camera.main.orthographic = true;
     }
     // East/West/South/North 방이 있는지 검색하고 없으면 생성 - for문이 쥰내 들어감 괜찮은지
@@ -145,6 +151,28 @@ public class M_MapManager : NetworkBehaviour
             }
         }
     }
+
+    // 맵 플레이어들이 선택한 방 선택지 확인
+    // 1. 중복값이 있다는것은 2명 이상이 해당 방을 선택한 것이며, 과반수 이상 이므로 해당 MapRoom 반환
+    // 2. 중복값이 없다는 것은 모두 다른 선택을 한 것이므로 랜덤으로 돌려서 선택된 MapRoom 반환
+    [Server]
+    public MapRoom GetVoteMapRoomResult()
+    {
+        List<MapRoom> mapRooms = new List<MapRoom>();
+        foreach (MapRoom mapRoom in playerVoteMapRoom.Values)
+        {
+            if(!mapRooms.Contains(mapRoom)){
+                mapRooms.Add(mapRoom);
+            }else{
+                Debug.Log("중복 선택 - 해당 방 선택");
+                return mapRoom;
+            }
+        }
+        int randomIndex = Random.Range(0, mapRooms.Count); // 투표한 사람수만큼 랜덤
+        Debug.Log("중복 없음 - 랜덤 방 선택");
+        return mapRooms[randomIndex];
+    }
+
 
     // 방이동후 카메라 전환 (자유 이동으로 할지)
     [ClientRpc]

@@ -113,6 +113,17 @@ public class GamePlayer : NetworkBehaviour
             }
             // All Player Ready !
             M_TurnManager.instance.HandleStartBattle();
-        }
+
+            // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
+            MapRoom mapRoom = M_MapManager.instance.GetVoteMapRoomResult();
+            if(mapRoom != null){
+                Vector3 position = mapRoom.GetComponent<Transform>().position;
+                foreach(GameObject mapPlayerPieceObject in M_MapManager.instance.mapPlayerPieces){
+                    MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
+                    mapPlayerPiece.OnChangeMapPlayerPiecePosition(position);
+                    M_MapManager.instance.MoveToRoom(mapRoom.location, position);
+                }
+            }
+        }    
     }
 }

@@ -17,6 +17,7 @@ public class DeckUI : SingletonD<DeckUI>
     public GameObject TrashDeck;
     public GameObject DeckListPopUp;
     public GameObject CardOnDeckPrefab;
+    public GameObject GameBackGround;
 
     [Header("UI 요소")]
     public Button buttonEndTurn;

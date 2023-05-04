@@ -888,7 +888,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &228626581
 Transform:
   m_ObjectHideFlags: 0
@@ -1905,6 +1905,7 @@ MonoBehaviour:
   TrashDeck: {fileID: 1681072078}
   DeckListPopUp: {fileID: 1581196589}
   CardOnDeckPrefab: {fileID: 6285776433173605381, guid: 5f8c496d1b06c2549a3d0dc4c225442b, type: 3}
+  GameBackGround: {fileID: 228626580}
   buttonEndTurn: {fileID: 1065066847}
   buttonPrefareDeck: {fileID: 22229867}
   buttonTrashDeck: {fileID: 791626060}
@@ -4712,7 +4713,9 @@ MonoBehaviour:
   mapPlayerForUI: {fileID: 5678142405827003429, guid: 6dd6d54b28b6baf418bb5cb38e93941f, type: 3}
   roommaps: {fileID: 2118407966}
   game: {fileID: 1408884458}
-  playerPieces: []
+  mapPlayerPieces: []
+  playerVoteMapRoom:
+    _serializedList: []
 --- !u!4 &1913121864
 Transform:
   m_ObjectHideFlags: 0
@@ -6259,6 +6262,7 @@ MonoBehaviour:
   startButton: {fileID: 2118407961}
   playerSpawnLocation: {fileID: 1337139467}
   monsterSpawnLocation: {fileID: 1280680010139328500}
+  spawnedPlayerList: []
 --- !u!1 &3946356632764995061
 GameObject:
   m_ObjectHideFlags: 0

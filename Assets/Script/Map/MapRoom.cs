@@ -29,9 +29,11 @@ public class MapRoom : NetworkBehaviour
     void  OnMouseDown()
     {
         Debug.Log(" 클릭 !");
+        // TODO : 이전에 선택 혹은 버려진 맵들은 선택되지 않도록 해야함
         if( Vector2.Distance(location,M_MapManager.instance.currentLocation) == 1f )
             NetworkClient.localPlayer.GetComponent<GamePlayer>().destination = location;
-            NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeCurrentMapPlayerPosition(location);
+            NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdSelectMapRoom(this, NetworkClient.connection.identity);
+            NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeCurrentMapPlayerPosition(GetComponent<Transform>().position);
     }
 
 
