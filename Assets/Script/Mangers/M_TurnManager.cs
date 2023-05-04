@@ -210,9 +210,13 @@ public class M_TurnManager : NetworkBehaviour
         foreach(TargetObject monster in spawnedMonsterList)
         {
             monster.monster.DoAction();
-            yield return new WaitForSeconds(1f);
+            while(true)
+            {
+                yield return new WaitForSeconds(0.01f);
+                if(!monster.GetComponentInChildren<AnimationEventHandler>().isAnimating) break;
+            }
         }
-        phase = BattleTurn.PLAYER_ORDERSELECT;
+        phase = BattleTurn.BATTLE_STANDBY;
     }
 
 

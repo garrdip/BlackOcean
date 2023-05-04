@@ -81,6 +81,7 @@ public class SpawnedMonster : NetworkBehaviour
     [Server]
     public void DoAction()
     {
+        transform.parent.GetComponentInChildren<AnimationEventHandler>().isAnimating = true;
         switch(nextAction.actionType)
         {
             case ActionType.SINGLEATTACK :
@@ -99,7 +100,6 @@ public class SpawnedMonster : NetworkBehaviour
                 }
                 break;
         }
-        SetNextAction();
     }
 
     [ClientRpc]
