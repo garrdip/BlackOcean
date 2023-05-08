@@ -42,19 +42,23 @@ public class GamePlayerMap : NetworkBehaviour
 
     // 맵플레이어 위치 변경 요청
     [Command]
-    public void CmdChangeCurrentMapPlayerPosition(Vector3 position)
+    public void CmdChangeCurrentMapPlayerPosition(MapRoom mapRoom, Vector3 position)
     {
-        currentMapPlayerPosition = position;
+        if(!mapRoom.isComplete){
+            currentMapPlayerPosition = position;
+        }
     }
 
     // 맵플레이어가 선택한 MapRoom값을 Dictionary<NetworkIdentity, MapRoom> 형태로 저장
     [Command]
     public void CmdSelectMapRoom(MapRoom mapRoom, NetworkIdentity networkIdentity)
     {
-        if(M_MapManager.instance.playerVoteMapRoom.ContainsKey(networkIdentity)){
-            M_MapManager.instance.playerVoteMapRoom[networkIdentity] = mapRoom;
-        }else{
-            M_MapManager.instance.playerVoteMapRoom.Add(networkIdentity, mapRoom);
+        if(!mapRoom.isComplete){
+            if(M_MapManager.instance.playerVoteMapRoom.ContainsKey(networkIdentity)){
+                M_MapManager.instance.playerVoteMapRoom[networkIdentity] = mapRoom;
+            }else{
+                M_MapManager.instance.playerVoteMapRoom.Add(networkIdentity, mapRoom);
+            }
         }
     }
 

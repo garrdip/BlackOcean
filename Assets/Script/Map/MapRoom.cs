@@ -9,12 +9,16 @@ public class MapRoom : NetworkBehaviour
 {
     [SyncVar]
     public Vector2 location;
+    
     [SyncVar]
     public int hazard;
+    
     [SyncVar]
     public bool isComplete = false;
+
     [SyncVar]
     public RoomType roomType;
+    
     SpriteRenderer testSprite;
 
     Camera mainCamera;
@@ -28,12 +32,13 @@ public class MapRoom : NetworkBehaviour
 
     void  OnMouseDown()
     {
-        Debug.Log(" 클릭 !");
-        // TODO : 이전에 선택 혹은 버려진 맵들은 선택되지 않도록 해야함
-        if( Vector2.Distance(location,M_MapManager.instance.currentLocation) == 1f )
+        // 맵은 상하좌우 한칸씩만 이동가능
+        if(Vector2.Distance(location, M_MapManager.instance.currentLocation) <= 1f){
+            Debug.Log(" 클릭 : " + location + " / " + M_MapManager.instance.currentLocation);
             NetworkClient.localPlayer.GetComponent<GamePlayer>().destination = location;
             NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdSelectMapRoom(this, NetworkClient.connection.identity);
-            NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeCurrentMapPlayerPosition(GetComponent<Transform>().position);
+            NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeCurrentMapPlayerPosition(this, GetComponent<Transform>().position);
+        }
     }
 
 

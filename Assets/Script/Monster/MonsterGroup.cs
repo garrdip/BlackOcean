@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class MonsterGroup : MonoBehaviour
+public class MonsterGroup
 {
     public string groupName;
 

@@ -120,7 +120,7 @@ public class GamePlayer : NetworkBehaviour
                 Vector3 position = mapRoom.GetComponent<Transform>().position;
                 foreach(GameObject mapPlayerPieceObject in M_MapManager.instance.mapPlayerPieces){
                     MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
-                    mapPlayerPiece.OnChangeMapPlayerPiecePosition(position);
+                    mapPlayerPiece.RpcChangeMapPlayerPiecePosition(position);
                     M_MapManager.instance.MoveToRoom(mapRoom.location, position);
                 }
             }

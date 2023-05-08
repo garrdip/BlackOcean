@@ -164,13 +164,15 @@ public class M_MapManager : NetworkBehaviour
             if(!mapRooms.Contains(mapRoom)){
                 mapRooms.Add(mapRoom);
             }else{
-                Debug.Log("중복 선택 - 해당 방 선택");
-                return mapRoom;
+                return mapRoom; // 중복 선택된 방
             }
         }
-        int randomIndex = Random.Range(0, mapRooms.Count); // 투표한 사람수만큼 랜덤
-        Debug.Log("중복 없음 - 랜덤 방 선택");
-        return mapRooms[randomIndex];
+        if(mapRooms.Count > 0){
+            int randomIndex = Random.Range(0, mapRooms.Count); // 선택된 방들 중에 랜덤
+            return mapRooms[randomIndex];
+        }else{
+            return null;
+        }
     }
 
 

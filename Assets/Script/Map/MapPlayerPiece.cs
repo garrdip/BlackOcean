@@ -23,7 +23,7 @@ public class MapPlayerPiece: NetworkBehaviour
 
     // 맵 플레이어 위치 변경 수신
     [ClientRpc]
-    public void OnChangeMapPlayerPiecePosition(Vector3 position)
+    public void RpcChangeMapPlayerPiecePosition(Vector3 position)
     {
         transform.position = position;
     }
