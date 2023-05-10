@@ -297,7 +297,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 22229868}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 780574851}
+        m_TargetAssemblyTypeName: DeckUI, Assembly-CSharp
+        m_MethodName: HandleShowPrefareDeck
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &22229868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1361,9 +1373,9 @@ RectTransform:
   m_Father: {fileID: 1302168156}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 114, y: -50}
   m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &580192230
@@ -2001,7 +2013,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 791626061}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 780574851}
+        m_TargetAssemblyTypeName: DeckUI, Assembly-CSharp
+        m_MethodName: HandleShowTrashDeck
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &791626061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2105,9 +2129,9 @@ RectTransform:
   m_Father: {fileID: 1302168156}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 27, y: -50}
   m_SizeDelta: {x: 54, y: 74}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &830413459
@@ -2425,7 +2449,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1065066848}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 780574851}
+        m_TargetAssemblyTypeName: DeckUI, Assembly-CSharp
+        m_MethodName: HandleEndTurn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1065066848
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3329,7 +3365,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1408884459
 Transform:
   m_ObjectHideFlags: 0
@@ -3586,7 +3622,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1478530161}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 780574851}
+        m_TargetAssemblyTypeName: DeckUI, Assembly-CSharp
+        m_MethodName: HandleReturnGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1478530161
 MonoBehaviour:
   m_ObjectHideFlags: 0

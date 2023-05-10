@@ -361,19 +361,6 @@ public class M_TurnManager : NetworkBehaviour
             && currentTurnPlayer.isLocalPlayer;
     }
 
-    // 게임화면의 DeckUI에 있는 플레이어 정보 및 턴 정보 뷰 세팅
-    private void SetPlayerOrderView(GamePlayer gamePlayer, int index)
-    {
-        OrderUI orderUI =  DeckUI.instance.playerOrderList[index].GetComponent<OrderUI>();
-        orderUI.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
-        if(gamePlayer.isLocalPlayer){
-            orderUI.playerOwnMenu.gameObject.SetActive(true); // 전용 메뉴 활성화
-            float width = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.width;
-            float height = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.height;
-            orderUI.buttonPlayerOrder.GetComponent<RectTransform>().sizeDelta = new Vector2(width + 30f, height + 30f); // 버튼 크기 크게 변경(변경된 값이 native size)
-        }
-    }
-
 
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
     private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
@@ -381,7 +368,7 @@ public class M_TurnManager : NetworkBehaviour
         switch (op)
         {
             case SyncList<GamePlayer>.Operation.OP_ADD:
-                SetPlayerOrderView(newGamePlayer, index);
+
                 break;
             case SyncList<GamePlayer>.Operation.OP_INSERT:
                 
@@ -390,7 +377,7 @@ public class M_TurnManager : NetworkBehaviour
 
                 break;
             case SyncList<GamePlayer>.Operation.OP_SET:
-                // TODO : 인덱스가 바뀔 때
+                // TODO : 인덱스가 바뀔 때(플레이어 정렬 순서 바뀔 때 로직 구현부)
                 break;
             case SyncList<GamePlayer>.Operation.OP_CLEAR:
                 
