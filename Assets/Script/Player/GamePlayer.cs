@@ -111,8 +111,6 @@ public class GamePlayer : NetworkBehaviour
             {
                 if(!player.isReady) return;
             }
-            // All Player Ready !
-            M_TurnManager.instance.HandleStartBattle();
 
             // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
             MapRoom mapRoom = M_MapManager.instance.GetVoteMapRoomResult();
@@ -124,6 +122,9 @@ public class GamePlayer : NetworkBehaviour
                     M_MapManager.instance.MoveToRoom(mapRoom.location, position);
                 }
             }
+
+            // All Player Ready !
+            M_TurnManager.instance.HandleStartBattle();
         }    
     }
 }

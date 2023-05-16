@@ -335,7 +335,6 @@ public class M_TurnManager : NetworkBehaviour
     {
         if(IsCurrentPlayerTurn(newGamePlayer)){
             isMyTurn = true;
-            GetCardFromPrefareDeck();
         }else{
             isMyTurn = false;
         }

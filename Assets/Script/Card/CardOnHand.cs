@@ -51,6 +51,8 @@ public class CardOnHand : NetworkBehaviour
         originScale = transform.localScale;
         targetScale = originScale + new Vector3(0.05f, 0.05f, 0f);
         hoveredPositionY = 1.2f;
+        transform.GetComponent<SpriteRenderer>().sortingOrder = index;
+        gameObject.SetActive(isOwned); // 현재 게임 플레이어 소유의 카드 오브젝트만 활성화
     }
 
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
@@ -61,7 +63,6 @@ public class CardOnHand : NetworkBehaviour
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardNoneCollidableSize);
-            CmdChangeCardOnHandSortOrder(999);
         }
     }
 
@@ -72,7 +73,6 @@ public class CardOnHand : NetworkBehaviour
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardCollidableSize);
-            CmdChangeCardOnHandSortOrder(originSortOrder);
         }
     }
 
@@ -133,19 +133,5 @@ public class CardOnHand : NetworkBehaviour
                 .DOMove(new Vector3(0f, originPosition.y, originPosition.z), 0.4f)
                 .SetEase(Ease.OutSine);
         }
-    }
-
-    // 스프라이트 랜더링 정렬값 변경 요청
-    [Command]
-    public void CmdChangeCardOnHandSortOrder(int sortOrder)
-    {
-        RpcChangeCardOnHandSortOrder(sortOrder);
-    }
-
-    // 변경된 스프라이트 랜더링 정렬값에 따라 CardOnHand 랜더링 순서 변경
-    [ClientRpc]
-    public void RpcChangeCardOnHandSortOrder(int sortOrder)
-    {
-        transform.GetComponent<SpriteRenderer>().sortingOrder = sortOrder;
     }
 }

@@ -121,7 +121,10 @@ public class M_MapManager : NetworkBehaviour
         DeckUI.instance.GameUI.gameObject.SetActive(true);
         DeckUI.instance.GameBackGround.gameObject.SetActive(true);
         Camera.main.orthographic = true;
+        Camera.main.transform.position = new Vector3(0f, 0f, -10f); // 카메라 위치 리셋
+        M_TurnManager.instance.GetCardFromPrefareDeck(); // 각 플레이어들의 카드 소환 요청
     }
+
     // East/West/South/North 방이 있는지 검색하고 없으면 생성 - for문이 쥰내 들어감 괜찮은지
     [Server]
     public void GenerateNextRoom()
