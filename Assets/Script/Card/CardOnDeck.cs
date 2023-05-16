@@ -16,7 +16,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     void Start()
     {
         textCardName.text = card.name;
-        textCardInfo.text = card.effect.ToString();
+        //textCardInfo.text = card.effect.ToString();
         originScale = transform.localScale;
     }
 

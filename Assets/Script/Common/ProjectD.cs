@@ -4,10 +4,6 @@ namespace ProjectD
     public enum ObjectType {PLAYER, ENEMY, BOSS}
     public enum ActionType { SINGLEATTACK, FULLSCALEATTACK, MULTIPLEATTACK, BLEEDING_PER_DAMAGE, DEFENSE , DEBUFF_ATK, DEBUFF_DEF, BUFF_STR, DEBUFF_WEAKNESS, DEBUFF_BLEEDING, DEBUFF_DEFENSELESS }
     public enum CardGrade { NORMAL, RARE, UNIQUE, LEGEND }
-    public enum CardEffect { NONE, SINGLEATTACK, FULLSCALEATTACK, MULTIPLEATTACK, BLEEDING_PER_DAMAGE, SELFDEFENSE , DEBUFF_ATK, DEBUFF_DEF, BUFF_STR, DEBUFF_WEAKNESS, DEBUFF_BLEEDING, DEBUFF_DEFENSELESS, 
-                            SINGLE_COUNTER_ATTACK, MULTI_COUNTER_ATTACK, THORN, SELFEVOLUTION, CHANGE_POSITION, CONFUSE, DRAW_TRANSFORMCARD, TRANSFORMATION, OVERCOME, CHAOS, SELFHEAL, DRAWCARD, PIERCEATTACK, 
-                            AGILITY, PROVOKE }
-    public enum CardAttribute { DESTROY, CREATION } 
     public enum CardCharacteristic { NONE, EXTINCTION, INNATENESS, CONSERVATION, TRANSFORM }
     public enum PlayOrder { FIRST = 0, SECOND = 1, THIRD = 2 , UNDEFINED = 3}
     public enum GameLevel { EASY = 0, NORMAL = 1, HARD = 2 }
@@ -20,5 +16,5 @@ namespace ProjectD
             return input.Replace("\u200B", "");
         }
     }
-
+    public delegate void ExecuteCard(TargetObject[] target);
 }

@@ -58,11 +58,11 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Attack"));
+                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("G_Default"));
                         deck.Add(attackCard);
                         prefareDeck.Add(attackCard);
                     }else{
-                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Defense"));
+                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("G_Default"));
                         deck.Add(defenseCard);
                         prefareDeck.Add(defenseCard);
                     }
@@ -73,11 +73,11 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Attack"));
+                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("E_Default"));
                         deck.Add(attackCard);
                         prefareDeck.Add(attackCard);
                     }else{
-                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Heal"));
+                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("E_Default"));
                         deck.Add(defenseCard);
                         prefareDeck.Add(defenseCard);
                     }
@@ -88,11 +88,11 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Attack"));
+                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("H_Default"));
                         deck.Add(attackCard);
                         prefareDeck.Add(attackCard);
                     }else{
-                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("Normal_Defense"));
+                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("H_Default"));
                         deck.Add(defenseCard);
                         prefareDeck.Add(defenseCard);
                     }
