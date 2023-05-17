@@ -15,9 +15,6 @@ public class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public CardCtrlArrow cardCtrlArrow; // 현재 소환된 카드 화살표
 
-    [SyncVar]
-    public bool isArrowSpawned = false; // 화살표는 한개만 생성되어야하므로 이미 생성되어 있는지 체크용 변수
-
     public const int arrowNodeNum = 13; // 카드 컨트롤 화살표 몸통 개수
 
     public const int defaultCardOnHandCount = 10; // 카드 오브젝트 기본 개수
@@ -137,63 +134,53 @@ public class GamePlayerDeck : NetworkBehaviour
 
     // 카드 컨트롤 화살표 인디케이터 생성(네트워크 오브젝트)
     [Command]
-    public void CmdSpawnArrowEmitter(CardOnHand cardOnHand)
+    public void CmdSpawnArrowEmitter()
     {
-        if(!isArrowSpawned){
-            M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
-            // 화살표 생성 위치는 소환한 카드 위치
-            Vector3 arrowSpawnPosition = cardOnHand.transform.position;
+        // 화면 밖에 화살표 생성
+        Vector3 arrowSpawnPosition = new Vector3(-20f, 0f, 0f);
 
-            // 화살표 노드들 담을 리스트
-            List<GameObject> arrowNodes = new List<GameObject>();
-                        
-            // 화살표 인디케이터 오브젝트 생성
-            GameObject cardEmitter = Instantiate(
-                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")),
+        // 화살표 노드들 담을 리스트
+        List<GameObject> arrowNodes = new List<GameObject>();
+                    
+        // 화살표 인디케이터 오브젝트 생성
+        GameObject cardEmitter = Instantiate(
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")),
+            arrowSpawnPosition,
+            Quaternion.identity);
+        NetworkServer.Spawn(cardEmitter, connectionToClient);
+
+        // 화살표 인디케이터 몸체 생성
+        for(int i=0; i<arrowNodeNum; i++){
+            GameObject arrowNode = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowNode")),
                 arrowSpawnPosition,
                 Quaternion.identity);
-            NetworkServer.Spawn(cardEmitter, connectionToClient);
-
-            // 화살표 인디케이터 몸체 생성
-            for(int i=0; i<arrowNodeNum; i++){
-                GameObject arrowNode = Instantiate(
-                    M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowNode")),
-                    arrowSpawnPosition,
-                    Quaternion.identity);
-                NetworkServer.Spawn(arrowNode, connectionToClient);
-                arrowNodes.Add(arrowNode);
-            }
-
-            // 화살표 인디케이터 머리 생성
-            GameObject arrowHead = Instantiate(
-                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowHead")),
-                arrowSpawnPosition,
-                Quaternion.identity);
-            NetworkServer.Spawn(arrowHead, connectionToClient);
-            arrowNodes.Add(arrowHead);
-
-
-            // 화살표 머리와 몸체가 담긴 노드들을 클라이언트에 전달
-            cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowParts(arrowNodes, cardOnHand);
-
-            // 화살표를 소환한 카드를 화살표 주인으로 설정
-            cardEmitter.GetComponent<CardCtrlArrow>().arrowOwnedCardOnHand = cardOnHand;
-
-            // 화살 소환 상태 변수 설정
-            isArrowSpawned = true;
-
-            // 화살 소환한 플레이어에도 참조값 설정
-            cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();
+            NetworkServer.Spawn(arrowNode, connectionToClient);
+            arrowNodes.Add(arrowNode);
         }
+
+        // 화살표 인디케이터 머리 생성
+        GameObject arrowHead = Instantiate(
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowHead")),
+            arrowSpawnPosition,
+            Quaternion.identity);
+        NetworkServer.Spawn(arrowHead, connectionToClient);
+        arrowNodes.Add(arrowHead);
+
+        // 화살표 머리와 몸체가 담긴 노드들을 클라이언트에 전달
+        cardEmitter.GetComponent<CardCtrlArrow>().RpcSetArrowParts(arrowNodes);
+
+        // 플레이어에 자신이 소환한 화살표 참조값 설정
+        cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();
     }
 
-    // 카드 컨트롤 화살표 인디케이터 제거(네트워크 오브젝트)
+    // 화살표 주인 카드 참조값 설정
     [Command]
-    public void CmdDestroyArrowEmitter(GameObject cardEmitter)
+    public void CmdSetArrowOwnCardOnHand(CardOnHand cardOnHand)
     {
-        NetworkServer.Destroy(cardEmitter);
-        isArrowSpawned = false;
+        cardCtrlArrow.arrowOwnedCardOnHand = cardOnHand;
     }
 
     // 카드 리스트에서 삭제, 댁카운트 감소, 카드 오브젝트 삭제, 사용된 댁에 추가
