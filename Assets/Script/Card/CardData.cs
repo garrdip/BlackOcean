@@ -8,7 +8,7 @@ using ProjectD;
 
 public static class CardData
 {
-    public static List<Card> cards = new List<Card>();
+    public static List<CardBase> cards = new List<CardBase>();
     public static List<CardEffect> cardEffects = new List<CardEffect>();
 
     public static void LoadCardDataFromDB()
@@ -20,13 +20,13 @@ public static class CardData
             {
                 string value = DB.ReadLine();
                 if( value == null ) break; // 마지막 데이터의 경우 null을 반환
-                Card card = new Card();
+                CardBase card = new CardBase();
                 CardEffect cardEffect = new CardEffect();
                 string[] values = value.Trim().Split(",");
                 if(values[0] == "Character") continue; // 첫줄 데이터 스킵   
                 card.character = (Character)Enum.Parse<Character>(values[0]);
                 card.name = values[1];
-
+                card.isTargetable = (values[3] == "Y") ? true : false;
                 MethodInfo methodInfo = typeof(CardMethods).GetMethod(values[2]);
                 cardEffect.ProcessCard = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard), null, methodInfo, true);
                 cards.Add(card);
@@ -34,12 +34,14 @@ public static class CardData
             }
         }
     }
+
+
 }
 
 public class CardMethods
 {
     // Card Method List
-    public static void TEST(TargetObject[] tar)
+    public static void TEST(TargetObject tar)
     {
         Debug.Log("TEST 메소드 실행");
     }

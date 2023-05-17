@@ -37,7 +37,7 @@ public class M_TurnManager : NetworkBehaviour
     List<TargetObject> monsterOrderList = new List<TargetObject>();
 
     // 카드와 타겟을 한쌍으로 저장하는 Dictionary타입의 큐
-    public Queue<Dictionary<Card, TargetObject>> cardTargetPairQueue = new Queue<Dictionary<Card, TargetObject>>();
+    public Queue<(Card, TargetObject)> cardTargetPairQueue = new Queue<(Card, TargetObject)>();
 
     
     // Turn 관리는 서버
@@ -121,11 +121,19 @@ public class M_TurnManager : NetworkBehaviour
         {
             if(cardTargetPairQueue.Count != 0){
                 // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
-                Dictionary<Card, TargetObject> pairs = cardTargetPairQueue.Dequeue();
-                foreach(KeyValuePair<Card, TargetObject> pair in pairs){
-                    Debug.Log("카드: " + pair.Key);
-                    Debug.Log("타겟: " + pair.Value);
+                (Card card,TargetObject tar) = cardTargetPairQueue.Dequeue();
+               
+                Debug.Log("카드: " + card.baseCard.name);
+                if(card.baseCard.isTargetable)
+                {
+                    if(tar.player == null)
+                        Debug.Log("타겟: " + tar.monster.monsterData.name);
+                    else
+                        Debug.Log("타겟: " + tar.player.netIdentity);
                 }
+
+                CardData.cardEffects[CardData.cards.IndexOf(CardData.cards.Find(c => c.name == card.baseCard.name))].ProcessCard(tar);
+           
                 yield return waitForDelay;
             }
             yield return waitForLoop;
@@ -154,9 +162,6 @@ public class M_TurnManager : NetworkBehaviour
         {
             case BattleTurn.BATTLE_STANDBY :
                 BattleStandby();
-                break;
-            case BattleTurn.PLAYER_ORDERSELECT :
-                PlayerOrderSelectPhase();
                 break;
             case BattleTurn.PLAYER_PREEFFECT :
                 PlayerPreEffect();
@@ -197,7 +202,7 @@ public class M_TurnManager : NetworkBehaviour
             monster.monster.SetNextAction();
             monster.monster.SetNextTarget();
         }
-        phase = BattleTurn.PLAYER_ORDERSELECT;
+        phase = BattleTurn.PLAYER_PREEFFECT;
     }
 
     [Server]
@@ -254,13 +259,7 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void PlayerEndTurn()
     {
-        if(currentPlayer == playerOrder[playerOrder.Count - 1])
-            phase = BattleTurn.MONSTER_ORDERSELECT;
-        else
-        {
-            SetCurrentPlayer();
-            phase = BattleTurn.PLAYER_DRAW;
-        }
+        phase = BattleTurn.MONSTER_ORDERSELECT;
     }
 
     [Server]
@@ -333,11 +332,9 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     public void OnTurnChanged(GamePlayer newGamePlayer)
     {
-        if(IsCurrentPlayerTurn(newGamePlayer)){
+       
             isMyTurn = true;
-        }else{
-            isMyTurn = false;
-        }
+   
     }
 
     // prefareDeck에서 카드 가져와서 생성

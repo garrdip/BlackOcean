@@ -55,11 +55,11 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("G_Default"));
+                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("G_Target")));
                         deck.Add(attackCard);
                         prefareDeck.Add(attackCard);
                     }else{
-                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("G_Default"));
+                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("G_NonTarget")));
                         deck.Add(defenseCard);
                         prefareDeck.Add(defenseCard);
                     }
@@ -70,11 +70,11 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("E_Default"));
+                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("E_Target")));
                         deck.Add(attackCard);
                         prefareDeck.Add(attackCard);
                     }else{
-                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("E_Default"));
+                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("E_NonTarget")));
                         deck.Add(defenseCard);
                         prefareDeck.Add(defenseCard);
                     }
@@ -85,11 +85,11 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("H_Default"));
+                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("H_Target")));
                         deck.Add(attackCard);
                         prefareDeck.Add(attackCard);
                     }else{
-                        Card defenseCard = CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("H_Default"));
+                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("H_NonTarget")));
                         deck.Add(defenseCard);
                         prefareDeck.Add(defenseCard);
                     }
@@ -122,7 +122,6 @@ public class GamePlayerDeck : NetworkBehaviour
             NetworkServer.Spawn(cardOnHand, connectionToClient);
 
             cardOnHand.GetComponent<CardOnHand>().index = i;
-            cardOnHand.GetComponent<CardOnHand>().card.isTargetable = i % 2 == 0 ? true : false;
             cardOnHands.Add(cardOnHand.GetComponent<CardOnHand>()); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
 
             // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
@@ -207,9 +206,7 @@ public class GamePlayerDeck : NetworkBehaviour
     [Command]
     public void CmdEnQueueCardTargetPair(Card card, TargetObject targetObjects)
     {
-        Dictionary<Card, TargetObject> cardTargetPair = new Dictionary<Card, TargetObject>();
-        cardTargetPair.Add(card, targetObjects);
-        M_TurnManager.instance.cardTargetPairQueue.Enqueue(cardTargetPair);
+        M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, targetObjects));
     }
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//

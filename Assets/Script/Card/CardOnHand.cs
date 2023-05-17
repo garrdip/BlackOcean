@@ -97,8 +97,8 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 왼쪽버튼 뗄 때 이벤트
     void OnMouseUp()
     {
-         if(isOwned && isDrag){
-            if(!card.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
+        if(isOwned && isDrag){
+            if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
                 if(NetworkClient.connection != null && NetworkClient.active){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                     if (gamePlayerDeck.isLocalPlayer){
@@ -125,7 +125,7 @@ public class CardOnHand : NetworkBehaviour
     // 타겟팅 카드일 경우, 드래그중 위치가 화면 하단부 3분의1을 넘어가면 화살표 생성 후 카드의 위치를 중앙으로 이동
     private void MovePositionArrowSpawnedCardOnHand(CardOnHand cardOnHand)
     {
-        if(cardOnHand.card.isTargetable && (Input.mousePosition.y > Screen.height / 3)){
+        if(cardOnHand.card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 3)){
             cardOnHand.isDrag = false;
             cardOnHand.isMoving = true;
             currentPlayerDeck.cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
