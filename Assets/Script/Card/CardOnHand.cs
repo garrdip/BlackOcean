@@ -58,7 +58,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
     void OnMouseEnter()
     {
-        if(isOwned && !M_CardManager.instance.IsArrowSpawned()){
+        if(isOwned){
             isMouseOver = true;
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
@@ -69,7 +69,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 포인터 나갈 때 이벤트
     void OnMouseExit()
     {
-        if(isOwned && !M_CardManager.instance.IsArrowSpawned()){
+        if(isOwned){
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardCollidableSize);
@@ -79,7 +79,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 왼쪽버튼 누를 때 이벤트
     void OnMouseDown()
     {
-        if(isOwned && currentPlayerDeck.isLocalPlayer && !M_CardManager.instance.IsArrowSpawned()){
+        if(isOwned && currentPlayerDeck.isLocalPlayer){
             isDrag = true;
             originPosition = transform.position;
         }
@@ -88,7 +88,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트를 마우스로 드래그 할 때 이벤트
     void OnMouseDrag()
     {
-        if(isOwned && isDrag && !M_CardManager.instance.IsArrowSpawned()){
+        if(isOwned && isDrag){
             DragCardOnHand(this);
             MovePositionArrowSpawnedCardOnHand(this);
         }
@@ -97,7 +97,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 왼쪽버튼 뗄 때 이벤트
     void OnMouseUp()
     {
-         if(isOwned && isDrag && !M_CardManager.instance.IsArrowSpawned()){
+         if(isOwned && isDrag){
             if(!card.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
                 if(NetworkClient.connection != null && NetworkClient.active){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
@@ -128,7 +128,8 @@ public class CardOnHand : NetworkBehaviour
         if(cardOnHand.card.isTargetable && (Input.mousePosition.y > Screen.height / 3)){
             cardOnHand.isDrag = false;
             cardOnHand.isMoving = true;
-            currentPlayerDeck.CmdSpawnArrowEmitter(cardOnHand);
+            currentPlayerDeck.cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
+            currentPlayerDeck.CmdSetArrowOwnCardOnHand(cardOnHand);
             cardOnHand.transform
                 .DOMove(new Vector3(0f, originPosition.y, originPosition.z), 0.4f)
                 .SetEase(Ease.OutSine);

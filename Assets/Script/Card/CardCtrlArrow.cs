@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using Mirror;
 
 
-public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
+public class CardCtrlArrow : NetworkBehaviour
 {
     [SyncVar]
     public CardOnHand arrowOwnedCardOnHand; // 현재 소환된 화살표의 주인 카드
@@ -93,7 +93,7 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
                         if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
                             TargetObject targetObject = hit.collider.gameObject.GetComponent<TargetObject>();
                             gamePlayerDeck.CmdEnQueueCardTargetPair(arrowOwnedCardOnHand.card, targetObject); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
-                            gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject); // 화살표 삭제
+                            ChangeArrowVisible(false, DeckUI.instance.CardPocket.transform);
                             M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
                             M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
                         }
@@ -103,12 +103,28 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
         }
     }
 
+    // 화살표 초기화(위치설정, visible상태 활성화, 베지어 곡선 조작점 설정)
+    public void InitCardCtrlArrow(CardOnHand cardOnHand)
+    {
+        transform.position = cardOnHand.transform.position;
+        ChangeArrowVisible(true, cardOnHand.transform);
+        InitBezierCurvePoint(cardOnHand);
+    }
+
+    // 베지어 곡선 조작점 초기 위치값을 카드의 위치로 설정
+    private void InitBezierCurvePoint(CardOnHand cardOnHand)
+    {
+        controlPoints.Clear();
+        for(int i=0; i<4; i++){
+            this.controlPoints.Add(cardOnHand.transform.position);
+        }
+    }
+
     // 현재 소환된 카드 타겟 화살표 제거, 화살표 소유 카드의 충돌체 크기 변경 및 상태값 변경,
     public void RemoveCardCtrlArrow()
     {
-        if(NetworkClient.connection != null && NetworkClient.active && arrowOwnedCardOnHand != null){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            gamePlayerDeck.CmdDestroyArrowEmitter(this.gameObject);
+        if(isOwned && arrowOwnedCardOnHand != null){
+            ChangeArrowVisible(false, DeckUI.instance.CardPocket.transform);
             arrowOwnedCardOnHand.isDrag = false;
             arrowOwnedCardOnHand.isMoving = false;
             arrowOwnedCardOnHand.isMouseOver = false;
@@ -117,12 +133,11 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
         }
     }
 
-    // 베지어 곡선 조작점 초기 위치값 설정
-    private void InitBezierCurvePoint(Vector3 position)
+    // 화살표의 활성화 상태 변경 및 부모 오브젝트 설정 변경
+    public void ChangeArrowVisible(bool isVisible, Transform parent)
     {
-        for(int i=0; i<4; i++){
-            this.controlPoints.Add(position);
-        }
+        this.gameObject.SetActive(isVisible);
+        transform.SetParent(parent);
     }
 
     // 베지어 곡선 조작점 계산
@@ -154,8 +169,9 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
 
     // 화살표 머리와 몸통 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅 및 소유 권한 구분용 색상 변경
     [ClientRpc]
-    public void RpcSetArrowParts(List<GameObject> nodes, CardOnHand cardOnHand)
+    public void RpcSetArrowParts(List<GameObject> nodes)
     {
+        ChangeArrowVisible(isOwned, DeckUI.instance.CardPocket.transform);
         foreach(GameObject arrowNode in nodes){
             arrowNode.transform.SetParent(transform);
             arrowNode.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
@@ -163,8 +179,5 @@ public class CardCtrlArrow : NetworkSingletonD<CardCtrlArrow>
             arrowNodes.Add(arrowNode.GetComponent<Transform>());
         }
         SetArrowNodesScale();
-        transform.SetParent(cardOnHand.transform); // 소환된 화살표는 소환한 카드의 자식오브젝트로 설정
-        transform.position = cardOnHand.transform.position; // 소환된 화살표 위치는 소환한 카드의 위치
-        InitBezierCurvePoint(cardOnHand.transform.position); // 소환된 화살표의 베지어 곡선의 기준점들의 초기위치는 카드위치
     }
 }

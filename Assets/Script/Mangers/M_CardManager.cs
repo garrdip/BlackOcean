@@ -201,16 +201,6 @@ public class M_CardManager : NetworkBehaviour
     }
 
 
-    // 현재 타겟팅 카드 화살표가 소환되어 있는지 여부 확인 함수
-    public bool IsArrowSpawned()
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            return gamePlayerDeck.isArrowSpawned;
-        }
-        return false;
-    }
-
     // 현재 플레이어의 CardOnHand 오브젝트의 충돌체 크기 조정(마우스 오버되지 않은 카드들의 충돌체 사이즈를 줄여서 충돌판정을 받지 않도록 함)
     public void ChangeCardOnHandColliderSize(CardOnHand mouseOveredCardOnHand, Vector3 size)
     {

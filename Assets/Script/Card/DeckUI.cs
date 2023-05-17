@@ -139,16 +139,13 @@ public class DeckUI : SingletonD<DeckUI>
         }
     }
 
-    // 내 턴 종료시 카드 제어 화살표 제거
+    // 내 턴 종료시 내 소유의 카드 제어 화살표 제거
     private void RemoveAllCurrentPlayerArrow()
     {
          if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
-                CardCtrlArrow[] cardCtrlArrows = FindObjectsOfType<CardCtrlArrow>();
-                foreach(CardCtrlArrow cardCtrlArrow in cardCtrlArrows){
-                    gamePlayerDeck.CmdDestroyArrowEmitter(cardCtrlArrow.gameObject);
-                }
+                gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
             }
         }
     }
