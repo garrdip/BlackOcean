@@ -337,27 +337,6 @@ public class M_TurnManager : NetworkBehaviour
    
     }
 
-    // prefareDeck에서 카드 가져와서 생성
-    public void GetCardFromPrefareDeck()
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdSpawnCardOnHand();
-            }
-        }
-    }
-
-    // 현재 로컬플레이어의 턴인지 아닌지 bool값 반환
-    public bool IsCurrentPlayerTurn(GamePlayer currentTurnPlayer)
-    {
-        return NetworkClient.connection != null 
-            && NetworkClient.active
-            && NetworkClient.connection.identity == currentTurnPlayer.GetComponent<NetworkIdentity>()
-            && currentTurnPlayer.isLocalPlayer;
-    }
-
-
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
     private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
     {

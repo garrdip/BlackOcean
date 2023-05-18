@@ -34,6 +34,12 @@ public class M_CardManager : NetworkBehaviour
     [Range(-20.0f, 20.0f)]
     public float symmetryRotationRange;
 
+    [Header("카드 원래 사이즈")]
+    public Vector3 cardOriginSize;
+
+    [Header("카드 마우스 오버 사이즈")]
+    public Vector3 cardOverSize;
+
 
     public static M_CardManager instance
     {
@@ -52,6 +58,8 @@ public class M_CardManager : NetworkBehaviour
         InitSymmetryValue();
         cardCollidableSize = new Vector3(22f, 30f, 1f);
         cardNoneCollidableSize = new Vector3(0f, 0f, 0f);
+        cardOriginSize = new Vector3(0.1f, 0.1f, 0.1f);
+        cardOverSize = cardOriginSize + new Vector3(0.05f, 0.05f, 0.05f);
     }
 
     void FixedUpdate()
@@ -84,7 +92,7 @@ public class M_CardManager : NetworkBehaviour
                             Vector3 targetPosition = new Vector3(cardOnHand.transform.localPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
                             cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
                             cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                            cardOnHand.transform.localScale = cardOnHand.targetScale;
+                            cardOnHand.transform.localScale = cardOverSize;
                         }else{
                             // 대칭값 계산
                             int leftCount = (count - 1) / 2;
@@ -99,7 +107,7 @@ public class M_CardManager : NetworkBehaviour
                             cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, -symmetryValue * symmetryRotationRange);
 
                             // 크기값
-                            cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOnHand.originScale, Time.deltaTime * 10f);  
+                            cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOriginSize, Time.deltaTime * 10f);
                         }
                     }
                 }
@@ -210,6 +218,18 @@ public class M_CardManager : NetworkBehaviour
                 if(cardOnHand != mouseOveredCardOnHand){
                     cardOnHand.GetComponent<BoxCollider>().size = size;
                 }
+            }
+        }
+    }
+
+    // 각 플레이어들 소유의 카드와 화살표 생성
+    public void SpawnPlayerOwnedCardAndArrow()
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdSpawnCardOnHand();
+                gamePlayerDeck.CmdSpawnArrowEmitter();
             }
         }
     }

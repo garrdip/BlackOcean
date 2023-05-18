@@ -12,7 +12,7 @@ public class DeckUI : SingletonD<DeckUI>
     [Header("게임 오브젝트")]
     public GameObject DeckListPanel;
     public GameObject GameUI;
-    public GameObject CardPocket;
+    public GameObject CardOnHandsPanel;
     public GameObject PrefareDeck;
     public GameObject TrashDeck;
     public GameObject DeckListPopUp;

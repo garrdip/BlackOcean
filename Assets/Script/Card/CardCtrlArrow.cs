@@ -93,7 +93,7 @@ public class CardCtrlArrow : NetworkBehaviour
                         if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
                             TargetObject targetObject = hit.collider.gameObject.GetComponent<TargetObject>();
                             gamePlayerDeck.CmdEnQueueCardTargetPair(arrowOwnedCardOnHand.card, targetObject); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
-                            ChangeArrowVisible(false, DeckUI.instance.CardPocket.transform);
+                            ChangeArrowVisible(false, DeckUI.instance.CardOnHandsPanel.transform);
                             M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
                             M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
                         }
@@ -124,7 +124,7 @@ public class CardCtrlArrow : NetworkBehaviour
     public void RemoveCardCtrlArrow()
     {
         if(isOwned && arrowOwnedCardOnHand != null){
-            ChangeArrowVisible(false, DeckUI.instance.CardPocket.transform);
+            ChangeArrowVisible(false, DeckUI.instance.CardOnHandsPanel.transform);
             arrowOwnedCardOnHand.isDrag = false;
             arrowOwnedCardOnHand.isMoving = false;
             arrowOwnedCardOnHand.isMouseOver = false;
@@ -171,7 +171,7 @@ public class CardCtrlArrow : NetworkBehaviour
     [ClientRpc]
     public void RpcSetArrowParts(List<GameObject> nodes)
     {
-        ChangeArrowVisible(isOwned, DeckUI.instance.CardPocket.transform);
+        ChangeArrowVisible(isOwned, DeckUI.instance.CardOnHandsPanel.transform);
         foreach(GameObject arrowNode in nodes){
             arrowNode.transform.SetParent(transform);
             arrowNode.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;

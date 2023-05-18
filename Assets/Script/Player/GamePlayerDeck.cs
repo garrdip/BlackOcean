@@ -13,6 +13,9 @@ public class GamePlayerDeck : NetworkBehaviour
     public int currentDeckCount = 0; // 현재 플레이어의 카드 카운트
 
     [SyncVar]
+    public CardPocket cardPocket; // 현재 플레이어 소유의 카드 포켓 오브젝트
+
+    [SyncVar]
     public CardCtrlArrow cardCtrlArrow; // 현재 소환된 카드 화살표
 
     public const int arrowNodeNum = 13; // 카드 컨트롤 화살표 몸통 개수
@@ -107,7 +110,15 @@ public class GamePlayerDeck : NetworkBehaviour
     public void CmdSpawnCardOnHand()
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
+        // CardPocket 오브젝트 생성
+        GameObject cardPocketObject = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")));
+        NetworkServer.Spawn(cardPocketObject, connectionToClient);
+
+        // 플레이어에 자신이 소환한 CardPocket 참조값 설정
+        cardPocket = cardPocketObject.GetComponent<CardPocket>();
         
+        // CardOnHand 오브젝트 생성
         for(int i=0; i<currentDeckCount; i++){
             // TODO : 버린댁과 뽑을댁 모두 비엇을떄 예외처리 필요
             if(prefareDeck.Count == 0){
@@ -127,6 +138,9 @@ public class GamePlayerDeck : NetworkBehaviour
             // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
             cardOnHand.GetComponent<CardOnHand>().card = prefareDeck[randomIndex];
             prefareDeck.RemoveAt(randomIndex); 
+            
+            // 클라이언트들에게 CardPocket, CardOnHand 생성 이벤트 전송
+            cardOnHand.GetComponent<CardOnHand>().RpcSpawnCardOnHand(cardPocketObject, cardOnHand);
         }
     }
 

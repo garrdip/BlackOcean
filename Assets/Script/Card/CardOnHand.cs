@@ -19,9 +19,6 @@ public class CardOnHand : NetworkBehaviour
     // 랜더링 순서값
     public int originSortOrder;
 
-    // 크기값
-    public Vector3 originScale;
-    public Vector3 targetScale;
 
     // 위치값
     public Vector3 originPosition;
@@ -47,12 +44,9 @@ public class CardOnHand : NetworkBehaviour
         if(NetworkClient.connection != null && NetworkClient.active){
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         }
-        transform.SetParent(DeckUI.instance.CardPocket.transform);
-        originScale = transform.localScale;
-        targetScale = originScale + new Vector3(0.05f, 0.05f, 0f);
+        transform.SetParent(DeckUI.instance.CardOnHandsPanel.transform);
         hoveredPositionY = 1.2f;
         transform.GetComponent<SpriteRenderer>().sortingOrder = index;
-        gameObject.SetActive(isOwned); // 현재 게임 플레이어 소유의 카드 오브젝트만 활성화
     }
 
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
@@ -118,7 +112,7 @@ public class CardOnHand : NetworkBehaviour
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         cardOnHand.transform.position = new Vector2(mousePosition.x, mousePosition.y);
-        cardOnHand.transform.localScale = targetScale;
+        cardOnHand.transform.localScale = M_CardManager.instance.cardOverSize;
         cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
     }
 
@@ -134,5 +128,12 @@ public class CardOnHand : NetworkBehaviour
                 .DOMove(new Vector3(0f, originPosition.y, originPosition.z), 0.4f)
                 .SetEase(Ease.OutSine);
         }
+    }
+
+    // 생성된 카드 오브젝트들을 해당 플레이어 소유의 CardPocket의 자식오브젝트로 세팅
+    [ClientRpc]
+    public void RpcSpawnCardOnHand(GameObject cardPocket, GameObject cardOnHand)
+    {
+        cardOnHand.transform.SetParent(cardPocket.transform);
     }
 }

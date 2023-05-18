@@ -1085,37 +1085,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 450}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &393809748
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 393809749}
-  m_Layer: 0
-  m_Name: CardPocket
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &393809749
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 393809748}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 823382815}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &424807022
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1912,7 +1881,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DeckListPanel: {fileID: 823382814}
   GameUI: {fileID: 144497855}
-  CardPocket: {fileID: 393809748}
+  CardOnHandsPanel: {fileID: 823382814}
   PrefareDeck: {fileID: 1206986712}
   TrashDeck: {fileID: 1681072078}
   DeckListPopUp: {fileID: 1581196589}
@@ -2091,8 +2060,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 393809749}
+  m_Children: []
   m_Father: {fileID: 1408884459}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5451,6 +5419,8 @@ MonoBehaviour:
   symmetryPositionX_Range: 1.15
   symmetryPositionY_Range: 0.2
   symmetryRotationRange: 5
+  cardOriginSize: {x: 0, y: 0, z: 0}
+  cardOverSize: {x: 0, y: 0, z: 0}
 --- !u!114 &2095118380
 MonoBehaviour:
   m_ObjectHideFlags: 0
