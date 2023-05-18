@@ -27,8 +27,6 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedMonsterData))]
     public MonsterData monsterData;
 
-    readonly public SyncList<Buff> buffs = new SyncList<Buff>();
-
     public  void OnChangedMonsterData(MonsterData oldVal , MonsterData newVal)
     {
         monsterName = monsterData.name;
@@ -106,5 +104,16 @@ public class SpawnedMonster : NetworkBehaviour
     public void DoAnimation()
     {
         transform.parent.GetComponentInChildren<Animator>().SetTrigger("SingleAttack");
+    }
+
+    void FixedUpdate()
+    {
+        if(isServer)
+        {
+            if(HP <= 0)
+            {
+                NetworkServer.Destroy(this.gameObject);
+            }
+        }
     }
 }

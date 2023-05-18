@@ -16,5 +16,5 @@ namespace ProjectD
             return input.Replace("\u200B", "");
         }
     }
-    public delegate void ExecuteCard(TargetObject target);
+    public delegate void ExecuteCard(TargetObject[] target);
 }

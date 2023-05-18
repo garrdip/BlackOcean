@@ -32,12 +32,17 @@ public class TargetObject : NetworkBehaviour
     [SyncVar (hook = nameof(InitTargetObjectPlayer))]
     public GamePlayer player;
 
+    public CloneGamePlayer cloneGamePlayer;
+
     // Monster 의 경우
     [SyncVar (hook = nameof(InitTargetObjectEmemy))]
     public SpawnedMonster monster;
 
     public List<GameObject> characters;
     public List<GameObject> monsters;
+
+    public TargetObject clone;
+    public bool isCloneData = false;
 
     public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
     {
@@ -96,6 +101,29 @@ public class TargetObject : NetworkBehaviour
                 break;
             }
             yield return loopSecond;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if(isServer)
+        {
+            if(objectType == ObjectType.PLAYER) 
+            {
+                // 플레이어 사망시 처리
+            }
+            else
+            {
+                if(monster == null)
+                {
+                    if(isCloneData)
+                        M_TurnManager.instance.cloneMonsterList.Remove(this);
+                    else
+                        M_TurnManager.instance.spawnedMonsterList.Remove(this);
+                        
+                    NetworkServer.Destroy(this.gameObject);
+                }
+            }
         }
     }
 

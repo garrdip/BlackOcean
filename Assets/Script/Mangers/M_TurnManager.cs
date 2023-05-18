@@ -33,11 +33,12 @@ public class M_TurnManager : NetworkBehaviour
     public Transform monsterSpawnLocation;
 
     public List<TargetObject> spawnedPlayerList = new List<TargetObject>();
-    List<TargetObject> spawnedMonsterList = new List<TargetObject>();
+    public List<TargetObject> spawnedMonsterList = new List<TargetObject>();
+    public List<TargetObject> cloneMonsterList = new List<TargetObject>();
     List<TargetObject> monsterOrderList = new List<TargetObject>();
 
     // 카드와 타겟을 한쌍으로 저장하는 Dictionary타입의 큐
-    public Queue<(Card, TargetObject)> cardTargetPairQueue = new Queue<(Card, TargetObject)>();
+    public Queue<(Card, TargetObject[])> cardTargetPairQueue = new Queue<(Card, TargetObject[])>();
 
     
     // Turn 관리는 서버
@@ -49,6 +50,16 @@ public class M_TurnManager : NetworkBehaviour
         Phase = value;
         OnChangedPhase();
     }}
+
+    public TargetObject[] GetTargetObjects()
+    {
+        return spawnedMonsterList.ToArray();
+    }
+
+    public TargetObject[] GetCloneTargetObject()
+    {
+        return cloneMonsterList.ToArray();
+    }
 
     public static M_TurnManager instance
     {
@@ -105,6 +116,7 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void HandleStartBattle()
     {
+        Debug.Log("시작!!!!!!!!!!!");
         M_MapManager.instance.StartBattle();
         GeneratePlayerUnit();
         GenerateMonster();
@@ -115,21 +127,21 @@ public class M_TurnManager : NetworkBehaviour
     public IEnumerator ProcessCardQueue()
     {
         // 무한루프에서 인스턴스 생성시 생기는 가비지 방지를 위해 함수호출에서 미리 인스턴스 생성하여 캐싱후 루프 안에서 사용
-        WaitForSeconds waitForDelay = new WaitForSeconds(2.0f);
+        WaitForSeconds waitForDelay = new WaitForSeconds(5.0f);
         WaitForSeconds waitForLoop = new WaitForSeconds(0.01f);
         while (true)
         {
             if(cardTargetPairQueue.Count != 0){
                 // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
-                (Card card,TargetObject tar) = cardTargetPairQueue.Dequeue();
+                (Card card,TargetObject[] tar) = cardTargetPairQueue.Dequeue();
                
                 Debug.Log("카드: " + card.baseCard.name);
                 if(card.baseCard.isTargetable)
                 {
-                    if(tar.player == null)
-                        Debug.Log("타겟: " + tar.monster.monsterData.name);
+                    if(tar[0].player == null)
+                        Debug.Log("타겟: " + tar[0].monster.monsterData.name);
                     else
-                        Debug.Log("타겟: " + tar.player.netIdentity);
+                        Debug.Log("타겟: " + tar[0].player.netIdentity);
                 }
 
                 CardData.cardEffects[CardData.cards.IndexOf(CardData.cards.Find(c => c.name == card.baseCard.name))].ProcessCard(tar);
@@ -138,6 +150,11 @@ public class M_TurnManager : NetworkBehaviour
             }
             yield return waitForLoop;
         }
+    }
+    [Server]
+    public void ProcessCardPredict(Card card,TargetObject[] tar)
+    {
+        CardData.cardEffects[CardData.cards.IndexOf(CardData.cards.Find(c => c.name == card.baseCard.name))].ProcessCard(tar);
     }
 
     [Server]
@@ -158,6 +175,7 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void OnChangedPhase()
     {
+        Debug.Log("Phase is " + phase);
         switch(phase)
         {
             case BattleTurn.BATTLE_STANDBY :
@@ -246,7 +264,13 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void PlayerCardDraw()
     {
-        OnTurnChanged(currentPlayer);
+        EachPlayerCardDraw();
+    }
+
+    [ClientRpc]
+    public void EachPlayerCardDraw()
+    {
+
     }
 
     [Server]
@@ -272,6 +296,14 @@ public class M_TurnManager : NetworkBehaviour
             NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().player = playerOrder[i];
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+            // 타겟 유효 판단을 위한 클론 데이터 //
+            GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
+            NetworkServer.Spawn(clone);
+            clone.GetComponent<TargetObject>().cloneGamePlayer = new CloneGamePlayer(playerOrder[i]);
+            clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+
+            avatar.GetComponent<TargetObject>().clone = clone.GetComponent<TargetObject>();
+
             spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
         }
     }
@@ -290,14 +322,32 @@ public class M_TurnManager : NetworkBehaviour
         for(int i = 0 ; i < M_MonsterManager.monsterGroups[num].monsters.Count ; i ++)
         {
             var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "SpawnedMonster"),monsterSpawnLocation.GetChild(i).transform.position,Quaternion.identity).GetComponent<SpawnedMonster>();
+            var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "SpawnedMonster"),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
+
             NetworkServer.Spawn(monster.gameObject);
+            NetworkServer.Spawn(cloneMonster.gameObject);
+
             monster.monsterData = M_MonsterManager.monsterGroups[num].monsters[i];
+            cloneMonster.monsterData = M_MonsterManager.monsterGroups[num].monsters[i];
+
+
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),monsterSpawnLocation.GetChild(i).transform.position,Quaternion.identity);
+            var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
+
             NetworkServer.Spawn(avatar);
+            NetworkServer.Spawn(cloneAvatar);
+
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
             avatar.GetComponent<TargetObject>().monster = monster;
+
+            cloneAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+            cloneAvatar.GetComponent<TargetObject>().monster = cloneMonster;
+            avatar.GetComponent<TargetObject>().clone = cloneAvatar.GetComponent<TargetObject>();
+
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
+            cloneMonsterList.Add(cloneAvatar.GetComponent<TargetObject>());
             RpcMonsterInit(avatar.GetComponent<TargetObject>(), monster);
+            RpcMonsterInit(cloneAvatar.GetComponent<TargetObject>(), cloneMonster);
         }
     }
 
@@ -327,14 +377,6 @@ public class M_TurnManager : NetworkBehaviour
     {
         orderUI.SetActive(true);
         isOrderSelect = true;
-    }
-
-    [ClientRpc]
-    public void OnTurnChanged(GamePlayer newGamePlayer)
-    {
-       
-            isMyTurn = true;
-   
     }
 
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//

@@ -103,11 +103,11 @@ public class GamePlayerDeck : NetworkBehaviour
                 break;
         }
     }
-
     // 현재 플레이어의 CardPocket 오브젝트 생성
     [Command]
     public void CmdSpawnCardPocket()
     {
+        Debug.Log("시작5");
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
         // CardPocket 오브젝트 생성
@@ -118,13 +118,13 @@ public class GamePlayerDeck : NetworkBehaviour
         cardPocket = cardPocketObject.GetComponent<CardPocket>();
     }
 
-    // 현재 플레이어의 CardOnHand 오브젝트 생성 (prefareDeck에서 랜덤으로 가져옴. prefareDeck이 0개일 경우 trashDeck에서 가져온뒤 뽑음)
+    // 현재 플레이어의 CardOnHand 오브젝트 생성
+    // prefareDeck에서 랜덤으로 가져옴. prefareDeck이 0개일 경우 trashDeck에서 가져온뒤 뽑음
     [Command]
     public void CmdSpawnCardOnHand()
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         
-        // CardOnHand 오브젝트 생성
         for(int i=0; i<currentDeckCount; i++){
             // TODO : 버린댁과 뽑을댁 모두 비엇을떄 예외처리 필요
             if(prefareDeck.Count == 0){
@@ -149,6 +149,7 @@ public class GamePlayerDeck : NetworkBehaviour
             cardOnHand.GetComponent<CardOnHand>().cardPocket = cardPocket;
         }
     }
+
 
     // 카드 컨트롤 화살표 인디케이터 생성(네트워크 오브젝트)
     [Command]
@@ -223,9 +224,26 @@ public class GamePlayerDeck : NetworkBehaviour
 
     // 카드데이터와 카드의 액션수행 대상을 Dictionary로 key, value 쌍으로 묶어 저장
     [Command]
-    public void CmdEnQueueCardTargetPair(Card card, TargetObject targetObjects)
+    public void CmdEnQueueCardTargetPair(Card card, TargetObject[] targetObjects, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
     {
-        M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, targetObjects));
+        if(card.baseCard.isTargetable)
+        {
+            if(targetObjects[0].clone == null) // 서버
+            {
+                return;
+            }
+            TargetObject[] tar = new TargetObject[1];
+            tar[0] = targetObjects[0].clone;
+            M_TurnManager.instance.ProcessCardPredict(card,tar);
+            cardCtrlArrow.AcceptCardUse(conn);
+        }
+        else
+            M_TurnManager.instance.ProcessCardPredict(card,M_TurnManager.instance.GetCloneTargetObject());
+
+        if(card.baseCard.isTargetable) 
+            M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, targetObjects));
+        else
+            M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, M_TurnManager.instance.GetTargetObjects())); // Targetable 카드가 아닌경우 TargetObject 위치를 Server에서 불러옴으로 싱크 에러 방지
     }
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
@@ -248,9 +266,7 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
             case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
-                if(cardOnHands.Count <= 0 && isLocalPlayer){
-                    CmdSpawnCardOnHand();  // 테스트용
-                }
+
                 break;
             case SyncList<CardOnHand>.Operation.OP_SET:
                 
@@ -282,11 +298,9 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        // 로컬플레이어의 PrefareDeck Count 표시
-        if(isLocalPlayer){
-            DeckUI.instance.textPrefareDeckCount.text = prefareDeck.Count.ToString();
-        }
-        // TODO : 관전하려는 플레이어의 PrefareDeck Count 표시
+        // 현재 턴인 플레이어의 PrefareDeck Count 갱신
+        int textPrefareDeckCount = M_TurnManager.instance.currentPlayer.GetComponent<GamePlayerDeck>().prefareDeck.Count;
+        DeckUI.instance.textPrefareDeckCount.text = textPrefareDeckCount.ToString();
     }
 
     // TrashDeck Callback
@@ -310,10 +324,8 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        // 로컬플레이어의 TrashDeck Count 표시
-        if(isLocalPlayer){
-            DeckUI.instance.textTrashDeckCount.text = trashDeck.Count.ToString();
-        }
-        // TODO : 관전하려는 플레이어의 TrashDeck Count 표시
+        // 현재 턴인 플레이어의 TrashDeck Count 갱신
+        int textTrashDeckCount = M_TurnManager.instance.currentPlayer.GetComponent<GamePlayerDeck>().trashDeck.Count;
+        DeckUI.instance.textTrashDeckCount.text = textTrashDeckCount.ToString();
     }
 }

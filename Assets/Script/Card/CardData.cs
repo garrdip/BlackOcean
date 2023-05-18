@@ -5,6 +5,7 @@ using System.Reflection;
 using System.IO;
 using System;
 using ProjectD;
+using Mirror;
 
 public static class CardData
 {
@@ -41,8 +42,28 @@ public static class CardData
 public class CardMethods
 {
     // Card Method List
-    public static void TEST(TargetObject tar)
+    public static void SingleAttack(TargetObject[] tar)
     {
-        Debug.Log("TEST 메소드 실행");
+        Debug.Log("Single Attack!");
+        if(!(tar[0].monster == null))
+        {
+            Debug.Log("Single Attack!2");
+            tar[0].monster.HP -= 10;
+        }
+        if(!(tar[0].player == null))
+        {
+            tar[0].player.HP -= 5;
+        }
+    }
+
+    public static void FullAttack(TargetObject[] tar)
+    {
+        if(tar == null) return;
+        Debug.Log("Full Scale Attack!");
+        foreach(TargetObject obj in tar)
+        {
+            if(obj.monster != null)
+                obj.monster.HP -= 20;
+        }
     }
 }

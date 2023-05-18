@@ -1,7 +1,7 @@
 Character,Name,Effect,isTargetable
-HONGDANHYANG,H_Target,TEST,Y
-HONGDANHYANG,H_NonTarget,TEST,N
-GEORK,G_Target,TEST,Y
-GEORK,G_NonTarget,TEST,N
-ERIS,E_Target,TEST,Y
-ERIS,E_NonTarget,TEST,N
+HONGDANHYANG,H_Target,SingleAttack,Y
+HONGDANHYANG,H_NonTarget,FullAttack,N
+GEORK,G_Target,SingleAttack,Y
+GEORK,G_NonTarget,FullAttack,N
+ERIS,E_Target,SingleAttack,Y
+ERIS,E_NonTarget,FullAttack,N
