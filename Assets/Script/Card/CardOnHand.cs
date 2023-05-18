@@ -8,6 +8,9 @@ using DG.Tweening;
 
 public class CardOnHand : NetworkBehaviour
 {
+    [SyncVar(hook = nameof(OnSpawnedCardPocket))]
+    public CardPocket cardPocket;
+
     [SyncVar]
     public Card card;
 
@@ -44,7 +47,6 @@ public class CardOnHand : NetworkBehaviour
         if(NetworkClient.connection != null && NetworkClient.active){
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         }
-        transform.SetParent(DeckUI.instance.CardOnHandsPanel.transform);
         hoveredPositionY = 1.2f;
         transform.GetComponent<SpriteRenderer>().sortingOrder = index;
     }
@@ -52,7 +54,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
     void OnMouseEnter()
     {
-        if(isOwned){
+        if(isOwned && !isMoving){
             isMouseOver = true;
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
@@ -63,7 +65,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 포인터 나갈 때 이벤트
     void OnMouseExit()
     {
-        if(isOwned){
+        if(isOwned && !isMoving){
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardCollidableSize);
@@ -131,9 +133,8 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // 생성된 카드 오브젝트들을 해당 플레이어 소유의 CardPocket의 자식오브젝트로 세팅
-    [ClientRpc]
-    public void RpcSpawnCardOnHand(GameObject cardPocket, GameObject cardOnHand)
+    public void OnSpawnedCardPocket(CardPocket oldCardPocket, CardPocket newCardPocket)
     {
-        cardOnHand.transform.SetParent(cardPocket.transform);
+        gameObject.transform.SetParent(newCardPocket.transform);
     }
 }

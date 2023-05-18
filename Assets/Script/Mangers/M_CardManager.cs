@@ -228,6 +228,7 @@ public class M_CardManager : NetworkBehaviour
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdSpawnCardPocket();
                 gamePlayerDeck.CmdSpawnCardOnHand();
                 gamePlayerDeck.CmdSpawnArrowEmitter();
             }

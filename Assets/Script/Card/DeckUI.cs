@@ -63,14 +63,8 @@ public class DeckUI : SingletonD<DeckUI>
     // 턴 넘김
     public void HandleEndTurn()
     {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            if(M_TurnManager.instance.currentPlayer == NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>()){
-                M_TurnManager.instance.SetNextTurn();
-                M_TurnManager.instance.isMyTurn = false;
-                RemoveAllCurrentPlayerDeck();
-                RemoveAllCurrentPlayerArrow();
-            }
-        }
+        RemoveAllCurrentPlayerDeck();
+        RemoveAllCurrentPlayerArrow();
     }
 
     // PrefareDeck 정보 팝업
@@ -86,11 +80,13 @@ public class DeckUI : SingletonD<DeckUI>
         }else{
             HandleReturnGame();
         }
-        // 현재 턴인 플레이어의 PrefareDeck 데이터를 가지고 댁 목록 팝업창 세팅
-        GamePlayerDeck gamePlayerDeck = M_TurnManager.instance.currentPlayer.GetComponent<GamePlayerDeck>();
-        if(gamePlayerDeck != null){
+
+        // 로컬 플레이어의 PrefareDeck 조회
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             AddDeckList(gamePlayerDeck.prefareDeck);
         }
+        // TODO : 관전하려는 플레이어의 PrefareDeck 조회
     }
 
     // TrashDeck 정보 팝업
@@ -106,11 +102,13 @@ public class DeckUI : SingletonD<DeckUI>
         }else{
             HandleReturnGame();
         }
-        // 현재 턴인 플레이어의 TrashDeck 데이터를 가지고 댁 목록 팝업창 세팅
-        GamePlayerDeck gamePlayerDeck = M_TurnManager.instance.currentPlayer.GetComponent<GamePlayerDeck>();
-        if(gamePlayerDeck != null){
+
+        // 로컬 플레이어의 Trash Deck 조회
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             AddDeckList(gamePlayerDeck.trashDeck);
         }
+        // TODO : 관전하려는 플레이어의 TrashDeck 조회
     }
 
     // 팝업 닫고 게임으로 돌아가기

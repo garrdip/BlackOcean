@@ -104,10 +104,9 @@ public class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 현재 플레이어의 CardOnHand 오브젝트 생성
-    // prefareDeck에서 랜덤으로 가져옴. prefareDeck이 0개일 경우 trashDeck에서 가져온뒤 뽑음
+    // 현재 플레이어의 CardPocket 오브젝트 생성
     [Command]
-    public void CmdSpawnCardOnHand()
+    public void CmdSpawnCardPocket()
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
@@ -117,6 +116,13 @@ public class GamePlayerDeck : NetworkBehaviour
 
         // 플레이어에 자신이 소환한 CardPocket 참조값 설정
         cardPocket = cardPocketObject.GetComponent<CardPocket>();
+    }
+
+    // 현재 플레이어의 CardOnHand 오브젝트 생성 (prefareDeck에서 랜덤으로 가져옴. prefareDeck이 0개일 경우 trashDeck에서 가져온뒤 뽑음)
+    [Command]
+    public void CmdSpawnCardOnHand()
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         
         // CardOnHand 오브젝트 생성
         for(int i=0; i<currentDeckCount; i++){
@@ -138,12 +144,11 @@ public class GamePlayerDeck : NetworkBehaviour
             // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
             cardOnHand.GetComponent<CardOnHand>().card = prefareDeck[randomIndex];
             prefareDeck.RemoveAt(randomIndex); 
-            
-            // 클라이언트들에게 CardPocket, CardOnHand 생성 이벤트 전송
-            cardOnHand.GetComponent<CardOnHand>().RpcSpawnCardOnHand(cardPocketObject, cardOnHand);
+
+            // 소환된 카드들의 부모 오브젝트인 CardPocket참조값 설정
+            cardOnHand.GetComponent<CardOnHand>().cardPocket = cardPocket;
         }
     }
-
 
     // 카드 컨트롤 화살표 인디케이터 생성(네트워크 오브젝트)
     [Command]
@@ -243,7 +248,9 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
             case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
-
+                if(cardOnHands.Count <= 0 && isLocalPlayer){
+                    CmdSpawnCardOnHand();  // 테스트용
+                }
                 break;
             case SyncList<CardOnHand>.Operation.OP_SET:
                 
@@ -275,9 +282,11 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        // 현재 턴인 플레이어의 PrefareDeck Count 갱신
-        int textPrefareDeckCount = M_TurnManager.instance.currentPlayer.GetComponent<GamePlayerDeck>().prefareDeck.Count;
-        DeckUI.instance.textPrefareDeckCount.text = textPrefareDeckCount.ToString();
+        // 로컬플레이어의 PrefareDeck Count 표시
+        if(isLocalPlayer){
+            DeckUI.instance.textPrefareDeckCount.text = prefareDeck.Count.ToString();
+        }
+        // TODO : 관전하려는 플레이어의 PrefareDeck Count 표시
     }
 
     // TrashDeck Callback
@@ -301,8 +310,10 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        // 현재 턴인 플레이어의 TrashDeck Count 갱신
-        int textTrashDeckCount = M_TurnManager.instance.currentPlayer.GetComponent<GamePlayerDeck>().trashDeck.Count;
-        DeckUI.instance.textTrashDeckCount.text = textTrashDeckCount.ToString();
+        // 로컬플레이어의 TrashDeck Count 표시
+        if(isLocalPlayer){
+            DeckUI.instance.textTrashDeckCount.text = trashDeck.Count.ToString();
+        }
+        // TODO : 관전하려는 플레이어의 TrashDeck Count 표시
     }
 }
