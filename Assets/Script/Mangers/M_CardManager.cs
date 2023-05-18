@@ -125,8 +125,8 @@ public class M_CardManager : NetworkBehaviour
 
         // Dotween 애니매이션 시퀀스 생성
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
-        sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f));
+        sequence.Append(cardTransform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
+        sequence.Join(cardTransform.DORotate(new Vector3(0f, 0f, 0f), 0.2f));
         sequence.Join(cardTransform
             .DOMove(cardTransform.position + new Vector3(0f, 5f, 0f), 0.2f)
             .SetDelay(index * 0.1f)
