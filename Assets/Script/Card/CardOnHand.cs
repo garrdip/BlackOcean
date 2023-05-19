@@ -8,16 +8,11 @@ using DG.Tweening;
 
 public class CardOnHand : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(OnSpawnedCardPocket))]
-    public CardPocket cardPocket;
-
     [SyncVar]
     public Card card;
 
     [SyncVar]
     public int index;
-    
-    public SpriteRenderer spriteRenderer;
     
     // 랜더링 순서값
     public int originSortOrder;
@@ -48,7 +43,6 @@ public class CardOnHand : NetworkBehaviour
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         }
         hoveredPositionY = 1.2f;
-        transform.GetComponent<SpriteRenderer>().sortingOrder = index;
     }
 
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
@@ -132,9 +126,22 @@ public class CardOnHand : NetworkBehaviour
         }
     }
 
-    // 생성된 카드 오브젝트들을 해당 플레이어 소유의 CardPocket의 자식오브젝트로 세팅
-    public void OnSpawnedCardPocket(CardPocket oldCardPocket, CardPocket newCardPocket)
+    // 카드 생성 이벤트 수신 (카드의 위치 및 부모 오브젝트 설정)
+    [ClientRpc]
+    public void RpcSpawnedCardOnHand(CardPocket cardPocket)
     {
-        gameObject.transform.SetParent(newCardPocket.transform);
+        if(isOwned){
+            transform.position = DeckUI.instance.buttonPrefareDeck.transform.position;
+        }else{
+            transform.position = new Vector3(-100f, 0f, 0f);
+        }
+        transform.SetParent(cardPocket.transform);
+    }
+
+    // 카드 정렬값 이벤트 수신
+    [ClientRpc]
+    public void RpcSortOrder(int index)
+    {
+        transform.GetComponent<SpriteRenderer>().sortingOrder = index;
     }
 }

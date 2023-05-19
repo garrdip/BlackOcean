@@ -270,7 +270,12 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     public void EachPlayerCardDraw()
     {
-
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdSpawnCardOnHand();
+            }
+        }
     }
 
     [Server]

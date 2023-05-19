@@ -103,11 +103,12 @@ public class GamePlayerDeck : NetworkBehaviour
                 break;
         }
     }
+
+
     // 현재 플레이어의 CardPocket 오브젝트 생성
     [Command]
     public void CmdSpawnCardPocket()
     {
-        Debug.Log("시작5");
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
         // CardPocket 오브젝트 생성
@@ -125,6 +126,9 @@ public class GamePlayerDeck : NetworkBehaviour
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         
+        // 카드 생성 초기 위치는 화면 밖
+        Vector3 cardSpawnPosition = new Vector3(-100f, 0f, 0f);
+
         for(int i=0; i<currentDeckCount; i++){
             // TODO : 버린댁과 뽑을댁 모두 비엇을떄 예외처리 필요
             if(prefareDeck.Count == 0){
@@ -135,7 +139,11 @@ public class GamePlayerDeck : NetworkBehaviour
                 }
             }
             int randomIndex = Random.Range(0, prefareDeck.Count);
-            GameObject cardOnHand = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")));
+            GameObject cardOnHand = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+                cardSpawnPosition,
+                Quaternion.identity
+            );
             NetworkServer.Spawn(cardOnHand, connectionToClient);
 
             cardOnHand.GetComponent<CardOnHand>().index = i;
@@ -145,8 +153,11 @@ public class GamePlayerDeck : NetworkBehaviour
             cardOnHand.GetComponent<CardOnHand>().card = prefareDeck[randomIndex];
             prefareDeck.RemoveAt(randomIndex); 
 
-            // 소환된 카드들의 부모 오브젝트인 CardPocket참조값 설정
-            cardOnHand.GetComponent<CardOnHand>().cardPocket = cardPocket;
+            // 소환된 카드를 포켓의 자식오브젝트로 설정하기 위해 클라이언트에 이벤트 전송
+            cardOnHand.GetComponent<CardOnHand>().RpcSpawnedCardOnHand(cardPocket);
+
+            // 소환된 카드의 정렬 순서값을 설정하기 위해 클라이언트에 이벤트 전송
+            cardOnHand.GetComponent<CardOnHand>().RpcSortOrder(i);
         }
     }
 
@@ -157,8 +168,8 @@ public class GamePlayerDeck : NetworkBehaviour
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
-        // 화면 밖에 화살표 생성
-        Vector3 arrowSpawnPosition = new Vector3(-20f, 0f, 0f);
+        // 화살표 생성 초기 위치는 화면 밖
+        Vector3 arrowSpawnPosition = new Vector3(-100f, 0f, 0f);
 
         // 화살표 노드들 담을 리스트
         List<GameObject> arrowNodes = new List<GameObject>();
@@ -266,7 +277,9 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
             case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
-
+                if(cardOnHands.Count <= 0 && isLocalPlayer){
+                    CmdSpawnCardOnHand();
+                }
                 break;
             case SyncList<CardOnHand>.Operation.OP_SET:
                 
@@ -298,9 +311,10 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        // 현재 턴인 플레이어의 PrefareDeck Count 갱신
-        int textPrefareDeckCount = M_TurnManager.instance.currentPlayer.GetComponent<GamePlayerDeck>().prefareDeck.Count;
-        DeckUI.instance.textPrefareDeckCount.text = textPrefareDeckCount.ToString();
+        if(isLocalPlayer){
+            DeckUI.instance.textPrefareDeckCount.text = prefareDeck.Count.ToString();
+        }
+        // TODO : 관전하려는 플레이어의 PrefareDeck Count 표시
     }
 
     // TrashDeck Callback
@@ -324,8 +338,10 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        // 현재 턴인 플레이어의 TrashDeck Count 갱신
-        int textTrashDeckCount = M_TurnManager.instance.currentPlayer.GetComponent<GamePlayerDeck>().trashDeck.Count;
-        DeckUI.instance.textTrashDeckCount.text = textTrashDeckCount.ToString();
+        // 로컬플레이어의 TrashDeck Count 표시
+        if(isLocalPlayer){
+            DeckUI.instance.textTrashDeckCount.text = trashDeck.Count.ToString();
+        }
+        // TODO : 관전하려는 플레이어의 TrashDeck Count 표시
     }
 }

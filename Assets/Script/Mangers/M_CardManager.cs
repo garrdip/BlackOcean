@@ -121,27 +121,16 @@ public class M_CardManager : NetworkBehaviour
         cardOnHand.isMoving = true;
         Transform cardTransform = cardOnHand.gameObject.transform;
         cardTransform.localRotation = Quaternion.Euler(0f, 0f, -90f);
-        cardTransform.position = DeckUI.instance.buttonPrefareDeck.GetComponent<RectTransform>().position;
 
         // Dotween 애니매이션 시퀀스 생성
         Sequence sequence = DOTween.Sequence();
         sequence.Append(cardTransform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
-        sequence.Join(cardTransform.DORotate(new Vector3(0f, 0f, 0f), 0.2f));
-        sequence.Join(cardTransform
-            .DOMove(cardTransform.position + new Vector3(0f, 5f, 0f), 0.2f)
+        sequence.Join(cardTransform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
             .SetDelay(index * 0.1f)
             .SetEase(Ease.OutSine)
             .OnComplete(() => {
-                cardTransform
-                    .DOMove(cardTransform.position, 0.2f)
-                    .SetDelay(index * 0.1f)
-                    .SetEase(Ease.OutSine)
-                    .OnComplete(() => {
-                        cardOnHand.isMoving = false;
-                    }
-                );
-            })
-        );
+                cardOnHand.isMoving = false;
+            }));
     }
 
     // CardOnHand 오브젝트 멀어지는 애니매이션 + 오브젝트 파괴 커맨드 호출
@@ -229,7 +218,6 @@ public class M_CardManager : NetworkBehaviour
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 gamePlayerDeck.CmdSpawnCardPocket();
-                gamePlayerDeck.CmdSpawnCardOnHand();
                 gamePlayerDeck.CmdSpawnArrowEmitter();
             }
         }
