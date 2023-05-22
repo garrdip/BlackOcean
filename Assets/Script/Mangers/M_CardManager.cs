@@ -8,6 +8,8 @@ public class M_CardManager : NetworkBehaviour
 {
     public static M_CardManager Instance = null;
 
+    public GamePlayerDeck gamePlayerDeck; // GamePlayerDeck 참조값 캐싱
+
     public GameObject cardOnHandsPanel; // 카드 모음 패널 오브젝트
 
     public Vector3 cardCollidableSize; // 충돌 판정이 가능한 원래의 충돌체 크기값
@@ -55,6 +57,9 @@ public class M_CardManager : NetworkBehaviour
 
     void Start()
     {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+        }
         InitSymmetryValue();
         cardCollidableSize = new Vector3(22f, 30f, 1f);
         cardNoneCollidableSize = new Vector3(0f, 0f, 0f);
@@ -81,8 +86,7 @@ public class M_CardManager : NetworkBehaviour
     public void SetCardOfHandPositionSymmetry()
     {
         cardOnHandsPanel.transform.position = new Vector3(0f, cardOnHandsPanelPositionY_Range, 0f); // 카드 모음 패널의 위치       
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+        if(gamePlayerDeck != null){
             int count = gamePlayerDeck.cardOnHands.Count;
             if(count > 0){
                 for(int i=0; i<count; i++){      
