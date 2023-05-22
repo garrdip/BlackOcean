@@ -277,9 +277,7 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
             case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
-                if(cardOnHands.Count <= 0 && isLocalPlayer){
-                    CmdSpawnCardOnHand();
-                }
+
                 break;
             case SyncList<CardOnHand>.Operation.OP_SET:
                 
@@ -311,8 +309,9 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
+        // 로컬플레이어의 PrefareDeck Count 표시
         if(isLocalPlayer){
-            DeckUI.instance.textPrefareDeckCount.text = prefareDeck.Count.ToString();
+            DeckUI.instance.DeckCountTextScaleAnimation(DeckUI.instance.textPrefareDeckCount, prefareDeck.Count);
         }
         // TODO : 관전하려는 플레이어의 PrefareDeck Count 표시
     }
@@ -340,7 +339,7 @@ public class GamePlayerDeck : NetworkBehaviour
         }
         // 로컬플레이어의 TrashDeck Count 표시
         if(isLocalPlayer){
-            DeckUI.instance.textTrashDeckCount.text = trashDeck.Count.ToString();
+            DeckUI.instance.DeckCountTextScaleAnimation(DeckUI.instance.textTrashDeckCount, trashDeck.Count);
         }
         // TODO : 관전하려는 플레이어의 TrashDeck Count 표시
     }

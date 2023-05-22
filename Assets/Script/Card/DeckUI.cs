@@ -25,8 +25,8 @@ public class DeckUI : SingletonD<DeckUI>
     public Button buttonTrashDeck;
     public Button buttonReturnGame;
     public GridLayoutGroup gridLayoutGroup;
-    public TextMeshProUGUI textPrefareDeckCount;
-    public TextMeshProUGUI textTrashDeckCount;
+    public Text textPrefareDeckCount;
+    public Text textTrashDeckCount;
 
     [Header("댁 리스트")]
     public List<GameObject> deckList;
@@ -168,5 +168,18 @@ public class DeckUI : SingletonD<DeckUI>
             Destroy(deckList[i]);
             deckList.RemoveAt(i);
         }
+    }
+
+    // 댁 카운트 텍스트 컴포넌트들의 크기 변경 애니매이션(댁 카운트 변경 시 크기 커졌다 작아지는 애니매이션)
+    public void DeckCountTextScaleAnimation(Text textComponent, int count)
+    {
+        Vector3 chagenScale = new Vector3(2f, 2f, 2f);
+        Vector3 originScale = new Vector3(1f, 1f, 1f);
+        textComponent.text = count.ToString();
+        textComponent.transform.DOScale(chagenScale, 0.1f).SetEase(Ease.OutQuad)
+        .OnComplete(() =>
+        {
+            textComponent.transform.DOScale(originScale, 0.1f).SetEase(Ease.InQuad);
+        });
     }
 }
