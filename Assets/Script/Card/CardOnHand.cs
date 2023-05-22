@@ -48,7 +48,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
     void OnMouseEnter()
     {
-        if(isOwned && !isMoving){
+        if(isOwned && !isMoving && !IsDeckListPopUpActive()){
             isMouseOver = true;
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
@@ -59,7 +59,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 포인터 나갈 때 이벤트
     void OnMouseExit()
     {
-        if(isOwned && !isMoving){
+        if(isOwned && !isMoving && !IsDeckListPopUpActive()){
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardCollidableSize);
@@ -69,7 +69,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 왼쪽버튼 누를 때 이벤트
     void OnMouseDown()
     {
-        if(isOwned && currentPlayerDeck.isLocalPlayer){
+        if(isOwned && currentPlayerDeck.isLocalPlayer && !IsDeckListPopUpActive()){
             isDrag = true;
             originPosition = transform.position;
         }
@@ -78,7 +78,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트를 마우스로 드래그 할 때 이벤트
     void OnMouseDrag()
     {
-        if(isOwned && isDrag){
+        if(isOwned && isDrag && !IsDeckListPopUpActive()){
             DragCardOnHand(this);
             MovePositionArrowSpawnedCardOnHand(this);
         }
@@ -87,7 +87,8 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 왼쪽버튼 뗄 때 이벤트
     void OnMouseUp()
     {
-        if(isOwned && isDrag){
+        if(isOwned && isDrag && !IsDeckListPopUpActive()){
+            // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
             if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
                 if(NetworkClient.connection != null && NetworkClient.active){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
@@ -124,6 +125,12 @@ public class CardOnHand : NetworkBehaviour
                 .DOMove(new Vector3(0f, originPosition.y, originPosition.z), 0.4f)
                 .SetEase(Ease.OutSine);
         }
+    }
+
+    // DeckList PopUP 활성화 여부 확인 함수
+    private bool IsDeckListPopUpActive()
+    {
+        return DeckUI.instance.DeckListPopUp.activeSelf;
     }
 
     // 카드 생성 이벤트 수신 (카드의 위치 및 부모 오브젝트 설정)

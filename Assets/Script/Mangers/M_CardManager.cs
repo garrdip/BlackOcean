@@ -226,4 +226,28 @@ public class M_CardManager : NetworkBehaviour
             }
         }
     }
+
+    // 로컬 플레이어의 모든 카드 제거
+    public void RemoveAllCurrentPlayerDeck()
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                    M_CardManager.instance.CardOnHandAllThrowAwaySequence(cardOnHand);
+                }
+            }
+        }
+    }
+
+    // 로컬 플레이어 소유의 카드 제어 화살표 제거
+    public void RemoveAllCurrentPlayerArrow()
+    {
+         if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
+            }
+        }
+    }
 }

@@ -63,8 +63,8 @@ public class DeckUI : SingletonD<DeckUI>
     // 턴 넘김
     public void HandleEndTurn()
     {
-        RemoveAllCurrentPlayerDeck();
-        RemoveAllCurrentPlayerArrow();
+        M_CardManager.instance.RemoveAllCurrentPlayerDeck();
+        M_CardManager.instance.RemoveAllCurrentPlayerArrow();
     }
 
     // PrefareDeck 정보 팝업
@@ -122,30 +122,6 @@ public class DeckUI : SingletonD<DeckUI>
         buttonTrashDeck.transform.SetParent(TrashDeck.transform);
         DeckListPopUp.gameObject.SetActive(false);
         ClearDeckList();
-    }
-
-    // 내 턴 종료시 손에있는 모든 카드 제거
-    private void RemoveAllCurrentPlayerDeck()
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                    M_CardManager.instance.CardOnHandAllThrowAwaySequence(cardOnHand);
-                }
-            }
-        }
-    }
-
-    // 내 턴 종료시 내 소유의 카드 제어 화살표 제거
-    private void RemoveAllCurrentPlayerArrow()
-    {
-         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
-            }
-        }
     }
 
     // Deck정보 리스트 요소 추가
