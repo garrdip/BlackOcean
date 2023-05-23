@@ -23,7 +23,6 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         transform.DOScale(originScale * 1.2f, 0.3f);
-
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)

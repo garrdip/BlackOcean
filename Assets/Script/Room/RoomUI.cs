@@ -9,8 +9,6 @@ using Steamworks;
 
 public class RoomUI : InstanceD<RoomUI>
 {
-    // 캐릭터 오브젝트 (인스펙터 창에서 캐릭터 리스트 생성 및 오브젝트 참조 해두는 방법으로 구현)
-    [Header("Select Characters")]
     public Button buttonReady;
     public TMP_InputField messageInput;
     public Scrollbar scrollbar;

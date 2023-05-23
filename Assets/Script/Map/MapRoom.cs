@@ -30,7 +30,7 @@ public class MapRoom : NetworkBehaviour
         mainCamera = Camera.main;
     }
 
-    void  OnMouseDown()
+    void OnMouseDown()
     {
         // 맵은 상하좌우 한칸씩만 이동가능
         if(Vector2.Distance(location, M_MapManager.instance.currentLocation) <= 1f){

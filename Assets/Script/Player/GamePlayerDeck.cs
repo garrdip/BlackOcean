@@ -246,7 +246,7 @@ public class GamePlayerDeck : NetworkBehaviour
             TargetObject[] tar = new TargetObject[1];
             tar[0] = targetObjects[0].clone;
             M_TurnManager.instance.ProcessCardPredict(card,tar);
-            cardCtrlArrow.AcceptCardUse(conn);
+            cardCtrlArrow.RpcAcceptCardUse(conn);
         }
         else
             M_TurnManager.instance.ProcessCardPredict(card,M_TurnManager.instance.GetCloneTargetObject());

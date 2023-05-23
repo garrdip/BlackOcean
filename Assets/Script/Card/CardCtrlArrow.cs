@@ -101,16 +101,6 @@ public class CardCtrlArrow : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void AcceptCardUse(NetworkIdentity conn)
-    {
-        if(conn == NetworkClient.connection.identity){
-            ChangeArrowVisible(false, DeckUI.instance.CardOnHandsPanel.transform);
-            M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
-            M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
-        }
-    }
-
     // 화살표 초기화(위치설정, visible상태 활성화, 베지어 곡선 조작점 설정)
     public void InitCardCtrlArrow(CardOnHand cardOnHand)
     {
@@ -188,4 +178,16 @@ public class CardCtrlArrow : NetworkBehaviour
         }
         SetArrowNodesScale();
     }
+
+    // 화살표를 소환한 카드의 액션 수행 이벤트 수신
+    [ClientRpc]
+    public void RpcAcceptCardUse(NetworkIdentity conn)
+    {
+        if(conn == NetworkClient.connection.identity){
+            ChangeArrowVisible(false, DeckUI.instance.CardOnHandsPanel.transform); // 화살표 활성화 상태 변경
+            M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
+            M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize); // 카드 충돌체 크기 변경
+        }
+    }
+
 }
