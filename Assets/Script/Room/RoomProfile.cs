@@ -66,7 +66,7 @@ public class RoomProfile : MonoBehaviour
         {
             UpdateCharacter();
             UpdateReadyState();
-            ChangeSteamProfile();
+            if(prePlayer != player)ChangeSteamProfile();
             if(!player.isLocalPlayer)
             {
                 EnableButton();
