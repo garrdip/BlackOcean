@@ -4498,7 +4498,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 1
+  m_Text: 0
 --- !u!1 &1903600591
 GameObject:
   m_ObjectHideFlags: 0
@@ -5356,6 +5356,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  gamePlayerDeck: {fileID: 0}
   cardOnHandsPanel: {fileID: 823382814}
   cardCollidableSize: {x: 0, y: 0, z: 0}
   cardNoneCollidableSize: {x: 0, y: 0, z: 0}
@@ -5823,7 +5824,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 1
+  m_Text: 0
 --- !u!1 &2130835926
 GameObject:
   m_ObjectHideFlags: 0

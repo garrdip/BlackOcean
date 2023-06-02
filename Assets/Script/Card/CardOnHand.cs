@@ -18,19 +18,27 @@ public class CardOnHand : NetworkBehaviour
     public int originSortOrder;
 
 
-    // 위치값
+    // 초기 위치값
     public Vector3 originPosition;
+
+    // 화살표 소환된 카드의 위치값(화면 중앙 하단)
+    public Vector3 arrowSpawnedCardPosition;
+
+    // 마우스 오버 시 Y좌표값
     public float hoveredPositionY;
 
 
     // 마우스가 오브젝트 위에 있는지 여부
     public bool isMouseOver = false; 
 
-    // 오브젝트가 드래그 상태인지 여부
+    // 카드 오브젝트가 드래그 상태인지 여부
     public bool isDrag = false;
 
-    // 오브젝트가 움직이는 상태인지 여부
+    // 카드 오브젝트가 움직이는 상태인지 여부
     public bool isMoving = false;
+
+    // 카드 오브젝트가 밀려난 상태인지 여부
+    public bool isShifted = false;
 
     // 현재 게임 플레이어의 GamePlayerDeck 클래스 참조값
     public GamePlayerDeck currentPlayerDeck;
@@ -53,6 +61,7 @@ public class CardOnHand : NetworkBehaviour
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardNoneCollidableSize);
+            M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
         }
     }
 
@@ -63,6 +72,7 @@ public class CardOnHand : NetworkBehaviour
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardCollidableSize);
+            M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
         }
     }
 
@@ -70,8 +80,9 @@ public class CardOnHand : NetworkBehaviour
     void OnMouseDown()
     {
         if(isOwned && currentPlayerDeck.isLocalPlayer && !IsDeckListPopUpActive()){
+            // 드래그 시작전 마우스 클릭 시점에 카드의 절대 위치값 저장(이 시점의 카드 위치는 중앙 하단). 화살표 소환 시 카드를 다시 중앙 하단으로 이동시키기 위함.
             isDrag = true;
-            originPosition = transform.position;
+            arrowSpawnedCardPosition = transform.position;
         }
     }
 
@@ -122,7 +133,7 @@ public class CardOnHand : NetworkBehaviour
             currentPlayerDeck.cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
             currentPlayerDeck.CmdSetArrowOwnCardOnHand(cardOnHand);
             cardOnHand.transform
-                .DOMove(new Vector3(0f, originPosition.y, originPosition.z), 0.4f)
+                .DOMove(new Vector3(0f, arrowSpawnedCardPosition.y, arrowSpawnedCardPosition.z), 0.4f)
                 .SetEase(Ease.OutSine);
         }
     }

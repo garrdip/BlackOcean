@@ -42,6 +42,9 @@ public class M_CardManager : NetworkBehaviour
     [Header("카드 마우스 오버 사이즈")]
     public Vector3 cardOverSize;
 
+    [Header("카드 밀려나는 정도값 범위")]
+    public float cardOnHandShiftedRange;
+
 
     public static M_CardManager instance
     {
@@ -69,7 +72,7 @@ public class M_CardManager : NetworkBehaviour
 
     void FixedUpdate()
     {
-        SetCardOfHandPositionSymmetry();
+        SetCardOnHandPositionSymmetry();
     }
 
     // Range로 변경가능한 값들 초기화
@@ -80,10 +83,11 @@ public class M_CardManager : NetworkBehaviour
         symmetryPositionX_Range = 1.15f;
         symmetryPositionY_Range = 0.2f;
         symmetryRotationRange = 5.0f;
+        cardOnHandShiftedRange = 1f;
     }
 
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
-    public void SetCardOfHandPositionSymmetry()
+    public void SetCardOnHandPositionSymmetry()
     {
         cardOnHandsPanel.transform.position = new Vector3(0f, cardOnHandsPanelPositionY_Range, 0f); // 카드 모음 패널의 위치       
         if(gamePlayerDeck != null){
@@ -93,7 +97,7 @@ public class M_CardManager : NetworkBehaviour
                     CardOnHand cardOnHand =  gamePlayerDeck.cardOnHands[i];
                     if(cardOnHand != null && !cardOnHand.isMoving && !cardOnHand.isDrag){
                         if(cardOnHand.isMouseOver){
-                            Vector3 targetPosition = new Vector3(cardOnHand.transform.localPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
+                            Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
                             cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
                             cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
                             cardOnHand.transform.localScale = cardOverSize;
@@ -104,14 +108,26 @@ public class M_CardManager : NetworkBehaviour
                             float symmetryValue = (count % 2 == 0) ? ((i - leftCount) * symmetryRange - 0.75f) : ((i - leftCount) * symmetryRange);
 
                             // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
-                            Vector3 position = new Vector3(symmetryValue * symmetryPositionX_Range, -Mathf.Abs(symmetryValue) * symmetryPositionY_Range, 0f);
-                            cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, position, Time.deltaTime * 10f);
+                            Vector3 symmetryPosition = new Vector3(symmetryValue * symmetryPositionX_Range, -Mathf.Abs(symmetryValue) * symmetryPositionY_Range, 0f);
+                            cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
+                            cardOnHand.originPosition = symmetryPosition;
 
                             // 회전값
                             cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, -symmetryValue * symmetryRotationRange);
 
                             // 크기값
                             cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOriginSize, Time.deltaTime * 10f);
+
+                            // 마우스 오버되지 않은 나머지 카드들은 shift 되어 밀려남. 마우스 오버된 카드를 기준으로 좌우 대칭으로 멀어질 수록 밀려나는 위치의 정도가 감소.
+                            if(cardOnHand.isShifted){
+                                int mouseOveredIndex = gamePlayerDeck.cardOnHands.FindIndex((card) =>  card.isMouseOver);
+                                float shiftedValue = 0f;
+                                if(cardOnHand.index != mouseOveredIndex){
+                                    shiftedValue = cardOnHandShiftedRange / (cardOnHand.index - mouseOveredIndex);
+                                }
+                                Vector3 shiftPosition = new Vector3(symmetryPosition.x + shiftedValue, symmetryPosition.y, symmetryPosition.z);
+                                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, shiftPosition, Time.deltaTime * 10f);
+                            }
                         }
                     }
                 }
@@ -148,10 +164,10 @@ public class M_CardManager : NetworkBehaviour
         // Dotween 애니매이션 시퀀스 생성
         Sequence sequence = DOTween.Sequence();
         
-        // 시퀸스에 사이즈 축소, 현재위치에서 중앙 0.5f위쪽 위치로 이동 애니매이션 추가
-        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration));
+        // 시퀸스에 회전 초기화, 현재위치에서 중앙 0.5f위쪽 위치로 이동 애니매이션 추가
+        sequence.Prepend(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f));
         sequence.Join(cardOnHand.transform
-                            .DOMove(new Vector3(0f, 0.5f, 0f), duration)
+                            .DOMove(new Vector3(0f, 0.5f, 0f), 0.5f)
                             .SetEase(Ease.OutSine));
 
         // 시퀀스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 화면의 우측하단 방향으로 포물선 이동 애니매이션 추가
@@ -202,14 +218,32 @@ public class M_CardManager : NetworkBehaviour
     }
 
 
-    // 현재 플레이어의 CardOnHand 오브젝트의 충돌체 크기 조정(마우스 오버되지 않은 카드들의 충돌체 사이즈를 줄여서 충돌판정을 받지 않도록 함)
+    // 로컬 플레이어의 CardOnHand 오브젝트의 충돌체 크기 조정(마우스 오버되지 않은 카드들의 충돌체 사이즈를 줄여서 충돌판정을 받지 않도록 함)
     public void ChangeCardOnHandColliderSize(CardOnHand mouseOveredCardOnHand, Vector3 size)
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                if(cardOnHand != mouseOveredCardOnHand){
-                    cardOnHand.GetComponent<BoxCollider>().size = size;
+            if(gamePlayerDeck.isLocalPlayer){
+                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                    if(cardOnHand != mouseOveredCardOnHand){
+                        cardOnHand.GetComponent<BoxCollider>().size = size;
+                    }
+                }
+            }
+        }
+    }
+
+
+    // 로컬 플레이어의 CardOnHand 오브젝트들 중 마우스 오버되지 않은 카드들의 isShifted 변수 값 변경
+    public void ChangeCardOnHandShiftState(CardOnHand mouseOveredCardOnHand, bool isShifted)
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                    if(cardOnHand != mouseOveredCardOnHand){
+                        cardOnHand.isShifted = isShifted;
+                    }
                 }
             }
         }
