@@ -144,8 +144,7 @@ public class M_TurnManager : NetworkBehaviour
                         Debug.Log("타겟: " + tar[0].player.netIdentity);
                 }
 
-                CardData.cardEffects[CardData.cards.IndexOf(CardData.cards.Find(c => c.name == card.baseCard.name))].ProcessCard(tar);
-           
+                CardData.RunCard(card,tar);
                 yield return waitForDelay;
             }
             yield return waitForLoop;
@@ -154,7 +153,7 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void ProcessCardPredict(Card card,TargetObject[] tar)
     {
-        CardData.cardEffects[CardData.cards.IndexOf(CardData.cards.Find(c => c.name == card.baseCard.name))].ProcessCard(tar);
+        CardData.RunCard(card,tar);
     }
 
     [Server]

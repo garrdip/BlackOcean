@@ -10,8 +10,7 @@ using Mirror;
 public static class CardData
 {
     public static List<CardBase> cards = new List<CardBase>();
-    public static List<CardEffect> cardEffects = new List<CardEffect>();
-
+    public static List<(string,ExecuteCard)> CardMethods = new List<(string, ExecuteCard)>();
     public static void LoadCardDataFromDB()
     {
         TextAsset DBtext = Resources.Load<TextAsset>("DBs/CardDB");
@@ -22,27 +21,29 @@ public static class CardData
                 string value = DB.ReadLine();
                 if( value == null ) break; // 마지막 데이터의 경우 null을 반환
                 CardBase card = new CardBase();
-                CardEffect cardEffect = new CardEffect();
+                
                 string[] values = value.Trim().Split(",");
                 if(values[0] == "Character") continue; // 첫줄 데이터 스킵   
                 card.character = (Character)Enum.Parse<Character>(values[0]);
                 card.name = values[1];
                 card.isTargetable = (values[3] == "Y") ? true : false;
-                MethodInfo methodInfo = typeof(CardMethods).GetMethod(values[2]);
-                cardEffect.ProcessCard = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard), null, methodInfo, true);
+                ExecuteCard temp = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard),typeof(CardMethod),values[2]);
                 cards.Add(card);
-                cardEffects.Add(cardEffect);
+                CardMethods.Add((card.name,temp));
             }
         }
     }
 
-
+    public static void RunCard(Card card,TargetObject[] targets)
+    {
+        CardMethods.Find(data => data.Item1 == card.baseCard.name).Item2(card,targets);
+    }
 }
 
-public class CardMethods
+public class CardMethod
 {
     // Card Method List
-    public static void SingleAttack(TargetObject[] tar)
+    public static void SingleAttack(Card card,TargetObject[] tar)
     {
         Debug.Log("Single Attack!");
         if(!(tar[0].monster == null))
@@ -56,7 +57,7 @@ public class CardMethods
         }
     }
 
-    public static void FullAttack(TargetObject[] tar)
+    public static void FullAttack(Card card,TargetObject[] tar)
     {
         if(tar == null) return;
         Debug.Log("Full Scale Attack!");
