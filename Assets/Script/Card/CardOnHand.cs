@@ -5,6 +5,7 @@ using UnityEngine;
 using ProjectD;
 using Mirror;
 using DG.Tweening;
+using TMPro;
 
 public class CardOnHand : NetworkBehaviour
 {
@@ -43,6 +44,17 @@ public class CardOnHand : NetworkBehaviour
     // 현재 게임 플레이어의 GamePlayerDeck 클래스 참조값
     public GamePlayerDeck currentPlayerDeck;
 
+    [Header("CardOnHand UI 컴포넌트")]
+    public Canvas cardOnHandCanvas;
+    public TextMeshProUGUI textCardName;
+    public TextMeshProUGUI textCardInfo;
+
+
+    void Start()
+    {
+        textCardName.text = card.baseCard.name;
+        textCardInfo.text = card.baseCard.cardType.ToString();
+    }
 
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
     public override void OnStartClient()
@@ -60,6 +72,7 @@ public class CardOnHand : NetworkBehaviour
             isMouseOver = true;
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
+            cardOnHandCanvas.sortingOrder = 999;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardNoneCollidableSize);
             M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
         }
@@ -71,6 +84,7 @@ public class CardOnHand : NetworkBehaviour
         if(isOwned && !isMoving && !IsDeckListPopUpActive()){
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
+            cardOnHandCanvas.sortingOrder = originSortOrder;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardCollidableSize);
             M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
         }
@@ -161,5 +175,6 @@ public class CardOnHand : NetworkBehaviour
     public void RpcSortOrder(int index)
     {
         transform.GetComponent<SpriteRenderer>().sortingOrder = index;
+        cardOnHandCanvas.sortingOrder = index;
     }
 }

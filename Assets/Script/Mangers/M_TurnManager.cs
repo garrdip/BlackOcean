@@ -10,6 +10,9 @@ public class M_TurnManager : NetworkBehaviour
 {
     public static M_TurnManager Instance = null;
 
+    [Header("랜덤 시드값")]
+    public int seedNumber = 0;
+
     // 서버에서 관리할 player 리스트
     public List<GamePlayer> players;
 
@@ -85,7 +88,21 @@ public class M_TurnManager : NetworkBehaviour
         selectOrderButtons[2].onClick.AddListener(() => SelectOrder(3));
     }
 
-    
+    // 피셔 예이츠 셔플 알고리즘 함수
+    public void Shuffle<T>(SyncList<T> list)
+    {
+        System.Random random = new System.Random(M_TurnManager.instance.seedNumber); // 시드값을 이용한 랜덤(시드값 같을 시 동일한 값 산출)
+
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = random.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+    }
 
     [Command(requiresAuthority = false)]
     public void SetNextTurn()

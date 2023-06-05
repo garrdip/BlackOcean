@@ -26,11 +26,11 @@ public class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<Artifact> artifacts = new SyncList<Artifact>();
 
-    public readonly SyncList<Card> deck =  new SyncList<Card>(); // 카드 총량(시작 8개)
+    public readonly SyncList<Card> deck =  new SyncList<Card>(); // 댁 총괄 데이터
 
-    public readonly  SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 카드(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
+    public readonly  SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 댁(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
     
-    public readonly SyncList<Card> trashDeck = new SyncList<Card>(); // 버릴 카드(사용된 카드 + 턴 종료될때 내 손에 있는 카드)
+    public readonly SyncList<Card> trashDeck = new SyncList<Card>(); // 버릴 댁(사용된 카드 + 턴 종료될때 내 손에 있는 카드)
 
     public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 실제 컨트롤 하는 플레이어 소유의 카드 네트워크 오브젝트 리스트
 
@@ -48,7 +48,7 @@ public class GamePlayerDeck : NetworkBehaviour
         trashDeck.Callback += OnTrashDeckUpdated;
     }
 
-    // 플레이어 댁 정보 초기화
+    // 플레이어 댁 정보 초기화. 캐릭터 생성시 DB에서 캐릭터별 카드데이터 조회하여 deck에 추가
     public void SetInitialValue()
     {
         currentDeckCount = 5;
@@ -60,11 +60,9 @@ public class GamePlayerDeck : NetworkBehaviour
                     if(i % 2 == 0){
                         Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("G_Target")));
                         deck.Add(attackCard);
-                        prefareDeck.Add(attackCard);
                     }else{
                         Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("G_NonTarget")));
                         deck.Add(defenseCard);
-                        prefareDeck.Add(defenseCard);
                     }
                     
                 }
@@ -75,11 +73,9 @@ public class GamePlayerDeck : NetworkBehaviour
                     if(i % 2 == 0){
                         Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("E_Target")));
                         deck.Add(attackCard);
-                        prefareDeck.Add(attackCard);
                     }else{
                         Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("E_NonTarget")));
                         deck.Add(defenseCard);
-                        prefareDeck.Add(defenseCard);
                     }
                     
                 }
@@ -90,11 +86,9 @@ public class GamePlayerDeck : NetworkBehaviour
                     if(i % 2 == 0){
                         Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("H_Target")));
                         deck.Add(attackCard);
-                        prefareDeck.Add(attackCard);
                     }else{
                         Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("H_NonTarget")));
                         deck.Add(defenseCard);
-                        prefareDeck.Add(defenseCard);
                     }
                     
                 }
@@ -102,6 +96,17 @@ public class GamePlayerDeck : NetworkBehaviour
             default:
                 break;
         }
+    }
+
+    // 전투 시작시 deck -> prefareDeck 으로 Card 데이터를 깊은복사 후 랜덤 셔플 수행
+    [Command]
+    public void CmdAddPrefareDeckWithShuffle()
+    {
+        foreach(Card card in deck){
+            Card copyCard = card.CardDeepCopy();
+            prefareDeck.Add(copyCard);
+        }
+        M_TurnManager.instance.Shuffle(prefareDeck);
     }
 
 

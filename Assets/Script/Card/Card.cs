@@ -13,4 +13,12 @@ public class Card
 
     public Card(){} // For Mirror Library default constructor
 
+    
+    // 카드 클래스 깊은복사
+    public Card CardDeepCopy()
+    {
+        Card card = new Card();
+        card.baseCard = baseCard;
+        return card;
+    }
 }

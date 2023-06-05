@@ -257,6 +257,7 @@ public class M_CardManager : NetworkBehaviour
             if(gamePlayerDeck.isLocalPlayer){
                 gamePlayerDeck.CmdSpawnCardPocket();
                 gamePlayerDeck.CmdSpawnArrowEmitter();
+                gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
             }
         }
     }
