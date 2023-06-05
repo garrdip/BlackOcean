@@ -28,9 +28,9 @@ public class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<Card> deck =  new SyncList<Card>(); // 댁 총괄 데이터
 
-    public readonly  SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 댁(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
+    public readonly  SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 카드(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
     
-    public readonly SyncList<Card> trashDeck = new SyncList<Card>(); // 버릴 댁(사용된 카드 + 턴 종료될때 내 손에 있는 카드)
+    public readonly SyncList<Card> trashDeck = new SyncList<Card>(); // 버릴 카드(사용된 카드 + 턴 종료될때 내 손에 있는 카드)
 
     public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 실제 컨트롤 하는 플레이어 소유의 카드 네트워크 오브젝트 리스트
 
@@ -48,7 +48,7 @@ public class GamePlayerDeck : NetworkBehaviour
         trashDeck.Callback += OnTrashDeckUpdated;
     }
 
-    // 플레이어 댁 정보 초기화. 캐릭터 생성시 DB에서 캐릭터별 카드데이터 조회하여 deck에 추가
+    // 플레이어 댁 정보 초기화
     public void SetInitialValue()
     {
         currentDeckCount = 5;
@@ -58,10 +58,10 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("G_Target")));
+                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G0")));
                         deck.Add(attackCard);
                     }else{
-                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("G_NonTarget")));
+                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G1")));
                         deck.Add(defenseCard);
                     }
                     
@@ -71,10 +71,10 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("E_Target")));
+                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E0")));
                         deck.Add(attackCard);
                     }else{
-                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("E_NonTarget")));
+                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E1")));
                         deck.Add(defenseCard);
                     }
                     
@@ -84,10 +84,10 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("H_Target")));
+                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
                         deck.Add(attackCard);
                     }else{
-                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.name.Equals("H_NonTarget")));
+                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H1")));
                         deck.Add(defenseCard);
                     }
                     

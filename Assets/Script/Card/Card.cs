@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectD;
 
 public class Card
 {
     public CardBase baseCard;
+    public bool isEnhanced;
+    public int costAddition;
+    public List<CardCharacteristic> cardCharacteristics;
 
     public Card(CardBase basecard)
     {
@@ -22,3 +26,5 @@ public class Card
         return card;
     }
 }
+
+
