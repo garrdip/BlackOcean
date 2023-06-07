@@ -240,26 +240,32 @@ public class GamePlayerDeck : NetworkBehaviour
 
     // 카드데이터와 카드의 액션수행 대상을 Dictionary로 key, value 쌍으로 묶어 저장
     [Command]
-    public void CmdEnQueueCardTargetPair(Card card, TargetObject[] targetObjects, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
+    public void CmdEnQueueCardTargetPair(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
     {
-        if(card.baseCard.isTargetable)
-        {
-            if(targetObjects[0].clone == null) // 서버
-            {
-                return;
-            }
-            TargetObject[] tar = new TargetObject[1];
-            tar[0] = targetObjects[0].clone;
-            M_TurnManager.instance.ProcessCardPredict(card,tar);
-            cardCtrlArrow.RpcAcceptCardUse(conn);
-        }
-        else
-            M_TurnManager.instance.ProcessCardPredict(card,M_TurnManager.instance.GetCloneTargetObject());
+            // TargetObject List 구조 : 
+            /*
+            Index : 내용
+            0 : 카드 사용한 Player 
+            1 : Target Monster
+            이후 : 모든 플레이어 및 몬스터
+            */
+        if(card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
+            return;
+        List<TargetObject> tar = new List<TargetObject>();
+        tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
+        if(card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
+        tar.AddRange(M_TurnManager.instance.GetClonePlayerObjects());
+        tar.AddRange(M_TurnManager.instance.GetCloneMonsterObjects());
+        if(card.baseCard.isTargetable)cardCtrlArrow.RpcAcceptCardUse(conn); // TargetAble이 유효한 타겟이었을 경우 화살표 제거
+        M_TurnManager.instance.ProcessCardPredict(card,tar);
 
-        if(card.baseCard.isTargetable) 
-            M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, targetObjects));
-        else
-            M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, M_TurnManager.instance.GetTargetObjects())); // Targetable 카드가 아닌경우 TargetObject 위치를 Server에서 불러옴으로 싱크 에러 방지
+        List<TargetObject> targetObjects = new List<TargetObject>();
+        targetObjects.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
+        if(card.baseCard.isTargetable)targetObjects.Add(targetObject);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
+        targetObjects.AddRange(M_TurnManager.instance.GetPlayerObjects());
+        targetObjects.AddRange(M_TurnManager.instance.GetMonsterObjects());
+
+        M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, targetObjects));
     }
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//

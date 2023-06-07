@@ -36,13 +36,20 @@ public class M_TurnManager : NetworkBehaviour
     public Transform monsterSpawnLocation;
 
     public List<TargetObject> spawnedPlayerList = new List<TargetObject>();
+    public List<TargetObject> clonePlayerList = new List<TargetObject>();
     public List<TargetObject> spawnedMonsterList = new List<TargetObject>();
     public List<TargetObject> cloneMonsterList = new List<TargetObject>();
     List<TargetObject> monsterOrderList = new List<TargetObject>();
 
-    // 카드와 타겟을 한쌍으로 저장하는 Dictionary타입의 큐
-    public Queue<(Card, TargetObject[])> cardTargetPairQueue = new Queue<(Card, TargetObject[])>();
-
+    // 카드와 타겟을 한쌍으로 저장하는 큐
+    public Queue<(Card, List<TargetObject>)> cardTargetPairQueue = new Queue<(Card, List<TargetObject>)>();
+    // TargetObject List 구조 : 
+    /*
+    Index : 내용
+    0 : 카드 사용한 Player 
+    1 : Target Monster
+    이후 : 모든 플레이어 및 몬스터
+    */
     
     // Turn 관리는 서버
     BattleTurn Phase;
@@ -54,14 +61,43 @@ public class M_TurnManager : NetworkBehaviour
         OnChangedPhase();
     }}
 
-    public TargetObject[] GetTargetObjects()
-    {
-        return spawnedMonsterList.ToArray();
+    public TargetObject GetPlayer(NetworkIdentity conn)
+    {     
+        foreach(TargetObject tar in spawnedPlayerList)
+        {
+            if(tar.conn == conn)
+            return tar;
+        }
+        return null;
     }
 
-    public TargetObject[] GetCloneTargetObject()
+    public TargetObject GetClonePlayer(NetworkIdentity conn)
     {
-        return cloneMonsterList.ToArray();
+        foreach(TargetObject tar in clonePlayerList)
+        {
+            if(tar.conn == conn)
+            return tar;
+        }
+        return null;
+    }
+
+    public List<TargetObject> GetPlayerObjects()
+    {
+        return spawnedPlayerList;
+    }
+
+    public List<TargetObject> GetClonePlayerObjects()
+    {
+        return clonePlayerList;
+    }
+    public List<TargetObject> GetMonsterObjects()
+    {
+        return spawnedMonsterList;
+    }
+
+    public List<TargetObject> GetCloneMonsterObjects()
+    {
+        return cloneMonsterList;
     }
 
     public static M_TurnManager instance
@@ -133,7 +169,6 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void HandleStartBattle()
     {
-        Debug.Log("시작!!!!!!!!!!!");
         M_MapManager.instance.StartBattle();
         GeneratePlayerUnit();
         GenerateMonster();
@@ -150,15 +185,15 @@ public class M_TurnManager : NetworkBehaviour
         {
             if(cardTargetPairQueue.Count != 0){
                 // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
-                (Card card,TargetObject[] tar) = cardTargetPairQueue.Dequeue();
+                (Card card,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
                
                 Debug.Log("카드: " + card.baseCard.name);
                 if(card.baseCard.isTargetable)
                 {
-                    if(tar[0].player == null)
-                        Debug.Log("타겟: " + tar[0].monster.monsterData.name);
+                    if(tar[1].objectType != ObjectType.PLAYER)
+                        Debug.Log("타겟: " + tar[1].monster.monsterData.name);
                     else
-                        Debug.Log("타겟: " + tar[0].player.netIdentity);
+                        Debug.Log("타겟: " + tar[1].player.netIdentity);
                 }
 
                 CardData.RunCard(card,tar);
@@ -168,7 +203,7 @@ public class M_TurnManager : NetworkBehaviour
         }
     }
     [Server]
-    public void ProcessCardPredict(Card card,TargetObject[] tar)
+    public void ProcessCardPredict(Card card,List<TargetObject> tar)
     {
         CardData.RunCard(card,tar);
     }
@@ -316,16 +351,19 @@ public class M_TurnManager : NetworkBehaviour
             GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),playerSpawnLocation.GetChild(i).transform.position,Quaternion.identity);
             NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().player = playerOrder[i];
+            avatar.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+            spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
+
             // 타겟 유효 판단을 위한 클론 데이터 //
             GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
             NetworkServer.Spawn(clone);
             clone.GetComponent<TargetObject>().cloneGamePlayer = new CloneGamePlayer(playerOrder[i]);
+            clone.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
             clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
 
             avatar.GetComponent<TargetObject>().clone = clone.GetComponent<TargetObject>();
-
-            spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
+            clonePlayerList.Add(clone.GetComponent<TargetObject>());
         }
     }
 

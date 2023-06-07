@@ -31,8 +31,9 @@ public class TargetObject : NetworkBehaviour
     // Player 의 경우 
     [SyncVar (hook = nameof(InitTargetObjectPlayer))]
     public GamePlayer player;
-
     public CloneGamePlayer cloneGamePlayer;
+
+    public NetworkIdentity conn;
 
     // Monster 의 경우
     [SyncVar (hook = nameof(InitTargetObjectEmemy))]

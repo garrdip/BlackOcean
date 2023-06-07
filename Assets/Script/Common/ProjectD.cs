@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+
 namespace ProjectD
 {
     public enum Character { NONE, GEORK, ERIS, HONGDANHYANG }
@@ -16,5 +19,5 @@ namespace ProjectD
             return input.Replace("\u200B", "");
         }
     }
-    public delegate void ExecuteCard(Card card,TargetObject[] target);
+    public delegate void ExecuteCard(Card card,List<TargetObject> target);
 }
