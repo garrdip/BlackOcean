@@ -16,7 +16,8 @@ public class CardOnHand : NetworkBehaviour
     public int index;
     
     // 랜더링 순서값
-    public int originSortOrder;
+    public int originSortOrder; // 초기값
+    public const int maxSortOrder = 999; // 변경되는 최대값
 
 
     // 초기 위치값
@@ -52,6 +53,7 @@ public class CardOnHand : NetworkBehaviour
 
     void Start()
     {
+        cardOnHandCanvas.worldCamera = Camera.main;
         textCardName.text = card.baseCard.name;
         textCardInfo.text = card.baseCard.cardType.ToString();
     }
@@ -71,8 +73,8 @@ public class CardOnHand : NetworkBehaviour
         if(isOwned && !isMoving && !IsDeckListPopUpActive()){
             isMouseOver = true;
             originSortOrder = index;
-            transform.GetComponent<SpriteRenderer>().sortingOrder = 999;
-            cardOnHandCanvas.sortingOrder = 999;
+            transform.GetComponent<SpriteRenderer>().sortingOrder = maxSortOrder;
+            cardOnHandCanvas.sortingOrder = maxSortOrder;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardNoneCollidableSize);
             M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
         }
@@ -103,7 +105,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트를 마우스로 드래그 할 때 이벤트
     void OnMouseDrag()
     {
-        if(isOwned && isDrag && !IsDeckListPopUpActive()){
+        if(isOwned && isDrag && !IsDeckListPopUpActive() && !IsDeckRemovePopUpActive()){
             DragCardOnHand(this);
             MovePositionArrowSpawnedCardOnHand(this);
         }
@@ -114,7 +116,7 @@ public class CardOnHand : NetworkBehaviour
     {
         if(isOwned && isDrag && !IsDeckListPopUpActive()){
             // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
-            if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
+            if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2) && !IsDeckRemovePopUpActive()){
                 if(NetworkClient.connection != null && NetworkClient.active){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                     if (gamePlayerDeck.isLocalPlayer){
@@ -132,6 +134,10 @@ public class CardOnHand : NetworkBehaviour
     // 마우스 좌표에 따라 카드 오브젝트 드래그
     private void DragCardOnHand(CardOnHand cardOnHand)
     {
+        // 드래그 중 오브젝트의 정렬값은 최대값. 항상 맨 위에 랜더링
+        cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = maxSortOrder;
+        cardOnHand.cardOnHandCanvas.sortingOrder = maxSortOrder;
+        // 오브젝트 위치는 마우스 커서 위치
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         cardOnHand.transform.position = new Vector2(mousePosition.x, mousePosition.y);
         cardOnHand.transform.localScale = M_CardManager.instance.cardOverSize;
@@ -156,6 +162,12 @@ public class CardOnHand : NetworkBehaviour
     private bool IsDeckListPopUpActive()
     {
         return DeckUI.instance.DeckListPopUp.activeSelf;
+    }
+
+    // DeckRemove PopUp 활성화 여부 확인 함수
+    private bool IsDeckRemovePopUpActive()
+    {
+        return DeckUI.instance.DeckRemovePopUp.activeSelf;
     }
 
     // 카드 생성 이벤트 수신 (카드의 위치 및 부모 오브젝트 설정)
