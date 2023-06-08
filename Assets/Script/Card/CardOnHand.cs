@@ -15,9 +15,9 @@ public class CardOnHand : NetworkBehaviour
     [SyncVar]
     public int index;
     
+    [Header("CardOnHand Transform 및 컴포넌트 관련 값들")]
     // 랜더링 순서값
     public int originSortOrder; // 초기값
-
 
     // 초기 위치값
     public Vector3 originPosition;
@@ -29,6 +29,7 @@ public class CardOnHand : NetworkBehaviour
     public float hoveredPositionY;
 
 
+    [Header("CardOnHand 상태 변수값들")]
     // 마우스가 오브젝트 위에 있는지 여부
     public bool isMouseOver = false; 
 
@@ -41,7 +42,11 @@ public class CardOnHand : NetworkBehaviour
     // 카드 오브젝트가 밀려난 상태인지 여부
     public bool isShifted = false;
 
-    // 현재 게임 플레이어의 GamePlayerDeck 클래스 참조값
+    // 카드 선택 모드 창에서 선택된 상태인지 여부
+    public bool isChoosed = false;
+
+
+    [Header("현재 게임 플레이어의 GamePlayerDeck 클래스 참조값")]
     public GamePlayerDeck currentPlayerDeck;
 
     [Header("CardOnHand UI 컴포넌트")]
@@ -67,7 +72,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
     void OnMouseEnter()
     {
-        if(isOwned && !isMoving && !IsDeckListPopUpActive()){
+        if(isOwned && !isMoving && !IsDeckListPopUpActive() && !isChoosed){
             isMouseOver = true;
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
@@ -92,10 +97,18 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 왼쪽버튼 누를 때 이벤트
     void OnMouseDown()
     {
-        if(isOwned && currentPlayerDeck.isLocalPlayer && !IsDeckListPopUpActive()){
-            // 드래그 시작전 마우스 클릭 시점에 카드의 절대 위치값 저장(이 시점의 카드 위치는 중앙 하단). 화살표 소환 시 카드를 다시 중앙 하단으로 이동시키기 위함.
-            isDrag = true;
-            arrowSpawnedCardPosition = transform.position;
+        if(isOwned && currentPlayerDeck.isLocalPlayer){
+            // 덱 [목록] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
+            if(!IsDeckListPopUpActive()){
+                isDrag = true;
+                arrowSpawnedCardPosition = transform.position; // 드래그 시작전 마우스 클릭 시점에 카드의 절대 위치값 저장(이 시점의 카드 위치는 중앙 하단). 화살표 소환 시 카드를 다시 중앙 하단으로 이동시키기 위함.
+            }
+            // 덱 [제거] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
+            if(IsDeckRemovePopUpActive()){
+                isChoosed = true;
+                currentPlayerDeck.cardOnHands.Remove(this);
+                M_CardManager.instance.choosedCardOnHand = this;
+            }
         }
     }
 

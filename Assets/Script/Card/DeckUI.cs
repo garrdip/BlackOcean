@@ -19,6 +19,7 @@ public class DeckUI : SingletonD<DeckUI>
     public GameObject DeckRemovePopUp;
     public GameObject CardOnDeckPrefab;
     public GameObject GameBackGround;
+    public GameObject LayoutCardOnHandForRemove;
 
     [Header("UI 요소")]
     public Button buttonEndTurn;
@@ -29,7 +30,7 @@ public class DeckUI : SingletonD<DeckUI>
     public Text textPrefareDeckCount;
     public Text textTrashDeckCount;
     public Button buttonRemoveConfirm;
-    public Button testButton;
+
 
     [Header("댁 리스트")]
     public List<GameObject> deckList;
@@ -60,7 +61,7 @@ public class DeckUI : SingletonD<DeckUI>
             // 팝업창 열리면 버튼 오브젝트의 부모를 팝업으로 바꾼뒤 가장 마지막 순서로 추가하여 팝업창 위에 버튼 그려지도록 변경
             buttonPrefareDeck.transform.SetParent(DeckListPopUp.transform);
             buttonPrefareDeck.transform.SetAsLastSibling();
-            ChangeCardOnHandSortingLayerByName("CardOnHand");
+            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }else{
             HandleReturnGame();
         }
@@ -83,7 +84,7 @@ public class DeckUI : SingletonD<DeckUI>
             // 팝업창 열리면 버튼 오브젝트의 부모를 팝업으로 바꾼뒤 가장 마지막 순서로 추가하여 팝업창 위에 버튼 그려지도록 변경
             buttonTrashDeck.transform.SetParent(DeckListPopUp.transform);
             buttonTrashDeck.transform.SetAsLastSibling();
-            ChangeCardOnHandSortingLayerByName("CardOnHand");
+            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }else{
             HandleReturnGame();
         }
@@ -106,7 +107,7 @@ public class DeckUI : SingletonD<DeckUI>
             buttonPrefareDeck.transform.SetAsLastSibling();
             buttonTrashDeck.transform.SetParent(DeckRemovePopUp.transform);
             buttonTrashDeck.transform.SetAsLastSibling();
-            ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
+            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
         }else{
             HandleRemoveConfirm();
         }
@@ -117,21 +118,10 @@ public class DeckUI : SingletonD<DeckUI>
     {
         isOpenDeckRemovePopUp = false;
         DeckRemovePopUp.gameObject.SetActive(false);
-        ChangeCardOnHandSortingLayerByName("CardOnHand");
         buttonPrefareDeck.transform.SetParent(PrefareDeck.transform);
         buttonTrashDeck.transform.SetParent(TrashDeck.transform);
-    }
-
-    // CardOnHand 오브젝트들의 sortingLayer 변경
-    private void ChangeCardOnHandSortingLayerByName(string layerName)
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                cardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
-                cardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
-            }
-        }
+        M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
+        M_CardManager.instance.ChangeCardOnHandChooseState(false);
     }
 
     // 팝업 닫고 게임으로 돌아가기
@@ -142,11 +132,11 @@ public class DeckUI : SingletonD<DeckUI>
         if(isOpenDeckRemovePopUp){
             buttonPrefareDeck.transform.SetParent(DeckRemovePopUp.transform);
             buttonTrashDeck.transform.SetParent(DeckRemovePopUp.transform);
-            ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
+            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
         }else{
             buttonPrefareDeck.transform.SetParent(PrefareDeck.transform);
             buttonTrashDeck.transform.SetParent(TrashDeck.transform);
-            ChangeCardOnHandSortingLayerByName("CardOnHand");
+            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }
         buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);
         buttonTrashDeck.transform.SetSiblingIndex(originSiblingIndex);

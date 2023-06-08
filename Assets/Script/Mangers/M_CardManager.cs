@@ -8,13 +8,20 @@ public class M_CardManager : NetworkBehaviour
 {
     public static M_CardManager Instance = null;
 
-    public GamePlayerDeck gamePlayerDeck; // GamePlayerDeck 참조값 캐싱
+    [Header("GamePlayerDeck 참조값 캐싱")]
+    public GamePlayerDeck gamePlayerDeck;
 
-    public GameObject cardOnHandsPanel; // 카드 모음 패널 오브젝트
+    [Header("카드 모음 패널 오브젝트")]
+    public GameObject cardOnHandsPanel;
 
-    public Vector3 cardCollidableSize; // 충돌 판정이 가능한 원래의 충돌체 크기값
+    [Header("충돌 판정이 가능한 원래의 충돌체 크기값")]
+    public Vector3 cardCollidableSize;
 
-    public Vector3 cardNoneCollidableSize; // 충돌 판정이 되지 않도록 크기를 줄인 충돌체 크기값
+    [Header("충돌 판정이 되지 않도록 크기를 줄인 충돌체 크기값")]
+    public Vector3 cardNoneCollidableSize;
+
+    [Header("버리기 위해 선택된 카드")]
+    public CardOnHand choosedCardOnHand;
 
     [Header("cardOnHandsPanel의 위치 Y값 범위")]
     [Range(-5.0f, 2.0f)]
@@ -99,13 +106,17 @@ public class M_CardManager : NetworkBehaviour
                 for(int i=0; i<count; i++){      
                     CardOnHand cardOnHand =  gamePlayerDeck.cardOnHands[i];
                     if(cardOnHand != null){
-                        if(!cardOnHand.isMoving && !cardOnHand.isDrag){
+                        if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isChoosed){
                             if(cardOnHand.isMouseOver){
                                 Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
                                 cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
                                 cardOnHand.transform.localScale = cardOverSize;
                             }else{
+                                cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = i; // 스프라이트 정렬 인덱스
+                                cardOnHand.cardOnHandCanvas.sortingOrder = i; // 카드 이름 및 설명 텍스트 요소의 정렬 인덱스
+                                cardOnHand.transform.SetSiblingIndex(i); // 오브젝트 스택 순서 인덱스
+
                                 // 대칭값 계산
                                 int leftCount = (count - 1) / 2;
                                 int rightCount = count - leftCount - 1;
@@ -143,19 +154,21 @@ public class M_CardManager : NetworkBehaviour
     // CardOnHand 오브젝트들의 인덱스값에 따라 순차적인 움직임으로 날아오는 애니매이션 + Moving플래그 변수 조정
     public void CardOnHandDrawSequence(CardOnHand cardOnHand, int index)
     {
-        cardOnHand.isMoving = true;
-        Transform cardTransform = cardOnHand.gameObject.transform;
-        cardTransform.localRotation = Quaternion.Euler(0f, 0f, -90f);
+        if(!cardOnHand.isChoosed){
+            cardOnHand.isMoving = true;
+            Transform cardTransform = cardOnHand.gameObject.transform;
+            cardTransform.localRotation = Quaternion.Euler(0f, 0f, -90f);
 
-        // Dotween 애니매이션 시퀀스 생성
-        Sequence sequence = DOTween.Sequence();
-        sequence.Append(cardTransform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
-        sequence.Join(cardTransform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
-            .SetDelay(index * 0.1f)
-            .SetEase(Ease.OutSine)
-            .OnComplete(() => {
-                cardOnHand.isMoving = false;
-            }));
+            // Dotween 애니매이션 시퀀스 생성
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(cardTransform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
+            sequence.Join(cardTransform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
+                .SetDelay(index * 0.1f)
+                .SetEase(Ease.OutSine)
+                .OnComplete(() => {
+                    cardOnHand.isMoving = false;
+                }));      
+        }
     }
 
     // CardOnHand 오브젝트 멀어지는 애니매이션 + 오브젝트 파괴 커맨드 호출
@@ -238,6 +251,34 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
+    // 로컬 플레이어의 CardOnHand 오브젝트들의 sortingLayer 변경
+    public void ChangeCardOnHandSortingLayerByName(string layerName)
+    {
+        // 버릴카드 정렬 순서 변경
+        if(M_CardManager.instance.choosedCardOnHand != null){
+            M_CardManager.instance.choosedCardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+            M_CardManager.instance.choosedCardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
+        }
+        // 로컬 플레이어의 카드 정렬 순서 변경
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                cardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+                cardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
+            }
+        }
+    }
+
+    // 로컬 플레이어의 CardOnHand 오브젝트들의 isChoosed 상태값 변경
+    public void ChangeCardOnHandChooseState(bool isChoosed)
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                cardOnHand.isChoosed = isChoosed;
+            }
+        }
+    }
 
     // 로컬 플레이어의 CardOnHand 오브젝트들 중 마우스 오버되지 않은 카드들의 isShifted 변수 값 변경
     public void ChangeCardOnHandShiftState(CardOnHand mouseOveredCardOnHand, bool isShifted)
@@ -289,5 +330,30 @@ public class M_CardManager : NetworkBehaviour
                 gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
             }
         }
+    }
+
+    // 덱 제거를 위해 선택된 카드의 위치 및 크기 변경
+    public void MoveCardOnHandPositionForRemove(CardOnHand cardOnHand)
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                // 덱 제거 팝업 위치로 카드 위치 변경 및 크기 변경
+                cardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
+                cardOnHand.transform.DOMove(DeckUI.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position, 0.2f).SetEase(Ease.OutSine);
+                
+                // 덱 제거용으로 선택되었던 카드가 이미 있다면 그 카드를 다시 cardOnHands에 추가
+                if(choosedCardOnHand != null){
+                    gamePlayerDeck.cardOnHands.Add(choosedCardOnHand);
+
+                    // 상태값 모두 false로
+                    choosedCardOnHand.isDrag = false;
+                    choosedCardOnHand.isMouseOver = false;
+                    choosedCardOnHand.isMoving = false;
+                    choosedCardOnHand.isShifted = false;
+                    choosedCardOnHand.isChoosed = false;
+                }
+            }
+        }   
     }
 }
