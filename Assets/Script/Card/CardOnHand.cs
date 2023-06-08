@@ -104,7 +104,7 @@ public class CardOnHand : NetworkBehaviour
                 arrowSpawnedCardPosition = transform.position; // 드래그 시작전 마우스 클릭 시점에 카드의 절대 위치값 저장(이 시점의 카드 위치는 중앙 하단). 화살표 소환 시 카드를 다시 중앙 하단으로 이동시키기 위함.
             }
             // 덱 [제거] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
-            if(IsDeckRemovePopUpActive()){
+            if(IsCardOnHandRemovePopUpActive()){
                 isChoosed = true;
                 currentPlayerDeck.cardOnHands.Remove(this);
                 M_CardManager.instance.choosedCardOnHand = this;
@@ -115,7 +115,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트를 마우스로 드래그 할 때 이벤트
     void OnMouseDrag()
     {
-        if(isOwned && isDrag && !IsDeckListPopUpActive() && !IsDeckRemovePopUpActive()){
+        if(isOwned && isDrag && !IsDeckListPopUpActive() && !IsCardOnHandRemovePopUpActive()){
             DragCardOnHand(this);
             MovePositionArrowSpawnedCardOnHand(this);
         }
@@ -126,7 +126,7 @@ public class CardOnHand : NetworkBehaviour
     {
         if(isOwned && isDrag && !IsDeckListPopUpActive()){
             // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
-            if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2) && !IsDeckRemovePopUpActive()){
+            if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2) && !IsCardOnHandRemovePopUpActive()){
                 if(NetworkClient.connection != null && NetworkClient.active){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                     if (gamePlayerDeck.isLocalPlayer){
@@ -175,10 +175,10 @@ public class CardOnHand : NetworkBehaviour
         return DeckUI.instance.DeckListPopUp.activeSelf;
     }
 
-    // DeckRemove PopUp 활성화 여부 확인 함수
-    private bool IsDeckRemovePopUpActive()
+    // CardOnHandRemove PopUp 활성화 여부 확인 함수
+    private bool IsCardOnHandRemovePopUpActive()
     {
-        return DeckUI.instance.DeckRemovePopUp.activeSelf;
+        return DeckUI.instance.CardOnHandRemovePopUp.activeSelf;
     }
 
     // 카드 생성 이벤트 수신 (카드의 위치 및 부모 오브젝트 설정)

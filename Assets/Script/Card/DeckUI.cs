@@ -10,26 +10,31 @@ using Steamworks;
 public class DeckUI : SingletonD<DeckUI>
 {
     [Header("게임 오브젝트")]
+    public GameObject GameBackGround;
     public GameObject DeckListPanel;
     public GameObject GameUI;
     public GameObject CardOnHandsPanel;
     public GameObject PrefareDeck;
     public GameObject TrashDeck;
-    public GameObject DeckListPopUp;
-    public GameObject DeckRemovePopUp;
-    public GameObject CardOnDeckPrefab;
-    public GameObject GameBackGround;
+    public GameObject DeckListPopUp; // 덱 목록 팝업
+    public GameObject DeckRemovePopUp; // 덱 제거 팝업
+    public GameObject CardOnHandRemovePopUp; // 패 제거 팝업
     public GameObject LayoutCardOnHandForRemove;
+
+    [Header("UI에 사용되는 카드 프리팹")]
+    public GameObject CardOnDeckPrefab;
 
     [Header("UI 요소")]
     public Button buttonEndTurn;
     public Button buttonPrefareDeck;
     public Button buttonTrashDeck;
     public Button buttonReturnGame;
-    public GridLayoutGroup gridLayoutGroup;
+    public GridLayoutGroup deckListPopUpGrid;
+    public GridLayoutGroup deckRemovePopUpGrid;
     public Text textPrefareDeckCount;
     public Text textTrashDeckCount;
-    public Button buttonRemoveConfirm;
+    public Button buttonRemoveCardOnHandOk;
+    public Button buttonRemoveDeckOk;
 
 
     [Header("댁 리스트")]
@@ -41,7 +46,7 @@ public class DeckUI : SingletonD<DeckUI>
     private int originSiblingIndex = 0;
     private bool isOpenPrefareDeckPopUp = false;
     private bool isOpenTrashDeckPopUp = false;
-    private bool isOpenDeckRemovePopUp = false;
+    private bool isOpenCardOnHandRemovePopUp = false;
 
 
     // 턴 넘김
@@ -69,7 +74,7 @@ public class DeckUI : SingletonD<DeckUI>
         // 로컬 플레이어의 PrefareDeck 조회
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            AddDeckList(gamePlayerDeck.prefareDeck);
+            AddDeckList(gamePlayerDeck.prefareDeck, deckListPopUpGrid);
         }
         // TODO : 관전하려는 플레이어의 PrefareDeck 조회
     }
@@ -92,36 +97,49 @@ public class DeckUI : SingletonD<DeckUI>
         // 로컬 플레이어의 Trash Deck 조회
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            AddDeckList(gamePlayerDeck.trashDeck);
+            AddDeckList(gamePlayerDeck.trashDeck, deckListPopUpGrid);
         }
         // TODO : 관전하려는 플레이어의 TrashDeck 조회
     }
 
-    // 댁 제거 팝업 호출 (TEST)
-    public void HandleTest()
+    // CardOnHand 제거 팝업 호출
+    public void HandleOpenCardOnHandRemovePopUp()
     {
-        isOpenDeckRemovePopUp = !isOpenDeckRemovePopUp;
-        DeckRemovePopUp.gameObject.SetActive(isOpenDeckRemovePopUp);
-        if(isOpenDeckRemovePopUp){
-            buttonPrefareDeck.transform.SetParent(DeckRemovePopUp.transform);
+        isOpenCardOnHandRemovePopUp = !isOpenCardOnHandRemovePopUp;
+        CardOnHandRemovePopUp.gameObject.SetActive(isOpenCardOnHandRemovePopUp);
+        if(isOpenCardOnHandRemovePopUp){
+            buttonPrefareDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
             buttonPrefareDeck.transform.SetAsLastSibling();
-            buttonTrashDeck.transform.SetParent(DeckRemovePopUp.transform);
+            buttonTrashDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
             buttonTrashDeck.transform.SetAsLastSibling();
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
         }else{
-            HandleRemoveConfirm();
+            HandleCardOnHandRemoveOk();
         }
     }
 
-    // 댁 제거 팝업 확인 버튼 클릭
-    public void HandleRemoveConfirm()
+    // CardOnHand 제거 팝업 확인 버튼 클릭
+    public void HandleCardOnHandRemoveOk()
     {
-        isOpenDeckRemovePopUp = false;
-        DeckRemovePopUp.gameObject.SetActive(false);
+        isOpenCardOnHandRemovePopUp = false;
+        CardOnHandRemovePopUp.gameObject.SetActive(false);
         buttonPrefareDeck.transform.SetParent(PrefareDeck.transform);
         buttonTrashDeck.transform.SetParent(TrashDeck.transform);
         M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         M_CardManager.instance.ChangeCardOnHandChooseState(false);
+    }
+
+    // 덱 제거 팝업 호출
+    public void HandleOpenDeckRemovePopUp(SyncList<Card> deck)
+    {
+        DeckRemovePopUp.SetActive(true);
+        AddDeckList(deck, deckRemovePopUpGrid);
+    }
+
+    // 덱 제거 팝업 확인 버튼
+    public void HandleDeckRemoveOk()
+    {
+        // TODO : 선택된 카드를 덱 목록에서 제거
     }
 
     // 팝업 닫고 게임으로 돌아가기
@@ -129,9 +147,9 @@ public class DeckUI : SingletonD<DeckUI>
     {
         isOpenPrefareDeckPopUp = false;
         isOpenTrashDeckPopUp = false;
-        if(isOpenDeckRemovePopUp){
-            buttonPrefareDeck.transform.SetParent(DeckRemovePopUp.transform);
-            buttonTrashDeck.transform.SetParent(DeckRemovePopUp.transform);
+        if(isOpenCardOnHandRemovePopUp){
+            buttonPrefareDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
+            buttonTrashDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
         }else{
             buttonPrefareDeck.transform.SetParent(PrefareDeck.transform);
@@ -145,7 +163,7 @@ public class DeckUI : SingletonD<DeckUI>
     }
 
     // Deck정보 리스트 요소 추가
-    private void AddDeckList(SyncList<Card> cards)
+    private void AddDeckList(SyncList<Card> cards, GridLayoutGroup gridLayoutGroup)
     {
         ClearDeckList();
         foreach(Card card in cards){

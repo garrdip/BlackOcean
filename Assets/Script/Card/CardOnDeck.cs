@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using DG.Tweening;
 using TMPro;
 
-public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Card card;
     public TextMeshProUGUI textCardName;
@@ -28,5 +28,10 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerExit(PointerEventData pointerEventData)
     {
         transform.DOScale(originScale, 0.3f);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        // TODO : 덱 제거 팝업인 경우 클릭시 제거 로직 수행
     }
 }
