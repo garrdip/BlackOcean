@@ -58,10 +58,10 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G0")));
+                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G0")));
                         deck.Add(attackCard);
                     }else{
-                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G1")));
+                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G1")));
                         deck.Add(defenseCard);
                     }
                     
@@ -71,10 +71,10 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E0")));
+                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E0")));
                         deck.Add(attackCard);
                     }else{
-                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E1")));
+                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E1")));
                         deck.Add(defenseCard);
                     }
                     
@@ -84,10 +84,10 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
+                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
                         deck.Add(attackCard);
                     }else{
-                        Card defenseCard = new Card(CardData.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H1")));
+                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H1")));
                         deck.Add(defenseCard);
                     }
                     
@@ -260,7 +260,7 @@ public class GamePlayerDeck : NetworkBehaviour
         M_TurnManager.instance.ProcessCardPredict(card,tar);
 
         List<TargetObject> targetObjects = new List<TargetObject>();
-        targetObjects.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
+        targetObjects.Add(M_TurnManager.instance.GetPlayer(conn)); // Index 0 
         if(card.baseCard.isTargetable)targetObjects.Add(targetObject);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
         targetObjects.AddRange(M_TurnManager.instance.GetPlayerObjects());
         targetObjects.AddRange(M_TurnManager.instance.GetMonsterObjects());

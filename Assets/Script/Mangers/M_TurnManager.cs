@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using ProjectD;
 using Steamworks;
+using Spine.Unity;
 
 public class M_TurnManager : NetworkBehaviour
 {
@@ -187,25 +188,26 @@ public class M_TurnManager : NetworkBehaviour
                 // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
                 (Card card,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
                
-                Debug.Log("카드: " + card.baseCard.name);
-                if(card.baseCard.isTargetable)
-                {
-                    if(tar[1].objectType != ObjectType.PLAYER)
-                        Debug.Log("타겟: " + tar[1].monster.monsterData.name);
-                    else
-                        Debug.Log("타겟: " + tar[1].player.netIdentity);
-                }
-
-                CardData.RunCard(card,tar);
+                CardData.instance.RunCard(card,tar);
                 yield return waitForDelay;
             }
             yield return waitForLoop;
         }
     }
+
+    [ClientRpc]
+    public void StartAnimation(TargetObject tar, int trackIndex,string animationName, bool loop )
+    {
+        if(!tar.isCloneData) // Clone 데이터 검증은 Animation 스킵
+        {
+            tar.spawnedPlayer.GetComponent<SkeletonAnimation>().state.SetAnimation(trackIndex,animationName,loop);
+        }
+    }
+
     [Server]
     public void ProcessCardPredict(Card card,List<TargetObject> tar)
     {
-        CardData.RunCard(card,tar);
+        CardData.instance.RunCard(card,tar);
     }
 
     [Server]
@@ -361,6 +363,7 @@ public class M_TurnManager : NetworkBehaviour
             clone.GetComponent<TargetObject>().cloneGamePlayer = new CloneGamePlayer(playerOrder[i]);
             clone.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
             clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+            clone.GetComponent<TargetObject>().isCloneData = true;
 
             avatar.GetComponent<TargetObject>().clone = clone.GetComponent<TargetObject>();
             clonePlayerList.Add(clone.GetComponent<TargetObject>());
@@ -401,6 +404,7 @@ public class M_TurnManager : NetworkBehaviour
 
             cloneAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
             cloneAvatar.GetComponent<TargetObject>().monster = cloneMonster;
+            cloneAvatar.GetComponent<TargetObject>().isCloneData = true;
             avatar.GetComponent<TargetObject>().clone = cloneAvatar.GetComponent<TargetObject>();
 
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());

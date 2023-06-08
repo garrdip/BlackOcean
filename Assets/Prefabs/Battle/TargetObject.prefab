@@ -351,14 +351,17 @@ MonoBehaviour:
   currentPlayerGroundIndicator: {fileID: 4937458924776004315}
   objectType: 0
   player: {fileID: 0}
+  conn: {fileID: 0}
   monster: {fileID: 0}
   characters:
-  - {fileID: 4899987475605225879, guid: d547f9af7596d4f4e9c8bba8024996e3, type: 3}
-  - {fileID: 5817053353496438955, guid: 06fa60deeb982604db4b07b2f3338044, type: 3}
-  - {fileID: 8907893385436738934, guid: 2ef12f5410fbc23488ddbc23a5f8276d, type: 3}
+  - {fileID: 1238078986054683857, guid: d547f9af7596d4f4e9c8bba8024996e3, type: 3}
+  - {fileID: 1238078986054683857, guid: 19decaaa4c666534494b39af1cee56b8, type: 3}
+  - {fileID: 1238078986054683857, guid: c9b6d7b83beb28c46b6dfd46a0abaf4c, type: 3}
   monsters:
-  - {fileID: 5618053439420854590, guid: 39a9f77f4b23d62458b5dc2eb9696cb1, type: 3}
-  - {fileID: 546911306462619370, guid: 90531be2a9a74b942b7f76a7159f5122, type: 3}
+  - {fileID: 4867607338461666766, guid: ad822ac0b766ae4469a2c3ddfc5d47e0, type: 3}
+  - {fileID: 4867607338461666766, guid: 444a410164d9d4841a4ee70ccc96fa14, type: 3}
+  clone: {fileID: 0}
+  isCloneData: 0
 --- !u!114 &457687340931919250
 MonoBehaviour:
   m_ObjectHideFlags: 0

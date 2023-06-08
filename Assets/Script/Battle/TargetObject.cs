@@ -35,6 +35,8 @@ public class TargetObject : NetworkBehaviour
 
     public NetworkIdentity conn;
 
+    public GameObject spawnedPlayer;
+
     // Monster 의 경우
     [SyncVar (hook = nameof(InitTargetObjectEmemy))]
     public SpawnedMonster monster;
@@ -52,13 +54,13 @@ public class TargetObject : NetworkBehaviour
             switch(player.character)
             {
                 case Character.GEORK :
-                    Instantiate(characters[2],transform.position,Quaternion.identity,transform);
+                    spawnedPlayer = Instantiate(characters[2],transform.position,Quaternion.identity,transform);
                 break;
                 case Character.ERIS :
-                    Instantiate(characters[1],transform.position,Quaternion.identity,transform);
+                    spawnedPlayer = Instantiate(characters[1],transform.position,Quaternion.identity,transform);
                 break;
                 case Character.HONGDANHYANG :
-                    Instantiate(characters[0],transform.position,Quaternion.identity,transform);
+                    spawnedPlayer = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
                 break;
             }
             textTargetName.text = SteamFriends.GetFriendPersonaName((CSteamID)newVal.steamID);

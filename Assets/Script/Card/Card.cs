@@ -8,7 +8,7 @@ public class Card
     public CardBase baseCard;
     public bool isEnhanced;
     public int costAddition;
-    public List<CardCharacteristic> cardCharacteristics;
+    public List<CardCharacteristic> cardCharacteristics = new List<CardCharacteristic>();
 
     public Card(CardBase basecard)
     {
@@ -23,6 +23,10 @@ public class Card
     {
         Card card = new Card();
         card.baseCard = baseCard;
+        card.isEnhanced = isEnhanced;
+        card.costAddition = costAddition;
+        foreach(CardCharacteristic cardChar in cardCharacteristics)
+            card.cardCharacteristics.Add(cardChar);
         return card;
     }
 }

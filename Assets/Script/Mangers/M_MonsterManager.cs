@@ -14,7 +14,7 @@ public class M_MonsterManager : MonoBehaviour
     {
         LoadMonsterDataFromDB();
         LoadMonsterGroupDataFromDB();
-        CardData.LoadCardDataFromDB();
+        CardData.instance.LoadCardDataFromDB();
     }
 
     void LoadMonsterDataFromDB()

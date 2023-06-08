@@ -6,14 +6,20 @@ using System.IO;
 using System;
 using ProjectD;
 using Mirror;
+using Spine.Unity;
 
-public static class CardData
+public class CardData : InstanceD<CardData>
 {
-    public static List<CardBase> cards = new List<CardBase>();
-    public static List<(string,ExecuteCard)> CardMethods = new List<(string, ExecuteCard)>();
+    public List<CardBase> cards = new List<CardBase>();
+    public List<(string,ExecuteCard)> CardMethods = new List<(string, ExecuteCard)>();
+
+    public void Start()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     //Version 3
-    public static void LoadCardDataFromDB()
+    public void LoadCardDataFromDB()
     {
         TextAsset DBtext = Resources.Load<TextAsset>("DBs/CardDB");
         using (StringReader DB = new StringReader(DBtext.text))
@@ -39,21 +45,18 @@ public static class CardData
                     if(values[i] == "")break;
                     card.cardCharacteristics.Add((CardCharacteristic)Enum.Parse<CardCharacteristic>(values[i]));
                 }
-                ExecuteCard temp = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard),typeof(CardMethod),"H1"); // valuse[0] : 메소드 이름
+                ExecuteCard temp = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard),this,"H0"); // valuse[0] : 메소드 이름
                 cards.Add(card);
                 CardMethods.Add((card.cardNumber,temp)); // cardNumber
             }
         }
     }
 
-    public static void RunCard(Card card,List<TargetObject> targets)
+    public void RunCard(Card card,List<TargetObject> targets)
     {
         CardMethods.Find(data => data.Item1 == card.baseCard.cardNumber).Item2(card,targets);
     }
-}
 
-public class CardMethod
-{
     // TargetObject List 구조 : 
     /*
     Index : 내용
@@ -62,20 +65,21 @@ public class CardMethod
     이후 : 모든 플레이어 및 몬스터
     */
 
-    public static void GeneralSingleAttack(TargetObject tar, int damage)
+    public void GeneralSingleAttack(TargetObject tar, int damage)
     {
         tar.monster.HP -= damage;
+
     }
     // Card Method List
-    public static void H0(Card card,List<TargetObject> tar)
+    public void H0(Card card,List<TargetObject> tar)
     {
+        M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
         GeneralSingleAttack(tar[1],6);
     }
 
-    public static void H1(Card card,List<TargetObject> tar)
+    public void H1(Card card,List<TargetObject> tar)
     {
         GeneralSingleAttack(tar[1],10);
-
-
     }
+
 }
