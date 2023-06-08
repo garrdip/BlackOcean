@@ -45,6 +45,9 @@ public class M_CardManager : NetworkBehaviour
     [Header("카드 밀려나는 정도값 범위")]
     public float cardOnHandShiftedRange;
 
+    [Header("카드 정렬 순서 최대값")]
+    public readonly int maxSortOrder = 999;
+
 
     public static M_CardManager instance
     {
@@ -96,7 +99,6 @@ public class M_CardManager : NetworkBehaviour
                 for(int i=0; i<count; i++){      
                     CardOnHand cardOnHand =  gamePlayerDeck.cardOnHands[i];
                     if(cardOnHand != null){
-                        SetCardOnHandOrder(cardOnHand, i);
                         if(!cardOnHand.isMoving && !cardOnHand.isDrag){
                             if(cardOnHand.isMouseOver){
                                 Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
@@ -136,15 +138,6 @@ public class M_CardManager : NetworkBehaviour
                 }
             }
         }
-    }
-
-    // CardOnHand 오브젝트의 스프라이트 정렬 인덱스 및 오브젝트 스택 인덱스 설정
-    private void SetCardOnHandOrder(CardOnHand cardOnHand, int index)
-    {
-        cardOnHand.index = index;
-        cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = index; // 스프라이트 정렬 인덱스
-        cardOnHand.cardOnHandCanvas.sortingOrder = index; // 카드 이름 및 설명 텍스트 요소의 정렬 인덱스. 카드 오브젝트와 동일한 인덱스
-        cardOnHand.transform.SetSiblingIndex(index); // 오브젝트 스택 순서 인덱스
     }
 
     // CardOnHand 오브젝트들의 인덱스값에 따라 순차적인 움직임으로 날아오는 애니매이션 + Moving플래그 변수 조정

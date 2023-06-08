@@ -9,7 +9,7 @@ using TMPro;
 
 public class CardOnHand : NetworkBehaviour
 {
-    [SyncVar]
+    [SyncVar(hook = nameof(OnChangeCardData))]
     public Card card;
 
     [SyncVar]
@@ -17,7 +17,6 @@ public class CardOnHand : NetworkBehaviour
     
     // 랜더링 순서값
     public int originSortOrder; // 초기값
-    public const int maxSortOrder = 999; // 변경되는 최대값
 
 
     // 초기 위치값
@@ -54,8 +53,6 @@ public class CardOnHand : NetworkBehaviour
     void Start()
     {
         cardOnHandCanvas.worldCamera = Camera.main;
-        textCardName.text = card.baseCard.name;
-        textCardInfo.text = card.baseCard.cardType.ToString();
     }
 
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
@@ -73,8 +70,8 @@ public class CardOnHand : NetworkBehaviour
         if(isOwned && !isMoving && !IsDeckListPopUpActive()){
             isMouseOver = true;
             originSortOrder = index;
-            transform.GetComponent<SpriteRenderer>().sortingOrder = maxSortOrder;
-            cardOnHandCanvas.sortingOrder = maxSortOrder;
+            transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
+            cardOnHandCanvas.sortingOrder =  M_CardManager.instance.maxSortOrder;
             M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardNoneCollidableSize);
             M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
         }
@@ -135,8 +132,8 @@ public class CardOnHand : NetworkBehaviour
     private void DragCardOnHand(CardOnHand cardOnHand)
     {
         // 드래그 중 오브젝트의 정렬값은 최대값. 항상 맨 위에 랜더링
-        cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = maxSortOrder;
-        cardOnHand.cardOnHandCanvas.sortingOrder = maxSortOrder;
+        cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
+        cardOnHand.cardOnHandCanvas.sortingOrder = M_CardManager.instance.maxSortOrder;
         // 오브젝트 위치는 마우스 커서 위치
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         cardOnHand.transform.position = new Vector2(mousePosition.x, mousePosition.y);
@@ -150,6 +147,7 @@ public class CardOnHand : NetworkBehaviour
         if(cardOnHand.card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 3)){
             cardOnHand.isDrag = false;
             cardOnHand.isMoving = true;
+            cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = M_CardManager.instance.maxSortOrder;
             currentPlayerDeck.cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
             currentPlayerDeck.CmdSetArrowOwnCardOnHand(cardOnHand);
             cardOnHand.transform
@@ -188,5 +186,15 @@ public class CardOnHand : NetworkBehaviour
     {
         transform.GetComponent<SpriteRenderer>().sortingOrder = index;
         cardOnHandCanvas.sortingOrder = index;
+        transform.SetSiblingIndex(index);
+    }
+
+    // --------------------------------------------------------------- SyncVar Hook -----------------------------------------------------------------//
+
+    // 카드 정보 뷰 업데이트
+    public void OnChangeCardData(Card oldCard, Card newCard)
+    {
+        textCardName.text = card.baseCard.name;
+        textCardInfo.text = card.baseCard.cardType.ToString();
     }
 }

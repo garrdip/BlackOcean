@@ -431,6 +431,22 @@ public class M_TurnManager : NetworkBehaviour
         NetworkClient.localPlayer.GetComponent<GamePlayer>().SetOrderByUI(num);
     }
 
+    
+    // 플레이어 정보 및 턴 정보 뷰 세팅
+    public void SetPlayerOrderView(int index)
+    {
+        GamePlayer gamePlayer = M_TurnManager.instance.playerOrder[index];
+        OrderUI orderUI = DeckUI.instance.playerOrderList[index].GetComponent<OrderUI>();
+        orderUI.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
+        if(gamePlayer.isLocalPlayer){
+            orderUI.playerOwnMenu.gameObject.SetActive(true); // 전용 메뉴 활성화
+            float width = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.width;
+            float height = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.height;
+            orderUI.buttonPlayerOrder.GetComponent<RectTransform>().sizeDelta = new Vector2(width + 30f, height + 30f); // 버튼 크기 크게 변경(변경된 값이 native size)
+        }
+    }
+
+
     [ClientRpc]
     public void PopUpOrderUI()
     {
@@ -444,7 +460,7 @@ public class M_TurnManager : NetworkBehaviour
         switch (op)
         {
             case SyncList<GamePlayer>.Operation.OP_ADD:
-
+                SetPlayerOrderView(index);
                 break;
             case SyncList<GamePlayer>.Operation.OP_INSERT:
                 

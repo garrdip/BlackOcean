@@ -58,3 +58,6 @@ TagManager:
   - name: PopUp
     uniqueID: 1936650549
     locked: 0
+  - name: CardOnHandOverPopUp
+    uniqueID: 1678806035
+    locked: 0
