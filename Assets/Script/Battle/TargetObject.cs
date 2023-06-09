@@ -44,8 +44,8 @@ public class TargetObject : NetworkBehaviour
     public List<GameObject> monsters;
 
     public TargetObject clone;
+    [SyncVar]
     public bool isCloneData = false;
-
     public GameObject avatar;
 
     public SkeletonAnimation anim;
@@ -57,6 +57,7 @@ public class TargetObject : NetworkBehaviour
         StartCoroutine(FindSkeletonAnimation());
     }
 
+    // 
     IEnumerator FindSkeletonAnimation()
     {
         WaitForSeconds loopTime = new WaitForSeconds(0.01f);
@@ -72,16 +73,18 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
+    // Animation Event 처리 구간
     public void OnAnimationEvent(Spine.TrackEntry trackEntry, Spine.Event e)
-    {
-        if(e.Data.Name == "AttackEnd")
+    {    
+        if(e.Data.Name == "AttackEnd") // 공격모션 종료시 
         {
-            anim.state.SetAnimation(1,"00Normal",true);
-            isAnimating = false;
+            anim.state.SetAnimation(1,"00Normal",true); // IDLE 애니메이션 재구동
+            isAnimating = false; // 공격 애니메이팅 종료를 알림
         }
     }
     public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
     {
+        Debug.Log("Init Player!");
         if(objectType == ObjectType.PLAYER)
         {
             switch(player.character)
