@@ -46,8 +46,7 @@ public class DeckUI : SingletonD<DeckUI>
     // 턴 넘김
     public void HandleEndTurn()
     {
-        M_CardManager.instance.RemoveAllCurrentPlayerDeck();
-        M_CardManager.instance.RemoveAllCurrentPlayerArrow();
+        NetworkClient.localPlayer.GetComponent<GamePlayer>().endTurnActive = !NetworkClient.localPlayer.GetComponent<GamePlayer>().endTurnActive;
     }
 
     // PrefareDeck 정보 팝업
