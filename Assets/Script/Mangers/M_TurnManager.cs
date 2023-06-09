@@ -176,21 +176,24 @@ public class M_TurnManager : NetworkBehaviour
         GenerateMonster();
         phase = BattleTurn.BATTLE_STANDBY;
         StartCoroutine(ProcessCardQueue());
+        StartCoroutine(CardData.instance.EffectProcess());
     }
  
     public IEnumerator ProcessCardQueue()
     {
         // 무한루프에서 인스턴스 생성시 생기는 가비지 방지를 위해 함수호출에서 미리 인스턴스 생성하여 캐싱후 루프 안에서 사용
-        WaitForSeconds waitForDelay = new WaitForSeconds(5.0f);
         WaitForSeconds waitForLoop = new WaitForSeconds(0.01f);
         while (true)
         {
+            while(CardData.instance.isCardOperating)
+                yield return waitForLoop;
             if(cardTargetPairQueue.Count != 0){
+                CardData.instance.count = 500;
+                CardData.instance.isCardOperating = true;
                 // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
                 (Card card,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
                
                 CardData.instance.RunCard(card,tar);
-                yield return waitForDelay;
             }
             yield return waitForLoop;
         }
