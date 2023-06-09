@@ -201,7 +201,7 @@ public class M_TurnManager : NetworkBehaviour
             while(CardData.instance.isCardOperating)
                 yield return waitForLoop;
             if(cardTargetPairQueue.Count != 0){
-                CardData.instance.count = 500;
+                CardData.instance.count = 100;
                 CardData.instance.isCardOperating = true;
                 // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
                 (Card card,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
