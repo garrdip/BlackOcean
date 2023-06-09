@@ -58,10 +58,10 @@ public class GamePlayerDeck : NetworkBehaviour
                 for(int i = 0 ; i <8 ;i++)
                 {
                     if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G0")));
+                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G3")));
                         deck.Add(attackCard);
                     }else{
-                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G1")));
+                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G4")));
                         deck.Add(defenseCard);
                     }
                     

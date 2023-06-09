@@ -6,6 +6,7 @@ using Mirror;
 using ProjectD;
 using Steamworks;
 using Spine.Unity;
+using Spine;
 
 public class M_TurnManager : NetworkBehaviour
 {
@@ -141,7 +142,7 @@ public class M_TurnManager : NetworkBehaviour
         }
     }
 
-    [Command(requiresAuthority = false)]
+    [Server]
     public void SetNextTurn()
     {
         phase = BattleTurn.PLAYER_END;
@@ -200,7 +201,9 @@ public class M_TurnManager : NetworkBehaviour
     {
         if(!tar.isCloneData) // Clone 데이터 검증은 Animation 스킵
         {
-            tar.spawnedPlayer.GetComponent<SkeletonAnimation>().state.SetAnimation(trackIndex,animationName,loop);
+            Debug.Log("Animation Start!");
+            SkeletonAnimation anim = tar.avatar.GetComponent<SkeletonAnimation>();
+            anim.state.SetAnimation(trackIndex,animationName,loop);
         }
     }
 
@@ -285,11 +288,12 @@ public class M_TurnManager : NetworkBehaviour
     {
         foreach(TargetObject monster in spawnedMonsterList)
         {
+            monster.isAnimating = true;
             monster.monster.DoAction();
             while(true)
             {
+                if(monster.isAnimating == false) break;
                 yield return new WaitForSeconds(0.01f);
-                if(!monster.GetComponentInChildren<AnimationEventHandler>().isAnimating) break;
             }
         }
         phase = BattleTurn.BATTLE_STANDBY;

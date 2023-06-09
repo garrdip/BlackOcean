@@ -6,6 +6,7 @@ using Mirror;
 using ProjectD;
 using Steamworks;
 using TMPro;
+using Spine.Unity;
 
 public class TargetObject : NetworkBehaviour
 {
@@ -35,8 +36,6 @@ public class TargetObject : NetworkBehaviour
 
     public NetworkIdentity conn;
 
-    public GameObject spawnedPlayer;
-
     // Monster 의 경우
     [SyncVar (hook = nameof(InitTargetObjectEmemy))]
     public SpawnedMonster monster;
@@ -47,6 +46,40 @@ public class TargetObject : NetworkBehaviour
     public TargetObject clone;
     public bool isCloneData = false;
 
+    public GameObject avatar;
+
+    public SkeletonAnimation anim;
+
+    public bool isAnimating = false;
+
+    void Awake()
+    {
+        StartCoroutine(FindSkeletonAnimation());
+    }
+
+    IEnumerator FindSkeletonAnimation()
+    {
+        WaitForSeconds loopTime = new WaitForSeconds(0.01f);
+        while(true)
+        {
+            if(GetComponentInChildren<SkeletonAnimation>() != null)
+            {
+                anim = GetComponentInChildren<SkeletonAnimation>();
+                anim.state.Event += OnAnimationEvent;
+                break;
+            }
+            yield return loopTime;
+        }
+    }
+
+    public void OnAnimationEvent(Spine.TrackEntry trackEntry, Spine.Event e)
+    {
+        if(e.Data.Name == "AttackEnd")
+        {
+            anim.state.SetAnimation(1,"00Normal",true);
+            isAnimating = false;
+        }
+    }
     public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
     {
         if(objectType == ObjectType.PLAYER)
@@ -54,13 +87,13 @@ public class TargetObject : NetworkBehaviour
             switch(player.character)
             {
                 case Character.GEORK :
-                    spawnedPlayer = Instantiate(characters[2],transform.position,Quaternion.identity,transform);
+                    avatar = Instantiate(characters[2],transform.position,Quaternion.identity,transform);
                 break;
                 case Character.ERIS :
-                    spawnedPlayer = Instantiate(characters[1],transform.position,Quaternion.identity,transform);
+                    avatar = Instantiate(characters[1],transform.position,Quaternion.identity,transform);
                 break;
                 case Character.HONGDANHYANG :
-                    spawnedPlayer = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
+                    avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
                 break;
             }
             textTargetName.text = SteamFriends.GetFriendPersonaName((CSteamID)newVal.steamID);
@@ -95,10 +128,10 @@ public class TargetObject : NetworkBehaviour
                 switch(monster.monsterData.name)
                 {
                     case "Monster_Goblin" :
-                        Instantiate(monsters.Find(prefab => prefab.name == "Goblin"),transform.position,Quaternion.identity,transform);
+                        avatar = Instantiate(monsters.Find(prefab => prefab.name == "Goblin"),transform.position,Quaternion.identity,transform);
                     break;
                     case "Monster_Troll" :
-                        Instantiate(monsters.Find(prefab => prefab.name == "Troll"),transform.position,Quaternion.identity,transform);
+                        avatar = Instantiate(monsters.Find(prefab => prefab.name == "Troll"),transform.position,Quaternion.identity,transform);
                     break;
                 }
                 break;

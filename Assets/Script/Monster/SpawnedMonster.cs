@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectD;
 using Mirror;
+using Spine.Unity;
 
 public class SpawnedMonster : NetworkBehaviour
 {
@@ -79,7 +80,7 @@ public class SpawnedMonster : NetworkBehaviour
     [Server]
     public void DoAction()
     {
-        transform.parent.GetComponentInChildren<AnimationEventHandler>().isAnimating = true;
+        transform.parent.GetComponent<TargetObject>().isAnimating = true;
         switch(nextAction.actionType)
         {
             case ActionType.SINGLEATTACK :
@@ -103,7 +104,14 @@ public class SpawnedMonster : NetworkBehaviour
     [ClientRpc]
     public void DoAnimation()
     {
-        transform.parent.GetComponentInChildren<Animator>().SetTrigger("SingleAttack");
+        transform.parent.GetComponent<TargetObject>().anim.state.SetAnimation(1,"01Attack",false);
+    }
+
+    [ClientRpc]
+    public void ResumeIdleAnimation()
+    {
+        transform.parent.GetComponent<TargetObject>().anim.state.SetAnimation(1,"00Normal",true);
+        transform.parent.GetComponent<TargetObject>().isAnimating = false;
     }
 
     void FixedUpdate()

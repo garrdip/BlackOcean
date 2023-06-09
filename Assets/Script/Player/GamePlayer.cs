@@ -31,6 +31,21 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public ulong steamID;
 
+    [SyncVar (hook = nameof(OnEndTurnStateChanged))]
+    public bool endTurnActive = false;
+
+    public void OnEndTurnStateChanged(bool oldVal, bool newVal)
+    {
+        if(isServer)
+        {
+           GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+           foreach(GamePlayer user in users)
+           {
+                if(!user.endTurnActive)return;
+           }
+           M_TurnManager.instance.SetNextTurn();
+        }
+    }
 
     public void SetOrderByUI(int num)
     {
