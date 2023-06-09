@@ -12,6 +12,8 @@ public class CardData : InstanceD<CardData>
 {
     public List<CardBase> cards = new List<CardBase>();
     public List<(string,ExecuteCard)> CardMethods = new List<(string, ExecuteCard)>();
+    public bool isCardOperating = false;
+    public int count = 0;
 
     public void Start()
     {
@@ -55,6 +57,19 @@ public class CardData : InstanceD<CardData>
     public void RunCard(Card card,List<TargetObject> targets)
     {
         CardMethods.Find(data => data.Item1 == card.baseCard.cardNumber).Item2(card,targets);
+    }
+
+    public IEnumerator EffectProcess()
+    {
+        while(true)
+        {
+            if(count == 0)isCardOperating = false;
+            else{
+                count --;
+                isCardOperating = true;
+            }
+            yield return new WaitForSeconds(0.01f);
+        }
     }
 
     // TargetObject List 구조 : 
