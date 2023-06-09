@@ -145,6 +145,19 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void SetNextTurn()
     {
+        StartCoroutine(WaitCardQueue());
+    }
+
+    IEnumerator WaitCardQueue()
+    {
+        while(true)
+        {
+            if(!CardData.instance.isCardOperating && cardTargetPairQueue.Count == 0)
+            {
+                break;
+            }
+            yield return new WaitForSeconds(0.01f);
+        }
         phase = BattleTurn.PLAYER_END;
     }
 
