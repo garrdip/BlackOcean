@@ -288,7 +288,9 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
             case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
-                M_CardManager.instance.MoveCardOnHandPositionForRemove(oldCardOnHand);
+                if(oldCardOnHand.isChoosed){
+                    M_CardManager.instance.CardOnHandChooseForRemoveSequence(oldCardOnHand);
+                }
                 break;
             case SyncList<CardOnHand>.Operation.OP_SET:
                 

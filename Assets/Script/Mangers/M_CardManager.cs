@@ -21,7 +21,7 @@ public class M_CardManager : NetworkBehaviour
     public Vector3 cardNoneCollidableSize;
 
     [Header("버리기 위해 선택된 카드")]
-    public CardOnHand choosedCardOnHand;
+    public CardOnHand cardonHandForRemove;
 
     [Header("cardOnHandsPanel의 위치 Y값 범위")]
     [Range(-5.0f, 2.0f)]
@@ -171,7 +171,7 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
-    // CardOnHand 오브젝트 멀어지는 애니매이션 + 오브젝트 파괴 커맨드 호출
+    // CardOnHand 오브젝트 trashDeck으로 버리는 애니매이션 + 오브젝트 파괴 커맨드 호출
     public void CardOnHandThrowAwaySequence(CardOnHand cardOnHand)
     {
         DeckUI.instance.buttonEndTurn.interactable = false;        
@@ -235,6 +235,31 @@ public class M_CardManager : NetworkBehaviour
         } 
     }
 
+    // 덱 제거를 위해 선택된 카드의 위치 및 크기 변경
+    public void CardOnHandChooseForRemoveSequence(CardOnHand cardOnHand)
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                // 덱 제거 팝업 위치로 카드 위치 변경 및 크기 변경
+                cardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
+                cardOnHand.transform.DOMove(DeckUI.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position, 0.2f).SetEase(Ease.OutSine);
+                
+                // 덱 제거용으로 선택되었던 카드가 이미 있다면 그 카드를 다시 cardOnHands에 추가
+                if(cardonHandForRemove != null){
+                    gamePlayerDeck.cardOnHands.Add(cardonHandForRemove);
+
+                    // 상태값 모두 false로
+                    cardonHandForRemove.isDrag = false;
+                    cardonHandForRemove.isMouseOver = false;
+                    cardonHandForRemove.isMoving = false;
+                    cardonHandForRemove.isShifted = false;
+                    cardonHandForRemove.isChoosed = false;
+                }
+            }
+        }   
+    }
+
 
     // 로컬 플레이어의 CardOnHand 오브젝트의 충돌체 크기 조정(마우스 오버되지 않은 카드들의 충돌체 사이즈를 줄여서 충돌판정을 받지 않도록 함)
     public void ChangeCardOnHandColliderSize(CardOnHand mouseOveredCardOnHand, Vector3 size)
@@ -255,9 +280,9 @@ public class M_CardManager : NetworkBehaviour
     public void ChangeCardOnHandSortingLayerByName(string layerName)
     {
         // 버릴카드 정렬 순서 변경
-        if(M_CardManager.instance.choosedCardOnHand != null){
-            M_CardManager.instance.choosedCardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
-            M_CardManager.instance.choosedCardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
+        if(M_CardManager.instance.cardonHandForRemove != null){
+            M_CardManager.instance.cardonHandForRemove.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+            M_CardManager.instance.cardonHandForRemove.cardOnHandCanvas.sortingLayerName = layerName;
         }
         // 로컬 플레이어의 카드 정렬 순서 변경
         if(NetworkClient.connection != null && NetworkClient.active){
@@ -332,28 +357,14 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
-    // 덱 제거를 위해 선택된 카드의 위치 및 크기 변경
-    public void MoveCardOnHandPositionForRemove(CardOnHand cardOnHand)
+    // 카드와 타겟 데이터 큐에 저장
+    public void EnQueueCardTargetPair(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                // 덱 제거 팝업 위치로 카드 위치 변경 및 크기 변경
-                cardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
-                cardOnHand.transform.DOMove(DeckUI.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position, 0.2f).SetEase(Ease.OutSine);
-                
-                // 덱 제거용으로 선택되었던 카드가 이미 있다면 그 카드를 다시 cardOnHands에 추가
-                if(choosedCardOnHand != null){
-                    gamePlayerDeck.cardOnHands.Add(choosedCardOnHand);
-
-                    // 상태값 모두 false로
-                    choosedCardOnHand.isDrag = false;
-                    choosedCardOnHand.isMouseOver = false;
-                    choosedCardOnHand.isMoving = false;
-                    choosedCardOnHand.isShifted = false;
-                    choosedCardOnHand.isChoosed = false;
-                }
+            if (gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdEnQueueCardTargetPair(card, null, NetworkClient.connection.identity, null);
             }
-        }   
+        }
     }
 }

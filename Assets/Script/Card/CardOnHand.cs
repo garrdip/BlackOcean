@@ -42,7 +42,7 @@ public class CardOnHand : NetworkBehaviour
     // 카드 오브젝트가 밀려난 상태인지 여부
     public bool isShifted = false;
 
-    // 카드 선택 모드 창에서 선택된 상태인지 여부
+    // 버릴 카드 선택 모드 창에서 선택된 상태인지 여부
     public bool isChoosed = false;
 
 
@@ -107,7 +107,7 @@ public class CardOnHand : NetworkBehaviour
             if(IsCardOnHandRemovePopUpActive()){
                 isChoosed = true;
                 currentPlayerDeck.cardOnHands.Remove(this);
-                M_CardManager.instance.choosedCardOnHand = this;
+                M_CardManager.instance.cardonHandForRemove = this;
             }
         }
     }
@@ -127,12 +127,7 @@ public class CardOnHand : NetworkBehaviour
         if(isOwned && isDrag && !IsDeckListPopUpActive()){
             // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
             if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2) && !IsCardOnHandRemovePopUpActive()){
-                if(NetworkClient.connection != null && NetworkClient.active){
-                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-                    if (gamePlayerDeck.isLocalPlayer){
-                        gamePlayerDeck.CmdEnQueueCardTargetPair(card, null, NetworkClient.connection.identity, null);
-                    }
-                }
+                M_CardManager.instance.EnQueueCardTargetPair(card, null, NetworkClient.connection.identity, null);
                 M_CardManager.instance.CardOnHandThrowAwaySequence(this);
             }
             isDrag = false;
