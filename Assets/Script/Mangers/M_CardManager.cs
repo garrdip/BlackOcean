@@ -363,7 +363,7 @@ public class M_CardManager : NetworkBehaviour
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if (gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdEnQueueCardTargetPair(card, null, NetworkClient.connection.identity, null);
+                gamePlayerDeck.CmdEnQueueCardTargetPair(card, targetObject, conn, cardCtrlArrow);
             }
         }
     }
