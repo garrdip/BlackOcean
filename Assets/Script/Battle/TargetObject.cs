@@ -44,6 +44,7 @@ public class TargetObject : NetworkBehaviour
     public List<GameObject> monsters;
 
     public TargetObject clone;
+    
     [SyncVar]
     public bool isCloneData = false;
     public GameObject avatar;
@@ -51,6 +52,21 @@ public class TargetObject : NetworkBehaviour
     public SkeletonAnimation anim;
 
     public bool isAnimating = false;
+
+    public readonly SyncList<Buff> buffs = new SyncList<Buff>();
+
+
+// 전투용 변수들
+    [SyncVar]
+    public int defense = 0;
+// 플레이어용 변수
+    [SyncVar]
+    public int currentIchi = 3;
+    [SyncVar]
+    public int maxIchi = 3;
+    [SyncVar]
+    public int limitiChi = 6;
+
 
     void Awake()
     {

@@ -361,8 +361,10 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void PlayerEndTurn()
     {
+
         phase = BattleTurn.MONSTER_ORDERSELECT;
     }
+
 
     [Server]
     public void GeneratePlayerUnit()

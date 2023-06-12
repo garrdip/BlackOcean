@@ -1,17 +1,21 @@
+using ProjectD;
 public class Buff
 {
-    string name;
-    int value;
+    public BuffType type;
+    public int value;
+    public bool isDebuff = false;
 
-    public Buff(string nameIn, int valueIn)
+    public Buff(BuffType typeIn, int valueIn, bool isDebuffIn)
     {
-        name = nameIn;
+        type = typeIn;
         value = valueIn;
+        isDebuff = isDebuffIn;
     }
 
     public Buff()
     {
-        name = "None";
+        type = BuffType.NONE;
         value = 0;
+        isDebuff = false;
     }
 }
