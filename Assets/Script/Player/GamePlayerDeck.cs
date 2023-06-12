@@ -109,6 +109,20 @@ public class GamePlayerDeck : NetworkBehaviour
         M_TurnManager.instance.Shuffle(prefareDeck);
     }
 
+    // CardOnHands SyncList에 해당 카드 추가
+    [Command]
+    public void CmdAddCardToCardOnHands(CardOnHand cardOnHand)
+    {
+        cardOnHands.Add(cardOnHand);
+    }
+
+    // CardOnHands SyncList에서 해당 카드 제거
+    [Command]
+    public void CmdRemoveCardFromCardOnHands(CardOnHand cardOnHand)
+    {
+        cardOnHands.Remove(cardOnHand);
+    }
+
 
     // 현재 플레이어의 CardPocket 오브젝트 생성
     [Command]

@@ -241,13 +241,14 @@ public class M_CardManager : NetworkBehaviour
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
-                // 덱 제거 팝업 위치로 카드 위치 변경 및 크기 변경
+                // 덱 제거 팝업 위치로 카드 위치 변경 및 크기, 회전 변경
+                cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
                 cardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
                 cardOnHand.transform.DOMove(DeckUI.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position, 0.2f).SetEase(Ease.OutSine);
                 
                 // 덱 제거용으로 선택되었던 카드가 이미 있다면 그 카드를 다시 cardOnHands에 추가
                 if(cardonHandForRemove != null){
-                    gamePlayerDeck.cardOnHands.Add(cardonHandForRemove);
+                    gamePlayerDeck.CmdAddCardToCardOnHands(cardonHandForRemove);
 
                     // 상태값 모두 false로
                     cardonHandForRemove.isDrag = false;
