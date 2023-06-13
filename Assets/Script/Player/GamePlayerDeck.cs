@@ -18,6 +18,9 @@ public class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public CardCtrlArrow cardCtrlArrow; // 현재 소환된 카드 화살표
 
+    [SyncVar(hook = nameof(OnChangeCardOnHandForRemove))]
+    public CardOnHand cardOnHandForRemove; // 카드 제거를 위해 선택된 카드
+
     public const int arrowNodeNum = 13; // 카드 컨트롤 화살표 몸통 개수
 
     public const int defaultCardOnHandCount = 10; // 카드 오브젝트 기본 개수
@@ -111,18 +114,26 @@ public class GamePlayerDeck : NetworkBehaviour
 
     // CardOnHands SyncList에 해당 카드 추가
     [Command]
-    public void CmdAddCardToCardOnHands(CardOnHand cardOnHand)
+    public void CmdAddCardOnHandsByRemoveMode(CardOnHand cardOnHand)
     {
+        cardOnHand.isRemoveMode = true; // 카드 제거 기능 수행시 호출되는 경우이므로 카드 제거모드 변수값 true로 변경
         cardOnHands.Add(cardOnHand);
     }
 
     // CardOnHands SyncList에서 해당 카드 제거
     [Command]
-    public void CmdRemoveCardFromCardOnHands(CardOnHand cardOnHand)
+    public void CmdRemoveCardOnHandsByRemoveMode(CardOnHand cardOnHand)
     {
+        cardOnHand.isRemoveMode = true; // 카드 제거 기능 수행시 호출되는 경우이므로 카드 제거모드 변수값 true로 변경
         cardOnHands.Remove(cardOnHand);
     }
 
+    // CardOnHands SyncList에서 제거할 카드 선택
+    [Command]
+    public void CmdSetCardOnHandForRemove(CardOnHand cardOnHand)
+    {
+        cardOnHandForRemove = cardOnHand;
+    }
 
     // 현재 플레이어의 CardPocket 오브젝트 생성
     [Command]
@@ -165,7 +176,8 @@ public class GamePlayerDeck : NetworkBehaviour
             );
             NetworkServer.Spawn(cardOnHand, connectionToClient);
 
-            cardOnHand.GetComponent<CardOnHand>().index = i;
+            cardOnHand.GetComponent<CardOnHand>().index = i; // 카드 인덱스
+            cardOnHand.GetComponent<CardOnHand>().isRemoveMode = false; // 카드 생성될 때 리스트에 추가되는 경우 카드는 제거 모드가 아닌 상태
             cardOnHands.Add(cardOnHand.GetComponent<CardOnHand>()); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
 
             // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
@@ -288,6 +300,26 @@ public class GamePlayerDeck : NetworkBehaviour
         Debug.Log("현재 댁 갯수 변경 :" + newCount);
     }
 
+    public void OnChangeCardOnHandForRemove(CardOnHand oldCardOnHand, CardOnHand newCardOnHand)
+    {
+        // 이전에 선택되었던 카드 상태값 변경
+        if(oldCardOnHand != null){
+            oldCardOnHand.isDrag = false;
+            oldCardOnHand.isMouseOver = false;
+            oldCardOnHand.isMoving = false;
+            oldCardOnHand.isShifted = false;
+            oldCardOnHand.isChoosed = false;
+        }
+        // 새로 선택된 카드 상태값 변경
+        if(newCardOnHand != null){
+            newCardOnHand.isDrag = false;
+            newCardOnHand.isMouseOver = false;
+            newCardOnHand.isMoving = false;
+            newCardOnHand.isShifted = false;
+            newCardOnHand.isChoosed = true;
+        }
+    }
+
     // -------------------------------------------------SyncList Callback ---------------------------------------------------//
     
     // CardOnHand Callback
@@ -296,7 +328,9 @@ public class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<CardOnHand>.Operation.OP_ADD:
-                M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
+                if(!newCardOnHand.isRemoveMode){
+                    M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
+                }
                 break;
             case SyncList<CardOnHand>.Operation.OP_INSERT:
                 
@@ -304,6 +338,7 @@ public class GamePlayerDeck : NetworkBehaviour
             case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
                 if(oldCardOnHand.isChoosed){
                     M_CardManager.instance.CardOnHandChooseForRemoveSequence(oldCardOnHand);
+                    M_CardManager.instance.CheckAlreadyExistCardOnHandForRemove();
                 }
                 break;
             case SyncList<CardOnHand>.Operation.OP_SET:
