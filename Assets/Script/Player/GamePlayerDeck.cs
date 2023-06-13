@@ -109,7 +109,7 @@ public class GamePlayerDeck : NetworkBehaviour
             Card copyCard = card.CardDeepCopy();
             prefareDeck.Add(copyCard);
         }
-        M_TurnManager.instance.Shuffle(prefareDeck);
+        M_CardManager.instance.Shuffle(prefareDeck);
     }
 
     // CardOnHands SyncList에 해당 카드 추가

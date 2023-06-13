@@ -38,12 +38,12 @@ public class GamePlayer : NetworkBehaviour
     {
         if(isServer)
         {
-           GamePlayer[] users = FindObjectsOfType<GamePlayer>();
-           foreach(GamePlayer user in users)
-           {
+            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+            foreach(GamePlayer user in users)
+            {
                 if(!user.endTurnActive)return;
-           }
-           M_TurnManager.instance.SetNextTurn();
+            }
+            M_TurnManager.instance.SetNextTurn();
         }
     }
 
