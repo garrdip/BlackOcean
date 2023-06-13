@@ -187,4 +187,111 @@ public class CardData : InstanceD<CardData>
             target.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER).type = BuffType.FLOWER;
         }
     }
+    // 게오르크
+    public void G0(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G1(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G2(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G3(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G4(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G5(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G6(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G7(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G8(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G9(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G10(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G11(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void G12(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    //에리스
+    public void E0(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E1(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E2(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E3(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E4(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E5(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E6(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E7(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E8(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E9(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E10(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E11(Card card,List<TargetObject> tar)
+    {
+        
+    }
+    public void E12(Card card,List<TargetObject> tar)
+    {
+        
+    }
+
 }
