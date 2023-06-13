@@ -94,7 +94,8 @@ public class CardCtrlArrow : NetworkBehaviour
                         GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                         if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
                             TargetObject targetObjects = hit.collider.transform.parent.GetComponent<TargetObject>();
-                            gamePlayerDeck.CmdEnQueueCardTargetPair(arrowOwnedCardOnHand.card, targetObjects, NetworkClient.connection.identity, this); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
+                            if(targetObjects.objectType != ProjectD.ObjectType.PLAYER || arrowOwnedCardOnHand.card.baseCard.cardType != ProjectD.CardType.ATTACK)
+                                gamePlayerDeck.CmdEnQueueCardTargetPair(arrowOwnedCardOnHand.card, targetObjects, NetworkClient.connection.identity, this); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
                         }
                     }
                 }
