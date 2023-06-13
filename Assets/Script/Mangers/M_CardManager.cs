@@ -293,13 +293,13 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
-    // 로컬 플레이어의 CardOnHand 오브젝트들의 isChoosed 상태값 변경
-    public void ChangeCardOnHandChooseState(bool isChoosed)
+    // 선택된 제거용 카드 있을경우 카드 제거
+    public void RemoveChoosedCardOnHand()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                cardOnHand.isChoosed = isChoosed;
+            if(gamePlayerDeck.cardOnHandForRemove != null){
+                CardOnHandThrowAwaySequence(gamePlayerDeck.cardOnHandForRemove);
             }
         }
     }
