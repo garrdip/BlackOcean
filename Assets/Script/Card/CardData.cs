@@ -47,7 +47,7 @@ public class CardData : InstanceD<CardData>
                     if(values[i] == "")break;
                     card.cardCharacteristics.Add((CardCharacteristic)Enum.Parse<CardCharacteristic>(values[i]));
                 }
-                ExecuteCard temp = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard),this,"H3"); // valuse[0] : 메소드 이름
+                ExecuteCard temp = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard),this,values[0]); // valuse[0] : 메소드 이름
                 cards.Add(card);
                 CardMethods.Add((card.cardNumber,temp)); // cardNumber
             }
@@ -59,6 +59,10 @@ public class CardData : InstanceD<CardData>
         CardMethods.Find(data => data.Item1 == card.baseCard.cardNumber).Item2(card,targets);
     }
 
+    public bool CheckCardCharacteristic(Card card, CardCharacteristic character)
+    {
+        return (card.cardCharacteristics.Exists(cha => cha == character) || card.baseCard.cardCharacteristics.Exists(cha => cha == character));
+    }
     public IEnumerator EffectProcess()
     {
         while(true)
@@ -117,8 +121,7 @@ public class CardData : InstanceD<CardData>
     public void GeneralGetDefense(TargetObject from, TargetObject tar, int value, Card card)
     {
         int defenseValue = value;
-        if((card.cardCharacteristics.Exists(character => character == CardCharacteristic.GOOWON) || 
-            card.baseCard.cardCharacteristics.Exists(character => character == CardCharacteristic.GOOWON) )&& tar != from) // 카드 또는 카드 베이스
+        if(CheckCardCharacteristic(card,CardCharacteristic.GOOWON)&& tar != from) // 카드 또는 카드 베이스
             defenseValue *= 2;
         if(from.buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE) == null)
             tar.defense += defenseValue;
