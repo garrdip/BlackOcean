@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 5957500320845354124}
   - component: {fileID: 5547613088508484496}
   - component: {fileID: 1952732149570449232}
+  - component: {fileID: -6116819418788090984}
   m_Layer: 0
   m_Name: Goblin
-  m_TagString: Untagged
+  m_TagString: TargetObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -124,3 +125,47 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4867607338461666766}
   m_Mesh: {fileID: 0}
+--- !u!60 &-6116819418788090984
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4867607338461666766}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.88013124, y: 6.060917}
+      - {x: -1.1878222, y: 6.6170573}
+      - {x: -2.070518, y: 6.1479745}
+      - {x: -1.6776996, y: 5.059425}
+      - {x: -0.81860733, y: 4.0218725}
+      - {x: -1.835395, y: 2.3928246}
+      - {x: -2.749225, y: 0.48480964}
+      - {x: -1.27502, y: 0.52703273}
+      - {x: -0.7210037, y: 1.6820765}
+      - {x: -0.2823122, y: 0.70869076}
+      - {x: -0.063325524, y: 0.36972457}
+      - {x: -0.4195376, y: -0.16050422}
+      - {x: 1.4057465, y: -0.26560265}
+      - {x: 1.7578883, y: 0.4521098}
+      - {x: 1.4124779, y: 1.472127}
+      - {x: 2.2807627, y: 1.6479632}
+      - {x: 2.4968827, y: 2.2487023}
+      - {x: 1.9119964, y: 2.4360616}
+      - {x: 1.8904631, y: 4.387536}

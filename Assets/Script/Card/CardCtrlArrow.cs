@@ -84,14 +84,16 @@ public class CardCtrlArrow : NetworkBehaviour
     private void HandleArrowAction()
     {
         if(Input.GetMouseButtonUp(0)){
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit)){
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Debug.Log("Mouse Up!");
+            RaycastHit2D hit;
+            if (hit = Physics2D.Raycast(mousePosition, Vector2.zero)){
+                if(hit.collider != null)Debug.Log(hit.collider);
                 if(hit.collider != null && hit.collider.tag.Equals("TargetObject")){
                     if(NetworkClient.connection != null && NetworkClient.active){
                         GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                         if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
-                            TargetObject targetObjects = hit.collider.gameObject.GetComponent<TargetObject>();
+                            TargetObject targetObjects = hit.collider.transform.parent.GetComponent<TargetObject>();
                             gamePlayerDeck.CmdEnQueueCardTargetPair(arrowOwnedCardOnHand.card, targetObjects, NetworkClient.connection.identity, this); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
                         }
                     }
