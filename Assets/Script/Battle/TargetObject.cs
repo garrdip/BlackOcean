@@ -68,15 +68,17 @@ public class TargetObject : NetworkBehaviour
     public int limitiChi = 6;
     [SyncVar]
     public bool isTransformed = false;
-    [SyncVar]
-    public int erisDefense = 0;
-
 
     void Awake()
     {
         StartCoroutine(FindSkeletonAnimation());
+        buffs.Callback += OnChangedBuff;
     }
 
+    public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
+    {
+        //Buff 추가 제거시 UI 효과 여기서 해야할듯
+    }
     // 
     IEnumerator FindSkeletonAnimation()
     {
@@ -181,6 +183,7 @@ public class TargetObject : NetworkBehaviour
                         M_TurnManager.instance.spawnedMonsterList.Remove(this);
                         
                     NetworkServer.Destroy(this.gameObject);
+                    M_TurnManager.instance.OnChangedMonsterList();
                 }
             }
         }

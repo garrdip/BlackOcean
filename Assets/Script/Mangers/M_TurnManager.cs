@@ -254,6 +254,9 @@ public class M_TurnManager : NetworkBehaviour
             case BattleTurn.MONSTER_ACTIVE :
                 MonsterActive();
                 break;
+            case BattleTurn.BATTLE_END :
+                BattleEnd();
+                break;
         }
     }
 
@@ -468,6 +471,18 @@ public class M_TurnManager : NetworkBehaviour
         isOrderSelect = true;
     }
 
+    [Server]
+    public void OnChangedMonsterList()
+    {
+        if(spawnedMonsterList.Count == 0)
+            phase = BattleTurn.BATTLE_END;
+    }
+
+    [Server]
+    public void BattleEnd()
+    {
+        Debug.Log("전투 종료");
+    }
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
     private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
     {

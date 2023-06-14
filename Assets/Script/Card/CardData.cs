@@ -15,7 +15,7 @@ public class CardData : InstanceD<CardData>
     public bool isCardOperating = false;
     public int count = 0;
 
-    WaitForSeconds tempWait = new WaitForSeconds(5f);
+    WaitForSeconds tempWait = new WaitForSeconds(1f);
 
     public void Start()
     {
@@ -66,11 +66,6 @@ public class CardData : InstanceD<CardData>
         return (card.cardCharacteristics.Exists(cha => cha == character) || card.baseCard.cardCharacteristics.Exists(cha => cha == character));
     }
 
-    public IEnumerator CardProcess()
-    {
-        yield return null;
-    }
-
     // TargetObject List 구조 : 
     /*
     Index : 내용
@@ -88,6 +83,11 @@ public class CardData : InstanceD<CardData>
             tar.monster.HP -= ( damage + from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK).value + tar.buffs.Find(buff => buff.type == BuffType.FLOWER).value);
     }
 
+    private void GeneralSingleDamage(TargetObject tar, int damage)
+    {
+        tar.monster.HP -= damage;
+    }
+
     public void GeneralAddBuff(TargetObject tar, BuffType type, int value)
     {
         if(tar.buffs.Find(buff => buff.type == type) == null)
@@ -98,6 +98,19 @@ public class CardData : InstanceD<CardData>
         else
         {
             tar.buffs.Find(buff => buff.type == type).value += value;
+        }
+    }
+    
+    public void GeneralAddBuff(TargetObject tar, BuffType type, int value, TargetObject user) //고유 디버프 사용시
+    {
+        if(tar.buffs.Find(buff => buff.type == type && buff.user == user) == null)
+        {
+            Buff newBuff = new Buff(type,value,true,user);
+            tar.buffs.Add(newBuff);
+        }
+        else
+        {
+            tar.buffs.Find(buff => buff.type == type && buff.user == user).value += value;
         }
     }
 
@@ -209,7 +222,7 @@ public class CardData : InstanceD<CardData>
     public IEnumerator H10(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
-        GeneralAddBuff(tar[1],BuffType.FLOWERPOWDER, 5);
+        GeneralAddBuff(tar[1],BuffType.FLOWERPOWDER, 5,tar[0]);
         isCardOperating = false;
     }
     public IEnumerator H11(Card card,List<TargetObject> tar)
@@ -222,6 +235,19 @@ public class CardData : InstanceD<CardData>
         isCardOperating = false;
     }
     // 게오르크
+    private void GeneralApDo(TargetObject user,TargetObject tar, int value)
+    {
+        if(user.buffs.Find(buff => buff.type == BuffType.THEREISNOJABI) != null) // 자비는 없다 보유시 압도스택 => 데미지(힘의이치영향X)
+        {
+            GeneralSingleDamage(tar,3+tar.buffs.Find(buff => buff.type == BuffType.APDO && buff.user == user).value);
+            tar.buffs.Remove(tar.buffs.Find(buff => buff.type == BuffType.APDO && buff.user == user));
+        }
+        else
+        {
+            GeneralAddBuff(tar,BuffType.APDO,1,user);
+        }
+    }
+
     public IEnumerator G0(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
@@ -317,7 +343,7 @@ public class CardData : InstanceD<CardData>
     {
         if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],9);
-        GeneralAddBuff(tar[1],BuffType.APDO,1,true);
+        GeneralApDo(tar[0],tar[1],1);
         isCardOperating = false;
     }
     public IEnumerator G9(Card card,List<TargetObject> tar)
