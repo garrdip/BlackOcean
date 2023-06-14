@@ -281,14 +281,16 @@ public class M_CardManager : NetworkBehaviour
         // 로컬 플레이어의 카드 정렬 순서 변경
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                cardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
-                cardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
-            }
-            if(gamePlayerDeck.cardOnHandForRemove != null){
-                // 버릴카드 정렬 순서 변경
-                gamePlayerDeck.cardOnHandForRemove.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
-                gamePlayerDeck.cardOnHandForRemove.cardOnHandCanvas.sortingLayerName = layerName;
+            if(gamePlayerDeck.isLocalPlayer){
+                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                    cardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+                    cardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
+                }
+                if(gamePlayerDeck.cardOnHandForRemove != null){
+                    // 버릴카드 정렬 순서 변경
+                    gamePlayerDeck.cardOnHandForRemove.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+                    gamePlayerDeck.cardOnHandForRemove.cardOnHandCanvas.sortingLayerName = layerName;
+                }
             }
         }
     }
@@ -298,7 +300,7 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.cardOnHandForRemove != null){
+            if(gamePlayerDeck.isLocalPlayer && gamePlayerDeck.cardOnHandForRemove != null){
                 CardOnHandThrowAwaySequence(gamePlayerDeck.cardOnHandForRemove);
             }
         }

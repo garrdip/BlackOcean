@@ -2493,7 +2493,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -15}
   m_SizeDelta: {x: 327, y: 317}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1036906214
@@ -6476,11 +6476,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  seedNumber: 0
   gamePlayerDeck: {fileID: 0}
   cardOnHandsPanel: {fileID: 823382814}
   cardCollidableSize: {x: 0, y: 0, z: 0}
   cardNoneCollidableSize: {x: 0, y: 0, z: 0}
-  choosedCardOnHand: {fileID: 0}
   cardOnHandsPanelPositionY_Range: -4
   symmetryRange: 1.5
   symmetryPositionX_Range: 1.15
@@ -7281,7 +7281,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  seedNumber: 0
   players: []
   currentPlayer: {fileID: 0}
   orderUI: {fileID: 2118407965}
