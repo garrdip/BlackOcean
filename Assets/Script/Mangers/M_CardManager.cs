@@ -344,7 +344,7 @@ public class M_CardManager : NetworkBehaviour
                     // 영원 타입이 아닌 카드들만 제거
                     bool isCardTypeImmortal = CardData.instance.CheckCardCharacteristic(cardOnHand.card, ProjectD.CardCharacteristic.YOUNGWON);
                     if(!isCardTypeImmortal){
-                        M_CardManager.instance.CardOnHandAllThrowAwaySequence(cardOnHand);
+                        CardOnHandAllThrowAwaySequence(cardOnHand);
                     }
                 }
             }
