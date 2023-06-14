@@ -12,7 +12,7 @@ namespace ProjectD
     public enum BattleTurn { BATTLE_STANDBY, PLAYER_ORDERSELECT, PLAYER_PREEFFECT, PLAYER_DRAW, PLAYER_ACTIVE, PLAYER_END, MONSTER_ORDERSELECT, MONSTER_PREEFFECT, MONSTER_ACTIVE}
     public enum CardType { BLESS, ATTACK, STRATEGY, CURSE, WOUND }
     public enum CardCharacteristic { GOOWON, YOUNGWON, GEUNWON, CHALNA, HEBANG, JOONGREUK, SOOKREON, BOONGGUI, SOIRAK, FORWARD, BACKWARD ,GOHENG, GISADO, EUNHASOO }
-    public enum BuffType { NONE, DEFENSE, ICHI_ATTACK, ICHI_DEFENSE , MOMISPOWERFUL, FLOWERPOWDER, FLOWER}
+    public enum BuffType { NONE, DEFENSE, ICHI_ATTACK, ICHI_DEFENSE , MOMISPOWERFUL, FLOWERPOWDER, FLOWER, CARDCOSTONE, SOIRAK, APDO, THEREISNOJABI, BOONGGUI, BYEOLMURI}
 
     public static class StringUtils{
         public static string RemoveZWSP(string input)
@@ -20,5 +20,5 @@ namespace ProjectD
             return input.Replace("\u200B", "");
         }
     }
-    public delegate void ExecuteCard(Card card,List<TargetObject> target);
+    public delegate IEnumerator ExecuteCard(Card card,List<TargetObject> target);
 }

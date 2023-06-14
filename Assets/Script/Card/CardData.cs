@@ -56,7 +56,7 @@ public class CardData : InstanceD<CardData>
 
     public void RunCard(Card card,List<TargetObject> targets)
     {
-        CardMethods.Find(data => data.Item1 == card.baseCard.cardNumber).Item2(card,targets);
+        StartCoroutine(CardMethods.Find(data => data.Item1 == card.baseCard.cardNumber).Item2(card,targets));
     }
 
     public bool CheckCardCharacteristic(Card card, CardCharacteristic character)
@@ -76,6 +76,11 @@ public class CardData : InstanceD<CardData>
         }
     }
 
+    public IEnumerator CardProcess()
+    {
+        yield return null;
+    }
+
     // TargetObject List 구조 : 
     /*
     Index : 내용
@@ -86,6 +91,7 @@ public class CardData : InstanceD<CardData>
 
     public void GeneralSingleAttack(TargetObject from, TargetObject tar, int damage)
     {
+        // 이곳에 최소 딜레이 넣어야함
         if(from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK) == null)
             tar.monster.HP -= damage;
         else
@@ -120,178 +126,293 @@ public class CardData : InstanceD<CardData>
 
     public void GeneralGetDefense(TargetObject from, TargetObject tar, int value, Card card)
     {
-        int defenseValue = value;
-        if(CheckCardCharacteristic(card,CardCharacteristic.GOOWON)&& tar != from) // 카드 또는 카드 베이스
-            defenseValue *= 2;
-        if(from.buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE) == null)
-            tar.defense += defenseValue;
+        if(from.player.character == Character.ERIS && from == tar) // 에리스의 경우 피가 닳아있을경우 체력을 채움
+        {
+            int remind = from.player.MaxHP - from.player.HP;
+            if(remind >= value)
+                from.player.HP += value;
+            else
+            {
+                from.player.HP = from.player.MaxHP;
+                from.defense += value - remind;
+            }
+        }
         else
-            tar.defense += ( defenseValue + from.buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value );
+        {
+            int defenseValue = value;
+            if(CheckCardCharacteristic(card,CardCharacteristic.GOOWON)&& tar != from) // 카드 또는 카드 베이스
+                defenseValue *= 2;
+            if(from.buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE) == null)
+                tar.defense += defenseValue;
+            else
+                tar.defense += ( defenseValue + from.buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value );
+        }
     }
     // Card Method List 
     // HONG DAN HYANG
-    public void H0(Card card,List<TargetObject> tar)
+    public IEnumerator H0(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
         GeneralSingleAttack(tar[0],tar[1],6);
     }
 
-    public void H1(Card card,List<TargetObject> tar)
+    public IEnumerator H1(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         GeneralSingleAttack(tar[0],tar[1],10);
     }
 
-    public void H2(Card card,List<TargetObject> tar)
+    public IEnumerator H2(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         GeneralGetDefense(tar[0],tar[0],5,card);
     }
-    public void H3(Card card,List<TargetObject> tar)
+    public IEnumerator H3(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         GeneralGetDefense(tar[0],tar[1],5,card);
     }
-    public void H4(Card card,List<TargetObject> tar)
+    public IEnumerator H4(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         if(tar[1].maxIchi < tar[1].limitiChi)
             tar[1].maxIchi += 1;
     }
-    public void H5(Card card,List<TargetObject> tar)
+    public IEnumerator H5(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         GeneralAddBuff(tar[0],BuffType.MOMISPOWERFUL,1);
     }
-    public void H6(Card card,List<TargetObject> tar)
+    public IEnumerator H6(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         GeneralGetDefense(tar[0],tar[0],7,card);
     }
-    public void H7(Card card,List<TargetObject> tar)
+    public IEnumerator H7(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         GeneralSingleAttack(tar[0],tar[1],8);
     }
-    public void H8(Card card,List<TargetObject> tar)
+    public IEnumerator H8(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         //갑옷 약탈 
         //철구 매커니즘 설계후 적용
     }
-    public void H9(Card card,List<TargetObject> tar)
+    public IEnumerator H9(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         //식후 명령
         //철구 매커니즘 설계후 적용
     }
-    public void H10(Card card,List<TargetObject> tar)
+    public IEnumerator H10(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         GeneralAddBuff(tar[1],BuffType.FLOWERPOWDER, 5);
     }
-    public void H11(Card card,List<TargetObject> tar)
+    public IEnumerator H11(Card card,List<TargetObject> tar)
     {
+        yield return new WaitForSeconds(1.0f);
         foreach(TargetObject target in tar)
         {
             target.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER).type = BuffType.FLOWER;
         }
     }
     // 게오르크
-    public void G0(Card card,List<TargetObject> tar)
+    public IEnumerator G0(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        if(tar[0].isTransformed) // 변신 후 효과
+        {
+            GeneralSingleAttack(tar[0],tar[1],9);
+            // 기사도 효과 추가 필요
+            if(tar[1].monster.nextTarget == tar[0])
+            {
+                GeneralSingleAttack(tar[0],tar[1],9);
+                GeneralSingleAttack(tar[0],tar[1],9);
+            }
+        }
+        else // 변신 전 효과
+        {
+            tar[1].defense = 0;
+            GeneralSingleAttack(tar[0],tar[1],30);
+        }
     }
-    public void G1(Card card,List<TargetObject> tar)
+    public IEnumerator G1(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        if(tar[0].isTransformed) // 변신 후 효과
+        {
+            foreach(Buff buff in tar[0].buffs) // 디버프 스택 1씩 감소
+            {
+                if(buff.isDebuff)
+                    buff.value -= 1;
+                if(buff.value <= 0)
+                    tar[0].buffs.Remove(buff);
+            }
+            GeneralGetDefense(tar[0],tar[0],20,card);
+        }
+        else // 변신 전 효과
+        {
+            GeneralGetDefense(tar[0],tar[0],15,card);
+        }
     }
-    public void G2(Card card,List<TargetObject> tar)
+    public IEnumerator G2(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        if(tar[0].isTransformed) // 변신 후 효과
+        {
+            foreach(CardOnHand cardOnHand in tar[0].player.gameObject.GetComponent<GamePlayerDeck>().cardOnHands)
+            {
+                cardOnHand.card.costAddition = -1;
+            }
+        }
+        else // 변신 전 효과
+        {
+            GeneralAddBuff(tar[0],BuffType.CARDCOSTONE,1);
+        }
     }
-    public void G3(Card card,List<TargetObject> tar)
+    public IEnumerator G3(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],7);
     }
-    public void G4(Card card,List<TargetObject> tar)
+    public IEnumerator G4(Card card,List<TargetObject> tar)
     {
-        
+        GeneralSingleAttack(tar[0],tar[1],9);
+        yield return new WaitForSeconds(1.0f);
+        GeneralAddBuff(tar[1],BuffType.SOIRAK,1,true);
     }
-    public void G5(Card card,List<TargetObject> tar)
+    public IEnumerator G5(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralGetDefense(tar[0],tar[0],6,card);
     }
-    public void G6(Card card,List<TargetObject> tar)
+    public IEnumerator G6(Card card,List<TargetObject> tar) 
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralGetDefense(tar[0],tar[0],4,card);
+        GeneralGetDefense(tar[0],tar[1],4,card);//내부에 구원 구현되어 있음
+
     }
-    public void G7(Card card,List<TargetObject> tar)
+    public IEnumerator G7(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],9);
+        if(tar[1].monster.nextTarget == tar[0])
+            GeneralSingleAttack(tar[0],tar[1],9);
     }
-    public void G8(Card card,List<TargetObject> tar)
+    public IEnumerator G8(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],9);
+        GeneralAddBuff(tar[1],BuffType.APDO,1,true);
     }
-    public void G9(Card card,List<TargetObject> tar)
+    public IEnumerator G9(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralGetDefense(tar[0],tar[0],7,card);
     }
-    public void G10(Card card,List<TargetObject> tar)
+    public IEnumerator G10(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],5);
     }
-    public void G11(Card card,List<TargetObject> tar)
+    public IEnumerator G11(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralAddBuff(tar[0],BuffType.THEREISNOJABI,1);
     }
-    public void G12(Card card,List<TargetObject> tar)
+    public IEnumerator G12(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        // 무작위 기사도 카드 3장 생성
     }
     //에리스
-    public void E0(Card card,List<TargetObject> tar)
+    public IEnumerator E0(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],5);
     }
-    public void E1(Card card,List<TargetObject> tar)
+    public IEnumerator E1(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],8);
     }
-    public void E2(Card card,List<TargetObject> tar)
+    public IEnumerator E2(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralGetDefense(tar[0],tar[0],4,card);
     }
-    public void E3(Card card,List<TargetObject> tar)
+    public IEnumerator E3(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralGetDefense(tar[0],tar[1],3,card);
     }
-    public void E4(Card card,List<TargetObject> tar)
+    public IEnumerator E4(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],3);
+        GeneralAddBuff(tar[1],BuffType.BOONGGUI,1,true);
     }
-    public void E5(Card card,List<TargetObject> tar)
+    public IEnumerator E5(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],2);
+        GeneralAddBuff(tar[0],BuffType.BYEOLMURI,1);
     }
-    public void E6(Card card,List<TargetObject> tar)
+    public IEnumerator E6(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        // 카드생성 
     }
-    public void E7(Card card,List<TargetObject> tar)
+    public IEnumerator E7(Card card,List<TargetObject> tar)
     {
-        
+        //ToDo : 힘의 이치, 방어의 이치 적용 여부, 
+        yield return new WaitForSeconds(1.0f);
+        int remind = tar[0].player.MaxHP - tar[0].player.HP;
+        if(remind >= 3 + tar[0].buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value)
+        {
+            tar[0].player.HP += 3 + tar[0].buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value; // 방어의 이치 적용할지 판단
+        }
+        else
+        {
+            tar[0].player.HP = tar[0].player.MaxHP;
+            foreach(TargetObject target in tar)
+            {
+                if(target.objectType != ObjectType.PLAYER) // 힘의 이치를 적용할지 판단해야함
+                    GeneralSingleAttack(tar[0],target,3+tar[0].buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value - remind);
+            }
+        }
+
     }
-    public void E8(Card card,List<TargetObject> tar)
+    public IEnumerator E8(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        if(tar[0].player.HP != 1) tar[0].player.HP /= 2;
     }
-    public void E9(Card card,List<TargetObject> tar)
+    public IEnumerator E9(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],12);
+        // 뽑을덱에서 한장 선택후 버린덱으로 보내기 
     }
-    public void E10(Card card,List<TargetObject> tar)
+    public IEnumerator E10(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralGetDefense(tar[0],tar[0],4,card);
     }
-    public void E11(Card card,List<TargetObject> tar)
+    public IEnumerator E11(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],6);
     }
-    public void E12(Card card,List<TargetObject> tar)
+    public IEnumerator E12(Card card,List<TargetObject> tar)
     {
-        
+        yield return new WaitForSeconds(1.0f);
+        GeneralSingleAttack(tar[0],tar[1],8);
+        // 뽑을덱에서 한장 선택후 버린덱으로 보내기 
     }
 
 }
