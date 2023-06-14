@@ -37,8 +37,8 @@ public class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 실제 컨트롤 하는 플레이어 소유의 카드 네트워크 오브젝트 리스트
 
+    public readonly SyncList<CardOnHand> removeCardOnHands = new SyncList<CardOnHand>(); // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 네트워크 오브젝트 리스트
 
-    
     public override void OnStartServer()
     {
         SetInitialValue();
@@ -47,6 +47,7 @@ public class GamePlayerDeck : NetworkBehaviour
     public override void OnStartClient()
     {
         cardOnHands.Callback += OnCardOnHandsUpdated;
+        removeCardOnHands.Callback += OnRemoveCardOnHandsUpdated;
         prefareDeck.Callback += OnPrefareDeckUpdated;
         trashDeck.Callback += OnTrashDeckUpdated;
     }
@@ -112,27 +113,17 @@ public class GamePlayerDeck : NetworkBehaviour
         M_CardManager.instance.Shuffle(prefareDeck);
     }
 
-    // CardOnHands SyncList에 해당 카드 추가
+    // CardOnHands SyncList에서 제거할 카드들 선택해서 RemoveCardOnHands SyncList에 추가
     [Command]
-    public void CmdAddCardOnHandsByRemoveMode(CardOnHand cardOnHand)
+    public void CmdAddToRemoveCardOnHands(CardOnHand cardOnHand)
     {
         cardOnHand.isRemoveMode = true; // 카드 제거 기능 수행시 호출되는 경우이므로 카드 제거모드 변수값 true로 변경
-        cardOnHands.Add(cardOnHand);
-    }
-
-    // CardOnHands SyncList에서 해당 카드 제거
-    [Command]
-    public void CmdRemoveCardOnHandsByRemoveMode(CardOnHand cardOnHand)
-    {
-        cardOnHand.isRemoveMode = true; // 카드 제거 기능 수행시 호출되는 경우이므로 카드 제거모드 변수값 true로 변경
-        cardOnHands.Remove(cardOnHand);
-    }
-
-    // CardOnHands SyncList에서 제거할 카드 선택
-    [Command]
-    public void CmdSetCardOnHandForRemove(CardOnHand cardOnHand)
-    {
-        cardOnHandForRemove = cardOnHand;
+        cardOnHands.Remove(cardOnHand); // cardOnHands 리스트에서 해당 카드 제거
+        removeCardOnHands.Add(cardOnHand); // removeCardOnHands 리스트에 해당 카드 추가
+        if(removeCardOnHands.Count > 2){ // removeCardOnHands 리스트 크기가 2일 경우 0번 인덱스 카드를 제거후 새로 들어온 카드 추가
+            cardOnHands.Add(removeCardOnHands[0]);
+            removeCardOnHands.RemoveAt(0);
+        }
     }
 
     // 현재 플레이어의 CardPocket 오브젝트 생성
@@ -328,7 +319,9 @@ public class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<CardOnHand>.Operation.OP_ADD:
-                if(!newCardOnHand.isRemoveMode){
+                if(newCardOnHand.isRemoveMode){
+                    M_CardManager.instance.ResetCardAllState(newCardOnHand, false);
+                }else{
                     M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
                 }
                 break;
@@ -336,10 +329,7 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
             case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
-                if(oldCardOnHand.isChoosed){
-                    M_CardManager.instance.CardOnHandChooseForRemoveSequence(oldCardOnHand);
-                    M_CardManager.instance.CheckAlreadyExistCardOnHandForRemove();
-                }
+
                 break;
             case SyncList<CardOnHand>.Operation.OP_SET:
                 
@@ -348,6 +338,30 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
+    }
+
+    // RemoveCardOnHand Callback
+    void OnRemoveCardOnHandsUpdated(SyncList<CardOnHand>.Operation op, int index, CardOnHand oldCardOnHand, CardOnHand newCardOnHand)
+    {
+        switch (op)
+        {
+            case SyncList<CardOnHand>.Operation.OP_ADD:
+                
+                break;
+            case SyncList<CardOnHand>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<CardOnHand>.Operation.OP_SET:
+                
+                break;
+            case SyncList<CardOnHand>.Operation.OP_CLEAR:
+                
+                break;
+        }
+        M_CardManager.instance.CardOnHandChooseForRemoveSequence(removeCardOnHands);
     }
 
     // PrefareDeck Callback

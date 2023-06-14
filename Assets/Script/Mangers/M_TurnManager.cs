@@ -482,7 +482,15 @@ public class M_TurnManager : NetworkBehaviour
     public void BattleEnd()
     {
         Debug.Log("전투 종료");
+        EachPlayerCompensation();
     }
+
+    [ClientRpc]
+    public void EachPlayerCompensation()
+    {
+        // TODO: 각 플레이어 보상 팝업 호출해서 카드 선택하도록
+    }
+
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
     private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
     {

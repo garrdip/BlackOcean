@@ -235,28 +235,23 @@ public class M_CardManager : NetworkBehaviour
         } 
     }
 
-    // 덱 제거를 위해 선택된 카드의 위치 및 크기 변경
-    public void CardOnHandChooseForRemoveSequence(CardOnHand cardOnHand)
+    // 덱 제거를 위해 선택된 카드들의 위치 및 크기 변경
+    public void CardOnHandChooseForRemoveSequence(SyncList<CardOnHand> removeCardOnHands)
     {
         // 카드 제거 팝업 위치로 카드 위치 변경 및 크기, 회전 변경
-        cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-        cardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
-        cardOnHand.transform.DOMove(DeckUI.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position, 0.2f).SetEase(Ease.OutSine);
-    }
+        Vector3 centerPosition = DeckUI.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position;
+        Vector3 left = centerPosition - new Vector3(2f, 0f, 0f);
+        Vector3 right = centerPosition + new Vector3(2f, 0f, 0f);
 
+        for (int i = 0; i < removeCardOnHands.Count; i++)
+        {
+            CardOnHand cardOnHand = removeCardOnHands[i];
+            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            cardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
 
-    // 제거를 위해 선택된 카드가 이미 있다면 그 카드를 다시 cardOnHands에 추가
-    public void CheckAlreadyExistCardOnHandForRemove()
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){   
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                CardOnHand cardOnHandForRemove = gamePlayerDeck.cardOnHandForRemove;
-                if(cardOnHandForRemove != null){
-                    gamePlayerDeck.CmdAddCardOnHandsByRemoveMode(cardOnHandForRemove);
-                }
-            }
-        }   
+            Vector3 targetPosition = (i == 0) ? left : right;
+            cardOnHand.transform.DOMove(targetPosition, 0.2f).SetEase(Ease.OutSine);
+        }
     }
 
 
@@ -371,6 +366,16 @@ public class M_CardManager : NetworkBehaviour
                 gamePlayerDeck.CmdEnQueueCardTargetPair(card, targetObject, conn, cardCtrlArrow);
             }
         }
+    }
+
+    // CardOnHand의 상태변수값 모두 변경
+    public void ResetCardAllState(CardOnHand cardOnHand, bool state)
+    {
+        cardOnHand.isDrag = state;
+        cardOnHand.isMouseOver = state;
+        cardOnHand.isMoving = state;
+        cardOnHand.isShifted = state;
+        cardOnHand.isChoosed = state;
     }
 
     // 피셔 예이츠 셔플 알고리즘 함수

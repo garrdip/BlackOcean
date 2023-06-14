@@ -109,8 +109,7 @@ public class CardOnHand : NetworkBehaviour
             // 덱 [제거] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
             if(IsCardOnHandRemovePopUpActive()){
                 isChoosed = true;
-                currentPlayerDeck.CmdRemoveCardOnHandsByRemoveMode(this); // 리스트에서 해당 카드 제거
-                currentPlayerDeck.CmdSetCardOnHandForRemove(this); // 해당 카드를 제거용 카드로 세팅
+                currentPlayerDeck.CmdAddToRemoveCardOnHands(this); // 선택한 카드를 제거용 카드 리스트에 추가
             }
         }
     }
