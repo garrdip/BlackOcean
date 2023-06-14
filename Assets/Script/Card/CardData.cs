@@ -15,6 +15,8 @@ public class CardData : InstanceD<CardData>
     public bool isCardOperating = false;
     public int count = 0;
 
+    WaitForSeconds tempWait = new WaitForSeconds(5f);
+
     public void Start()
     {
         DontDestroyOnLoad(gameObject);
@@ -62,18 +64,6 @@ public class CardData : InstanceD<CardData>
     public bool CheckCardCharacteristic(Card card, CardCharacteristic character)
     {
         return (card.cardCharacteristics.Exists(cha => cha == character) || card.baseCard.cardCharacteristics.Exists(cha => cha == character));
-    }
-    public IEnumerator EffectProcess()
-    {
-        while(true)
-        {
-            if(count == 0)isCardOperating = false;
-            else{
-                count --;
-                isCardOperating = true;
-            }
-            yield return new WaitForSeconds(0.01f);
-        }
     }
 
     public IEnumerator CardProcess()
@@ -152,81 +142,93 @@ public class CardData : InstanceD<CardData>
     // HONG DAN HYANG
     public IEnumerator H0(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
-        GeneralSingleAttack(tar[0],tar[1],6);
+        GeneralSingleAttack(tar[0],tar[1],15);
+        isCardOperating = false;
     }
 
     public IEnumerator H1(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],10);
+        isCardOperating = false;
     }
 
     public IEnumerator H2(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralGetDefense(tar[0],tar[0],5,card);
+        isCardOperating = false;
     }
     public IEnumerator H3(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralGetDefense(tar[0],tar[1],5,card);
+        isCardOperating = false;
     }
     public IEnumerator H4(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         if(tar[1].maxIchi < tar[1].limitiChi)
             tar[1].maxIchi += 1;
+        isCardOperating = false;
     }
     public IEnumerator H5(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralAddBuff(tar[0],BuffType.MOMISPOWERFUL,1);
+        isCardOperating = false;
     }
     public IEnumerator H6(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralGetDefense(tar[0],tar[0],7,card);
+        isCardOperating = false;
     }
     public IEnumerator H7(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],8);
+        isCardOperating = false;
     }
     public IEnumerator H8(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         //갑옷 약탈 
         //철구 매커니즘 설계후 적용
+        isCardOperating = false;
     }
     public IEnumerator H9(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         //식후 명령
         //철구 매커니즘 설계후 적용
+        isCardOperating = false;
     }
     public IEnumerator H10(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralAddBuff(tar[1],BuffType.FLOWERPOWDER, 5);
+        isCardOperating = false;
     }
     public IEnumerator H11(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         foreach(TargetObject target in tar)
         {
             target.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER).type = BuffType.FLOWER;
         }
+        isCardOperating = false;
     }
     // 게오르크
     public IEnumerator G0(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         if(tar[0].isTransformed) // 변신 후 효과
         {
             GeneralSingleAttack(tar[0],tar[1],9);
-            // 기사도 효과 추가 필요
+            // 기사도 효과
             if(tar[1].monster.nextTarget == tar[0])
             {
                 GeneralSingleAttack(tar[0],tar[1],9);
@@ -238,10 +240,11 @@ public class CardData : InstanceD<CardData>
             tar[1].defense = 0;
             GeneralSingleAttack(tar[0],tar[1],30);
         }
+        isCardOperating = false;
     }
     public IEnumerator G1(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         if(tar[0].isTransformed) // 변신 후 효과
         {
             foreach(Buff buff in tar[0].buffs) // 디버프 스택 1씩 감소
@@ -257,10 +260,11 @@ public class CardData : InstanceD<CardData>
         {
             GeneralGetDefense(tar[0],tar[0],15,card);
         }
+        isCardOperating = false;
     }
     public IEnumerator G2(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         if(tar[0].isTransformed) // 변신 후 효과
         {
             foreach(CardOnHand cardOnHand in tar[0].player.gameObject.GetComponent<GamePlayerDeck>().cardOnHands)
@@ -272,105 +276,123 @@ public class CardData : InstanceD<CardData>
         {
             GeneralAddBuff(tar[0],BuffType.CARDCOSTONE,1);
         }
+        isCardOperating = false;
     }
     public IEnumerator G3(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],7);
+        isCardOperating = false;
     }
     public IEnumerator G4(Card card,List<TargetObject> tar)
     {
         GeneralSingleAttack(tar[0],tar[1],9);
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralAddBuff(tar[1],BuffType.SOIRAK,1,true);
+        isCardOperating = false;
     }
     public IEnumerator G5(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralGetDefense(tar[0],tar[0],6,card);
+        isCardOperating = false;
     }
     public IEnumerator G6(Card card,List<TargetObject> tar) 
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralGetDefense(tar[0],tar[0],4,card);
         GeneralGetDefense(tar[0],tar[1],4,card);//내부에 구원 구현되어 있음
+        isCardOperating = false;
 
     }
     public IEnumerator G7(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],9);
         if(tar[1].monster.nextTarget == tar[0])
             GeneralSingleAttack(tar[0],tar[1],9);
+        isCardOperating = false;
     }
     public IEnumerator G8(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],9);
         GeneralAddBuff(tar[1],BuffType.APDO,1,true);
+        isCardOperating = false;
     }
     public IEnumerator G9(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralGetDefense(tar[0],tar[0],7,card);
+        isCardOperating = false;
     }
     public IEnumerator G10(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],5);
+        isCardOperating = false;
     }
     public IEnumerator G11(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralAddBuff(tar[0],BuffType.THEREISNOJABI,1);
+        isCardOperating = false;
     }
     public IEnumerator G12(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         // 무작위 기사도 카드 3장 생성
+        isCardOperating = false;
     }
     //에리스
     public IEnumerator E0(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],5);
+        isCardOperating = false;
     }
     public IEnumerator E1(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],8);
+        isCardOperating = false;
     }
     public IEnumerator E2(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralGetDefense(tar[0],tar[0],4,card);
+        isCardOperating = false;
     }
     public IEnumerator E3(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralGetDefense(tar[0],tar[1],3,card);
+        isCardOperating = false;
     }
     public IEnumerator E4(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],3);
         GeneralAddBuff(tar[1],BuffType.BOONGGUI,1,true);
+        isCardOperating = false;
     }
     public IEnumerator E5(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],2);
         GeneralAddBuff(tar[0],BuffType.BYEOLMURI,1);
+        isCardOperating = false;
     }
     public IEnumerator E6(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         // 카드생성 
+        isCardOperating = false;
     }
     public IEnumerator E7(Card card,List<TargetObject> tar)
     {
         //ToDo : 힘의 이치, 방어의 이치 적용 여부, 
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         int remind = tar[0].player.MaxHP - tar[0].player.HP;
         if(remind >= 3 + tar[0].buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value)
         {
@@ -385,34 +407,39 @@ public class CardData : InstanceD<CardData>
                     GeneralSingleAttack(tar[0],target,3+tar[0].buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value - remind);
             }
         }
-
+        isCardOperating = false;
     }
     public IEnumerator E8(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         if(tar[0].player.HP != 1) tar[0].player.HP /= 2;
+        isCardOperating = false;
     }
     public IEnumerator E9(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],12);
         // 뽑을덱에서 한장 선택후 버린덱으로 보내기 
+        isCardOperating = false;
     }
     public IEnumerator E10(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralGetDefense(tar[0],tar[0],4,card);
+        isCardOperating = false;
     }
     public IEnumerator E11(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],6);
+        isCardOperating = false;
     }
     public IEnumerator E12(Card card,List<TargetObject> tar)
     {
-        yield return new WaitForSeconds(1.0f);
+        if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],8);
         // 뽑을덱에서 한장 선택후 버린덱으로 보내기 
+        isCardOperating = false;
     }
 
 }

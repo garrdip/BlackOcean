@@ -170,7 +170,6 @@ public class M_TurnManager : NetworkBehaviour
         GenerateMonster();
         phase = BattleTurn.BATTLE_STANDBY;
         StartCoroutine(ProcessCardQueue());
-        StartCoroutine(CardData.instance.EffectProcess());
     }
  
     public IEnumerator ProcessCardQueue()
