@@ -34,9 +34,9 @@ public class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 실제 컨트롤 하는 플레이어 소유의 카드 네트워크 오브젝트 리스트
 
-    public readonly SyncList<CardOnHand> removeCardOnHands = new SyncList<CardOnHand>(); // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 네트워크 오브젝트 리스트
-
     private int currentIndex = 1; // removeCardOnHands SyncList에서 0번, 1번 인덱스 삽입을 반복하기 위해 사용되는 인덱스 변수
+
+    public CardOnHand[] choosedCardOnHands = new CardOnHand[2];  // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
 
     public override void OnStartServer()
     {
@@ -46,7 +46,6 @@ public class GamePlayerDeck : NetworkBehaviour
     public override void OnStartClient()
     {
         cardOnHands.Callback += OnCardOnHandsUpdated;
-        removeCardOnHands.Callback += OnRemoveCardOnHandsUpdated;
         prefareDeck.Callback += OnPrefareDeckUpdated;
         trashDeck.Callback += OnTrashDeckUpdated;
     }
@@ -101,6 +100,40 @@ public class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    // choosedCardOnHands 배열에 선택한 카드를 추가
+    public void AddChoosedCardOnHands(CardOnHand cardOnHand)
+    {
+        cardOnHand.isChoosed = true;
+        // 인덱스 0, 1 반복
+        if(choosedCardOnHands[0] == null){
+            currentIndex = 0;
+        }else{
+            if(choosedCardOnHands[1] == null){
+                currentIndex = 1;
+            }else{
+                currentIndex = (1 - currentIndex);
+            }
+        }
+        if(choosedCardOnHands[currentIndex] != null){
+            M_CardManager.instance.ResetCardAllState(choosedCardOnHands[currentIndex], false);
+        }
+        choosedCardOnHands[currentIndex] = cardOnHand;
+        M_CardManager.instance.CardOnHandChooseForRemoveSequence(cardOnHand, currentIndex);
+    }
+
+    // choosedCardOnHands 배열에 선택한 카드를 제거
+    public void RemoveChoosedCardOnHands(CardOnHand cardOnHand)
+    {
+        if(choosedCardOnHands[0] == cardOnHand){
+            choosedCardOnHands[0] = null;
+        }else{
+            choosedCardOnHands[1] = null;
+        }
+        cardOnHand.isChoosed = false;
+        M_CardManager.instance.ResetCardAllState(cardOnHand, false);
+    }
+
+
     // 전투 시작시 deck -> prefareDeck 으로 Card 데이터를 깊은복사 후 랜덤 셔플 수행
     [Command]
     public void CmdAddPrefareDeckWithShuffle()
@@ -110,21 +143,6 @@ public class GamePlayerDeck : NetworkBehaviour
             prefareDeck.Add(copyCard);
         }
         M_CardManager.instance.Shuffle(prefareDeck);
-    }
-
-    // CardOnHands SyncList에서 제거할 카드들 선택해서 RemoveCardOnHands SyncList에 추가
-    [Command]
-    public void CmdAddToRemoveCardOnHands(CardOnHand cardOnHand)
-    {
-        cardOnHand.isRemoveMode = true; // 카드 제거 기능 수행시 호출되는 경우이므로 카드 제거모드 변수값 true로 변경
-        currentIndex = (1 - currentIndex); // 인덱스 0, 1 반복
-        
-        cardOnHands.Remove(cardOnHand); // cardOnHands 리스트에서 해당 카드 제거
-        if(removeCardOnHands.Count >= 2){ // removeCardOnHands 리스트 크기가 2 이상인 경우 해당 인덱스 카드를 제거후 새로 들어온 카드 추가
-            cardOnHands.Add(removeCardOnHands[currentIndex]);
-            removeCardOnHands.RemoveAt(currentIndex);
-        }
-        removeCardOnHands.Insert(currentIndex, cardOnHand); // removeCardOnHands 리스트의 해당 인덱스에 카드 추가
     }
 
     // 현재 플레이어의 CardPocket 오브젝트 생성
@@ -169,7 +187,7 @@ public class GamePlayerDeck : NetworkBehaviour
             NetworkServer.Spawn(cardOnHand, connectionToClient);
 
             cardOnHand.GetComponent<CardOnHand>().index = i; // 카드 인덱스
-            cardOnHand.GetComponent<CardOnHand>().isRemoveMode = false; // 카드 생성될 때 리스트에 추가되는 경우 카드는 제거 모드가 아닌 상태
+            
             cardOnHands.Add(cardOnHand.GetComponent<CardOnHand>()); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
 
             // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
@@ -242,9 +260,6 @@ public class GamePlayerDeck : NetworkBehaviour
     {
         trashDeck.Add(cardOnHand.card);
         cardOnHands.Remove(cardOnHand);
-        if(cardOnHand.isRemoveMode){
-            removeCardOnHands.Remove(cardOnHand); // 제거용으로 선택된 카드라면 제거용카드 리스트에서도 제거 
-        }
         NetworkServer.Destroy(cardOnHand.gameObject);
     }
 
@@ -303,37 +318,10 @@ public class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<CardOnHand>.Operation.OP_ADD:
-                if(newCardOnHand.isRemoveMode){
-                    M_CardManager.instance.ResetCardAllState(newCardOnHand, false);
-                }else{
-                    M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
-                }
+                M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
                 break;
             case SyncList<CardOnHand>.Operation.OP_INSERT:
                 
-                break;
-            case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
-
-                break;
-            case SyncList<CardOnHand>.Operation.OP_SET:
-                
-                break;
-            case SyncList<CardOnHand>.Operation.OP_CLEAR:
-                
-                break;
-        }
-    }
-
-    // RemoveCardOnHand Callback
-    void OnRemoveCardOnHandsUpdated(SyncList<CardOnHand>.Operation op, int index, CardOnHand oldCardOnHand, CardOnHand newCardOnHand)
-    {
-        switch (op)
-        {
-            case SyncList<CardOnHand>.Operation.OP_ADD:
-                
-                break;
-            case SyncList<CardOnHand>.Operation.OP_INSERT:
-                M_CardManager.instance.CardOnHandChooseForRemoveSequence(newCardOnHand, index);
                 break;
             case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
 
