@@ -236,22 +236,17 @@ public class M_CardManager : NetworkBehaviour
     }
 
     // 덱 제거를 위해 선택된 카드들의 위치 및 크기 변경
-    public void CardOnHandChooseForRemoveSequence(SyncList<CardOnHand> removeCardOnHands)
+    public void CardOnHandChooseForRemoveSequence(CardOnHand removeCardOnHand, int index)
     {
-        // 카드 제거 팝업 위치로 카드 위치 변경 및 크기, 회전 변경
+        // 카드 제거 팝업 위치로 카드 위치, 크기, 회전 변경
+        removeCardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        removeCardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
+
         Vector3 centerPosition = DeckUI.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position;
         Vector3 left = centerPosition - new Vector3(2f, 0f, 0f);
         Vector3 right = centerPosition + new Vector3(2f, 0f, 0f);
-
-        for (int i = 0; i < removeCardOnHands.Count; i++)
-        {
-            CardOnHand cardOnHand = removeCardOnHands[i];
-            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-            cardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
-
-            Vector3 targetPosition = (i == 0) ? left : right;
-            cardOnHand.transform.DOMove(targetPosition, 0.2f).SetEase(Ease.OutSine);
-        }
+        Vector3 targetPosition = (index == 0) ? left : right;
+        removeCardOnHand.transform.DOMove(targetPosition, 0.2f).SetEase(Ease.OutSine);
     }
 
 

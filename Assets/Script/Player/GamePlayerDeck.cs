@@ -36,6 +36,8 @@ public class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<CardOnHand> removeCardOnHands = new SyncList<CardOnHand>(); // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 네트워크 오브젝트 리스트
 
+    private int currentIndex = 1; // removeCardOnHands SyncList에서 0번, 1번 인덱스 삽입을 반복하기 위해 사용되는 인덱스 변수
+
     public override void OnStartServer()
     {
         SetInitialValue();
@@ -115,12 +117,14 @@ public class GamePlayerDeck : NetworkBehaviour
     public void CmdAddToRemoveCardOnHands(CardOnHand cardOnHand)
     {
         cardOnHand.isRemoveMode = true; // 카드 제거 기능 수행시 호출되는 경우이므로 카드 제거모드 변수값 true로 변경
+        currentIndex = (1 - currentIndex); // 인덱스 0, 1 반복
+        
         cardOnHands.Remove(cardOnHand); // cardOnHands 리스트에서 해당 카드 제거
-        removeCardOnHands.Add(cardOnHand); // removeCardOnHands 리스트에 해당 카드 추가
-        if(removeCardOnHands.Count > 2){ // removeCardOnHands 리스트 크기가 2보다 큰 경우 0번 인덱스 카드를 제거후 새로 들어온 카드 추가
-            cardOnHands.Add(removeCardOnHands[0]);
-            removeCardOnHands.RemoveAt(0);
+        if(removeCardOnHands.Count >= 2){ // removeCardOnHands 리스트 크기가 2 이상인 경우 해당 인덱스 카드를 제거후 새로 들어온 카드 추가
+            cardOnHands.Add(removeCardOnHands[currentIndex]);
+            removeCardOnHands.RemoveAt(currentIndex);
         }
+        removeCardOnHands.Insert(currentIndex, cardOnHand); // removeCardOnHands 리스트의 해당 인덱스에 카드 추가
     }
 
     // 현재 플레이어의 CardPocket 오브젝트 생성
@@ -329,7 +333,7 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
             case SyncList<CardOnHand>.Operation.OP_INSERT:
-                
+                M_CardManager.instance.CardOnHandChooseForRemoveSequence(newCardOnHand, index);
                 break;
             case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
 
@@ -341,7 +345,6 @@ public class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        M_CardManager.instance.CardOnHandChooseForRemoveSequence(removeCardOnHands);
     }
 
     // PrefareDeck Callback
