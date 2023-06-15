@@ -125,7 +125,6 @@ public class DeckUI : SingletonD<DeckUI>
         buttonPrefareDeck.transform.SetParent(PrefareDeck.transform);
         buttonTrashDeck.transform.SetParent(TrashDeck.transform);
         M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
-        M_CardManager.instance.RemoveChoosedCardOnHand(); // TODO : 카드 이펙트 수행 후에 제거 로직 수행 되도록 변경해야함
     }
 
     // 덱 제거 팝업 호출

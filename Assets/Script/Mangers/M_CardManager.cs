@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using DG.Tweening;
+using ProjectD;
 
 public class M_CardManager : NetworkBehaviour
 {
@@ -99,14 +100,16 @@ public class M_CardManager : NetworkBehaviour
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
     public void SetCardOnHandPositionSymmetry()
     {
+        int count = 0;
         cardOnHandsPanel.transform.position = new Vector3(0f, cardOnHandsPanelPositionY_Range, 0f); // 카드 모음 패널의 위치       
         if(gamePlayerDeck != null){
-            int count = gamePlayerDeck.cardOnHands.Count;
-            if(count > 0){
+            List<CardOnHand> cardOnHandsIsNotChoosed = gamePlayerDeck.cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
+            count = cardOnHandsIsNotChoosed.Count;
+            if(count> 0){
                 for(int i=0; i<count; i++){      
-                    CardOnHand cardOnHand =  gamePlayerDeck.cardOnHands[i];
+                    CardOnHand cardOnHand = cardOnHandsIsNotChoosed[i];
                     if(cardOnHand != null){
-                        if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isChoosed){
+                        if(!cardOnHand.isMoving && !cardOnHand.isDrag){
                             if(cardOnHand.isMouseOver){
                                 Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
@@ -265,7 +268,7 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
-    // 로컬 플레이어의 CardOnHand, removeCardOnHand 오브젝트들의 sortingLayer 변경
+    // 로컬 플레이어의 CardOnHand 오브젝트들의 sortingLayer 변경
     public void ChangeCardOnHandSortingLayerByName(string layerName)
     {
         // 로컬 플레이어의 카드 정렬 순서 변경
@@ -276,24 +279,6 @@ public class M_CardManager : NetworkBehaviour
                     cardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
                     cardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
                 }
-                foreach(CardOnHand removeCardOnHand in gamePlayerDeck.removeCardOnHands){
-                    // 버릴카드 정렬 순서 변경
-                    removeCardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
-                    removeCardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
-                }
-            }
-        }
-    }
-
-    // 선택된 제거용 카드 있을경우 카드 제거
-    public void RemoveChoosedCardOnHand()
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                foreach(CardOnHand removeCardOnHand in gamePlayerDeck.removeCardOnHands){
-                    CardOnHandThrowAwaySequence(removeCardOnHand);
-                }   
             }
         }
     }

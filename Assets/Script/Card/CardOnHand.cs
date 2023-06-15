@@ -15,9 +15,6 @@ public class CardOnHand : NetworkBehaviour
     [SyncVar]
     public int index;
 
-    [SyncVar]
-    public bool isRemoveMode = false; // 카드 제거 모드 변수(카드 리스트에 추가,제거 시 카드 제거 모드일 때와 아닐 때를 분기해서 처리하기 위함)
-    
     [Header("CardOnHand Transform 및 컴포넌트 관련 값들")]
     // 랜더링 순서값
     public int originSortOrder; // 초기값
@@ -45,7 +42,7 @@ public class CardOnHand : NetworkBehaviour
     // 카드 오브젝트가 밀려난 상태인지 여부
     public bool isShifted = false;
 
-    // 버릴 카드 선택 모드 창에서 선택된 상태인지 여부
+    // 카드 제거 팝업창에서 선택한 상태인지 여부
     public bool isChoosed = false;
 
 
@@ -108,8 +105,11 @@ public class CardOnHand : NetworkBehaviour
             }
             // 덱 [제거] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
             if(IsCardOnHandRemovePopUpActive()){
-                isChoosed = true;
-                currentPlayerDeck.CmdAddToRemoveCardOnHands(this); // 선택한 카드를 제거용 카드 리스트에 추가
+                if(isChoosed){
+                    currentPlayerDeck.RemoveChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에서 제거
+                }else{
+                    currentPlayerDeck.AddChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에 추가
+                }  
             }
         }
     }
