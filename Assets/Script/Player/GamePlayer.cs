@@ -43,6 +43,7 @@ public class GamePlayer : NetworkBehaviour
             {
                 if(!user.endTurnActive)return;
             }
+            Debug.Log("End !");
             M_TurnManager.instance.SetNextTurn();
         }
     }

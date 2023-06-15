@@ -139,7 +139,9 @@ public class M_TurnManager : NetworkBehaviour
             }
             yield return new WaitForSeconds(0.01f);
         }
-        phase = BattleTurn.PLAYER_END;
+        if(phase == BattleTurn.PLAYER_ACTIVE){
+            phase = BattleTurn.PLAYER_END;
+        } 
     }
 
     [Server]
@@ -321,6 +323,7 @@ public class M_TurnManager : NetworkBehaviour
     public void PlayerCardDraw()
     {
         EachPlayerCardDraw();
+        phase = BattleTurn.PLAYER_ACTIVE;
     }
 
     [ClientRpc]
@@ -344,8 +347,18 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void PlayerEndTurn()
     {
+        ResetEndTurnState();
         phase = BattleTurn.MONSTER_ORDERSELECT;
         EachPlayerEndTurn();
+    }
+
+    [Server]
+    public void ResetEndTurnState()
+    {
+        foreach(TargetObject user in spawnedPlayerList)
+        {
+            user.player.endTurnActive = false;
+        }
     }
 
     [ClientRpc]
@@ -448,7 +461,6 @@ public class M_TurnManager : NetworkBehaviour
         NetworkClient.localPlayer.GetComponent<GamePlayer>().SetOrderByUI(num);
     }
 
-    
     // 플레이어 정보 및 턴 정보 뷰 세팅
     public void SetPlayerOrderView(int index)
     {
@@ -462,7 +474,6 @@ public class M_TurnManager : NetworkBehaviour
             orderUI.buttonPlayerOrder.GetComponent<RectTransform>().sizeDelta = new Vector2(width + 30f, height + 30f); // 버튼 크기 크게 변경(변경된 값이 native size)
         }
     }
-
 
     [ClientRpc]
     public void PopUpOrderUI()
@@ -482,15 +493,7 @@ public class M_TurnManager : NetworkBehaviour
     public void BattleEnd()
     {
         Debug.Log("전투 종료");
-        EachPlayerCompensation();
     }
-
-    [ClientRpc]
-    public void EachPlayerCompensation()
-    {
-        // TODO: 각 플레이어 보상 팝업 호출해서 카드 선택하도록
-    }
-
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
     private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
     {
