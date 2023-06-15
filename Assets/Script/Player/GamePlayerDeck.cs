@@ -18,9 +18,6 @@ public class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public CardCtrlArrow cardCtrlArrow; // 현재 소환된 카드 화살표
 
-    [SyncVar(hook = nameof(OnChangeCardOnHandForRemove))]
-    public CardOnHand cardOnHandForRemove; // 카드 제거를 위해 선택된 카드
-
     public const int arrowNodeNum = 13; // 카드 컨트롤 화살표 몸통 개수
 
     public const int defaultCardOnHandCount = 10; // 카드 오브젝트 기본 개수
@@ -120,7 +117,7 @@ public class GamePlayerDeck : NetworkBehaviour
         cardOnHand.isRemoveMode = true; // 카드 제거 기능 수행시 호출되는 경우이므로 카드 제거모드 변수값 true로 변경
         cardOnHands.Remove(cardOnHand); // cardOnHands 리스트에서 해당 카드 제거
         removeCardOnHands.Add(cardOnHand); // removeCardOnHands 리스트에 해당 카드 추가
-        if(removeCardOnHands.Count > 2){ // removeCardOnHands 리스트 크기가 2일 경우 0번 인덱스 카드를 제거후 새로 들어온 카드 추가
+        if(removeCardOnHands.Count > 2){ // removeCardOnHands 리스트 크기가 2보다 큰 경우 0번 인덱스 카드를 제거후 새로 들어온 카드 추가
             cardOnHands.Add(removeCardOnHands[0]);
             removeCardOnHands.RemoveAt(0);
         }
@@ -241,6 +238,9 @@ public class GamePlayerDeck : NetworkBehaviour
     {
         trashDeck.Add(cardOnHand.card);
         cardOnHands.Remove(cardOnHand);
+        if(cardOnHand.isRemoveMode){
+            removeCardOnHands.Remove(cardOnHand); // 제거용으로 선택된 카드라면 제거용카드 리스트에서도 제거 
+        }
         NetworkServer.Destroy(cardOnHand.gameObject);
     }
 
@@ -289,26 +289,6 @@ public class GamePlayerDeck : NetworkBehaviour
     public void OnChangeCurrentDeckCount(int oldCount, int newCount)
     {
         Debug.Log("현재 댁 갯수 변경 :" + newCount);
-    }
-
-    public void OnChangeCardOnHandForRemove(CardOnHand oldCardOnHand, CardOnHand newCardOnHand)
-    {
-        // 이전에 선택되었던 카드 상태값 변경
-        if(oldCardOnHand != null){
-            oldCardOnHand.isDrag = false;
-            oldCardOnHand.isMouseOver = false;
-            oldCardOnHand.isMoving = false;
-            oldCardOnHand.isShifted = false;
-            oldCardOnHand.isChoosed = false;
-        }
-        // 새로 선택된 카드 상태값 변경
-        if(newCardOnHand != null){
-            newCardOnHand.isDrag = false;
-            newCardOnHand.isMouseOver = false;
-            newCardOnHand.isMoving = false;
-            newCardOnHand.isShifted = false;
-            newCardOnHand.isChoosed = true;
-        }
     }
 
     // -------------------------------------------------SyncList Callback ---------------------------------------------------//

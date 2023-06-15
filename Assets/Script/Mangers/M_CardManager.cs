@@ -270,7 +270,7 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
-    // 로컬 플레이어의 CardOnHand 오브젝트들의 sortingLayer 변경
+    // 로컬 플레이어의 CardOnHand, removeCardOnHand 오브젝트들의 sortingLayer 변경
     public void ChangeCardOnHandSortingLayerByName(string layerName)
     {
         // 로컬 플레이어의 카드 정렬 순서 변경
@@ -281,10 +281,10 @@ public class M_CardManager : NetworkBehaviour
                     cardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
                     cardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
                 }
-                if(gamePlayerDeck.cardOnHandForRemove != null){
+                foreach(CardOnHand removeCardOnHand in gamePlayerDeck.removeCardOnHands){
                     // 버릴카드 정렬 순서 변경
-                    gamePlayerDeck.cardOnHandForRemove.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
-                    gamePlayerDeck.cardOnHandForRemove.cardOnHandCanvas.sortingLayerName = layerName;
+                    removeCardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+                    removeCardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
                 }
             }
         }
@@ -295,8 +295,10 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer && gamePlayerDeck.cardOnHandForRemove != null){
-                CardOnHandThrowAwaySequence(gamePlayerDeck.cardOnHandForRemove);
+            if(gamePlayerDeck.isLocalPlayer){
+                foreach(CardOnHand removeCardOnHand in gamePlayerDeck.removeCardOnHands){
+                    CardOnHandThrowAwaySequence(removeCardOnHand);
+                }   
             }
         }
     }
