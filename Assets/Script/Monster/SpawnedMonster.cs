@@ -45,6 +45,11 @@ public class SpawnedMonster : NetworkBehaviour
 
     public void OnChangedHpValue(int oldHpValue, int newHpValue)
     {
+        if(HP <= 0)
+        {
+            if(isServer)NetworkServer.Destroy(this.gameObject);
+            return;
+        }
         if(transform.parent != null){
             transform.parent.GetComponent<TargetObject>().hpbar.value = newHpValue;
         }
@@ -80,7 +85,6 @@ public class SpawnedMonster : NetworkBehaviour
     [Server]
     public void DoAction()
     {
-        transform.parent.GetComponent<TargetObject>().isAnimating = true;
         switch(nextAction.actionType)
         {
             case ActionType.SINGLEATTACK :
@@ -105,23 +109,5 @@ public class SpawnedMonster : NetworkBehaviour
     public void DoAnimation()
     {
         transform.parent.GetComponent<TargetObject>().anim.state.SetAnimation(1,"01Attack",false);
-    }
-
-    [ClientRpc]
-    public void ResumeIdleAnimation()
-    {
-        transform.parent.GetComponent<TargetObject>().anim.state.SetAnimation(1,"00Normal",true);
-        transform.parent.GetComponent<TargetObject>().isAnimating = false;
-    }
-
-    void FixedUpdate()
-    {
-        if(isServer)
-        {
-            if(HP <= 0)
-            {
-                NetworkServer.Destroy(this.gameObject);
-            }
-        }
     }
 }
