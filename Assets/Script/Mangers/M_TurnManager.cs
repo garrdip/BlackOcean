@@ -404,10 +404,10 @@ public class M_TurnManager : NetworkBehaviour
         while(true)
         {
             //위험도 일치하는 선에서 랜덤한 몹 찾아야함
-            num = Random.Range(0,M_MonsterManager.monsterGroups.Count - 1);
+            num = Random.Range(0,M_MonsterManager.instance.monsterGroups.Count - 1);
             break;
         }
-        for(int i = 0 ; i < M_MonsterManager.monsterGroups[num].monsters.Count ; i ++)
+        for(int i = 0 ; i < M_MonsterManager.instance.monsterGroups[num].monsters.Count ; i ++)
         {
             var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "SpawnedMonster"),monsterSpawnLocation.GetChild(i).transform.position,Quaternion.identity).GetComponent<SpawnedMonster>();
             var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "SpawnedMonster"),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
@@ -415,8 +415,8 @@ public class M_TurnManager : NetworkBehaviour
             NetworkServer.Spawn(monster.gameObject);
             NetworkServer.Spawn(cloneMonster.gameObject);
 
-            monster.monsterData = M_MonsterManager.monsterGroups[num].monsters[i];
-            cloneMonster.monsterData = M_MonsterManager.monsterGroups[num].monsters[i];
+            monster.monsterData = M_MonsterManager.instance.monsterGroups[num].monsters[i];
+            cloneMonster.monsterData = M_MonsterManager.instance.monsterGroups[num].monsters[i];
 
 
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),monsterSpawnLocation.GetChild(i).transform.position,Quaternion.identity);

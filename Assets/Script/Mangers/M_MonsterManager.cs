@@ -5,10 +5,10 @@ using System;
 using UnityEngine;
 using ProjectD;
 
-public class M_MonsterManager : MonoBehaviour
+public class M_MonsterManager : SingletonD<M_MonsterManager>
 {
-    public static List<MonsterData> monsterDataList = new List<MonsterData>();
-    public static List<MonsterGroup> monsterGroups = new List<MonsterGroup>();
+    public List<MonsterData> monsterDataList = new List<MonsterData>();
+    public List<MonsterGroup> monsterGroups = new List<MonsterGroup>();
 
     void Start()
     {
@@ -25,28 +25,44 @@ public class M_MonsterManager : MonoBehaviour
         {
             while(true)
             {
-                string[] values = DB.ReadLine().Trim().Split(",");
-                if(values[0] == "Monster_Name") continue;
-                if(values[0] == "EndOfData") {
-                    monsterDataList.Add(monsterData);
+                string value = DB.ReadLine();
+                if( value == null ) break; // 마지막 라인
+                string[] values = value.Trim().Split(",");
+                
+                if(values[0] == "Monster_Name") continue; // 첫번째 라인 스킵
+                if(values[0].Length != 0)
+                {
                     monsterData = new MonsterData();
-                    break;
-                }
-                if(values[0].Length == 0){
-                    // 몬스터 이름이 없을경우 스킬 LIST만 추가
-                    monsterData.actionList.Add(new MonsterAction(values[2],GetActionType(values[3]),int.Parse(values[4]),int.Parse(values[5])));
-                }
-                else{
-                    //새로운 몬스터 이름이 출현할 경우 기존 데이터를 LIST 추가후 새로운 몬스터 객체 생성
-                    if(monsterData.name != null){
-                        monsterDataList.Add(monsterData);
-                        monsterData = new MonsterData();
-                    }
+                    monsterDataList.Add(monsterData);
+                    
                     //CSV 파일내의 데이터를 클래스 데이터로 저장
                     monsterData.name = values[0];
                     monsterData.MAXHP = int.Parse(values[1]);
-                    monsterData.actionList.Add(new MonsterAction(values[2],GetActionType(values[3]),int.Parse(values[4]),int.Parse(values[5])));
                 }
+
+                // 몬스터 이름이 없을경우 스킬 LIST만 추가
+                if(values[3] == "Buff")
+                {
+                    Buff newBuff = new Buff((BuffType)Enum.Parse<BuffType>(values[4]),int.Parse(values[5]),false,null);
+                    monsterData.buffList.Add(newBuff);
+                }
+                else
+                {
+                    MonsterActionList monsterActionList = new MonsterActionList();
+                    monsterData.behavior.Add(monsterActionList);
+                    monsterActionList.frequency = int.Parse(values[2]);
+                    for(int i = 1 ; i < values.Length/3 ; i++ )
+                    {
+                        if(values[i*3].Length == 0)break;
+                        MonsterAction monsterActions = new MonsterAction();
+                        monsterActions.actionName = values[i*3];
+                        monsterActions.actionType = (ActionType)Enum.Parse<ActionType>(values[i*3 + 1]);
+                        monsterActions.actionValue = int.Parse(values[i*3+2]);
+                        monsterActionList.ActionList.Add(monsterActions);
+                    }
+                }
+                    
+                
             }
         }
     }
@@ -58,9 +74,11 @@ public class M_MonsterManager : MonoBehaviour
         {
             while(true)
             {
-                string[] values = DB.ReadLine().Trim().Split(",");
+                string value = DB.ReadLine();
+                if( value == null ) break;
+                string[] values = value.Trim().Split(",");
+
                 if(values[0] == "Monster_Group_Name") continue;
-                if(values[0] == "EndOfData") break;
                 MonsterGroup monsterGroup = new MonsterGroup();
                 monsterGroup.groupName = values[0];
                 monsterGroup.minHazard = int.Parse(values[1]);

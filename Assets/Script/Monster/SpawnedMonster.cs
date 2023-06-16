@@ -18,10 +18,11 @@ public class SpawnedMonster : NetworkBehaviour
 
     [SyncVar]
     public int sheild;
-    public List<MonsterAction> actionList = new List<MonsterAction>();
-
+    
     [SyncVar]
     public MonsterAction nextAction;
+
+    public MonsterActionList currentBehavior;
     [SyncVar]
     public TargetObject nextTarget;
     
@@ -33,13 +34,11 @@ public class SpawnedMonster : NetworkBehaviour
         monsterName = monsterData.name;
         MAXHP = monsterData.MAXHP;
         HP = monsterData.MAXHP;
-        actionList = monsterData.actionList;
         sheild = 0;
         //SyncVar Data는 서버에서 관리
         if(isServer)
         {
             HP = monsterData.MAXHP;
-            nextAction = actionList[0];
         }
     }
 
@@ -69,17 +68,8 @@ public class SpawnedMonster : NetworkBehaviour
 
     MonsterAction GetNextAction()
     {
-        int frequencySum = 0;
-        foreach(MonsterAction action in actionList)
-            frequencySum += action.actionFrequency;
-        int freq = UnityEngine.Random.Range(0,frequencySum);
-        foreach(MonsterAction action in actionList)
-        {
-            if(action.actionFrequency > freq) return action;
-            else freq -= action.actionFrequency;
-        }
-        Debug.Log("버그 : 몬스터 다음 액션 찾기 실패");
-        return null;
+        // 다음 액션 찾는 알고리즘 추가 부분
+        return monsterData.behavior[0].ActionList[0];
     }
 
     [Server]

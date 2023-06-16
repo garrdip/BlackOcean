@@ -13,17 +13,21 @@ public class MonsterAction
 
     public int actionValue;
 
-    public int actionFrequency;
-
-    public MonsterAction(string name, ActionType type,int value, int freq)
+    public MonsterAction(string name, ActionType type,int value)
     {
         actionName = name;
         actionType = type;
         actionValue = value;
-        actionFrequency = freq;
     }
     public MonsterAction()
     {
 
     }
+}
+
+[System.Serializable]
+public class MonsterActionList
+{
+    public List<MonsterAction> ActionList = new List<MonsterAction>();
+    public int frequency;
 }

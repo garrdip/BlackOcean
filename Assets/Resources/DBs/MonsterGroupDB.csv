@@ -4,4 +4,3 @@ Three_Goblin,1,4,Monster_Goblin,Monster_Goblin,Monster_Goblin,,
 Solo_Troll,5,8,Monster_Troll,,,,
 Three_Troll,6,10,Monster_Troll,Monster_Troll,Monster_Troll,,
 Goblin_With_Troll,7,11,Monster_Goblin,Monster_Goblin,Monster_Troll,Monster_Troll,Monster_Troll
-EndOfData,,,,,,,
