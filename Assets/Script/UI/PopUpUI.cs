@@ -11,9 +11,10 @@ public class PopUpUI : SingletonD<PopUpUI>
     public GameObject DeckListPopUp; // 덱 목록 팝업
     public GameObject DeckRemovePopUp; // 덱 제거 팝업
     public GameObject CardOnHandRemovePopUp; // 패 제거 팝업
+    public GameObject BattleResultPopUp; // 전투 종료 후 카드 선택 팝업
     public GameObject LayoutCardOnHandForRemove;
-    public GameObject PrefareDeck;
-    public GameObject TrashDeck;
+    public GameObject SelectableCardLIst;
+
 
     [Header("UI에 사용되는 카드 프리팹")]
     public GameObject CardOnDeckPrefab;
@@ -106,9 +107,21 @@ public class PopUpUI : SingletonD<PopUpUI>
     {
         isOpenCardOnHandRemovePopUp = false;
         CardOnHandRemovePopUp.gameObject.SetActive(false);
-        DeckUI.instance.buttonPrefareDeck.transform.SetParent(PrefareDeck.transform);
-        DeckUI.instance.buttonTrashDeck.transform.SetParent(TrashDeck.transform);
+        DeckUI.instance.buttonPrefareDeck.transform.SetParent(DeckUI.instance.PrefareDeck.transform);
+        DeckUI.instance.buttonTrashDeck.transform.SetParent(DeckUI.instance.TrashDeck.transform);
         M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
+    }
+
+    // 전투보상 카드선택 팝업창 활성화
+    public void HandleShowBattleResultPopUp()
+    {
+        BattleResultPopUp.SetActive(true);        
+    }
+
+    // 전투보상 카드선택 팝업창 비활성화
+    public void HandleClickSkipButton()
+    {
+        BattleResultPopUp.SetActive(false);
     }
 
     // 덱 제거 팝업 호출
@@ -134,8 +147,8 @@ public class PopUpUI : SingletonD<PopUpUI>
             DeckUI.instance.buttonTrashDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
         }else{
-            DeckUI.instance.buttonPrefareDeck.transform.SetParent(PrefareDeck.transform);
-            DeckUI.instance.buttonTrashDeck.transform.SetParent(TrashDeck.transform);
+            DeckUI.instance.buttonPrefareDeck.transform.SetParent(DeckUI.instance.PrefareDeck.transform);
+            DeckUI.instance.buttonTrashDeck.transform.SetParent(DeckUI.instance.TrashDeck.transform);
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }
         DeckUI.instance.buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);

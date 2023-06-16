@@ -15,6 +15,9 @@ public class M_CardManager : NetworkBehaviour
     [Header("GamePlayerDeck 참조값 캐싱")]
     public GamePlayerDeck gamePlayerDeck;
 
+    [Header("현재 플레이어가 선택한 캐릭터의 카드 리스트")]
+    public List<Card> cards = new List<Card>();
+
     [Header("카드 모음 패널 오브젝트")]
     public GameObject cardOnHandsPanel;
 
@@ -73,6 +76,7 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GetCurrentCharacterCardData();
         }
         InitSymmetryValue();
         cardCollidableSize = new Vector3(22f, 30f, 1f);
@@ -373,5 +377,33 @@ public class M_CardManager : NetworkBehaviour
             list[k] = list[n];
             list[n] = value;
         }
+    }
+
+    // 로컬 플레이어가 선택한 캐릭터 타입의 카드들을 추출해서 리스트에 추가
+    public void GetCurrentCharacterCardData()
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayer currentPlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
+            List<CardBase> currentCharacterCards = CardData.instance.cards.FindAll((cardBase) => cardBase.character == currentPlayer.character);
+            foreach(CardBase cardBase in currentCharacterCards){
+                Card card = new Card(cardBase);
+                cards.Add(card);
+            }
+        }
+    }
+
+    // 로컬 플레이어가 선택한 캐릭터의 카드들 중 랜덤으로 n개 카드 추출
+    public List<Card> ExtractRandomCards(int count)
+    {
+        List<Card> extractedCards = new List<Card>();
+        while (extractedCards.Count < count && cards.Count > 0)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, cards.Count); // 랜덤한 인덱스 선택
+            Card extractedCard = cards[randomIndex]; // 랜덤한 카드 추출
+            if(!extractedCard.baseCard.cardCharacteristics.Exists((c) => c == CardCharacteristic.GOHENG)){ // 고행 카드 제외
+                extractedCards.Add(extractedCard); // 추출한 카드를 추출된 카드 리스트에 추가
+            }
+        }
+        return extractedCards;
     }
 }

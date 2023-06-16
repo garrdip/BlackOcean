@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Mirror;
 using DG.Tweening;
 using TMPro;
 
@@ -20,6 +21,11 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         originScale = transform.localScale;
     }
 
+    void OnDisable()
+    {
+        DOTween.Kill(transform); // 비활성화 될 때 DoTween 프로세스 킬
+    }
+
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         transform.DOScale(originScale * 1.2f, 0.3f);
@@ -32,6 +38,13 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        // TODO : 덱 제거 팝업인 경우 클릭시 제거 로직 수행
+        if(PopUpUI.instance.BattleResultPopUp.activeSelf){
+            if(NetworkClient.connection != null && NetworkClient.active){
+                GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                if(gamePlayerDeck.isLocalPlayer){
+                    gamePlayerDeck.CmdAddPrefareDeck(this.card);
+                }
+            }
+        }
     }
 }

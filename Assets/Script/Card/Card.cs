@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectD;
 
+[System.Serializable]
 public class Card
 {
     public CardBase baseCard;

@@ -14,7 +14,8 @@ public class DeckUI : SingletonD<DeckUI>
     public GameObject GameBackGround;
     public GameObject DeckListPanel;
     public GameObject CardOnHandsPanel;
-
+    public GameObject PrefareDeck;
+    public GameObject TrashDeck;
 
     [Header("UI 컴포넌트")]
     public Button buttonEndTurn;

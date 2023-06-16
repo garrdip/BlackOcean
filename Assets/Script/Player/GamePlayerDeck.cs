@@ -133,6 +133,12 @@ public class GamePlayerDeck : NetworkBehaviour
         M_CardManager.instance.ResetCardAllState(cardOnHand, false);
     }
 
+    // prefareDeck에 추가
+    [Command]
+    public void CmdAddPrefareDeck(Card card)
+    {
+        prefareDeck.Add(card);
+    }
 
     // 전투 시작시 deck -> prefareDeck 으로 Card 데이터를 깊은복사 후 랜덤 셔플 수행
     [Command]

@@ -72,7 +72,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
     void OnMouseEnter()
     {
-        if(isOwned && !isMoving && !IsDeckListPopUpActive() && !isChoosed){
+        if(isOwned && !isMoving && !IsCardControllablePopUpActive() && !isChoosed){
             isMouseOver = true;
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
@@ -85,7 +85,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 포인터 나갈 때 이벤트
     void OnMouseExit()
     {
-        if(isOwned && !isMoving && !IsDeckListPopUpActive()){
+        if(isOwned && !isMoving && !IsCardControllablePopUpActive()){
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
             cardOnHandCanvas.sortingOrder = originSortOrder;
@@ -99,7 +99,7 @@ public class CardOnHand : NetworkBehaviour
     {
         if(isOwned && currentPlayerDeck.isLocalPlayer){
             // 덱 [목록] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
-            if(!IsDeckListPopUpActive()){
+            if(!IsCardControllablePopUpActive()){
                 isDrag = true;
                 arrowSpawnedCardPosition = transform.position; // 드래그 시작전 마우스 클릭 시점에 카드의 절대 위치값 저장(이 시점의 카드 위치는 중앙 하단). 화살표 소환 시 카드를 다시 중앙 하단으로 이동시키기 위함.
             }
@@ -117,7 +117,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트를 마우스로 드래그 할 때 이벤트
     void OnMouseDrag()
     {
-        if(isOwned && isDrag && !IsDeckListPopUpActive() && !IsCardOnHandRemovePopUpActive()){
+        if(isOwned && isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
             DragCardOnHand(this);
             MovePositionArrowSpawnedCardOnHand(this);
         }
@@ -126,9 +126,9 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 왼쪽버튼 뗄 때 이벤트
     void OnMouseUp()
     {
-        if(isOwned && isDrag && !IsDeckListPopUpActive()){
+        if(isOwned && isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
             // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
-            if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2) && !IsCardOnHandRemovePopUpActive()){
+            if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
                 M_CardManager.instance.EnQueueCardTargetPair(card, null, NetworkClient.connection.identity, null);
                 M_CardManager.instance.CardOnHandThrowAwaySequence(this);
             }
@@ -166,10 +166,11 @@ public class CardOnHand : NetworkBehaviour
         }
     }
 
-    // DeckList PopUP 활성화 여부 확인 함수
-    private bool IsDeckListPopUpActive()
+    // 팝업 활성화 상태일 때 카드 제어가 가능한 팝업의 활성화 여부 확인 함수
+    private bool IsCardControllablePopUpActive()
     {
-        return PopUpUI.instance.DeckListPopUp.activeSelf;
+        // PrefareDeckPopUp, TrashDeckPopUp, BattleResultPopUp은 팝업 활성화 상태에서 카드 제어가 안되야 하므로 체크.
+        return PopUpUI.instance.DeckListPopUp.activeSelf || PopUpUI.instance.BattleResultPopUp.activeSelf;
     }
 
     // CardOnHandRemove PopUp 활성화 여부 확인 함수
