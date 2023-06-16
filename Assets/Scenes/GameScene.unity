@@ -298,8 +298,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 780574851}
-        m_TargetAssemblyTypeName: DeckUI, Assembly-CSharp
+      - m_Target: {fileID: 204350123}
+        m_TargetAssemblyTypeName: PopUpUI, Assembly-CSharp
         m_MethodName: HandleShowPrefareDeck
         m_Mode: 1
         m_Arguments:
@@ -714,6 +714,7 @@ GameObject:
   - component: {fileID: 204350122}
   - component: {fileID: 204350121}
   - component: {fileID: 204350120}
+  - component: {fileID: 204350123}
   m_Layer: 5
   m_Name: PopUpCanvas
   m_TagString: Untagged
@@ -805,6 +806,30 @@ Canvas:
   m_SortingLayerID: 1936650549
   m_SortingOrder: 1
   m_TargetDisplay: 0
+--- !u!114 &204350123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204350117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5595233def1e7c446a5290bd44575b8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DeckListPopUp: {fileID: 1581196589}
+  DeckRemovePopUp: {fileID: 305056129}
+  CardOnHandRemovePopUp: {fileID: 1022321676}
+  LayoutCardOnHandForRemove: {fileID: 252813962}
+  PrefareDeck: {fileID: 1206986712}
+  TrashDeck: {fileID: 1681072078}
+  CardOnDeckPrefab: {fileID: 6285776433173605381, guid: 5f8c496d1b06c2549a3d0dc4c225442b, type: 3}
+  deckListPopUpGrid: {fileID: 213638931}
+  deckRemovePopUpGrid: {fileID: 1501898033}
+  buttonRemoveCardOnHandOk: {fileID: 1650667653}
+  buttonReturnGame: {fileID: 1478530160}
+  deckList: []
 --- !u!1 &213638928
 GameObject:
   m_ObjectHideFlags: 0
@@ -1994,28 +2019,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c9f82b747121c54ca099fdbf6514cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GameUI: {fileID: 144497855}
   GameBackGround: {fileID: 228626580}
   DeckListPanel: {fileID: 823382814}
-  GameUI: {fileID: 144497855}
   CardOnHandsPanel: {fileID: 823382814}
-  PrefareDeck: {fileID: 1206986712}
-  TrashDeck: {fileID: 1681072078}
-  DeckListPopUp: {fileID: 1581196589}
-  DeckRemovePopUp: {fileID: 305056129}
-  CardOnHandRemovePopUp: {fileID: 1022321676}
-  LayoutCardOnHandForRemove: {fileID: 252813962}
-  CardOnDeckPrefab: {fileID: 6285776433173605381, guid: 5f8c496d1b06c2549a3d0dc4c225442b, type: 3}
   buttonEndTurn: {fileID: 1065066847}
   buttonPrefareDeck: {fileID: 22229867}
   buttonTrashDeck: {fileID: 791626060}
-  buttonReturnGame: {fileID: 1478530160}
-  deckListPopUpGrid: {fileID: 213638931}
-  deckRemovePopUpGrid: {fileID: 1501898033}
   textPrefareDeckCount: {fileID: 2120763168}
   textTrashDeckCount: {fileID: 1794285381}
-  buttonRemoveCardOnHandOk: {fileID: 1650667653}
-  buttonRemoveDeckOk: {fileID: 0}
-  deckList: []
   playerOrderList:
   - {fileID: 589778328}
   - {fileID: 424807024}
@@ -2104,8 +2116,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 780574851}
-        m_TargetAssemblyTypeName: DeckUI, Assembly-CSharp
+      - m_Target: {fileID: 204350123}
+        m_TargetAssemblyTypeName: PopUpUI, Assembly-CSharp
         m_MethodName: HandleShowTrashDeck
         m_Mode: 1
         m_Arguments:
@@ -4098,8 +4110,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 780574851}
-        m_TargetAssemblyTypeName: DeckUI, Assembly-CSharp
+      - m_Target: {fileID: 204350123}
+        m_TargetAssemblyTypeName: PopUpUI, Assembly-CSharp
         m_MethodName: HandleReturnGame
         m_Mode: 1
         m_Arguments:
@@ -4735,8 +4747,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 780574851}
-        m_TargetAssemblyTypeName: DeckUI, Assembly-CSharp
+      - m_Target: {fileID: 204350123}
+        m_TargetAssemblyTypeName: PopUpUI, Assembly-CSharp
         m_MethodName: HandleCardOnHandRemoveOk
         m_Mode: 1
         m_Arguments:
