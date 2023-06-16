@@ -169,13 +169,13 @@ public class CardOnHand : NetworkBehaviour
     // DeckList PopUP 활성화 여부 확인 함수
     private bool IsDeckListPopUpActive()
     {
-        return DeckUI.instance.DeckListPopUp.activeSelf;
+        return PopUpUI.instance.DeckListPopUp.activeSelf;
     }
 
     // CardOnHandRemove PopUp 활성화 여부 확인 함수
     private bool IsCardOnHandRemovePopUpActive()
     {
-        return DeckUI.instance.CardOnHandRemovePopUp.activeSelf;
+        return PopUpUI.instance.CardOnHandRemovePopUp.activeSelf;
     }
 
     // 카드 생성 이벤트 수신 (카드의 위치 및 부모 오브젝트 설정)

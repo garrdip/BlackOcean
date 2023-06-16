@@ -100,12 +100,11 @@ public class M_CardManager : NetworkBehaviour
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
     public void SetCardOnHandPositionSymmetry()
     {
-        int count = 0;
         cardOnHandsPanel.transform.position = new Vector3(0f, cardOnHandsPanelPositionY_Range, 0f); // 카드 모음 패널의 위치       
         if(gamePlayerDeck != null){
             List<CardOnHand> cardOnHandsIsNotChoosed = gamePlayerDeck.cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
-            count = cardOnHandsIsNotChoosed.Count;
-            if(count> 0){
+            int count = cardOnHandsIsNotChoosed.Count;
+            if(count > 0){
                 for(int i=0; i<count; i++){      
                     CardOnHand cardOnHand = cardOnHandsIsNotChoosed[i];
                     if(cardOnHand != null){
@@ -245,7 +244,7 @@ public class M_CardManager : NetworkBehaviour
         removeCardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         removeCardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
 
-        Vector3 centerPosition = DeckUI.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position;
+        Vector3 centerPosition = PopUpUI.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position;
         Vector3 left = centerPosition - new Vector3(2f, 0f, 0f);
         Vector3 right = centerPosition + new Vector3(2f, 0f, 0f);
         Vector3 targetPosition = (index == 0) ? left : right;
