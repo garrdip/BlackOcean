@@ -503,6 +503,13 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     public void EachPlayerBattleEnd()
     {
+        // 플레이어의 모든 카드 제거(버린댁으로 보내지 않고 제거만 수행)
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdDestroyAllCardOnHandWithOutTrashDeck();
+            }
+        }
         PopUpUI.instance.HandleShowBattleResultPopUp(); // 전투 결과 보상 팝업 활성화
     }
 

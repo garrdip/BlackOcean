@@ -121,6 +121,12 @@ public class PopUpUI : SingletonD<PopUpUI>
         BattleResultPopUp.SetActive(true);        
     }
 
+    // 전투보상 카드선택 팝업창 비활성화
+    public void HandleCloseBattleResultPopUp()
+    {
+        BattleResultPopUp.SetActive(false);    
+    }
+
     // 덱 제거 팝업 호출
     public void HandleOpenDeckRemovePopUp(SyncList<Card> deck)
     {

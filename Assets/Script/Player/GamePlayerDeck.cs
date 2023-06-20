@@ -276,12 +276,22 @@ public class GamePlayerDeck : NetworkBehaviour
         NetworkServer.Destroy(cardOnHand.gameObject);
     }
 
-    // 손에 든 모든 카드 제거 및 댁카운트 0으로 초기화, 리스트 초기화, 사용된 댁에 추가
+    // 플레이어의  손에 든 모든 카드 제거 및 댁카운트 0으로 초기화, 리스트 초기화, 사용된 댁에 추가
     [Command]
     public void CmdDestroyAllCardOnHand()
     {
         foreach(CardOnHand cardOnHand in cardOnHands){
             trashDeck.Add(cardOnHand.card);
+            NetworkServer.Destroy(cardOnHand.gameObject);
+        }
+        cardOnHands.Clear();
+    }
+
+    // 플레이어의 손에 든 모든 카드 제거(사용된 댁으로 보내지 않고 제거만 수행)
+    [Command]
+    public void CmdDestroyAllCardOnHandWithOutTrashDeck()
+    {
+        foreach(CardOnHand cardOnHand in cardOnHands){
             NetworkServer.Destroy(cardOnHand.gameObject);
         }
         cardOnHands.Clear();

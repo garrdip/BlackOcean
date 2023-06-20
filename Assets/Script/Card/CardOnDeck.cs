@@ -53,8 +53,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             if(NetworkClient.connection != null && NetworkClient.active){
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                 if(gamePlayerDeck.isLocalPlayer){
-                    // 전투 결과 팝업 활성화
-                    PopUpUI.instance.HandleShowBattleResultPopUp();
+                    // 전투 결과 팝업 비활성화
+                    PopUpUI.instance.HandleCloseBattleResultPopUp();
 
                     // 애니매이션용 카드 오브젝트 복사본 생성
                     GameObject cardOnDeckChoosed = CreateChoosedCardOnDeck(this.card);
