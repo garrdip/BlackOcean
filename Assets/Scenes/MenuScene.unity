@@ -9444,6 +9444,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93112c226974be244a3ef7d6aa474600, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  monsterDataList: []
+  monsterGroups: []
 --- !u!4 &1586568290
 Transform:
   m_ObjectHideFlags: 0

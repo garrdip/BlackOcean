@@ -18,6 +18,9 @@ public class M_TurnManager : NetworkBehaviour
     // 서버에서 관리하지만 유저도 쓸지 몰라서 일단 SyncList
     public readonly SyncList<GamePlayer> playerOrder = new SyncList<GamePlayer>();
 
+    // 각 클라이언트에서 참조할 현재 참가한 플레이어들의 타겟오브젝트 목록
+    public readonly SyncList<TargetObject> spawnedPlayerSyncList = new SyncList<TargetObject>();
+
     [SyncVar]
     public GamePlayer currentPlayer;
 
@@ -382,6 +385,7 @@ public class M_TurnManager : NetworkBehaviour
             avatar.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
             spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
+            spawnedPlayerSyncList.Add(avatar.GetComponent<TargetObject>());
 
             // 타겟 유효 판단을 위한 클론 데이터 //
             GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
@@ -493,7 +497,15 @@ public class M_TurnManager : NetworkBehaviour
     public void BattleEnd()
     {
         Debug.Log("전투 종료");
+        EachPlayerBattleEnd();
     }
+
+    [ClientRpc]
+    public void EachPlayerBattleEnd()
+    {
+        PopUpUI.instance.HandleShowBattleResultPopUp(); // 전투 결과 보상 팝업 활성화
+    }
+
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
     private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
     {

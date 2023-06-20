@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class BattleResultPopUp : MonoBehaviour
+public class BattleResultPopUp : SingletonD<BattleResultPopUp>
 {
     [Header("랜덤으로 추출한 카드 리스트")]
     public List<Card> extractCards = new List<Card>();

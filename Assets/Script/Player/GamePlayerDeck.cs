@@ -132,6 +132,13 @@ public class GamePlayerDeck : NetworkBehaviour
         cardOnHand.isChoosed = false;
         M_CardManager.instance.ResetCardAllState(cardOnHand, false);
     }
+    
+    // deck에 추가
+    [Command]
+    public void CmdAddDeck(Card card)
+    {
+        deck.Add(card);
+    }
 
     // prefareDeck에 추가
     [Command]

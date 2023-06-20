@@ -10,6 +10,7 @@ using Steamworks;
 public class DeckUI : SingletonD<DeckUI>
 {
     [Header("게임 오브젝트")]
+    public GameObject RootGameObject;
     public GameObject GameUI;
     public GameObject GameBackGround;
     public GameObject DeckListPanel;

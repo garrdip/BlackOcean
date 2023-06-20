@@ -19,6 +19,9 @@ public class PopUpUI : SingletonD<PopUpUI>
     [Header("UI에 사용되는 카드 프리팹")]
     public GameObject CardOnDeckPrefab;
 
+    [Header("선택한 보상카드 애니매이션에 사용되는 카드 프리팹")]
+    public GameObject CardOnDeckChoosedPrefab;
+
 
     [Header("UI 컴포넌트")]
     public GridLayoutGroup deckListPopUpGrid;
@@ -116,12 +119,6 @@ public class PopUpUI : SingletonD<PopUpUI>
     public void HandleShowBattleResultPopUp()
     {
         BattleResultPopUp.SetActive(true);        
-    }
-
-    // 전투보상 카드선택 팝업창 비활성화
-    public void HandleClickSkipButton()
-    {
-        BattleResultPopUp.SetActive(false);
     }
 
     // 덱 제거 팝업 호출
