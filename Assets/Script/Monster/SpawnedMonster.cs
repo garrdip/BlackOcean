@@ -29,7 +29,7 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedMonsterData))]
     public MonsterData monsterData;
 
-    public  void OnChangedMonsterData(MonsterData oldVal , MonsterData newVal)
+    public void OnChangedMonsterData(MonsterData oldVal , MonsterData newVal)
     {
         monsterName = monsterData.name;
         MAXHP = monsterData.MAXHP;
@@ -73,31 +73,15 @@ public class SpawnedMonster : NetworkBehaviour
     }
 
     [Server]
-    public void DoAction()
+    public virtual void DoAction()
     {
-        switch(nextAction.actionType)
-        {
-            case ActionType.SINGLEATTACK :
-                nextTarget.player.HP -= nextAction.actionValue;
-                DoAnimation();
-                break;
-            case ActionType.DEFENSE :
-                sheild += nextAction.actionValue;
-                DoAnimation();
-                break;
-            case ActionType.FULLSCALEATTACK :
-                DoAnimation();
-                foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
-                {
-                    target.player.HP -= nextAction.actionValue;
-                }
-                break;
-        }
+
     }
 
     [ClientRpc]
-    public void DoAnimation()
+    public virtual void DoAnimation()
     {
-        transform.parent.GetComponent<TargetObject>().anim.state.SetAnimation(1,"01Attack",false);
+        
     }
+
 }
