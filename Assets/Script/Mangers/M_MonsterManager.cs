@@ -78,7 +78,7 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
                 if( value == null ) break;
                 string[] values = value.Trim().Split(",");
 
-                if(values[0] == "Monster_Group_Name") continue;
+                if(values[0] == "Group_Name") continue;
                 MonsterGroup monsterGroup = new MonsterGroup();
                 monsterGroup.groupName = values[0];
                 monsterGroup.minHazard = int.Parse(values[1]);

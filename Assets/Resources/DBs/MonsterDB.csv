@@ -1,8 +1,8 @@
 Monster_Name,MAXHP,Frequency,ActionName,ActionType,ActionValue,,,
-Monster_Goblin,30,5,Monster_Action_Melee_Attack,SINGLEATTACK,10,,,
+Goblin,30,5,Monster_Action_Melee_Attack,SINGLEATTACK,10,,,
 ,,5,Monster_Action_Defense,DEFENSE,10,,,
 ,,,Buff,ICHI_ATTACK ,3,,,
-Monster_Troll,60,5,Monster_Action_Melee_Attack,SINGLEATTACK,10,,,
+Troll,60,5,Monster_Action_Melee_Attack,SINGLEATTACK,10,,,
 ,,5,Monster_Action_Defense,DEFENSE,10,,,
 ,,5,Monster_Action_AOE,FULLSCALEATTACK,5,,,
 ,,10,Monster_Action_Melee_Attack,SINGLEATTACK,15,Monster_Action_Melee_Attack,SINGLEATTACK,15

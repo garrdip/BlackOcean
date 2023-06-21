@@ -409,8 +409,9 @@ public class M_TurnManager : NetworkBehaviour
         }
         for(int i = 0 ; i < M_MonsterManager.instance.monsterGroups[num].monsters.Count ; i ++)
         {
-            var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "SpawnedMonster"),monsterSpawnLocation.GetChild(i).transform.position,Quaternion.identity).GetComponent<SpawnedMonster>();
-            var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "SpawnedMonster"),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
+            Debug.Log(M_MonsterManager.instance.monsterGroups[num].monsters[i].name);
+            var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == M_MonsterManager.instance.monsterGroups[num].monsters[i].name),monsterSpawnLocation.GetChild(i).transform.position,Quaternion.identity).GetComponent<SpawnedMonster>();
+            var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == M_MonsterManager.instance.monsterGroups[num].monsters[i].name),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
 
             NetworkServer.Spawn(monster.gameObject);
             NetworkServer.Spawn(cloneMonster.gameObject);
