@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
+using DG.Tweening;
 
 
 public class BattleResultPopUp : SingletonD<BattleResultPopUp>
@@ -14,7 +16,20 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
  
     void OnEnable()
     {
-        List<Card> randomCards = M_CardManager.instance.ExtractRandomCards(3);
+        DOTween.KillAll(); // 전투 결과 팝업 호출 시 모든 Tweening 제거(카드 수행도중 전투종료로 팝업이 호출되어, 네트워크 오브젝트가 제거되었으나 트위닝에 의해 접근을 하려는 경우를 방지하기 위함.)
+        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck(); // 현재 플레이어 손에 있던 카드들을 소멸
+        CreateResultCard(3); // 랜덤 보상 카드 3개 생성
+    }
+
+    void OnDisable()
+    {
+       RemoveResultCard();
+    }
+
+    // 랜덤 보상 카드 N개 생성
+    private void CreateResultCard(int count)
+    {
+        List<Card> randomCards = M_CardManager.instance.ExtractRandomCards(count);
         foreach(Card card in randomCards){
             extractCards.Add(card);
             GameObject cardOnDeck = Instantiate(PopUpUI.instance.CardOnDeckPrefab);
@@ -26,7 +41,8 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         }
     }
 
-    void OnDisable()
+    // 생성되었던 보상 카드들 제거
+    private void RemoveResultCard()
     {
         for(int i=extractCardObjects.Count-1; i >=0; i--){
             Destroy(extractCardObjects[i]);

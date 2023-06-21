@@ -331,6 +331,17 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
+    // 로컬 플레이어의 모든 카드 제거(버린댁으로 보내지 않고 제거만 수행)
+    public void RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck()
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdDestroyAllCardOnHandWithOutTrashDeck();
+            }
+        }    
+    }
+
     // 로컬 플레이어 소유의 카드 제어 화살표 제거
     public void RemoveAllCurrentPlayerArrow()
     {
