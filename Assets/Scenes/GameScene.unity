@@ -359,6 +359,7 @@ GameObject:
   - component: {fileID: 71096696}
   - component: {fileID: 71096698}
   - component: {fileID: 71096697}
+  - component: {fileID: 71096700}
   - component: {fileID: 71096699}
   m_Layer: 5
   m_Name: BattleResultPopUp
@@ -440,8 +441,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f324f449fa3afc48adc0e1de930e1ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 71096700}
   extractCards: []
   extractCardObjects: []
+--- !u!225 &71096700
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 71096695}
+  m_Enabled: 1
+  m_Alpha: 0.5
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &94103973
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -913,12 +927,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5595233def1e7c446a5290bd44575b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DeckListPopUp: {fileID: 1581196589}
-  DeckRemovePopUp: {fileID: 305056129}
-  CardOnHandRemovePopUp: {fileID: 1022321676}
-  BattleResultPopUp: {fileID: 71096695}
-  LayoutCardOnHandForRemove: {fileID: 252813962}
-  SelectableCardLIst: {fileID: 1983393684}
+  deckListPopUp: {fileID: 1581196589}
+  deckRemovePopUp: {fileID: 305056129}
+  cardOnHandRemovePopUp: {fileID: 1022321676}
+  battleResultPopUp: {fileID: 71096695}
+  layoutCardOnHandForRemove: {fileID: 252813962}
+  selectableCardList: {fileID: 1983393684}
   CardOnDeckPrefab: {fileID: 6285776433173605381, guid: 5f8c496d1b06c2549a3d0dc4c225442b, type: 3}
   CardOnDeckChoosedPrefab: {fileID: 1402594259885998433, guid: 2d518b834ab06ed489517582c793e3e5, type: 3}
   deckListPopUpGrid: {fileID: 213638931}
@@ -1139,6 +1153,8 @@ GameObject:
   - component: {fileID: 305056130}
   - component: {fileID: 305056132}
   - component: {fileID: 305056131}
+  - component: {fileID: 305056134}
+  - component: {fileID: 305056133}
   m_Layer: 5
   m_Name: DeckRemovePopUp
   m_TagString: Untagged
@@ -1205,6 +1221,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 305056129}
   m_CullTransparentMesh: 1
+--- !u!114 &305056133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305056129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc3fc09cdaeedb240802c9070526d47a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 305056134}
+--- !u!225 &305056134
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305056129}
+  m_Enabled: 1
+  m_Alpha: 0.5
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &305771830
 GameObject:
   m_ObjectHideFlags: 0
@@ -2713,8 +2754,10 @@ GameObject:
   - component: {fileID: 1022321677}
   - component: {fileID: 1022321679}
   - component: {fileID: 1022321678}
+  - component: {fileID: 1022321681}
+  - component: {fileID: 1022321680}
   m_Layer: 5
-  m_Name: CardOnHandRemvePopUp
+  m_Name: CardOnHandRemovePopUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2781,6 +2824,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1022321676}
   m_CullTransparentMesh: 1
+--- !u!114 &1022321680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1022321676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a76d7339d8bbab4892d49762502a1ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 1022321681}
+--- !u!225 &1022321681
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1022321676}
+  m_Enabled: 1
+  m_Alpha: 0.5
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1036906212
 GameObject:
   m_ObjectHideFlags: 0
@@ -4907,6 +4975,8 @@ GameObject:
   - component: {fileID: 1581196590}
   - component: {fileID: 1581196592}
   - component: {fileID: 1581196591}
+  - component: {fileID: 1581196594}
+  - component: {fileID: 1581196593}
   m_Layer: 5
   m_Name: DeckListPopUp
   m_TagString: Untagged
@@ -4974,6 +5044,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1581196589}
   m_CullTransparentMesh: 1
+--- !u!114 &1581196593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581196589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f546835382917354ab0aebe89a4ebe92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 1581196594}
+--- !u!225 &1581196594
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581196589}
+  m_Enabled: 1
+  m_Alpha: 0.5
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1650667651
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,12 +8,12 @@ using Mirror;
 public class PopUpUIManager : SingletonD<PopUpUIManager>
 {
     [Header("게임 오브젝트")]
-    public GameObject DeckListPopUp; // 덱 목록 팝업
-    public GameObject DeckRemovePopUp; // 덱 제거 팝업
-    public GameObject CardOnHandRemovePopUp; // 패 제거 팝업
-    public GameObject BattleResultPopUp; // 전투 종료 후 카드 선택 팝업
-    public GameObject LayoutCardOnHandForRemove;
-    public GameObject SelectableCardLIst;
+    public GameObject deckListPopUp; // 덱 목록 팝업
+    public GameObject deckRemovePopUp; // 덱 제거 팝업
+    public GameObject cardOnHandRemovePopUp; // 패 제거 팝업
+    public GameObject battleResultPopUp; // 전투 종료 후 카드 선택 팝업
+    public GameObject layoutCardOnHandForRemove; // 카드 제거 팝업의 선택된 카드가 움직일 위치의 레이아웃
+    public GameObject selectableCardList; // 전투 종료 보상 카드 목록 레이아웃 
 
 
     [Header("댁 리스트 팝업에 사용되는 카드 프리팹")]
@@ -45,10 +45,10 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isOpenPrefareDeckPopUp = !isOpenPrefareDeckPopUp; // 버튼 클릭으로도 팝업 열기 및 닫기
         originSiblingIndex = GameUIManager.instance.buttonPrefareDeck.transform.GetSiblingIndex(); // 원래의 오브젝트 스택 순서 인덱스값
-        DeckListPopUp.gameObject.SetActive(isOpenPrefareDeckPopUp);
         if(isOpenPrefareDeckPopUp){
+            deckListPopUp.gameObject.SetActive(true);
             // 팝업창 열리면 버튼 오브젝트의 부모를 팝업으로 바꾼뒤 가장 마지막 순서로 추가하여 팝업창 위에 버튼 그려지도록 변경
-            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(DeckListPopUp.transform);
+            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(deckListPopUp.transform);
             GameUIManager.instance.buttonPrefareDeck.transform.SetAsLastSibling();
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }else{
@@ -68,10 +68,10 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isOpenTrashDeckPopUp = !isOpenTrashDeckPopUp; // 버튼 클릭으로도 팝업 열기 및 닫기
         originSiblingIndex = GameUIManager.instance.buttonTrashDeck.transform.GetSiblingIndex(); // 원래의 오브젝트 스택 순서 인덱스값
-        DeckListPopUp.gameObject.SetActive(isOpenTrashDeckPopUp);
         if(isOpenTrashDeckPopUp){
+            deckListPopUp.gameObject.SetActive(true);
             // 팝업창 열리면 버튼 오브젝트의 부모를 팝업으로 바꾼뒤 가장 마지막 순서로 추가하여 팝업창 위에 버튼 그려지도록 변경
-            GameUIManager.instance.buttonTrashDeck.transform.SetParent(DeckListPopUp.transform);
+            GameUIManager.instance.buttonTrashDeck.transform.SetParent(deckListPopUp.transform);
             GameUIManager.instance.buttonTrashDeck.transform.SetAsLastSibling();
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }else{
@@ -90,14 +90,14 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public void HandleOpenCardOnHandRemovePopUp()
     {
         isOpenCardOnHandRemovePopUp = !isOpenCardOnHandRemovePopUp;
-        CardOnHandRemovePopUp.gameObject.SetActive(isOpenCardOnHandRemovePopUp);
+        cardOnHandRemovePopUp.gameObject.SetActive(isOpenCardOnHandRemovePopUp);
         if(isOpenCardOnHandRemovePopUp){
             Button buttonPrefareDeck =  GameUIManager.instance.buttonPrefareDeck;
-            buttonPrefareDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
+            buttonPrefareDeck.transform.SetParent(cardOnHandRemovePopUp.transform);
             buttonPrefareDeck.transform.SetAsLastSibling();
 
             Button buttonTrashDeck = GameUIManager.instance.buttonTrashDeck;
-            buttonTrashDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
+            buttonTrashDeck.transform.SetParent(cardOnHandRemovePopUp.transform);
             buttonTrashDeck.transform.SetAsLastSibling();
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
         }else{
@@ -109,7 +109,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public void HandleCardOnHandRemoveOk()
     {
         isOpenCardOnHandRemovePopUp = false;
-        CardOnHandRemovePopUp.gameObject.SetActive(false);
+        cardOnHandRemovePopUp.gameObject.SetActive(false);
         GameUIManager.instance.buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
         GameUIManager.instance.buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
         M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
@@ -118,19 +118,19 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 전투보상 카드선택 팝업창 활성화
     public void HandleShowBattleResultPopUp()
     {
-        BattleResultPopUp.SetActive(true);        
+        battleResultPopUp.SetActive(true);        
     }
 
     // 전투보상 카드선택 팝업창 비활성화
     public void HandleCloseBattleResultPopUp()
     {
-        BattleResultPopUp.SetActive(false);    
+        battleResultPopUp.SetActive(false);    
     }
 
     // 덱 제거 팝업 호출
     public void HandleOpenDeckRemovePopUp(SyncList<Card> deck)
     {
-        DeckRemovePopUp.SetActive(true);
+        deckRemovePopUp.SetActive(true);
         AddDeckList(deck, deckRemovePopUpGrid);
     }
 
@@ -146,8 +146,8 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         isOpenPrefareDeckPopUp = false;
         isOpenTrashDeckPopUp = false;
         if(isOpenCardOnHandRemovePopUp){
-            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
-            GameUIManager.instance.buttonTrashDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
+            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(cardOnHandRemovePopUp.transform);
+            GameUIManager.instance.buttonTrashDeck.transform.SetParent(cardOnHandRemovePopUp.transform);
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
         }else{
             GameUIManager.instance.buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
@@ -156,7 +156,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }
         GameUIManager.instance.buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);
         GameUIManager.instance.buttonTrashDeck.transform.SetSiblingIndex(originSiblingIndex);
-        DeckListPopUp.gameObject.SetActive(false);
+        deckListPopUp.gameObject.SetActive(false);
         ClearDeckList();
     }
 

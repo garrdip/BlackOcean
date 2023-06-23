@@ -49,7 +49,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // BattleResultPopUp이 활성화 된 경우의 CardOnDeck 클릭 이벤트 처리
     private void HandleClickCardOnDeckOnBattleResultPopUp()
     {
-        if(PopUpUIManager.instance.BattleResultPopUp.activeSelf){
+        if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
             if(NetworkClient.connection != null && NetworkClient.active){
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                 if(gamePlayerDeck.isLocalPlayer){

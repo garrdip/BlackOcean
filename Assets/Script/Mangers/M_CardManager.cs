@@ -248,7 +248,7 @@ public class M_CardManager : NetworkBehaviour
         removeCardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         removeCardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
 
-        Vector3 centerPosition = PopUpUIManager.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position;
+        Vector3 centerPosition = PopUpUIManager.instance.layoutCardOnHandForRemove.GetComponent<RectTransform>().position;
         Vector3 left = centerPosition - new Vector3(2f, 0f, 0f);
         Vector3 right = centerPosition + new Vector3(2f, 0f, 0f);
         Vector3 targetPosition = (index == 0) ? left : right;
