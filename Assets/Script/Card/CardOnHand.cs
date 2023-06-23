@@ -170,13 +170,13 @@ public class CardOnHand : NetworkBehaviour
     private bool IsCardControllablePopUpActive()
     {
         // PrefareDeckPopUp, TrashDeckPopUp, BattleResultPopUp은 팝업 활성화 상태에서 카드 제어가 안되야 하므로 체크.
-        return PopUpUI.instance.DeckListPopUp.activeSelf || PopUpUI.instance.BattleResultPopUp.activeSelf;
+        return PopUpUIManager.instance.DeckListPopUp.activeSelf || PopUpUIManager.instance.BattleResultPopUp.activeSelf;
     }
 
     // CardOnHandRemove PopUp 활성화 여부 확인 함수
     private bool IsCardOnHandRemovePopUpActive()
     {
-        return PopUpUI.instance.CardOnHandRemovePopUp.activeSelf;
+        return PopUpUIManager.instance.CardOnHandRemovePopUp.activeSelf;
     }
 
     // 카드 생성 이벤트 수신 (카드의 위치 및 부모 오브젝트 설정)
@@ -184,7 +184,7 @@ public class CardOnHand : NetworkBehaviour
     public void RpcSpawnedCardOnHand(CardPocket cardPocket)
     {
         if(isOwned){
-            transform.position = DeckUI.instance.buttonPrefareDeck.transform.position;
+            transform.position = GameUIManager.instance.buttonPrefareDeck.transform.position;
         }else{
             transform.position = new Vector3(-100f, 0f, 0f);
         }

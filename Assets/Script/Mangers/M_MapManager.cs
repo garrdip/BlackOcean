@@ -118,8 +118,8 @@ public class M_MapManager : NetworkBehaviour
     {
         roommaps.SetActive(false);
         game.SetActive(true);
-        DeckUI.instance.GameUI.gameObject.SetActive(true);
-        DeckUI.instance.GameBackGround.gameObject.SetActive(true);
+        GameUIManager.instance.GameUI.gameObject.SetActive(true);
+        GameUIManager.instance.GameBackGround.gameObject.SetActive(true);
         Camera.main.orthographic = true;
         Camera.main.transform.position = new Vector3(0f, 0f, -10f); // 카메라 위치 리셋
         M_CardManager.instance.SpawnPlayerOwnedCardAndArrow(); // 각 플레이어들의 카드와 화살표 생성 요청

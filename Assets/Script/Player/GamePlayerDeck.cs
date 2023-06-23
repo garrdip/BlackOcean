@@ -381,7 +381,7 @@ public class GamePlayerDeck : NetworkBehaviour
         }
         // 로컬플레이어의 PrefareDeck Count 표시
         if(isLocalPlayer){
-            DeckUI.instance.DeckCountTextScaleAnimation(DeckUI.instance.textPrefareDeckCount, prefareDeck.Count);
+            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textPrefareDeckCount, prefareDeck.Count);
         }
         // TODO : 관전하려는 플레이어의 PrefareDeck Count 표시
     }
@@ -409,7 +409,7 @@ public class GamePlayerDeck : NetworkBehaviour
         }
         // 로컬플레이어의 TrashDeck Count 표시
         if(isLocalPlayer){
-            DeckUI.instance.DeckCountTextScaleAnimation(DeckUI.instance.textTrashDeckCount, trashDeck.Count);
+            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textTrashDeckCount, trashDeck.Count);
         }
         // TODO : 관전하려는 플레이어의 TrashDeck Count 표시
     }

@@ -7,7 +7,7 @@ using DG.Tweening;
 using TMPro;
 using Steamworks;
 
-public class DeckUI : SingletonD<DeckUI>
+public class GameUIManager : SingletonD<GameUIManager>
 {
     [Header("게임 오브젝트")]
     public GameObject RootGameObject;

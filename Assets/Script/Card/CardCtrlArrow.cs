@@ -122,7 +122,7 @@ public class CardCtrlArrow : NetworkBehaviour
     public void RemoveCardCtrlArrow()
     {
         if(isOwned && arrowOwnedCardOnHand != null){
-            ChangeArrowVisible(false, DeckUI.instance.CardOnHandsPanel.transform);
+            ChangeArrowVisible(false, GameUIManager.instance.CardOnHandsPanel.transform);
             arrowOwnedCardOnHand.isDrag = false;
             arrowOwnedCardOnHand.isMoving = false;
             arrowOwnedCardOnHand.isMouseOver = false;
@@ -169,7 +169,7 @@ public class CardCtrlArrow : NetworkBehaviour
     [ClientRpc]
     public void RpcSetArrowParts(List<GameObject> nodes)
     {
-        ChangeArrowVisible(isOwned, DeckUI.instance.CardOnHandsPanel.transform);
+        ChangeArrowVisible(isOwned, GameUIManager.instance.CardOnHandsPanel.transform);
         foreach(GameObject arrowNode in nodes){
             arrowNode.transform.SetParent(transform);
             arrowNode.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
@@ -184,7 +184,7 @@ public class CardCtrlArrow : NetworkBehaviour
     public void RpcAcceptCardUse(NetworkIdentity conn)
     {
         if(conn == NetworkClient.connection.identity){
-            ChangeArrowVisible(false, DeckUI.instance.CardOnHandsPanel.transform); // 화살표 활성화 상태 변경
+            ChangeArrowVisible(false, GameUIManager.instance.CardOnHandsPanel.transform); // 화살표 활성화 상태 변경
             M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
             M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize); // 카드 충돌체 크기 변경
         }

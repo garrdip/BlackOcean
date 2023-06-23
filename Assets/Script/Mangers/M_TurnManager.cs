@@ -470,7 +470,7 @@ public class M_TurnManager : NetworkBehaviour
     public void SetPlayerOrderView(int index)
     {
         GamePlayer gamePlayer = M_TurnManager.instance.playerOrder[index];
-        OrderUI orderUI = DeckUI.instance.playerOrderList[index].GetComponent<OrderUI>();
+        OrderUI orderUI = GameUIManager.instance.playerOrderList[index].GetComponent<OrderUI>();
         orderUI.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
         if(gamePlayer.isLocalPlayer){
             orderUI.playerOwnMenu.gameObject.SetActive(true); // 전용 메뉴 활성화
@@ -504,7 +504,7 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     public void EachPlayerBattleEnd()
     {
-        PopUpUI.instance.HandleShowBattleResultPopUp(); // 전투 결과 보상 팝업 활성화
+        PopUpUIManager.instance.HandleShowBattleResultPopUp(); // 전투 결과 보상 팝업 활성화
     }
 
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//

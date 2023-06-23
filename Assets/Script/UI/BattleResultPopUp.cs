@@ -32,8 +32,8 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         List<Card> randomCards = M_CardManager.instance.ExtractRandomCards(count);
         foreach(Card card in randomCards){
             extractCards.Add(card);
-            GameObject cardOnDeck = Instantiate(PopUpUI.instance.CardOnDeckPrefab);
-            cardOnDeck.transform.SetParent(PopUpUI.instance.SelectableCardLIst.transform);
+            GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
+            cardOnDeck.transform.SetParent(PopUpUIManager.instance.SelectableCardLIst.transform);
             cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
             cardOnDeck.GetComponent<RectTransform>().sizeDelta = new Vector2(350, 500);
             cardOnDeck.GetComponent<CardOnDeck>().card = card;

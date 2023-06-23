@@ -49,12 +49,12 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // BattleResultPopUp이 활성화 된 경우의 CardOnDeck 클릭 이벤트 처리
     private void HandleClickCardOnDeckOnBattleResultPopUp()
     {
-        if(PopUpUI.instance.BattleResultPopUp.activeSelf){
+        if(PopUpUIManager.instance.BattleResultPopUp.activeSelf){
             if(NetworkClient.connection != null && NetworkClient.active){
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                 if(gamePlayerDeck.isLocalPlayer){
                     // 전투 결과 팝업 비활성화
-                    PopUpUI.instance.HandleCloseBattleResultPopUp();
+                    PopUpUIManager.instance.HandleCloseBattleResultPopUp();
 
                     // 애니매이션용 카드 오브젝트 복사본 생성
                     GameObject cardOnDeckChoosed = CreateChoosedCardOnDeck(this.card);
@@ -74,10 +74,10 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // 애니매이션용으로 사용될 선택된 보상카드의 복사 오브젝트 생성
     private GameObject CreateChoosedCardOnDeck(Card card)
     {
-        GameObject cardOnDeckChoosed = Instantiate(PopUpUI.instance.CardOnDeckChoosedPrefab);
+        GameObject cardOnDeckChoosed = Instantiate(PopUpUIManager.instance.CardOnDeckChoosedPrefab);
         cardOnDeckChoosed.GetComponent<CardOnDeck>().card = card;
         cardOnDeckChoosed.GetComponent<CardOnDeck>().isTweening = true;
-        cardOnDeckChoosed.transform.SetParent(DeckUI.instance.RootGameObject.transform);
+        cardOnDeckChoosed.transform.SetParent(GameUIManager.instance.RootGameObject.transform);
         cardOnDeckChoosed.transform.position = new Vector3(0f, 0f, 0f);
 
         return cardOnDeckChoosed;

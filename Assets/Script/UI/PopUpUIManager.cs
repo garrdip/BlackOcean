@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 
 
-public class PopUpUI : SingletonD<PopUpUI>
+public class PopUpUIManager : SingletonD<PopUpUIManager>
 {
     [Header("게임 오브젝트")]
     public GameObject DeckListPopUp; // 덱 목록 팝업
@@ -16,7 +16,7 @@ public class PopUpUI : SingletonD<PopUpUI>
     public GameObject SelectableCardLIst;
 
 
-    [Header("UI에 사용되는 카드 프리팹")]
+    [Header("댁 리스트 팝업에 사용되는 카드 프리팹")]
     public GameObject CardOnDeckPrefab;
 
     [Header("선택한 보상카드 애니매이션에 사용되는 카드 프리팹")]
@@ -44,12 +44,12 @@ public class PopUpUI : SingletonD<PopUpUI>
     public void HandleShowPrefareDeck()
     {
         isOpenPrefareDeckPopUp = !isOpenPrefareDeckPopUp; // 버튼 클릭으로도 팝업 열기 및 닫기
-        originSiblingIndex = DeckUI.instance.buttonPrefareDeck.transform.GetSiblingIndex(); // 원래의 오브젝트 스택 순서 인덱스값
+        originSiblingIndex = GameUIManager.instance.buttonPrefareDeck.transform.GetSiblingIndex(); // 원래의 오브젝트 스택 순서 인덱스값
         DeckListPopUp.gameObject.SetActive(isOpenPrefareDeckPopUp);
         if(isOpenPrefareDeckPopUp){
             // 팝업창 열리면 버튼 오브젝트의 부모를 팝업으로 바꾼뒤 가장 마지막 순서로 추가하여 팝업창 위에 버튼 그려지도록 변경
-            DeckUI.instance.buttonPrefareDeck.transform.SetParent(DeckListPopUp.transform);
-            DeckUI.instance.buttonPrefareDeck.transform.SetAsLastSibling();
+            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(DeckListPopUp.transform);
+            GameUIManager.instance.buttonPrefareDeck.transform.SetAsLastSibling();
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }else{
             HandleReturnGame();
@@ -67,12 +67,12 @@ public class PopUpUI : SingletonD<PopUpUI>
     public void HandleShowTrashDeck()
     {
         isOpenTrashDeckPopUp = !isOpenTrashDeckPopUp; // 버튼 클릭으로도 팝업 열기 및 닫기
-        originSiblingIndex = DeckUI.instance.buttonTrashDeck.transform.GetSiblingIndex(); // 원래의 오브젝트 스택 순서 인덱스값
+        originSiblingIndex = GameUIManager.instance.buttonTrashDeck.transform.GetSiblingIndex(); // 원래의 오브젝트 스택 순서 인덱스값
         DeckListPopUp.gameObject.SetActive(isOpenTrashDeckPopUp);
         if(isOpenTrashDeckPopUp){
             // 팝업창 열리면 버튼 오브젝트의 부모를 팝업으로 바꾼뒤 가장 마지막 순서로 추가하여 팝업창 위에 버튼 그려지도록 변경
-            DeckUI.instance.buttonTrashDeck.transform.SetParent(DeckListPopUp.transform);
-            DeckUI.instance.buttonTrashDeck.transform.SetAsLastSibling();
+            GameUIManager.instance.buttonTrashDeck.transform.SetParent(DeckListPopUp.transform);
+            GameUIManager.instance.buttonTrashDeck.transform.SetAsLastSibling();
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }else{
             HandleReturnGame();
@@ -92,11 +92,11 @@ public class PopUpUI : SingletonD<PopUpUI>
         isOpenCardOnHandRemovePopUp = !isOpenCardOnHandRemovePopUp;
         CardOnHandRemovePopUp.gameObject.SetActive(isOpenCardOnHandRemovePopUp);
         if(isOpenCardOnHandRemovePopUp){
-            Button buttonPrefareDeck =  DeckUI.instance.buttonPrefareDeck;
+            Button buttonPrefareDeck =  GameUIManager.instance.buttonPrefareDeck;
             buttonPrefareDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
             buttonPrefareDeck.transform.SetAsLastSibling();
 
-            Button buttonTrashDeck = DeckUI.instance.buttonTrashDeck;
+            Button buttonTrashDeck = GameUIManager.instance.buttonTrashDeck;
             buttonTrashDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
             buttonTrashDeck.transform.SetAsLastSibling();
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
@@ -110,8 +110,8 @@ public class PopUpUI : SingletonD<PopUpUI>
     {
         isOpenCardOnHandRemovePopUp = false;
         CardOnHandRemovePopUp.gameObject.SetActive(false);
-        DeckUI.instance.buttonPrefareDeck.transform.SetParent(DeckUI.instance.PrefareDeck.transform);
-        DeckUI.instance.buttonTrashDeck.transform.SetParent(DeckUI.instance.TrashDeck.transform);
+        GameUIManager.instance.buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
+        GameUIManager.instance.buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
         M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
     }
 
@@ -146,16 +146,16 @@ public class PopUpUI : SingletonD<PopUpUI>
         isOpenPrefareDeckPopUp = false;
         isOpenTrashDeckPopUp = false;
         if(isOpenCardOnHandRemovePopUp){
-            DeckUI.instance.buttonPrefareDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
-            DeckUI.instance.buttonTrashDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
+            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
+            GameUIManager.instance.buttonTrashDeck.transform.SetParent(CardOnHandRemovePopUp.transform);
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
         }else{
-            DeckUI.instance.buttonPrefareDeck.transform.SetParent(DeckUI.instance.PrefareDeck.transform);
-            DeckUI.instance.buttonTrashDeck.transform.SetParent(DeckUI.instance.TrashDeck.transform);
+            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
+            GameUIManager.instance.buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }
-        DeckUI.instance.buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);
-        DeckUI.instance.buttonTrashDeck.transform.SetSiblingIndex(originSiblingIndex);
+        GameUIManager.instance.buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);
+        GameUIManager.instance.buttonTrashDeck.transform.SetSiblingIndex(originSiblingIndex);
         DeckListPopUp.gameObject.SetActive(false);
         ClearDeckList();
     }

@@ -180,10 +180,10 @@ public class M_CardManager : NetworkBehaviour
     // CardOnHand 오브젝트 trashDeck으로 버리는 애니매이션 + 오브젝트 파괴 커맨드 호출
     public void CardOnHandThrowAwaySequence(CardOnHand cardOnHand)
     {
-        DeckUI.instance.buttonEndTurn.interactable = false;        
+        GameUIManager.instance.buttonEndTurn.interactable = false;        
         cardOnHand.isMoving = true;
         float duration = 0.3f;
-        Vector3 trashDeckPosition = DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
+        Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
 
         // Dotween 애니매이션 시퀀스 생성
         Sequence sequence = DOTween.Sequence();
@@ -209,7 +209,7 @@ public class M_CardManager : NetworkBehaviour
                 {
                     cardOnHand.isMoving = false;
                     gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
-                    DeckUI.instance.buttonEndTurn.interactable = true;
+                    GameUIManager.instance.buttonEndTurn.interactable = true;
                 }
             }
         });
@@ -218,12 +218,12 @@ public class M_CardManager : NetworkBehaviour
     // CardOnHand 모두 trashDeck으로 버리는 애니매이션(역순으로 크기, 방향, 위치 변경)
     public void CardOnHandAllThrowAwaySequence(CardOnHand cardOnHand)
     {
-        DeckUI.instance.buttonEndTurn.interactable = false;
+        GameUIManager.instance.buttonEndTurn.interactable = false;
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
-                Vector3 trashDeckPosition = DeckUI.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
+                Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
                 cardOnHand.isMoving = true;
 
                 cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.3f);
@@ -235,7 +235,7 @@ public class M_CardManager : NetworkBehaviour
                         .OnComplete(() => {
                             cardOnHand.isMoving = false;
                             gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
-                            DeckUI.instance.buttonEndTurn.interactable = true;
+                            GameUIManager.instance.buttonEndTurn.interactable = true;
                         });
             }   
         } 
@@ -248,7 +248,7 @@ public class M_CardManager : NetworkBehaviour
         removeCardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         removeCardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
 
-        Vector3 centerPosition = PopUpUI.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position;
+        Vector3 centerPosition = PopUpUIManager.instance.LayoutCardOnHandForRemove.GetComponent<RectTransform>().position;
         Vector3 left = centerPosition - new Vector3(2f, 0f, 0f);
         Vector3 right = centerPosition + new Vector3(2f, 0f, 0f);
         Vector3 targetPosition = (index == 0) ? left : right;

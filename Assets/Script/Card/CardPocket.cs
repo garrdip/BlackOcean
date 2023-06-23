@@ -11,7 +11,7 @@ public class CardPocket : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        transform.SetParent(DeckUI.instance.CardOnHandsPanel.transform);
+        transform.SetParent(GameUIManager.instance.CardOnHandsPanel.transform);
         if(isOwned){
             transform.position = new Vector3(0f, -4f, 0f); // 현재 플레이어 소유의 카드는 화면 중앙 하단위치
         }else{
