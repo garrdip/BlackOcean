@@ -3,11 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
+using ProjectD;
 
 
 public class PopUpUIManager : SingletonD<PopUpUIManager>
 {
-    [Header("게임 오브젝트")]
+    // DeckListPopUp 활성화 이벤트
+    public delegate void OnChangeDeckListPopUpShow(DeckListType type);
+    public OnChangeDeckListPopUpShow onChangeDeckListPopUpShow;
+
+    // DeckListPopUp 비활성화 이벤트
+    public delegate void OnChangeDeckListPopUpHide(DeckListType type);
+    public OnChangeDeckListPopUpHide onChangeDeckListPopUpHide;
+
+    // CardOnHandRemovePopUp 활성화 이벤트
+    public delegate void OnChangeCardOnHandRemovePopUpShow();
+    public OnChangeCardOnHandRemovePopUpShow onChangeCardOnHandRemovePopUpShow;
+
+    // CardOnHandRemovePopUp 비활성화 이벤트
+    public delegate void OnChangeCardOnHandRemovePopUpHide();
+    public OnChangeCardOnHandRemovePopUpHide onChangeCardOnHandRemovePopUpHide;
+
+    // BattleResultPopUp 활성화 이벤트
+    public delegate void OnChangeBattleResultPopUpShow();
+    public OnChangeBattleResultPopUpShow onChangeBattleResultPopUpShow;
+
+    // BattleResultPopUp 비활성화 이벤트
+    public delegate void OnChangeBattleResultPopUpHide();
+    public OnChangeBattleResultPopUpHide onChangeBattleResultPopUpHide;
+
+    // DeckRemovePopUp 활성화 이벤트
+    public delegate void OnChangeDeckRemovePopUpShow();
+    public OnChangeBattleResultPopUpShow onChangeDeckRemovePopUpShow;
+
+    // DeckRemovePopUp 비활성화 이벤트
+    public delegate void OnChangeDeckRemovePopUpHide();
+    public OnChangeDeckRemovePopUpHide onChangeDeckRemovePopUpHide;
+
+
+    [Header("팝업 UI 오브젝트")]
     public GameObject deckListPopUp; // 덱 목록 팝업
     public GameObject deckRemovePopUp; // 덱 제거 팝업
     public GameObject cardOnHandRemovePopUp; // 패 제거 팝업
@@ -23,162 +57,92 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject CardOnDeckChoosedPrefab;
 
 
-    [Header("UI 컴포넌트")]
-    public GridLayoutGroup deckListPopUpGrid;
-    public GridLayoutGroup deckRemovePopUpGrid;
-    public Button buttonRemoveCardOnHandOk;
-    public Button buttonReturnGame;
-
-    [Header("댁 리스트")]
-    public List<GameObject> deckList;
-
     [Header("팝업 제어 변수")]
-    private int originSiblingIndex = 0;
-    private bool isOpenPrefareDeckPopUp = false;
-    private bool isOpenTrashDeckPopUp = false;
-    private bool isOpenCardOnHandRemovePopUp = false;
+    public bool isOpenPrefareDeckPopUp = false;
+    public bool isOpenTrashDeckPopUp = false;
 
 
 
-    // PrefareDeck 정보 팝업
-    public void HandleShowPrefareDeck()
+    // PrefareDeck 정보 팝업 활성화, 비활성화
+    public void HandleShowPrefareDeckListPopUp()
     {
-        isOpenPrefareDeckPopUp = !isOpenPrefareDeckPopUp; // 버튼 클릭으로도 팝업 열기 및 닫기
-        originSiblingIndex = GameUIManager.instance.buttonPrefareDeck.transform.GetSiblingIndex(); // 원래의 오브젝트 스택 순서 인덱스값
+        isOpenPrefareDeckPopUp = !isOpenPrefareDeckPopUp;
         if(isOpenPrefareDeckPopUp){
             deckListPopUp.gameObject.SetActive(true);
-            // 팝업창 열리면 버튼 오브젝트의 부모를 팝업으로 바꾼뒤 가장 마지막 순서로 추가하여 팝업창 위에 버튼 그려지도록 변경
-            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(deckListPopUp.transform);
-            GameUIManager.instance.buttonPrefareDeck.transform.SetAsLastSibling();
-            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
+            if(onChangeDeckListPopUpShow != null){
+                onChangeDeckListPopUpShow.Invoke(DeckListType.PREFARE_DECK);
+            }
         }else{
-            HandleReturnGame();
+            if(onChangeDeckListPopUpHide != null){
+                onChangeDeckListPopUpHide.Invoke(DeckListType.PREFARE_DECK);
+            }
         }
-
-        // 로컬 플레이어의 PrefareDeck 조회
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            AddDeckList(gamePlayerDeck.prefareDeck, deckListPopUpGrid);
-        }
-        // TODO : 관전하려는 플레이어의 PrefareDeck 조회
     }
 
-    // TrashDeck 정보 팝업
-    public void HandleShowTrashDeck()
+    // TrashDeck 정보 팝업 활성화, 비활성화
+    public void HandleShowTrashDeckListPopUp()
     {
-        isOpenTrashDeckPopUp = !isOpenTrashDeckPopUp; // 버튼 클릭으로도 팝업 열기 및 닫기
-        originSiblingIndex = GameUIManager.instance.buttonTrashDeck.transform.GetSiblingIndex(); // 원래의 오브젝트 스택 순서 인덱스값
+        isOpenTrashDeckPopUp = !isOpenTrashDeckPopUp;
         if(isOpenTrashDeckPopUp){
             deckListPopUp.gameObject.SetActive(true);
-            // 팝업창 열리면 버튼 오브젝트의 부모를 팝업으로 바꾼뒤 가장 마지막 순서로 추가하여 팝업창 위에 버튼 그려지도록 변경
-            GameUIManager.instance.buttonTrashDeck.transform.SetParent(deckListPopUp.transform);
-            GameUIManager.instance.buttonTrashDeck.transform.SetAsLastSibling();
-            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
+            if(onChangeDeckListPopUpShow != null){
+                onChangeDeckListPopUpShow.Invoke(DeckListType.TRASH_DECK);
+            }
         }else{
-            HandleReturnGame();
-        }
-
-        // 로컬 플레이어의 Trash Deck 조회
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            AddDeckList(gamePlayerDeck.trashDeck, deckListPopUpGrid);
-        }
-        // TODO : 관전하려는 플레이어의 TrashDeck 조회
-    }
-
-    // CardOnHand 제거 팝업 호출
-    public void HandleOpenCardOnHandRemovePopUp()
-    {
-        isOpenCardOnHandRemovePopUp = !isOpenCardOnHandRemovePopUp;
-        cardOnHandRemovePopUp.gameObject.SetActive(isOpenCardOnHandRemovePopUp);
-        if(isOpenCardOnHandRemovePopUp){
-            Button buttonPrefareDeck =  GameUIManager.instance.buttonPrefareDeck;
-            buttonPrefareDeck.transform.SetParent(cardOnHandRemovePopUp.transform);
-            buttonPrefareDeck.transform.SetAsLastSibling();
-
-            Button buttonTrashDeck = GameUIManager.instance.buttonTrashDeck;
-            buttonTrashDeck.transform.SetParent(cardOnHandRemovePopUp.transform);
-            buttonTrashDeck.transform.SetAsLastSibling();
-            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
-        }else{
-            HandleCardOnHandRemoveOk();
+            if(onChangeDeckListPopUpHide != null){
+                onChangeDeckListPopUpHide.Invoke(DeckListType.TRASH_DECK);
+            }
         }
     }
 
-    // CardOnHand 제거 팝업 확인 버튼 클릭
-    public void HandleCardOnHandRemoveOk()
+    // CardOnHand 제거 팝업 활성화
+    public void HandleShowCardOnHandRemovePopUp()
     {
-        isOpenCardOnHandRemovePopUp = false;
-        cardOnHandRemovePopUp.gameObject.SetActive(false);
-        GameUIManager.instance.buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
-        GameUIManager.instance.buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
-        M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
+        cardOnHandRemovePopUp.gameObject.SetActive(true);
+        if(onChangeCardOnHandRemovePopUpShow != null){
+            onChangeCardOnHandRemovePopUpShow.Invoke();
+        }
+    }
+
+    // CardOnHand 제거 팝업 비활성화
+    public void HandleHideCardOnHandRemovePopUp()
+    {
+        if(onChangeCardOnHandRemovePopUpHide != null){
+            onChangeCardOnHandRemovePopUpHide.Invoke();
+        }
     }
 
     // 전투보상 카드선택 팝업창 활성화
     public void HandleShowBattleResultPopUp()
     {
-        battleResultPopUp.SetActive(true);        
+        battleResultPopUp.SetActive(true);
+        if(onChangeBattleResultPopUpShow != null){
+            onChangeBattleResultPopUpShow.Invoke();
+        }
     }
 
     // 전투보상 카드선택 팝업창 비활성화
-    public void HandleCloseBattleResultPopUp()
+    public void HandleHideBattleResultPopUp()
     {
-        battleResultPopUp.SetActive(false);    
+        if(onChangeBattleResultPopUpHide != null){
+            onChangeBattleResultPopUpHide.Invoke();
+        } 
     }
 
-    // 덱 제거 팝업 호출
-    public void HandleOpenDeckRemovePopUp(SyncList<Card> deck)
+    // 덱 제거 팝업창 활성화
+    public void HandleShowDeckRemovePopUp(SyncList<Card> deck)
     {
         deckRemovePopUp.SetActive(true);
-        AddDeckList(deck, deckRemovePopUpGrid);
-    }
-
-    // 덱 제거 팝업 확인 버튼
-    public void HandleDeckRemoveOk()
-    {
-        // TODO : 선택된 카드를 덱 목록에서 제거
-    }
-
-    // 팝업 닫고 게임으로 돌아가기
-    public void HandleReturnGame()
-    {
-        isOpenPrefareDeckPopUp = false;
-        isOpenTrashDeckPopUp = false;
-        if(isOpenCardOnHandRemovePopUp){
-            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(cardOnHandRemovePopUp.transform);
-            GameUIManager.instance.buttonTrashDeck.transform.SetParent(cardOnHandRemovePopUp.transform);
-            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
-        }else{
-            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
-            GameUIManager.instance.buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
-            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
-        }
-        GameUIManager.instance.buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);
-        GameUIManager.instance.buttonTrashDeck.transform.SetSiblingIndex(originSiblingIndex);
-        deckListPopUp.gameObject.SetActive(false);
-        ClearDeckList();
-    }
-
-    // Deck정보 리스트 요소 추가
-    private void AddDeckList(SyncList<Card> cards, GridLayoutGroup gridLayoutGroup)
-    {
-        ClearDeckList();
-        foreach(Card card in cards){
-            GameObject cardOnDeck = Instantiate(CardOnDeckPrefab);
-            cardOnDeck.transform.SetParent(gridLayoutGroup.transform);
-            cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
-            cardOnDeck.GetComponent<CardOnDeck>().card = card;
-            deckList.Add(cardOnDeck);
+        if(onChangeDeckRemovePopUpShow != null){
+            onChangeDeckRemovePopUpShow.Invoke();
         }
     }
 
-    // Deck정보 리스트 요소 제거
-    private void ClearDeckList()
+     // 덱 제거 팝업창 비활성화
+    public void HandleHideDeckRemovePopUp(SyncList<Card> deck)
     {
-        for(int i=deckList.Count-1; i >=0; i--){
-            Destroy(deckList[i]);
-            deckList.RemoveAt(i);
+        if(onChangeDeckRemovePopUpHide != null){
+            onChangeDeckRemovePopUpHide.Invoke();
         }
     }
 }

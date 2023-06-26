@@ -16,18 +16,10 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     public List<GameObject> extractCardObjects = new List<GameObject>();
 
  
-    void OnEnable()
+    protected override void Awake()
     {
-        DOTween.KillAll(); // 전투 결과 팝업 호출 시 모든 Tweening 제거(카드 수행도중 전투종료로 팝업이 호출되어, 네트워크 오브젝트가 제거되었으나 트위닝에 의해 접근을 하려는 경우를 방지하기 위함.)
-        canvasGroup.DOFade(1.0f, 1.0f);
-        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck(); // 현재 플레이어 손에 있던 카드들을 소멸
-        CreateResultCard(3); // 랜덤 보상 카드 3개 생성
-    }
-
-    void OnDisable()
-    {
-        canvasGroup.DOFade(0.0f, 1.0f);
-        RemoveResultCard();
+        PopUpUIManager.instance.onChangeBattleResultPopUpShow += OnChangeBattleResultPopUpShow;
+        PopUpUIManager.instance.onChangeBattleResultPopUpHide += OnChangeBattleResultPopUpHide;
     }
 
     void OnDestroy()
@@ -59,4 +51,30 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         extractCards.Clear();
         extractCardObjects.Clear();
     }
+
+    // 넘기기 버튼 클릭
+    public void HandleClickButtonSkip()
+    {
+        gameObject.SetActive(false);
+    }
+
+    // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //
+
+    // BattleResultPopUp 활성화 콜백
+    public void OnChangeBattleResultPopUpShow()
+    {
+        DOTween.KillAll(); // 전투 결과 팝업 호출 시 모든 Tweening 제거(카드 수행도중 전투종료로 팝업이 호출되어, 네트워크 오브젝트가 제거되었으나 트위닝에 의해 접근을 하려는 경우를 방지하기 위함.)
+        canvasGroup.DOFade(1.0f, 0.5f);
+        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck(); // 현재 플레이어 손에 있던 카드들을 소멸
+        CreateResultCard(3); // 랜덤 보상 카드 3개 생성
+    }
+    
+    // BattleResultPopUp 비활성화 콜백
+    public void OnChangeBattleResultPopUpHide()
+    {
+        RemoveResultCard();
+        canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
+            gameObject.SetActive(false);
+        });
+    } 
 }

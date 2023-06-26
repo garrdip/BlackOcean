@@ -299,8 +299,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 204350123}
-        m_TargetAssemblyTypeName: PopUpUI, Assembly-CSharp
-        m_MethodName: HandleShowPrefareDeck
+        m_TargetAssemblyTypeName: PopUpUIManager, Assembly-CSharp
+        m_MethodName: HandleShowPrefareDeckListPopUp
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -935,11 +935,8 @@ MonoBehaviour:
   selectableCardList: {fileID: 1983393684}
   CardOnDeckPrefab: {fileID: 6285776433173605381, guid: 5f8c496d1b06c2549a3d0dc4c225442b, type: 3}
   CardOnDeckChoosedPrefab: {fileID: 1402594259885998433, guid: 2d518b834ab06ed489517582c793e3e5, type: 3}
-  deckListPopUpGrid: {fileID: 213638931}
-  deckRemovePopUpGrid: {fileID: 1501898033}
-  buttonRemoveCardOnHandOk: {fileID: 1650667653}
-  buttonReturnGame: {fileID: 1478530160}
-  deckList: []
+  isOpenPrefareDeckPopUp: 0
+  isOpenTrashDeckPopUp: 0
 --- !u!1 &213638928
 GameObject:
   m_ObjectHideFlags: 0
@@ -2469,8 +2466,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 204350123}
-        m_TargetAssemblyTypeName: PopUpUI, Assembly-CSharp
-        m_MethodName: HandleShowTrashDeck
+        m_TargetAssemblyTypeName: PopUpUIManager, Assembly-CSharp
+        m_MethodName: HandleShowTrashDeckListPopUp
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4489,8 +4486,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 204350123}
-        m_TargetAssemblyTypeName: PopUpUI, Assembly-CSharp
+      - m_Target: {fileID: 1581196593}
+        m_TargetAssemblyTypeName: DeckListPopUp, Assembly-CSharp
         m_MethodName: HandleReturnGame
         m_Mode: 1
         m_Arguments:
@@ -5056,7 +5053,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f546835382917354ab0aebe89a4ebe92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deckList: []
   canvasGroup: {fileID: 1581196594}
+  deckListPopUpGrid: {fileID: 213638931}
 --- !u!225 &1581196594
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -5153,8 +5152,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 204350123}
-        m_TargetAssemblyTypeName: PopUpUI, Assembly-CSharp
+      - m_Target: {fileID: 1022321680}
+        m_TargetAssemblyTypeName: CardOnHandRemovePopUp, Assembly-CSharp
         m_MethodName: HandleCardOnHandRemoveOk
         m_Mode: 1
         m_Arguments:
@@ -5510,9 +5509,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 204350123}
-        m_TargetAssemblyTypeName: PopUpUI, Assembly-CSharp
-        m_MethodName: HandleClickSkipButton
+      - m_Target: {fileID: 71096699}
+        m_TargetAssemblyTypeName: BattleResultPopUp, Assembly-CSharp
+        m_MethodName: HandleClickButtonSkip
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

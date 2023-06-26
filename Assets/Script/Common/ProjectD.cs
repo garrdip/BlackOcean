@@ -13,6 +13,7 @@ namespace ProjectD
     public enum CardType { BLESS, ATTACK, STRATEGY, CURSE, WOUND }
     public enum CardCharacteristic { GOOWON, YOUNGWON, GEUNWON, CHALNA, HEBANG, JOONGREUK, SOOKREON, BOONGGUI, SOIRAK, FORWARD, BACKWARD ,GOHENG, GISADO, EUNHASOO }
     public enum BuffType { NONE, DEFENSE, ICHI_ATTACK, ICHI_DEFENSE , MOMISPOWERFUL, FLOWERPOWDER, FLOWER, CARDCOSTONE, SOIRAK, APDO, THEREISNOJABI, BOONGGUI, BYEOLMURI}
+    public enum DeckListType { PREFARE_DECK, TRASH_DECK }
 
     public static class StringUtils{
         public static string RemoveZWSP(string input)
