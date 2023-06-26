@@ -8,35 +8,30 @@ using ProjectD;
 
 public class PopUpUIManager : SingletonD<PopUpUIManager>
 {
-    // DeckListPopUp 활성화 이벤트
+    // DeckListPopUp Delegate
     public delegate void OnChangeDeckListPopUpShow(DeckListType type);
     public OnChangeDeckListPopUpShow onChangeDeckListPopUpShow;
-
-    // DeckListPopUp 비활성화 이벤트
     public delegate void OnChangeDeckListPopUpHide(DeckListType type);
     public OnChangeDeckListPopUpHide onChangeDeckListPopUpHide;
 
-    // CardOnHandRemovePopUp 활성화 이벤트
+    
+    // CardOnHandRemovePopUp Delegate
     public delegate void OnChangeCardOnHandRemovePopUpShow();
     public OnChangeCardOnHandRemovePopUpShow onChangeCardOnHandRemovePopUpShow;
-
-    // CardOnHandRemovePopUp 비활성화 이벤트
     public delegate void OnChangeCardOnHandRemovePopUpHide();
     public OnChangeCardOnHandRemovePopUpHide onChangeCardOnHandRemovePopUpHide;
 
-    // BattleResultPopUp 활성화 이벤트
+    
+    // BattleResultPopUp Delegate
     public delegate void OnChangeBattleResultPopUpShow();
     public OnChangeBattleResultPopUpShow onChangeBattleResultPopUpShow;
-
-    // BattleResultPopUp 비활성화 이벤트
     public delegate void OnChangeBattleResultPopUpHide();
     public OnChangeBattleResultPopUpHide onChangeBattleResultPopUpHide;
 
-    // DeckRemovePopUp 활성화 이벤트
+    
+    // DeckRemovePopUp Delegate
     public delegate void OnChangeDeckRemovePopUpShow();
     public OnChangeBattleResultPopUpShow onChangeDeckRemovePopUpShow;
-
-    // DeckRemovePopUp 비활성화 이벤트
     public delegate void OnChangeDeckRemovePopUpHide();
     public OnChangeDeckRemovePopUpHide onChangeDeckRemovePopUpHide;
 
