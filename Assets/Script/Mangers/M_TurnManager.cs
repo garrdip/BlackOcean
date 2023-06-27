@@ -171,10 +171,18 @@ public class M_TurnManager : NetworkBehaviour
     public void HandleStartBattle()
     {
         M_MapManager.instance.StartBattle();
-        GeneratePlayerUnit();
-        GenerateMonster();
-        phase = BattleTurn.BATTLE_STANDBY;
-        StartCoroutine(ProcessCardQueue());
+    }
+
+    [Server]
+    public void GenerateBattleObject()
+    {
+        if(isServer)
+        {
+            GeneratePlayerUnit();
+            GenerateMonster();
+            phase = BattleTurn.BATTLE_STANDBY;
+            StartCoroutine(ProcessCardQueue());
+        }
     }
  
     public IEnumerator ProcessCardQueue()

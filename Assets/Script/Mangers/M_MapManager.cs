@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 using AYellowpaper.SerializedCollections;
 
@@ -33,6 +34,9 @@ public class M_MapManager : NetworkBehaviour
 
     [Header("Map Player List")]
     public List<GameObject> mapPlayerPieces;
+
+    [Header("Scene Change Black Curtain")]
+    public GameObject blackCurtain;
 
     [Header("Map Player Select MapRoom")]
     [SerializedDictionary("NetworkIdentity", "MapRoom")]
@@ -116,6 +120,20 @@ public class M_MapManager : NetworkBehaviour
     [ClientRpc]
     public void StartBattle()
     {
+        StartCoroutine(ChangeBattle());
+    }
+
+    IEnumerator ChangeBattle()
+    {
+        float transparency = 0f;
+        blackCurtain.transform.GetChild(0).GetComponent<Image>().color = new Color(0,0,0,0);
+        blackCurtain.SetActive(true);
+        while(transparency < 1f)
+        {
+            transparency += 0.02f;
+            blackCurtain.transform.GetChild(0).GetComponent<Image>().color = new Color(0,0,0,transparency);
+            yield return new WaitForSeconds(0.01f);
+        }
         roommaps.SetActive(false);
         game.SetActive(true);
         GameUIManager.instance.GameUI.gameObject.SetActive(true);
@@ -123,6 +141,14 @@ public class M_MapManager : NetworkBehaviour
         Camera.main.orthographic = true;
         Camera.main.transform.position = new Vector3(0f, 0f, -10f); // 카메라 위치 리셋
         M_CardManager.instance.SpawnPlayerOwnedCardAndArrow(); // 각 플레이어들의 카드와 화살표 생성 요청
+        M_TurnManager.instance.GenerateBattleObject();
+        while(transparency > 0f)
+        {
+            transparency -= 0.02f;
+            blackCurtain.transform.GetChild(0).GetComponent<Image>().color = new Color(0,0,0,transparency);
+            yield return new WaitForSeconds(0.01f);
+        }
+        blackCurtain.SetActive(false);
     }
 
     // East/West/South/North 방이 있는지 검색하고 없으면 생성 - for문이 쥰내 들어감 괜찮은지
