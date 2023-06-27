@@ -183,7 +183,7 @@ public class TargetObject : NetworkBehaviour
                         M_TurnManager.instance.spawnedMonsterList.Remove(this);
                         
                     NetworkServer.Destroy(this.gameObject);
-                    M_TurnManager.instance.OnChangedMonsterList();
+                    if(!isCloneData)M_TurnManager.instance.OnChangedMonsterList(); 
                 }
             }
         }
