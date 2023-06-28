@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
 using DG.Tweening;
@@ -100,7 +101,19 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             .OnComplete(() => {
                 cardOnDeckChoosed.GetComponent<CardOnDeck>().isTweening = false;
                 gamePlayerDeck.CmdAddDeck(cardOnDeckChoosed.card);
+                gamePlayerDeck.CmdClearPrefareDeckAndTrashDeck();
                 Destroy(cardOnDeckChoosed.gameObject);
+
+                GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+                    M_MapManager.instance.roommaps.SetActive(true);
+                    M_MapManager.instance.game.SetActive(false);
+                    GameUIManager.instance.GameUI.gameObject.SetActive(false);
+                    GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
+                    Camera.main.orthographic = false;
+                    Camera.main.transform.position = new Vector3(0f, 0f, -8f);
+                    blackCurtain.gameObject.SetActive(false);
+                    blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
+                });
             });
     }
 }

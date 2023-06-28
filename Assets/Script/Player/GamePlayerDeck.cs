@@ -147,6 +147,14 @@ public class GamePlayerDeck : NetworkBehaviour
         prefareDeck.Add(card);
     }
 
+    // prefareDeck과 TrashDeck의 모든 데이터 제거
+    [Command]
+    public void CmdClearPrefareDeckAndTrashDeck()
+    {
+        prefareDeck.Clear();
+        trashDeck.Clear();
+    }
+
     // 전투 시작시 deck -> prefareDeck 으로 Card 데이터를 깊은복사 후 랜덤 셔플 수행
     [Command]
     public void CmdAddPrefareDeckWithShuffle()

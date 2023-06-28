@@ -26,6 +26,9 @@ public class GameUIManager : SingletonD<GameUIManager>
     public Text textTrashDeckCount;
 
 
+    [Header("화면 Dim 처리용 이미지")]
+    public Image blackCurtain;
+
     [Header("플레이어 리스트(플레이어 정보 및 턴 정보)")]
     public List<GameObject> playerOrderList;
 
@@ -49,5 +52,14 @@ public class GameUIManager : SingletonD<GameUIManager>
         {
             textComponent.transform.DOScale(originScale, 0.1f).SetEase(Ease.InQuad);
         });
+    }
+
+    // 화면 전체 Dim 효과용 이미지 컴포넌트 Fade 애니매이션
+    public void FadeBlackCurtain(System.Action<Image> callback)
+    {
+        blackCurtain.gameObject.SetActive(true);
+        blackCurtain.DOFade(1.0f, 0.5f).OnComplete(() => {
+            callback(blackCurtain);
+        }); 
     }
 }
