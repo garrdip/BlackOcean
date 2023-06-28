@@ -105,12 +105,13 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 Destroy(cardOnDeckChoosed.gameObject);
                 M_TurnManager.instance.ClearTargetObject();
                 GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+                    Vector2 currLoc = M_MapManager.instance.currentLocation;
                     M_MapManager.instance.roommaps.SetActive(true);
                     M_MapManager.instance.game.SetActive(false);
                     GameUIManager.instance.GameUI.gameObject.SetActive(false);
                     GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
                     Camera.main.orthographic = false;
-                    Camera.main.transform.position = new Vector3(0f, 0f, -8f);
+                    Camera.main.transform.position = new Vector3(currLoc.x*1.2f, currLoc.y*1.2f, -8f);
                     blackCurtain.gameObject.SetActive(false);
                     blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
                 });
