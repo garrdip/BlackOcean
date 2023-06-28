@@ -515,6 +515,24 @@ public class M_TurnManager : NetworkBehaviour
         PopUpUIManager.instance.HandleShowBattleResultPopUp(); // 전투 결과 보상 팝업 활성화
     }
 
+    [Server]
+    public void ClearTargetObject()
+    {
+        ClearTargetObjectList(spawnedMonsterList);
+        ClearTargetObjectList(cloneMonsterList);
+        ClearTargetObjectList(spawnedPlayerList);
+        ClearTargetObjectList(clonePlayerList);
+    }
+
+    [Server]
+    private void ClearTargetObjectList(List<TargetObject> targetList)
+    {
+        foreach(TargetObject tar in targetList)
+        {
+            NetworkServer.Destroy(tar.gameObject);
+        }
+    }
+
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
     private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
     {
