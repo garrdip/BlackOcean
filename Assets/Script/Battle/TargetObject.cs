@@ -156,9 +156,6 @@ public class TargetObject : NetworkBehaviour
                         avatar = Instantiate(monsters.Find(prefab => prefab.name == "Troll"),transform.position,Quaternion.identity,transform);
                     break;
                 }
-                textTargetName.text = monster.monsterData.name;
-                hpbar.maxValue = monster.MAXHP;;
-                hpbar.value = monster.HP;
                 break;
             }
             yield return loopSecond;

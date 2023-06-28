@@ -7,6 +7,8 @@ using ProjectD;
 using Steamworks;
 using Spine.Unity;
 using Spine;
+using UnityEngine.UI;
+using TMPro;
 
 public class M_TurnManager : NetworkBehaviour
 {
@@ -463,10 +465,16 @@ public class M_TurnManager : NetworkBehaviour
         }
     }
 
+    // 몬스터 오브젝트 생성되면 몬스터 이름, HP등 뷰 요소의 값을 몬스터 데이터값에 따라 세팅
     [ClientRpc]
     public void RpcMonsterInit(TargetObject avatar, SpawnedMonster monster)
     {
         monster.transform.SetParent(avatar.transform);
+        Slider hpbar = avatar.transform.GetChild(0).GetChild(3).GetComponent<Slider>();
+        TextMeshProUGUI textMonsterName = avatar.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();
+        textMonsterName.text = monster.monsterName;
+        hpbar.maxValue = monster.MAXHP;;
+        hpbar.value = monster.HP;
     }
 
     [Server]
