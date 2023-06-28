@@ -14,8 +14,7 @@ public class CardData : InstanceD<CardData>
     public List<(string,ExecuteCard)> CardMethods = new List<(string, ExecuteCard)>();
     public bool isCardOperating = false;
     public int count = 0;
-
-    WaitForSeconds tempWait = new WaitForSeconds(1f);
+    WaitForSeconds tempWait = new WaitForSeconds(3f);
 
     public void Start()
     {

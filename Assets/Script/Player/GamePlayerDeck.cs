@@ -41,6 +41,7 @@ public class GamePlayerDeck : NetworkBehaviour
     public override void OnStartServer()
     {
         SetInitialValue();
+        StartCoroutine(EnQueueCardTargetPair());
     }
 
     public override void OnStartClient()
@@ -305,6 +306,7 @@ public class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Clear();
     }
 
+    private Queue<(Card,TargetObject,NetworkIdentity,CardCtrlArrow)> serverCardPredictQueue = new Queue<(Card, TargetObject, NetworkIdentity, CardCtrlArrow)>();
     // 카드데이터와 카드의 액션수행 대상을 Dictionary로 key, value 쌍으로 묶어 저장
     [Command]
     public void CmdEnQueueCardTargetPair(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
@@ -316,23 +318,40 @@ public class GamePlayerDeck : NetworkBehaviour
             1 : Target Monster
             이후 : 모든 플레이어 및 몬스터
             */
-        if(card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
-            return;
-        List<TargetObject> tar = new List<TargetObject>();
-        tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
-        if(card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
-        tar.AddRange(M_TurnManager.instance.GetClonePlayerObjects());
-        tar.AddRange(M_TurnManager.instance.GetCloneMonsterObjects());
-        if(card.baseCard.isTargetable)cardCtrlArrow.RpcAcceptCardUse(conn); // TargetAble이 유효한 타겟이었을 경우 화살표 제거
-        M_TurnManager.instance.ProcessCardPredict(card,tar);
+        serverCardPredictQueue.Enqueue((card,targetObject,conn,cardCtrlArrow));
+    }
 
-        List<TargetObject> targetObjects = new List<TargetObject>();
-        targetObjects.Add(M_TurnManager.instance.GetPlayer(conn)); // Index 0 
-        if(card.baseCard.isTargetable)targetObjects.Add(targetObject);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
-        targetObjects.AddRange(M_TurnManager.instance.GetPlayerObjects());
-        targetObjects.AddRange(M_TurnManager.instance.GetMonsterObjects());
+    [Server]
+    IEnumerator EnQueueCardTargetPair()
+    {
+        WaitForSeconds loopTime = new WaitForSeconds(0.01f);
+        Card card;
+        TargetObject targetObject;
+        NetworkIdentity conn;
+        CardCtrlArrow cardCtrlArrow;
+        while(true)
+        {
+            yield return loopTime;
+            if(serverCardPredictQueue.Count == 0) continue;
+            (card,targetObject,conn,cardCtrlArrow) = serverCardPredictQueue.Dequeue();
+            if(card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
+                continue;
+            List<TargetObject> tar = new List<TargetObject>();
+            tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
+            if(card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
+            tar.AddRange(M_TurnManager.instance.GetClonePlayerObjects());
+            tar.AddRange(M_TurnManager.instance.GetCloneMonsterObjects());
+            if(card.baseCard.isTargetable)cardCtrlArrow.RpcAcceptCardUse(conn); // TargetAble이 유효한 타겟이었을 경우 화살표 제거
+            M_TurnManager.instance.ProcessCardPredict(card,tar);
 
-        M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, targetObjects));
+            List<TargetObject> targetObjects = new List<TargetObject>();
+            targetObjects.Add(M_TurnManager.instance.GetPlayer(conn)); // Index 0 
+            if(card.baseCard.isTargetable)targetObjects.Add(targetObject);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
+            targetObjects.AddRange(M_TurnManager.instance.GetPlayerObjects());
+            targetObjects.AddRange(M_TurnManager.instance.GetMonsterObjects());
+
+            M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, targetObjects));
+        }
     }
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//

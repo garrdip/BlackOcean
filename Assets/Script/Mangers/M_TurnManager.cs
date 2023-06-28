@@ -191,8 +191,8 @@ public class M_TurnManager : NetworkBehaviour
         WaitForSeconds waitForLoop = new WaitForSeconds(0.01f);
         while (true)
         {
-            while(CardData.instance.isCardOperating)
-                yield return waitForLoop;
+            yield return waitForLoop;
+            if(CardData.instance.isCardOperating)continue;
             if(cardTargetPairQueue.Count != 0){
                 CardData.instance.count = 100;
                 CardData.instance.isCardOperating = true;
@@ -201,7 +201,7 @@ public class M_TurnManager : NetworkBehaviour
                
                 CardData.instance.RunCard(card,tar);
             }
-            yield return waitForLoop;
+
         }
     }
 
