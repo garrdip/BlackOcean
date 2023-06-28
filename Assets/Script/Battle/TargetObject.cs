@@ -138,9 +138,6 @@ public class TargetObject : NetworkBehaviour
     public void InitTargetObjectEmemy(SpawnedMonster oldVal, SpawnedMonster newVal)
     {
         StartCoroutine(nameof(EmemyTargetObjectGenerator));
-        textTargetName.text = newVal.monsterData.name;
-        hpbar.maxValue = newVal.MAXHP;;
-        hpbar.value = newVal.HP;
     }
 
     IEnumerator EmemyTargetObjectGenerator()
@@ -159,6 +156,9 @@ public class TargetObject : NetworkBehaviour
                         avatar = Instantiate(monsters.Find(prefab => prefab.name == "Troll"),transform.position,Quaternion.identity,transform);
                     break;
                 }
+                textTargetName.text = monster.monsterData.name;
+                hpbar.maxValue = monster.MAXHP;;
+                hpbar.value = monster.HP;
                 break;
             }
             yield return loopSecond;

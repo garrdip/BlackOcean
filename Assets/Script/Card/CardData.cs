@@ -25,7 +25,7 @@ public class CardData : SingletonD<CardData>
     {
         Debug.Log("False로 바뀜");
     }
-    WaitForSeconds tempWait = new WaitForSeconds(3f);
+    WaitForSeconds tempWait = new WaitForSeconds(1f);
 
     //Version 3
     public void LoadCardDataFromDB()
