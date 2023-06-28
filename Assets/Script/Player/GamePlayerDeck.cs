@@ -38,6 +38,8 @@ public class GamePlayerDeck : NetworkBehaviour
 
     public CardOnHand[] choosedCardOnHands = new CardOnHand[2];  // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
 
+    private Queue<(Card,TargetObject,NetworkIdentity,CardCtrlArrow)> serverCardPredictQueue = new Queue<(Card, TargetObject, NetworkIdentity, CardCtrlArrow)>();// Server에서 Card Queue 관리를 위한 Queue
+
     public override void OnStartServer()
     {
         SetInitialValue();
@@ -306,24 +308,24 @@ public class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Clear();
     }
 
-    private Queue<(Card,TargetObject,NetworkIdentity,CardCtrlArrow)> serverCardPredictQueue = new Queue<(Card, TargetObject, NetworkIdentity, CardCtrlArrow)>();
+    
     // 카드데이터와 카드의 액션수행 대상을 Dictionary로 key, value 쌍으로 묶어 저장
     [Command]
     public void CmdEnQueueCardTargetPair(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
     {
-            // TargetObject List 구조 : 
-            /*
-            Index : 내용
-            0 : 카드 사용한 Player 
-            1 : Target Monster
-            이후 : 모든 플레이어 및 몬스터
-            */
         serverCardPredictQueue.Enqueue((card,targetObject,conn,cardCtrlArrow));
     }
 
     [Server]
     IEnumerator EnQueueCardTargetPair()
     {
+        // TargetObject List 구조 : 
+        /*
+            Index : 내용
+            0 : 카드 사용한 Player 
+            1 : Target Monster
+            이후 : 모든 플레이어 및 몬스터
+        */
         WaitForSeconds loopTime = new WaitForSeconds(0.01f);
         Card card;
         TargetObject targetObject;
@@ -331,11 +333,17 @@ public class GamePlayerDeck : NetworkBehaviour
         CardCtrlArrow cardCtrlArrow;
         while(true)
         {
-            yield return loopTime;
-            if(serverCardPredictQueue.Count == 0) continue;
-            (card,targetObject,conn,cardCtrlArrow) = serverCardPredictQueue.Dequeue();
+            yield return loopTime; // 0.01s
+
+            if(serverCardPredictQueue.Count == 0) continue; //카드큐가 비어있을경우 스킵 
+            
+            (card,targetObject,conn,cardCtrlArrow) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
+
+            if(targetObject == null) // 타겟이 널일경우 후속조치 하지 않음 (카드 사용이 안됨)
+                continue;
             if(card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
                 continue;
+
             List<TargetObject> tar = new List<TargetObject>();
             tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
             if(card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
