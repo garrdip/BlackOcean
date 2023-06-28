@@ -532,6 +532,7 @@ public class M_TurnManager : NetworkBehaviour
             spawnedPlayerList.Remove(removeItem);
             NetworkServer.Destroy(removeItem.gameObject);
         }
+        spawnedPlayerSyncList.Clear();
     }
 
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
