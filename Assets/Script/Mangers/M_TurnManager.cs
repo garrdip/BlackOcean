@@ -512,6 +512,7 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     public void EachPlayerBattleEnd()
     {
+        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck(); // 현재 플레이어 손에 있던 카드들을 소멸
         PopUpUIManager.instance.HandleShowBattleResultPopUp(); // 전투 결과 보상 팝업 활성화
     }
 
