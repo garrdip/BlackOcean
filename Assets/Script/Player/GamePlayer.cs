@@ -43,7 +43,7 @@ public class GamePlayer : NetworkBehaviour
             {
                 if(!user.endTurnActive)return;
             }
-            M_TurnManager.instance.SetNextTurn();
+            M_TurnManager.instance.phase = BattleTurn.PLAYER_ACTIVE_DONE;
         }
     }
 

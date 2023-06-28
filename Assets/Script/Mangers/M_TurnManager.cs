@@ -28,6 +28,7 @@ public class M_TurnManager : NetworkBehaviour
 
     public bool isOrderSelect = false;
     public bool isMyTurn = false;
+    public bool isCardQueueOperating = false;
 
     public List<Button> selectOrderButtons;
 
@@ -54,8 +55,8 @@ public class M_TurnManager : NetworkBehaviour
     */
     
     // Turn 관리는 서버
-    BattleTurn Phase;
-    BattleTurn phase {get{
+    public BattleTurn Phase;
+    public BattleTurn phase {get{
         return Phase;
     }
     set{
@@ -114,6 +115,13 @@ public class M_TurnManager : NetworkBehaviour
         }
     }
 
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        StartCoroutine(ProcessCardQueue());
+        Debug.Log("Card Queue 코루틴 시작 ");
+    }
+
     public override void OnStartClient()
     {
         playerOrder.Callback += OnPlayerOrderUpdated;
@@ -127,7 +135,7 @@ public class M_TurnManager : NetworkBehaviour
     }
 
     [Server]
-    public void SetNextTurn()
+    public void StartWaitCardQueue()
     {
         StartCoroutine(WaitCardQueue());
     }
@@ -136,15 +144,14 @@ public class M_TurnManager : NetworkBehaviour
     {
         while(true)
         {
-            if(!CardData.instance.isCardOperating && cardTargetPairQueue.Count == 0)
+            if(!isCardQueueOperating && cardTargetPairQueue.Count == 0)
             {
                 break;
             }
             yield return new WaitForSeconds(0.01f);
         }
-        if(phase == BattleTurn.PLAYER_ACTIVE){
+        if(phase == BattleTurn.PLAYER_ACTIVE_DONE) // 아무때나 동작하지 않음 (광클방지)
             phase = BattleTurn.PLAYER_END;
-        } 
     }
 
     [Server]
@@ -181,7 +188,6 @@ public class M_TurnManager : NetworkBehaviour
             GeneratePlayerUnit();
             GenerateMonster();
             phase = BattleTurn.BATTLE_STANDBY;
-            StartCoroutine(ProcessCardQueue());
         }
     }
  
@@ -192,16 +198,24 @@ public class M_TurnManager : NetworkBehaviour
         while (true)
         {
             yield return waitForLoop;
-            if(CardData.instance.isCardOperating)continue;
-            if(cardTargetPairQueue.Count != 0){
-                CardData.instance.count = 100;
-                CardData.instance.isCardOperating = true;
-                // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
-                (Card card,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
-               
-                CardData.instance.RunCard(card,tar);
+            if(CardData.instance.isCardOperating){
+                continue;
             }
+            else
+            {
+                if(cardTargetPairQueue.Count != 0){
+                    CardData.instance.isCardOperating = true;
+                    isCardQueueOperating = true;
+                    // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
+                    (Card card,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
 
+                    CardData.instance.RunCard(card,tar);
+                }
+                else
+                {
+                    isCardQueueOperating = false;
+                }
+            }
         }
     }
 
@@ -254,12 +268,15 @@ public class M_TurnManager : NetworkBehaviour
                 break;
             case BattleTurn.PLAYER_ACTIVE :
                 break;
+            case BattleTurn.PLAYER_ACTIVE_DONE :
+                StartWaitCardQueue();
+                break;
             case BattleTurn.PLAYER_END :
                 PlayerEndTurn();
                 break;
             case BattleTurn.MONSTER_ORDERSELECT :
                 MonsterSetOrder();
-                StartCoroutine(DebugDelay()); // Todo
+                phase = BattleTurn.MONSTER_PREEFFECT;
                 break;
             case BattleTurn.MONSTER_PREEFFECT :
                 MonsterPreEffect();
@@ -271,13 +288,6 @@ public class M_TurnManager : NetworkBehaviour
                 BattleEnd();
                 break;
         }
-    }
-
-    // 디버그 용도로 딜레이 주는 함수(TEMP)
-    IEnumerator DebugDelay()
-    {
-        yield return new WaitForSeconds(1.0f);
-        phase = BattleTurn.MONSTER_PREEFFECT;
     }
 
     [Server]
