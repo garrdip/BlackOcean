@@ -518,18 +518,19 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void ClearTargetObject()
     {
-        ClearTargetObjectList(spawnedMonsterList);
-        ClearTargetObjectList(cloneMonsterList);
-        ClearTargetObjectList(spawnedPlayerList);
-        ClearTargetObjectList(clonePlayerList);
-    }
-
-    [Server]
-    private void ClearTargetObjectList(List<TargetObject> targetList)
-    {
-        foreach(TargetObject tar in targetList)
+        for(int i = clonePlayerList.Count - 1 ; i >=0 ; i--)
         {
-            NetworkServer.Destroy(tar.gameObject);
+            Debug.Log("Clone Destroy!!");
+            TargetObject removeItem = clonePlayerList[i];
+            clonePlayerList.Remove(removeItem);
+            NetworkServer.Destroy(removeItem.gameObject);
+        }
+        for(int i = spawnedPlayerList.Count - 1 ; i >=0 ; i--)
+        {
+            Debug.Log("Player Target Destroy!!");
+            TargetObject removeItem = spawnedPlayerList[i];
+            spawnedPlayerList.Remove(removeItem);
+            NetworkServer.Destroy(removeItem.gameObject);
         }
     }
 

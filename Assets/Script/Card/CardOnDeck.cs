@@ -103,7 +103,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 gamePlayerDeck.CmdAddDeck(cardOnDeckChoosed.card);
                 gamePlayerDeck.CmdClearPrefareDeckAndTrashDeck();
                 Destroy(cardOnDeckChoosed.gameObject);
-
+                M_TurnManager.instance.ClearTargetObject();
                 GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
                     M_MapManager.instance.roommaps.SetActive(true);
                     M_MapManager.instance.game.SetActive(false);
