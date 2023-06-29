@@ -104,12 +104,12 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 M_CardManager.instance.RemoveAllCurrentPlayerPrefareDeckAndTrashDeck();
                 M_TurnManager.instance.ClearTargetObject();
                 Destroy(cardOnDeckChoosed.gameObject);
-                M_MapManager.instance.SetCameraPosition();
+                //M_MapManager.instance.SetCameraPosition();
                 GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
                     // 카메라 위치 리셋
                     Vector2 currLoc = M_MapManager.instance.currentLocation;
+                    Camera.main.transform.position = M_MapManager.instance.GetMapCameraLocation() + new Vector3(0,0,-8);
                     Camera.main.orthographic = false;
-                    Camera.main.transform.position = new Vector3(currLoc.x*1.2f, currLoc.y*1.2f, -8f);
 
                     // UI 활성화 상태 변경
                     M_MapManager.instance.roommaps.SetActive(true);

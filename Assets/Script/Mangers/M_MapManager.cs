@@ -99,6 +99,10 @@ public class M_MapManager : NetworkBehaviour
         else return RoomType.MONSTER;
     }
 
+    public Vector3 GetMapCameraLocation()
+    {
+        return rooms.Find(room => room.location == currentLocation).transform.position;
+    }
 
     [Server]
     public void SetDirection(Vector2 to, Vector3 from)
@@ -177,6 +181,7 @@ public class M_MapManager : NetworkBehaviour
                 newRoom.GetComponent<MapRoom>().location = new Vector2(currentLocation.x + loc[i].x, currentLocation.y + loc[i].y);
                 newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(currentLocation.x + loc[i].x) + (int)Mathf.Abs(currentLocation.y + loc[i].y);
                 NetworkServer.Spawn(newRoom);
+                newRoom.GetComponent<MapRoom>().roomType = GetRoomType();
                 rooms.Add(newRoom.GetComponent<MapRoom>());
             }
         }
