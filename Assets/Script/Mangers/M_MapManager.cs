@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
+using ProjectD;
 using AYellowpaper.SerializedCollections;
 
 public class M_MapManager : NetworkBehaviour
@@ -65,9 +66,11 @@ public class M_MapManager : NetworkBehaviour
         //최초 방 좌표
         Vector2[] loc = {new Vector2(0,0),new Vector2(1,0),new Vector2(-1,0),new Vector2(0,1),new Vector2(0,-1)};
         //모든 방 정보 삭제
-        foreach(MapRoom room in rooms)
+        for(int i = 0; i < rooms.Count ; i++)
         {
-             NetworkServer.Destroy(room.gameObject);
+            MapRoom destroyRoom = rooms[i];
+            rooms.Remove(destroyRoom);
+            NetworkServer.Destroy(destroyRoom.gameObject);
         }
         //새로운 방 5개 생성 
         for(int i = 0 ;i < 5 ;i ++)
@@ -77,11 +80,25 @@ public class M_MapManager : NetworkBehaviour
             newRoom.transform.localPosition = new Vector3(loc[i].x*1.2f,loc[i].y*1.2f,0);
             newRoom.GetComponent<MapRoom>().location = loc[i];
             // Vector2 형식의 좌표 절대값의 합을 위험도로 지정 
+            if( i == 0 ) newRoom.GetComponent<MapRoom>().roomType = RoomType.START_LOCATION;
+            else newRoom.GetComponent<MapRoom>().roomType = GetRoomType();
             newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(loc[i].x) + (int)Mathf.Abs(loc[i].y);
             NetworkServer.Spawn(newRoom);
             rooms.Add(newRoom.GetComponent<MapRoom>());
         }
     }
+
+    private RoomType GetRoomType()
+    {
+        int ramdomValue = Random.Range(0,100);
+        if(ramdomValue < 10) return RoomType.CAMP;
+        if(ramdomValue < 30) return RoomType.EVENT;
+        if(ramdomValue < 40) return RoomType.ITEM_NPC;
+        if(ramdomValue < 50) return RoomType.CARD_NPC;
+        if(ramdomValue < 60) return RoomType.ELITE;
+        else return RoomType.MONSTER;
+    }
+
 
     [Server]
     public void SetDirection(Vector2 to, Vector3 from)
@@ -93,7 +110,7 @@ public class M_MapManager : NetworkBehaviour
     [Server]    
     public void MoveToRoom()
     {
-        SetRoomColor(moveToRoomDestination);
+        // 현재 위치 표시 여기서 해야함
         currentLocation = moveToRoomDestination;
         GenerateNextRoom();
         return;
@@ -108,27 +125,6 @@ public class M_MapManager : NetworkBehaviour
     public void PopUpOrderUI()
     {
         M_TurnManager.instance.PopUpOrderUI();
-    }
-
-    [Server]
-    public void SetRoomColor(Vector2 tar)
-    {
-        //현재 위치의 방 파란색으로 변경
-        foreach(MapRoom room in rooms)
-        {
-            if(room.location == currentLocation)
-            {
-               room.SetSprite(new Color(1,0,0));
-            }
-        }
-        //기존 방 빨간색으로 변경 
-        foreach(MapRoom room in rooms)
-        {
-            if(room.location == tar)
-            {
-                room.SetSprite(new Color(0,0,1));
-            }
-        }
     }
 
     [ClientRpc]

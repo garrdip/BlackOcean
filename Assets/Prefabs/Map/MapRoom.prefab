@@ -8,12 +8,13 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8291181443595791438}
+  - component: {fileID: 499652513252339653}
   - component: {fileID: 4221198413373322407}
   - component: {fileID: 1707717743087670525}
   - component: {fileID: 1764301527721376804}
   - component: {fileID: 6194218860147729521}
   - component: {fileID: 3290923807836130824}
+  - component: {fileID: 803051875144044372}
   m_Layer: 0
   m_Name: MapRoom
   m_TagString: Untagged
@@ -21,8 +22,8 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8291181443595791438
-Transform:
+--- !u!224 &499652513252339653
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -36,6 +37,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &4221198413373322407
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -78,7 +84,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -123,6 +129,15 @@ MonoBehaviour:
   location: {x: 0, y: 0}
   hazard: 0
   isComplete: 0
+  roomType: 0
+  MapMarkers:
+  - {fileID: 21300000, guid: d3f2fc2186b63b640bdae4f0c70b9b22, type: 3}
+  - {fileID: 21300000, guid: 5c3b43279e0230f4d97d05fc0a55f60f, type: 3}
+  - {fileID: 21300000, guid: 7c563d4b15b4bcc42b7552ab8d48e0d9, type: 3}
+  - {fileID: 21300000, guid: 40277d917bbaec94aa9130c27eb6af0d, type: 3}
+  - {fileID: 21300000, guid: 3e7e8095d00bcce4a8e12f09ce393bff, type: 3}
+  - {fileID: 21300000, guid: 42b6e16c85548d84eb8510c7c68da2a5, type: 3}
+  - {fileID: 21300000, guid: 94837e9d490449a47a93039952f6eb91, type: 3}
 --- !u!114 &6194218860147729521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,3 +208,11 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!222 &803051875144044372
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6935118939728155846}
+  m_CullTransparentMesh: 1
