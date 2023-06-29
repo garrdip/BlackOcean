@@ -134,7 +134,7 @@ public class GamePlayer : NetworkBehaviour
                 foreach(GameObject mapPlayerPieceObject in M_MapManager.instance.mapPlayerPieces){
                     MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
                     mapPlayerPiece.RpcChangeMapPlayerPiecePosition(position);
-                    M_MapManager.instance.MoveToRoom(mapRoom.location, position);
+                    M_MapManager.instance.SetDirection(mapRoom.location, position);
                 }
             }
 

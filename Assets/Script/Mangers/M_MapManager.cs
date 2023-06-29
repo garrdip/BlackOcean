@@ -40,6 +40,11 @@ public class M_MapManager : NetworkBehaviour
     [SerializedDictionary("NetworkIdentity", "MapRoom")]
     public SerializedDictionary<NetworkIdentity, MapRoom> playerVoteMapRoom = new SerializedDictionary<NetworkIdentity, MapRoom>();
 
+    [SyncVar]
+    Vector2 moveToRoomDestination;
+    [SyncVar]
+    Vector3 moveToRoomFrom;
+
     public static M_MapManager instance
     {
         get
@@ -79,13 +84,24 @@ public class M_MapManager : NetworkBehaviour
     }
 
     [Server]
-    public void MoveToRoom(Vector2 to, Vector3 from)
+    public void SetDirection(Vector2 to, Vector3 from)
     {
-        SetRoomColor(to);
-        currentLocation = to;
+        moveToRoomDestination = to;
+        moveToRoomFrom = from;
+    }
+
+    [Server]    
+    public void MoveToRoom()
+    {
+        SetRoomColor(moveToRoomDestination);
+        currentLocation = moveToRoomDestination;
         GenerateNextRoom();
-        MoveCameraPositionToRoom(from);
         return;
+    }
+
+    public void SetCameraPosition()
+    {
+        MoveCameraPositionToRoom(moveToRoomFrom);
     }
 
     [Server]
@@ -136,6 +152,7 @@ public class M_MapManager : NetworkBehaviour
             // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
             M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
             M_TurnManager.instance.GenerateBattleObject();
+            if(isServer)M_MapManager.instance.MoveToRoom(); // 이순간에 새로운 맵 생성
         });
     }
 

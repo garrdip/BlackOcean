@@ -60,6 +60,7 @@ public class GameUIManager : SingletonD<GameUIManager>
         blackCurtain.gameObject.SetActive(true);
         blackCurtain.DOFade(1.0f, 0.5f).OnComplete(() => {
             callback(blackCurtain);
+            M_MapManager.instance.MoveToRoom(); // 이순간에 새로운 맵 생성
         }); 
     }
 }
