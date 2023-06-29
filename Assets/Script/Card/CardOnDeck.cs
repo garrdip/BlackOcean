@@ -66,7 +66,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
                     // 이동 위치는 현재 플레이어 타겟오브젝트 위치
                     Vector3 targetPosition = currentPlayer.transform.position;
-                    StartMoveToTarget(cardOnDeckChoosed.GetComponent<CardOnDeck>(), targetPosition, gamePlayerDeck);
+                    StartMoveToTarget(cardOnDeckChoosed.GetComponent<CardOnDeck>(), targetPosition);
                 }
             }
         }
@@ -85,7 +85,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
 
     // 포물선을 그리며 타겟 위치로 이동
-    private void StartMoveToTarget(CardOnDeck cardOnDeckChoosed, Vector3 targetPosition, GamePlayerDeck gamePlayerDeck)
+    private void StartMoveToTarget(CardOnDeck cardOnDeckChoosed, Vector3 targetPosition)
     {
         float height = 2f;
         float duration = 1f;
@@ -100,18 +100,23 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             .SetEase(Ease.OutQuint)
             .OnComplete(() => {
                 cardOnDeckChoosed.GetComponent<CardOnDeck>().isTweening = false;
-                gamePlayerDeck.CmdAddDeck(cardOnDeckChoosed.card);
-                gamePlayerDeck.CmdClearPrefareDeckAndTrashDeck();
-                Destroy(cardOnDeckChoosed.gameObject);
+                M_CardManager.instance.AddCardDataToCurrentPlayerDeck(cardOnDeckChoosed.card);
+                M_CardManager.instance.RemoveAllCurrentPlayerPrefareDeckAndTrashDeck();
                 M_TurnManager.instance.ClearTargetObject();
+                Destroy(cardOnDeckChoosed.gameObject);
                 GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+                    // 카메라 위치 리셋
                     Vector2 currLoc = M_MapManager.instance.currentLocation;
+                    Camera.main.orthographic = false;
+                    Camera.main.transform.position = new Vector3(currLoc.x*1.2f, currLoc.y*1.2f, -8f);
+
+                    // UI 활성화 상태 변경
                     M_MapManager.instance.roommaps.SetActive(true);
                     M_MapManager.instance.game.SetActive(false);
                     GameUIManager.instance.GameUI.gameObject.SetActive(false);
                     GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
-                    Camera.main.orthographic = false;
-                    Camera.main.transform.position = new Vector3(currLoc.x*1.2f, currLoc.y*1.2f, -8f);
+                    
+                    // Dim배경 상태 변경
                     blackCurtain.gameObject.SetActive(false);
                     blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
                 });

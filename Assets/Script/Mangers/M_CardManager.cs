@@ -353,6 +353,28 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
+    // 로컬 플레이어의 PrefareDeck과 TrashDeck 데이터 모두 제거
+    public void RemoveAllCurrentPlayerPrefareDeckAndTrashDeck()
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdClearPrefareDeckAndTrashDeck();
+            }
+        }   
+    }
+
+    // 로컬 플레이어의 Deck에 카드 데이터 추가
+    public void AddCardDataToCurrentPlayerDeck(Card card)
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdAddDeck(card);
+            }
+        }   
+    }
+
     // 카드와 타겟 데이터 큐에 저장
     public void EnQueueCardTargetPair(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
     {

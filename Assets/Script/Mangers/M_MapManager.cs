@@ -119,15 +119,22 @@ public class M_MapManager : NetworkBehaviour
     public void StartBattle()
     {
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+            // 카메라 위치 리셋
+            Camera.main.orthographic = true;
+            Camera.main.transform.position = new Vector3(0f, 0f, -10f);
+
+            // UI 활성화 상태 변경
             roommaps.SetActive(false);
             game.SetActive(true);
             GameUIManager.instance.GameUI.gameObject.SetActive(true);
             GameUIManager.instance.GameBackGround.gameObject.SetActive(true);
-            Camera.main.orthographic = true;
-            Camera.main.transform.position = new Vector3(0f, 0f, -10f); // 카메라 위치 리셋
+
+            // Dim배경 상태 변경
             blackCurtain.gameObject.SetActive(false);
             blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
-            M_CardManager.instance.SpawnPlayerOwnedCardAndArrow(); // 각 플레이어들의 카드와 화살표 생성 요청
+
+            // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
+            M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
             M_TurnManager.instance.GenerateBattleObject();
         });
     }

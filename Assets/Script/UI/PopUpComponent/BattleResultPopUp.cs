@@ -56,6 +56,24 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     public void HandleClickButtonSkip()
     {
         gameObject.SetActive(false);
+        M_CardManager.instance.RemoveAllCurrentPlayerPrefareDeckAndTrashDeck(); // 플레이어의 PrefareDeck, TrashDeck 삭제
+        M_TurnManager.instance.ClearTargetObject(); // 타겟오브젝트 삭제
+        GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+            // 카메라 위치 리셋
+            Vector2 currLoc = M_MapManager.instance.currentLocation;
+            Camera.main.orthographic = false;
+            Camera.main.transform.position = new Vector3(currLoc.x*1.2f, currLoc.y*1.2f, -8f);
+
+            // UI 활성화 상태 변경
+            M_MapManager.instance.roommaps.SetActive(true);
+            M_MapManager.instance.game.SetActive(false);
+            GameUIManager.instance.GameUI.gameObject.SetActive(false);
+            GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
+
+            // Dim배경 상태 변경
+            blackCurtain.gameObject.SetActive(false);
+            blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
+        });
     }
 
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //
