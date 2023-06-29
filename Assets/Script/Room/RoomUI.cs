@@ -9,14 +9,19 @@ using Steamworks;
 
 public class RoomUI : InstanceD<RoomUI>
 {
+    [Header("UI 컴포넌트")]
     public Button buttonReady;
     public TMP_InputField messageInput;
     public Scrollbar scrollbar;
     public TextMeshProUGUI chatMessage;
-    public List<GameObject> orderEffector;
-
     public TextMeshProUGUI readyButton;
     public Button ExitButton;
+    public ScrollRect scrollRect;
+
+    [Header("플레이어 순서 표시용 컴포넌트 리스트")]
+    public List<GameObject> orderEffector;
+
+    public float scrollSpeed = 1f;
 
     public void SetReadyButton(string str)
     {
@@ -34,6 +39,15 @@ public class RoomUI : InstanceD<RoomUI>
             SendChatMessage(messageInput.text);
             messageInput.ActivateInputField();       
         }
+        HandleChatMessageScrollBarByMouseWheel();
+    }
+
+    // 마우스 휠로 채팅 메시지 스크롤 이동
+    private void HandleChatMessageScrollBarByMouseWheel()
+    {
+        float scrollDelta = Input.GetAxis("Mouse ScrollWheel");
+        float scrollValue = scrollSpeed * scrollDelta;
+        scrollRect.verticalNormalizedPosition += scrollValue;
     }
 
     // 레디 상태 제어 

@@ -2575,7 +2575,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 20, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &691604886
 MonoBehaviour:
@@ -2905,12 +2905,14 @@ MonoBehaviour:
   messageInput: {fileID: 2118531975}
   scrollbar: {fileID: 1833719108}
   chatMessage: {fileID: 84619836}
+  readyButton: {fileID: 784790960}
+  ExitButton: {fileID: 1925102779}
+  scrollRect: {fileID: 2146174252}
   orderEffector:
   - {fileID: 1647730910}
   - {fileID: 91585822}
   - {fileID: 1636200292}
-  readyButton: {fileID: 784790960}
-  ExitButton: {fileID: 1925102779}
+  scrollSpeed: 1
 --- !u!4 &726264676
 Transform:
   m_ObjectHideFlags: 0
@@ -5515,7 +5517,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 0
+  m_ChildAlignment: 4
   m_Spacing: 10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1

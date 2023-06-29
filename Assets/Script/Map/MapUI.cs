@@ -11,10 +11,23 @@ public class MapUI : InstanceD<MapUI>
     public GameObject[] orderSelected;
     public GameObject[] playerProfiles;
 
+    [Header("UI 컴포넌트")]
     public Button readyButton;
     public Scrollbar scrollbar;
     public TextMeshProUGUI chatMessage;
     public TMP_InputField messageInput;
+    public ScrollRect scrollRect;
+
+    [Header("현재 마우스 포인터가 채팅메시지 박스 위에 있는지 여부")]
+    public bool isMouseOnChatBox = false;
+
+    [Header("맵 화면의 카메라 줌 조절 변수값")]
+    [SerializeField]
+    private float minCameraFOV = 30f;
+    [SerializeField]
+    private float maxCameraFOV = 90f;
+    [SerializeField]
+    private float scrollSpeed = 10000f;
 
     public void Start()
     {
@@ -26,6 +39,39 @@ public class MapUI : InstanceD<MapUI>
         if (Input.GetKeyDown(KeyCode.Return)){
             SendChatMessage(messageInput.text);
             messageInput.ActivateInputField();       
+        }
+        if(isMouseOnChatBox){
+            HandleChatMessageScrollBarByMouseWheel();
+        }else{
+            HandleMapCameraByMouseWheel();
+        }
+    }
+
+    // 마우스 휠로 채팅 메시지 스크롤 이동
+    private void HandleChatMessageScrollBarByMouseWheel()
+    {
+        float scrollDelta = Input.GetAxis("Mouse ScrollWheel");
+        float scrollValue = scrollDelta * 1f;
+        scrollRect.verticalNormalizedPosition += scrollValue;
+    }
+
+    // 마우스 휠로 카메라 줌인, 줌아웃
+    public void HandleMapCameraByMouseWheel()
+    {
+        float scrollWhell = -Input.GetAxis("Mouse ScrollWheel");
+        if(scrollWhell < 0)
+        {
+            if(Camera.main.fieldOfView > 30)
+            {
+                Camera.main.fieldOfView += scrollWhell * Time.deltaTime * scrollSpeed;
+            }
+        }
+        else
+        {
+            if(Camera.main.fieldOfView < 90)
+            {
+                Camera.main.fieldOfView += scrollWhell * Time.deltaTime * scrollSpeed;
+            }
         }
     }
 

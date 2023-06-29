@@ -810,6 +810,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 149617931}
   m_CullTransparentMesh: 1
+--- !u!1 &156187998 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5268937065939271264, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+  m_PrefabInstance: {fileID: 2118407960}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &156187999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156187998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d01072554a0f1344a809044b3638932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &204350117
 GameObject:
   m_ObjectHideFlags: 0
@@ -2559,6 +2576,17 @@ MonoBehaviour:
   - {fileID: 589778328}
   - {fileID: 424807024}
   - {fileID: 1129489426}
+--- !u!114 &784896032 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5268937064367203080, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+  m_PrefabInstance: {fileID: 2118407960}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &791626058
 GameObject:
   m_ObjectHideFlags: 0
@@ -7691,6 +7719,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5268937065275993009, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 52
+      objectReference: {fileID: 0}
+    - target: {fileID: 5268937065275993009, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5268937065277795311, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_fontAsset
       value: 
@@ -7739,6 +7775,10 @@ PrefabInstance:
       propertyPath: scrollbar
       value: 
       objectReference: {fileID: 1994219502}
+    - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: scrollRect
+      value: 
+      objectReference: {fileID: 784896032}
     - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: chatMessage
       value: 
@@ -7865,21 +7905,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4770237055140911796, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
   m_PrefabInstance: {fileID: 2118407960}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2118407967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2118407966}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a40b1a688fb2de4ca64164793a9d3b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minCameraFOV: 30
-  maxCameraFOV: 90
-  scrollSpeed: 20000
 --- !u!1 &2120763164
 GameObject:
   m_ObjectHideFlags: 0
