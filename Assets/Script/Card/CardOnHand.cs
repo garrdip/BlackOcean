@@ -72,7 +72,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
     void OnMouseEnter()
     {
-        if(isOwned && !isMoving && !IsCardControllablePopUpActive() && !isChoosed){
+        if(isOwned && !isMoving && !IsCardControllablePopUpActive() && !isChoosed && M_TurnManager.instance.IsActivePhase()){
             isMouseOver = true;
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
@@ -85,7 +85,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 포인터 나갈 때 이벤트
     void OnMouseExit()
     {
-        if(isOwned && !isMoving && !IsCardControllablePopUpActive()){
+        if(isOwned && !isMoving && !IsCardControllablePopUpActive() && M_TurnManager.instance.IsActivePhase()){
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
             cardOnHandCanvas.sortingOrder = originSortOrder;
@@ -97,7 +97,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 왼쪽버튼 누를 때 이벤트
     void OnMouseDown()
     {
-        if(isOwned && currentPlayerDeck.isLocalPlayer){
+        if(isOwned && currentPlayerDeck.isLocalPlayer && M_TurnManager.instance.IsActivePhase()){
             // 덱 [목록] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
             if(!IsCardControllablePopUpActive()){
                 isDrag = true;
@@ -117,7 +117,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트를 마우스로 드래그 할 때 이벤트
     void OnMouseDrag()
     {
-        if(isOwned && isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
+        if(isOwned && isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive() && M_TurnManager.instance.IsActivePhase()){
             DragCardOnHand(this);
             MovePositionArrowSpawnedCardOnHand(this);
         }
@@ -126,7 +126,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 왼쪽버튼 뗄 때 이벤트
     void OnMouseUp()
     {
-        if(isOwned && isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
+        if(isOwned && isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive() && M_TurnManager.instance.IsActivePhase()){
             // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
             if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
                 M_CardManager.instance.EnQueueCardTargetPair(card, null, NetworkClient.connection.identity, null);

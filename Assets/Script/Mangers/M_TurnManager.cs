@@ -105,6 +105,12 @@ public class M_TurnManager : NetworkBehaviour
         return cloneMonsterList;
     }
 
+    // 현재 페이즈가 PLAYER_ACTIVE 상태인지 체크
+    public bool IsActivePhase()
+    {
+        return phase == BattleTurn.PLAYER_ACTIVE ? true : false;
+    }
+
     public static M_TurnManager instance
     {
         get
