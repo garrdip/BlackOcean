@@ -18,9 +18,6 @@ public class M_CardManager : NetworkBehaviour
     [Header("현재 플레이어가 선택한 캐릭터의 카드 리스트")]
     public List<Card> cards = new List<Card>();
 
-    [Header("카드 모음 패널 오브젝트")]
-    public GameObject cardOnHandsPanel;
-
     [Header("충돌 판정이 가능한 원래의 충돌체 크기값")]
     public Vector3 cardCollidableSize;
 
@@ -93,7 +90,6 @@ public class M_CardManager : NetworkBehaviour
     // Range로 변경가능한 값들 초기화
     private void InitSymmetryValue()
     {
-        cardOnHandsPanelPositionY_Range = -4.0f;
         symmetryRange = 1.5f;
         symmetryPositionX_Range = 1.15f;
         symmetryPositionY_Range = 0.2f;
@@ -104,7 +100,6 @@ public class M_CardManager : NetworkBehaviour
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
     public void SetCardOnHandPositionSymmetry()
     {
-        cardOnHandsPanel.transform.position = new Vector3(0f, cardOnHandsPanelPositionY_Range, 0f); // 카드 모음 패널의 위치       
         if(gamePlayerDeck != null){
             List<CardOnHand> cardOnHandsIsNotChoosed = gamePlayerDeck.cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
             int count = cardOnHandsIsNotChoosed.Count;
@@ -307,8 +302,6 @@ public class M_CardManager : NetworkBehaviour
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdSpawnCardPocket();
-                gamePlayerDeck.CmdSpawnArrowEmitter();
                 gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
             }
         }

@@ -25,11 +25,13 @@ public class CardCtrlArrow : NetworkBehaviour
     void Start()
     {
         origin = GetComponent<Transform>();
+        ChangeArrowVisible(isOwned, GameUIManager.instance.CardOnHandsPanel.transform);
     }
 
     void Update()
     {
-        if(isOwned){          
+        if(isOwned){       
+            SetArrowNodesScale();   
             HandleArrowAction();
             HandleArrowRemove();
             HandleArrowNodesTrasnform();
@@ -165,20 +167,6 @@ public class CardCtrlArrow : NetworkBehaviour
         }
     }
 
-    // 화살표 머리와 몸통 네트워크 오브젝트 생성되면 클라이언트별로 생성 위치 세팅 및 소유 권한 구분용 색상 변경
-    [ClientRpc]
-    public void RpcSetArrowParts(List<GameObject> nodes)
-    {
-        ChangeArrowVisible(isOwned, GameUIManager.instance.CardOnHandsPanel.transform);
-        foreach(GameObject arrowNode in nodes){
-            arrowNode.transform.SetParent(transform);
-            arrowNode.GetComponent<SpriteRenderer>().color = isOwned ? Color.red : Color.white;
-            arrowNode.GetComponent<SpriteRenderer>().sortingOrder = arrowSortingOrder;
-            arrowNodes.Add(arrowNode.GetComponent<Transform>());
-        }
-        SetArrowNodesScale();
-    }
-
     // 화살표를 소환한 카드의 액션 수행 이벤트 수신
     [ClientRpc]
     public void RpcAcceptCardUse(NetworkIdentity conn)
@@ -189,5 +177,4 @@ public class CardCtrlArrow : NetworkBehaviour
             M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize); // 카드 충돌체 크기 변경
         }
     }
-
 }

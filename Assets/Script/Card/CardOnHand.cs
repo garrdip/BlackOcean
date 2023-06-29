@@ -12,6 +12,9 @@ public class CardOnHand : NetworkBehaviour
     [SyncVar(hook = nameof(OnChangeCardData))]
     public Card card;
 
+    [SyncVar(hook = nameof(OnChangeOwnedCardPocket))]
+    public CardPocket cardPocket;
+
     [SyncVar]
     public int index;
 
@@ -179,18 +182,6 @@ public class CardOnHand : NetworkBehaviour
         return PopUpUIManager.instance.cardOnHandRemovePopUp.activeSelf;
     }
 
-    // 카드 생성 이벤트 수신 (카드의 위치 및 부모 오브젝트 설정)
-    [ClientRpc]
-    public void RpcSpawnedCardOnHand(CardPocket cardPocket)
-    {
-        if(isOwned){
-            transform.position = GameUIManager.instance.buttonPrefareDeck.transform.position;
-        }else{
-            transform.position = new Vector3(-100f, 0f, 0f);
-        }
-        transform.SetParent(cardPocket.transform);
-    }
-
     // 카드 정렬값 이벤트 수신
     [ClientRpc]
     public void RpcSortOrder(int index)
@@ -207,5 +198,16 @@ public class CardOnHand : NetworkBehaviour
     {
         textCardName.text = card.baseCard.name;
         textCardInfo.text = card.baseCard.cardType.ToString();
+    }
+
+    // 카드 포켓이 생성되면 카드들의 부모는 해당 카드 포켓으로 설정
+    public void OnChangeOwnedCardPocket(CardPocket oldCardPocekt, CardPocket newCardPocket)
+    {
+        if(isOwned){
+            transform.position = GameUIManager.instance.buttonPrefareDeck.transform.position;
+        }else{
+            transform.position = new Vector3(-100f, 0f, 0f);
+        }
+        transform.SetParent(newCardPocket.transform);
     }
 }

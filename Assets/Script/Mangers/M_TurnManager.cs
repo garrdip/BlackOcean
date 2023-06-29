@@ -8,6 +8,7 @@ using Steamworks;
 using Spine.Unity;
 using Spine;
 using TMPro;
+using DG.Tweening;
 
 public class M_TurnManager : NetworkBehaviour
 {
@@ -30,6 +31,8 @@ public class M_TurnManager : NetworkBehaviour
     public bool isOrderSelect = false;
     public bool isMyTurn = false;
     public bool isCardQueueOperating = false;
+
+    public RoomType roomType;
 
     public List<Button> selectOrderButtons;
 
@@ -56,6 +59,7 @@ public class M_TurnManager : NetworkBehaviour
     */
     
     // Turn 관리는 서버
+    [SyncVar]
     public BattleTurn Phase;
     public BattleTurn phase {get{
         return Phase;
@@ -182,8 +186,9 @@ public class M_TurnManager : NetworkBehaviour
     }
 
     [Server]
-    public void HandleStartBattle()
+    public void HandleStartBattle(MapRoom mapRoom)
     {
+        roomType = mapRoom.roomType;
         M_MapManager.instance.StartBattle();
     }
 
@@ -193,8 +198,16 @@ public class M_TurnManager : NetworkBehaviour
         if(isServer)
         {
             GeneratePlayerUnit();
-            GenerateMonster();
-            phase = BattleTurn.BATTLE_STANDBY;
+            if(roomType == RoomType.MONSTER || roomType == RoomType.ELITE)
+            {
+                GenerateMonster();
+                phase = BattleTurn.BATTLE_STANDBY;
+            }
+            else
+            {
+                GenerateNPC();
+                phase = BattleTurn.NONE_BATTLE_SCENE;
+            }
         }
     }
  
@@ -264,6 +277,8 @@ public class M_TurnManager : NetworkBehaviour
         Debug.Log("Phase is " + phase);
         switch(phase)
         {
+            case BattleTurn.NONE_BATTLE_SCENE :
+                break;
             case BattleTurn.BATTLE_STANDBY :
                 BattleStandby();
                 break;
@@ -293,6 +308,9 @@ public class M_TurnManager : NetworkBehaviour
                 break;
             case BattleTurn.BATTLE_END :
                 BattleEnd();
+                break;
+            case BattleTurn.NONE_BATTLE_END :
+                NoneBattleEnd();
                 break;
         }
     }
@@ -470,6 +488,12 @@ public class M_TurnManager : NetworkBehaviour
         }
     }
 
+    [Server]
+    void GenerateNPC()
+    {
+        // 이벤트 , 상점, 전초기지 NPC 생성 위치
+    }
+
     // 몬스터 오브젝트 생성되면 몬스터 이름, HP등 뷰 요소의 값을 몬스터 데이터값에 따라 세팅
     [ClientRpc]
     public void RpcMonsterInit(TargetObject avatar, SpawnedMonster monster)
@@ -527,36 +551,69 @@ public class M_TurnManager : NetworkBehaviour
 
     [Server]
     public void BattleEnd()
-    {
-        Debug.Log("전투 종료");
+    {   
+        // TODO : 전투 종료 혹은 이벤트방에서 개인별로 먼저 수행하고 넘어가는게 맞을지?, 팀원이 모두 수행을 끝낼때까지 기다리는게 맞을지?
         EachPlayerBattleEnd();
+    }
+
+    [Server]
+    public void NoneBattleEnd()
+    {
+        EachPlayerNoneBattleEnd();
     }
 
     [ClientRpc]
     public void EachPlayerBattleEnd()
     {
-        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck(); // 현재 플레이어 손에 있던 카드들을 소멸
         PopUpUIManager.instance.HandleShowBattleResultPopUp(); // 전투 결과 보상 팝업 활성화
+    }
+
+    [ClientRpc]
+    public void EachPlayerNoneBattleEnd()
+    {
+        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck(); // 현재 플레이어 손에 있던 카드들을 삭제, 삭제 시 Trash Deck에 추가하지 않음.
+        M_CardManager.instance.RemoveAllCurrentPlayerPrefareDeckAndTrashDeck(); // 플레이어의 PrefareDeck, TrashDeck 삭제
+        ReturnToMap();
     }
 
     [Server]
     public void ClearTargetObject()
     {
-        for(int i = clonePlayerList.Count - 1 ; i >=0 ; i--)
-        {
-            Debug.Log("Clone Destroy!!");
-            TargetObject removeItem = clonePlayerList[i];
-            clonePlayerList.Remove(removeItem);
-            NetworkServer.Destroy(removeItem.gameObject);
-        }
-        for(int i = spawnedPlayerList.Count - 1 ; i >=0 ; i--)
-        {
-            Debug.Log("Player Target Destroy!!");
-            TargetObject removeItem = spawnedPlayerList[i];
-            spawnedPlayerList.Remove(removeItem);
-            NetworkServer.Destroy(removeItem.gameObject);
-        }
+        ClearTargetObjectList(cloneMonsterList);
+        ClearTargetObjectList(spawnedMonsterList);
+        ClearTargetObjectList(clonePlayerList);
+        ClearTargetObjectList(spawnedPlayerList);
         spawnedPlayerSyncList.Clear();
+    }
+
+    private void ClearTargetObjectList(List<TargetObject> targets)
+    {
+        for(int i = targets.Count - 1 ; i >=0 ; i--)
+        {
+            TargetObject removeItem = targets[i];
+            targets.Remove(removeItem);
+            NetworkServer.Destroy(removeItem.gameObject);
+        }
+    }
+
+    public void ReturnToMap()
+    {
+        ClearTargetObject();
+        GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+            // 카메라 위치 리셋
+            Vector2 currLoc = M_MapManager.instance.currentLocation;
+            Camera.main.transform.position = M_MapManager.instance.GetMapCameraLocation() + new Vector3(0,0,-8);
+            Camera.main.orthographic = false; 
+            // UI 활성화 상태 변경
+            M_MapManager.instance.roommaps.SetActive(true);
+            M_MapManager.instance.game.SetActive(false);
+            GameUIManager.instance.GameUI.gameObject.SetActive(false);
+            GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
+
+            // Dim배경 상태 변경
+            blackCurtain.gameObject.SetActive(false);
+            blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
+        });
     }
 
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//

@@ -44,7 +44,15 @@ public class GamePlayer : NetworkBehaviour
             {
                 if(!user.endTurnActive)return;
             }
-            M_TurnManager.instance.phase = BattleTurn.PLAYER_ACTIVE_DONE;
+            switch(M_TurnManager.instance.phase)
+            {
+                case BattleTurn.PLAYER_ACTIVE :
+                    M_TurnManager.instance.phase = BattleTurn.PLAYER_ACTIVE_DONE;
+                    break;
+                case BattleTurn.NONE_BATTLE_SCENE :
+                    M_TurnManager.instance.phase = BattleTurn.NONE_BATTLE_END;
+                    break;
+            }
         }
     }
 
@@ -140,7 +148,7 @@ public class GamePlayer : NetworkBehaviour
             }
 
             // All Player Ready !
-            M_TurnManager.instance.HandleStartBattle();
+            M_TurnManager.instance.HandleStartBattle(mapRoom);
         }    
     }
 

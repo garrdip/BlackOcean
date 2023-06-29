@@ -56,8 +56,6 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     public void HandleClickButtonSkip()
     {
         PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
-        M_CardManager.instance.RemoveAllCurrentPlayerPrefareDeckAndTrashDeck(); // 플레이어의 PrefareDeck, TrashDeck 삭제
-        M_TurnManager.instance.ClearTargetObject(); // 타겟오브젝트 삭제
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
             // 카메라 위치 리셋
             Vector2 currLoc = M_MapManager.instance.currentLocation;

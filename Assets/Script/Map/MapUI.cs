@@ -67,14 +67,14 @@ public class MapUI : InstanceD<MapUI>
         float scrollWhell = -Input.GetAxis("Mouse ScrollWheel");
         if(scrollWhell < 0)
         {
-            if(Camera.main.fieldOfView > 30)
+            if(Camera.main.fieldOfView > minCameraFOV)
             {
                 Camera.main.fieldOfView += scrollWhell * Time.deltaTime * scrollSpeed;
             }
         }
         else
         {
-            if(Camera.main.fieldOfView < 90)
+            if(Camera.main.fieldOfView < maxCameraFOV)
             {
                 Camera.main.fieldOfView += scrollWhell * Time.deltaTime * scrollSpeed;
             }

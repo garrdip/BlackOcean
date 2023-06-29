@@ -101,10 +101,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             .OnComplete(() => {
                 cardOnDeckChoosed.GetComponent<CardOnDeck>().isTweening = false;
                 M_CardManager.instance.AddCardDataToCurrentPlayerDeck(cardOnDeckChoosed.card);
-                M_CardManager.instance.RemoveAllCurrentPlayerPrefareDeckAndTrashDeck();
-                M_TurnManager.instance.ClearTargetObject();
                 Destroy(cardOnDeckChoosed.gameObject);
-                //M_MapManager.instance.SetCameraPosition();
                 GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
                     // 카메라 위치 리셋
                     Vector2 currLoc = M_MapManager.instance.currentLocation;

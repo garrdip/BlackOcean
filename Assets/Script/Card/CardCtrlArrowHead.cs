@@ -5,6 +5,9 @@ using Mirror;
 
 public class CardCtrlArrowHead : NetworkBehaviour
 {
+    [SyncVar(hook = nameof(OnChangeCardCtrlArrow))]
+    public CardCtrlArrow cardCtrlArrow; // 화살표 머리의 부모 오브젝트 클래스
+
     void Update()
     {
         CheckArrowHeadPosition();
@@ -38,5 +41,14 @@ public class CardCtrlArrowHead : NetworkBehaviour
                 cardCtrlArrow.RemoveCardCtrlArrow();
             }
         }
+    }
+
+    // --------------------------------------------------------------SyncVar Hook ----------------------------------------------------------------------//
+
+    // 화살표 머리의 부모오브젝트 설정
+    public void OnChangeCardCtrlArrow(CardCtrlArrow oldCardCtrlArrow, CardCtrlArrow newCarCtrlAroow)
+    {
+        transform.SetParent(newCarCtrlAroow.transform);
+        newCarCtrlAroow.arrowNodes.Add(GetComponent<Transform>());
     }
 }
