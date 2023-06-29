@@ -2549,12 +2549,12 @@ MonoBehaviour:
   CardOnHandsPanel: {fileID: 823382814}
   PrefareDeck: {fileID: 1206986712}
   TrashDeck: {fileID: 1681072078}
-  blackCurtain: {fileID: 492361048}
   buttonEndTurn: {fileID: 1065066847}
   buttonPrefareDeck: {fileID: 22229867}
   buttonTrashDeck: {fileID: 791626060}
   textPrefareDeckCount: {fileID: 2120763168}
   textTrashDeckCount: {fileID: 1794285381}
+  blackCurtain: {fileID: 492361048}
   playerOrderList:
   - {fileID: 589778328}
   - {fileID: 424807024}
@@ -7094,6 +7094,39 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1983393684}
   m_CullTransparentMesh: 1
+--- !u!114 &1994219500 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5268937064356060579, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+  m_PrefabInstance: {fileID: 2118407960}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1994219501 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5268937065878787096, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+  m_PrefabInstance: {fileID: 2118407960}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1994219502 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5268937064138634080, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+  m_PrefabInstance: {fileID: 2118407960}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2031684311
 GameObject:
   m_ObjectHideFlags: 0
@@ -7658,6 +7691,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5268937065277795311, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8e5105025f8206c4e8f3c7b2ae77de49, type: 2}
+    - target: {fileID: 5268937065277795311, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 7321018890295107995, guid: 8e5105025f8206c4e8f3c7b2ae77de49, type: 2}
     - target: {fileID: 5268937065536568228, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
@@ -7670,6 +7711,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5268937065878787096, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8e5105025f8206c4e8f3c7b2ae77de49, type: 2}
+    - target: {fileID: 5268937065878787096, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 7321018890295107995, guid: 8e5105025f8206c4e8f3c7b2ae77de49, type: 2}
     - target: {fileID: 5268937065878787103, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -7686,6 +7735,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: scrollbar
+      value: 
+      objectReference: {fileID: 1994219502}
+    - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: chatMessage
+      value: 
+      objectReference: {fileID: 1994219501}
+    - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: messageInput
+      value: 
+      objectReference: {fileID: 1994219500}
     - target: {fileID: 7420341388645532057, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.9396927
@@ -8223,6 +8284,7 @@ MonoBehaviour:
   orderUI: {fileID: 2118407965}
   isOrderSelect: 0
   isMyTurn: 0
+  isCardQueueOperating: 0
   selectOrderButtons:
   - {fileID: 2118407964}
   - {fileID: 2118407963}
@@ -8234,6 +8296,7 @@ MonoBehaviour:
   clonePlayerList: []
   spawnedMonsterList: []
   cloneMonsterList: []
+  Phase: 0
 --- !u!1 &3946356632764995061
 GameObject:
   m_ObjectHideFlags: 0

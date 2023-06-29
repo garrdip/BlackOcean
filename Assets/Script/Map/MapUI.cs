@@ -12,10 +12,21 @@ public class MapUI : InstanceD<MapUI>
     public GameObject[] playerProfiles;
 
     public Button readyButton;
+    public Scrollbar scrollbar;
+    public TextMeshProUGUI chatMessage;
+    public TMP_InputField messageInput;
 
     public void Start()
     {
         readyButton.onClick.AddListener(() => OnChangeReadyState());
+    }
+
+    void Update()
+    { 
+        if (Input.GetKeyDown(KeyCode.Return)){
+            SendChatMessage(messageInput.text);
+            messageInput.ActivateInputField();       
+        }
     }
 
     public void SetOrderIndicator(int order)
@@ -52,4 +63,31 @@ public class MapUI : InstanceD<MapUI>
         UpdateProfile();
     }
 
+    // 채팅 메시지 전송
+    public void SendChatMessage(string input)
+    {
+        if (NetworkClient.connection != null && !string.IsNullOrWhiteSpace(messageInput.text)){
+            GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
+            gamePlayer.CmdSendChatMessage(messageInput.text.Trim());
+            messageInput.ActivateInputField();
+            messageInput.text = string.Empty;;
+        }
+    }
+
+    // 채팅 메시지 추가
+    public void AppendMessage(string playerName, string message)
+    {
+        chatMessage.text += playerName + " : " + message + "\n";
+        StartCoroutine(ScrollToBottom());
+    }
+
+    // 스크롤 이동
+    IEnumerator ScrollToBottom()
+    {
+        // it takes 2 frames for the UI to update ?!?!
+        yield return null;
+        yield return null;
+
+        scrollbar.value = 0;
+    }
 }

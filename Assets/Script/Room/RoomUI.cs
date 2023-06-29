@@ -59,6 +59,7 @@ public class RoomUI : InstanceD<RoomUI>
         NetworkClient.Disconnect();
         M_SteamManager.LeaveLobby();
     }
+
     // 게임 씬으로 이동
     public void HandleChangeGameScene()
     {
@@ -72,7 +73,7 @@ public class RoomUI : InstanceD<RoomUI>
     {
         if (NetworkClient.connection != null && !string.IsNullOrWhiteSpace(messageInput.text)){
             RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.GetComponent<RoomPlayer>();
-            roomPlayer.CmdSend(messageInput.text.Trim());
+            roomPlayer.CmdSendChatMessage(messageInput.text.Trim());
             messageInput.ActivateInputField();
             messageInput.text = string.Empty;;
         }

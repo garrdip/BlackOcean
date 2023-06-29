@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using ProjectD;
+using Steamworks;
 
 public class GamePlayer : NetworkBehaviour
 {
@@ -141,5 +142,22 @@ public class GamePlayer : NetworkBehaviour
             // All Player Ready !
             M_TurnManager.instance.HandleStartBattle();
         }    
+    }
+
+    // 채팅 메시지 이벤트 송신
+    [Command]
+    public void CmdSendChatMessage(string message, NetworkConnectionToClient sender = null)
+    {
+        if (!string.IsNullOrWhiteSpace(message)){
+            string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
+            RpcReceiveChatMessage(playerName, message.Trim());
+        }
+    }
+
+    // 채팅 메시지 이벤트 수신
+    [ClientRpc]
+    void RpcReceiveChatMessage(string playerName, string message)
+    {
+        MapUI.instance.AppendMessage(playerName, message);
     }
 }

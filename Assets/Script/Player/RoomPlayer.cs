@@ -52,15 +52,17 @@ public class RoomPlayer : NetworkRoomPlayer
 
     // 채팅 메시지 이벤트 송신
     [Command]
-    public void CmdSend(string message, NetworkConnectionToClient sender = null)
+    public void CmdSendChatMessage(string message, NetworkConnectionToClient sender = null)
     {
-        if (!string.IsNullOrWhiteSpace(message))
-            RpcReceive("PlayerName", message.Trim());
+        if (!string.IsNullOrWhiteSpace(message)){
+            string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
+            RpcReceiveChatMessage(playerName, message.Trim());
+        }
     }
 
     // 채팅 메시지 이벤트 수신
     [ClientRpc]
-    void RpcReceive(string playerName, string message)
+    void RpcReceiveChatMessage(string playerName, string message)
     {
         RoomUI.instance.AppendMessage(playerName, message);
     }
