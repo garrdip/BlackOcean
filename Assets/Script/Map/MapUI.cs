@@ -36,14 +36,20 @@ public class MapUI : InstanceD<MapUI>
 
     void Update()
     { 
-        if (Input.GetKeyDown(KeyCode.Return)){
-            SendChatMessage(messageInput.text);
-            messageInput.ActivateInputField();       
-        }
+        HandleChatMessageInput();
         if(isMouseOnChatBox){
             HandleChatMessageScrollBarByMouseWheel();
         }else{
             HandleMapCameraByMouseWheel();
+        }
+    }
+
+    // Enter 키로 채팅 메시지 입력
+    private void HandleChatMessageInput()
+    {
+        if(Input.GetKeyDown(KeyCode.Return)){
+            SendChatMessage(messageInput.text);
+            messageInput.ActivateInputField();       
         }
     }
 
@@ -56,7 +62,7 @@ public class MapUI : InstanceD<MapUI>
     }
 
     // 마우스 휠로 카메라 줌인, 줌아웃
-    public void HandleMapCameraByMouseWheel()
+    private void HandleMapCameraByMouseWheel()
     {
         float scrollWhell = -Input.GetAxis("Mouse ScrollWheel");
         if(scrollWhell < 0)

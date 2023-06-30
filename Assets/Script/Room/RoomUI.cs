@@ -35,11 +35,17 @@ public class RoomUI : InstanceD<RoomUI>
 
     void Update()
     { 
-        if (Input.GetKeyDown(KeyCode.Return)){
+        HandleChatMessageInput();
+        HandleChatMessageScrollBarByMouseWheel();
+    }
+
+    // Enter 키로 채팅 메시지 입력
+    private void HandleChatMessageInput()
+    {
+        if(Input.GetKeyDown(KeyCode.Return)){
             SendChatMessage(messageInput.text);
             messageInput.ActivateInputField();       
         }
-        HandleChatMessageScrollBarByMouseWheel();
     }
 
     // 마우스 휠로 채팅 메시지 스크롤 이동
