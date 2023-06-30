@@ -103,11 +103,11 @@ public class RoomUI : InstanceD<RoomUI>
     // 스크롤 이동
     IEnumerator ScrollToBottom()
     {
-        // it takes 2 frames for the UI to update ?!?!
-        yield return null;
-        yield return null;
+        // 스크롤뷰의 컨텐츠의 크기가 변경되고 한 프레임이 끝날때까지 지연
+        yield return new WaitForEndOfFrame();
 
-        scrollbar.value = 0;
+        // 스크롤바를 맨 아래로 이동
+        scrollRect.normalizedPosition = new Vector2(0, 0);
     }
 
     // 순서 바뀜에 따른 자리 표시
