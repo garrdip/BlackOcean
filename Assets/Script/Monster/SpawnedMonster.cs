@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using ProjectD;
+using UnityEngine.UI;
+using TMPro;
 using Mirror;
-using Spine.Unity;
 
 public class SpawnedMonster : NetworkBehaviour
 {
@@ -29,10 +29,12 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedMonsterData))]
     public MonsterData monsterData;
 
+    [SyncVar (hook = nameof(OnChangeParent))]
+    public TargetObject parent;
+
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead")){
-            Debug.Log("타겟 오브젝트에 화살표 진입");
             // TODO : 타겟 오브젝트에 외곽선 표시 설정
         }
     }
@@ -41,33 +43,7 @@ public class SpawnedMonster : NetworkBehaviour
     private void OnTriggerExit2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead")){
-            Debug.Log("타겟 오브젝트에 화살표 탈출");
             // TODO : 타겟 오브젝트에 외곽선 표시 해제
-        }
-    }
-
-    public void OnChangedMonsterData(MonsterData oldVal , MonsterData newVal)
-    {
-        monsterName = monsterData.name;
-        MAXHP = monsterData.MAXHP;
-        HP = monsterData.MAXHP;
-        sheild = 0;
-        //SyncVar Data는 서버에서 관리
-        if(isServer)
-        {
-            HP = monsterData.MAXHP;
-        }
-    }
-
-    public void OnChangedHpValue(int oldHpValue, int newHpValue)
-    {
-        if(HP <= 0)
-        {
-            if(isServer)NetworkServer.Destroy(this.gameObject);
-            return;
-        }
-        if(transform.parent != null){
-            transform.parent.GetComponent<TargetObject>().hpbar.value = newHpValue;
         }
     }
 
@@ -99,6 +75,44 @@ public class SpawnedMonster : NetworkBehaviour
     public virtual void DoAnimation()
     {
         
+    }
+
+
+    // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
+
+    public void OnChangedMonsterData(MonsterData oldVal , MonsterData newVal)
+    {
+        monsterName = monsterData.name;
+        MAXHP = monsterData.MAXHP;
+        HP = monsterData.MAXHP;
+        sheild = 0;
+        //SyncVar Data는 서버에서 관리
+        if(isServer)
+        {
+            HP = monsterData.MAXHP;
+        }
+    }
+
+    public void OnChangedHpValue(int oldHpValue, int newHpValue)
+    {
+        if(HP <= 0)
+        {
+            if(isServer)NetworkServer.Destroy(this.gameObject);
+            return;
+        }
+        if(transform.parent != null){
+            transform.parent.GetComponent<TargetObject>().hpbar.value = newHpValue;
+        }
+    }
+
+    public void OnChangeParent(TargetObject oldPrent, TargetObject newParent)
+    {
+        transform.SetParent(newParent.transform);
+        Slider hpbar = newParent.transform.GetChild(0).GetChild(3).GetComponent<Slider>();
+        TextMeshProUGUI textMonsterName = newParent.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();
+        textMonsterName.text = monsterName;
+        hpbar.maxValue = MAXHP;;
+        hpbar.value = MAXHP;
     }
 
 }
