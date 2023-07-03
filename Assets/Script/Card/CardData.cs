@@ -134,6 +134,7 @@ public class CardData : SingletonD<CardData>
 
     public void GeneralGetDefense(TargetObject from, TargetObject tar, int value, Card card)
     {
+        if(from.isCloneData)return;
         if(from.player.character == Character.ERIS && from == tar) // 에리스의 경우 피가 닳아있을경우 체력을 채움
         {
             int remind = from.player.MaxHP - from.player.HP;

@@ -26,6 +26,9 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar (hook = nameof(OnReadyStateChanged))]
     public bool isReady = false;
 
+    [SyncVar (hook = nameof(OnCompleteReward))]
+    public bool isRewardDone = false;
+
     [SyncVar]
     public Vector2 destination;
 
@@ -135,7 +138,7 @@ public class GamePlayer : NetworkBehaviour
             {
                 if(!player.isReady) return;
             }
-
+            foreach(GamePlayer player in users) player.isReady = false; // 레디 상태 모두 확인후 다시 Flase로 되돌림 (여러군데서 사용 예정)
             // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
             MapRoom mapRoom = M_MapManager.instance.GetVoteMapRoomResult();
             if(mapRoom != null){
@@ -150,6 +153,20 @@ public class GamePlayer : NetworkBehaviour
             // All Player Ready !
             M_TurnManager.instance.HandleStartBattle(mapRoom);
         }    
+    }
+
+    public void OnCompleteReward(bool oldVal, bool newVal)
+    {
+        if(isServer)
+        {
+            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+            foreach(GamePlayer player in users)
+            {
+                if(!player.isRewardDone) return;
+            }
+            foreach(GamePlayer player in users) player.isRewardDone = false;
+            M_TurnManager.instance.NoneBattleEnd();
+        }   
     }
 
     // 채팅 메시지 이벤트 송신

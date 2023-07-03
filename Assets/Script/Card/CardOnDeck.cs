@@ -102,22 +102,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 cardOnDeckChoosed.GetComponent<CardOnDeck>().isTweening = false;
                 M_CardManager.instance.AddCardDataToCurrentPlayerDeck(cardOnDeckChoosed.card);
                 Destroy(cardOnDeckChoosed.gameObject);
-                GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
-                    // 카메라 위치 리셋
-                    Vector2 currLoc = M_MapManager.instance.currentLocation;
-                    Camera.main.transform.position = M_MapManager.instance.GetMapCameraLocation() + new Vector3(0,0,-8);
-                    Camera.main.orthographic = false;
-
-                    // UI 활성화 상태 변경
-                    M_MapManager.instance.roommaps.SetActive(true);
-                    M_MapManager.instance.game.SetActive(false);
-                    GameUIManager.instance.GameUI.gameObject.SetActive(false);
-                    GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
-                    
-                    // Dim배경 상태 변경
-                    blackCurtain.gameObject.SetActive(false);
-                    blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
-                });
+                NetworkClient.connection.identity.GetComponent<GamePlayer>().isRewardDone = true;
             });
     }
 }
