@@ -94,6 +94,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  arrowOwnedCardOnHand: {fileID: 0}
   arrowHeadPrefab: {fileID: 387816068712704334, guid: ced8dc11b1bd51c4abdb0adc2c1c882b, type: 3}
   arrowNodePrefab: {fileID: 1804995873757050396, guid: dbd1c9886aa648347b11354c1a3c2343, type: 3}
+  currentTarget: {fileID: 0}
   scaleFactor: 2
+  arrowNodes: []

@@ -13,6 +13,7 @@ public class CardCtrlArrow : NetworkBehaviour
 
     public GameObject arrowHeadPrefab;
     public GameObject arrowNodePrefab;
+    public GameObject currentTarget; // 현재 소환된 화살표가 타겟으로 잡은 오브젝트
 
     public float scaleFactor = 1f;
 
@@ -85,19 +86,13 @@ public class CardCtrlArrow : NetworkBehaviour
     // 마우스 왼쪽버튼 뗄때 마우스로 타겟팅한 오브젝트에게 액션 수행
     private void HandleArrowAction()
     {
-        if(Input.GetMouseButtonUp(0)){
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit;
-            if (hit = Physics2D.Raycast(mousePosition, Vector2.zero)){
-                if(hit.collider != null && hit.collider.tag.Equals("TargetObject")){
-                    if(NetworkClient.connection != null && NetworkClient.active){
-                        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-                        if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
-                            TargetObject targetObjects = hit.collider.transform.parent.GetComponent<TargetObject>();
-                            if(targetObjects.objectType != ProjectD.ObjectType.PLAYER || arrowOwnedCardOnHand.card.baseCard.cardType != ProjectD.CardType.ATTACK) // 카드 발동조건 추가해야할듯
-                                gamePlayerDeck.CmdEnQueueCardTargetPair(arrowOwnedCardOnHand.card, targetObjects, NetworkClient.connection.identity, this); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
-                        }
-                    }
+        if(Input.GetMouseButtonUp(0) && currentTarget != null){
+            if(NetworkClient.connection != null && NetworkClient.active){
+                GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
+                    TargetObject targetObjects = currentTarget.transform.parent.GetComponent<TargetObject>();
+                    if(targetObjects.objectType != ProjectD.ObjectType.PLAYER || arrowOwnedCardOnHand.card.baseCard.cardType != ProjectD.CardType.ATTACK) // 카드 발동조건 추가해야할듯
+                        gamePlayerDeck.CmdEnQueueCardTargetPair(arrowOwnedCardOnHand.card, targetObjects, NetworkClient.connection.identity, this); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
                 }
             }
         }

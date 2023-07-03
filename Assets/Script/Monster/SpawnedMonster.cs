@@ -29,6 +29,23 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedMonsterData))]
     public MonsterData monsterData;
 
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if(collider != null && collider.tag.Equals("CardArrowHead")){
+            Debug.Log("타겟 오브젝트에 화살표 진입");
+            // TODO : 타겟 오브젝트에 외곽선 표시 설정
+        }
+    }
+
+    // 화살표 인디케이터 헤드가 TargetObject로 Exit 감지해서 흰색으로 변경
+    private void OnTriggerExit2D(Collider2D collider)
+    {
+        if(collider != null && collider.tag.Equals("CardArrowHead")){
+            Debug.Log("타겟 오브젝트에 화살표 탈출");
+            // TODO : 타겟 오브젝트에 외곽선 표시 해제
+        }
+    }
+
     public void OnChangedMonsterData(MonsterData oldVal , MonsterData newVal)
     {
         monsterName = monsterData.name;

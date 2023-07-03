@@ -6,6 +6,7 @@ TagManager:
   tags:
   - TargetObject
   - CardOnHand
+  - CardArrowHead
   layers:
   - Default
   - TransparentFX
