@@ -33,6 +33,8 @@ public class M_TurnManager : NetworkBehaviour
     public bool isCardQueueOperating = false;
 
     public RoomType roomType;
+    [Header("Scene Change Black Curtain")]
+    public GameObject blackCurtain;
 
     public List<Button> selectOrderButtons;
 
@@ -598,21 +600,24 @@ public class M_TurnManager : NetworkBehaviour
 
     public void ReturnToMap()
     {
-        ClearTargetObject();
+        if(isServer)ClearTargetObject();
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+            Debug.Log("Callback Called!");
             // 카메라 위치 리셋
-            Vector2 currLoc = M_MapManager.instance.currentLocation;
-            Camera.main.transform.position = M_MapManager.instance.GetMapCameraLocation() + new Vector3(0,0,-8);
+            Vector3 currLoc = M_MapManager.instance.currentRoom.location;
+            Camera.main.transform.position = currLoc + new Vector3(0,0,-8);
             Camera.main.orthographic = false; 
             // UI 활성화 상태 변경
             M_MapManager.instance.roommaps.SetActive(true);
             M_MapManager.instance.game.SetActive(false);
-            GameUIManager.instance.GameUI.gameObject.SetActive(false);
-            GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
 
             // Dim배경 상태 변경
             blackCurtain.gameObject.SetActive(false);
             blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
+            Debug.Log("Callback Done!");
+
+            GameUIManager.instance.GameUI.gameObject.SetActive(false);
+            GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
         });
     }
 

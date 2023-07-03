@@ -7476,7 +7476,6 @@ MonoBehaviour:
   seedNumber: 0
   gamePlayerDeck: {fileID: 0}
   cards: []
-  cardOnHandsPanel: {fileID: 823382814}
   cardCollidableSize: {x: 0, y: 0, z: 0}
   cardNoneCollidableSize: {x: 0, y: 0, z: 0}
   cardOnHandsPanelPositionY_Range: -4
@@ -8325,6 +8324,8 @@ MonoBehaviour:
   isOrderSelect: 0
   isMyTurn: 0
   isCardQueueOperating: 0
+  roomType: 0
+  blackCurtain: {fileID: 344256298}
   selectOrderButtons:
   - {fileID: 2118407964}
   - {fileID: 2118407963}

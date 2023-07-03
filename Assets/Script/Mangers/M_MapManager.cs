@@ -12,8 +12,8 @@ public class M_MapManager : NetworkBehaviour
     public static M_MapManager Instance = null; 
     
     [SyncVar]
-    public Vector2 currentLocation = new Vector2(0,0);
-    
+    public MapRoom currentRoom;
+   
     [SyncVar]
     public int turnsLeft = 10;
     
@@ -22,7 +22,7 @@ public class M_MapManager : NetworkBehaviour
 
     //방정보는 서버만 관리 (No SyncVar)
     [Header("Room List")]
-    public List<MapRoom> rooms = new List<MapRoom>();
+    public readonly List<MapRoom> rooms = new List<MapRoom>();
 
     // 맵 UI에 사용될 Gameplayer를 참조하는 커스텀 캐릭터 프리팹
     [Header("MapPlayerForUI Prefab")]
@@ -42,9 +42,10 @@ public class M_MapManager : NetworkBehaviour
     public SerializedDictionary<NetworkIdentity, MapRoom> playerVoteMapRoom = new SerializedDictionary<NetworkIdentity, MapRoom>();
 
     [SyncVar]
-    Vector2 moveToRoomDestination;
+    MapRoom moveToRoomDestination;
+
     [SyncVar]
-    Vector3 moveToRoomFrom;
+    MapRoom moveToRoomFrom;
 
     public static M_MapManager instance
     {
@@ -85,6 +86,7 @@ public class M_MapManager : NetworkBehaviour
             newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(loc[i].x) + (int)Mathf.Abs(loc[i].y);
             NetworkServer.Spawn(newRoom);
             rooms.Add(newRoom.GetComponent<MapRoom>());
+            if( i == 0) currentRoom = newRoom.GetComponent<MapRoom>();
         }
     }
 
@@ -101,11 +103,11 @@ public class M_MapManager : NetworkBehaviour
 
     public Vector3 GetMapCameraLocation()
     {
-        return rooms.Find(room => room.location == currentLocation).transform.position;
+        return currentRoom.transform.position;
     }
 
     [Server]
-    public void SetDirection(Vector2 to, Vector3 from)
+    public void SetDirection(MapRoom to, MapRoom from)
     {
         moveToRoomDestination = to;
         moveToRoomFrom = from;
@@ -115,14 +117,9 @@ public class M_MapManager : NetworkBehaviour
     public void MoveToRoom()
     {
         // 현재 위치 표시 여기서 해야함
-        currentLocation = moveToRoomDestination;
+        currentRoom = moveToRoomDestination;
         GenerateNextRoom();
         return;
-    }
-
-    public void SetCameraPosition()
-    {
-        MoveCameraPositionToRoom(moveToRoomFrom);
     }
 
     [Server]
@@ -168,7 +165,7 @@ public class M_MapManager : NetworkBehaviour
             bool isEmpty = true;
             foreach(MapRoom room in rooms)
             {
-                if(room.location == (currentLocation + loc[i]))
+                if(room.location == (currentRoom.location + loc[i]))
                 {
                     isEmpty = false;
                     break;
@@ -176,10 +173,10 @@ public class M_MapManager : NetworkBehaviour
             }
             if(isEmpty)
             {
-                GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3((currentLocation.x + loc[i].x)*1.2f,(currentLocation.y + loc[i].y)*1.2f,0),Quaternion.Euler(40,0,0));
-                newRoom.transform.localPosition = new Vector3((currentLocation.x + loc[i].x)*1.2f,(currentLocation.y + loc[i].y)*1.2f,0);
-                newRoom.GetComponent<MapRoom>().location = new Vector2(currentLocation.x + loc[i].x, currentLocation.y + loc[i].y);
-                newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(currentLocation.x + loc[i].x) + (int)Mathf.Abs(currentLocation.y + loc[i].y);
+                GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3((currentRoom.location.x + loc[i].x)*1.2f,(currentRoom.location.y + loc[i].y)*1.2f,0),Quaternion.Euler(40,0,0));
+                newRoom.transform.localPosition = new Vector3((currentRoom.location.x + loc[i].x)*1.2f,(currentRoom.location.y + loc[i].y)*1.2f,0);
+                newRoom.GetComponent<MapRoom>().location = new Vector2(currentRoom.location.x + loc[i].x, currentRoom.location.y + loc[i].y);
+                newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(currentRoom.location.x + loc[i].x) + (int)Mathf.Abs(currentRoom.location.y + loc[i].y);
                 NetworkServer.Spawn(newRoom);
                 newRoom.GetComponent<MapRoom>().roomType = GetRoomType();
                 rooms.Add(newRoom.GetComponent<MapRoom>());
