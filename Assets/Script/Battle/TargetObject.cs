@@ -148,7 +148,7 @@ public class TargetObject : NetworkBehaviour
     IEnumerator EmemyTargetObjectGenerator()
     {
         WaitForSeconds loopSecond = new WaitForSeconds(0.01f);
-        while(true)
+        while(avatar == null)
         {
             if(objectType == ObjectType.ENEMY && monster.monsterData != null)
             {
@@ -199,6 +199,7 @@ public class TargetObject : NetworkBehaviour
             {
                 player.HP = newVal;
             }
+            hpbar.value = newVal; // HP 슬라이더값 업데이트
         }
     }
 }

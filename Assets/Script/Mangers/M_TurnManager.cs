@@ -488,8 +488,10 @@ public class M_TurnManager : NetworkBehaviour
 
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
             cloneMonsterList.Add(cloneAvatar.GetComponent<TargetObject>());
-            RpcMonsterInit(avatar.GetComponent<TargetObject>(), monster);
-            RpcMonsterInit(cloneAvatar.GetComponent<TargetObject>(), cloneMonster);
+
+            // monster 오브젝트의 부모오브젝트 참조값 설정
+            monster.parent = avatar.GetComponent<TargetObject>();
+            cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
         }
     }
 
@@ -497,18 +499,6 @@ public class M_TurnManager : NetworkBehaviour
     void GenerateNPC()
     {
         // 이벤트 , 상점, 전초기지 NPC 생성 위치
-    }
-
-    // 몬스터 오브젝트 생성되면 몬스터 이름, HP등 뷰 요소의 값을 몬스터 데이터값에 따라 세팅
-    [ClientRpc]
-    public void RpcMonsterInit(TargetObject avatar, SpawnedMonster monster)
-    {
-        monster.transform.SetParent(avatar.transform);
-        Slider hpbar = avatar.transform.GetChild(0).GetChild(3).GetComponent<Slider>();
-        TextMeshProUGUI textMonsterName = avatar.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();
-        textMonsterName.text = monster.monsterName;
-        hpbar.maxValue = monster.MAXHP;;
-        hpbar.value = monster.HP;
     }
 
     [Server]
