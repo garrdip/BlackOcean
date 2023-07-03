@@ -32,7 +32,12 @@ public class TargetObject : NetworkBehaviour
     // Player 의 경우 
     [SyncVar (hook = nameof(InitTargetObjectPlayer))]
     public GamePlayer player;
-    public CloneGamePlayer cloneGamePlayer;
+
+    [SyncVar (hook = nameof(OnChangedPlayerHP))]
+    public int playerHP;
+    
+    [SyncVar]
+    public int playerMaxHP;
 
     public NetworkIdentity conn;
 
@@ -185,5 +190,15 @@ public class TargetObject : NetworkBehaviour
             }
         }
     }
-
+    
+    void OnChangedPlayerHP(int oldVal, int newVal)
+    {
+        if(player != null)
+        {
+            if(player.netIdentity == NetworkClient.connection.identity)
+            {
+                player.HP = newVal;
+            }
+        }
+    }
 }

@@ -38,7 +38,6 @@ public class MapRoom : NetworkBehaviour
         // 맵은 상하좌우 한칸씩만 이동가능
         if(Vector2.Distance(location, M_MapManager.instance.currentRoom.location) <= 1.2f && M_MapManager.instance.currentRoom != this){
             Debug.Log(" 클릭 : " + location + " / " + M_MapManager.instance.currentRoom);
-            NetworkClient.localPlayer.GetComponent<GamePlayer>().destination = location;
             NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdSelectMapRoom(this, NetworkClient.connection.identity);
             NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeCurrentMapPlayerPosition(this, GetComponent<Transform>().position);
         }

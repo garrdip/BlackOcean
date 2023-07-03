@@ -12,7 +12,7 @@ public class MonsterTroll : SpawnedMonster
         switch(nextAction.actionType)
         {
             case ActionType.SINGLEATTACK :
-                nextTarget.player.HP -= nextAction.actionValue;
+                nextTarget.playerHP -= nextAction.actionValue;
                 DoAnimation();
                 break;
             case ActionType.DEFENSE :
@@ -23,7 +23,7 @@ public class MonsterTroll : SpawnedMonster
                 DoAnimation();
                 foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
                 {
-                    target.player.HP -= nextAction.actionValue;
+                    target.playerHP -= nextAction.actionValue;
                 }
                 break;
         }

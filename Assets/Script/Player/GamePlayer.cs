@@ -30,9 +30,6 @@ public class GamePlayer : NetworkBehaviour
     public bool isRewardDone = false;
 
     [SyncVar]
-    public Vector2 destination;
-
-    [SyncVar]
     public ulong steamID;
 
     [SyncVar (hook = nameof(OnEndTurnStateChanged))]
@@ -84,7 +81,6 @@ public class GamePlayer : NetworkBehaviour
             HP = 100;
             MaxHP = 100;
             isInitializeDone = true;
-            Debug.Log("다른 플레이어 기다림 시작!");
             StartCoroutine(nameof(WaitPlayerList));
         }
     }
@@ -138,7 +134,7 @@ public class GamePlayer : NetworkBehaviour
             {
                 if(!player.isReady) return;
             }
-            foreach(GamePlayer player in users) player.isReady = false; // 레디 상태 모두 확인후 다시 Flase로 되돌림 (여러군데서 사용 예정)
+            foreach(GamePlayer player in users)player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 Flase로 되돌림 (여러군데서 사용 예정)
             // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
             MapRoom mapRoom = M_MapManager.instance.GetVoteMapRoomResult();
             if(mapRoom != null){
@@ -155,6 +151,20 @@ public class GamePlayer : NetworkBehaviour
         }    
     }
 
+    [ClientRpc]
+    public void SetIsReadyStateDefault()
+    {
+        if(netIdentity == NetworkClient.connection.identity)
+            isReady = false;
+    }
+
+    [ClientRpc]
+    public void SetEndTurnActiveStateDefault()
+    {
+        if(netIdentity == NetworkClient.connection.identity)
+            endTurnActive = false;
+    }
+
     public void OnCompleteReward(bool oldVal, bool newVal)
     {
         if(isServer)
@@ -164,9 +174,16 @@ public class GamePlayer : NetworkBehaviour
             {
                 if(!player.isRewardDone) return;
             }
-            foreach(GamePlayer player in users) player.isRewardDone = false;
+            foreach(GamePlayer player in users)player.SetCompleteRewardStateDefault();
             M_TurnManager.instance.NoneBattleEnd();
         }   
+    }
+
+    [ClientRpc]
+    public void SetCompleteRewardStateDefault()
+    {
+        if(netIdentity == NetworkClient.connection.identity)
+            isRewardDone = false;
     }
 
     // 채팅 메시지 이벤트 송신

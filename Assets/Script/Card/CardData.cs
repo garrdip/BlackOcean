@@ -137,12 +137,12 @@ public class CardData : SingletonD<CardData>
         if(from.isCloneData)return;
         if(from.player.character == Character.ERIS && from == tar) // 에리스의 경우 피가 닳아있을경우 체력을 채움
         {
-            int remind = from.player.MaxHP - from.player.HP;
+            int remind = from.playerMaxHP - from.playerHP;
             if(remind >= value)
-                from.player.HP += value;
+                from.playerHP += value;
             else
             {
-                from.player.HP = from.player.MaxHP;
+                from.playerHP = from.playerMaxHP;
                 from.defense += value - remind;
             }
         }
@@ -425,14 +425,14 @@ public class CardData : SingletonD<CardData>
     {
         //ToDo : 힘의 이치, 방어의 이치 적용 여부, 
         if(!tar[0].isCloneData) yield return tempWait;
-        int remind = tar[0].player.MaxHP - tar[0].player.HP;
+        int remind = tar[0].playerMaxHP - tar[0].playerHP;
         if(remind >= 3 + tar[0].buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value)
         {
-            tar[0].player.HP += 3 + tar[0].buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value; // 방어의 이치 적용할지 판단
+            tar[0].playerHP += 3 + tar[0].buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value; // 방어의 이치 적용할지 판단
         }
         else
         {
-            tar[0].player.HP = tar[0].player.MaxHP;
+            tar[0].playerHP = tar[0].playerMaxHP;
             foreach(TargetObject target in tar)
             {
                 if(target.objectType != ObjectType.PLAYER) // 힘의 이치를 적용할지 판단해야함
@@ -444,7 +444,7 @@ public class CardData : SingletonD<CardData>
     public IEnumerator E8(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
-        if(tar[0].player.HP != 1) tar[0].player.HP /= 2;
+        if(tar[0].playerHP != 1) tar[0].playerHP /= 2;
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator E9(Card card,List<TargetObject> tar)

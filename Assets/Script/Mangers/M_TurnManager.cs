@@ -405,7 +405,7 @@ public class M_TurnManager : NetworkBehaviour
     {
         foreach(TargetObject user in spawnedPlayerList)
         {
-            user.player.endTurnActive = false;
+            user.player.SetEndTurnActiveStateDefault();
         }
     }
 
@@ -427,6 +427,8 @@ public class M_TurnManager : NetworkBehaviour
             GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),playerSpawnLocation.GetChild(i).transform.position,Quaternion.identity);
             NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().player = playerOrder[i];
+            avatar.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
+            avatar.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
             avatar.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
             spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
@@ -435,8 +437,9 @@ public class M_TurnManager : NetworkBehaviour
             // 타겟 유효 판단을 위한 클론 데이터 //
             GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
             NetworkServer.Spawn(clone);
-            clone.GetComponent<TargetObject>().cloneGamePlayer = new CloneGamePlayer(playerOrder[i]);
             clone.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
+            clone.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
+            clone.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
             clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
             clone.GetComponent<TargetObject>().isCloneData = true;
 
