@@ -606,7 +606,7 @@ public class M_TurnManager : NetworkBehaviour
         if(isServer)ClearTargetObject();
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
             // 카메라 위치 리셋
-            Vector3 currLoc = M_MapManager.instance.currentRoom.location;
+            Vector3 currLoc = M_MapManager.instance.currentRoom.transform.position;
             Camera.main.transform.position = currLoc + new Vector3(0,0,-8);
             Camera.main.orthographic = false; 
             // UI 활성화 상태 변경

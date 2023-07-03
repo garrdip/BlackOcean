@@ -107,10 +107,9 @@ public class M_MapManager : NetworkBehaviour
     }
 
     [Server]
-    public void SetDirection(MapRoom to, MapRoom from)
+    public void SetDirection(MapRoom to)
     {
         moveToRoomDestination = to;
-        moveToRoomFrom = from;
     }
 
     [Server]    
@@ -148,7 +147,7 @@ public class M_MapManager : NetworkBehaviour
 
             // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
             M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
-            M_TurnManager.instance.GenerateBattleObject();
+            if(isServer)M_TurnManager.instance.GenerateBattleObject();
             if(isServer)M_MapManager.instance.MoveToRoom(); // 이순간에 새로운 맵 생성
         });
     }
