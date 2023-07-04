@@ -158,9 +158,10 @@ public class CardData : SingletonD<CardData>
     public IEnumerator H0(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
+        if(!tar[0].isCloneData) M_TurnManager.instance.ChangePlayerOrder(tar[0].player,MoveDirection.FORWARD);
+        if(!tar[0].isCloneData) yield return new WaitForSeconds(0.5f);
         M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
         GeneralSingleAttack(tar[0],tar[1],15);
-        if(!tar[0].isCloneData) M_TurnManager.instance.ChangePlayerOrder(tar[0].player,MoveDirection.FORWARD);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
 
