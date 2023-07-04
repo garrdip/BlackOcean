@@ -34,27 +34,13 @@ public class RoomPlayer : NetworkRoomPlayer
         if(!isServer)RoomUI.instance.SetReadyButton("READY");
         else RoomUI.instance.SetReadyButton("");
         steamID = (ulong)SteamUser.GetSteamID();
-        base.OnStartLocalPlayer();
-    }
-
-    // RoomPlayer 시작시 프로필 변경
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-    }
-
-    // 클라 + 호스트 종료 시 RoomPlayerForUI 오브젝트 파괴 및 리스트에서 제거
-    public override void OnStopClient()
-    {
-        base.OnStopClient();
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
     }
 
     // 채팅 메시지 이벤트 송신
     [Command]
     public void CmdSendChatMessage(string message, NetworkConnectionToClient sender = null)
     {
-        if (!string.IsNullOrWhiteSpace(message)){
+        if(!string.IsNullOrWhiteSpace(message)){
             string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
             RpcReceiveChatMessage(playerName, message.Trim());
         }
