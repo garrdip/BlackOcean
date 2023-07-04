@@ -168,26 +168,6 @@ public class M_TurnManager : NetworkBehaviour
     }
 
     [Server]
-    public void SetCurrentPlayer()
-    {
-        if(currentPlayer == null)
-            currentPlayer = playerOrder[0];
-        else if(currentPlayer == playerOrder[playerOrder.Count -1])
-            currentPlayer = playerOrder[0];
-        else
-        {
-            for(int i = 0 ; i < playerOrder.Count ; i ++)        
-            {
-                if(currentPlayer == playerOrder[i])
-                {
-                    currentPlayer = playerOrder[i+1];
-                    break;
-                }
-            }
-        }
-    }
-
-    [Server]
     public void HandleStartBattle(MapRoom mapRoom)
     {
         roomType = mapRoom.roomType;
@@ -270,7 +250,6 @@ public class M_TurnManager : NetworkBehaviour
             }
             playerOrder[order] = player;
         }
-        phase = BattleTurn.PLAYER_PREEFFECT;
     }
 
     [Server]
@@ -388,7 +367,6 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void PlayerPreEffect()
     {
-        SetCurrentPlayer();
         phase = BattleTurn.PLAYER_DRAW;
     }
 
@@ -421,6 +399,7 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void GeneratePlayerUnit()
     {
+        PlayerOrderSelectPhase();
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         for(int i = 0 ;i < playerOrder.Count ; i ++)
         {
@@ -608,6 +587,61 @@ public class M_TurnManager : NetworkBehaviour
             blackCurtain.gameObject.SetActive(false);
             blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
         });
+    }
+
+    public void ChangePlayerOrder(GamePlayer player, MoveDirection direction)
+    {
+        Debug.Log("ChangePlayerOrder Called");
+        TargetObject forwarding = null,backwarding = null;
+        Vector3 forwardingDestination = new Vector3(0,0,0),backwardingDestination = new Vector3(0,0,0);
+        if(direction == MoveDirection.FORWARD)
+        {
+            if(player.selectOrder == 0) return;
+            Debug.Log(player.selectOrder);
+            GamePlayer swap = playerOrder[player.selectOrder-1];
+            playerOrder[player.selectOrder-1] = player;
+            playerOrder[player.selectOrder] = swap;
+            player.SetPlayerOrder(player.selectOrder - 1);
+            swap.SetPlayerOrder(swap.selectOrder + 1);
+            Debug.Log(player.selectOrder);
+            foreach(TargetObject tar in spawnedPlayerList)
+            {
+                if(tar.player == player)
+                {   
+                    forwarding = tar;
+                    backwardingDestination = tar.transform.position;
+                }
+                if(tar.player == swap)
+                {
+                    backwarding = tar;
+                    forwardingDestination = tar.transform.position;
+                }
+            }
+        }
+        if(direction == MoveDirection.BACKWARD)
+        {
+            if(player.selectOrder == NetworkServer.connections.Count - 1) return;
+            GamePlayer swap = playerOrder[player.selectOrder+1];
+            playerOrder[player.selectOrder+1] = player;
+            playerOrder[player.selectOrder] = swap;
+            player.SetPlayerOrder(player.selectOrder + 1);
+            swap.SetPlayerOrder(swap.selectOrder - 1);
+            foreach(TargetObject tar in spawnedPlayerList)
+            {
+                if(tar.player == player)
+                {   
+                    backwarding = tar;
+                    forwardingDestination = tar.transform.position;
+                }
+                if(tar.player == swap)
+                {
+                    forwarding = tar;
+                    backwardingDestination = tar.transform.position;
+                }
+            }
+        }
+        forwarding.transform.DOMove(forwardingDestination,0.5f,false);
+        backwarding.transform.DOMove(backwardingDestination,0.5f,false);
     }
 
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//

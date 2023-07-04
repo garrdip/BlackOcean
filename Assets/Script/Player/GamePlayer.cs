@@ -201,4 +201,20 @@ public class GamePlayer : NetworkBehaviour
     {
         MapUI.instance.AppendMessage(playerName, message);
     }
+
+    [Server]
+    public void SetPlayerOrder(int num)
+    {
+        SetPlayerOrderRPC(num);
+    }
+
+    [ClientRpc]
+    void SetPlayerOrderRPC(int num)
+    {
+        if(isLocalPlayer)
+        {
+            selectOrder = num;
+            Debug.Log("Player Order 변경됨");
+        }
+    }
 }

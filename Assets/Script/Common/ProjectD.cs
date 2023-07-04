@@ -15,6 +15,7 @@ namespace ProjectD
     public enum BuffType { NONE, DEFENSE, ICHI_ATTACK, ICHI_DEFENSE , MOMISPOWERFUL, FLOWERPOWDER, FLOWER, CARDCOSTONE, SOIRAK, APDO, THEREISNOJABI, BOONGGUI, BYEOLMURI}
     public enum DeckListType { PREFARE_DECK, TRASH_DECK }
 
+    public enum MoveDirection {FORWARD, BACKWARD}
     public static class StringUtils{
         public static string RemoveZWSP(string input)
         {

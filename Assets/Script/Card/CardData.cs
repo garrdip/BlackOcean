@@ -19,12 +19,8 @@ public class CardData : SingletonD<CardData>
     }
     set{
         isCardOperatingTEST = value;
-        TEST();
     }}
-    public void TEST()
-    {
-        Debug.Log("False로 바뀜");
-    }
+
     WaitForSeconds tempWait = new WaitForSeconds(1f);
 
     //Version 3
@@ -164,6 +160,7 @@ public class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData) yield return tempWait;
         M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
         GeneralSingleAttack(tar[0],tar[1],15);
+        if(!tar[0].isCloneData) M_TurnManager.instance.ChangePlayerOrder(tar[0].player,MoveDirection.FORWARD);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
 
