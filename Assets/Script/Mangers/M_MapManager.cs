@@ -22,7 +22,7 @@ public class M_MapManager : NetworkBehaviour
 
     //방정보는 서버만 관리 (No SyncVar)
     [Header("Room List")]
-    public readonly List<MapRoom> rooms = new List<MapRoom>();
+    public List<MapRoom> rooms = new List<MapRoom>();
 
     // 맵 UI에 사용될 Gameplayer를 참조하는 커스텀 캐릭터 프리팹
     [Header("MapPlayerForUI Prefab")]

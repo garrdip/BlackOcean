@@ -12,19 +12,19 @@ public class GamePlayerMap : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeCurrentMapPlayerPosition))]
     public Vector3 currentMapPlayerPosition;
 
-    public override void OnStartLocalPlayer()
+    public override void OnStartServer()
     {
-        CmdSpawndMapPlayerPiece();
+        SpawnMapPlayerPiece();
     }
 
     // 맵에서 사용될 플레이어 권한을 가진 삼각형 오브젝트 생성
-    [Command]
-    public void CmdSpawndMapPlayerPiece()
+    [Server]
+    public void SpawnMapPlayerPiece()
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         GameObject mapPlayerPiece = Instantiate(
             M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerPiece"),
-            M_MapManager.instance.rooms[0].transform.position, // 중앙에 생성된 room 타일
+            Vector3.zero,
             Quaternion.identity
         );
         NetworkServer.Spawn(mapPlayerPiece, connectionToClient);
