@@ -597,13 +597,11 @@ public class M_TurnManager : NetworkBehaviour
         if(direction == MoveDirection.FORWARD)
         {
             if(player.selectOrder == 0) return;
-            Debug.Log(player.selectOrder);
             GamePlayer swap = playerOrder[player.selectOrder-1];
             playerOrder[player.selectOrder-1] = player;
             playerOrder[player.selectOrder] = swap;
             player.SetPlayerOrder(player.selectOrder - 1);
             swap.SetPlayerOrder(swap.selectOrder + 1);
-            Debug.Log(player.selectOrder);
             foreach(TargetObject tar in spawnedPlayerList)
             {
                 if(tar.player == player)
@@ -640,8 +638,8 @@ public class M_TurnManager : NetworkBehaviour
                 }
             }
         }
-        forwarding.transform.DOMove(forwardingDestination,0.5f,false);
-        backwarding.transform.DOMove(backwardingDestination,0.5f,false);
+        forwarding.transform.DOMove(forwardingDestination,0.5f,false).SetEase(Ease.OutQuart);
+        backwarding.transform.DOMove(backwardingDestination,0.5f,false).SetEase(Ease.OutQuart);
     }
 
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
