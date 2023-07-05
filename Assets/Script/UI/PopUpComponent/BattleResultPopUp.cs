@@ -71,7 +71,8 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         DOTween.KillAll(); // 전투 결과 팝업 호출 시 모든 Tweening 제거(카드 수행도중 전투종료로 팝업이 호출되어, 네트워크 오브젝트가 제거되었으나 트위닝에 의해 접근을 하려는 경우를 방지하기 위함.)
         canvasGroup.DOFade(1.0f, 0.5f);
         CreateResultCard(3); // 랜덤 보상 카드 3개 생성
-        M_CardManager.instance.RemoveAllCurrentPlayerArrow();
+        M_CardManager.instance.RemoveAllCurrentPlayerArrow(); // 화살표 제거
+        M_CardManager.instance.ChangeCurrentPlayerCardOnHandState(false); // 남아있는 CardOnHand 오브젝트들의 상태값 초기화
     }
     
     // BattleResultPopUp 비활성화 콜백

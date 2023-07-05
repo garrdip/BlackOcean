@@ -204,7 +204,6 @@ public class M_CardManager : NetworkBehaviour
                     cardOnHand.isMoving = false;
                     gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
                     GameUIManager.instance.buttonEndTurn.interactable = true;
-                    ChangeCardOnHandShiftState(cardOnHand, false);
                 }
             }
         });
@@ -357,8 +356,21 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if (gamePlayerDeck.isLocalPlayer){
+            if(gamePlayerDeck.isLocalPlayer){
                 gamePlayerDeck.CmdEnQueueCardTargetPair(card, targetObject, conn, cardCtrlArrow);
+            }
+        }
+    }
+
+    // 로컬 플레이어의 현재 소환된 CardOnHand의 상태 변수들 변경
+    public void ChangeCurrentPlayerCardOnHandState(bool state)
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                    ResetCardAllState(cardOnHand, state);
+                }
             }
         }
     }
