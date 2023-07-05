@@ -214,7 +214,6 @@ public class GamePlayer : NetworkBehaviour
         if(isLocalPlayer)
         {
             selectOrder = num;
-            Debug.Log("Player Order 변경됨");
         }
     }
 }

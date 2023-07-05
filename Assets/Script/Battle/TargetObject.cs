@@ -111,7 +111,6 @@ public class TargetObject : NetworkBehaviour
     }
     public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
     {
-        Debug.Log("Init Player!");
         if(objectType == ObjectType.PLAYER)
         {
             switch(player.character)

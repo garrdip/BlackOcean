@@ -226,7 +226,6 @@ public class M_TurnManager : NetworkBehaviour
     {
         if(!tar.isCloneData) // Clone 데이터 검증은 Animation 스킵
         {
-            Debug.Log("Animation Start!");
             SkeletonAnimation anim = tar.avatar.GetComponent<SkeletonAnimation>();
             anim.state.SetAnimation(trackIndex,animationName,loop);
         }
