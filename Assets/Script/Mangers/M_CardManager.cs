@@ -205,6 +205,8 @@ public class M_CardManager : NetworkBehaviour
                     cardOnHand.isMoving = false;
                     gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
                     GameUIManager.instance.buttonEndTurn.interactable = true;
+                    ChangeCardOnHandColliderSize(cardOnHand, M_CardManager.instance.cardCollidableSize);
+                    ChangeCardOnHandShiftState(cardOnHand, false);
                 }
             }
         });
