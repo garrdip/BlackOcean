@@ -75,7 +75,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
     void OnMouseEnter()
     {
-        if(isOwned && !isMoving && !IsCardControllablePopUpActive() && !isChoosed && M_TurnManager.instance.IsActivePhase()){
+        if(isOwned && !isMoving && !isChoosed && !IsCardControllablePopUpActive()  && M_TurnManager.instance.IsActivePhase() && !IsArrowActive()){
             isMouseOver = true;
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
@@ -87,7 +87,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에서 마우스 포인터 나갈 때 이벤트
     void OnMouseExit()
     {
-        if(isOwned && !isMoving && !IsCardControllablePopUpActive() && M_TurnManager.instance.IsActivePhase()){
+        if(isOwned && !isMoving && !IsCardControllablePopUpActive() && M_TurnManager.instance.IsActivePhase() && !IsArrowActive()){
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
             cardOnHandCanvas.sortingOrder = originSortOrder;
@@ -178,6 +178,12 @@ public class CardOnHand : NetworkBehaviour
     private bool IsCardOnHandRemovePopUpActive()
     {
         return PopUpUIManager.instance.cardOnHandRemovePopUp.activeSelf;
+    }
+
+    // 화살표 활성화 여부 확인 함수
+    private bool IsArrowActive()
+    {
+        return M_CardManager.instance.isArrowActive;
     }
 
     // 카드 정렬값 이벤트 수신

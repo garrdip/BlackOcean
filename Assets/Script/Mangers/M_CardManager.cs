@@ -21,13 +21,6 @@ public class M_CardManager : NetworkBehaviour
     [Header("충돌 판정이 가능한 원래의 충돌체 크기값")]
     public Vector3 cardCollidableSize;
 
-    [Header("충돌 판정이 되지 않도록 크기를 줄인 충돌체 크기값")]
-    public Vector3 cardNoneCollidableSize;
-
-    [Header("cardOnHandsPanel의 위치 Y값 범위")]
-    [Range(-5.0f, 2.0f)]
-    public float cardOnHandsPanelPositionY_Range;
-
     [Header("카드 대칭 계산값 변수 범위")]
     [Range(-2.5f, 2.5f)]
     public float symmetryRange;
@@ -56,6 +49,9 @@ public class M_CardManager : NetworkBehaviour
     [Header("카드 정렬 순서 최대값")]
     public readonly int maxSortOrder = 999;
 
+    [Header("화살표 활성화 상태 여부")]
+    public bool isArrowActive = false;
+
 
     public static M_CardManager instance
     {
@@ -76,7 +72,6 @@ public class M_CardManager : NetworkBehaviour
             GetCurrentCharacterCardData();
         }
         InitSymmetryValue();
-        cardNoneCollidableSize = new Vector3(0f, 0f, 0f);
         cardOriginSize = new Vector3(0.1f, 0.1f, 0.1f);
         cardOverSize = cardOriginSize + new Vector3(0.05f, 0.05f, 0.05f);
     }
@@ -279,7 +274,7 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
-    // 각 플레이어들 소유의 카드와 화살표 생성
+    // 로컬 플레이어의 PrefareDeck에 셔플 수행후 추가
     public void SpawnPlayerOwnedCardAndArrow()
     {
         if(NetworkClient.connection != null && NetworkClient.active){

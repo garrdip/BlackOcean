@@ -55,11 +55,13 @@ public class GameUIManager : SingletonD<GameUIManager>
     }
 
     // 화면 전체 Dim 효과용 이미지 컴포넌트 Fade 애니매이션
-    public void FadeBlackCurtain(System.Action<Image> callback)
+    public void FadeBlackCurtain(System.Action<Image> callback = null)
     {
         blackCurtain.gameObject.SetActive(true);
         blackCurtain.DOFade(1.0f, 0.5f).OnComplete(() => {
-            callback(blackCurtain);
+            if(callback != null){
+                callback(blackCurtain);
+            }
         }); 
     }
 }

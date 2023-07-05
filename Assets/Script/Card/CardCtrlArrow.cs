@@ -16,23 +16,22 @@ public class CardCtrlArrow : NetworkBehaviour
     public GameObject currentTarget; // 현재 소환된 화살표가 타겟으로 잡은 오브젝트
 
     public float scaleFactor = 1f;
-
-    private const int arrowSortingOrder = 1000; // 카드 Hover상태의 경우 카드의 sortingOrder는 999, 따라서 화살표는 그보다 항상 위
     private Transform origin;
     public List<Transform> arrowNodes = new List<Transform>();
-    private List<Vector2> controlPoints = new List<Vector2>();
+    private readonly List<Vector2> controlPoints = new List<Vector2>();
     private readonly List<Vector2> controlPointFactors = new List<Vector2>{ new Vector2(-0.3f, 0.8f), new Vector2(0.1f, 1.4f) };
 
     void Start()
     {
         origin = GetComponent<Transform>();
         ChangeArrowVisible(isOwned, GameUIManager.instance.CardOnHandsPanel.transform);
+        M_CardManager.instance.isArrowActive = false; // 생성 시점에는 오브젝트가 활성화 되어있지만(네트워크 오브젝트는 생성시 Active 상태), 활성화 상태 변수값은 false로 초기화
     }
 
     void Update()
     {
         if(isOwned){       
-            SetArrowNodesScale();   
+            SetArrowNodesScale();
             HandleArrowAction();
             HandleArrowRemove();
             HandleArrowNodesTrasnform();
@@ -98,7 +97,7 @@ public class CardCtrlArrow : NetworkBehaviour
         }
     }
 
-    // 화살표 초기화(위치설정, visible상태 활성화, 베지어 곡선 조작점 설정)
+    // 화살표 초기화(위치설정, visible상태 활성화, 베지어 곡선 조작점 설정, 화살표 활성화 상태 변수 변경)
     public void InitCardCtrlArrow(CardOnHand cardOnHand)
     {
         transform.position = cardOnHand.transform.position;
@@ -115,7 +114,7 @@ public class CardCtrlArrow : NetworkBehaviour
         }
     }
 
-    // 현재 소환된 카드 타겟 화살표 제거, 화살표 소유 카드의 충돌체 크기 변경 및 상태값 변경,
+    // 현재 소환된 카드 타겟 화살표 제거, 화살표 소유 카드의 상태값 변경,
     public void RemoveCardCtrlArrow()
     {
         if(isOwned && arrowOwnedCardOnHand != null){
@@ -132,6 +131,7 @@ public class CardCtrlArrow : NetworkBehaviour
     public void ChangeArrowVisible(bool isVisible, Transform parent)
     {
         this.gameObject.SetActive(isVisible);
+        M_CardManager.instance.isArrowActive = isVisible;
         transform.SetParent(parent);
     }
 

@@ -19,12 +19,6 @@ public class GamePlayerDeck : NetworkBehaviour
 
     public const int arrowNodeNum = 13; // 카드 컨트롤 화살표 몸통 개수
 
-    public const int defaultCardOnHandCount = 10; // 카드 오브젝트 기본 개수
-
-    public const int maxCardOnHandCount = 12; // 카드 오브젝트 최대 개수
-
-    public readonly SyncList<Artifact> artifacts = new SyncList<Artifact>();
-
     public readonly SyncList<Card> deck =  new SyncList<Card>(); // 댁 총괄 데이터
 
     public readonly  SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 카드(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
