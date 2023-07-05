@@ -80,7 +80,6 @@ public class CardOnHand : NetworkBehaviour
             originSortOrder = index;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
             cardOnHandCanvas.sortingOrder =  M_CardManager.instance.maxSortOrder;
-            M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardNoneCollidableSize);
             M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
         }
     }
@@ -92,7 +91,6 @@ public class CardOnHand : NetworkBehaviour
             isMouseOver = false;
             transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
             cardOnHandCanvas.sortingOrder = originSortOrder;
-            M_CardManager.instance.ChangeCardOnHandColliderSize(this, M_CardManager.instance.cardCollidableSize);
             M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
         }
     }

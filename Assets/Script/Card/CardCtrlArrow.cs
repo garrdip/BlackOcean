@@ -124,7 +124,6 @@ public class CardCtrlArrow : NetworkBehaviour
             arrowOwnedCardOnHand.isMoving = false;
             arrowOwnedCardOnHand.isMouseOver = false;
             arrowOwnedCardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = arrowOwnedCardOnHand.originSortOrder;
-            M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
             M_CardManager.instance.ChangeCardOnHandShiftState(arrowOwnedCardOnHand, false);
         }
     }
@@ -170,7 +169,6 @@ public class CardCtrlArrow : NetworkBehaviour
         if(conn == NetworkClient.connection.identity){
             ChangeArrowVisible(false, GameUIManager.instance.CardOnHandsPanel.transform); // 화살표 활성화 상태 변경
             M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
-            M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize); // 카드 충돌체 크기 변경
         }
     }
 }

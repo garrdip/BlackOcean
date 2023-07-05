@@ -76,7 +76,6 @@ public class M_CardManager : NetworkBehaviour
             GetCurrentCharacterCardData();
         }
         InitSymmetryValue();
-        cardCollidableSize = new Vector3(22f, 30f, 1f);
         cardNoneCollidableSize = new Vector3(0f, 0f, 0f);
         cardOriginSize = new Vector3(0.1f, 0.1f, 0.1f);
         cardOverSize = cardOriginSize + new Vector3(0.05f, 0.05f, 0.05f);
@@ -205,7 +204,6 @@ public class M_CardManager : NetworkBehaviour
                     cardOnHand.isMoving = false;
                     gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
                     GameUIManager.instance.buttonEndTurn.interactable = true;
-                    ChangeCardOnHandColliderSize(cardOnHand, M_CardManager.instance.cardCollidableSize);
                     ChangeCardOnHandShiftState(cardOnHand, false);
                 }
             }
@@ -250,22 +248,6 @@ public class M_CardManager : NetworkBehaviour
         Vector3 right = centerPosition + new Vector3(2f, 0f, 0f);
         Vector3 targetPosition = (index == 0) ? left : right;
         removeCardOnHand.transform.DOMove(targetPosition, 0.2f).SetEase(Ease.OutSine);
-    }
-
-
-    // 로컬 플레이어의 CardOnHand 오브젝트의 충돌체 크기 조정(마우스 오버되지 않은 카드들의 충돌체 사이즈를 줄여서 충돌판정을 받지 않도록 함)
-    public void ChangeCardOnHandColliderSize(CardOnHand mouseOveredCardOnHand, Vector3 size)
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                    if(cardOnHand != mouseOveredCardOnHand){
-                        cardOnHand.GetComponent<BoxCollider>().size = size;
-                    }
-                }
-            }
-        }
     }
 
     // 로컬 플레이어의 CardOnHand 오브젝트들의 sortingLayer 변경
