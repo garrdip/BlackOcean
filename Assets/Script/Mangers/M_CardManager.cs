@@ -18,9 +18,6 @@ public class M_CardManager : NetworkBehaviour
     [Header("현재 플레이어가 선택한 캐릭터의 카드 리스트")]
     public List<Card> cards = new List<Card>();
 
-    [Header("충돌 판정이 가능한 원래의 충돌체 크기값")]
-    public Vector3 cardCollidableSize;
-
     [Header("카드 대칭 계산값 변수 범위")]
     [Range(-2.5f, 2.5f)]
     public float symmetryRange;

@@ -38,7 +38,6 @@ public class M_TurnManager : NetworkBehaviour
 
     public List<Button> selectOrderButtons;
 
-    public GameObject startButton;
 
     [Header("Spwan Object Transfrom Group")]
     public Transform playerSpawnLocation;

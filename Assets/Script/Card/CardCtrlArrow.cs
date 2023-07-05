@@ -10,9 +10,6 @@ public class CardCtrlArrow : NetworkBehaviour
 {
     [SyncVar]
     public CardOnHand arrowOwnedCardOnHand; // 현재 소환된 화살표의 주인 카드
-
-    public GameObject arrowHeadPrefab;
-    public GameObject arrowNodePrefab;
     public GameObject currentTarget; // 현재 소환된 화살표가 타겟으로 잡은 오브젝트
 
     public float scaleFactor = 1f;

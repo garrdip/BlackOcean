@@ -24,10 +24,6 @@ public class M_MapManager : NetworkBehaviour
     [Header("Room List")]
     public List<MapRoom> rooms = new List<MapRoom>();
 
-    // 맵 UI에 사용될 Gameplayer를 참조하는 커스텀 캐릭터 프리팹
-    [Header("MapPlayerForUI Prefab")]
-    public GameObject mapPlayerForUI;
-
     [Header("Map Scene")]
     public GameObject roommaps;
 
@@ -44,8 +40,6 @@ public class M_MapManager : NetworkBehaviour
     [SyncVar]
     MapRoom moveToRoomDestination;
 
-    [SyncVar]
-    MapRoom moveToRoomFrom;
 
     public static M_MapManager instance
     {
