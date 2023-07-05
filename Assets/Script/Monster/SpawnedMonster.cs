@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Mirror;
-
+using ProjectD;
 public class SpawnedMonster : NetworkBehaviour
 {
     public string monsterName;
@@ -24,7 +24,7 @@ public class SpawnedMonster : NetworkBehaviour
 
     public MonsterActionList currentBehavior;
     [SyncVar]
-    public TargetObject nextTarget;
+    public PlayOrder nextTarget;
     
     [SyncVar (hook = nameof(OnChangedMonsterData))]
     public MonsterData monsterData;
@@ -50,7 +50,7 @@ public class SpawnedMonster : NetworkBehaviour
     [Server]
     public void SetNextTarget()
     {
-        nextTarget = M_TurnManager.instance.spawnedPlayerList[0];
+        nextTarget = PlayOrder.FIRST;
     }
 
     [Server]
@@ -113,6 +113,22 @@ public class SpawnedMonster : NetworkBehaviour
         textMonsterName.text = monsterName;
         hpbar.maxValue = MAXHP;;
         hpbar.value = MAXHP;
+    }
+    
+    //-------------------------------------- Battle Method ----------------------------------//
+    public void GeneralSingleAttack()
+    {
+        M_TurnManager.instance.GetTargetObjectFromOrder(nextTarget)[0].playerHP -= nextAction.actionValue;
+        M_TurnManager.instance.GetTargetObjectFromOrder(nextTarget)[1].playerHP -= nextAction.actionValue; // Clone도 데미지 적용(TBD)
+    }
+
+
+    public void GeneralFullScaleAttack()
+    {
+        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+            target.playerHP -= nextAction.actionValue;
+        foreach(TargetObject target in M_TurnManager.instance.clonePlayerList)
+            target.playerHP -= nextAction.actionValue;
     }
 
 }

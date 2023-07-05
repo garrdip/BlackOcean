@@ -641,6 +641,16 @@ public class M_TurnManager : NetworkBehaviour
         backwarding.transform.DOMove(backwardingDestination,0.5f,false).SetEase(Ease.OutQuart);
     }
 
+    public TargetObject[] GetTargetObjectFromOrder(PlayOrder PlayOrder)
+    {
+        TargetObject[] retVal = new TargetObject[2];
+        foreach(TargetObject tar in spawnedPlayerList)
+            if(playerOrder[(int)PlayOrder] == tar.player) retVal[0] = tar;
+        foreach(TargetObject tar in clonePlayerList)
+            if(playerOrder[(int)PlayOrder] == tar.player) retVal[1] = tar;
+        return retVal;
+    }
+
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
     private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
     {

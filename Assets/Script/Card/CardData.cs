@@ -153,6 +153,11 @@ public class CardData : SingletonD<CardData>
                 tar.defense += ( defenseValue + from.buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value );
         }
     }
+
+    public bool IsGISADO(List<TargetObject> tar)
+    {
+        return ((int)tar[1].monster.nextTarget == tar[0].player.selectOrder)? true : false;
+    }
     // Card Method List 
     // HONG DAN HYANG
     public IEnumerator H0(Card card,List<TargetObject> tar)
@@ -259,7 +264,7 @@ public class CardData : SingletonD<CardData>
         {
             GeneralSingleAttack(tar[0],tar[1],9);
             // 기사도 효과
-            if(tar[1].monster.nextTarget == tar[0])
+            if(IsGISADO(tar))
             {
                 GeneralSingleAttack(tar[0],tar[1],9);
                 GeneralSingleAttack(tar[0],tar[1],9);
@@ -339,7 +344,7 @@ public class CardData : SingletonD<CardData>
     {
         if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],9);
-        if(tar[1].monster.nextTarget == tar[0])
+        if(IsGISADO(tar))
             GeneralSingleAttack(tar[0],tar[1],9);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
