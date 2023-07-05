@@ -143,10 +143,9 @@ public class GamePlayer : NetworkBehaviour
                     mapPlayerPiece.RpcChangeMapPlayerPiecePosition(mapRoom.transform.position);
                     M_MapManager.instance.SetDirection(mapRoom);
                 }
+                // All Player Ready !
+                M_TurnManager.instance.HandleStartBattle(mapRoom);
             }
-
-            // All Player Ready !
-            M_TurnManager.instance.HandleStartBattle(mapRoom);
         }    
     }
 
