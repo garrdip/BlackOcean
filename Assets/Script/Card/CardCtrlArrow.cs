@@ -125,6 +125,7 @@ public class CardCtrlArrow : NetworkBehaviour
             arrowOwnedCardOnHand.isMouseOver = false;
             arrowOwnedCardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = arrowOwnedCardOnHand.originSortOrder;
             M_CardManager.instance.ChangeCardOnHandColliderSize(arrowOwnedCardOnHand, M_CardManager.instance.cardCollidableSize);
+            M_CardManager.instance.ChangeCardOnHandShiftState(arrowOwnedCardOnHand, false);
         }
     }
 
