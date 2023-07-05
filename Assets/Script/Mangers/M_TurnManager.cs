@@ -645,9 +645,10 @@ public class M_TurnManager : NetworkBehaviour
     {
         TargetObject[] retVal = new TargetObject[2];
         foreach(TargetObject tar in spawnedPlayerList)
-            if(playerOrder[(int)PlayOrder] == tar.player) retVal[0] = tar;
-        foreach(TargetObject tar in clonePlayerList)
-            if(playerOrder[(int)PlayOrder] == tar.player) retVal[1] = tar;
+            if(playerOrder[(int)PlayOrder] == tar.player) {
+                retVal[0] = tar;
+                retVal[1] = tar.clone;
+            }
         return retVal;
     }
 
