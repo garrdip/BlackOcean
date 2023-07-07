@@ -28,10 +28,6 @@ public class CardOnHand : NetworkBehaviour
     // 화살표 소환된 카드의 위치값(화면 중앙 하단)
     public Vector3 arrowSpawnedCardPosition;
 
-    // 마우스 오버 시 Y좌표값
-    public float hoveredPositionY;
-
-
     [Header("CardOnHand 상태 변수값들")]
     // 마우스가 오브젝트 위에 있는지 여부
     public bool isMouseOver = false; 
@@ -69,7 +65,6 @@ public class CardOnHand : NetworkBehaviour
         if(NetworkClient.connection != null && NetworkClient.active){
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         }
-        hoveredPositionY = 1.2f;
     }
 
     // 오브젝트에 마우스 포인터 진입할 때 이벤트

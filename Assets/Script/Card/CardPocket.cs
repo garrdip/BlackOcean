@@ -13,9 +13,9 @@ public class CardPocket : NetworkBehaviour
     {
         transform.SetParent(GameUIManager.instance.CardOnHandsPanel.transform);
         if(isOwned){
-            transform.position = new Vector3(0f, -4f, 0f); // 현재 플레이어 소유의 카드는 화면 중앙 하단위치
+            transform.position = new Vector3(0f, -8f, 0f); // 현재 플레이어 소유의 카드는 화면 중앙 하단위치
         }else{
-            transform.position = new Vector3(-100f, -4f, 0f); // 다른 플레이어 소유의 카드는 좌측 -100 위치
+            transform.position = new Vector3(-100f, -8f, 0f); // 다른 플레이어 소유의 카드는 좌측 -100 위치
         }
     }
 }
