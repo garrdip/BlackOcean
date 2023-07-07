@@ -7435,6 +7435,7 @@ MonoBehaviour:
   symmetryPositionX_Range: 1.15
   symmetryPositionY_Range: 0.2
   symmetryRotationRange: 5
+  hoveredPositionY: 0
   cardOriginSize: {x: 0, y: 0, z: 0}
   cardOverSize: {x: 0, y: 0, z: 0}
   cardOnHandShiftedRange: 0
@@ -7635,6 +7636,10 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4977190475686666023, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 5268937064356060578, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
