@@ -1,0 +1,11 @@
+TEST PLZ.png
+size:926,613
+filter:Linear,Linear
+pma:true
+B2
+bounds:657,131,163,480
+LA
+bounds:822,249,102,362
+RA
+bounds:2,2,609,653
+rotate:90

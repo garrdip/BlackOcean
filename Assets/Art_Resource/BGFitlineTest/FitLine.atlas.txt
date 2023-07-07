@@ -1,0 +1,6 @@
+FitLine.png
+size:3646,1966
+filter:Linear,Linear
+pma:true
+FitLine
+bounds:2,2,3642,1962

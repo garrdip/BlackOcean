@@ -1,0 +1,26 @@
+BACK T.png
+size:3846,2932
+filter:Linear,Linear
+pma:true
+1
+bounds:2,2405,397,353
+2
+bounds:401,2293,1200,465
+offsets:2,2,1205,470
+3
+bounds:2,1307,2686,886
+offsets:4,2,2694,891
+S 1
+bounds:1603,2195,563,859
+rotate:90
+S 2
+bounds:2,2,3354,1303
+W
+bounds:2,2760,3842,170
+
+BACK T_2.png
+size:3846,2166
+filter:Linear,Linear
+pma:true
+B
+bounds:2,2,3842,2162

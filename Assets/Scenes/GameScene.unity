@@ -2882,7 +2882,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 10.8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -6603,11 +6603,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  currentLocation: {x: 0, y: 0}
+  currentRoom: {fileID: 0}
   turnsLeft: 10
   mainCam: {fileID: 842314909}
   rooms: []
-  mapPlayerForUI: {fileID: 5678142405827003429, guid: 6dd6d54b28b6baf418bb5cb38e93941f, type: 3}
   roommaps: {fileID: 2118407966}
   game: {fileID: 1408884458}
   mapPlayerPieces: []
@@ -7476,9 +7475,6 @@ MonoBehaviour:
   seedNumber: 0
   gamePlayerDeck: {fileID: 0}
   cards: []
-  cardCollidableSize: {x: 0, y: 0, z: 0}
-  cardNoneCollidableSize: {x: 0, y: 0, z: 0}
-  cardOnHandsPanelPositionY_Range: -4
   symmetryRange: 1.5
   symmetryPositionX_Range: 1.15
   symmetryPositionY_Range: 0.2
@@ -7486,6 +7482,7 @@ MonoBehaviour:
   cardOriginSize: {x: 0, y: 0, z: 0}
   cardOverSize: {x: 0, y: 0, z: 0}
   cardOnHandShiftedRange: 0
+  isArrowActive: 0
 --- !u!114 &2095118380
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7856,11 +7853,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
---- !u!1 &2118407961 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4770237055250645465, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
-  m_PrefabInstance: {fileID: 2118407960}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2118407962 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4770237054019145584, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
@@ -8330,7 +8322,6 @@ MonoBehaviour:
   - {fileID: 2118407964}
   - {fileID: 2118407963}
   - {fileID: 2118407962}
-  startButton: {fileID: 2118407961}
   playerSpawnLocation: {fileID: 1337139467}
   monsterSpawnLocation: {fileID: 1280680010139328500}
   spawnedPlayerList: []
