@@ -76,39 +76,55 @@ public class TargetObject : NetworkBehaviour
 
     void Awake()
     {
-        StartCoroutine(FindSkeletonAnimation());
         buffs.Callback += OnChangedBuff;
     }
 
-    public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
+    void Start()
     {
-        //Buff 추가 제거시 UI 효과 여기서 해야할듯
-    }
-    // 
-    IEnumerator FindSkeletonAnimation()
-    {
-        WaitForSeconds loopTime = new WaitForSeconds(0.01f);
-        while(true)
-        {
-            if(GetComponentInChildren<SkeletonAnimation>() != null)
-            {
-                anim = GetComponentInChildren<SkeletonAnimation>();
-                anim.state.Event += OnAnimationEvent;
-                break;
-            }
-            yield return loopTime;
+        // 오브젝트 생성 시 델리게이트 이벤트 리스너 연결
+        anim = GetComponentInChildren<SkeletonAnimation>();
+        if(anim != null){
+            anim.state.Event += OnAnimationEvent;
+            anim.state.Start += OnAnimationStart;
+            anim.state.Complete += OnAnimationComplete;
         }
     }
 
-    // Animation Event 처리 구간
-    public void OnAnimationEvent(Spine.TrackEntry trackEntry, Spine.Event e)
-    {    
-        if(e.Data.Name == "AttackEnd") // 공격모션 종료시 
-        {
-            anim.state.SetAnimation(1,"00Normal",true); // IDLE 애니메이션 재구동
-            isAnimating = false; // 공격 애니메이팅 종료를 알림
+    void OnDestroy()
+    {
+        // 오브젝트 제거 시 델리게이트 이벤트 리스너 해제
+        if(anim != null){
+            anim.state.Event -= OnAnimationEvent;
+            anim.state.Start -= OnAnimationStart;
+            anim.state.Complete -= OnAnimationComplete;
         }
     }
+
+    void FixedUpdate()
+    {
+        if(isServer)
+        {
+            if(objectType == ObjectType.PLAYER) 
+            {
+                // 플레이어 사망시 처리
+            }
+            else
+            {
+                if(monster == null)
+                {
+                    if(isCloneData)
+                        M_TurnManager.instance.cloneMonsterList.Remove(this);
+                    else
+                        M_TurnManager.instance.spawnedMonsterList.Remove(this);
+                        
+                    NetworkServer.Destroy(this.gameObject);
+                    if(!isCloneData)M_TurnManager.instance.OnChangedMonsterList(); 
+                }
+            }
+        }
+    }
+
+
     public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
     {
         if(objectType == ObjectType.PLAYER)
@@ -165,31 +181,14 @@ public class TargetObject : NetworkBehaviour
             yield return loopSecond;
         }
     }
-
-    void FixedUpdate()
-    {
-        if(isServer)
-        {
-            if(objectType == ObjectType.PLAYER) 
-            {
-                // 플레이어 사망시 처리
-            }
-            else
-            {
-                if(monster == null)
-                {
-                    if(isCloneData)
-                        M_TurnManager.instance.cloneMonsterList.Remove(this);
-                    else
-                        M_TurnManager.instance.spawnedMonsterList.Remove(this);
-                        
-                    NetworkServer.Destroy(this.gameObject);
-                    if(!isCloneData)M_TurnManager.instance.OnChangedMonsterList(); 
-                }
-            }
-        }
-    }
     
+    // ----------------------------------------------  SyncVar, SyncList 콜백 처리 구간 ---------------------------------------------------//
+
+    public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
+    {
+        //Buff 추가 제거시 UI 효과 여기서 해야할듯
+    }
+
     void OnChangedPlayerHP(int oldVal, int newVal)
     {
         if(player != null)
@@ -201,4 +200,29 @@ public class TargetObject : NetworkBehaviour
             hpbar.value = newVal; // HP 슬라이더값 업데이트
         }
     }
+
+    // ---------------------------------------------- Spine Animation Event 처리 구간 ---------------------------------------------------//
+    
+    // Animation Event 총괄 처리
+    public void OnAnimationEvent(Spine.TrackEntry trackEntry, Spine.Event e)
+    {    
+        if(e.Data.Name == "AttackEnd") // 공격모션 종료시 
+        {
+            anim.state.SetAnimation(1,"00Normal",true); // IDLE 애니메이션 재구동
+            isAnimating = false; // 공격 애니메이팅 종료를 알림
+        }
+    }
+
+    // Animation Event 시작 시 처리
+    public void OnAnimationStart(Spine.TrackEntry trackEntry)
+    {
+        // TODO : Animation Event 시작 시점 처리
+    }
+
+    // Animationm Event 완료 시 처리
+    public void OnAnimationComplete(Spine.TrackEntry trackEntry)
+    {
+        // TODO : Animation Event 종료 시점 처리
+    }
+
 }

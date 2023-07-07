@@ -57,6 +57,7 @@ public class CardOnHand : NetworkBehaviour
     void Start()
     {
         cardOnHandCanvas.worldCamera = Camera.main;
+        transform.localScale = M_CardManager.instance.cardOriginSize;
     }
 
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
