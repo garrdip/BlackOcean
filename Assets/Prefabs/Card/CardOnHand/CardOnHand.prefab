@@ -197,7 +197,7 @@ Transform:
   m_GameObject: {fileID: 2153712344633156845}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8682612195038272988}
@@ -317,6 +317,20 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  card:
+    baseCard:
+      character: 0
+      name: 
+      description: 
+      cardNumber: 
+      isTargetable: 1
+      cardType: 0
+      cost: 0
+      cardCharacteristics: 
+    isEnhanced: 0
+    costAddition: 0
+    cardCharacteristics: 
+  cardPocket: {fileID: 0}
   index: 0
   originSortOrder: 0
   originPosition: {x: 0, y: 0, z: 0}
@@ -326,6 +340,7 @@ MonoBehaviour:
   isDrag: 0
   isMoving: 0
   isShifted: 0
+  isChoosed: 0
   currentPlayerDeck: {fileID: 0}
   cardOnHandCanvas: {fileID: 2876669895777172954}
   textCardName: {fileID: 2224060468152251558}

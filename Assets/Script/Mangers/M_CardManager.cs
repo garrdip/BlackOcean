@@ -34,6 +34,9 @@ public class M_CardManager : NetworkBehaviour
     [Range(-20.0f, 20.0f)]
     public float symmetryRotationRange;
 
+    [Header("카드 마우스 오버시 Y값")]
+    public float hoveredPositionY;
+
     [Header("카드 원래 사이즈")]
     public Vector3 cardOriginSize;
 
@@ -69,8 +72,8 @@ public class M_CardManager : NetworkBehaviour
             GetCurrentCharacterCardData();
         }
         InitSymmetryValue();
-        cardOriginSize = new Vector3(0.1f, 0.1f, 0.1f);
-        cardOverSize = cardOriginSize + new Vector3(0.05f, 0.05f, 0.05f);
+        cardOriginSize = new Vector3(0.2f, 0.2f, 0.2f);
+        cardOverSize = cardOriginSize + new Vector3(0.1f, 0.1f, 0.1f);
     }
 
     void FixedUpdate()
@@ -81,11 +84,12 @@ public class M_CardManager : NetworkBehaviour
     // Range로 변경가능한 값들 초기화
     private void InitSymmetryValue()
     {
-        symmetryRange = 1.5f;
-        symmetryPositionX_Range = 1.15f;
-        symmetryPositionY_Range = 0.2f;
+        symmetryRange = 1.6f;
+        symmetryPositionX_Range = 2.0f;
+        symmetryPositionY_Range = 0.35f;
         symmetryRotationRange = 5.0f;
         cardOnHandShiftedRange = 1f;
+        hoveredPositionY = 1.6f;
     }
 
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
@@ -100,7 +104,7 @@ public class M_CardManager : NetworkBehaviour
                     if(cardOnHand != null){
                         if(!cardOnHand.isMoving && !cardOnHand.isDrag){
                             if(cardOnHand.isMouseOver){
-                                Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, cardOnHand.hoveredPositionY, cardOnHand.transform.localPosition.z);
+                                Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
                                 cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
                                 cardOnHand.transform.localScale = cardOverSize;
