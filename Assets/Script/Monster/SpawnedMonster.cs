@@ -32,10 +32,17 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeParent))]
     public TargetObject parent;
 
+    public MeshRenderer meshRenderer;
+
+    void Start()
+    {
+        meshRenderer = GetComponent<MeshRenderer>();   
+    }
+
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead")){
-            // TODO : 타겟 오브젝트에 외곽선 표시 설정
+            meshRenderer.material = M_MonsterManager.instance.outLineMaterial;
         }
     }
 
@@ -43,7 +50,7 @@ public class SpawnedMonster : NetworkBehaviour
     private void OnTriggerExit2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead")){
-            // TODO : 타겟 오브젝트에 외곽선 표시 해제
+            meshRenderer.material = M_MonsterManager.instance.defaultMaterial;
         }
     }
 
