@@ -7,12 +7,6 @@ using ProjectD;
 
 public class M_MonsterManager : SingletonD<M_MonsterManager>
 {
-    [Header("몬스터 기본 Material")]
-    public Material defaultMaterial;
-
-    [Header("몬스터 외곽선 Material")]
-    public Material outLineMaterial;
-
     public List<MonsterData> monsterDataList = new List<MonsterData>();
     public List<MonsterGroup> monsterGroups = new List<MonsterGroup>();
 
