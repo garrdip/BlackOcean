@@ -214,9 +214,12 @@ MonoBehaviour:
   currentBehavior:
     ActionList: []
     frequency: 0
-  nextTarget: {fileID: 0}
+  nextTarget: 0
   monsterData:
     name: 
     MAXHP: 0
     behavior: []
   parent: {fileID: 0}
+  meshRenderer: {fileID: 0}
+  defaultMaterial: {fileID: 2100000, guid: 460d387e6c817b244aa7e7e9d2beab96, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 634f0b23f7beacd4f8df264bf0ce41a8, type: 2}
