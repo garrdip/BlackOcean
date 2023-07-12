@@ -4,6 +4,8 @@ public class Buff
     public BuffType type;
     public int value;
     public bool isDebuff = false;
+    public bool isInfinity = false;
+    public bool isDecrease = true;
     public TargetObject user;
 
     public Buff(BuffType typeIn, int valueIn, bool isDebuffIn)
@@ -11,6 +13,7 @@ public class Buff
         type = typeIn;
         value = valueIn;
         isDebuff = isDebuffIn;
+        isInfinity = false;
         user = null;
     }
 
@@ -19,6 +22,7 @@ public class Buff
         type = typeIn;
         value = valueIn;
         isDebuff = isDebuffIn;
+        isInfinity = false;
         user = tar;
     }
 
@@ -28,5 +32,6 @@ public class Buff
         value = 0;
         isDebuff = false;
         user = null;
+        isInfinity = false;
     }
 }
