@@ -16,13 +16,19 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedHpValue))]
     public int HP;
 
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChangedSheild))]
     public int sheild;
-    
+
+    [SyncVar (hook = nameof(OnChangedAggro))]
+    public int[] aggro = new int[3];
+
     [SyncVar]
     public MonsterAction nextAction;
 
     public MonsterActionList currentBehavior;
+
+    [SyncVar]
+    public TargetObject nextTargetPlayer;
     [SyncVar]
     public PlayOrder nextTarget;
     
@@ -91,6 +97,17 @@ public class SpawnedMonster : NetworkBehaviour
         
     }
 
+    [Server]
+    public virtual void OnChangedSheild()
+    {
+
+    }
+
+    [Server]
+    public virtual void OnChangedAggro()
+    {
+
+    }
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
 
