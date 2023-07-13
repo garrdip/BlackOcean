@@ -93,7 +93,10 @@ public partial class CardData : SingletonD<CardData>
     {
         if(tar.buffs.Find(buff => buff.type == type) == null)
         {
-            Buff newBuff = new Buff(type,value,false);
+            Buff newBuff = Buff.builder()
+                .SetBuffType(type)
+                .SetValue(value)
+                .Build();
             tar.buffs.Add(newBuff);
         }
         else
@@ -106,7 +109,12 @@ public partial class CardData : SingletonD<CardData>
     {
         if(tar.buffs.Find(buff => buff.type == type && buff.user == user) == null)
         {
-            Buff newBuff = new Buff(type,value,true,user);
+            Buff newBuff = Buff.builder()
+                .SetBuffType(type)
+                .SetValue(value)
+                .SetIsDebuff(true)
+                .SetUser(user)
+                .Build();
             tar.buffs.Add(newBuff);
         }
         else
@@ -119,7 +127,11 @@ public partial class CardData : SingletonD<CardData>
     {
         if(tar.buffs.Find(buff => buff.type == type) == null)
         {
-            Buff newBuff = new Buff(type,value,isDebuff);
+            Buff newBuff = Buff.builder()
+                .SetBuffType(type)
+                .SetValue(value)
+                .SetIsDebuff(true)
+                .Build();
             tar.buffs.Add(newBuff);
         }
         else

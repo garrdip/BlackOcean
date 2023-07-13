@@ -19,7 +19,6 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedSheild))]
     public int sheild;
 
-    [SyncVar (hook = nameof(OnChangedAggro))]
     public int[] aggro = new int[3];
 
     [SyncVar]
@@ -59,7 +58,6 @@ public class SpawnedMonster : NetworkBehaviour
         }
     }
 
-    // 화살표 인디케이터 헤드가 TargetObject로 Exit 감지해서 흰색으로 변경
     private void OnTriggerExit2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead")){
@@ -98,16 +96,11 @@ public class SpawnedMonster : NetworkBehaviour
     }
 
     [Server]
-    public virtual void OnChangedSheild()
+    public virtual void OnChangedSheild(int oldValue, int newValue)
     {
 
     }
 
-    [Server]
-    public virtual void OnChangedAggro()
-    {
-
-    }
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
 
