@@ -199,6 +199,7 @@ public class GamePlayerDeck : NetworkBehaviour
     [Command]
     public void CmdEnQueueCardTargetPair(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
     {
+        Debug.Log("카드 인큐!");
         serverCardPredictQueue.Enqueue((card,targetObject,conn,cardCtrlArrow));
     }
 

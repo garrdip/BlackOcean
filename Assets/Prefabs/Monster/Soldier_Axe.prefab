@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4867607338461666766
+--- !u!1 &7282913678413976495
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,42 +8,50 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5298511270301069158}
-  - component: {fileID: 5957500320845354124}
-  - component: {fileID: 5547613088508484496}
-  - component: {fileID: 1952732149570449232}
-  - component: {fileID: 8426244146090305450}
-  - component: {fileID: -5699892660768286675}
-  - component: {fileID: -5088398235858390759}
+  - component: {fileID: 1823733455099175416}
+  - component: {fileID: 4724923869431906575}
+  - component: {fileID: 6660934960172510745}
+  - component: {fileID: 5636346225143495542}
+  - component: {fileID: -8857217337639133172}
+  - component: {fileID: -8474590207132107960}
+  - component: {fileID: 1404664657326623815}
   m_Layer: 0
-  m_Name: Troll
+  m_Name: Soldier_Axe
   m_TagString: TargetObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5298511270301069158
+--- !u!4 &1823733455099175416
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4867607338461666766}
+  m_GameObject: {fileID: 7282913678413976495}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.35, y: 0.35, z: 1}
+  m_LocalPosition: {x: -3.71, y: -1.41, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &5957500320845354124
+--- !u!33 &4724923869431906575
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7282913678413976495}
+  m_Mesh: {fileID: 0}
+--- !u!23 &6660934960172510745
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4867607338461666766}
+  m_GameObject: {fileID: 7282913678413976495}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -57,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 460d387e6c817b244aa7e7e9d2beab96, type: 2}
+  - {fileID: 2100000, guid: 2008c654bea4fb14895bed909d510eda, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -79,19 +87,19 @@ MeshRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5547613088508484496
+--- !u!114 &5636346225143495542
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4867607338461666766}
+  m_GameObject: {fileID: 7282913678413976495}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 7d3d132355a02d340b0278db1486e065, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: b3a8b916c96b3694693ad420b1366026, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -119,21 +127,68 @@ MonoBehaviour:
   _animationName: 00Normal
   loop: 1
   timeScale: 1
---- !u!33 &1952732149570449232
-MeshFilter:
+--- !u!114 &-8857217337639133172
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4867607338461666766}
-  m_Mesh: {fileID: 0}
---- !u!60 &8426244146090305450
+  m_GameObject: {fileID: 7282913678413976495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3123911590
+  serverOnly: 0
+  visible: 0
+  hasSpawned: 0
+--- !u!114 &-8474590207132107960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7282913678413976495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23cd355e4be9265499a8cbd0adc9ebb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.1
+  monsterName: 
+  MAXHP: 0
+  HP: 0
+  sheild: 0
+  aggro: 000000000000000000000000
+  nextAction:
+    actionName: 
+    actionNumber: 0
+    actionValue: 0
+    actionTarget: 0
+  currentBehavior:
+    ActionList: []
+    frequency: 0
+  nextTargetPlayer: {fileID: 0}
+  nextTarget: 0
+  monsterData:
+    name: 
+    MAXHP: 0
+    behavior: []
+  parent: {fileID: 0}
+  meshRenderer: {fileID: 6660934960172510745}
+  defaultMaterial: {fileID: 2100000, guid: 460d387e6c817b244aa7e7e9d2beab96, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 634f0b23f7beacd4f8df264bf0ce41a8, type: 2}
+--- !u!60 &1404664657326623815
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4867607338461666766}
+  m_GameObject: {fileID: 7282913678413976495}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -152,80 +207,27 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 1.6369545, y: 4.398914}
-      - {x: 0.93540686, y: 5.8930645}
-      - {x: -0.10193345, y: 6.4849653}
-      - {x: -0.84666365, y: 6.226649}
-      - {x: -0.98344225, y: 6.5464797}
-      - {x: -2.0357385, y: 6.261689}
-      - {x: -1.6565589, y: 5.0576944}
-      - {x: -1.1399257, y: 5.275481}
-      - {x: -0.723952, y: 4.0792646}
-      - {x: -1.0500817, y: 3.447174}
-      - {x: -1.9281567, y: 2.5070944}
-      - {x: -1.7107121, y: 2.0901752}
-      - {x: -2.8259165, y: 0.5305698}
-      - {x: -1.9278436, y: 0.59216404}
-      - {x: -1.3565325, y: 0.56315434}
-      - {x: -0.6242291, y: 1.7121422}
-      - {x: -0.05319655, y: 0.4242414}
-      - {x: -0.41211903, y: 0.3256941}
-      - {x: -0.3052587, y: -0.10281928}
-      - {x: 0.9378784, y: -0.334892}
-      - {x: 1.587822, y: -0.2581674}
-      - {x: 1.2912158, y: 1.6592263}
-      - {x: 2.0851092, y: 1.6947521}
-      - {x: 2.4416447, y: 2.2810445}
-      - {x: 1.7982163, y: 2.497091}
---- !u!114 &-5699892660768286675
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4867607338461666766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 2295594254
-  serverOnly: 0
-  visible: 0
-  hasSpawned: 0
---- !u!114 &-5088398235858390759
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4867607338461666766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb521ba4e62a04a42b51a753b359e551, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0.1
-  monsterName: 
-  MAXHP: 0
-  HP: 0
-  sheild: 0
-  nextAction:
-    actionName: 
-    actionType: 0
-    actionValue: 0
-  currentBehavior:
-    ActionList: []
-    frequency: 0
-  nextTarget: 0
-  monsterData:
-    name: 
-    MAXHP: 0
-    behavior: []
-  parent: {fileID: 0}
-  meshRenderer: {fileID: 0}
-  defaultMaterial: {fileID: 2100000, guid: 460d387e6c817b244aa7e7e9d2beab96, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 634f0b23f7beacd4f8df264bf0ce41a8, type: 2}
+    - - {x: 1.6551733, y: 4.358008}
+      - {x: 0.8315754, y: 6.0210915}
+      - {x: -0.06624198, y: 6.410056}
+      - {x: -0.87749577, y: 6.3149643}
+      - {x: -1.0016994, y: 6.5946827}
+      - {x: -2.1525548, y: 6.3239455}
+      - {x: -1.5947542, y: 4.7856116}
+      - {x: -1.1580095, y: 5.1577687}
+      - {x: -0.737103, y: 4.007803}
+      - {x: -1.789484, y: 2.6588428}
+      - {x: -1.8770638, y: 2.0020423}
+      - {x: -2.7478309, y: 0.5778878}
+      - {x: -1.3478537, y: 0.62624764}
+      - {x: -0.8916168, y: 1.5870892}
+      - {x: -0.5083194, y: 1.7524682}
+      - {x: 0.004551649, y: 0.3313949}
+      - {x: -0.16398168, y: -0.22002184}
+      - {x: 0.642113, y: -0.20746028}
+      - {x: 1.5602361, y: -0.2756095}
+      - {x: 1.2631464, y: 1.6631563}
+      - {x: 2.0847826, y: 1.6839994}
+      - {x: 2.4759753, y: 2.344075}
+      - {x: 1.7894878, y: 2.2284677}
+      - {x: 1.7997084, y: 2.791122}

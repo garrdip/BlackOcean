@@ -25,11 +25,12 @@ public class SpawnedMonster : NetworkBehaviour
     public MonsterAction nextAction;
 
     public MonsterActionList currentBehavior;
+    public int currentBehaviorSequence = 0;
 
     [SyncVar]
     public TargetObject nextTargetPlayer;
     [SyncVar]
-    public PlayOrder nextTarget;
+    public ActionTarget nextTarget;
     
     [SyncVar (hook = nameof(OnChangedMonsterData))]
     public MonsterData monsterData;
@@ -66,21 +67,32 @@ public class SpawnedMonster : NetworkBehaviour
     }
 
     [Server]
-    public void SetNextTarget()
-    {
-        nextTarget = PlayOrder.FIRST;
-    }
-
-    [Server]
     public void SetNextAction()
     {
-        nextAction = GetNextAction();
+        GetNextAction();
+        nextTarget = nextAction.actionTarget;
     }
 
-    MonsterAction GetNextAction()
+    void GetNextAction()
     {
-        // 다음 액션 찾는 알고리즘 추가 부분
-        return monsterData.behavior[0].ActionList[0];
+        if(currentBehavior.ActionList.Count - 1 < currentBehaviorSequence && currentBehavior.ActionList.Count != 0)
+        {
+            currentBehaviorSequence++;
+            nextAction = currentBehavior.ActionList[currentBehaviorSequence];
+        }
+        else
+        {
+            int randomValue = UnityEngine.Random.Range(0,100); // 0 ~ 99
+            foreach(MonsterActionList actionList in monsterData.behavior)
+            {
+                randomValue -= actionList.frequency;
+                if(randomValue < 0) {
+                    nextAction = actionList.ActionList[0];
+                    currentBehaviorSequence = 0;
+                    break;
+                }
+            }
+        }
     }
 
     [Server]
@@ -101,6 +113,11 @@ public class SpawnedMonster : NetworkBehaviour
 
     }
 
+    [Server]
+    public virtual void OnAppliedCard(Card card, TargetObject[] tar)
+    {
+
+    }
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
 
@@ -140,19 +157,19 @@ public class SpawnedMonster : NetworkBehaviour
     }
     
     //-------------------------------------- Battle Method ----------------------------------//
-    public void GeneralSingleAttack()
+    public void GeneralAttack()
     {
-        M_TurnManager.instance.GetTargetObjectFromOrder(nextTarget)[0].playerHP -= nextAction.actionValue;
-        M_TurnManager.instance.GetTargetObjectFromOrder(nextTarget)[1].playerHP -= nextAction.actionValue; // Clone도 데미지 적용(TBD)
-    }
-
-
-    public void GeneralFullScaleAttack()
-    {
-        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
-            target.playerHP -= nextAction.actionValue;
-        foreach(TargetObject target in M_TurnManager.instance.clonePlayerList)
-            target.playerHP -= nextAction.actionValue;
+        if(nextTarget == ActionTarget.FIXEDPLAYER)
+        {
+            nextTargetPlayer.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
+        }
+        else
+        {
+            foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
+            {
+                tar.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
+            }
+        }
     }
 
 }

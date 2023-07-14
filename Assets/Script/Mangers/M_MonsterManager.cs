@@ -30,7 +30,7 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
                 string[] values = value.Trim().Split(",");
                 
                 if(values[0] == "Monster_Name") continue; // 첫번째 라인 스킵
-                if(values[0].Length != 0)
+                if(values[0].Length != 0) // 새로운 몬스터 데이터 시작
                 {
                     monsterData = new MonsterData();
                     monsterDataList.Add(monsterData);
@@ -41,11 +41,11 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
                 }
 
                 // 몬스터 이름이 없을경우 스킬 LIST만 추가
-                if(values[3] == "Buff")
+                if(values[2] == "Buff")
                 {
                     Buff newBuff = Buff.builder()
-                        .SetBuffType((BuffType)Enum.Parse<BuffType>(values[4]))
-                        .SetValue(int.Parse(values[5]))
+                        .SetBuffType(GetEnumData<BuffType>(values[3]))
+                        .SetValue(int.Parse(values[4]))
                         .Build();
                     monsterData.buffList.Add(newBuff);
                 }
@@ -54,18 +54,17 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
                     MonsterActionList monsterActionList = new MonsterActionList();
                     monsterData.behavior.Add(monsterActionList);
                     monsterActionList.frequency = int.Parse(values[2]);
-                    for(int i = 1 ; i < values.Length/3 ; i++ )
+                    for(int i = 1 ; i < values.Length/3 ; i++ ) // 순차적 액션 저장
                     {
                         if(values[i*3].Length == 0)break;
                         MonsterAction monsterActions = new MonsterAction();
                         monsterActions.actionName = values[i*3];
-                        monsterActions.actionType = (ActionType)Enum.Parse<ActionType>(values[i*3 + 1]);
-                        monsterActions.actionValue = int.Parse(values[i*3+2]);
+                        monsterActions.actionNumber = i-1;
+                        monsterActions.actionValue = int.Parse(values[i*3+1]);
+                        monsterActions.actionTarget = (values[i*3+2] == "") ? ActionTarget.NONE : GetEnumData<ActionTarget>(values[i*3+2]);
                         monsterActionList.ActionList.Add(monsterActions);
                     }
                 }
-                    
-                
             }
         }
     }
@@ -95,10 +94,8 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
             }
         }
     }
-    ActionType GetActionType(string type)
+    T GetEnumData<T>(string data)
     {
-        ActionType retVal = ActionType.SINGLEATTACK;
-        retVal = (ActionType)Enum.Parse(typeof(ActionType),type);
-        return retVal;
+        return (T)Enum.Parse(typeof(T),data);
     }
 }

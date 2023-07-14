@@ -1,6 +1,2 @@
-Group_Name,Minimum_Hazard,Maximum_Hazard,Name,,,,
-Solo_Goblin,0,3,Goblin,,,,
-Three_Goblin,1,4,Goblin,Goblin,Goblin,,
-Solo_Troll,5,8,Troll,,,,
-Three_Troll,6,10,Troll,Troll,Troll,,
-Goblin_With_Troll,7,11,Goblin,Goblin,Troll,Troll,Troll
+Group_Name,Minimum_Hazard,Maximum_Hazard,Name
+Default,0,200,Soldier_Axe

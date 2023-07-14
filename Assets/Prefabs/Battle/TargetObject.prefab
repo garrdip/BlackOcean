@@ -360,8 +360,7 @@ MonoBehaviour:
   - {fileID: 1238078986054683857, guid: 19decaaa4c666534494b39af1cee56b8, type: 3}
   - {fileID: 1238078986054683857, guid: c9b6d7b83beb28c46b6dfd46a0abaf4c, type: 3}
   monsters:
-  - {fileID: 4867607338461666766, guid: ad822ac0b766ae4469a2c3ddfc5d47e0, type: 3}
-  - {fileID: 4867607338461666766, guid: 444a410164d9d4841a4ee70ccc96fa14, type: 3}
+  - {fileID: 7282913678413976495, guid: b9a0165d22875e044b8c8a0d37a31d50, type: 3}
   clone: {fileID: 0}
   isCloneData: 0
   avatar: {fileID: 0}

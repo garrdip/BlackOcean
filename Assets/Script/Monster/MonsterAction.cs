@@ -9,14 +9,15 @@ public class MonsterAction
 
     public string actionName;
 
-    public ActionType actionType;
+    public int actionNumber;
 
     public int actionValue;
+    public ActionTarget actionTarget;
 
-    public MonsterAction(string name, ActionType type,int value)
+    public MonsterAction(string name, int type,int value)
     {
         actionName = name;
-        actionType = type;
+        actionNumber = type;
         actionValue = value;
     }
     public MonsterAction()

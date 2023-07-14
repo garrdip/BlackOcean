@@ -170,5 +170,4 @@ public partial class CardData : SingletonD<CardData>
     {
         return ((int)tar[1].monster.nextTarget == tar[0].player.selectOrder)? true : false;
     }
-  
 }

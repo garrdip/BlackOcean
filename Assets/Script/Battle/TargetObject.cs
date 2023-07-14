@@ -42,7 +42,6 @@ public class TargetObject : NetworkBehaviour
     public NetworkIdentity conn;
 
     // Monster 의 경우
-    [SyncVar (hook = nameof(InitTargetObjectEmemy))]
     public SpawnedMonster monster;
 
     public List<GameObject> characters;
@@ -154,34 +153,33 @@ public class TargetObject : NetworkBehaviour
             }
         }
     }
-
-    public void InitTargetObjectEmemy(SpawnedMonster oldVal, SpawnedMonster newVal)
+    // ----------------------------------------------           Damage 관련 함수        ---------------------------------------------------//
+    public void DamageToPlayer(int damage)
     {
-        StartCoroutine(nameof(EmemyTargetObjectGenerator));
+        playerHP -= damage; //ToDo 방어력 적용, 붕괴 적용, 꽃가루 적용 필요
     }
 
-    IEnumerator EmemyTargetObjectGenerator()
+    // ----------------------------------------------           Buff 관련 함수          ---------------------------------------------------//
+    public void GainBuff(BuffType buffType,int value)
     {
-        WaitForSeconds loopSecond = new WaitForSeconds(0.01f);
-        while(avatar == null)
+        if(buffs.Find(buff => buff.type == buffType) == null) // 버프 신규 등록
         {
-            if(objectType == ObjectType.ENEMY && monster.monsterData != null)
-            {
-                switch(monster.monsterData.name)
-                {
-                    case "Monster_Goblin" :
-                        avatar = Instantiate(monsters.Find(prefab => prefab.name == "Goblin"),transform.position,Quaternion.identity,transform);
-                    break;
-                    case "Monster_Troll" :
-                        avatar = Instantiate(monsters.Find(prefab => prefab.name == "Troll"),transform.position,Quaternion.identity,transform);
-                    break;
-                }
-                break;
-            }
-            yield return loopSecond;
+            Buff newBuff = Buff.builder().SetBuffType(buffType).SetValue(value).Build();
+            buffs.Add(newBuff);
+        }
+        else // 버프가 있을경우 중첩 상승
+        {
+            buffs.Find(buff => buff.type == buffType).value += value;
         }
     }
-    
+
+    public int GetBuffValue(BuffType buffType)
+    {
+        if(buffs.Find(buff => buff.type == buffType) == null) return 0;
+        else return buffs.Find(buff => buff.type == buffType).value;
+    }
+
+
     // ----------------------------------------------  SyncVar, SyncList 콜백 처리 구간 ---------------------------------------------------//
 
     public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)

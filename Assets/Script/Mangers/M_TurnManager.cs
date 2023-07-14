@@ -300,7 +300,6 @@ public class M_TurnManager : NetworkBehaviour
         foreach(TargetObject monster in spawnedMonsterList)
         {
             monster.monster.SetNextAction();
-            monster.monster.SetNextTarget();
         }
         phase = BattleTurn.PLAYER_PREEFFECT;
     }
@@ -640,15 +639,24 @@ public class M_TurnManager : NetworkBehaviour
         backwarding.transform.DOMove(backwardingDestination,0.5f,false).SetEase(Ease.OutQuart);
     }
 
-    public TargetObject[] GetTargetObjectFromOrder(PlayOrder PlayOrder)
+    public TargetObject[] GetTargetObjectFromActionTarget(ActionTarget target)
     {
-        TargetObject[] retVal = new TargetObject[2];
+        if(target == ActionTarget.FIXEDPLAYER || target == ActionTarget.RANDOM || target == ActionTarget.NONE){
+            Debug.Log("ERROR : Next Target Error");
+        }
+        List<TargetObject> retVal = new List<TargetObject>();
         foreach(TargetObject tar in spawnedPlayerList)
-            if(playerOrder[(int)PlayOrder] == tar.player) {
-                retVal[0] = tar;
-                retVal[1] = tar.clone;
-            }
-        return retVal;
+        {
+            if( target == ActionTarget.WHOLE || 
+                (target == ActionTarget.FRONT && tar.player.selectOrder == 0) ||
+                (target == ActionTarget.MIDDLE && tar.player.selectOrder == 1) ||
+                (target == ActionTarget.BACK && tar.player.selectOrder == 2) ||
+                (target == ActionTarget.FRONT_MIDDLE && tar.player.selectOrder != 2) ||
+                (target == ActionTarget.MIDDLE_BACK && tar.player.selectOrder != 0) ||
+                (target == ActionTarget.FRONT_BACK && tar.player.selectOrder != 1) )
+                retVal.Add(tar);
+        }
+        return retVal.ToArray();
     }
 
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
