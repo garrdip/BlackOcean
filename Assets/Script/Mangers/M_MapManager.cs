@@ -16,30 +16,36 @@ public class M_MapManager : NetworkBehaviour
    
     [SyncVar]
     public int turnsLeft = 10;
-    
-    [Header("Main Camera")]
-    public Camera mainCam;
-
-    //방정보는 서버만 관리 (No SyncVar)
-    [Header("Room List")]
-    public List<MapRoom> rooms = new List<MapRoom>();
-
-    [Header("Map Scene")]
-    public GameObject roommaps;
-
-    [Header("Game Scene")]
-    public GameObject game;
-
-    [Header("Map Player List")]
-    public List<GameObject> mapPlayerPieces;
-
-    [Header("Map Player Select MapRoom")]
-    [SerializedDictionary("NetworkIdentity", "MapRoom")]
-    public SerializedDictionary<NetworkIdentity, MapRoom> playerVoteMapRoom = new SerializedDictionary<NetworkIdentity, MapRoom>();
 
     [SyncVar]
     MapRoom moveToRoomDestination;
+    
+    [Header("메인 카메라")]
+    public Camera mainCam;
 
+    [Header("게임 화면의 요소들의 최상위 오브젝트")]
+    public GameObject game;
+
+    //방정보는 서버만 관리 (No SyncVar)
+    [Header("방 리스트")]
+    public List<MapRoom> rooms = new List<MapRoom>();
+
+    [Header("맵 화면의 요소들의 최상위 오브젝트")]
+    public GameObject roommaps;
+
+    [Header("맵화면의 방 요소들의 부모 오브젝트")]
+    public GameObject MapRooms;
+
+    [Header("맵에서 플레이어가 컨트롤하는 오브젝트 리스트")]
+    public List<GameObject> mapPlayerPieces;
+
+    [Header("맵에서 선택된 방 정보")]
+    [SerializedDictionary("NetworkIdentity", "MapRoom")]
+    public SerializedDictionary<NetworkIdentity, MapRoom> playerVoteMapRoom = new SerializedDictionary<NetworkIdentity, MapRoom>();
+
+    public const float rangeExistOtherHexagon = 0.5f; // 현재 위치한 육각형 주위에 다른 육각형이 존재하는지 확인용 중심점 간의 거리 차이 계산값
+    private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
+    public List<Vector3> hexagonPositions = new List<Vector3>(); // 각 육각형 방의 위치 리스트
 
     public static M_MapManager instance
     {
@@ -206,5 +212,90 @@ public class M_MapManager : NetworkBehaviour
     public void MoveCameraPositionToRoom(Vector3 pos)
     {
         mainCam.transform.position = pos + new Vector3(0,0,-10);
+    }
+
+
+    // 처음 시작시 가운데 1개, 각 변에 6개 생성
+    [Server]
+    public void GenerateStartHexagonRoom()
+    {
+        var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        
+        // 가운데 육각형 생성
+        GameObject centerRoom = Instantiate(
+            networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
+            new Vector3(0f, 0f, 0f),
+            Quaternion.identity
+        );
+        NetworkServer.Spawn(centerRoom);
+
+        // 육각형 위치 리스트에 추가
+        hexagonPositions.Add(new Vector3(0f, 0f, 0f));
+        
+        // 가운데 주위에 6개 생성
+        for (int i = 0; i < 6; i++)
+        {
+            float angle = i * angleIncrement; // 새로 생성될 육각형의 각도 계산
+            Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up; // 60도씩 육각형의 6면을 돌며 각 면의 위치에 생성
+            Vector3 position = centerRoom.transform.position + offset;
+
+            // 새로운 육각형 생성
+            GameObject aroundRoom = Instantiate(
+                networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
+                position,
+                Quaternion.identity
+            );
+            NetworkServer.Spawn(aroundRoom);
+
+            // 육각형 위치 리스트에 추가
+            hexagonPositions.Add(position);
+        }
+    }
+
+
+    // 현재 위치한 육각형의 각 변에 새로운 육각형 생성, 이미 존재하면 생성하지 않음
+    [Server]
+    public void GenerateHexagonRoom(Vector3 hexagonPosition)
+    {
+        // 6개의 육각형을 생성하여 각 면에 배치
+        for (int i = 0; i < 6; i++)
+        {
+            // 새로 생성될 육각형의 각도 계산
+            float angle = i * angleIncrement;
+            Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up;
+
+            // 새로운 육각형이 생성될 위치
+            Vector3 position = hexagonPosition + offset;
+
+            // 생성 위치가 중복이 아닌 경우 육각형 생성
+            if(!IsPositionDuplicated(position))
+            {
+                // 새로운 육각형 생성
+                var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+                GameObject hexagonMapRoom = Instantiate(
+                    networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
+                    position,
+                    Quaternion.identity
+                );
+                NetworkServer.Spawn(hexagonMapRoom);
+
+                // 육각형 위치 리스트에 추가
+                hexagonPositions.Add(position);
+            }
+        }
+    }
+
+    // 육각형 방 생성하려는 위치에 이미 방이 존재하는지 체크
+    private bool IsPositionDuplicated(Vector3 spawnPosition)
+    {
+        // 육각형 위치 리스트를 순회하며 중복 체크
+        foreach(Vector3 position in hexagonPositions)
+        {
+            if(Vector3.Distance(spawnPosition, position) < rangeExistOtherHexagon)
+            {
+                return true; // 중복된 위치가 있음
+            }
+        }
+        return false; // 중복된 위치가 없음
     }
 }

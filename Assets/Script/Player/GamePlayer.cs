@@ -75,6 +75,7 @@ public class GamePlayer : NetworkBehaviour
         if(isServer)
         {
             M_MapManager.instance.GenerateFloor();
+            // M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성(진행중)
         }
         if(isLocalPlayer)
         {

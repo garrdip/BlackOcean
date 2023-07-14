@@ -6568,6 +6568,10 @@ MonoBehaviour:
   mapPlayerPieces: []
   playerVoteMapRoom:
     _serializedList: []
+  MapRooms: {fileID: 2118407961}
+  hexagonPrefab: {fileID: 8609336857473495323, guid: e10658e92c5f3a84c9d44301412536d1, type: 3}
+  hexagonSize: 1
+  gap: 0.1
 --- !u!4 &1913121864
 Transform:
   m_ObjectHideFlags: 0
@@ -7814,6 +7818,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+--- !u!1 &2118407961 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4770237055216254667, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+  m_PrefabInstance: {fileID: 2118407960}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2118407962 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4770237054019145584, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
