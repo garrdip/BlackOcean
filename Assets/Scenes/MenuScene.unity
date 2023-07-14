@@ -6339,9 +6339,8 @@ MonoBehaviour:
   - {fileID: 387816068712704334, guid: ced8dc11b1bd51c4abdb0adc2c1c882b, type: 3}
   - {fileID: 1804995873757050396, guid: dbd1c9886aa648347b11354c1a3c2343, type: 3}
   - {fileID: 5712702224796208543, guid: f7ce3938832aaef41aad5da46f699ddc, type: 3}
-  - {fileID: 4867607338461666766, guid: 444a410164d9d4841a4ee70ccc96fa14, type: 3}
-  - {fileID: 4867607338461666766, guid: ad822ac0b766ae4469a2c3ddfc5d47e0, type: 3}
   - {fileID: 590561824302976873, guid: 3d16db062879a3649b1eeedf8f866591, type: 3}
+  - {fileID: 7282913678413976495, guid: b9a0165d22875e044b8c8a0d37a31d50, type: 3}
   timeInterpolationGui: 0
   showRoomGUI: 1
   minPlayers: 1
