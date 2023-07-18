@@ -47,6 +47,14 @@ public class M_MapManager : NetworkBehaviour
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
     public List<Vector3> hexagonPositions = new List<Vector3>(); // 각 육각형 방의 위치 리스트
 
+    // 거점 지역 등급
+    public RegionGrade[] regionGrades = { RegionGrade.NORMAL, RegionGrade.RARE, RegionGrade.UNIQUE, RegionGrade.LEGEND };
+    public float[] weight = { 0.6f, 0.25f, 0.13f, 0.02f }; // 확률 가중치(60%, 25%, 13%, 2%)
+
+    [Header("거점지역 목록 정보")]
+    [SerializedDictionary("Region", "HexagonMapRoom")]
+    public SerializedDictionary<Region, HexagonMapRoom> regions = new SerializedDictionary<Region, HexagonMapRoom>(); // 거점지역 
+
     public static M_MapManager instance
     {
         get
@@ -250,6 +258,19 @@ public class M_MapManager : NetworkBehaviour
             // 육각형 위치 리스트에 추가
             hexagonPositions.Add(position);
         }
+        GenerateHexgonGrid(101);
+    }
+
+    // [TEST : 그리스 생성]
+    [Server]
+    public void GenerateHexgonGrid(int count)
+    {
+        for(int i=0; i< count; i++)
+        {
+            if(hexagonPositions.Count <= count){
+                GenerateHexagonRoom(hexagonPositions[i]);
+            }
+        }
     }
 
 
@@ -283,6 +304,85 @@ public class M_MapManager : NetworkBehaviour
                 hexagonPositions.Add(position);
             }
         }
+    }
+
+    // 랜덤 거점지역 생성
+    [Server]
+    public void GenerateHexagonRegion()
+    {
+        var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
+        int regionCount = Random.Range(2, 5); // 몇개의 지역이 생성될지 랜덤
+
+        // 랜덤 갯수만큼 거점지역 생성
+        for (int i = 0; i < regionCount; i++)
+        {
+            Debug.Log("지역갯수 : " + regionCount);
+            int ranomDistance = Random.Range(5, 10); // 얼마나 떨어진 위치에 생성될지 랜덤
+            float randomDirection = (Random.Range(0, 7) * angleIncrement); // 6방향중 어느 방향일지 랜덤(추후 방향을 전환하도록 바꾸면 랜덤성 증가)
+            int randomRoomCount = Random.Range(5, 15); // 거점지역에 몇개의 육각형이 생성될지 랜덤
+            
+            Vector3 position = Quaternion.Euler(0f, 0f, randomDirection) * (Vector3.up * ranomDistance); // 랜덤방향 + 랜덤거리
+            RegionGrade regionGrade = GenerateRandomGrade(); // 거짐지역의 등급 랜덤으로 결정
+        
+            Debug.Log("육각형갯수 : " + (randomRoomCount) + " // " + regionGrade);
+            for(int j = 0; j < randomRoomCount; j++)
+            {
+                position += Quaternion.Euler(0f, 0f, (Random.Range(-7, 7) * angleIncrement)) * Vector3.up; // 생성된 거점지역의 육각형에 생성 위치 + 방향값 랜덤성 추가
+                if(IsPositionDuplicated(position)){
+                    Debug.Log("겹침 위치바꿔");
+                    position += Vector3.up;
+                }
+
+                // 새로운 육각형 생성
+                GameObject hexagonMapRoom = Instantiate(networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"), position, Quaternion.identity);
+                hexagonMapRoom.transform.SetParent(hexagonMapRoom.transform);
+
+                // 거점 지역 정보 세팅
+                Region region = new Region(){
+                    uuid = System.Guid.NewGuid().ToString(),
+                    regionGrade = regionGrade
+                };
+                hexagonMapRoom.GetComponent<HexagonMapRoom>().region = region;
+                NetworkServer.Spawn(hexagonMapRoom);
+                
+                // 거점지역정보 Dictionary에 추가
+                regions.Add(region, hexagonMapRoom.GetComponent<HexagonMapRoom>());
+                
+                // 육각형 위치 리스트에 추가
+                hexagonPositions.Add(hexagonMapRoom.transform.position);
+
+            }
+        }
+    }
+
+    // 가중치 랜덤을 사용한 랜덤등급 산출 함수
+    private RegionGrade GenerateRandomGrade()
+    {
+        float randomValue = Random.Range(0.0f, 1.0f); // 0.0 ~ 1.0 사이의 랜덤한 값 얻기
+        float cumulativeWeight = 0f; // 누적 가중치
+
+        for (int i = 0; i < weight.Length; i++)
+        {
+            cumulativeWeight += weight[i];
+            if (randomValue <= cumulativeWeight)
+            {
+                switch (i)
+                {
+                    case 0:
+                        return RegionGrade.NORMAL;
+                    case 1:
+                        return RegionGrade.RARE;
+                    case 2:
+                        return RegionGrade.UNIQUE;
+                    case 3:
+                        return RegionGrade.LEGEND;
+                    default:
+                        break;
+                }
+            }
+        }
+        return RegionGrade.NONE; 
     }
 
     // 육각형 방 생성하려는 위치에 이미 방이 존재하는지 체크

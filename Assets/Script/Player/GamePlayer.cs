@@ -74,8 +74,8 @@ public class GamePlayer : NetworkBehaviour
         // Server Loading 종료 후 1층 데이터 생성
         if(isServer)
         {
-            M_MapManager.instance.GenerateFloor();
-            // M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성(진행중)
+            //M_MapManager.instance.GenerateFloor();
+            M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성(진행중)
         }
         if(isLocalPlayer)
         {

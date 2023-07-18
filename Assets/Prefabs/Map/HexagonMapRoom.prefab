@@ -155,3 +155,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  region:
+    uuid: 
+    regionGrade: 0
+  spriteRenderer: {fileID: 6925378521302171519}
