@@ -33,6 +33,8 @@ public class GamePlayerDeck : NetworkBehaviour
 
     private Queue<(Card,TargetObject,NetworkIdentity,CardCtrlArrow)> serverCardPredictQueue = new Queue<(Card, TargetObject, NetworkIdentity, CardCtrlArrow)>();// Server에서 Card Queue 관리를 위한 Queue
 
+
+
     public override void OnStartServer()
     {
         SetInitialValue();
@@ -199,7 +201,6 @@ public class GamePlayerDeck : NetworkBehaviour
     [Command]
     public void CmdEnQueueCardTargetPair(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
     {
-        Debug.Log("카드 인큐!");
         serverCardPredictQueue.Enqueue((card,targetObject,conn,cardCtrlArrow));
     }
 
