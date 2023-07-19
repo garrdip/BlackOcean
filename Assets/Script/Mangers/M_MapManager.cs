@@ -36,6 +36,13 @@ public class M_MapManager : NetworkBehaviour
     [Header("맵화면의 방 요소들의 부모 오브젝트")]
     public GameObject MapRooms;
 
+    [Header("그리드")]
+    public GameObject hexagonGrid;
+
+    [Header("그리드 부모 오브젝트")]
+    public Transform gridParent;
+
+
     [Header("맵에서 플레이어가 컨트롤하는 오브젝트 리스트")]
     public List<GameObject> mapPlayerPieces;
 
@@ -258,17 +265,30 @@ public class M_MapManager : NetworkBehaviour
             // 육각형 위치 리스트에 추가
             hexagonPositions.Add(position);
         }
-        GenerateHexgonGrid(101);
     }
-
-    // [TEST : 그리스 생성]
+    
     [Server]
-    public void GenerateHexgonGrid(int count)
+    public void GenerateHexgonGrid(int width, int height)
     {
-        for(int i=0; i< count; i++)
+     
+        float length = 1/Mathf.Tan(Mathf.PI/3);
+       
+        int widthIn = (width % 4 == 1)?width : (width/4)*4 + 1;
+        int heightIn = (height % 2 == 1)?height : (height/2)*2 + 1;
+
+        Vector3 currLoc = new Vector3(0,0,0);
+        for(int i = 0 ; i < widthIn ; i ++)
         {
-            if(hexagonPositions.Count <= count){
-                GenerateHexagonRoom(hexagonPositions[i]);
+            int horzontal = widthIn / 4;
+            int vertical = heightIn / 2;
+            currLoc = new Vector3(-3f*horzontal*length + ((1.5f)*i*length),-vertical+((i%2)*0.5f),0);
+            for(int j = 0 ; j < heightIn ; j++)
+            {
+                GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
+                newGrid.transform.localPosition = newGrid.transform.position;
+                newGrid.transform.localRotation = Quaternion.Euler(0,0,0);
+
+                currLoc += new Vector3(0,1,0);
             }
         }
     }

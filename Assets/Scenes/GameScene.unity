@@ -2965,27 +2965,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RenderShadows: 1
-  m_RequiresDepthTextureOption: 2
-  m_RequiresOpaqueTextureOption: 2
-  m_CameraType: 0
-  m_Cameras: []
-  m_RendererIndex: -1
-  m_VolumeLayerMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_VolumeTrigger: {fileID: 0}
-  m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
-  m_Antialiasing: 0
-  m_AntialiasingQuality: 2
-  m_StopNaN: 0
-  m_Dithering: 0
-  m_ClearDepth: 1
-  m_AllowXRRendering: 1
-  m_RequiresDepthTexture: 0
-  m_RequiresColorTexture: 0
-  m_Version: 2
 --- !u!1 &1022321676
 GameObject:
   m_ObjectHideFlags: 0
@@ -5230,6 +5209,11 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!4 &1642649180 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8899030788662680438, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+  m_PrefabInstance: {fileID: 2118407960}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1650667651
 GameObject:
   m_ObjectHideFlags: 0
@@ -6562,16 +6546,24 @@ MonoBehaviour:
   currentRoom: {fileID: 0}
   turnsLeft: 10
   mainCam: {fileID: 842314909}
+  game: {fileID: 1408884458}
   rooms: []
   roommaps: {fileID: 2118407966}
-  game: {fileID: 1408884458}
+  MapRooms: {fileID: 2118407961}
+  hexagonGrid: {fileID: 590561824302976873, guid: f2e6a979254885748ae72276906d5ac5, type: 3}
+  gridParent: {fileID: 1642649180}
   mapPlayerPieces: []
   playerVoteMapRoom:
     _serializedList: []
-  MapRooms: {fileID: 2118407961}
-  hexagonPrefab: {fileID: 8609336857473495323, guid: e10658e92c5f3a84c9d44301412536d1, type: 3}
-  hexagonSize: 1
-  gap: 0.1
+  hexagonPositions: []
+  regionGrades: 01000000020000000300000004000000
+  weight:
+  - 0.6
+  - 0.25
+  - 0.13
+  - 0.02
+  regions:
+    _serializedList: []
 --- !u!4 &1913121864
 Transform:
   m_ObjectHideFlags: 0
@@ -7757,6 +7749,18 @@ PrefabInstance:
       value: 0.3420201
       objectReference: {fileID: 0}
     - target: {fileID: 7420341388645532057, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899030788662680438, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9396927
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899030788662680438, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.3420201
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899030788662680438, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 40
       objectReference: {fileID: 0}
