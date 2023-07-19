@@ -41,7 +41,11 @@ public class M_MapManager : NetworkBehaviour
 
     [Header("그리드 부모 오브젝트")]
     public Transform gridParent;
+    public GameObject regionIndicator;
 
+    public readonly SyncList<Region> regions = new SyncList<Region>();
+
+    //public readonly SyncList<Vector2> colorRegion;
 
     [Header("맵에서 플레이어가 컨트롤하는 오브젝트 리스트")]
     public List<GameObject> mapPlayerPieces;
@@ -61,10 +65,6 @@ public class M_MapManager : NetworkBehaviour
     // 거점 지역 등급
     public RegionGrade[] regionGrades = { RegionGrade.NORMAL, RegionGrade.RARE, RegionGrade.UNIQUE, RegionGrade.LEGEND };
     public float[] weight = { 0.6f, 0.25f, 0.13f, 0.02f }; // 확률 가중치(60%, 25%, 13%, 2%)
-
-    [Header("거점지역 목록 정보")]
-    [SerializedDictionary("Region", "HexagonMapRoom")]
-    public SerializedDictionary<Region, HexagonMapRoom> regions = new SerializedDictionary<Region, HexagonMapRoom>(); // 거점지역 
 
     public static M_MapManager instance
     {
@@ -271,21 +271,14 @@ public class M_MapManager : NetworkBehaviour
         }
     }
     
-    [Server]
     public void GenerateHexgonGrid(int width, int height)
-    {
-     
-        float length = 1/Mathf.Tan(Mathf.PI/3);
-       
+    {      
         int widthIn = (width % 4 == 1)?width : (width/4)*4 + 1;
         int heightIn = (height % 2 == 1)?height : (height/2)*2 + 1;
-
         Vector3 currLoc = new Vector3(0,0,0);
         for(int i = 0 ; i < widthIn ; i ++)
         {
-            int horzontal = widthIn / 4;
-            int vertical = heightIn / 2;
-            currLoc = new Vector3(-3f*horzontal*length + ((1.5f)*i*length),-vertical+((i%2)*0.5f),0);
+            currLoc = GetPosition(-widthIn/2 + i,-heightIn/2);
             for(int j = 0 ; j < heightIn ; j++)
             {
                 GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
@@ -297,6 +290,86 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
+    public Vector3 GetPosition(int x,int y)
+    {
+        float length = 1/Mathf.Tan(Mathf.PI/3);
+        Vector3 retVal = new Vector3(0,0,0);
+        retVal.x = 1.5f*x*length;
+        retVal.y = y - (x%2)*0.5f;
+        return retVal;
+    }
+
+    [Server]
+    public void GenerateColorRegion()
+    {
+        //int numberOfRegion = Random.Range(3,5);
+        for(int i = 0 ;i < 1 ; i ++)
+        {
+            int numberOfTiles = Random.Range(5,9);
+            Region newRegion = new Region();
+            newRegion.GetRegionGrade();
+            newRegion.tiles.Add(new Tile(new Vector3(4,5,0)));
+            newRegion.tiles.Add(new Tile(new Vector3(4,6,0)));
+            newRegion.tiles.Add(new Tile(new Vector3(4,7,0)));
+            newRegion.tiles.Add(new Tile(new Vector3(5,5,0)));
+            newRegion.tiles.Add(new Tile(new Vector3(5,6,0)));
+            newRegion.tiles.Add(new Tile(new Vector3(5,7,0)));
+            newRegion.tiles.Add(new Tile(new Vector3(6,5,0)));
+            newRegion.tiles.Add(new Tile(new Vector3(6,5,0)));
+            newRegion.tiles.Add(new Tile(new Vector3(7,6,0)));
+            regions.Add(newRegion);
+            //for(int j = 0 ; j < numberOfTiles ; j++)
+            //{
+            //    Vector3 newTile = new Vector3(4,5,0);
+            //    // 여기다가 잘 넣으면됨.
+            //    newRegion.coordinate.Add(newTile,false);
+            //}
+
+        }
+
+        foreach(Tile loc in regions[0].tiles)
+        {
+            SetRegionWithColor((int)loc.coordinate.x,(int)loc.coordinate.y,regions[0]);
+        }
+    }
+
+    public void SetRegionWithColor(int x,int y,Region region)
+    {
+        int addVal = (x%2 == 0)? 0 : -1;
+        for(int i = 0;  i < 6 ; i ++)
+        {
+            switch(i)
+            {
+                case 0 : // North
+                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x,y+1,0)))
+                        continue;
+                    break;
+                case 1 : // 2시
+                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x+1,y+1+addVal,0)))
+                        continue;
+                    break;
+                case 2 : // 5시
+                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x+1,y+addVal,0)))
+                        continue;
+                    break;
+                case 3 :// 6시
+                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x,y-1,0)))
+                        continue;
+                    break;
+                case 4 :// 7시
+                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x-1,y+addVal,0)))
+                        continue;
+                    break;
+                case 5 :// 10시
+                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x-1,y+1+addVal,0)))
+                        continue;
+                    break;
+            }
+            GameObject newRegion = Instantiate(regionIndicator,GetPosition(x,y),Quaternion.identity,gridParent);
+            newRegion.transform.localPosition = newRegion.transform.position;
+            newRegion.transform.localRotation = Quaternion.Euler(0,0,-60*i);
+        }
+    }
 
     // 현재 위치한 육각형의 각 변에 새로운 육각형 생성, 이미 존재하면 생성하지 않음
     [Server]
@@ -362,16 +435,8 @@ public class M_MapManager : NetworkBehaviour
                 GameObject hexagonMapRoom = Instantiate(networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"), position, Quaternion.identity);
                 hexagonMapRoom.transform.SetParent(hexagonMapRoom.transform);
 
-                // 거점 지역 정보 세팅
-                Region region = new Region(){
-                    uuid = System.Guid.NewGuid().ToString(),
-                    regionGrade = regionGrade
-                };
-                hexagonMapRoom.GetComponent<HexagonMapRoom>().region = region;
                 NetworkServer.Spawn(hexagonMapRoom);
-                
-                // 거점지역정보 Dictionary에 추가
-                regions.Add(region, hexagonMapRoom.GetComponent<HexagonMapRoom>());
+
                 
                 // 육각형 위치 리스트에 추가
                 hexagonPositions.Add(hexagonMapRoom.transform.position);

@@ -2505,6 +2505,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 725271118}
   m_CullTransparentMesh: 1
+--- !u!1 &777574723 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6530405383400243560, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+  m_PrefabInstance: {fileID: 2118407960}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &780574847
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6552,8 +6557,11 @@ MonoBehaviour:
   MapRooms: {fileID: 2118407961}
   hexagonGrid: {fileID: 590561824302976873, guid: f2e6a979254885748ae72276906d5ac5, type: 3}
   gridParent: {fileID: 1642649180}
+  regionIndicator: {fileID: 590561824302976873, guid: e263356188cccbb4aa7f221fdcf2899f, type: 3}
   mapPlayerPieces: []
   playerVoteMapRoom:
+    _serializedList: []
+  playerVoteHexagonMapRoom:
     _serializedList: []
   hexagonPositions: []
   regionGrades: 01000000020000000300000004000000
@@ -6562,8 +6570,6 @@ MonoBehaviour:
   - 0.25
   - 0.13
   - 0.02
-  regions:
-    _serializedList: []
 --- !u!4 &1913121864
 Transform:
   m_ObjectHideFlags: 0
@@ -7740,6 +7746,10 @@ PrefabInstance:
       propertyPath: messageInput
       value: 
       objectReference: {fileID: 1994219500}
+    - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: gridGameObject
+      value: 
+      objectReference: {fileID: 777574723}
     - target: {fileID: 7420341388645532057, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.9396927

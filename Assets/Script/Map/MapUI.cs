@@ -27,6 +27,10 @@ public class MapUI : InstanceD<MapUI>
     [SerializeField]
     private float maxCameraFOV = 90f;
     [SerializeField]
+    private float gridDisableFOV = 60f;
+    public GameObject gridGameObject;
+    
+    [SerializeField]
     private float scrollSpeed = 10000f;
 
     public void Start()
