@@ -25,6 +25,9 @@ public class HexagonMapRoom : NetworkBehaviour
             Vector3 position = new Vector3(transform.localPosition.x, transform.localPosition.y, 0f);
             M_MapManager.instance.GenerateHexagonRoom(position);
         }
+        // 클릭한 육각형으로 맵플레이어 이동 및 현재 선택된 맵으로 저장
+        NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdSelectHexagonMapRoom(this, NetworkClient.connection.identity);
+        NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeCurrentMapPlayerPosition(this, GetComponent<Transform>().position);
     }
 
     public void OnChangeRegion(Region oldValue, Region newValue)

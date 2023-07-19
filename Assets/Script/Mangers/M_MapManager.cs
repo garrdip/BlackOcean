@@ -50,6 +50,10 @@ public class M_MapManager : NetworkBehaviour
     [SerializedDictionary("NetworkIdentity", "MapRoom")]
     public SerializedDictionary<NetworkIdentity, MapRoom> playerVoteMapRoom = new SerializedDictionary<NetworkIdentity, MapRoom>();
 
+    [Header("맵에서 선택된 방 정보(HEXAGON)")]
+    [SerializedDictionary("NetworkIdentity", "MapRoom")]
+    public SerializedDictionary<NetworkIdentity, HexagonMapRoom> playerVoteHexagonMapRoom = new SerializedDictionary<NetworkIdentity, HexagonMapRoom>();
+
     public const float rangeExistOtherHexagon = 0.5f; // 현재 위치한 육각형 주위에 다른 육각형이 존재하는지 확인용 중심점 간의 거리 차이 계산값
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
     public List<Vector3> hexagonPositions = new List<Vector3>(); // 각 육각형 방의 위치 리스트

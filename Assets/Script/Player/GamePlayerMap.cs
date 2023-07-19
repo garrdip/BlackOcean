@@ -40,6 +40,7 @@ public class GamePlayerMap : NetworkBehaviour
         currentMapPlayerPiece = mapPlayerPiece.GetComponent<MapPlayerPiece>();
     }
 
+    // -------------------------------------------- Square MapRoom ---------------------------------------------//
     // 맵플레이어 위치 변경 요청
     [Command]
     public void CmdChangeCurrentMapPlayerPosition(MapRoom mapRoom, Vector3 position)
@@ -59,6 +60,25 @@ public class GamePlayerMap : NetworkBehaviour
             }else{
                 M_MapManager.instance.playerVoteMapRoom.Add(networkIdentity, mapRoom);
             }
+        }
+    }
+
+    // -------------------------------------------- Hexagon MapRoom ---------------------------------------------//
+    // 맵플레이어 위치 변경 요청
+    [Command]
+    public void CmdChangeCurrentMapPlayerPosition(HexagonMapRoom hexagonMapRoom, Vector3 position)
+    {
+        currentMapPlayerPosition = position;
+    }
+
+    // 맵플레이어가 선택한 MapRoom값을 Dictionary<NetworkIdentity, MapRoom> 형태로 저장
+    [Command]
+    public void CmdSelectHexagonMapRoom(HexagonMapRoom hexagonMapRoom, NetworkIdentity networkIdentity)
+    {
+        if(M_MapManager.instance.playerVoteHexagonMapRoom.ContainsKey(networkIdentity)){
+            M_MapManager.instance.playerVoteHexagonMapRoom[networkIdentity] = hexagonMapRoom;
+        }else{
+            M_MapManager.instance.playerVoteHexagonMapRoom.Add(networkIdentity, hexagonMapRoom);
         }
     }
 
