@@ -302,7 +302,7 @@ public class M_MapManager : NetworkBehaviour
     [Server]
     public void GenerateColorRegion()
     {
-        int numberOfRegion = Random.Range(4,6); // 총 구역의 수
+        int numberOfRegion = Random.Range(10,11); // 총 구역의 수
         for(int i = 0 ;i < numberOfRegion ; i ++)
         {
             int numberOfTiles = Random.Range(5,9); // 선택한 구역의 총 칸수 (등급별로 나눠야함)

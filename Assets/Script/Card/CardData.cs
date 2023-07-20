@@ -11,7 +11,7 @@ using Spine.Unity;
 public partial class CardData : SingletonD<CardData>
 {
     public List<CardBase> cards = new List<CardBase>();
-    public List<(string,ExecuteCard)> CardMethods = new List<(string, ExecuteCard)>();
+    public Dictionary<string,ExecuteCard> CardMethods = new Dictionary<string, ExecuteCard>();
 
     public bool isCardOperatingTEST;
     public bool isCardOperating{get{
@@ -52,14 +52,14 @@ public partial class CardData : SingletonD<CardData>
                 }
                 ExecuteCard temp = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard),this,values[0]); // valuse[0] : 메소드 이름
                 cards.Add(card);
-                CardMethods.Add((card.cardNumber,temp)); // cardNumber
+                CardMethods.Add(card.cardNumber,temp); // cardNumber
             }
         }
     }
 
     public void RunCard(Card card,List<TargetObject> targets)
     {
-        StartCoroutine(CardMethods.Find(data => data.Item1 == card.baseCard.cardNumber).Item2(card,targets));
+        StartCoroutine(CardMethods[card.baseCard.cardNumber](card,targets));
     }
 
     public bool CheckCardCharacteristic(Card card, CardCharacteristic character)

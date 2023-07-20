@@ -16,8 +16,8 @@ namespace ProjectD
     public enum BuffType { NONE, DEFENSE, ICHI_ATTACK, ICHI_DEFENSE , MOMISPOWERFUL, FLOWERPOWDER, FLOWER, CARDCOSTONE, SOIRAK, APDO, THEREISNOJABI, BOONGGUI, BYEOLMURI, SUHOJA, E2}
     public enum DeckListType { PREFARE_DECK, TRASH_DECK }
     public enum RegionGrade{ NONE, NORMAL, RARE, UNIQUE, LEGEND }
-    public enum ITEM_EffectTime { STARTBATTLE, CHANGEPOSITION, DEAD, ENDBATTLE, KILLMONSTER, ALWAYS, MOVETOROOM, STARTTURN, GETCARD, HOOKHP, ONCEGET }
-
+    public enum ItemEffectTime { STARTBATTLE, CHANGEPOSITION, DEAD, ENDBATTLE, KILLMONSTER, ALWAYS, MOVETOROOM, STARTTURN, GETCARD, HOOKHP, ONCEGET }
+    public enum ItemType {ARTIFACT, LEGACY}
 
     public enum MoveDirection {FORWARD, BACKWARD}
     public static class StringUtils{
@@ -27,5 +27,5 @@ namespace ProjectD
         }
     }
     public delegate IEnumerator ExecuteCard(Card card,List<TargetObject> target);
-    public delegate void ITEM_EventHanddler();
+    public delegate void ItemEventHanddler();
 }
