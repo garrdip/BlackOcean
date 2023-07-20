@@ -12,23 +12,19 @@ public class M_MapManager : NetworkBehaviour
     public static M_MapManager Instance = null; 
     
     [SyncVar]
-    public MapRoom currentRoom;
+    public HexagonMapRoom currentRoom;
    
     [SyncVar]
     public int turnsLeft = 10;
 
     [SyncVar]
-    MapRoom moveToRoomDestination;
+    HexagonMapRoom moveToRoomDestination;
     
     [Header("메인 카메라")]
     public Camera mainCam;
 
     [Header("게임 화면의 요소들의 최상위 오브젝트")]
     public GameObject game;
-
-    //방정보는 서버만 관리 (No SyncVar)
-    [Header("방 리스트")]
-    public List<MapRoom> rooms = new List<MapRoom>();
 
     [Header("맵 화면의 요소들의 최상위 오브젝트")]
     public GameObject roommaps;
@@ -50,9 +46,6 @@ public class M_MapManager : NetworkBehaviour
     [Header("맵에서 플레이어가 컨트롤하는 오브젝트 리스트")]
     public List<GameObject> mapPlayerPieces;
 
-    [Header("맵에서 선택된 방 정보")]
-    [SerializedDictionary("NetworkIdentity", "MapRoom")]
-    public SerializedDictionary<NetworkIdentity, MapRoom> playerVoteMapRoom = new SerializedDictionary<NetworkIdentity, MapRoom>();
 
     [Header("맵에서 선택된 방 정보(HEXAGON)")]
     [SerializedDictionary("NetworkIdentity", "MapRoom")]
@@ -78,37 +71,6 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
-    [Server]
-    public void GenerateFloor()
-    {
-        //싱글톤 네트워크 매니저
-        var netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        //최초 방 좌표
-        Vector2[] loc = {new Vector2(0,0),new Vector2(1,0),new Vector2(-1,0),new Vector2(0,1),new Vector2(0,-1)};
-        //모든 방 정보 삭제
-        for(int i = 0; i < rooms.Count ; i++)
-        {
-            MapRoom destroyRoom = rooms[i];
-            rooms.Remove(destroyRoom);
-            NetworkServer.Destroy(destroyRoom.gameObject);
-        }
-        //새로운 방 5개 생성 
-        for(int i = 0 ;i < 5 ;i ++)
-        {
-            //각 방의 좌표값 * 1.2 위치에 방 생성 (방간격)
-            GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3(loc[i].x*1.2f,loc[i].y*1.2f,0),Quaternion.Euler(40,0,0),roommaps.transform);
-            newRoom.transform.localPosition = new Vector3(loc[i].x*1.2f,loc[i].y*1.2f,0);
-            newRoom.GetComponent<MapRoom>().location = loc[i];
-            // Vector2 형식의 좌표 절대값의 합을 위험도로 지정 
-            if( i == 0 ) newRoom.GetComponent<MapRoom>().roomType = RoomType.START_LOCATION;
-            else newRoom.GetComponent<MapRoom>().roomType = GetRoomType();
-            newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(loc[i].x) + (int)Mathf.Abs(loc[i].y);
-            NetworkServer.Spawn(newRoom);
-            rooms.Add(newRoom.GetComponent<MapRoom>());
-            if( i == 0) currentRoom = newRoom.GetComponent<MapRoom>();
-        }
-    }
-
     private RoomType GetRoomType()
     {
         int ramdomValue = Random.Range(0,100);
@@ -120,13 +82,8 @@ public class M_MapManager : NetworkBehaviour
         else return RoomType.MONSTER;
     }
 
-    public Vector3 GetMapCameraLocation()
-    {
-        return currentRoom.transform.position;
-    }
-
     [Server]
-    public void SetDirection(MapRoom to)
+    public void SetDirection(HexagonMapRoom to)
     {
         moveToRoomDestination = to;
     }
@@ -136,7 +93,7 @@ public class M_MapManager : NetworkBehaviour
     {
         // 현재 위치 표시 여기서 해야함
         currentRoom = moveToRoomDestination;
-        GenerateNextRoom();
+        GenerateHexagonRoom(currentRoom.transform.localPosition);
         return;
     }
 
@@ -171,55 +128,25 @@ public class M_MapManager : NetworkBehaviour
         });
     }
 
-    // East/West/South/North 방이 있는지 검색하고 없으면 생성 - for문이 쥰내 들어감 괜찮은지
-    [Server]
-    public void GenerateNextRoom()
-    {
-        Debug.Log("Generate Room");
-        var netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        Vector2[] loc = {new Vector2(1,0),new Vector2(-1,0),new Vector2(0,1),new Vector2(0,-1)};
-        for(int i = 0 ;i < 4 ;i ++)
-        {
-            bool isEmpty = true;
-            foreach(MapRoom room in rooms)
-            {
-                if(room.location == (currentRoom.location + loc[i]))
-                {
-                    isEmpty = false;
-                    break;
-                }
-            }
-            if(isEmpty)
-            {
-                GameObject newRoom = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "MapRoom"),new Vector3((currentRoom.location.x + loc[i].x)*1.2f,(currentRoom.location.y + loc[i].y)*1.2f,0),Quaternion.Euler(40,0,0));
-                newRoom.transform.localPosition = new Vector3((currentRoom.location.x + loc[i].x)*1.2f,(currentRoom.location.y + loc[i].y)*1.2f,0);
-                newRoom.GetComponent<MapRoom>().location = new Vector2(currentRoom.location.x + loc[i].x, currentRoom.location.y + loc[i].y);
-                newRoom.GetComponent<MapRoom>().hazard = (int)Mathf.Abs(currentRoom.location.x + loc[i].x) + (int)Mathf.Abs(currentRoom.location.y + loc[i].y);
-                NetworkServer.Spawn(newRoom);
-                newRoom.GetComponent<MapRoom>().roomType = GetRoomType();
-                rooms.Add(newRoom.GetComponent<MapRoom>());
-            }
-        }
-    }
 
     // 맵 플레이어들이 선택한 방 선택지 확인
     // 1. 중복값이 있다는것은 2명 이상이 해당 방을 선택한 것이며, 과반수 이상 이므로 해당 MapRoom 반환
     // 2. 중복값이 없다는 것은 모두 다른 선택을 한 것이므로 랜덤으로 돌려서 선택된 MapRoom 반환
     [Server]
-    public MapRoom GetVoteMapRoomResult()
+    public HexagonMapRoom GetVoteHexagonMapRoomResult()
     {
-        List<MapRoom> mapRooms = new List<MapRoom>();
-        foreach (MapRoom mapRoom in playerVoteMapRoom.Values)
+        List<HexagonMapRoom> hexagonMapRooms = new List<HexagonMapRoom>();
+        foreach(HexagonMapRoom hexagonMapRoom in playerVoteHexagonMapRoom.Values)
         {
-            if(!mapRooms.Contains(mapRoom)){
-                mapRooms.Add(mapRoom);
+            if(!hexagonMapRooms.Contains(hexagonMapRoom)){
+                hexagonMapRooms.Add(hexagonMapRoom);
             }else{
-                return mapRoom; // 중복 선택된 방
+                return hexagonMapRoom; // 중복 선택된 방
             }
         }
-        if(mapRooms.Count > 0){
-            int randomIndex = Random.Range(0, mapRooms.Count); // 선택된 방들 중에 랜덤
-            return mapRooms[randomIndex];
+        if(hexagonMapRooms.Count > 0){
+            int randomIndex = Random.Range(0, hexagonMapRooms.Count); // 선택된 방들 중에 랜덤
+            return hexagonMapRooms[randomIndex];
         }else{
             return null;
         }
@@ -265,6 +192,7 @@ public class M_MapManager : NetworkBehaviour
                 Quaternion.identity
             );
             NetworkServer.Spawn(aroundRoom);
+            aroundRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
 
             // 육각형 위치 리스트에 추가
             hexagonPositions.Add(position);
@@ -452,6 +380,7 @@ public class M_MapManager : NetworkBehaviour
                     Quaternion.identity
                 );
                 NetworkServer.Spawn(hexagonMapRoom);
+                hexagonMapRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
 
                 // 육각형 위치 리스트에 추가
                 hexagonPositions.Add(position);

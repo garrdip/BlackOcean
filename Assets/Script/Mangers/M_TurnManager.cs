@@ -167,9 +167,9 @@ public class M_TurnManager : NetworkBehaviour
     }
 
     [Server]
-    public void HandleStartBattle(MapRoom mapRoom)
+    public void HandleStartBattle(HexagonMapRoom hexagonMapRoom)
     {
-        roomType = mapRoom.roomType;
+        roomType = hexagonMapRoom.roomType;
         M_MapManager.instance.StartBattle();
     }
 
