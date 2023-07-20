@@ -295,79 +295,135 @@ public class M_MapManager : NetworkBehaviour
         float length = 1/Mathf.Tan(Mathf.PI/3);
         Vector3 retVal = new Vector3(0,0,0);
         retVal.x = 1.5f*x*length;
-        retVal.y = y - (x%2)*0.5f;
+        retVal.y = y - (Mathf.Abs(x)%2)*0.5f;
         return retVal;
     }
 
     [Server]
     public void GenerateColorRegion()
     {
-        //int numberOfRegion = Random.Range(3,5);
-        for(int i = 0 ;i < 1 ; i ++)
+        int numberOfRegion = Random.Range(4,6); // 총 구역의 수
+        for(int i = 0 ;i < numberOfRegion ; i ++)
         {
-            int numberOfTiles = Random.Range(5,9);
+            int numberOfTiles = Random.Range(5,9); // 선택한 구역의 총 칸수 (등급별로 나눠야함)
+
             Region newRegion = new Region();
             newRegion.GetRegionGrade();
-            newRegion.tiles.Add(new Tile(new Vector3(4,5,0)));
-            newRegion.tiles.Add(new Tile(new Vector3(4,6,0)));
-            newRegion.tiles.Add(new Tile(new Vector3(4,7,0)));
-            newRegion.tiles.Add(new Tile(new Vector3(5,5,0)));
-            newRegion.tiles.Add(new Tile(new Vector3(5,6,0)));
-            newRegion.tiles.Add(new Tile(new Vector3(5,7,0)));
-            newRegion.tiles.Add(new Tile(new Vector3(6,5,0)));
-            newRegion.tiles.Add(new Tile(new Vector3(6,5,0)));
-            newRegion.tiles.Add(new Tile(new Vector3(7,6,0)));
             regions.Add(newRegion);
-            //for(int j = 0 ; j < numberOfTiles ; j++)
-            //{
-            //    Vector3 newTile = new Vector3(4,5,0);
-            //    // 여기다가 잘 넣으면됨.
-            //    newRegion.coordinate.Add(newTile,false);
-            //}
 
-        }
+            // 거리와 각도를 이용하여 좌표를 계산
 
-        foreach(Tile loc in regions[0].tiles)
-        {
-            SetRegionWithColor((int)loc.coordinate.x,(int)loc.coordinate.y,regions[0]);
+            Vector3 centerPos = new Vector3(0,0,0);
+            do{
+                int distance = Random.Range(7,9);
+                float angle = Random.Range(0,2*Mathf.PI);
+                centerPos.x = (int)(distance * Mathf.Cos(angle));
+                centerPos.y = (int)(distance * Mathf.Sin(angle));
+            }while(regions.Find(x => x.tiles.Exists(tile => tile.coordinate == centerPos)) != null);
+            newRegion.tiles.Add(new Tile(centerPos));
+
+            //각각의 타일의 위치를 정의하는 곳.
+            for(int j = 0 ; j < numberOfTiles - 1 ; j++)
+            {
+                Vector3 newPos = MoveRandomDirection(centerPos); //랜덤 좌표 선택
+                if(regions.Find(x => x.tiles.Exists(tile => tile.coordinate == newPos)) != null)
+                {
+                    //centerPos = newPos;
+                    j--;
+                    continue;
+                }
+                newRegion.tiles.Add(new Tile(newPos));
+                centerPos = newPos;
+            }
+            SetRegionWithColor(newRegion);
         }
     }
 
-    public void SetRegionWithColor(int x,int y,Region region)
+    Vector3 MoveRandomDirection(Vector3 loc)
     {
-        int addVal = (x%2 == 0)? 0 : -1;
-        for(int i = 0;  i < 6 ; i ++)
+        Vector3 retVal = loc;
+        int addVal = (loc.x%2 == 0)? 0 : -1;
+        switch(Random.Range(0,6))
         {
-            switch(i)
+            case 0: // North
+                retVal += new Vector3(0,1,0);
+                break;
+            case 1: // 1si
+                retVal += new Vector3(1,1+addVal,0);
+                break;
+            case 2: // 5si
+                retVal += new Vector3(1,addVal,0);
+                break;
+            case 3: // South
+                retVal += new Vector3(0,-1,0);
+                break;
+            case 4: // 7si
+                retVal += new Vector3(-1,addVal,0);
+                break;
+            case 5: // 11si
+                retVal += new Vector3(-1,addVal+1,0);
+                break;
+        }
+        return retVal;
+    }
+
+    public void SetRegionWithColor(Region region)
+    {
+        foreach(Tile loc in region.tiles)
+        {
+            Debug.Log(loc.coordinate);
+            int addVal = (Mathf.Abs(loc.coordinate.x)%2 == 0)? 0 : -1; // X의 홀수축은 짝수축보다 아래에 위치
+            for(int i = 0;  i < 6 ; i ++)
             {
-                case 0 : // North
-                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x,y+1,0)))
-                        continue;
-                    break;
-                case 1 : // 2시
-                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x+1,y+1+addVal,0)))
-                        continue;
-                    break;
-                case 2 : // 5시
-                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x+1,y+addVal,0)))
-                        continue;
-                    break;
-                case 3 :// 6시
-                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x,y-1,0)))
-                        continue;
-                    break;
-                case 4 :// 7시
-                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x-1,y+addVal,0)))
-                        continue;
-                    break;
-                case 5 :// 10시
-                    if(region.tiles.Exists(loc => loc.coordinate == new Vector3(x-1,y+1+addVal,0)))
-                        continue;
-                    break;
+                switch(i)
+                {
+                    case 0 : // North
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x,loc.coordinate.y+1,0)))
+                            continue;
+                        break;
+                    case 1 : // 2시
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x+1,loc.coordinate.y+1+addVal,0)))
+                            continue;
+                        break;
+                    case 2 : // 5시
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x+1,loc.coordinate.y+addVal,0)))
+                            continue;
+                        break;
+                    case 3 :// 6시
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x,loc.coordinate.y-1,0)))
+                            continue;
+                        break;
+                    case 4 :// 7시
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x-1,loc.coordinate.y+addVal,0)))
+                            continue;
+                        break;
+                    case 5 :// 10시
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x-1,loc.coordinate.y+1+addVal,0)))
+                            continue;
+                        break;
+                }
+                GameObject newRegion = Instantiate(regionIndicator,GetPosition((int)loc.coordinate.x,(int)loc.coordinate.y),Quaternion.identity,gridParent);
+                newRegion.transform.localPosition = newRegion.transform.position;
+                Color regionColor = new Color(0,0,0);
+                switch(region.regionGrade)
+                {
+                    case RegionGrade.NORMAL :
+                        regionColor = new Color(1,0,0);
+                        break;
+                    case RegionGrade.RARE :
+                        regionColor = new Color(0,1,0);
+                        break;
+                    case RegionGrade.UNIQUE :
+                        regionColor = new Color(0,0,1);
+                        break;
+                    case RegionGrade.LEGEND :
+                        regionColor = new Color(1,0.8f,0);
+                        break;
+                        
+                }
+                newRegion.GetComponent<SpriteRenderer>().color = regionColor;
+                newRegion.transform.localRotation = Quaternion.Euler(0,0,-60*i);
             }
-            GameObject newRegion = Instantiate(regionIndicator,GetPosition(x,y),Quaternion.identity,gridParent);
-            newRegion.transform.localPosition = newRegion.transform.position;
-            newRegion.transform.localRotation = Quaternion.Euler(0,0,-60*i);
         }
     }
 
