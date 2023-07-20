@@ -15,6 +15,8 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
         LoadMonsterDataFromDB();
         LoadMonsterGroupDataFromDB();
         CardData.instance.LoadCardDataFromDB();
+        ItemData.instance.LoadArtifactData();
+        ItemData.instance.LoadLegacyData();
     }
 
     void LoadMonsterDataFromDB()

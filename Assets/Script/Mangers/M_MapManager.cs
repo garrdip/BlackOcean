@@ -302,20 +302,21 @@ public class M_MapManager : NetworkBehaviour
     [Server]
     public void GenerateColorRegion()
     {
-        int numberOfRegion = Random.Range(10,11); // 총 구역의 수
+        int numberOfRegion = Random.Range(6,9); // 총 구역의 수
         for(int i = 0 ;i < numberOfRegion ; i ++)
         {
-            int numberOfTiles = Random.Range(5,9); // 선택한 구역의 총 칸수 (등급별로 나눠야함)
-
             Region newRegion = new Region();
             newRegion.GetRegionGrade();
             regions.Add(newRegion);
 
+            int numberOfTiles = (newRegion.regionGrade == RegionGrade.NORMAL) ? Random.Range(4,6) :
+                                (newRegion.regionGrade == RegionGrade.RARE) ? Random.Range(5,8) :
+                                (newRegion.regionGrade == RegionGrade.UNIQUE) ? Random.Range(6,10) : Random.Range(7,12);
+                                                                        
             // 거리와 각도를 이용하여 좌표를 계산
-
             Vector3 centerPos = new Vector3(0,0,0);
             do{
-                int distance = Random.Range(7,9);
+                int distance = Random.Range(7,11);
                 float angle = Random.Range(0,2*Mathf.PI);
                 centerPos.x = (int)(distance * Mathf.Cos(angle));
                 centerPos.y = (int)(distance * Mathf.Sin(angle));
@@ -326,9 +327,8 @@ public class M_MapManager : NetworkBehaviour
             for(int j = 0 ; j < numberOfTiles - 1 ; j++)
             {
                 Vector3 newPos = MoveRandomDirection(centerPos); //랜덤 좌표 선택
-                if(regions.Find(x => x.tiles.Exists(tile => tile.coordinate == newPos)) != null)
+                if(regions.Find(x => x.tiles.Exists(tile => tile.coordinate == newPos)) != null || newPos == new Vector3(0,0,0))
                 {
-                    //centerPos = newPos;
                     j--;
                     continue;
                 }

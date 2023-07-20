@@ -11,17 +11,17 @@ public class Region{
     public void GetRegionGrade()
     {
         int value = Random.Range(0,100);
-        if(value < 2)
+        if(value < 25)
         {
             regionGrade = RegionGrade.LEGEND;
             return;
         }
-        if(value < 10)
+        if(value < 50)
         {
             regionGrade = RegionGrade.UNIQUE;
             return;
         }
-        if(value < 30)
+        if(value < 75)
         {
             regionGrade = RegionGrade.RARE;
             return;
