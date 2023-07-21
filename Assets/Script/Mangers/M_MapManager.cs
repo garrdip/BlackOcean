@@ -55,9 +55,6 @@ public class M_MapManager : NetworkBehaviour
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
     public List<Vector3> hexagonPositions = new List<Vector3>(); // 각 육각형 방의 위치 리스트
 
-    // 거점 지역 등급
-    public RegionGrade[] regionGrades = { RegionGrade.NORMAL, RegionGrade.RARE, RegionGrade.UNIQUE, RegionGrade.LEGEND };
-    public float[] weight = { 0.6f, 0.25f, 0.13f, 0.02f }; // 확률 가중치(60%, 25%, 13%, 2%)
 
     public static M_MapManager instance
     {

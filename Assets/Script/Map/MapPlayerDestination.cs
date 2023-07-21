@@ -18,27 +18,44 @@ public class MapPlayerDestination : NetworkBehaviour
         transform.SetParent(M_MapManager.instance.roommaps.transform);
     }
 
+    // 오브젝트 활성화 시 시퀀스 재시작
     void OnEnable()
     {
         sequence.Restart();
     }
 
+    // 오브젝트 비활성화 시 시퀀스 중지
+    void OnDisable()
+    {
+        sequence.Pause();
+    }
+
+    // 오브젝트 파괴 시 시퀀스 제거
+    void OnDestroy()
+    {
+        sequence.Kill();
+    }
+
     // 맵 플레이어가 이동할 방 클릭시 해당 위치에 생성되는 표시 오브젝트의 업다운 바운스 애니매이션 함수
     public void MoveBounce(Vector3 position, bool isNewPosition)
     {
-        if(transform != null){
-            // 업다운 바운스 무한 반복
-            Tweener upTweener = transform.DOMoveY(transform.localPosition.y + 0.2f, 0.3f);
-            Tweener downTweener = transform.DOMoveY(transform.localPosition.y, 0.3f);
-            sequence = DOTween.Sequence()
-                .Append(upTweener)
-                .Append(downTweener)
-                .SetLoops(-1);
+        // 시퀀스가 이전에 이미 있으면 제거
+        if(sequence != null && sequence.active)
+        {
+            sequence.Kill();
+            sequence = null;
+        }
+        // 업다운 바운스 무한 반복
+        Tweener upTweener = transform.DOMoveY(transform.localPosition.y + 0.2f, 0.3f);
+        Tweener downTweener = transform.DOMoveY(transform.localPosition.y, 0.3f);
+        sequence = DOTween.Sequence()
+            .Append(upTweener)
+            .Append(downTweener)
+            .SetLoops(-1);
 
-            // 새로운 위치로 이동된 경우 시퀀스 재시작
-            if(isNewPosition){
-                sequence.Restart();
-            }
+        // 새로운 위치로 이동된 경우 시퀀스 재시작
+        if(isNewPosition){
+            sequence.Restart();
         }
     }
 
@@ -59,11 +76,5 @@ public class MapPlayerDestination : NetworkBehaviour
                     break;
             }
         }
-    }
-
-    // 오브젝트 파괴시점에 Dotween이벤트 제거
-    void OnDestroy()
-    {
-        DOTween.Kill(sequence);
     }
 }
