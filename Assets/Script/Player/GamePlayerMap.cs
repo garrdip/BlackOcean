@@ -7,14 +7,19 @@ using Steamworks;
 public class GamePlayerMap : NetworkBehaviour
 {
     [SyncVar]
-    public MapPlayerPiece currentMapPlayerPiece;
+    public MapPlayerPiece currentMapPlayerPiece; // 맵플레이어 오브젝트
 
-    [SyncVar (hook = nameof(OnChangeCurrentMapPlayerPosition))]
-    public Vector3 currentMapPlayerPosition;
+    [SyncVar]
+    public MapPlayerDestination currentMapPlayerDestination; // 맵플레이어가 이동할 방의 위치를 표시해주는 오브젝트
+
+    [SyncVar (hook = nameof(OnChangeCurrentMapPlayerDestination))]
+    public Vector3 currentMapPlayerDestinationPosition;
+
 
     public override void OnStartServer()
     {
         SpawnMapPlayerPiece();
+        SpawnMapPlayerDestination();
     }
 
     // 맵에서 사용될 플레이어 권한을 가진 삼각형 오브젝트 생성
@@ -36,16 +41,38 @@ public class GamePlayerMap : NetworkBehaviour
         // 매니저의 리스트에 생성된 맵 플레이어 추가
         M_MapManager.instance.mapPlayerPieces.Add(mapPlayerPiece);
 
-        // 맵 플레이어 참조값 세팅
+        // 생성된 MapPlayerPiece 참조값 세팅
         currentMapPlayerPiece = mapPlayerPiece.GetComponent<MapPlayerPiece>();
+
+        // 게임 플레이어 참조값 세팅
+        currentMapPlayerPiece.gamePlayer = gamePlayer;
+    }
+
+    // 맵플레이어가 이동할 위치를 표시하는 오브젝트 생성
+    [Server]
+    public void SpawnMapPlayerDestination()
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        GameObject mapPlayerDestination = Instantiate(
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerDestination"),
+            Vector3.zero,
+            Quaternion.identity
+        );
+        NetworkServer.Spawn(mapPlayerDestination, connectionToClient);
+        
+        // 생성된 MapPlayerPiece 참조값 세팅
+        currentMapPlayerDestination = mapPlayerDestination.GetComponent<MapPlayerDestination>();
+
+        // 게임 플레이어 참조값 세팅
+        currentMapPlayerDestination.gamePlayer = GetComponent<GamePlayer>();
     }
 
 
-    // 맵플레이어 위치 변경 요청
+    // 맵 플레이어가 이동하려는 방의 위치를 알려주는 표시 변경
     [Command]
-    public void CmdChangeCurrentMapPlayerPosition(HexagonMapRoom hexagonMapRoom, Vector3 position)
+    public void CmdChangeMapPlayerDestinationPosition(HexagonMapRoom hexagonMapRoom, Vector3 position)
     {
-        currentMapPlayerPosition = position;
+        currentMapPlayerDestinationPosition = position;
     }
 
 
@@ -61,11 +88,12 @@ public class GamePlayerMap : NetworkBehaviour
     }
 
 
-    // 맵 플레이어 위치 변경 수신
-    public void OnChangeCurrentMapPlayerPosition(Vector3 oldPosition, Vector3 newPosition)
+    // 맵 플레이어가 이동하려는 방의 위치를 알려주는 표시 변경 수신
+    public void OnChangeCurrentMapPlayerDestination(Vector3 oldPosition, Vector3 newPosition)
     {
-        if(currentMapPlayerPiece != null){
-            currentMapPlayerPiece.transform.position = newPosition;
+        if(currentMapPlayerDestination != null){
+            currentMapPlayerDestination.transform.localPosition = newPosition;
+            currentMapPlayerDestination.MoveBounce(newPosition, oldPosition != newPosition);
         }
     }
 
