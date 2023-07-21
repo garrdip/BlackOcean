@@ -211,8 +211,8 @@ SpriteRenderer:
   m_SortingLayerID: 744391573
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: cad95c70a4bc7564aae8c33487b104f7, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 9aebd705574f9e642aef1e5f59b3e4d8, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -255,6 +255,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   steamId: 
+  gamePlayer: {fileID: 0}
+  spriteRenderer: {fileID: 7903060833937010717}
   textPlayerName: {fileID: 5787658978139623999}
 --- !u!1 &6210982548379404003
 GameObject:
