@@ -180,6 +180,6 @@ MonoBehaviour:
     MAXHP: 0
     behavior: []
   parent: {fileID: 0}
-  meshRenderer: {fileID: 0}
-  defaultMaterial: {fileID: 0}
-  outLineMaterial: {fileID: 0}
+  meshRenderer: {fileID: 7778458032851223039}
+  defaultMaterial: {fileID: 2100000, guid: bcf8c88b36cb59041a2ef3c34fa34c22, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 9a17379662fb1f94d85f6dcc029b7379, type: 2}

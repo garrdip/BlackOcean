@@ -38,33 +38,6 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeParent))]
     public TargetObject parent;
 
-    [Header("몬스터 MeshRenderer")]
-    public MeshRenderer meshRenderer;
-
-    [Header("몬스터 기본 Material")]
-    public Material defaultMaterial;
-
-    [Header("몬스터 외곽선 Material")]
-    public Material outLineMaterial;
-
-    void Start()
-    {
-        meshRenderer = GetComponent<MeshRenderer>();   
-    }
-
-    private void OnTriggerEnter2D(Collider2D collider)
-    {
-        if(collider != null && collider.tag.Equals("CardArrowHead")){
-            meshRenderer.material = outLineMaterial;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collider)
-    {
-        if(collider != null && collider.tag.Equals("CardArrowHead")){
-            meshRenderer.material = defaultMaterial;
-        }
-    }
 
     [Server]
     public void SetNextAction()
