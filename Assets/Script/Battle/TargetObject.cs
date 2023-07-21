@@ -76,16 +76,31 @@ public class TargetObject : NetworkBehaviour
     void Awake()
     {
         buffs.Callback += OnChangedBuff;
-    }
-
-    void Start()
-    {
-        // 오브젝트 생성 시 델리게이트 이벤트 리스너 연결
         anim = GetComponentInChildren<SkeletonAnimation>();
         if(anim != null){
             anim.state.Event += OnAnimationEvent;
             anim.state.Start += OnAnimationStart;
             anim.state.Complete += OnAnimationComplete;
+        }
+    }
+
+    void Start()
+    {
+        StartCoroutine(FindChildObjects());
+    }
+
+    IEnumerator FindChildObjects()
+    {
+        while(true)
+        {
+            anim = GetComponentInChildren<SkeletonAnimation>();
+            if(anim != null){
+                anim.state.Event += OnAnimationEvent;
+                anim.state.Start += OnAnimationStart;
+                anim.state.Complete += OnAnimationComplete;
+                break;
+            }
+            yield return new WaitForSeconds(0.01f);
         }
     }
 
