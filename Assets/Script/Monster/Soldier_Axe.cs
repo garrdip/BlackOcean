@@ -49,11 +49,14 @@ public class Soldier_Axe : SpawnedMonster
         yield return new WaitForSeconds(1f);
         isActive = false;
     }
+    
+    [ClientRpc]
     public void DoAnimation(string actionName)
     {
         parent.anim.state.SetAnimation(1,actionName,false);
     }
 
+    [ClientRpc]
     public override void OnHitAnimation()
     {
         parent.anim.state.SetAnimation(1,"1Defence",false);

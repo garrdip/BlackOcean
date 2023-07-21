@@ -263,7 +263,6 @@ public class M_MapManager : NetworkBehaviour
                 newRegion.tiles.Add(new Tile(newPos));
                 centerPos = newPos;
             }
-            SetRegionWithColor(newRegion);
         }
     }
 
@@ -295,11 +294,18 @@ public class M_MapManager : NetworkBehaviour
         return retVal;
     }
 
+    [ClientRpc]
+    public void SetRegionWithColorRPC()
+    {
+        Debug.Log("Color Region Start!" + regions.Count);
+        foreach(Region region in regions)
+            SetRegionWithColor(region);
+    }
+
     public void SetRegionWithColor(Region region)
     {
         foreach(Tile loc in region.tiles)
         {
-            Debug.Log(loc.coordinate);
             int addVal = (Mathf.Abs(loc.coordinate.x)%2 == 0)? 0 : -1; // X의 홀수축은 짝수축보다 아래에 위치
             for(int i = 0;  i < 6 ; i ++)
             {
