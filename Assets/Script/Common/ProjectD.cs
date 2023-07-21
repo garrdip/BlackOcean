@@ -28,5 +28,5 @@ namespace ProjectD
         }
     }
     public delegate IEnumerator ExecuteCard(Card card,List<TargetObject> target);
-    public delegate void ItemEventHanddler();
+    public delegate void ItemEventHanddler(TargetObject sender);
 }
