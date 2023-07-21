@@ -38,6 +38,7 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeParent))]
     public TargetObject parent;
 
+    public bool isActive = false;
 
     [Server]
     public void SetNextAction()
@@ -69,15 +70,15 @@ public class SpawnedMonster : NetworkBehaviour
     }
 
     [Server]
-    public virtual void DoAction()
+    public virtual IEnumerator DoAction()
     {
-
+        yield return null;
     }
 
     [ClientRpc]
-    public virtual void DoAnimation()
+    public virtual void OnHitAnimation()
     {
-        
+
     }
 
     [Server]

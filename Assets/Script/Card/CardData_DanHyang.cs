@@ -18,6 +18,8 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData) M_TurnManager.instance.ChangePlayerOrder(tar[0].player,MoveDirection.FORWARD);
         if(!tar[0].isCloneData) yield return new WaitForSeconds(0.5f);
         M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
+        if(!tar[0].isCloneData) yield return new WaitForSeconds(0.2f);
+        tar[1].monster.OnHitAnimation();
         GeneralSingleAttack(tar[0],tar[1],15);
         if(!tar[0].isCloneData) isCardOperating = false;
     }

@@ -313,8 +313,8 @@ public class M_TurnManager : NetworkBehaviour
     {
         foreach(TargetObject monster in spawnedMonsterList)
         {
-            monster.isAnimating = true;
-            monster.monster.DoAction();
+            monster.monster.isActive = true;
+            StartCoroutine(monster.monster.DoAction());
             while(true)
             {
                 if(monster.isAnimating == false) break;

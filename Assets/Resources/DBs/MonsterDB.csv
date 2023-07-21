@@ -1,5 +1,5 @@
 Monster_Name,MAXHP,Frequency,ActionName,ActionValue,ActionTarget,,,,,
-Soldier_Axe,10,80,두번찍기,10,FRONT,,,,,
+Soldier_Axe,150,80,두번찍기,10,FRONT,,,,,
 ,,20,힘증가,2,,,,,,
 Soldier_Shield,10,50,혼자방어,10,,,,,,
 ,,50,팀방어,5,,,,,,

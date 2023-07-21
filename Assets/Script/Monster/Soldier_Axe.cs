@@ -34,23 +34,28 @@ public class Soldier_Axe : SpawnedMonster
         }
     }
 
-    public override void DoAction()
+    public override IEnumerator DoAction()
     {
-        switch(nextAction.actionNumber){
-            case 0 :
+        switch(nextAction.actionName){
+            case "두번찍기" :
                 GeneralAttack();
-                DoAnimation();
+                DoAnimation("1Attack");
                 break;
-            case 1 :
+            case "힘증가" :
                 parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue);
-                DoAnimation();
+                DoAnimation("1Buff");
                 break;
         }
+        yield return new WaitForSeconds(1f);
+        isActive = false;
+    }
+    public void DoAnimation(string actionName)
+    {
+        parent.anim.state.SetAnimation(1,actionName,false);
     }
 
-    [ClientRpc]
-    public override void DoAnimation()
+    public override void OnHitAnimation()
     {
-        parent.anim.state.SetAnimation(1,"01Attack",false);
+        parent.anim.state.SetAnimation(1,"1Defence",false);
     }
 }
