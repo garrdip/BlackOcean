@@ -317,7 +317,7 @@ public class M_TurnManager : NetworkBehaviour
             StartCoroutine(monster.monster.DoAction());
             while(true)
             {
-                if(monster.isAnimating == false) break;
+                if(monster.monster.isActive == false) break;
                 yield return new WaitForSeconds(0.01f);
             }
         }
