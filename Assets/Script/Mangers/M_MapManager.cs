@@ -90,7 +90,7 @@ public class M_MapManager : NetworkBehaviour
     {
         // 현재 위치 표시 여기서 해야함
         currentRoom = moveToRoomDestination;
-        GenerateHexagonRoom(currentRoom.transform.localPosition);
+        GenerateHexagonRoom(currentRoom);
         return;
     }
 
@@ -171,6 +171,10 @@ public class M_MapManager : NetworkBehaviour
             Quaternion.identity
         );
         NetworkServer.Spawn(centerRoom);
+        
+        // 방 타입은 START_LOCATION, 고유 좌표계값은 (0, 0)
+        centerRoom.GetComponent<HexagonMapRoom>().roomType = RoomType.START_LOCATION;
+        centerRoom.GetComponent<HexagonMapRoom>().coordinate = new Vector2Int(0, 0);
 
         // 육각형 위치 리스트에 추가
         hexagonPositions.Add(new Vector3(0f, 0f, 0f));
@@ -179,7 +183,7 @@ public class M_MapManager : NetworkBehaviour
         for (int i = 0; i < 6; i++)
         {
             float angle = i * angleIncrement; // 새로 생성될 육각형의 각도 계산
-            Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up; // 60도씩 육각형의 6면을 돌며 각 면의 위치에 생성
+            Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up; // 60도씩 반시계 방향으로 육각형의 6면을 돌며 각 면의 위치에 생성
             Vector3 position = centerRoom.transform.position + offset;
 
             // 새로운 육각형 생성
@@ -189,10 +193,81 @@ public class M_MapManager : NetworkBehaviour
                 Quaternion.identity
             );
             NetworkServer.Spawn(aroundRoom);
+
+            // 방 타입 설정
             aroundRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
+            
+            // 고유 좌표계 값 설정
+            SetHexagonMapRoomCoordinate(i, centerRoom.GetComponent<HexagonMapRoom>(), aroundRoom.GetComponent<HexagonMapRoom>());
 
             // 육각형 위치 리스트에 추가
             hexagonPositions.Add(position);
+        }
+    }
+
+    // 현재 위치한 육각형의 각 변에 새로운 육각형 생성, 이미 존재하면 생성하지 않음
+    [Server]
+    public void GenerateHexagonRoom(HexagonMapRoom currentHexagonMapRoom)
+    {
+        // 6개의 육각형을 생성하여 각 면에 배치
+        for (int i = 0; i < 6; i++)
+        {
+            // 새로 생성될 육각형의 각도 계산
+            float angle = i * angleIncrement;
+            Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up;
+
+            // 새로운 육각형이 생성될 위치
+            Vector3 position = currentHexagonMapRoom.transform.localPosition + offset;
+
+            // 생성 위치가 중복이 아닌 경우 육각형 생성
+            if(!IsPositionDuplicated(position))
+            {
+                // 새로운 육각형 생성
+                var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+                GameObject hexagonMapRoom = Instantiate(
+                    networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
+                    position,
+                    Quaternion.identity
+                );
+                NetworkServer.Spawn(hexagonMapRoom);
+
+                // 방 타입 설정
+                hexagonMapRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
+
+                // 고유 좌표계 값 설정
+                SetHexagonMapRoomCoordinate(i, currentHexagonMapRoom, hexagonMapRoom.GetComponent<HexagonMapRoom>());
+
+                // 육각형 위치 리스트에 추가
+                hexagonPositions.Add(position);
+            }
+        }
+    }
+
+    // HexagonMapRoom의 고유 좌표계값을 설정
+    // (currentHexagonMapRoom을 중심으로 각 방들이 생성될 때 index값을 기반으로 각도가 정해지므로, 해당 각도에 따라 고유 좌표계값을 증감시켜 값을 설정)
+    private void SetHexagonMapRoomCoordinate(int index, HexagonMapRoom currentHexagonMapRoom, HexagonMapRoom aroundHexagonMapRoom)
+    {
+        Vector2Int currentHexagonMapRoomCoordinate = currentHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate;
+        switch(index)
+        {
+            case 0:
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(0, 1);
+                break;
+            case 1:
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(-1, 1);
+                break;
+            case 2:
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(-1, 0);
+                break;
+            case 3:
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(0, -1);
+                break;
+            case 4:
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(1, -1);
+                break;
+            case 5:
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(1, 0);
+                break;
         }
     }
     
@@ -354,39 +429,6 @@ public class M_MapManager : NetworkBehaviour
                 }
                 newRegion.GetComponent<SpriteRenderer>().color = regionColor;
                 newRegion.transform.localRotation = Quaternion.Euler(0,0,-60*i);
-            }
-        }
-    }
-
-    // 현재 위치한 육각형의 각 변에 새로운 육각형 생성, 이미 존재하면 생성하지 않음
-    [Server]
-    public void GenerateHexagonRoom(Vector3 hexagonPosition)
-    {
-        // 6개의 육각형을 생성하여 각 면에 배치
-        for (int i = 0; i < 6; i++)
-        {
-            // 새로 생성될 육각형의 각도 계산
-            float angle = i * angleIncrement;
-            Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up;
-
-            // 새로운 육각형이 생성될 위치
-            Vector3 position = hexagonPosition + offset;
-
-            // 생성 위치가 중복이 아닌 경우 육각형 생성
-            if(!IsPositionDuplicated(position))
-            {
-                // 새로운 육각형 생성
-                var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-                GameObject hexagonMapRoom = Instantiate(
-                    networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
-                    position,
-                    Quaternion.identity
-                );
-                NetworkServer.Spawn(hexagonMapRoom);
-                hexagonMapRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
-
-                // 육각형 위치 리스트에 추가
-                hexagonPositions.Add(position);
             }
         }
     }

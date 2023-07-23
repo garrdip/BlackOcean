@@ -10,8 +10,12 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedRoomType))]
     public RoomType roomType = RoomType.UNDEFINED;
 
+    [SyncVar (hook = nameof(OnChangedCoordinate))]
+    public Vector2Int coordinate; // 각 방의 고유 좌표계 값
+
     public SpriteRenderer spriteRenderer;
     public TextMeshProUGUI textRoomType;
+    public TextMeshProUGUI textCoordinate;
 
     void Start()
     {
@@ -61,5 +65,10 @@ public class HexagonMapRoom : NetworkBehaviour
                 textRoomType.text = "엔피씨";
                 break;
         }
+    }
+
+    void OnChangedCoordinate(Vector2Int oldValue, Vector2Int newValue)
+    {
+        textCoordinate.text = newValue.ToString();
     }
 }
