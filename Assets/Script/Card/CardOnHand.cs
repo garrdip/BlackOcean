@@ -12,9 +12,6 @@ public class CardOnHand : NetworkBehaviour
     [SyncVar(hook = nameof(OnChangeCardData))]
     public Card card;
 
-    [SyncVar(hook = nameof(OnChangeOwnedCardPocket))]
-    public CardPocket cardPocket;
-
     [SyncVar]
     public int index;
 
@@ -57,7 +54,6 @@ public class CardOnHand : NetworkBehaviour
     void Start()
     {
         cardOnHandCanvas.worldCamera = Camera.main;
-        transform.localScale = M_CardManager.instance.cardOriginSize;
     }
 
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
@@ -191,6 +187,13 @@ public class CardOnHand : NetworkBehaviour
         transform.SetSiblingIndex(index);
     }
 
+    // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
+    [ClientRpc]
+    public void RpcCardOnHandSetParent(CardPocket cardPocket)
+    {
+        transform.SetParent(cardPocket.transform);
+    }
+
     // --------------------------------------------------------------- SyncVar Hook -----------------------------------------------------------------//
 
     // 카드 정보 뷰 업데이트
@@ -200,14 +203,4 @@ public class CardOnHand : NetworkBehaviour
         textCardInfo.text = card.baseCard.cardType.ToString();
     }
 
-    // 카드 포켓이 생성되면 카드들의 부모는 해당 카드 포켓으로 설정
-    public void OnChangeOwnedCardPocket(CardPocket oldCardPocekt, CardPocket newCardPocket)
-    {
-        if(isOwned){
-            transform.position = GameUIManager.instance.buttonPrefareDeck.transform.position;
-        }else{
-            transform.position = new Vector3(-100f, 0f, 0f);
-        }
-        transform.SetParent(newCardPocket.transform);
-    }
 }

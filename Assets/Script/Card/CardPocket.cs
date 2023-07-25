@@ -9,13 +9,13 @@ public class CardPocket : NetworkBehaviour
     // 카드들은 이미 NetworkTransform에 의해 각 소유의 플레이어들에의해 제어되고 있으므로 Pocket의 위치만 옮겨주면 해당 플레이어의 제어화면을 볼 수 있음.
     // 또한 액션 수행 로직은 각 플레이어들에 의해 충돌판정 후 서버에 요청하여 클라이언트에 동기화하므로, 관전자 화면에 보여지는 위치에 상관없이 로직은 정상 수행.
 
-    public override void OnStartClient()
+    void Start()
     {
         transform.SetParent(GameUIManager.instance.CardOnHandsPanel.transform);
         if(isOwned){
-            transform.position = new Vector3(0f, -8f, 0f); // 현재 플레이어 소유의 카드는 화면 중앙 하단위치
+            transform.localPosition = new Vector3(0f, -8f, 0f); // 현재 플레이어 소유의 CardPocket은 화면 중앙 하단위치
         }else{
-            transform.position = new Vector3(-100f, -8f, 0f); // 다른 플레이어 소유의 카드는 좌측 -100 위치
+            transform.localPosition = new Vector3(-100f, -8f, 0f); // 다른 플레이어 소유의 CardPocket은 좌측 -100 위치
         }
     }
 }

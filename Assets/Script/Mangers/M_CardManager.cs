@@ -152,17 +152,19 @@ public class M_CardManager : NetworkBehaviour
     {
         if(!cardOnHand.isChoosed){
             cardOnHand.isMoving = true;
-            Transform cardTransform = cardOnHand.gameObject.transform;
-            cardTransform.localRotation = Quaternion.Euler(0f, 0f, -90f);
+            cardOnHand.transform.position = GameUIManager.instance.buttonPrefareDeck.transform.position;
+            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            cardOnHand.transform.localScale = new Vector3(0.02f, 0.02f, 0f);
 
             // Dotween 애니매이션 시퀀스 생성
             Sequence sequence = DOTween.Sequence();
-            sequence.Append(cardTransform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
-            sequence.Join(cardTransform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
+            sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
+            sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
                 .SetDelay(index * 0.1f)
                 .SetEase(Ease.OutSine)
                 .OnComplete(() => {
                     cardOnHand.isMoving = false;
+                    sequence.Kill();
                 }));      
         }
     }
@@ -200,6 +202,7 @@ public class M_CardManager : NetworkBehaviour
                     cardOnHand.isMoving = false;
                     gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
                     GameUIManager.instance.buttonEndTurn.interactable = true;
+                    sequence.Kill();
                 }
             }
         });

@@ -145,17 +145,19 @@ public class GamePlayerDeck : NetworkBehaviour
 
             cardOnHand.GetComponent<CardOnHand>().index = i; // 카드 인덱스
             
-            cardOnHands.Add(cardOnHand.GetComponent<CardOnHand>()); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
-
             // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
             cardOnHand.GetComponent<CardOnHand>().card = prefareDeck[randomIndex];
             prefareDeck.RemoveAt(randomIndex); 
 
-            // 소환된 카드를 포켓의 자식오브젝트로 설정하기 위해 참조값 설정
-            cardOnHand.GetComponent<CardOnHand>().cardPocket = cardPocket;
+            // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
+            if(cardPocket != null){
+                cardOnHand.GetComponent<CardOnHand>().RpcCardOnHandSetParent(cardPocket);
+            }
 
             // 소환된 카드의 정렬 순서값을 설정하기 위해 클라이언트에 이벤트 전송
             cardOnHand.GetComponent<CardOnHand>().RpcSortOrder(i);
+
+            cardOnHands.Add(cardOnHand.GetComponent<CardOnHand>()); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
         }
     }
 
