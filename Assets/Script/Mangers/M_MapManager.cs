@@ -226,7 +226,6 @@ public class M_MapManager : NetworkBehaviour
                 // 위치 중복인 경우 생성하지 않지만, Region의 경우에는 거점지역이 생성할떄 육각형도 같이 생성해 두기 때문에 해당 육각형을 활성화함.
                 HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find((room) => room.position == position);
                 if(hexagonMapRoom.isRegion){
-                    hexagonMapRoom.ChangeHexagonRoomActive(true);
                     hexagonMapRoom.GetComponent<HexagonMapRoom>().isActive = true;
                 }
             }else{

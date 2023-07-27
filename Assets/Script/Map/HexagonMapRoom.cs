@@ -19,7 +19,7 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedIsRegion))]
     public bool isRegion = false; // 거점지역 구분값
 
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChangedIsActive))]
     public bool isActive = false; // 방 활성화 상태 구분값
 
     public SpriteRenderer spriteRenderer;
@@ -98,6 +98,12 @@ public class HexagonMapRoom : NetworkBehaviour
         if(newValue){
             ChangeHexagonRoomActive(false);
         }
+    }
+
+    // 활성화 상태 변수값에 따라 방활성화 상태 변경
+    void OnChangedIsActive(bool oldValue, bool newValue)
+    {
+        ChangeHexagonRoomActive(newValue);
     }
 
     // HexagonMapRoom의 스프라이트 알파값과 텍스트 상태값 변경
