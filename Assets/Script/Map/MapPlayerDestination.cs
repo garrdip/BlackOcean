@@ -37,7 +37,7 @@ public class MapPlayerDestination : NetworkBehaviour
     }
 
     // 맵 플레이어가 이동할 방 클릭시 해당 위치에 생성되는 표시 오브젝트의 업다운 바운스 애니매이션 함수
-    public void MoveBounce(Vector3 position, bool isNewPosition)
+    public void MoveBounce(bool isNewPosition)
     {
         // 시퀀스가 이전에 이미 있으면 제거
         if(sequence != null && sequence.active)
@@ -46,6 +46,7 @@ public class MapPlayerDestination : NetworkBehaviour
             sequence = null;
         }
         // 업다운 바운스 무한 반복
+        transform.localPosition = transform.localPosition + new Vector3(0f, 0.2f, 0f);
         Tweener upTweener = transform.DOMoveY(transform.localPosition.y + 0.2f, 0.3f);
         Tweener downTweener = transform.DOMoveY(transform.localPosition.y, 0.3f);
         sequence = DOTween.Sequence()

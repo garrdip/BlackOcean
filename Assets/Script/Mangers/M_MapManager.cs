@@ -46,14 +46,15 @@ public class M_MapManager : NetworkBehaviour
     [Header("맵에서 플레이어가 컨트롤하는 오브젝트 리스트")]
     public List<GameObject> mapPlayerPieces;
 
-
     [Header("맵에서 선택된 방 정보(HEXAGON)")]
     [SerializedDictionary("NetworkIdentity", "MapRoom")]
     public SerializedDictionary<NetworkIdentity, HexagonMapRoom> playerVoteHexagonMapRoom = new SerializedDictionary<NetworkIdentity, HexagonMapRoom>();
 
+    [Header("HexagonMapRoom 리스트")]
+    public List<HexagonMapRoom> hexagonMapRooms = new List<HexagonMapRoom>();
+
     public const float rangeExistOtherHexagon = 0.5f; // 현재 위치한 육각형 주위에 다른 육각형이 존재하는지 확인용 중심점 간의 거리 차이 계산값
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
-    public List<Vector3> hexagonPositions = new List<Vector3>(); // 각 육각형 방의 위치 리스트
 
 
     public static M_MapManager instance
@@ -167,17 +168,18 @@ public class M_MapManager : NetworkBehaviour
         // 가운데 육각형 생성
         GameObject centerRoom = Instantiate(
             networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
-            new Vector3(0f, 0f, 0f),
+            Vector3.zero,
             Quaternion.identity
         );
         NetworkServer.Spawn(centerRoom);
         
-        // 방 타입은 START_LOCATION, 고유 좌표계값은 (0, 0)
+        // 방 타입, 고유 좌표계값, 인게임 좌표계값, 활성화 상태 초기값 설정
         centerRoom.GetComponent<HexagonMapRoom>().roomType = RoomType.START_LOCATION;
         centerRoom.GetComponent<HexagonMapRoom>().coordinate = new Vector2Int(0, 0);
-
+        centerRoom.GetComponent<HexagonMapRoom>().position = Vector3.zero;
+        centerRoom.GetComponent<HexagonMapRoom>().isActive = true;
         // 육각형 위치 리스트에 추가
-        hexagonPositions.Add(new Vector3(0f, 0f, 0f));
+        hexagonMapRooms.Add(centerRoom.GetComponent<HexagonMapRoom>());
         
         // 가운데 주위에 6개 생성
         for (int i = 0; i < 6; i++)
@@ -186,7 +188,6 @@ public class M_MapManager : NetworkBehaviour
             Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up; // 60도씩 반시계 방향으로 육각형의 6면을 돌며 각 면의 위치에 생성
             Vector3 position = centerRoom.transform.position + offset;
 
-            // 새로운 육각형 생성
             GameObject aroundRoom = Instantiate(
                 networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
                 position,
@@ -196,16 +197,18 @@ public class M_MapManager : NetworkBehaviour
 
             // 방 타입 설정
             aroundRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
-            
+            // 인게임 좌표계 값 설정
+            aroundRoom.GetComponent<HexagonMapRoom>().position = position;
+            // 방 활성화 상태 설정
+            aroundRoom.GetComponent<HexagonMapRoom>().isActive = true;
             // 고유 좌표계 값 설정
             SetHexagonMapRoomCoordinate(i, centerRoom.GetComponent<HexagonMapRoom>(), aroundRoom.GetComponent<HexagonMapRoom>());
-
-            // 육각형 위치 리스트에 추가
-            hexagonPositions.Add(position);
+            // 육각형 위치 및 오브젝트 클래스 리스트에 추가
+            hexagonMapRooms.Add(aroundRoom.GetComponent<HexagonMapRoom>());
         }
     }
 
-    // 현재 위치한 육각형의 각 변에 새로운 육각형 생성, 이미 존재하면 생성하지 않음
+    // 현재 위치한 육각형의 각 변에 새로운 육각형 생성
     [Server]
     public void GenerateHexagonRoom(HexagonMapRoom currentHexagonMapRoom)
     {
@@ -219,10 +222,15 @@ public class M_MapManager : NetworkBehaviour
             // 새로운 육각형이 생성될 위치
             Vector3 position = currentHexagonMapRoom.transform.localPosition + offset;
 
-            // 생성 위치가 중복이 아닌 경우 육각형 생성
-            if(!IsPositionDuplicated(position))
-            {
-                // 새로운 육각형 생성
+            if(IsPositionDuplicated(position)){
+                // 위치 중복인 경우 생성하지 않지만, Region의 경우에는 거점지역이 생성할떄 육각형도 같이 생성해 두기 때문에 해당 육각형을 활성화함.
+                HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find((room) => room.position == position);
+                if(hexagonMapRoom.isRegion){
+                    hexagonMapRoom.ChangeHexagonRoomActive(true);
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().isActive = true;
+                }
+            }else{
+                // 위치 중복 아닌 경우 새로운 육각형 생성 
                 var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
                 GameObject hexagonMapRoom = Instantiate(
                     networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
@@ -233,12 +241,47 @@ public class M_MapManager : NetworkBehaviour
 
                 // 방 타입 설정
                 hexagonMapRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
-
+                // 인게임 좌표계 값 설정
+                hexagonMapRoom.GetComponent<HexagonMapRoom>().position = position;
+                // 방 활성화 상태값 설정
+                hexagonMapRoom.GetComponent<HexagonMapRoom>().isActive = true;
                 // 고유 좌표계 값 설정
                 SetHexagonMapRoomCoordinate(i, currentHexagonMapRoom, hexagonMapRoom.GetComponent<HexagonMapRoom>());
+                // 육각형 위치 및 오브젝트 클래스 리스트에 추가
+                hexagonMapRooms.Add(hexagonMapRoom.GetComponent<HexagonMapRoom>());
+            }
+        }
+    }
 
-                // 육각형 위치 리스트에 추가
-                hexagonPositions.Add(position);
+    // 생성된 거점 지역에 HexagonRoom 오브젝트 생성
+    public void GenerateHexagonRoomOnRegion()
+    {
+        foreach(Region region in regions){
+            foreach(Tile loc in region.tiles)
+            {
+                Vector3 position = GetPosition((int)loc.coordinate.x, (int)loc.coordinate.y);
+                if(!IsPositionDuplicated(position)){
+                    var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+                    GameObject hexagonMapRoom = Instantiate(
+                        networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
+                        position,
+                        Quaternion.identity
+                    );
+                    NetworkServer.Spawn(hexagonMapRoom);
+
+                    // 방 타입 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
+                    // 거점지역 구분 변수값 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().isRegion = true;
+                    // 방 활성화 상태 변수값 false 설정(거점지역의 오브젝트는 그 지역에 도달하기 전까지는 비활성화 상태여야 하므로)
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().isActive = false;
+                    // 인게임 좌표계 값 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().position = position;
+                    // 고유 좌표계값
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = new Vector2Int((int)loc.coordinate.x, (int)loc.coordinate.y);
+                    // 육각형 위치 및 오브젝트 클래스 리스트에 추가
+                    hexagonMapRooms.Add(hexagonMapRoom.GetComponent<HexagonMapRoom>());
+                }
             }
         }
     }
@@ -336,6 +379,7 @@ public class M_MapManager : NetworkBehaviour
                 centerPos = newPos;
             }
         }
+        GenerateHexagonRoomOnRegion(); // 거점지역 생성시 그 위치에 HexagonMapRoom오브젝트도 생성
     }
 
     Vector3 MoveRandomDirection(Vector3 loc)
@@ -436,9 +480,10 @@ public class M_MapManager : NetworkBehaviour
     // 육각형 방 생성하려는 위치에 이미 방이 존재하는지 체크
     private bool IsPositionDuplicated(Vector3 spawnPosition)
     {
-        // 육각형 위치 리스트를 순회하며 중복 체크
-        foreach(Vector3 position in hexagonPositions)
+        // 육각형 방 리스트를 순회하며 위치 중복 체크
+        foreach(HexagonMapRoom hexagonMapRoom in hexagonMapRooms)
         {
+            Vector3 position = hexagonMapRoom.position;
             if(Vector3.Distance(spawnPosition, position) < rangeExistOtherHexagon)
             {
                 return true; // 중복된 위치가 있음

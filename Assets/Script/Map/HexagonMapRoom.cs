@@ -8,10 +8,19 @@ using TMPro;
 public class HexagonMapRoom : NetworkBehaviour
 {
     [SyncVar (hook = nameof(OnChangedRoomType))]
-    public RoomType roomType = RoomType.UNDEFINED;
+    public RoomType roomType = RoomType.UNDEFINED; // 방 타입
 
     [SyncVar (hook = nameof(OnChangedCoordinate))]
     public Vector2Int coordinate; // 각 방의 고유 좌표계 값
+
+    [SyncVar]
+    public Vector3 position; // 인게임 좌표계 값
+
+    [SyncVar (hook = nameof(OnChangedIsRegion))]
+    public bool isRegion = false; // 거점지역 구분값
+
+    [SyncVar]
+    public bool isActive = false; // 방 활성화 상태 구분값
 
     public SpriteRenderer spriteRenderer;
     public TextMeshProUGUI textRoomType;
@@ -26,10 +35,21 @@ public class HexagonMapRoom : NetworkBehaviour
 
     private void OnMouseDown()
     {
+        if(isRegion && !isActive) return; // 거점지역인 경우 아직 비활성화 상태면 이동 불가
         // 클릭한 육각형으로 맵플레이어 이동 및 현재 선택된 맵으로 저장
         NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdSelectHexagonMapRoom(this, NetworkClient.connection.identity);
         // 맵 플레이어가 이동할 방에 표시
         NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position);
+    }
+
+    private void OnMouseEnter()
+    {
+        // TODO : 거점지역 정보 인게임 팝업 활성화
+    }
+
+    private void OnMouseExit()
+    {
+        // TODO : 거점지역 정보 인게임 팝업 비활성화
     }
 
     void OnChangedRoomType(RoomType oldVal, RoomType newVal)
@@ -70,5 +90,22 @@ public class HexagonMapRoom : NetworkBehaviour
     void OnChangedCoordinate(Vector2Int oldValue, Vector2Int newValue)
     {
         textCoordinate.text = newValue.ToString();
+    }
+
+    // HexagonMapRoom이 isRegion인 경우 비활성화 상태
+    void OnChangedIsRegion(bool oldValue, bool newValue)
+    {
+        if(newValue){
+            ChangeHexagonRoomActive(false);
+        }
+    }
+
+    // HexagonMapRoom의 스프라이트 알파값과 텍스트 상태값 변경
+    public void ChangeHexagonRoomActive(bool isActive)
+    {
+        float alpha = isActive ? 1f : 0f;
+        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
+        textRoomType.gameObject.SetActive(isActive);
+        //textCoordinate.gameObject.SetActive(isActive);
     }
 }

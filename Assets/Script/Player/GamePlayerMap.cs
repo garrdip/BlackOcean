@@ -93,7 +93,7 @@ public class GamePlayerMap : NetworkBehaviour
     {
         if(currentMapPlayerDestination != null){
             currentMapPlayerDestination.transform.localPosition = newPosition;
-            currentMapPlayerDestination.MoveBounce(newPosition, oldPosition != newPosition);
+            currentMapPlayerDestination.MoveBounce(oldPosition != newPosition);
         }
     }
 

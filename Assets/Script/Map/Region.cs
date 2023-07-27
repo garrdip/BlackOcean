@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectD;
 
+[System.Serializable]
 public class Region{
+
     [SerializeField]
     public List<Tile> tiles = new List<Tile>();
     public RegionGrade regionGrade;
