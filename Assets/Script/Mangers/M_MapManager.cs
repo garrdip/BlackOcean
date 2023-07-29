@@ -19,6 +19,9 @@ public class M_MapManager : NetworkBehaviour
 
     [SyncVar]
     HexagonMapRoom moveToRoomDestination;
+
+    [SyncVar]
+    public int mapSight = 1; // 맵 시야 변수값
     
     [Header("메인 카메라")]
     public Camera mainCam;
@@ -285,7 +288,7 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
-    // HexagonMapRoom의 고유 좌표계값을 설정
+    // HexagonMapRoom의 고유 좌표계값을 설정 : Axial 좌표계
     // (currentHexagonMapRoom을 중심으로 각 방들이 생성될 때 index값을 기반으로 각도가 정해지므로, 해당 각도에 따라 고유 좌표계값을 증감시켜 값을 설정)
     private void SetHexagonMapRoomCoordinate(int index, HexagonMapRoom currentHexagonMapRoom, HexagonMapRoom aroundHexagonMapRoom)
     {
@@ -474,6 +477,18 @@ public class M_MapManager : NetworkBehaviour
                 newRegion.transform.localRotation = Quaternion.Euler(0,0,-60*i);
             }
         }
+    }
+
+    // Axial 좌표계를 이용한 시스템에서 현재 좌표에서 목표 좌표까지의 거리를 반환
+    public int GetDistanceFromCurrentCoordinate(Vector2Int targetCoordinate)
+    {
+        if(currentRoom != null){
+            int dQ = targetCoordinate.x - currentRoom.coordinate.x;
+            int dR = targetCoordinate.y - currentRoom.coordinate.y;
+            int distance = (Mathf.Abs(dQ) + Mathf.Abs(dR) + Mathf.Abs(dQ + dR)) / 2;
+            return distance;
+        }
+        return 0;
     }
 
     // 육각형 방 생성하려는 위치에 이미 방이 존재하는지 체크
