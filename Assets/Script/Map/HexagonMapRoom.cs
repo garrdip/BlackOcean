@@ -19,6 +19,9 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedIsRegion))]
     public bool isRegion = false; // 거점지역 구분값
 
+    [SyncVar]
+    public Region region;
+
     [SyncVar (hook = nameof(OnChangedIsActive))]
     public bool isActive = false; // 방 활성화 상태 구분값
 
@@ -47,12 +50,19 @@ public class HexagonMapRoom : NetworkBehaviour
 
     private void OnMouseEnter()
     {
-        // TODO : 거점지역 정보 인게임 팝업 활성화
+        // 거점지역 정보 팝업 활성화
+        if(isRegion && region != null){
+            MapUI.instance.RegionPopUpShow(region);
+        }
+        
     }
 
     private void OnMouseExit()
     {
-        // TODO : 거점지역 정보 인게임 팝업 비활성화
+        // 거점지역 정보 팝업 비활성화
+        if(isRegion && region != null){
+            MapUI.instance.RegionPopUpHide();
+        }
     }
 
     void OnChangedRoomType(RoomType oldVal, RoomType newVal)

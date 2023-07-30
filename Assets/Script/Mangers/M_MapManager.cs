@@ -273,6 +273,8 @@ public class M_MapManager : NetworkBehaviour
 
                     // 방 타입 설정
                     hexagonMapRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
+                    // 거점지역 데이터 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().region = region;
                     // 거점지역 구분 변수값 설정
                     hexagonMapRoom.GetComponent<HexagonMapRoom>().isRegion = true;
                     // 방 활성화 상태 변수값 false 설정(거점지역의 오브젝트는 그 지역에 도달하기 전까지는 비활성화 상태여야 하므로)

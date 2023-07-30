@@ -4,12 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using ProjectD;
 using Steamworks;
 
 public class MapUI : InstanceD<MapUI>
 {
     public GameObject[] orderSelected;
     public GameObject[] playerProfiles;
+    public GameObject regionPopUp;
 
     [Header("UI 컴포넌트")]
     public Button readyButton;
@@ -17,6 +19,9 @@ public class MapUI : InstanceD<MapUI>
     public TextMeshProUGUI chatMessage;
     public TMP_InputField messageInput;
     public ScrollRect scrollRect;
+    public Image regionPopUpHeader;
+    public TextMeshProUGUI textRegionGradeInfo;
+    public TextMeshProUGUI textRegionDesc;
 
     [Header("현재 마우스 포인터가 채팅메시지 박스 위에 있는지 여부")]
     public bool isMouseOnChatBox = false;
@@ -24,11 +29,9 @@ public class MapUI : InstanceD<MapUI>
     [Header("맵 화면의 카메라 줌 조절 변수값")]
     [SerializeField]
     private float minCameraFOV = 30f;
+    
     [SerializeField]
     private float maxCameraFOV = 90f;
-    [SerializeField]
-    private float gridDisableFOV = 60f;
-    public GameObject gridGameObject;
     
     [SerializeField]
     private float scrollSpeed = 10000f;
@@ -145,5 +148,41 @@ public class MapUI : InstanceD<MapUI>
 
         // 스크롤바를 맨 아래로 이동
         scrollRect.normalizedPosition = new Vector2(0, 0);
+    }
+
+    // 거점지역 정보 팝업 활성화 및 팝업에 표시될 데이터 세팅
+    public void RegionPopUpShow(Region region)
+    {
+        regionPopUp.SetActive(true);
+        regionPopUp.transform.position = Input.mousePosition; // 팝업 위치는 마우스 위치로
+        textRegionGradeInfo.text = region.regionGrade.ToString();
+        // textRegionDesc.text = region.regionDescription.ToString();
+        // 등급별 팝업 헤더이미지 및 텍스트 색상 변경
+        switch(region.regionGrade){
+            case RegionGrade.NORMAL :
+                regionPopUpHeader.color = new Color(1f, 0f, 0f);
+                textRegionGradeInfo.color = new Color(1f, 0f, 0f);
+                break;
+            case RegionGrade.RARE :
+                regionPopUpHeader.color = new Color(0f, 1f, 0f);
+                textRegionGradeInfo.color = new Color(0f, 1f, 0f);
+                break;
+            case RegionGrade.UNIQUE :
+                regionPopUpHeader.color = new Color(0f, 0f, 1f);
+                textRegionGradeInfo.color = new Color(0f, 0f, 1f);
+                break;
+            case RegionGrade.LEGEND :
+                regionPopUpHeader.color = new Color(1f, 0.8f, 0f);
+                textRegionGradeInfo.color = new Color(1f, 0.8f, 0f);
+                break;      
+        }
+    }
+
+    // 거점지역 정보 팝업 비활성화
+    public void RegionPopUpHide()
+    {
+        regionPopUp.SetActive(false);
+        textRegionGradeInfo.text = string.Empty;
+        textRegionDesc.text = string.Empty;
     }
 }
