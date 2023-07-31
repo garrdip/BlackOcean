@@ -318,21 +318,34 @@ public class M_MapManager : NetworkBehaviour
         }
     }
     
-    public void GenerateHexgonGrid(int width, int height)
+    public void GenerateHexgonGrid(int maxDistance)
     {      
-        int widthIn = (width % 4 == 1)?width : (width/4)*4 + 1;
-        int heightIn = (height % 2 == 1)?height : (height/2)*2 + 1;
         Vector3 currLoc = new Vector3(0,0,0);
-        for(int i = 0 ; i < widthIn ; i ++)
+        for(int i = -maxDistance ; i <= maxDistance ; i ++)
         {
-            currLoc = GetPosition(-widthIn/2 + i,-heightIn/2);
-            for(int j = 0 ; j < heightIn ; j++)
+            if(i <= 0)
             {
-                GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
-                newGrid.transform.localPosition = newGrid.transform.position;
-                newGrid.transform.localRotation = Quaternion.Euler(0,0,0);
+                for(int j = Mathf.Abs(i) - maxDistance ; j <= maxDistance ; j++)
+                {
+                    currLoc = GetPosition(i,j);
+                    GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
+                    newGrid.transform.localPosition = newGrid.transform.position;
+                    newGrid.transform.localRotation = Quaternion.Euler(0,0,0);
 
-                currLoc += new Vector3(0,1,0);
+                    currLoc += new Vector3(0,1,0);
+                }
+            }
+            else
+            {
+                for(int j = -maxDistance ; j <= maxDistance - Mathf.Abs(i) ; j++)
+                {
+                    currLoc = GetPosition(i,j);
+                    GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
+                    newGrid.transform.localPosition = newGrid.transform.position;
+                    newGrid.transform.localRotation = Quaternion.Euler(0,0,0);
+
+                    currLoc += new Vector3(0,1,0);
+                }
             }
         }
     }
@@ -342,7 +355,7 @@ public class M_MapManager : NetworkBehaviour
         float length = 1/Mathf.Tan(Mathf.PI/3);
         Vector3 retVal = new Vector3(0,0,0);
         retVal.x = 1.5f*x*length;
-        retVal.y = y - (Mathf.Abs(x)%2)*0.5f;
+        retVal.y = - y - ( x * 0.5f );
         return retVal;
     }
 
@@ -389,26 +402,25 @@ public class M_MapManager : NetworkBehaviour
     Vector3 MoveRandomDirection(Vector3 loc)
     {
         Vector3 retVal = loc;
-        int addVal = (loc.x%2 == 0)? 0 : -1;
         switch(Random.Range(0,6))
         {
             case 0: // North
-                retVal += new Vector3(0,1,0);
-                break;
-            case 1: // 1si
-                retVal += new Vector3(1,1+addVal,0);
-                break;
-            case 2: // 5si
-                retVal += new Vector3(1,addVal,0);
-                break;
-            case 3: // South
                 retVal += new Vector3(0,-1,0);
                 break;
+            case 1: // 1si
+                retVal += new Vector3(1,-1,0);
+                break;
+            case 2: // 5si
+                retVal += new Vector3(1,0,0);
+                break;
+            case 3: // South
+                retVal += new Vector3(0,1,0);
+                break;
             case 4: // 7si
-                retVal += new Vector3(-1,addVal,0);
+                retVal += new Vector3(-1,1,0);
                 break;
             case 5: // 11si
-                retVal += new Vector3(-1,addVal+1,0);
+                retVal += new Vector3(-1,0,0);
                 break;
         }
         return retVal;
@@ -426,33 +438,32 @@ public class M_MapManager : NetworkBehaviour
     {
         foreach(Tile loc in region.tiles)
         {
-            int addVal = (Mathf.Abs(loc.coordinate.x)%2 == 0)? 0 : -1; // X의 홀수축은 짝수축보다 아래에 위치
             for(int i = 0;  i < 6 ; i ++)
             {
                 switch(i)
                 {
                     case 0 : // North
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x,loc.coordinate.y+1,0)))
-                            continue;
-                        break;
-                    case 1 : // 2시
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x+1,loc.coordinate.y+1+addVal,0)))
-                            continue;
-                        break;
-                    case 2 : // 5시
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x+1,loc.coordinate.y+addVal,0)))
-                            continue;
-                        break;
-                    case 3 :// 6시
                         if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x,loc.coordinate.y-1,0)))
                             continue;
                         break;
+                    case 1 : // 2시
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x+1,loc.coordinate.y-1,0)))
+                            continue;
+                        break;
+                    case 2 : // 5시
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x+1,loc.coordinate.y,0)))
+                            continue;
+                        break;
+                    case 3 :// 6시
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x,loc.coordinate.y+1,0)))
+                            continue;
+                        break;
                     case 4 :// 7시
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x-1,loc.coordinate.y+addVal,0)))
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x-1,loc.coordinate.y+1,0)))
                             continue;
                         break;
                     case 5 :// 10시
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x-1,loc.coordinate.y+1+addVal,0)))
+                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x-1,loc.coordinate.y,0)))
                             continue;
                         break;
                 }

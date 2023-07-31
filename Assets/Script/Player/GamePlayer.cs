@@ -79,7 +79,7 @@ public class GamePlayer : NetworkBehaviour
         }
         if(isLocalPlayer)
         {
-            M_MapManager.instance.GenerateHexgonGrid(150,150);
+            M_MapManager.instance.GenerateHexgonGrid(40);
             HP = 100;
             MaxHP = 100;
             isInitializeDone = true;
