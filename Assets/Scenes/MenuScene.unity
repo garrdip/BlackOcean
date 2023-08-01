@@ -6341,6 +6341,8 @@ MonoBehaviour:
   - {fileID: 590561824302976873, guid: 3d16db062879a3649b1eeedf8f866591, type: 3}
   - {fileID: 8715637313035057607, guid: 4f50d02574f599a4bb2a2ab0da1277fd, type: 3}
   - {fileID: 4813194014757939247, guid: bd4e3ee47460b5447a0c345a3a044847, type: 3}
+  - {fileID: 8715637313035057607, guid: 9a6ba97bce7a1974b81c911cb6e3b5bd, type: 3}
+  - {fileID: 8715637313035057607, guid: af2d8931256d070468b953a12be7648e, type: 3}
   timeInterpolationGui: 0
   showRoomGUI: 1
   minPlayers: 1
