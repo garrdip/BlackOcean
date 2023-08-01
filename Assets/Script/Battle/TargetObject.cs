@@ -29,6 +29,9 @@ public class TargetObject : NetworkBehaviour
     [SyncVar]
     public ObjectType objectType;
 
+    [Header("쉴드 표시")]
+    public TextMeshProUGUI shieldText;
+
     // Player 의 경우 
     [SyncVar (hook = nameof(InitTargetObjectPlayer))]
     public GamePlayer player;
@@ -61,7 +64,7 @@ public class TargetObject : NetworkBehaviour
 
 
 // 전투용 변수들
-    [SyncVar]
+    [SyncVar(hook = nameof(OnChangedDefense))]
     public int defense = 0;
 // 플레이어용 변수
     [SyncVar]
@@ -168,10 +171,51 @@ public class TargetObject : NetworkBehaviour
             }
         }
     }
+
+
     // ----------------------------------------------           Damage 관련 함수        ---------------------------------------------------//
     public void DamageToPlayer(int damage)
     {
-        playerHP -= damage; //ToDo 방어력 적용, 붕괴 적용, 꽃가루 적용 필요
+        if(GetBuffValue(BuffType.BOONGGUI) > 0)
+        {
+            damage = (int)(damage * 1.5);
+        }
+        // 꽃가루 적용
+        damage -= GetBuffValue(BuffType.FLOWER);
+        if(damage <= 0) return;
+        // 방어력 적용
+        if(defense >= damage)
+        {
+            defense -= damage;
+        }
+        else
+        {
+            int remind = damage - defense;
+            defense = 0;
+            playerHP -= remind;
+        }
+    }
+
+    public void DamageToMonster(int damage)
+    {
+        // 붕괴 적용
+        if(GetBuffValue(BuffType.BOONGGUI) > 0)
+        {
+            damage = (int)(damage * 1.5);
+        }
+        // 꽃가루 적용
+        damage += GetBuffValue(BuffType.FLOWER);
+        // 방어력 적용
+        if(defense >= damage)
+        {
+            defense -= damage;
+        }
+        else
+        {
+            int remind = damage - defense;
+            defense = 0;
+            monster.HP -= remind;
+        }
     }
 
     // ----------------------------------------------           Buff 관련 함수          ---------------------------------------------------//
@@ -216,6 +260,11 @@ public class TargetObject : NetworkBehaviour
             }
             hpbar.value = newVal; // HP 슬라이더값 업데이트
         }
+    }
+
+    void OnChangedDefense(int oldVal, int newVal)
+    {
+        shieldText.text = newVal.ToString();
     }
 
     // ---------------------------------------------- Spine Animation Event 처리 구간 ---------------------------------------------------//
