@@ -158,6 +158,13 @@ MonoBehaviour:
   syncInterval: 0.1
   roomType: 7
   coordinate: {x: 0, y: 0}
+  position: {x: 0, y: 0, z: 0}
+  isRegion: 0
+  region:
+    tiles: []
+    regionGrade: 0
+  isActive: 0
+  isComplete: 0
   spriteRenderer: {fileID: 6925378521302171519}
   textRoomType: {fileID: 493934088665875889}
   textCoordinate: {fileID: 4925224301613228853}
@@ -358,8 +365,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.3
-  m_fontSizeBase: 0.3
+  m_fontSize: 0.2
+  m_fontSizeBase: 0.2
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

@@ -25,6 +25,9 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedIsActive))]
     public bool isActive = false; // 방 활성화 상태 구분값
 
+    [SyncVar (hook = nameof(OnChangedIsComplete))]
+    public bool isComplete = false; // 방 정복 완료 상태 구분값
+
     public SpriteRenderer spriteRenderer;
     public TextMeshProUGUI textRoomType;
     public TextMeshProUGUI textCoordinate;
@@ -67,35 +70,35 @@ public class HexagonMapRoom : NetworkBehaviour
 
     void OnChangedRoomType(RoomType oldVal, RoomType newVal)
     {
-        switch(roomType)
+        switch(newVal)
         {
             case RoomType.START_LOCATION :
                 textRoomType.color = Color.gray;
-                textRoomType.text = "시작";
+                textRoomType.text = Const.RoomType_StartLocation;
                 break;
             case RoomType.MONSTER :
                 textRoomType.color = Color.red;
-                textRoomType.text = "몬스터";
+                textRoomType.text = Const.RoomType_Monster;
                 break;
             case RoomType.ELITE :
                 textRoomType.color = Color.red;
-                textRoomType.text = "엘리트";
+                textRoomType.text = Const.RoomType_Elite;
                 break;
             case RoomType.EVENT :
                 textRoomType.color = Color.yellow;
-                textRoomType.text = "이벤트";
+                textRoomType.text = Const.RoomType_Event;
                 break;
             case RoomType.CAMP :
                 textRoomType.color = Color.green;
-                textRoomType.text = "캠프";
+                textRoomType.text = Const.RoomType_Camp;
                 break;
             case RoomType.ITEM_NPC :
                 textRoomType.color = Color.blue;
-                textRoomType.text = "아이템";
+                textRoomType.text = Const.RoomType_ItemNpc;
                 break;
             case RoomType.CARD_NPC :
                 textRoomType.color = Color.magenta;
-                textRoomType.text = "엔피씨";
+                textRoomType.text = Const.RoomType_CardNpc;
                 break;
         }
     }
@@ -127,4 +130,13 @@ public class HexagonMapRoom : NetworkBehaviour
         textRoomType.gameObject.SetActive(isActive);
         //textCoordinate.gameObject.SetActive(isActive);
     }
+
+    // 방 완료시 상태변경
+    void OnChangedIsComplete(bool oldValue, bool newValue)
+    {
+        spriteRenderer.color = Color.gray;
+        textRoomType.color = Color.green;
+        textRoomType.text = Const.RoomState_Complete;
+    }
+
 }

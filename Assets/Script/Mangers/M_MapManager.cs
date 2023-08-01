@@ -72,16 +72,7 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
-    private RoomType GetRoomType()
-    {
-        int ramdomValue = Random.Range(0,100);
-        if(ramdomValue < 10) return RoomType.CAMP;
-        if(ramdomValue < 30) return RoomType.EVENT;
-        if(ramdomValue < 40) return RoomType.ITEM_NPC;
-        if(ramdomValue < 50) return RoomType.CARD_NPC;
-        if(ramdomValue < 60) return RoomType.ELITE;
-        else return RoomType.MONSTER;
-    }
+    // ------------------------------------------------------------ Server Method -------------------------------------------------------------- //
 
     [Server]
     public void SetDirection(HexagonMapRoom to)
@@ -103,32 +94,6 @@ public class M_MapManager : NetworkBehaviour
     {
         M_TurnManager.instance.PopUpOrderUI();
     }
-
-    [ClientRpc]
-    public void StartBattle()
-    {
-        GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
-            // 카메라 위치 리셋
-            Camera.main.orthographic = true;
-            Camera.main.transform.position = new Vector3(0f, 0f, -10f);
-
-            // UI 활성화 상태 변경
-            roommaps.SetActive(false);
-            game.SetActive(true);
-            GameUIManager.instance.GameUI.gameObject.SetActive(true);
-            GameUIManager.instance.GameBackGround.gameObject.SetActive(true);
-
-            // Dim배경 상태 변경
-            blackCurtain.gameObject.SetActive(false);
-            blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
-
-            // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
-            M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
-            if(isServer)M_TurnManager.instance.GenerateBattleObject();
-            if(isServer)M_MapManager.instance.MoveToRoom(); // 이순간에 새로운 맵 생성
-        });
-    }
-
 
     // 맵 플레이어들이 선택한 방 선택지 확인
     // 1. 중복값이 있다는것은 2명 이상이 해당 방을 선택한 것이며, 과반수 이상 이므로 해당 MapRoom 반환
@@ -152,15 +117,6 @@ public class M_MapManager : NetworkBehaviour
             return null;
         }
     }
-
-
-    // 방이동후 카메라 전환 (자유 이동으로 할지)
-    [ClientRpc]
-    public void MoveCameraPositionToRoom(Vector3 pos)
-    {
-        mainCam.transform.position = pos + new Vector3(0,0,-10);
-    }
-
 
     // 처음 시작시 가운데 1개, 각 변에 6개 생성
     [Server]
@@ -255,110 +211,7 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
-    // 생성된 거점 지역에 HexagonRoom 오브젝트 생성
-    public void GenerateHexagonRoomOnRegion()
-    {
-        foreach(Region region in regions){
-            foreach(Tile loc in region.tiles)
-            {
-                Vector3 position = GetPosition((int)loc.coordinate.x, (int)loc.coordinate.y);
-                if(!IsPositionDuplicated(position)){
-                    var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-                    GameObject hexagonMapRoom = Instantiate(
-                        networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
-                        position,
-                        Quaternion.identity
-                    );
-                    NetworkServer.Spawn(hexagonMapRoom);
-
-                    // 방 타입 설정
-                    hexagonMapRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
-                    // 거점지역 데이터 설정
-                    hexagonMapRoom.GetComponent<HexagonMapRoom>().region = region;
-                    // 거점지역 구분 변수값 설정
-                    hexagonMapRoom.GetComponent<HexagonMapRoom>().isRegion = true;
-                    // 방 활성화 상태 변수값 false 설정(거점지역의 오브젝트는 그 지역에 도달하기 전까지는 비활성화 상태여야 하므로)
-                    hexagonMapRoom.GetComponent<HexagonMapRoom>().isActive = false;
-                    // 인게임 좌표계 값 설정
-                    hexagonMapRoom.GetComponent<HexagonMapRoom>().position = position;
-                    // 고유 좌표계값
-                    hexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = new Vector2Int((int)loc.coordinate.x, (int)loc.coordinate.y);
-                    // 육각형 위치 및 오브젝트 클래스 리스트에 추가
-                    hexagonMapRooms.Add(hexagonMapRoom.GetComponent<HexagonMapRoom>());
-                }
-            }
-        }
-    }
-
-    // HexagonMapRoom의 고유 좌표계값을 설정 : Axial 좌표계
-    // (currentHexagonMapRoom을 중심으로 각 방들이 생성될 때 index값을 기반으로 각도가 정해지므로, 해당 각도에 따라 고유 좌표계값을 증감시켜 값을 설정)
-    private void SetHexagonMapRoomCoordinate(int index, HexagonMapRoom currentHexagonMapRoom, HexagonMapRoom aroundHexagonMapRoom)
-    {
-        Vector2Int currentHexagonMapRoomCoordinate = currentHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate;
-        switch(index)
-        {
-            case 0: // North
-                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(0, -1);
-                break;
-            case 1: // 11시
-                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(-1, 0);
-                break;
-            case 2: // 7시
-                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(-1, 1);
-                break;
-            case 3: // South
-                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(0, 1);
-                break;
-            case 4: // 5시
-                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(1, 0);
-                break;
-            case 5: // 1시
-                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(1, -1);
-                break;
-        }
-    }
-    
-    public void GenerateHexgonGrid(int maxDistance)
-    {      
-        Vector3 currLoc = new Vector3(0,0,0);
-        for(int i = -maxDistance ; i <= maxDistance ; i ++)
-        {
-            if(i <= 0)
-            {
-                for(int j = Mathf.Abs(i) - maxDistance ; j <= maxDistance ; j++)
-                {
-                    currLoc = GetPosition(i,j);
-                    GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
-                    newGrid.transform.localPosition = newGrid.transform.position;
-                    newGrid.transform.localRotation = Quaternion.Euler(0,0,0);
-
-                    currLoc += new Vector3(0,1,0);
-                }
-            }
-            else
-            {
-                for(int j = -maxDistance ; j <= maxDistance - Mathf.Abs(i) ; j++)
-                {
-                    currLoc = GetPosition(i,j);
-                    GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
-                    newGrid.transform.localPosition = newGrid.transform.position;
-                    newGrid.transform.localRotation = Quaternion.Euler(0,0,0);
-
-                    currLoc += new Vector3(0,1,0);
-                }
-            }
-        }
-    }
-
-    public Vector3 GetPosition(int x,int y)
-    {
-        float length = 1/Mathf.Tan(Mathf.PI/3);
-        Vector3 retVal = new Vector3(0,0,0);
-        retVal.x = 1.5f*x*length;
-        retVal.y = - y - ( x * 0.5f );
-        return retVal;
-    }
-
+    // 거점지역 생성
     [Server]
     public void GenerateColorRegion()
     {
@@ -399,6 +252,179 @@ public class M_MapManager : NetworkBehaviour
         GenerateHexagonRoomOnRegion(); // 거점지역 생성시 그 위치에 HexagonMapRoom오브젝트도 생성
     }
 
+    // 생성된 거점 지역에 HexagonRoom 오브젝트 생성
+    [Server]
+    public void GenerateHexagonRoomOnRegion()
+    {
+        foreach(Region region in regions){
+            foreach(Tile loc in region.tiles)
+            {
+                Vector3 position = GetPosition((int)loc.coordinate.x, (int)loc.coordinate.y);
+                if(!IsPositionDuplicated(position)){
+                    var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+                    GameObject hexagonMapRoom = Instantiate(
+                        networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
+                        position,
+                        Quaternion.identity
+                    );
+                    NetworkServer.Spawn(hexagonMapRoom);
+
+                    // 방 타입 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
+                    // 거점지역 데이터 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().region = region;
+                    // 거점지역 구분 변수값 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().isRegion = true;
+                    // 방 활성화 상태 변수값 false 설정(거점지역의 오브젝트는 그 지역에 도달하기 전까지는 비활성화 상태여야 하므로)
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().isActive = false;
+                    // 인게임 좌표계 값 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().position = position;
+                    // 고유 좌표계값
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = new Vector2Int((int)loc.coordinate.x, (int)loc.coordinate.y);
+                    // 육각형 위치 및 오브젝트 클래스 리스트에 추가
+                    hexagonMapRooms.Add(hexagonMapRoom.GetComponent<HexagonMapRoom>());
+                }
+            }
+        }
+    }
+
+    // HexagonMapRoom의 고유 좌표계값을 설정 : Axial 좌표계
+    // (currentHexagonMapRoom을 중심으로 각 방들이 생성될 때 index값을 기반으로 각도가 정해지므로, 해당 각도에 따라 고유 좌표계값을 증감시켜 값을 설정)
+    [Server]
+    private void SetHexagonMapRoomCoordinate(int index, HexagonMapRoom currentHexagonMapRoom, HexagonMapRoom aroundHexagonMapRoom)
+    {
+        Vector2Int currentHexagonMapRoomCoordinate = currentHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate;
+        switch(index)
+        {
+            case 0: // North
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(0, -1);
+                break;
+            case 1: // 11시
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(-1, 0);
+                break;
+            case 2: // 7시
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(-1, 1);
+                break;
+            case 3: // South
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(0, 1);
+                break;
+            case 4: // 5시
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(1, 0);
+                break;
+            case 5: // 1시
+                aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(1, -1);
+                break;
+        }
+    }
+    
+
+    // 방 완료상태로 변경
+    [Server]
+    public void SetRoomStateComplete()
+    {
+        if(currentRoom != null){
+            currentRoom.isComplete = true;
+        }
+    }
+
+    // ------------------------------------------------------------ ClientRpc Method -------------------------------------------------------------- //
+    
+    [ClientRpc]
+    public void StartBattle()
+    {
+        GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+            // 카메라 위치 리셋
+            Camera.main.orthographic = true;
+            Camera.main.transform.position = new Vector3(0f, 0f, -10f);
+
+            // UI 활성화 상태 변경
+            roommaps.SetActive(false);
+            game.SetActive(true);
+            GameUIManager.instance.GameUI.gameObject.SetActive(true);
+            GameUIManager.instance.GameBackGround.gameObject.SetActive(true);
+
+            // Dim배경 상태 변경
+            blackCurtain.gameObject.SetActive(false);
+            blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
+
+            // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
+            M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
+            if(isServer)M_TurnManager.instance.GenerateBattleObject();
+            if(isServer)M_MapManager.instance.MoveToRoom(); // 이순간에 새로운 맵 생성
+        });
+    }
+    
+    // 방이동후 카메라 전환 (자유 이동으로 할지)
+    [ClientRpc]
+    public void MoveCameraPositionToRoom(Vector3 pos)
+    {
+        mainCam.transform.position = pos + new Vector3(0,0,-10);
+    }
+
+    [ClientRpc]
+    public void SetRegionWithColorRPC()
+    {
+        Debug.Log("Color Region Start!" + regions.Count);
+        foreach(Region region in regions)
+            SetRegionWithColor(region);
+    }
+
+    // ------------------------------------------------------------ Normal Method -------------------------------------------------------------- //
+    
+    // 가중치 랜덤 수행으로 방 타입 결정하여 반환
+    private RoomType GetRoomType()
+    {
+        int ramdomValue = Random.Range(0,100);
+        if(ramdomValue < 10) return RoomType.CAMP;
+        if(ramdomValue < 30) return RoomType.EVENT;
+        if(ramdomValue < 40) return RoomType.ITEM_NPC;
+        if(ramdomValue < 50) return RoomType.CARD_NPC;
+        if(ramdomValue < 60) return RoomType.ELITE;
+        else return RoomType.MONSTER;
+    }
+
+    // 육각형 그리드(배경) 생성
+    public void GenerateHexgonGrid(int maxDistance)
+    {      
+        Vector3 currLoc = new Vector3(0,0,0);
+        for(int i = -maxDistance ; i <= maxDistance ; i ++)
+        {
+            if(i <= 0)
+            {
+                for(int j = Mathf.Abs(i) - maxDistance ; j <= maxDistance ; j++)
+                {
+                    currLoc = GetPosition(i,j);
+                    GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
+                    newGrid.transform.localPosition = newGrid.transform.position;
+                    newGrid.transform.localRotation = Quaternion.Euler(0,0,0);
+
+                    currLoc += new Vector3(0,1,0);
+                }
+            }
+            else
+            {
+                for(int j = -maxDistance ; j <= maxDistance - Mathf.Abs(i) ; j++)
+                {
+                    currLoc = GetPosition(i,j);
+                    GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
+                    newGrid.transform.localPosition = newGrid.transform.position;
+                    newGrid.transform.localRotation = Quaternion.Euler(0,0,0);
+
+                    currLoc += new Vector3(0,1,0);
+                }
+            }
+        }
+    }
+
+    public Vector3 GetPosition(int x,int y)
+    {
+        float length = 1/Mathf.Tan(Mathf.PI/3);
+        Vector3 retVal = new Vector3(0,0,0);
+        retVal.x = 1.5f*x*length;
+        retVal.y = - y - ( x * 0.5f );
+        return retVal;
+    } 
+
     Vector3 MoveRandomDirection(Vector3 loc)
     {
         Vector3 retVal = loc;
@@ -424,14 +450,6 @@ public class M_MapManager : NetworkBehaviour
                 break;
         }
         return retVal;
-    }
-
-    [ClientRpc]
-    public void SetRegionWithColorRPC()
-    {
-        Debug.Log("Color Region Start!" + regions.Count);
-        foreach(Region region in regions)
-            SetRegionWithColor(region);
     }
 
     public void SetRegionWithColor(Region region)
