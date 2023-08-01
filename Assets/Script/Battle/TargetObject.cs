@@ -194,6 +194,10 @@ public class TargetObject : NetworkBehaviour
         else return buffs.Find(buff => buff.type == buffType).value;
     }
 
+    public void GainDefense(int value)
+    {
+        defense += value;
+    }
 
     // ----------------------------------------------  SyncVar, SyncList 콜백 처리 구간 ---------------------------------------------------//
 
@@ -217,11 +221,10 @@ public class TargetObject : NetworkBehaviour
     // ---------------------------------------------- Spine Animation Event 처리 구간 ---------------------------------------------------//
     
     // Animation Event 총괄 처리
-    public void OnAnimationEvent(Spine.TrackEntry trackEntry, Spine.Event e)
+    public virtual void OnAnimationEvent(Spine.TrackEntry trackEntry, Spine.Event e)
     {    
         if(e.Data.Name == "AttackEnd") // 공격모션 종료시 
         {
-            anim.state.SetAnimation(1,"00Normal",true); // IDLE 애니메이션 재구동
             isAnimating = false; // 공격 애니메이팅 종료를 알림
         }
     }

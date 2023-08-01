@@ -4,30 +4,28 @@ using UnityEngine;
 using ProjectD;
 using Mirror;
 
-public class Soldier_Axe : SpawnedMonster
+public class Soldier_Spear : SpawnedMonster
 {
+
 
     public override IEnumerator DoAction()
     {
         switch(nextAction.actionName){
-            case "두번찍기" :          
-                DoAnimation("1Attack");
-                yield return new WaitForSeconds(0.4f);
-                GeneralAttack();
-                yield return new WaitForSeconds(0.4f);
-                DoAnimation("1Attack");
+            case "찌르기" :
+                DoAnimation("3Attack");
                 yield return new WaitForSeconds(0.4f);
                 GeneralAttack();
                 yield return new WaitForSeconds(0.4f);
                 ReturnToIdleAnimation();
                 break;
-            case "힘증가" :
-                parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue);
-                DoAnimation("1Buff");
+            case "방어" :
+                parent.GainDefense(nextAction.actionValue);
+                DoAnimation("3Buff");
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;
         }
+        yield return new WaitForSeconds(1f);
         isActive = false;
     }
     
@@ -48,11 +46,12 @@ public class Soldier_Axe : SpawnedMonster
     [ClientRpc]
     public void OnHitAnimationRPC()
     {
-        parent.anim.state.SetAnimation(1,"1Defence",false);
+        parent.anim.state.SetAnimation(1,"3Defence",false);
     }
+
     [ClientRpc]
     public override void ReturnToIdleAnimation()
     {
-        parent.anim.state.SetAnimation(1,"1Idle",true);
+        parent.anim.state.SetAnimation(1,"3Idle",true);
     }
 }

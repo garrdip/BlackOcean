@@ -1,2 +1,2 @@
-Group_Name,Minimum_Hazard,Maximum_Hazard,Name
-Default,0,200,Soldier_Axe
+Group_Name,Minimum_Hazard,Maximum_Hazard,Name,,
+Default,0,200,Soldier_Axe,Soldier_Shield,Soldier_Spear

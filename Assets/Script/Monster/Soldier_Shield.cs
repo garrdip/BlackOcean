@@ -4,26 +4,24 @@ using UnityEngine;
 using ProjectD;
 using Mirror;
 
-public class Soldier_Axe : SpawnedMonster
+public class Soldier_Shield : SpawnedMonster
 {
-
     public override IEnumerator DoAction()
     {
         switch(nextAction.actionName){
-            case "두번찍기" :          
-                DoAnimation("1Attack");
-                yield return new WaitForSeconds(0.4f);
-                GeneralAttack();
-                yield return new WaitForSeconds(0.4f);
-                DoAnimation("1Attack");
-                yield return new WaitForSeconds(0.4f);
-                GeneralAttack();
-                yield return new WaitForSeconds(0.4f);
+            case "혼자방어" :
+                parent.GainDefense(nextAction.actionValue);
+                parent.clone.GainDefense(nextAction.actionValue);
+                DoAnimation("2Buff");
+                yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;
-            case "힘증가" :
-                parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue);
-                DoAnimation("1Buff");
+            case "팀방어" :
+                foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList)
+                    tar.GainDefense(nextAction.actionValue);
+                foreach(TargetObject tar in M_TurnManager.instance.cloneMonsterList)
+                    tar.GainDefense(nextAction.actionValue);
+                DoAnimation("2Buff");
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;
@@ -48,11 +46,13 @@ public class Soldier_Axe : SpawnedMonster
     [ClientRpc]
     public void OnHitAnimationRPC()
     {
-        parent.anim.state.SetAnimation(1,"1Defence",false);
+        parent.anim.state.SetAnimation(1,"2Defence",false);
     }
+
     [ClientRpc]
     public override void ReturnToIdleAnimation()
     {
-        parent.anim.state.SetAnimation(1,"1Idle",true);
+        parent.anim.state.SetAnimation(1,"2Idle",true);
     }
+
 }
