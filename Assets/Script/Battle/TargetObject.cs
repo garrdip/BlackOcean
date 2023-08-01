@@ -180,7 +180,7 @@ public class TargetObject : NetworkBehaviour
         {
             damage = (int)(damage * 1.5);
         }
-        // 꽃가루 적용
+        // 개화꽃 적용
         damage -= GetBuffValue(BuffType.FLOWER);
         if(damage <= 0) return;
         // 방어력 적용
@@ -203,7 +203,7 @@ public class TargetObject : NetworkBehaviour
         {
             damage = (int)(damage * 1.5);
         }
-        // 꽃가루 적용
+        // 개화꽃 적용
         damage += GetBuffValue(BuffType.FLOWER);
         // 방어력 적용
         if(defense >= damage)

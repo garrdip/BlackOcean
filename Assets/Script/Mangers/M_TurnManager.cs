@@ -340,6 +340,11 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void MonsterPreEffect()
     {
+        foreach(TargetObject tar in spawnedMonsterList)
+        {
+            tar.clone.defense = 0;
+            tar.defense = 0;
+        }
         phase = BattleTurn.MONSTER_ACTIVE;
     }
 
@@ -364,6 +369,11 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void PlayerPreEffect()
     {
+        foreach(TargetObject tar in spawnedPlayerList)
+        {
+            tar.clone.defense = 0;
+            tar.defense = 0;
+        }
         phase = BattleTurn.PLAYER_DRAW;
     }
 
