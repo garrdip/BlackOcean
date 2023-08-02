@@ -40,12 +40,6 @@ public class GamePlayerMap : NetworkBehaviour
 
         // 매니저의 리스트에 생성된 맵 플레이어 추가
         M_MapManager.instance.mapPlayerPieces.Add(mapPlayerPiece);
-
-        // 생성된 MapPlayerPiece 참조값 세팅
-        currentMapPlayerPiece = mapPlayerPiece.GetComponent<MapPlayerPiece>();
-
-        // 게임 플레이어 참조값 세팅
-        currentMapPlayerPiece.gamePlayer = gamePlayer;
     }
 
     // 맵플레이어가 이동할 위치를 표시하는 오브젝트 생성
@@ -59,12 +53,6 @@ public class GamePlayerMap : NetworkBehaviour
             Quaternion.identity
         );
         NetworkServer.Spawn(mapPlayerDestination, connectionToClient);
-        
-        // 생성된 MapPlayerPiece 참조값 세팅
-        currentMapPlayerDestination = mapPlayerDestination.GetComponent<MapPlayerDestination>();
-
-        // 게임 플레이어 참조값 세팅
-        currentMapPlayerDestination.gamePlayer = GetComponent<GamePlayer>();
     }
 
 
@@ -86,7 +74,22 @@ public class GamePlayerMap : NetworkBehaviour
             M_MapManager.instance.playerVoteHexagonMapRoom.Add(networkIdentity, hexagonMapRoom);
         }
     }
+    
+    // 생성된 MapPlayerPiece 참조값 세팅
+    [Command]
+    public void CmdSetOwnMapPlayerPiece(MapPlayerPiece mapPlayerPiece)
+    {
+        currentMapPlayerPiece = mapPlayerPiece;
+        currentMapPlayerPiece.gamePlayer = GetComponent<GamePlayer>();  // 게임 플레이어 참조값 세팅
+    }
 
+    // 생성된 MapPlayerPiece 참조값 세팅
+    [Command]
+    public void CmdSetOwnMapPlayerDestination(MapPlayerDestination mapPlayerDestination)
+    {
+        currentMapPlayerDestination = mapPlayerDestination;
+        currentMapPlayerDestination.gamePlayer = GetComponent<GamePlayer>();   // 게임 플레이어 참조값 세팅
+    }
 
     // 맵 플레이어가 이동하려는 방의 위치를 알려주는 표시 변경 수신
     public void OnChangeCurrentMapPlayerDestination(Vector3 oldPosition, Vector3 newPosition)

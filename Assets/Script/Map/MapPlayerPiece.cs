@@ -18,6 +18,9 @@ public class MapPlayerPiece: NetworkBehaviour
     void Start()
     {
         transform.SetParent(M_MapManager.instance.roommaps.transform);
+        if(isOwned){
+            NetworkClient.connection.identity.GetComponent<GamePlayerMap>().CmdSetOwnMapPlayerPiece(this); // 클라이언트별로 각자 소유의 MapPlayerPiece 참조값 설정
+        }
     }
 
     public void OnChangeSteamId(string oldSteamId, string newSteamId)
