@@ -13,6 +13,7 @@ public class CardPocket : NetworkBehaviour
     {
         transform.SetParent(GameUIManager.instance.CardOnHandsPanel.transform);
         if(isOwned){
+            NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().CmdSetPlayerOwnCardPocket(this); // 클라이언트별로 각자 소유의 CardPocket 참조값 설정
             transform.localPosition = new Vector3(0f, -8f, 0f); // 현재 플레이어 소유의 CardPocket은 화면 중앙 하단위치
         }else{
             transform.localPosition = new Vector3(-100f, -8f, 0f); // 다른 플레이어 소유의 CardPocket은 좌측 -100 위치

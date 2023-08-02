@@ -23,6 +23,9 @@ public class CardCtrlArrow : NetworkBehaviour
         origin = GetComponent<Transform>();
         ChangeArrowVisible(isOwned, GameUIManager.instance.CardOnHandsPanel.transform);
         M_CardManager.instance.isArrowActive = false; // 생성 시점에는 오브젝트가 활성화 되어있지만(네트워크 오브젝트는 생성시 Active 상태), 활성화 상태 변수값은 false로 초기화
+        if(isOwned){
+            NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().CmdSetPlayerOwnCardCtrlArrow(this);  // 클라이언트별로 각자 소유의 CardCtrlArrow 참조값 설정
+        }
     }
 
     void Update()

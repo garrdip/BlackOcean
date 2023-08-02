@@ -83,6 +83,153 @@ public class GamePlayerDeck : NetworkBehaviour
         M_CardManager.instance.ResetCardAllState(cardOnHand, false);
     }
 
+    // ---------------------------------------------------------------------- Server Method -----------------------------------------------------------------//
+    
+    // 플레이어 댁 정보 초기화
+    [Server]
+    public void SetInitialValue()
+    {
+        currentDeckCount = 5;
+        Character character = GetComponent<GamePlayer>().character;
+        switch(character){
+            case Character.GEORK:
+                for(int i = 0 ; i <8 ;i++)
+                {
+                    if(i % 2 == 0){
+                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G3")));
+                        deck.Add(attackCard);
+                    }else{
+                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G4")));
+                        deck.Add(defenseCard);
+                    }
+                    
+                }
+                break;
+            case Character.ERIS:
+                for(int i = 0 ; i <8 ;i++)
+                {
+                    if(i % 2 == 0){
+                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E0")));
+                        deck.Add(attackCard);
+                    }else{
+                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E1")));
+                        deck.Add(defenseCard);
+                    }
+                    
+                }
+                break;
+            case Character.HONGDANHYANG:
+                for(int i = 0 ; i <8 ;i++)
+                {
+                    if(i % 2 == 0){
+                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
+                        deck.Add(attackCard);
+                    }else{
+                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H3")));
+                        deck.Add(defenseCard);
+                    }
+                    
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    // 현재 플레이어의 CardPocket 오브젝트 생성
+    [Server]
+    public void SpawnCardPocket()
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
+        // CardPocket 오브젝트 생성
+        GameObject cardPocketObject = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")));
+        NetworkServer.Spawn(cardPocketObject, connectionToClient);
+    }
+
+    // 현재 플레이어의 카드 컨트롤 화살표 인디케이터 생성
+    [Server]
+    public void SpawnArrowEmitter()
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
+        // 화살표 생성 초기 위치는 화면 밖
+        Vector3 arrowSpawnPosition = new Vector3(-100f, 0f, 0f);
+
+        // 화살표 인디케이터 오브젝트 생성
+        GameObject cardEmitter = Instantiate(
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")),
+            arrowSpawnPosition,
+            Quaternion.identity);
+        NetworkServer.Spawn(cardEmitter, connectionToClient);
+
+        // 화살표 인디케이터 몸체 생성
+        for(int i=0; i<arrowNodeNum; i++){
+            GameObject arrowNode = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowNode")),
+                arrowSpawnPosition,
+                Quaternion.identity);
+            NetworkServer.Spawn(arrowNode, connectionToClient);
+            arrowNode.GetComponent<CardCtrlArrowNode>().cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>(); // 화살표 몸통에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
+        }
+
+        // 화살표 인디케이터 머리 생성
+        GameObject arrowHead = Instantiate(
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowHead")),
+            arrowSpawnPosition,
+            Quaternion.identity);
+        NetworkServer.Spawn(arrowHead, connectionToClient);
+        arrowHead.GetComponent<CardCtrlArrowHead>().cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();  // 화살표 머리에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
+    }
+
+    [Server]
+    IEnumerator EnQueueCardTargetPair()
+    {
+        // TargetObject List 구조 : 
+        /*
+            Index : 내용
+            0 : 카드 사용한 Player 
+            1 : Target Monster
+            이후 : 모든 플레이어 및 몬스터
+        */
+        WaitForSeconds loopTime = new WaitForSeconds(0.01f);
+        Card card;
+        TargetObject targetObject;
+        NetworkIdentity conn;
+        CardCtrlArrow cardCtrlArrow;
+        while(true)
+        {
+            yield return loopTime; // 0.01s
+
+            if(serverCardPredictQueue.Count == 0) continue; //카드큐가 비어있을경우 스킵 
+            
+            (card,targetObject,conn,cardCtrlArrow) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
+
+            if(targetObject == null) // 타겟이 널일경우 후속조치 하지 않음 (카드 사용이 안됨)
+                continue;
+            if(card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
+                continue;
+
+            List<TargetObject> tar = new List<TargetObject>();
+            tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
+            if(card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
+            tar.AddRange(M_TurnManager.instance.GetClonePlayerObjects());
+            tar.AddRange(M_TurnManager.instance.GetCloneMonsterObjects());
+            if(card.baseCard.isTargetable)cardCtrlArrow.RpcAcceptCardUse(conn); // TargetAble이 유효한 타겟이었을 경우 화살표 제거
+            M_TurnManager.instance.ProcessCardPredict(card,tar);
+
+            List<TargetObject> targetObjects = new List<TargetObject>();
+            targetObjects.Add(M_TurnManager.instance.GetPlayer(conn)); // Index 0 
+            if(card.baseCard.isTargetable)targetObjects.Add(targetObject);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
+            targetObjects.AddRange(M_TurnManager.instance.GetPlayerObjects());
+            targetObjects.AddRange(M_TurnManager.instance.GetMonsterObjects());
+
+            M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, targetObjects));
+        }
+    }
+
+    // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
+
     // deck에 추가
     [Command]
     public void CmdAddDeck(Card card)
@@ -161,13 +308,6 @@ public class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 화살표 주인 카드 참조값 설정
-    [Command]
-    public void CmdSetArrowOwnCardOnHand(CardOnHand cardOnHand)
-    {
-        cardCtrlArrow.arrowOwnedCardOnHand = cardOnHand;
-    }
-
     // 카드 리스트에서 삭제, 댁카운트 감소, 카드 오브젝트 삭제, 사용된 댁에 추가
     [Command]
     public void CmdDestroyCardOnHand(CardOnHand cardOnHand)
@@ -198,7 +338,6 @@ public class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Clear();
     }
 
-    
     // 카드데이터와 카드의 액션수행 대상을 Dictionary로 key, value 쌍으로 묶어 저장
     [Command]
     public void CmdEnQueueCardTargetPair(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
@@ -206,155 +345,27 @@ public class GamePlayerDeck : NetworkBehaviour
         serverCardPredictQueue.Enqueue((card,targetObject,conn,cardCtrlArrow));
     }
 
-    // 플레이어 댁 정보 초기화
-    [Server]
-    public void SetInitialValue()
+    // 화살표 주인 카드 참조값 설정
+    [Command]
+    public void CmdSetArrowOwnCardOnHand(CardOnHand cardOnHand)
     {
-        currentDeckCount = 5;
-        Character character = GetComponent<GamePlayer>().character;
-        switch(character){
-            case Character.GEORK:
-                for(int i = 0 ; i <8 ;i++)
-                {
-                    if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G3")));
-                        deck.Add(attackCard);
-                    }else{
-                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G4")));
-                        deck.Add(defenseCard);
-                    }
-                    
-                }
-                break;
-            case Character.ERIS:
-                for(int i = 0 ; i <8 ;i++)
-                {
-                    if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E0")));
-                        deck.Add(attackCard);
-                    }else{
-                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E1")));
-                        deck.Add(defenseCard);
-                    }
-                    
-                }
-                break;
-            case Character.HONGDANHYANG:
-                for(int i = 0 ; i <8 ;i++)
-                {
-                    if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
-                        deck.Add(attackCard);
-                    }else{
-                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H3")));
-                        deck.Add(defenseCard);
-                    }
-                    
-                }
-                break;
-            default:
-                break;
-        }
+        cardCtrlArrow.arrowOwnedCardOnHand = cardOnHand;
     }
 
-    // 현재 플레이어의 CardPocket 오브젝트 생성
-    [Server]
-    public void SpawnCardPocket()
+    // 플레이어에 소유의 CardPocket 참조값 설정
+    [Command]
+    public void CmdSetPlayerOwnCardPocket(CardPocket cardPocket)
     {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-
-        // CardPocket 오브젝트 생성
-        GameObject cardPocketObject = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")));
-        NetworkServer.Spawn(cardPocketObject, connectionToClient);
-
-        // 플레이어에 자신이 소환한 CardPocket 참조값 설정
-        cardPocket = cardPocketObject.GetComponent<CardPocket>();
+        this.cardPocket = cardPocket;
     }
 
-    // 현재 플레이어의 카드 컨트롤 화살표 인디케이터 생성
-    [Server]
-    public void SpawnArrowEmitter()
+    // 플레이어에 소유의 CardCtrlArrow 참조값 설정
+    [Command]
+    public void CmdSetPlayerOwnCardCtrlArrow(CardCtrlArrow cardCtrlArrow)
     {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-
-        // 화살표 생성 초기 위치는 화면 밖
-        Vector3 arrowSpawnPosition = new Vector3(-100f, 0f, 0f);
-
-        // 화살표 인디케이터 오브젝트 생성
-        GameObject cardEmitter = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")),
-            arrowSpawnPosition,
-            Quaternion.identity);
-        NetworkServer.Spawn(cardEmitter, connectionToClient);
-
-        // 화살표 인디케이터 몸체 생성
-        for(int i=0; i<arrowNodeNum; i++){
-            GameObject arrowNode = Instantiate(
-                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowNode")),
-                arrowSpawnPosition,
-                Quaternion.identity);
-            NetworkServer.Spawn(arrowNode, connectionToClient);
-            arrowNode.GetComponent<CardCtrlArrowNode>().cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>(); // 화살표 몸통에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
-        }
-
-        // 화살표 인디케이터 머리 생성
-        GameObject arrowHead = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowHead")),
-            arrowSpawnPosition,
-            Quaternion.identity);
-        NetworkServer.Spawn(arrowHead, connectionToClient);
-        arrowHead.GetComponent<CardCtrlArrowHead>().cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();  // 화살표 머리에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
-
-        // 플레이어에 자신이 소환한 화살표 참조값 설정
-        cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();
+        this.cardCtrlArrow = cardCtrlArrow;
     }
-
-    [Server]
-    IEnumerator EnQueueCardTargetPair()
-    {
-        // TargetObject List 구조 : 
-        /*
-            Index : 내용
-            0 : 카드 사용한 Player 
-            1 : Target Monster
-            이후 : 모든 플레이어 및 몬스터
-        */
-        WaitForSeconds loopTime = new WaitForSeconds(0.01f);
-        Card card;
-        TargetObject targetObject;
-        NetworkIdentity conn;
-        CardCtrlArrow cardCtrlArrow;
-        while(true)
-        {
-            yield return loopTime; // 0.01s
-
-            if(serverCardPredictQueue.Count == 0) continue; //카드큐가 비어있을경우 스킵 
-            
-            (card,targetObject,conn,cardCtrlArrow) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
-
-            if(targetObject == null) // 타겟이 널일경우 후속조치 하지 않음 (카드 사용이 안됨)
-                continue;
-            if(card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
-                continue;
-
-            List<TargetObject> tar = new List<TargetObject>();
-            tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
-            if(card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
-            tar.AddRange(M_TurnManager.instance.GetClonePlayerObjects());
-            tar.AddRange(M_TurnManager.instance.GetCloneMonsterObjects());
-            if(card.baseCard.isTargetable)cardCtrlArrow.RpcAcceptCardUse(conn); // TargetAble이 유효한 타겟이었을 경우 화살표 제거
-            M_TurnManager.instance.ProcessCardPredict(card,tar);
-
-            List<TargetObject> targetObjects = new List<TargetObject>();
-            targetObjects.Add(M_TurnManager.instance.GetPlayer(conn)); // Index 0 
-            if(card.baseCard.isTargetable)targetObjects.Add(targetObject);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
-            targetObjects.AddRange(M_TurnManager.instance.GetPlayerObjects());
-            targetObjects.AddRange(M_TurnManager.instance.GetMonsterObjects());
-
-            M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, targetObjects));
-        }
-    }
-
+    
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
     public void OnChangeCurrentDeckCount(int oldCount, int newCount)
     {
