@@ -59,6 +59,18 @@ public class M_MapManager : NetworkBehaviour
     public const float rangeExistOtherHexagon = 0.5f; // 현재 위치한 육각형 주위에 다른 육각형이 존재하는지 확인용 중심점 간의 거리 차이 계산값
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
 
+    private static readonly Vector2Int[] offSets = {
+        new Vector2Int(0, -1),
+        new Vector2Int(-1, 0),
+        new Vector2Int(-1, 1),
+        new Vector2Int(0, 1),
+        new Vector2Int(1, 0),
+        new Vector2Int(1, -1)
+    };
+
+    public HexagonMapRoom startAt;
+    public HexagonMapRoom endAt;
+
 
     public static M_MapManager instance
     {
@@ -535,5 +547,106 @@ public class M_MapManager : NetworkBehaviour
             }
         }
         return false; // 중복된 위치가 없음
+    }
+
+    // ------------------------------------------------------------ A* Algorithm Method -------------------------------------------------------------- //
+
+    // A* 알고리즘을 이용한 경로검색
+    public List<HexagonMapRoom> FindPath(HexagonMapRoom start, HexagonMapRoom target)
+    { 
+        List<HexagonMapRoom> openSet = new List<HexagonMapRoom>(); // 아직 방문하지 않은 노드들 목록
+        HashSet<HexagonMapRoom> closedSet = new HashSet<HexagonMapRoom>(); // 이미 방문한 노드들의 목록(중복제거)
+        openSet.Add(start); // 시작점 추가
+
+        // 검색 시작
+        while(openSet.Count > 0)
+        {
+            HexagonMapRoom currentNode = openSet[0];
+            for(int i = 1; i < openSet.Count; i++)
+            {
+                // openSet에서 fCost가 가장 낮은 노드를 선택. (fCost가 같은 경우, hCost가 낮은 노드를 선택)
+                if (openSet[i].FCost < currentNode.FCost || (openSet[i].FCost == currentNode.FCost && openSet[i].HCost < currentNode.HCost))
+                {
+                    currentNode = openSet[i];
+                }
+            }
+
+            openSet.Remove(currentNode); // openset에서 현재 노드 제거
+            closedSet.Add(currentNode); // closedSet에 현재 노드 추가
+
+            // 현재 노트가 목적지 노드와 같다면 목적지에 도달한 것이므로 경로를 생성해서 반환
+            if(currentNode.coordinate == target.coordinate)
+            {
+                return CreatePath(start, currentNode);
+            }
+
+            List<HexagonMapRoom> neighbours = GetNeighbours(currentNode); // 현재 노드의 주변 이웃 노드 조회
+            foreach (HexagonMapRoom neighbour in neighbours)
+            {
+                if(closedSet.Contains(neighbour)) // 이웃노드가 방문한 목록에 있으면 그대로 진행
+                    continue;
+
+                // Cost값 갱신
+                int newGCost = currentNode.GCost + 1;
+                int newHCost = CalculateHeuristics(neighbour.coordinate, target.coordinate);
+                int newFCost = newGCost + newHCost;
+
+                if(newFCost < neighbour.FCost || !openSet.Contains(neighbour))
+                {
+                    // 이웃노드들의 Cost값 갱신
+                    neighbour.GCost = newGCost;
+                    neighbour.HCost = newHCost;
+                    neighbour.previousNode = currentNode;
+
+                    // openSet리스트에 중복을 허용하지 않고 이웃노드 추가
+                    if(!openSet.Contains(neighbour)) 
+                    {
+                        openSet.Add(neighbour);
+                    }
+                }
+            }
+        }
+        return new List<HexagonMapRoom>(); // 경로 검색에 실패하면 빈 리스트 반환
+    }
+
+    // 현재 방의 6방향좌표에 있는 이웃 방 검색
+    private List<HexagonMapRoom> GetNeighbours(HexagonMapRoom currentHexagonRoom)
+    {
+        List<HexagonMapRoom> neighbours = new List<HexagonMapRoom>();
+        for(int i = 0; i < 6; i++)
+        {
+            HexagonMapRoom neighbour = M_MapManager.instance.hexagonMapRooms.Find((room) => room.coordinate == currentHexagonRoom.coordinate + offSets[i]);
+            if(neighbour != null){
+                neighbours.Add(neighbour);
+            }
+        }
+        return neighbours;
+    }
+
+    // [휴리스틱함수]
+    // A* 알고리즘에서 목적지까지 가는데 걸리는 비용 예측 함수. 해당함수의 로직에 따라 알고리즘 효율성 결정.
+    // 현재는 단순 두 지점간의 좌표계에 따른 거리값만 계산(Axial 좌표계에서의 맨해튼거리 계산식)
+    private int CalculateHeuristics(Vector2Int currentCoord, Vector2Int targetCoord)
+    {
+        int dQ = currentCoord.x - targetCoord.x;
+        int dR = currentCoord.y - targetCoord.y;
+        int distance = (Mathf.Abs(dQ) + Mathf.Abs(dR) + Mathf.Abs(dQ + dR)) / 2;
+        return distance;
+    }
+
+    // 검색된 최단경로들에 있는 HexagonMapRoom들의 목록 생성해서 반환
+    // 현재 노드의 멤버변수로 이전 노드가 존재하기 때문에 검색된 노드들을 역추적하며 경로를 생성하는 방식
+    private List<HexagonMapRoom> CreatePath(HexagonMapRoom startNode, HexagonMapRoom endNode)
+    {
+        List<HexagonMapRoom> path = new List<HexagonMapRoom>();
+        HexagonMapRoom currentNode = endNode;
+
+        while(currentNode != startNode)
+        {
+            path.Add(currentNode);
+            currentNode = currentNode.previousNode;
+        }
+        path.Reverse();
+        return path;
     }
 }

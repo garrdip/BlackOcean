@@ -28,9 +28,17 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedIsComplete))]
     public bool isComplete = false; // 방 정복 완료 상태 구분값
 
+    [Header("A* 알고리즘에 사용되는 멤버 변수들")]
+    public HexagonMapRoom previousNode; // 현재 위치 이전의 노드
+    public int GCost; // 시작 노드 ~ 검사할 노드까지의 비용
+    public int HCost; // 검사할 노드 ~ 목적지 노드까지의 추정 비용
+    public int FCost => GCost + HCost; // 최종 비용
+
+    [Header("UI 컴포넌트")]
     public SpriteRenderer spriteRenderer;
     public TextMeshProUGUI textRoomType;
     public TextMeshProUGUI textCoordinate;
+
 
     void Start()
     {
