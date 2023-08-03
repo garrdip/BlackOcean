@@ -90,7 +90,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 왼쪽버튼 누를 때 이벤트
     void OnMouseDown()
     {
-        if(isOwned && currentPlayerDeck.isLocalPlayer && M_TurnManager.instance.IsActivePhase()){
+        if(isOwned && !isMoving && currentPlayerDeck.isLocalPlayer && M_TurnManager.instance.IsActivePhase()){
             // 덱 [목록] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
             if(!IsCardControllablePopUpActive()){
                 isDrag = true;
@@ -149,7 +149,6 @@ public class CardOnHand : NetworkBehaviour
     {
         if(cardOnHand.card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 3)){
             cardOnHand.isDrag = false;
-            cardOnHand.isMoving = true;
             cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = M_CardManager.instance.maxSortOrder;
             currentPlayerDeck.cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
             currentPlayerDeck.CmdSetArrowOwnCardOnHand(cardOnHand);
