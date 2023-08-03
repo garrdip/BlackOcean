@@ -165,6 +165,9 @@ MonoBehaviour:
     regionGrade: 0
   isActive: 0
   isComplete: 0
+  previousNode: {fileID: 0}
+  GCost: 0
+  HCost: 0
   spriteRenderer: {fileID: 6925378521302171519}
   textRoomType: {fileID: 493934088665875889}
   textCoordinate: {fileID: 4925224301613228853}

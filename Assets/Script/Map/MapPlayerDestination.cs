@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using DG.Tweening;
+using TMPro;
 
 public class MapPlayerDestination : NetworkBehaviour
 {
     [SyncVar(hook = nameof(OnChangeGamePlayer))]
     public GamePlayer gamePlayer;
 
+    [SyncVar(hook = nameof(OnChangeDistanceFromCurrentCoordinate))]
+    public int distanceFromCurrentCoordinate;
+
+    public TextMeshProUGUI textDistanceCount;
     public SpriteRenderer spriteRenderer;
     public Sequence sequence;
 
@@ -80,5 +85,11 @@ public class MapPlayerDestination : NetworkBehaviour
                     break;
             }
         }
+    }
+
+    // 목적지까지의 거리값 표시
+    void OnChangeDistanceFromCurrentCoordinate(int oldValue, int newValue)
+    {
+        textDistanceCount.text = newValue.ToString();
     }
 }

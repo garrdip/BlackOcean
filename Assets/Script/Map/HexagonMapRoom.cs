@@ -51,7 +51,7 @@ public class HexagonMapRoom : NetworkBehaviour
     {
         if(isRegion && !isActive) return; // 거점지역인 경우 아직 비활성화 상태면 이동 불가
 
-        if(M_MapManager.instance.GetDistanceFromCurrentCoordinate(this.coordinate) > M_MapManager.instance.mapSight) return; // 맵 시야값 이상은 이동불가
+        // if(M_MapManager.instance.GetDistanceFromCurrentCoordinate(this.coordinate) > M_MapManager.instance.mapSight) return; // 맵 시야값 이상은 이동 불가
 
         // 클릭한 육각형으로 맵플레이어 이동 및 현재 선택된 맵으로 저장
         NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdSelectHexagonMapRoom(this, NetworkClient.connection.identity);

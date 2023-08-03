@@ -56,11 +56,25 @@ public class GamePlayerMap : NetworkBehaviour
     }
 
 
-    // 맵 플레이어가 이동하려는 방의 위치를 알려주는 표시 변경
+    // 맵 플레이어가 이동하려는 방 표시 오브젝트의 위치 변경 및 거리값 계산
     [Command]
-    public void CmdChangeMapPlayerDestinationPosition(HexagonMapRoom hexagonMapRoom, Vector3 position)
+    public void CmdChangeMapPlayerDestinationPosition(HexagonMapRoom endAt, Vector3 position)
     {
+        // MapPlayerDestination 오브젝트의 위치 변경
         currentMapPlayerDestinationPosition = position;
+        
+        // 시작지점은 CurretnRoom 또는 StartPosition
+        HexagonMapRoom startAt = M_MapManager.instance.currentRoom ? M_MapManager.instance.currentRoom : M_MapManager.instance.hexagonMapRooms[0];
+        
+        // 거리 계산을 위해 시작지점과 끝지점 설정
+        M_MapManager.instance.startAt = startAt;
+        M_MapManager.instance.endAt = endAt;
+        
+        // 경로검색
+        List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
+        
+        // findPath 리스트의 카운트 = 거리값
+        currentMapPlayerDestination.distanceFromCurrentCoordinate = findPath.Count;
     }
 
 

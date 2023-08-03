@@ -21,7 +21,13 @@ public class M_MapManager : NetworkBehaviour
     HexagonMapRoom moveToRoomDestination;
 
     [SyncVar]
-    public int mapSight = 1; // 맵 시야 변수값
+    public int mapSight; // 맵 시야 변수값
+
+    [SyncVar]
+    public int totaActionCost; // 맵에서 소모되는 행동비용 총량
+    
+    [SyncVar]
+    public int actionCost; // 행동시 소모되는 비용
     
     [Header("메인 카메라")]
     public Camera mainCam;
@@ -82,6 +88,13 @@ public class M_MapManager : NetworkBehaviour
             }
             return Instance;
         }
+    }
+
+    public override void OnStartServer()
+    {
+        mapSight = 1;
+        actionCost = 1;
+        totaActionCost = 30;
     }
 
     // ------------------------------------------------------------ Server Method -------------------------------------------------------------- //
@@ -615,7 +628,7 @@ public class M_MapManager : NetworkBehaviour
         List<HexagonMapRoom> neighbours = new List<HexagonMapRoom>();
         for(int i = 0; i < 6; i++)
         {
-            HexagonMapRoom neighbour = M_MapManager.instance.hexagonMapRooms.Find((room) => room.coordinate == currentHexagonRoom.coordinate + offSets[i]);
+            HexagonMapRoom neighbour = hexagonMapRooms.Find((room) => room.coordinate == currentHexagonRoom.coordinate + offSets[i]);
             if(neighbour != null){
                 neighbours.Add(neighbour);
             }
