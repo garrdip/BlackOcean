@@ -67,42 +67,48 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
     void OnMouseEnter()
     {
-        if(isOwned && !isMoving && !isChoosed && !IsCardControllablePopUpActive()  && M_TurnManager.instance.IsActivePhase() && !IsArrowActive()){
-            isMouseOver = true;
-            originSortOrder = index;
-            transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
-            cardOnHandCanvas.sortingOrder =  M_CardManager.instance.maxSortOrder;
-            M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
+        if(isOwned && M_TurnManager.instance.IsActivePhase()){
+            if(!isMoving && !isChoosed && !IsArrowActive() && !IsCardControllablePopUpActive()){
+                isMouseOver = true;
+                originSortOrder = index;
+                transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
+                cardOnHandCanvas.sortingOrder =  M_CardManager.instance.maxSortOrder;
+                M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
+            }
         }
     }
 
     // 오브젝트에서 마우스 포인터 나갈 때 이벤트
     void OnMouseExit()
     {
-        if(isOwned && !isMoving && !IsCardControllablePopUpActive() && M_TurnManager.instance.IsActivePhase() && !IsArrowActive()){
-            isMouseOver = false;
-            transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
-            cardOnHandCanvas.sortingOrder = originSortOrder;
-            M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
+        if(isOwned && M_TurnManager.instance.IsActivePhase()){
+            if(!isMoving && !IsArrowActive() && !IsCardControllablePopUpActive()){
+                isMouseOver = false;
+                transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
+                cardOnHandCanvas.sortingOrder = originSortOrder;
+                M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
+            }
         }
     }
 
     // 오브젝트에 마우스 왼쪽버튼 누를 때 이벤트
     void OnMouseDown()
     {
-        if(isOwned && !isMoving && currentPlayerDeck.isLocalPlayer && M_TurnManager.instance.IsActivePhase()){
-            // 덱 [목록] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
-            if(!IsCardControllablePopUpActive()){
-                isDrag = true;
-                arrowSpawnedCardPosition = transform.position; // 드래그 시작전 마우스 클릭 시점에 카드의 절대 위치값 저장(이 시점의 카드 위치는 중앙 하단). 화살표 소환 시 카드를 다시 중앙 하단으로 이동시키기 위함.
-            }
-            // 덱 [제거] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
-            if(IsCardOnHandRemovePopUpActive()){
-                if(isChoosed){
-                    currentPlayerDeck.RemoveChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에서 제거
-                }else{
-                    currentPlayerDeck.AddChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에 추가
-                }  
+        if(isOwned && M_TurnManager.instance.IsActivePhase()){
+            if(!isMoving && !IsArrowActive()){
+                // 덱 [목록] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
+                if(!IsCardControllablePopUpActive()){
+                    isDrag = true;
+                    arrowSpawnedCardPosition = transform.position; // 드래그 시작전 마우스 클릭 시점에 카드의 절대 위치값 저장(이 시점의 카드 위치는 중앙 하단). 화살표 소환 시 카드를 다시 중앙 하단으로 이동시키기 위함.
+                }
+                // 덱 [제거] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
+                if(IsCardOnHandRemovePopUpActive()){
+                    if(isChoosed){
+                        currentPlayerDeck.RemoveChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에서 제거
+                    }else{
+                        currentPlayerDeck.AddChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에 추가
+                    }  
+                }
             }
         }
     }
@@ -110,24 +116,28 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트를 마우스로 드래그 할 때 이벤트
     void OnMouseDrag()
     {
-        if(isOwned && isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive() && M_TurnManager.instance.IsActivePhase()){
-            DragCardOnHand(this);
-            MovePositionArrowSpawnedCardOnHand(this);
+        if(isOwned && M_TurnManager.instance.IsActivePhase()){
+            if(isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
+                DragCardOnHand(this);
+                MovePositionArrowSpawnedCardOnHand(this);
+            }
         }
     }
 
     // 오브젝트에서 마우스 왼쪽버튼 뗄 때 이벤트
     void OnMouseUp()
     {
-        if(isOwned && isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive() && M_TurnManager.instance.IsActivePhase()){
-            // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
-            if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
-                M_CardManager.instance.EnQueueCardTargetPair(card, null, NetworkClient.connection.identity, null);
-                M_CardManager.instance.CardOnHandThrowAwaySequence(this);
+        if(isOwned && M_TurnManager.instance.IsActivePhase()){
+            if(isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
+                // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
+                if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
+                    M_CardManager.instance.EnQueueCardTargetPair(card, null, NetworkClient.connection.identity, null);
+                    M_CardManager.instance.CardOnHandThrowAwaySequence(this);
+                }
+                isDrag = false;
+                isMoving = false;
+                isMouseOver = false;
             }
-            isDrag = false;
-            isMoving = false;
-            isMouseOver = false;
         }
     }
 
@@ -148,6 +158,7 @@ public class CardOnHand : NetworkBehaviour
     private void MovePositionArrowSpawnedCardOnHand(CardOnHand cardOnHand)
     {
         if(cardOnHand.card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 3)){
+            cardOnHand.isMoving = true;
             cardOnHand.isDrag = false;
             cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = M_CardManager.instance.maxSortOrder;
             currentPlayerDeck.cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
