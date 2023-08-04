@@ -14,13 +14,27 @@ public partial class CardData : SingletonD<CardData>
     // HONG DAN HYANG
     public IEnumerator H0(Card card,List<TargetObject> tar)
     {
-        if(!tar[0].isCloneData) yield return tempWait;
-        if(!tar[0].isCloneData) M_TurnManager.instance.ChangePlayerOrder(tar[0].player,MoveDirection.FORWARD);
-        if(!tar[0].isCloneData) yield return new WaitForSeconds(0.5f);
-        M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
-        if(!tar[0].isCloneData) yield return new WaitForSeconds(0.2f);
-        StartCoroutine(tar[1].monster.OnHitAnimation());
-        GeneralSingleAttack(tar[0],tar[1],15);
+        if(!tar[0].isCloneData)
+        {
+            yield return tempWait;
+            M_TurnManager.instance.ChangePlayerOrder(tar[0].player,MoveDirection.FORWARD);
+            yield return new WaitForSeconds(0.5f);
+            M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
+            yield return new WaitForSeconds(0.2f);
+            StartCoroutine(tar[1].monster.OnHitAnimation());
+            
+        }
+        if(card.experience >= 1)
+        {
+            GeneralSingleAttack(tar[0],tar[1],45);
+            if(!tar[0].isCloneData)card.experience = 0;
+        }
+        else
+        {
+            GeneralSingleAttack(tar[0],tar[1],15);
+            if(!tar[0].isCloneData)card.experience ++;
+        }
+            
         if(!tar[0].isCloneData) isCardOperating = false;
     }
 

@@ -131,7 +131,7 @@ public class CardOnHand : NetworkBehaviour
             if(isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
                 // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
                 if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
-                    M_CardManager.instance.EnQueueCardTargetPair(card, null, NetworkClient.connection.identity, null);
+                    CmdEnQueueCardData();
                     M_CardManager.instance.CardOnHandThrowAwaySequence(this);
                 }
                 isDrag = false;
@@ -139,6 +139,13 @@ public class CardOnHand : NetworkBehaviour
                 isMouseOver = false;
             }
         }
+    }
+
+    [Command]
+    void CmdEnQueueCardData()
+    {
+        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((card, null, NetworkClient.connection.identity, null));
     }
 
     // 마우스 좌표에 따라 카드 오브젝트 드래그
@@ -209,7 +216,10 @@ public class CardOnHand : NetworkBehaviour
     // 카드 정보 뷰 업데이트
     public void OnChangeCardData(Card oldCard, Card newCard)
     {
-        textCardName.text = card.baseCard.name;
+        if(card.experience >= 1)
+            textCardName.text = "강화 " + card.baseCard.name;
+        else
+            textCardName.text = card.baseCard.name;
         textCardInfo.text = card.baseCard.cardType.ToString();
     }
 

@@ -31,7 +31,7 @@ public class GamePlayerDeck : NetworkBehaviour
 
     public CardOnHand[] choosedCardOnHands = new CardOnHand[2];  // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
 
-    private Queue<(Card,TargetObject,NetworkIdentity,CardCtrlArrow)> serverCardPredictQueue = new Queue<(Card, TargetObject, NetworkIdentity, CardCtrlArrow)>();// Server에서 Card Queue 관리를 위한 Queue
+    public Queue<(Card,TargetObject,NetworkIdentity,CardCtrlArrow)> serverCardPredictQueue = new Queue<(Card, TargetObject, NetworkIdentity, CardCtrlArrow)>();// Server에서 Card Queue 관리를 위한 Queue
 
 
 
@@ -228,6 +228,13 @@ public class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    // 카드데이터와 카드의 액션수행 대상을 Dictionary로 key, value 쌍으로 묶어 저장
+    public void TESTEnQueueCardData(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
+    {
+        serverCardPredictQueue.Enqueue((card,targetObject,conn,cardCtrlArrow));
+    }
+
+
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
 
     // deck에 추가
@@ -336,13 +343,6 @@ public class GamePlayerDeck : NetworkBehaviour
             NetworkServer.Destroy(cardOnHand.gameObject);
         }
         cardOnHands.Clear();
-    }
-
-    // 카드데이터와 카드의 액션수행 대상을 Dictionary로 key, value 쌍으로 묶어 저장
-    [Command]
-    public void CmdEnQueueCardTargetPair(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
-    {
-        serverCardPredictQueue.Enqueue((card,targetObject,conn,cardCtrlArrow));
     }
 
     // 화살표 주인 카드 참조값 설정

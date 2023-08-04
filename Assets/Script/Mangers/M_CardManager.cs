@@ -350,17 +350,6 @@ public class M_CardManager : NetworkBehaviour
         }   
     }
 
-    // 카드와 타겟 데이터 큐에 저장
-    public void EnQueueCardTargetPair(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdEnQueueCardTargetPair(card, targetObject, conn, cardCtrlArrow);
-            }
-        }
-    }
-
     // 로컬 플레이어의 현재 소환된 CardOnHand의 상태 변수들 변경
     public void ChangeCurrentPlayerCardOnHandState(bool state)
     {
