@@ -50,6 +50,8 @@ public class CardOnHand : NetworkBehaviour
     public TextMeshProUGUI textCardName;
     public TextMeshProUGUI textCardInfo;
 
+    public TextMeshProUGUI textCardDescription;
+
 
     void Start()
     {
@@ -221,6 +223,7 @@ public class CardOnHand : NetworkBehaviour
         else
             textCardName.text = card.baseCard.name;
         textCardInfo.text = card.baseCard.cardType.ToString();
+        textCardDescription.text = card.baseCard.description;
     }
 
 }

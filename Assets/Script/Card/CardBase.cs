@@ -13,10 +13,26 @@ public class CardBase
     public bool isTargetable = true;
     public CardType cardType;
     public int cost;
+    public List<Infomation> info = new List<Infomation>();
     public List<CardCharacteristic> cardCharacteristics;
 
     public CardBase()
     {
         cardCharacteristics = new List<CardCharacteristic>();
+    }
+}
+
+[System.Serializable]
+public class Infomation
+{
+    string info = "";
+    int colorCode = 0;
+
+    public Infomation(){}
+
+    public Infomation(string str, int num)
+    {
+        info = str;
+        colorCode = num;
     }
 }

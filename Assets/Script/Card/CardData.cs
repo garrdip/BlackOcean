@@ -21,6 +21,8 @@ public partial class CardData : SingletonD<CardData>
         isCardOperatingTEST = value;
     }}
 
+    string[] colorList = {"<#ff0000>","<#00ff00>","<#0000ff>","<#ffff00>","<#00ffff>","<#ff00ff>"};
+
     WaitForSeconds tempWait = new WaitForSeconds(1f);
 
     //Version 3
@@ -42,10 +44,11 @@ public partial class CardData : SingletonD<CardData>
                 card.cardNumber = values[0]; //카드 번호 사실상 메소드이름
                 card.character = (Character)Enum.Parse<Character>(values[1]);//케릭터
                 card.name = values[2];//카드이름
-                card.isTargetable = (values[5] == "Y") ? true : false;
-                card.cardType = (CardType)Enum.Parse<CardType>(values[3]);
-                card.cost = int.Parse(values[4]);
-                for(int i = 6 ;i < values.Length ; i++)
+                card.isTargetable = (values[6] == "Y") ? true : false;
+                card.cardType = (CardType)Enum.Parse<CardType>(values[4]);
+                card.description = GetCardDescription(values[3],card);
+                card.cost = int.Parse(values[5]);
+                for(int i = 7 ;i < values.Length ; i++)
                 {
                     if(values[i] == "")break;
                     card.cardCharacteristics.Add((CardCharacteristic)Enum.Parse<CardCharacteristic>(values[i]));
@@ -55,6 +58,26 @@ public partial class CardData : SingletonD<CardData>
                 CardMethods.Add(card.cardNumber,temp); // cardNumber
             }
         }
+    }
+    
+    private string GetCardDescription(string desc, CardBase card)
+    {
+        int colorCnt = 0;
+        string[] values = desc.Trim().Split(" ");
+        string retVal = "";
+        for(int i = 0 ;i < values.Length ; i++)
+        {
+            Debug.Log(values[i]);
+            if(values[i].ToCharArray()[0] == '@')
+            {
+                values[i] = values[i].Remove(0,1);
+                card.info.Add(new Infomation(values[i],colorCnt));
+                values[i] = colorList[colorCnt] + values[i] + "</color>";
+                colorCnt++;
+            }
+            retVal += " " + values[i];
+        }
+        return retVal.Remove(0,1); // Concat 메서드를 사용하여 배열의 요소들을 하나로 합침
     }
 
     public void RunCard(Card card,List<TargetObject> targets)
