@@ -41,6 +41,9 @@ public class M_MapManager : NetworkBehaviour
     [Header("맵화면의 방 요소들의 부모 오브젝트")]
     public GameObject MapRooms;
 
+    [Header("맵 경로 표시할 라인랜더러들의 부모 오브젝트")]
+    public GameObject MapPathLines;
+
     [Header("그리드")]
     public GameObject hexagonGrid;
 
@@ -64,6 +67,12 @@ public class M_MapManager : NetworkBehaviour
 
     public const float rangeExistOtherHexagon = 0.5f; // 현재 위치한 육각형 주위에 다른 육각형이 존재하는지 확인용 중심점 간의 거리 차이 계산값
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
+
+    [Header("라인랜더러 프리팹")]
+    public LineRenderer lineRendererPrefab;
+
+    [Header("검색된 경로를 표시할 라인랜더러 목록")]
+    public List<GameObject> paths = new List<GameObject>();
 
     private static readonly Vector2Int[] offSets = {
         new Vector2Int(0, -1),
@@ -372,6 +381,12 @@ public class M_MapManager : NetworkBehaviour
             blackCurtain.gameObject.SetActive(false);
             blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
 
+            // 검색된 경로 모두 삭제
+            RemoveAllExistLineRenderer();
+
+            // 모든 MapPlayerDestination 비활성화
+            ChangeAllMapPlayerDestinationState(false);
+
             // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
             M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
             if(isServer)M_TurnManager.instance.GenerateBattleObject();
@@ -661,5 +676,68 @@ public class M_MapManager : NetworkBehaviour
         }
         path.Reverse();
         return path;
+    }
+
+    // 시작점과 끝지점을 연결하는 라인랜더러 오브젝트 생성
+    public LineRenderer CreatePathLineRenderer(Vector3 start, Vector3 end)
+    {
+        LineRenderer lineRenderer = Instantiate(lineRendererPrefab, MapPathLines.transform);
+        lineRenderer.positionCount = 2;
+        lineRenderer.startWidth = 0.05f;
+        lineRenderer.endWidth = 0.05f;
+        lineRenderer.numCornerVertices = 5;
+        lineRenderer.numCapVertices = 5;
+
+        lineRenderer.SetPosition(0, start);
+        lineRenderer.SetPosition(1, end);
+
+        return lineRenderer;
+    }
+
+    // netId에 해당하는 유저의 경로 랜더링
+    // (검색된 각각의 hexagonMapRoom와 멤버변수로 있는 이전노드의 hexagonMapRoom을 라인랜더러로 연결하는 방식)
+    public void RenderVisualizePath(List<HexagonMapRoom> findPath, uint netId)
+    {
+        foreach(HexagonMapRoom hexagonMapRoom in findPath){
+            if(hexagonMapRoom.previousNode != null){
+                LineRenderer lineRenderer = CreatePathLineRenderer(
+                    hexagonMapRoom.previousNode.transform.position,
+                    hexagonMapRoom.transform.position
+                );
+                lineRenderer.GetComponent<PathLineRenderer>().netId = netId;
+                paths.Add(lineRenderer.gameObject);
+            }
+        }
+    }
+
+    // netId에 해당하는 유저의 기존 랜더링된 경로 삭제
+    public void RemoveExistLineRenderer(uint netId)
+    {
+        for(int i=paths.Count-1; i>=0; i--){
+            if(paths[i].GetComponent<PathLineRenderer>().netId == netId){
+                Destroy(M_MapManager.instance.paths[i]);
+                paths.RemoveAt(i);
+            }
+        }
+    }
+
+    // 랜더링된 경로 모두 삭제
+    public void RemoveAllExistLineRenderer()
+    {
+        for(int i=paths.Count-1; i>=0; i--){
+            Destroy(M_MapManager.instance.paths[i]);
+            paths.RemoveAt(i);
+        }
+    }
+
+    // MapPlayerDestination 모두 상태 변경
+    private void ChangeAllMapPlayerDestinationState(bool isActive)
+    {
+        foreach(GamePlayer gamePlayer in M_TurnManager.instance.playerOrder)
+        {
+            GamePlayerMap gamePlayerMap = gamePlayer.GetComponent<GamePlayerMap>();
+            MapPlayerDestination mapPlayerDestination = gamePlayerMap.currentMapPlayerDestination;
+            mapPlayerDestination.gameObject.SetActive(isActive);
+        }
     }
 }
