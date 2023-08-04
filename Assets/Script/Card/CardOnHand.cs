@@ -223,7 +223,12 @@ public class CardOnHand : NetworkBehaviour
         else
             textCardName.text = card.baseCard.name;
         textCardInfo.text = card.baseCard.cardType.ToString();
+
         textCardDescription.text = card.baseCard.description;
+        textCardDescription.text += '\n';
+        textCardDescription.text += '\n';
+        foreach(CardCharacteristic character in card.baseCard.cardCharacteristics)
+            textCardDescription.text += " <b><color=yellow>" + character.ToString() + "</color></b>";
     }
 
 }

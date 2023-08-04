@@ -263,6 +263,7 @@ MonoBehaviour:
       isTargetable: 1
       cardType: 0
       cost: 0
+      info: []
       cardCharacteristics: 
     isEnhanced: 0
     costAddition: 0
@@ -620,7 +621,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1, y: -2.433}
+  m_AnchoredPosition: {x: 1, y: -2.416}
   m_SizeDelta: {x: 2, y: 1.27}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9074197765465436703
