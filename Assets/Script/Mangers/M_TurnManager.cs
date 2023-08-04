@@ -424,6 +424,7 @@ public class M_TurnManager : NetworkBehaviour
             GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
             NetworkServer.Spawn(clone);
             clone.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
+            clone.GetComponent<TargetObject>().player = playerOrder[i];
             clone.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
             clone.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
             clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;

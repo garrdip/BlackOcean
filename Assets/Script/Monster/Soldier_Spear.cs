@@ -20,6 +20,7 @@ public class Soldier_Spear : SpawnedMonster
                 break;
             case "방어" :
                 parent.GainDefense(nextAction.actionValue);
+                parent.clone.GainDefense(nextAction.actionValue);
                 DoAnimation("3Buff");
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
