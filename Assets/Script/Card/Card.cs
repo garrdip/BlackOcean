@@ -21,15 +21,18 @@ public class Card
 
     
     // 카드 클래스 깊은복사
-    public Card CardDeepCopy()
+    public Card CardDeepCopy(bool isEndBattle)
     {
         Card card = new Card();
         card.baseCard = baseCard;
         card.isEnhanced = isEnhanced;
         card.costAddition = costAddition;
         card.experience = experience;
-        foreach(CardCharacteristic cardChar in cardCharacteristics)
-            card.cardCharacteristics.Add(cardChar);
+        if(!isEndBattle) // 전투 종료 후 남길 특성 여기서 넣어줘야함
+        {
+            foreach(CardCharacteristic cardChar in cardCharacteristics)
+                card.cardCharacteristics.Add(cardChar);
+        }
         return card;
     }
 }

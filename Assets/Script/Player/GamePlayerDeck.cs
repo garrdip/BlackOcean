@@ -255,6 +255,10 @@ public class GamePlayerDeck : NetworkBehaviour
     [Command]
     public void CmdClearPrefareDeckAndTrashDeck()
     {
+        foreach(Card card in prefareDeck)
+            deck.Add(card.CardDeepCopy(true));
+        foreach(Card card in trashDeck)
+            deck.Add(card.CardDeepCopy(true));
         prefareDeck.Clear();
         trashDeck.Clear();
     }
@@ -264,9 +268,10 @@ public class GamePlayerDeck : NetworkBehaviour
     public void CmdAddPrefareDeckWithShuffle()
     {
         foreach(Card card in deck){
-            Card copyCard = card.CardDeepCopy();
+            Card copyCard = card.CardDeepCopy(false);
             prefareDeck.Add(copyCard);
         }
+        deck.Clear();
         M_CardManager.instance.Shuffle(prefareDeck);
     }
 
@@ -340,6 +345,7 @@ public class GamePlayerDeck : NetworkBehaviour
     public void CmdDestroyAllCardOnHandWithOutTrashDeck()
     {
         foreach(CardOnHand cardOnHand in cardOnHands){
+            deck.Add(cardOnHand.card.CardDeepCopy(true));
             NetworkServer.Destroy(cardOnHand.gameObject);
         }
         cardOnHands.Clear();
