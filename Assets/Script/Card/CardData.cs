@@ -67,7 +67,6 @@ public partial class CardData : SingletonD<CardData>
         string retVal = "";
         for(int i = 0 ;i < values.Length ; i++)
         {
-            Debug.Log(values[i]);
             if(values[i].ToCharArray()[0] == '@')
             {
                 values[i] = values[i].Remove(0,1);

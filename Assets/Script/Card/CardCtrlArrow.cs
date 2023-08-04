@@ -91,18 +91,16 @@ public class CardCtrlArrow : NetworkBehaviour
                 if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
                     TargetObject targetObjects = currentTarget.transform.parent.GetComponent<TargetObject>();
                     if(targetObjects.objectType != ProjectD.ObjectType.PLAYER || arrowOwnedCardOnHand.card.baseCard.cardType != ProjectD.CardType.ATTACK) // 카드 발동조건 추가해야할듯
-                        CmdEnQueueCardData(); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
+                        CmdEnQueueCardData(gamePlayerDeck, arrowOwnedCardOnHand,targetObjects, NetworkClient.connection.identity); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
                 }
             }
         }
     }
 
     [Command]
-    void CmdEnQueueCardData()
+    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, CardOnHand cardOnHand, TargetObject tar, NetworkIdentity conn)
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-        TargetObject targetObjects = currentTarget.transform.parent.GetComponent<TargetObject>();
-        gamePlayerDeck.serverCardPredictQueue.Enqueue((arrowOwnedCardOnHand.card, targetObjects, NetworkClient.connection.identity, this));
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((cardOnHand.card, tar, conn, this));
     }
 
     // 화살표 초기화(위치설정, visible상태 활성화, 베지어 곡선 조작점 설정, 화살표 활성화 상태 변수 변경)
