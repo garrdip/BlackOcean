@@ -21,9 +21,6 @@ public class MapPlayerDestination : NetworkBehaviour
     {
         transform.position = new Vector3(-100f, 0f, 0f);
         transform.SetParent(M_MapManager.instance.roommaps.transform);
-        if(isOwned){
-            NetworkClient.connection.identity.GetComponent<GamePlayerMap>().CmdSetOwnMapPlayerDestination(this); // 클라이언트별로 각자 소유의 MapPlayerDestination 참조값 설정
-        }
     }
 
     // 오브젝트 활성화 시 시퀀스 재시작
