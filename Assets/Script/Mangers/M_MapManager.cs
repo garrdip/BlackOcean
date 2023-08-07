@@ -69,7 +69,8 @@ public class M_MapManager : NetworkBehaviour
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
 
     [Header("라인랜더러 프리팹")]
-    public LineRenderer lineRendererPrefab;
+    public GameObject pathLineRendererPrefab;
+
 
     [Header("검색된 경로를 표시할 라인랜더러 목록")]
     public List<GameObject> paths = new List<GameObject>();
@@ -678,36 +679,48 @@ public class M_MapManager : NetworkBehaviour
         return path;
     }
 
-    // 시작점과 끝지점을 연결하는 라인랜더러 오브젝트 생성
-    public LineRenderer CreatePathLineRenderer(Vector3 start, Vector3 end)
-    {
-        LineRenderer lineRenderer = Instantiate(lineRendererPrefab, MapPathLines.transform);
-        lineRenderer.positionCount = 2;
-        lineRenderer.startWidth = 0.05f;
-        lineRenderer.endWidth = 0.05f;
-        lineRenderer.numCornerVertices = 5;
-        lineRenderer.numCapVertices = 5;
-
-        lineRenderer.SetPosition(0, start);
-        lineRenderer.SetPosition(1, end);
-
-        return lineRenderer;
-    }
-
     // netId에 해당하는 유저의 경로 랜더링
-    // (검색된 각각의 hexagonMapRoom와 멤버변수로 있는 이전노드의 hexagonMapRoom을 라인랜더러로 연결하는 방식)
     public void RenderVisualizePath(List<HexagonMapRoom> findPath, uint netId)
     {
-        foreach(HexagonMapRoom hexagonMapRoom in findPath){
-            if(hexagonMapRoom.previousNode != null){
-                LineRenderer lineRenderer = CreatePathLineRenderer(
-                    hexagonMapRoom.previousNode.transform.position,
-                    hexagonMapRoom.transform.position
-                );
-                lineRenderer.GetComponent<PathLineRenderer>().netId = netId;
-                paths.Add(lineRenderer.gameObject);
+        for(int i=0; i<findPath.Count; i++)
+        {
+            if(i+1 < findPath.Count){
+                GameObject pathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity);
+                pathLineRenderer.GetComponent<PathLineRenderer>().netId = netId;
+                pathLineRenderer.GetComponent<PathLineRenderer>().rotationZ = GetAngleFromCoordinate(findPath[i].coordinate, findPath[i+1].coordinate);
+
+                // 선의 방향과 길이 계산
+                Vector3 startPos = findPath[i].transform.position;
+                Vector3 endPos = findPath[i+1].transform.position;
+                Vector3 direction = endPos - startPos;
+
+                // 선의 중심 위치 계산
+                Vector3 centerPoint = (startPos + endPos) / 2f;
+
+                pathLineRenderer.transform.position = centerPoint;
+                paths.Add(pathLineRenderer);
             }
         }
+    }
+
+    // 고유좌표계를 이용해 시작점과 끝점 사이의 각도 뱐환
+    public float GetAngleFromCoordinate(Vector2Int start, Vector2Int end)
+    {
+        Vector2Int offset = end - start;
+        if (offset == new Vector2Int(0, -1))
+            return 90f;  // 북
+        else if (offset == new Vector2Int(-1, 0))
+            return -30f; // 11시
+        else if (offset == new Vector2Int(-1, 1))
+            return 30f;  // 7시
+        else if (offset == new Vector2Int(0, 1))
+            return -90f; // 남
+        else if (offset == new Vector2Int(1, 0))
+            return -30f; // 5시
+        else if (offset == new Vector2Int(1, -1))
+            return 30f;  // 1시
+        else
+            return 0f;
     }
 
     // netId에 해당하는 유저의 기존 랜더링된 경로 삭제

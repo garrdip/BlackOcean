@@ -56,6 +56,7 @@ public class HexagonMapRoom : NetworkBehaviour
 
         // 클릭한 육각형으로 맵플레이어 이동 및 현재 선택된 맵으로 저장
         NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdSelectHexagonMapRoom(this, NetworkClient.connection.identity);
+        
         // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시
         NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.connection.identity.netId);
     }
@@ -66,7 +67,6 @@ public class HexagonMapRoom : NetworkBehaviour
         if(isRegion && region != null){
             MapUI.instance.RegionPopUpShow(region);
         }
-        
     }
 
     private void OnMouseExit()
