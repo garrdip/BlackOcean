@@ -68,12 +68,11 @@ public class M_MapManager : NetworkBehaviour
     public const float rangeExistOtherHexagon = 0.5f; // 현재 위치한 육각형 주위에 다른 육각형이 존재하는지 확인용 중심점 간의 거리 차이 계산값
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
 
-    [Header("라인랜더러 프리팹")]
+    [Header("경로 표시용 스프라이트 라인랜더러 프리팹")]
     public GameObject pathLineRendererPrefab;
 
-
-    [Header("검색된 경로를 표시할 라인랜더러 목록")]
-    public List<GameObject> paths = new List<GameObject>();
+    [Header("검색된 경로를 표시할 스프라이트 라인랜더러 목록")]
+    public List<GameObject> pathLineRenderers = new List<GameObject>();
 
     private static readonly Vector2Int[] offSets = {
         new Vector2Int(0, -1),
@@ -590,15 +589,15 @@ public class M_MapManager : NetworkBehaviour
         // 검색 시작
         while(openSet.Count > 0)
         {
-            HexagonMapRoom currentNode = openSet[0];
-            for(int i = 1; i < openSet.Count; i++)
-            {
-                // openSet에서 fCost가 가장 낮은 노드를 선택. (fCost가 같은 경우, hCost가 낮은 노드를 선택)
-                if (openSet[i].FCost < currentNode.FCost || (openSet[i].FCost == currentNode.FCost && openSet[i].HCost < currentNode.HCost))
-                {
-                    currentNode = openSet[i];
+            // FCost와 HCost를 비교해서 오름차순 정렬
+            openSet.Sort((nodeA, nodeB) => {
+                int costComparison = nodeA.FCost.CompareTo(nodeB.FCost); // openSet에서 FCost가 가장 낮은 노드를 선택
+                if (costComparison == 0) { // FCost 같은 경우 HCost가 낮은 노드를 선택
+                    return nodeA.HCost.CompareTo(nodeB.HCost);
                 }
-            }
+                return costComparison;
+            });
+            HexagonMapRoom currentNode = openSet[0];
 
             openSet.Remove(currentNode); // openset에서 현재 노드 제거
             closedSet.Add(currentNode); // closedSet에 현재 노드 추가
@@ -645,7 +644,7 @@ public class M_MapManager : NetworkBehaviour
         for(int i = 0; i < 6; i++)
         {
             HexagonMapRoom neighbour = hexagonMapRooms.Find((room) => room.coordinate == currentHexagonRoom.coordinate + offSets[i]);
-            if(neighbour != null){
+            if(neighbour != null && neighbour.isComplete){ // 완료된 방의 경우에만 경로 탐색 가능
                 neighbours.Add(neighbour);
             }
         }
@@ -698,7 +697,7 @@ public class M_MapManager : NetworkBehaviour
                 Vector3 centerPoint = (startPos + endPos) / 2f;
 
                 pathLineRenderer.transform.position = centerPoint;
-                paths.Add(pathLineRenderer);
+                pathLineRenderers.Add(pathLineRenderer);
             }
         }
     }
@@ -726,10 +725,10 @@ public class M_MapManager : NetworkBehaviour
     // netId에 해당하는 유저의 기존 랜더링된 경로 삭제
     public void RemoveExistLineRenderer(uint netId)
     {
-        for(int i=paths.Count-1; i>=0; i--){
-            if(paths[i].GetComponent<PathLineRenderer>().netId == netId){
-                Destroy(M_MapManager.instance.paths[i]);
-                paths.RemoveAt(i);
+        for(int i=pathLineRenderers.Count-1; i>=0; i--){
+            if(pathLineRenderers[i].GetComponent<PathLineRenderer>().netId == netId){
+                Destroy(M_MapManager.instance.pathLineRenderers[i]);
+                pathLineRenderers.RemoveAt(i);
             }
         }
     }
@@ -737,9 +736,9 @@ public class M_MapManager : NetworkBehaviour
     // 랜더링된 경로 모두 삭제
     public void RemoveAllExistLineRenderer()
     {
-        for(int i=paths.Count-1; i>=0; i--){
-            Destroy(M_MapManager.instance.paths[i]);
-            paths.RemoveAt(i);
+        for(int i=pathLineRenderers.Count-1; i>=0; i--){
+            Destroy(M_MapManager.instance.pathLineRenderers[i]);
+            pathLineRenderers.RemoveAt(i);
         }
     }
 
