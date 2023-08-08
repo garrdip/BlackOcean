@@ -154,13 +154,14 @@ public class M_TurnManager : NetworkBehaviour
 
     IEnumerator WaitCardQueue()
     {
+        WaitForSeconds loopWait = new WaitForSeconds(0.01f);
         while(true)
         {
             if(!isCardQueueOperating && cardTargetPairQueue.Count == 0)
             {
                 break;
             }
-            yield return new WaitForSeconds(0.01f);
+            yield return loopWait;
         }
         if(phase == BattleTurn.PLAYER_ACTIVE_DONE) // 아무때나 동작하지 않음 (광클방지)
             phase = BattleTurn.PLAYER_END;
@@ -311,6 +312,7 @@ public class M_TurnManager : NetworkBehaviour
     }
     IEnumerator MonsterActionSeuqence()
     {
+        WaitForSeconds loopWait = new WaitForSeconds(0.01f);
         foreach(TargetObject monster in spawnedMonsterList)
         {
             monster.monster.isActive = true;
@@ -318,7 +320,7 @@ public class M_TurnManager : NetworkBehaviour
             while(true)
             {
                 if(monster.monster.isActive == false) break;
-                yield return new WaitForSeconds(0.01f);
+                yield return loopWait;
             }
         }
         phase = BattleTurn.BATTLE_STANDBY;
