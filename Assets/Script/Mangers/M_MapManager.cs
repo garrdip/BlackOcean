@@ -249,6 +249,7 @@ public class M_MapManager : NetworkBehaviour
     [Server]
     public void GenerateColorRegion()
     {
+        int totalTry = 0;
         int numberOfRegion = Random.Range(6,9); // 총 구역의 수
         for(int i = 0 ;i < numberOfRegion ; i ++)
         {
@@ -263,20 +264,28 @@ public class M_MapManager : NetworkBehaviour
             // 거리와 각도를 이용하여 좌표를 계산
             Vector3 centerPos = new Vector3(0,0,0);
             do{
+                if(totalTry >= 100){ // 새로운 지역 생성 불가시 생성 종료
+                    regions.Remove(newRegion);
+                    GenerateHexagonRoomOnRegion();
+                    return;
+                }
                 int distance = Random.Range(7,11);
                 float angle = Random.Range(0,2*Mathf.PI);
                 centerPos.x = (int)(distance * Mathf.Cos(angle));
                 centerPos.y = (int)(distance * Mathf.Sin(angle));
+                totalTry++;
             }while(regions.Find(x => x.tiles.Exists(tile => tile.coordinate == centerPos)) != null);
             newRegion.tiles.Add(new Tile(centerPos));
-
+            totalTry = 0;
             //각각의 타일의 위치를 정의하는 곳.
             for(int j = 0 ; j < numberOfTiles - 1 ; j++)
             {
                 Vector3 newPos = MoveRandomDirection(centerPos); //랜덤 좌표 선택
                 if(regions.Find(x => x.tiles.Exists(tile => tile.coordinate == newPos)) != null || newPos == new Vector3(0,0,0))
                 {
+                    if(totalTry >= 6)break; // 6면이 모두 막혔을경우 종료 (작은 지역으로 생성됨 TBD)
                     j--;
+                    totalTry++;
                     continue;
                 }
                 newRegion.tiles.Add(new Tile(newPos));
