@@ -93,7 +93,7 @@ public class GamePlayerMap : NetworkBehaviour
     public void RpcVisualizePath(List<HexagonMapRoom> findPath, uint netId)
     {   
         M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
-        M_MapManager.instance.RenderVisualizePath(findPath, netId); // 새 경로 랜더링
+        M_MapManager.instance.RenderVisualizePath(findPath, netId, currentMapPlayerDestination); // 새 경로 랜더링
         currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
     }
 

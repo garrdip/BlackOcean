@@ -679,26 +679,29 @@ public class M_MapManager : NetworkBehaviour
     }
 
     // netId에 해당하는 유저의 경로 랜더링
-    public void RenderVisualizePath(List<HexagonMapRoom> findPath, uint netId)
+    public void RenderVisualizePath(List<HexagonMapRoom> findPath, uint netId, MapPlayerDestination currentMapPlayerDestination)
     {
-        for(int i=0; i<findPath.Count; i++)
+        for(int i=0; i<findPath.Count-1; i++)
         {
-            if(i+1 < findPath.Count){
-                GameObject pathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity);
-                pathLineRenderer.GetComponent<PathLineRenderer>().netId = netId;
-                pathLineRenderer.GetComponent<PathLineRenderer>().rotationZ = GetAngleFromCoordinate(findPath[i].coordinate, findPath[i+1].coordinate);
+            GameObject pathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity);
+            PathLineRenderer pathLineRendererComponent = pathLineRenderer.GetComponent<PathLineRenderer>();
+            SpriteRenderer spriteRenderer = pathLineRenderer.GetComponent<SpriteRenderer>();
 
-                // 선의 방향과 길이 계산
-                Vector3 startPos = findPath[i].transform.position;
-                Vector3 endPos = findPath[i+1].transform.position;
-                Vector3 direction = endPos - startPos;
+            spriteRenderer.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color; // 경로표시 색상은 MapPlayerDestination과 동일한 색으로 설정
 
-                // 선의 중심 위치 계산
-                Vector3 centerPoint = (startPos + endPos) / 2f;
+            pathLineRendererComponent.netId = netId;
+            pathLineRendererComponent.rotationZ = GetAngleFromCoordinate(findPath[i].coordinate, findPath[i + 1].coordinate);
 
-                pathLineRenderer.transform.position = centerPoint;
-                pathLineRenderers.Add(pathLineRenderer);
-            }
+            // 선의 방향과 길이 계산
+            Vector3 startPos = findPath[i].transform.position;
+            Vector3 endPos = findPath[i + 1].transform.position;
+            Vector3 direction = endPos - startPos;
+
+            // 선의 중심 위치 계산
+            Vector3 centerPoint = (startPos + endPos) / 2f;
+
+            pathLineRenderer.transform.position = centerPoint;
+            pathLineRenderers.Add(pathLineRenderer);
         }
     }
 
