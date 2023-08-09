@@ -152,8 +152,6 @@ public class GamePlayerDeck : NetworkBehaviour
             이후 : 모든 플레이어 및 몬스터
         */
         WaitForSeconds loopTime = new WaitForSeconds(0.01f);
-        List<TargetObject> tar = new List<TargetObject>();
-        List<TargetObject> targetObjects = new List<TargetObject>();
 
         Card card;
         TargetObject targetObject;
@@ -171,14 +169,16 @@ public class GamePlayerDeck : NetworkBehaviour
                 continue;
             if(card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
                 continue;
-
+            
+            List<TargetObject> tar = new List<TargetObject>();
             tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
             if(card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
             tar.AddRange(M_TurnManager.instance.GetClonePlayerObjects());
             tar.AddRange(M_TurnManager.instance.GetCloneMonsterObjects());
             if(card.baseCard.isTargetable)cardCtrlArrow.RpcAcceptCardUse(conn); // TargetAble이 유효한 타겟이었을 경우 화살표 제거
             M_TurnManager.instance.ProcessCardPredict(card,tar);
-
+            
+            List<TargetObject> targetObjects = new List<TargetObject>();
             targetObjects.Add(M_TurnManager.instance.GetPlayer(conn)); // Index 0 
             if(card.baseCard.isTargetable)targetObjects.Add(targetObject);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
             targetObjects.AddRange(M_TurnManager.instance.GetPlayerObjects());

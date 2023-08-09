@@ -78,8 +78,11 @@ public class GamePlayerMap : NetworkBehaviour
         
         // 경로검색
         List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
-        // 경로표시
-        RpcVisualizePath(findPath, netId);
+        if(findPath.Count > 0){
+            RpcVisualizePath(findPath, netId); // 경로표시
+        }else{
+            RpcHidePath(netId); // 경로제거
+        }
         
         // findPath 리스트의 카운트 = 거리값
         currentMapPlayerDestination.distanceFromCurrentCoordinate = findPath.Count;
@@ -91,6 +94,15 @@ public class GamePlayerMap : NetworkBehaviour
     {   
         M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
         M_MapManager.instance.RenderVisualizePath(findPath, netId); // 새 경로 랜더링
+        currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
+    }
+
+    // 검색된 경로를 표시하는 라인랜더러 및 카운트 마크 제거
+    [ClientRpc]
+    public void RpcHidePath(uint netId)
+    {    
+        M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
+        currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(false);
     }
 
     // 맵플레이어가 선택한 MapRoom값을 Dictionary<NetworkIdentity, MapRoom> 형태로 저장

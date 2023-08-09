@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
 using TMPro;
@@ -13,6 +14,7 @@ public class MapPlayerDestination : NetworkBehaviour
     [SyncVar(hook = nameof(OnChangeDistanceFromCurrentCoordinate))]
     public int distanceFromCurrentCoordinate;
 
+    public Image imageDistanceCount;
     public TextMeshProUGUI textDistanceCount;
     public SpriteRenderer spriteRenderer;
     public Sequence sequence;

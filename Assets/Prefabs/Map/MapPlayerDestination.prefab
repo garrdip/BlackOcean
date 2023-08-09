@@ -118,7 +118,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1275468697914494991
 RectTransform:
   m_ObjectHideFlags: 0
@@ -299,6 +299,7 @@ MonoBehaviour:
   syncInterval: 0.1
   gamePlayer: {fileID: 0}
   distanceFromCurrentCoordinate: 0
+  imageDistanceCount: {fileID: 3334311889464501648}
   textDistanceCount: {fileID: 7426501215211149537}
   spriteRenderer: {fileID: 4813194014757939244}
 --- !u!1 &4989599541509249254
