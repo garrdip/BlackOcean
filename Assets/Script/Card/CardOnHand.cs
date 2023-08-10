@@ -49,8 +49,8 @@ public class CardOnHand : NetworkBehaviour
     public Canvas cardOnHandCanvas;
     public TextMeshProUGUI textCardName;
     public TextMeshProUGUI textCardInfo;
-
     public TextMeshProUGUI textCardDescription;
+    public TextMeshProUGUI textCardCost;
 
 
     void Start()
@@ -229,6 +229,8 @@ public class CardOnHand : NetworkBehaviour
         textCardDescription.text += '\n';
         foreach(CardCharacteristic character in card.baseCard.cardCharacteristics)
             textCardDescription.text += " <b><color=yellow>" + character.ToString() + "</color></b>";
+        
+        textCardCost.text = (card.baseCard.cost + card.costAddition).ToString();
     }
 
 }

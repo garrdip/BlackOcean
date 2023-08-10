@@ -29,6 +29,4 @@ public partial class GamePlayerDeck : NetworkBehaviour
             ichiText.text = currentIchi.ToString() + " / " + maxIchi.ToString();
     }
 
-
-
 }
