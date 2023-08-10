@@ -2698,6 +2698,7 @@ MonoBehaviour:
   - {fileID: 589778328}
   - {fileID: 424807024}
   - {fileID: 1129489426}
+  ichiText: {fileID: 1903600593}
 --- !u!1 &791626058
 GameObject:
   m_ObjectHideFlags: 0
@@ -6632,7 +6633,7 @@ MonoBehaviour:
     _serializedList: []
   hexagonMapRooms: []
   pathLineRendererPrefab: {fileID: 2595531754514205303, guid: 486f7d039ff94024db23ca542324cd1e, type: 3}
-  paths: []
+  pathLineRenderers: []
   startAt: {fileID: 0}
   endAt: {fileID: 0}
 --- !u!4 &1913121864

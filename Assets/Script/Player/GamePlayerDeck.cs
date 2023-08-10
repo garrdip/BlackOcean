@@ -5,7 +5,7 @@ using Mirror;
 using ProjectD;
 
 
-public class GamePlayerDeck : NetworkBehaviour
+public partial class GamePlayerDeck : NetworkBehaviour
 {
 
     [SyncVar (hook = nameof(OnChangeCurrentDeckCount))]
@@ -52,6 +52,7 @@ public class GamePlayerDeck : NetworkBehaviour
     {
         CmdSpawnCardPocket(); // 카드 포켓 생성 서버 요청
         CmdSpawnArrowEmitter(); // 화살표 생성 서버 요청
+        InitIchi();
     }
 
     // choosedCardOnHands 배열에 선택한 카드를 추가
@@ -152,11 +153,11 @@ public class GamePlayerDeck : NetworkBehaviour
             이후 : 모든 플레이어 및 몬스터
         */
         WaitForSeconds loopTime = new WaitForSeconds(0.01f);
-
         Card card;
         TargetObject targetObject;
         NetworkIdentity conn;
         CardCtrlArrow cardCtrlArrow;
+
         while(true)
         {
             yield return loopTime; // 0.01s
@@ -164,6 +165,11 @@ public class GamePlayerDeck : NetworkBehaviour
             if(serverCardPredictQueue.Count == 0) continue; //카드큐가 비어있을경우 스킵 
             
             (card,targetObject,conn,cardCtrlArrow) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
+
+            if((card.baseCard.cost + card.costAddition) > currentIchi) // 카드 코스트 계산 하는곳
+                continue;
+                
+            currentIchi -= card.baseCard.cost + card.costAddition;
 
             if(targetObject == null) // 타겟이 널일경우 후속조치 하지 않음 (카드 사용이 안됨)
                 continue;

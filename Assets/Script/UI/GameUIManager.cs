@@ -32,7 +32,8 @@ public class GameUIManager : SingletonD<GameUIManager>
     [Header("플레이어 리스트(플레이어 정보 및 턴 정보)")]
     public List<GameObject> playerOrderList;
 
-
+    [Header("플레이어 코스트 (현재이치/최대이치) 디스플레이")]
+    public TextMeshProUGUI ichiText;
 
     // 턴 종료
     public void HandleEndTurn()

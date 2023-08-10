@@ -23,9 +23,6 @@ public class M_TurnManager : NetworkBehaviour
     // 각 클라이언트에서 참조할 현재 참가한 플레이어들의 타겟오브젝트 목록
     public readonly SyncList<TargetObject> spawnedPlayerSyncList = new SyncList<TargetObject>();
 
-    [SyncVar]
-    public GamePlayer currentPlayer;
-
     public GameObject orderUI;
 
     public bool isOrderSelect = false;
@@ -353,6 +350,9 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void PlayerCardDraw()
     {
+        foreach(GamePlayer player in playerOrder)
+            player.GetComponent<GamePlayerDeck>().currentIchi = player.GetComponent<GamePlayerDeck>().maxIchi; 
+            
         EachPlayerCardDraw();
         phase = BattleTurn.PLAYER_ACTIVE;
     }
