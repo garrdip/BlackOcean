@@ -27,10 +27,10 @@ public class M_MapManager : NetworkBehaviour
     public int mapSight; // 맵 시야 변수값
 
     [SyncVar (hook = nameof(OnChangedTotalActionCost))]
-    public int totaActionCost; // 맵에서 소모되는 행동비용 총량
+    public int totaActionCost; // 맵에서 소모되는 행동 비용 총량
     
     [SyncVar (hook = nameof(OnChangedActionCost))]
-    public int actionCost; // 행동시 소모되는 행동비용
+    public int actionCost; // 행동시 소모되는 행동 비용
     
     [Header("메인 카메라")]
     public Camera mainCam;
@@ -407,19 +407,18 @@ public class M_MapManager : NetworkBehaviour
     }
 
     // 행동 비용 감소
-    // 1. 맵에서 방 이동투표 후 최종 이동시 비용 소모
+    // 1. 맵에서 방 이동투표 후 최종 이동 시 비용 소모 : 완료된 방들 사이의 이동은 거리만큼이 소모 비용(cost 인자값)
     // 2. 맵에서 방 클리어 후 비용 소모
     [Server]
     public void DecreaseTotalActionCost(int cost = 0)
     {
-        if(actionCost > totaActionCost){
-            Debug.Log("행동 비용이 부족합니다."); 
-            totaActionCost = 0;
-        }
-        if(cost > 0){
-            totaActionCost = Mathf.Max(0, totaActionCost - cost); // 비용값이 설정된 경우 그 비용값 만큼 감소
-        }else{
-            totaActionCost = Mathf.Max(0, totaActionCost - actionCost); // 기본 행동비용값 만큼 감소
+        if(totaActionCost > 0){
+            int reduceActionCost = (cost > 0) ? cost : actionCost; // 비용값이 설정된 경우 그 비용값 만큼 감소, 아닐 경우 기본 비용값 만큼 감소
+            if(reduceActionCost > totaActionCost){
+                Debug.Log("행동 비용이 부족합니다.");
+            }else{
+                totaActionCost = Mathf.Max(0, totaActionCost - reduceActionCost);
+            }
         }
     }
 
@@ -476,10 +475,10 @@ public class M_MapManager : NetworkBehaviour
     // 행동비용 총량 변경 이벤트 수신
     public void OnChangedTotalActionCost(int oldValue, int newValue)
     {
-        Debug.Log($"코스트값이 {oldValue} -> {newValue} 감소했습니다.");
+        Debug.Log($"행동 비용이 {oldValue} -> {newValue} 감소했습니다.");
         if(isServer){
             if(totaActionCost == 0 && mapBoss == null){
-                Debug.Log("코스트가 0이되어 보스 몬스터가 맵에 출현합니다.");
+                Debug.Log("행동 비용이 0이되어 보스 몬스터가 맵에 출현합니다.");
                 GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
             }
         }
