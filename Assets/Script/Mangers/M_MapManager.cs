@@ -477,7 +477,7 @@ public class M_MapManager : NetworkBehaviour
     {
         Debug.Log($"행동 비용이 {oldValue} -> {newValue} 감소했습니다.");
         if(isServer){
-            if(totaActionCost == 0 && mapBoss == null){
+            if(newValue == 0 && mapBoss == null){
                 Debug.Log("행동 비용이 0이되어 보스 몬스터가 맵에 출현합니다.");
                 GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
             }
