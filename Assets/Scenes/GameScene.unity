@@ -6617,6 +6617,7 @@ MonoBehaviour:
   syncInterval: 0.1
   currentRoom: {fileID: 0}
   turnsLeft: 10
+  mapBoss: {fileID: 0}
   mapSight: 1
   totaActionCost: 0
   actionCost: 0
@@ -7715,7 +7716,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4770237055216254665, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
 --- !u!1 &2118407961 stripped
 GameObject:
@@ -8180,7 +8182,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   players: []
-  currentPlayer: {fileID: 0}
   orderUI: {fileID: 2118407965}
   isOrderSelect: 0
   isMyTurn: 0
