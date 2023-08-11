@@ -221,12 +221,12 @@ public class CardOnHand : NetworkBehaviour
         if(card.experience >= card.baseCard.maxExperience)
         {
             textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").name;
-            textCardDescription.text = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").description;
+            textCardDescription.text = GetAdditionalValueFromDescription(CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").description);
         }
         else
         {
             textCardName.text = card.baseCard.name;
-            textCardDescription.text = card.baseCard.description;
+            textCardDescription.text = GetAdditionalValueFromDescription(card.baseCard.description);
         }
         textCardInfo.text = card.baseCard.cardType.ToString();
         textCardDescription.text += '\n';
@@ -235,6 +235,35 @@ public class CardOnHand : NetworkBehaviour
             textCardDescription.text += " <b><color=yellow>" + character.ToString() + "</color></b>";
         
         textCardCost.text = (card.baseCard.cost + card.costAddition).ToString();
+    }
+
+    private string GetAdditionalValueFromDescription(string str)
+    {
+        TargetObject tar = null;
+        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+        {
+            if(target.player == NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>())
+                tar = target;
+        }
+        string[] splitString = str.Trim().Split(" ");
+        for(int i = 0 ;i < splitString.Length ; i++)
+        {
+            if(splitString[i].ToCharArray()[0] == '!')
+            {
+                splitString[i] = splitString[i].Remove(0,1);
+                Debug.Log(splitString[i]);
+                int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + tar.GetBuffValue(BuffType.FLOWER);
+                splitString[i] = "<color=green>" + result.ToString() + "</color>";
+            }
+            if(splitString[i].ToCharArray()[0] == '#')
+            {
+                splitString[i] = splitString[i].Remove(0,1);
+                int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_DEFENSE);
+                splitString[i] = "<color=green>" + result.ToString() + "</color>";
+            }
+        }
+        
+        return string.Join(" ",splitString);
     }
 
 }

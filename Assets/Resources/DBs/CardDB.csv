@@ -1,6 +1,6 @@
 CardNo,Character,Name,Description,TYPE,Cost,Targetable,ValidTarget,MaxExp,Characteristic,,,
-H0,HONGDANHYANG,철의 손톱,피해 !6을 줍니다.,ATTACK,1,Y,ENEMY,1,,,,
-H0_E,HONGDANHYANG,강화 철의 손톱,피해 !10을 줍니다.,ATTACK,1,Y,ENEMY,5,,,,
+H0,HONGDANHYANG,철의 손톱,피해 !6 을 줍니다.,ATTACK,1,Y,ENEMY,1,,,,
+H0_E,HONGDANHYANG,강화 철의 손톱,피해 !10 을 줍니다.,ATTACK,1,Y,ENEMY,5,,,,
 H1,HONGDANHYANG,철의 이빨,피해 !10 을 줍니다. 그 후 자신에게 @붕괴 1 을 부여합니다.,ATTACK,0,Y,ENEMY,5,,,,
 H1_E,HONGDANHYANG,강화 철의 이빨,피해 !10 을 줍니다. 그 후 자신에게 @붕괴 1 을 부여합니다.,ATTACK,0,Y,ENEMY,5,,,,
 H2,HONGDANHYANG,막아라,방어 #5 를 얻습니다.,STRATEGY,1,N,NONE,5,,,,
