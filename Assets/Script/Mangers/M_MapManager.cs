@@ -21,13 +21,16 @@ public class M_MapManager : NetworkBehaviour
     HexagonMapRoom moveToRoomDestination;
 
     [SyncVar]
-    public int mapSight; // 맵 시야 변수값
+    public MapBoss mapBoss; // 보스
 
     [SyncVar]
+    public int mapSight; // 맵 시야 변수값
+
+    [SyncVar (hook = nameof(OnChangedTotalActionCost))]
     public int totaActionCost; // 맵에서 소모되는 행동비용 총량
     
-    [SyncVar]
-    public int actionCost; // 행동시 소모되는 비용
+    [SyncVar (hook = nameof(OnChangedActionCost))]
+    public int actionCost; // 행동시 소모되는 행동비용
     
     [Header("메인 카메라")]
     public Camera mainCam;
@@ -99,11 +102,12 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
+    // 서버에 생성 시 SyncVar 값들 초기화
     public override void OnStartServer()
     {
-        mapSight = 1;
-        actionCost = 1;
-        totaActionCost = 30;
+        mapSight = 1; // 맵시야
+        actionCost = 1; // 행동 비용
+        totaActionCost = 30; // 행동 비용 총량
     }
 
     // ------------------------------------------------------------ Server Method -------------------------------------------------------------- //
@@ -117,9 +121,10 @@ public class M_MapManager : NetworkBehaviour
     [Server]    
     public void MoveToRoom()
     {
-        // 현재 위치 표시 여기서 해야함
-        currentRoom = moveToRoomDestination;
-        GenerateHexagonRoom(currentRoom);
+        int actionCost = FindPath(currentRoom, moveToRoomDestination).Count; // 현재 위치와 목적지 간 거리차 계산
+        currentRoom = moveToRoomDestination; // 위치 이동
+        DecreaseTotalActionCost(actionCost); // 거리차 만큼 행동 비용 감소
+        GenerateHexagonRoom(currentRoom); // 주변 방 생성
         return;
     }
 
@@ -171,6 +176,10 @@ public class M_MapManager : NetworkBehaviour
         centerRoom.GetComponent<HexagonMapRoom>().coordinate = new Vector2Int(0, 0);
         centerRoom.GetComponent<HexagonMapRoom>().position = Vector3.zero;
         centerRoom.GetComponent<HexagonMapRoom>().isActive = true;
+
+        // 시작지점을 현재방으로 설정
+        currentRoom = centerRoom.GetComponent<HexagonMapRoom>();
+
         // 육각형 위치 리스트에 추가
         hexagonMapRooms.Add(centerRoom.GetComponent<HexagonMapRoom>());
         
@@ -366,12 +375,51 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
+    // 맵의 랜덤 위치에 보스 생성
+    [Server]
+    public void GenreateMapBoss()
+    {
+        Vector3 centerPos = Vector3.zero;
+        int distance = Random.Range(10, 12);
+        float angle = Random.Range(0, 2 * Mathf.PI);
+        centerPos.x = (int)(distance * Mathf.Cos(angle));
+        centerPos.y = (int)(distance * Mathf.Sin(angle));
+        Vector3 position = GetPosition((int)centerPos.x, (int)centerPos.y);
+
+        var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            GameObject mapBossObject = Instantiate(
+                networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapBoss"),
+                position,
+                Quaternion.identity
+            );
+        NetworkServer.Spawn(mapBossObject);
+
+        mapBoss = mapBossObject.GetComponent<MapBoss>(); // 서버에 참조값 생성
+    }
+
     // 방 완료상태로 변경
     [Server]
     public void SetRoomStateComplete()
     {
         if(currentRoom != null){
             currentRoom.isComplete = true;
+        }
+    }
+
+    // 행동 비용 감소
+    // 1. 맵에서 방 이동투표 후 최종 이동시 비용 소모
+    // 2. 맵에서 방 클리어 후 비용 소모
+    [Server]
+    public void DecreaseTotalActionCost(int cost = 0)
+    {
+        if(actionCost > totaActionCost){
+            Debug.Log("행동 비용이 부족합니다."); 
+            totaActionCost = 0;
+        }
+        if(cost > 0){
+            totaActionCost = Mathf.Max(0, totaActionCost - cost); // 비용값이 설정된 경우 그 비용값 만큼 감소
+        }else{
+            totaActionCost = Mathf.Max(0, totaActionCost - actionCost); // 기본 행동비용값 만큼 감소
         }
     }
 
@@ -421,6 +469,26 @@ public class M_MapManager : NetworkBehaviour
         Debug.Log("Color Region Start!" + regions.Count);
         foreach(Region region in regions)
             SetRegionWithColor(region);
+    }
+
+    // ------------------------------------------------------------ Syncvar Hook --------------------------------------------------------------- //
+
+    // 행동비용 총량 변경 이벤트 수신
+    public void OnChangedTotalActionCost(int oldValue, int newValue)
+    {
+        Debug.Log($"코스트값이 {oldValue} -> {newValue} 감소했습니다.");
+        if(isServer){
+            if(totaActionCost == 0 && mapBoss == null){
+                Debug.Log("코스트가 0이되어 보스 몬스터가 맵에 출현합니다.");
+                GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
+            }
+        }
+    }
+
+    // 행동비용 변경 이벤트 수신
+    public void OnChangedActionCost(int oldValue, int newValue)
+    {
+        // TBD
     }
 
     // ------------------------------------------------------------ Normal Method -------------------------------------------------------------- //

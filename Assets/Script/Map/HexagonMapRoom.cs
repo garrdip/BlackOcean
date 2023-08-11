@@ -50,6 +50,8 @@ public class HexagonMapRoom : NetworkBehaviour
 
     private void OnMouseDown()
     {
+        // TODO : 보스 생성 이후에는 클리어 유무 상관없이 모든 맵은 1칸씩만 이동가능
+
         if(isRegion && !isActive) return; // 거점지역인 경우 아직 비활성화 상태면 이동 불가
 
         // if(M_MapManager.instance.GetDistanceFromCurrentCoordinate(this.coordinate) > M_MapManager.instance.mapSight) return; // 맵 시야값 이상은 이동 불가

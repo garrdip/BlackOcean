@@ -585,6 +585,7 @@ public class M_TurnManager : NetworkBehaviour
         if(isServer){
             ClearTargetObject(); // 타겟오브젝트 정리
             M_MapManager.instance.SetRoomStateComplete(); // 방 완료상태로 변경
+            M_MapManager.instance.DecreaseTotalActionCost(); // 행동비용 감소
         }
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
             // 카메라 위치 리셋
