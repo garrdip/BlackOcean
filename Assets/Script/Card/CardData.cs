@@ -83,7 +83,16 @@ public partial class CardData : SingletonD<CardData>
 
     public void RunCard(Card card,List<TargetObject> targets)
     {
-        StartCoroutine(CardMethods[card.baseCard.cardNumber](card,targets));
+        if(card.experience >= card.baseCard.maxExperience)
+        {
+            StartCoroutine(CardMethods[card.baseCard.cardNumber+"_E"](card,targets));
+            if(!targets[0].isCloneData)card.experience = 0;
+        }
+        else
+        {
+            StartCoroutine(CardMethods[card.baseCard.cardNumber](card,targets));
+            if(!targets[0].isCloneData)card.experience++;
+        }
     }
 
     public bool CheckCardCharacteristic(Card card, CardCharacteristic character)

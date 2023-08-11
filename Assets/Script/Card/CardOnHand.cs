@@ -218,13 +218,17 @@ public class CardOnHand : NetworkBehaviour
     // 카드 정보 뷰 업데이트
     public void OnChangeCardData(Card oldCard, Card newCard)
     {
-        if(card.experience >= 1)
-            textCardName.text = "강화 " + card.baseCard.name;
+        if(card.experience >= card.baseCard.maxExperience)
+        {
+            textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").name;
+            textCardDescription.text = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").description;
+        }
         else
+        {
             textCardName.text = card.baseCard.name;
+            textCardDescription.text = card.baseCard.description;
+        }
         textCardInfo.text = card.baseCard.cardType.ToString();
-
-        textCardDescription.text = card.baseCard.description;
         textCardDescription.text += '\n';
         textCardDescription.text += '\n';
         foreach(CardCharacteristic character in card.baseCard.cardCharacteristics)
