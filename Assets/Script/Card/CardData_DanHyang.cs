@@ -60,8 +60,8 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator H4(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
-        if(tar[1].GetComponentInChildren<GamePlayerDeck>().maxIchi < tar[1].GetComponentInChildren<GamePlayerDeck>().limitiChi)
-            tar[1].GetComponentInChildren<GamePlayerDeck>().maxIchi += 1;
+        if(tar[1].player.GetComponentInChildren<GamePlayerDeck>().maxIchi < tar[1].player.GetComponentInChildren<GamePlayerDeck>().limitiChi)
+            tar[1].player.GetComponentInChildren<GamePlayerDeck>().maxIchi += 1;
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator H5(Card card,List<TargetObject> tar)

@@ -166,13 +166,33 @@ public partial class GamePlayerDeck : NetworkBehaviour
             
             (card,targetObject,conn,cardCtrlArrow) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
 
-            if((card.baseCard.cost + card.costAddition) > currentIchi) // 카드 코스트 계산 하는곳
-                continue;
-                
-            currentIchi -= card.baseCard.cost + card.costAddition;
-
             if(targetObject == null) // 타겟이 널일경우 후속조치 하지 않음 (카드 사용이 안됨)
                 continue;
+
+            if(card.baseCard.isTargetable)
+            {
+                switch(card.baseCard.validTarget)
+                {
+                    case ValidTarget.ENEMY :
+                        if(targetObject.objectType != ObjectType.ENEMY) continue;
+                        break;
+                    case ValidTarget.MEMBER :
+                        if(targetObject.objectType == ObjectType.ENEMY)
+                            continue;
+                        if(targetObject.player == GetComponent<GamePlayer>())
+                            continue;
+                        break;
+                    case ValidTarget.TEAM :
+                        if(targetObject.objectType != ObjectType.PLAYER)
+                            continue;
+                        break;
+                }
+            }
+
+            if((card.baseCard.cost + card.costAddition) > currentIchi) // 카드 코스트 계산 하는곳
+                continue;
+            currentIchi -= card.baseCard.cost + card.costAddition;
+
             if(card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
                 continue;
             

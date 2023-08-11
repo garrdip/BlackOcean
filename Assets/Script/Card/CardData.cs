@@ -48,7 +48,9 @@ public partial class CardData : SingletonD<CardData>
                 card.cardType = (CardType)Enum.Parse<CardType>(values[4]);
                 card.description = GetCardDescription(values[3],card);
                 card.cost = int.Parse(values[5]);
-                for(int i = 7 ;i < values.Length ; i++)
+                card.validTarget = (ValidTarget)Enum.Parse<ValidTarget>(values[7]);
+                card.maxExperience = int.Parse(values[8]);
+                for(int i = 9 ;i < values.Length ; i++)
                 {
                     if(values[i] == "")break;
                     card.cardCharacteristics.Add((CardCharacteristic)Enum.Parse<CardCharacteristic>(values[i]));

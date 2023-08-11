@@ -13,6 +13,8 @@ public class CardBase
     public bool isTargetable = true;
     public CardType cardType;
     public int cost;
+    public int maxExperience;
+    public ValidTarget validTarget;
     public List<Infomation> info = new List<Infomation>();
     public List<CardCharacteristic> cardCharacteristics;
 

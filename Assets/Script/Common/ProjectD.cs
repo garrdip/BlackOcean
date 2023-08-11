@@ -19,6 +19,7 @@ namespace ProjectD
     public enum ItemEffectTime { STARTBATTLE, CHANGEPOSITION, DEAD, ENDBATTLE, KILLMONSTER, ALWAYS, MOVETOROOM, STARTTURN, GETCARD, HOOKHP, ONCEGET, GETICHI }
     public enum ItemType {ARTIFACT, LEGACY}
     public enum ItemGrade {NORMAL, RARE, UNIQUE, LEGEND}
+    public enum ValidTarget { NONE, ENEMY, MEMBER, TEAM }
 
     public enum MoveDirection {FORWARD, BACKWARD}
     public static class StringUtils{

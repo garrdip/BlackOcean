@@ -87,8 +87,7 @@ public class CardCtrlArrow : NetworkBehaviour
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                 if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
                     TargetObject targetObjects = currentTarget.transform.parent.GetComponent<TargetObject>();
-                    if( targetObjects.objectType != ProjectD.ObjectType.PLAYER || arrowOwnedCardOnHand.card.baseCard.cardType != ProjectD.CardType.ATTACK ) // 카드 발동조건 추가해야할듯
-                        CmdEnQueueCardData(gamePlayerDeck, arrowOwnedCardOnHand,targetObjects, NetworkClient.connection.identity); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
+                    CmdEnQueueCardData(gamePlayerDeck, arrowOwnedCardOnHand,targetObjects, NetworkClient.connection.identity); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
                 }
             }
         }
