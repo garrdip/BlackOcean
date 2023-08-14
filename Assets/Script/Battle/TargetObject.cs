@@ -101,6 +101,7 @@ public class TargetObject : NetworkBehaviour
                 anim.state.Event += OnAnimationEvent;
                 anim.state.Start += OnAnimationStart;
                 anim.state.Complete += OnAnimationComplete;
+                anim.timeScale = Random.Range(0.9f,1.1f); // 칼군무 방지 코드
                 break;
             }
             yield return new WaitForSeconds(0.01f);
