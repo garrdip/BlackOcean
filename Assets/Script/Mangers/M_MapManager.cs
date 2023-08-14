@@ -204,89 +204,51 @@ public class M_MapManager : NetworkBehaviour
             // 방 활성화 상태 설정
             aroundRoom.GetComponent<HexagonMapRoom>().isActive = true;
             // 고유 좌표계 값 설정
-            SetHexagonMapRoomCoordinate(centerRoom.GetComponent<HexagonMapRoom>(), aroundRoom.GetComponent<HexagonMapRoom>(), i, false);
+            aroundRoom.GetComponent<HexagonMapRoom>().coordinate = centerRoom.GetComponent<HexagonMapRoom>().coordinate + offSets[i];
             // 육각형 위치 및 오브젝트 클래스 리스트에 추가
             hexagonMapRooms.Add(aroundRoom.GetComponent<HexagonMapRoom>());
         }
     }
 
-    // 현재 위치한 육각형의 각 변에 새로운 육각형 생성
+    // 현재 위치를 중심으로 주변 육각형 생성 : mapSight 값에 따라 생성되는 범위 동적으로 변경
     [Server]
     public void GenerateHexagonRoom(HexagonMapRoom currentHexagonMapRoom)
-    {
-        // 6개의 주변 육각형 생성
-        for (int i = 0; i < 6; i++)
+    {      
+        for(int q = -mapSight ; q <= mapSight ; q++)
         {
-            float angle = i * angleIncrement;
-            Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up;
-            CreateHexagonAtPosition(currentHexagonMapRoom.GetComponent<HexagonMapRoom>(), offset, i, false);
-        }
-        if(mapSight == 2){  // 맵 시야 2일 경우 12개의 외부 육각형 추가 생성
-            for (int i = 0; i < 12; i++)
+            int rStart = Mathf.Max(-mapSight, -q - mapSight);
+            int rEnd = Mathf.Min(mapSight, -q + mapSight);
+     
+            for(int r = rStart; r <= rEnd; r++)
             {
-                float angle = i * (360f / 12); // 12등분한 각도 = 30도
-                if(i % 2 == 0){
-                    // 짝수는 안쪽 6개 육각형 바운더리의 2배 거리 위치에 생성
-                    Vector3 offset = Quaternion.Euler(0f, 0f, angle) * (Vector3.up * 2f);
-                    CreateHexagonAtPosition(currentHexagonMapRoom.GetComponent<HexagonMapRoom>(), offset, i, true);
-                }else{ 
-                    // 홀수는 육각형 한변의 길이 + (중심에서 꼭지점좌표 x 2) 거리 위치에 생성
-                    float sideLength = 1f / Mathf.Cos(30f * Mathf.Deg2Rad);
-                    Vector3 offset = Quaternion.Euler(0f, 0f, angle) * (Vector3.up * 1.5f * sideLength);
-                    CreateHexagonAtPosition(currentHexagonMapRoom.GetComponent<HexagonMapRoom>(), offset, i, true);
+                Vector3 position = GetPosition(q, r, currentHexagonMapRoom.transform.localPosition);
+                if(IsPositionDuplicated(position)){
+                    HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find(room => room.position == position);
+                    if(hexagonMapRoom != null && hexagonMapRoom.isRegion){
+                        hexagonMapRoom.GetComponent<HexagonMapRoom>().isActive = true;
+                    }
+                }else{
+                    var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+                    GameObject hexagonMapRoom = Instantiate(
+                        networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
+                        position,
+                        Quaternion.identity
+                    );
+                    NetworkServer.Spawn(hexagonMapRoom);
+
+                    // 방 타입 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
+                    // 인게임 좌표계 값 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().position = position;
+                    // 방 활성화 상태값 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().isActive = true;
+                    // 고유 좌표계 값(Axial 좌표계) 설정
+                    hexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoom.coordinate + new Vector2Int(q, r);
+                    // 육각형 위치 및 오브젝트 클래스 리스트에 추가
+                    hexagonMapRooms.Add(hexagonMapRoom.GetComponent<HexagonMapRoom>());
                 }
             }
         }
-    }
-
-    // 육각형 맵 해당 위치에 생성
-    [Server]
-    private void CreateHexagonAtPosition(HexagonMapRoom currentHexagonMapRoom, Vector3 offset, int index, bool isDouble){
-        Vector3 position = currentHexagonMapRoom.transform.localPosition + offset;
-        if(IsPositionDuplicated(position)){
-            HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find(room => room.position == position);
-            if(hexagonMapRoom != null && hexagonMapRoom.isRegion){
-                hexagonMapRoom.GetComponent<HexagonMapRoom>().isActive = true;
-            }
-        }else{
-            var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-            GameObject hexagonMapRoom = Instantiate(
-                networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
-                position,
-                Quaternion.identity
-            );
-            NetworkServer.Spawn(hexagonMapRoom);
-
-            // 방 타입 설정
-            hexagonMapRoom.GetComponent<HexagonMapRoom>().roomType = GetRoomType();
-            // 인게임 좌표계 값 설정
-            hexagonMapRoom.GetComponent<HexagonMapRoom>().position = position;
-            // 방 활성화 상태값 설정
-            hexagonMapRoom.GetComponent<HexagonMapRoom>().isActive = true;
-            
-            // 고유 좌표계 값 설정
-            SetHexagonMapRoomCoordinate(currentHexagonMapRoom, hexagonMapRoom.GetComponent<HexagonMapRoom>(), index, isDouble);   
-            
-            // 육각형 위치 및 오브젝트 클래스 리스트에 추가
-            hexagonMapRooms.Add(hexagonMapRoom.GetComponent<HexagonMapRoom>());
-        }
-    }
-
-    // 고유 좌표계 값 설정 : Axial 좌표계
-    [Server]
-    private void SetHexagonMapRoomCoordinate(HexagonMapRoom currentHexagonMapRoom, HexagonMapRoom aroundHexagonMapRoom, int index, bool isMapSightDouble)
-    {
-        int[] xOffsets;
-        int[] yOffsets;
-        if(isMapSightDouble){
-            xOffsets = new int[] { 0, -1, -2, -2, -2, -1, 0, 1, 2, 2, 2, 1 };
-            yOffsets = new int[] { -2, -1, 0, 1, 2, 2, 2, 1, 0, -1, -2, -2 };
-        }else{
-            xOffsets = new int[] { 0, -1, -1, 0, 1, 1 };
-            yOffsets = new int[] { -1, 0, 1, 1, 0, -1 };
-        }
-        Vector2Int currentHexagonMapRoomCoordinate = currentHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate;
-        aroundHexagonMapRoom.GetComponent<HexagonMapRoom>().coordinate = currentHexagonMapRoomCoordinate + new Vector2Int(xOffsets[index], yOffsets[index]);
     }
 
     // 거점지역 생성
@@ -537,7 +499,18 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
-    public Vector3 GetPosition(int x,int y)
+    // 그리드 Axial좌표계 -> 인게임 좌표계 반환(중심점 동적 설정 Version)
+    public Vector3 GetPosition(int x, int y, Vector3 centerPosition)
+    {
+        float length = 1 / Mathf.Tan(Mathf.PI / 3);
+        Vector3 retVal = new Vector3(0, 0, 0);
+        retVal.x = centerPosition.x + 1.5f * x * length;
+        retVal.y = centerPosition.y - y - (x * 0.5f);
+        return retVal;
+    }
+
+    // 그리드 Axial좌표계 -> 인게임 좌표계 반환(중심점 0,0,0 Version)
+    public Vector3 GetPosition(int x, int y)
     {
         float length = 1/Mathf.Tan(Mathf.PI/3);
         Vector3 retVal = new Vector3(0,0,0);
