@@ -230,6 +230,11 @@ public class TargetObject : NetworkBehaviour
         {
             buffs.Find(buff => buff.type == buffType).value += value;
         }
+
+        if((buffType == BuffType.ICHI_ATTACK || buffType == BuffType.ICHI_DEFENSE) && objectType == ObjectType.PLAYER)
+            foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
+                cardOnHand.CardInfoChangedEvent.Invoke();
+            
     }
 
     public int GetBuffValue(BuffType buffType)

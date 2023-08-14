@@ -52,10 +52,13 @@ public class CardOnHand : NetworkBehaviour
     public TextMeshProUGUI textCardDescription;
     public TextMeshProUGUI textCardCost;
 
+    public delegate void CardInfoChanged();
+    public CardInfoChanged CardInfoChangedEvent;
 
     void Start()
     {
         cardOnHandCanvas.worldCamera = Camera.main;
+        CardInfoChangedEvent += OnChangedCardInfo;
     }
 
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
@@ -251,7 +254,6 @@ public class CardOnHand : NetworkBehaviour
             if(splitString[i].ToCharArray()[0] == '!')
             {
                 splitString[i] = splitString[i].Remove(0,1);
-                Debug.Log(splitString[i]);
                 int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + tar.GetBuffValue(BuffType.FLOWER);
                 splitString[i] = "<color=green>" + result.ToString() + "</color>";
             }
@@ -264,6 +266,11 @@ public class CardOnHand : NetworkBehaviour
         }
         
         return string.Join(" ",splitString);
+    }
+
+    void OnChangedCardInfo()
+    {
+        OnChangeCardData(null,null);
     }
 
 }

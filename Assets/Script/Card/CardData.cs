@@ -114,7 +114,13 @@ public partial class CardData : SingletonD<CardData>
         if(from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK) == null)
             tar.DamageToMonster(damage);
         else
-            tar.DamageToMonster( damage + from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK).value + tar.buffs.Find(buff => buff.type == BuffType.FLOWER).value);
+        {
+            if(tar.buffs.Find(buff => buff.type == BuffType.FLOWER) == null)
+                tar.DamageToMonster( damage + from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK).value);
+            else
+                tar.DamageToMonster( damage + from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK).value+ tar.buffs.Find(buff => buff.type == BuffType.FLOWER).value);
+        }
+            
     }
 
     private void GeneralSingleDamage(TargetObject tar, int damage)
