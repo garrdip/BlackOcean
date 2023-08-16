@@ -20,7 +20,7 @@ public class M_MapManager : NetworkBehaviour
     [SyncVar]
     HexagonMapRoom moveToRoomDestination;
 
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChangeMapBoss))]
     public MapBoss mapBoss; // 보스
 
     [SyncVar]
@@ -444,7 +444,6 @@ public class M_MapManager : NetworkBehaviour
         Debug.Log($"행동 비용이 {oldValue} -> {newValue} 감소했습니다.");
         if(isServer){
             if(newValue == 0 && mapBoss == null){
-                Debug.Log("행동 비용이 0이되어 보스 몬스터가 맵에 출현합니다.");
                 GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
             }
         }
@@ -454,6 +453,14 @@ public class M_MapManager : NetworkBehaviour
     public void OnChangedActionCost(int oldValue, int newValue)
     {
         // TBD
+    }
+
+    // 맵 보스 변경 이벤트 수신
+    public void OnChangeMapBoss(MapBoss oldValue, MapBoss newValue)
+    {
+        if(newValue != null){
+            Debug.Log("보스 몬스터가 맵에 출현했습니다.");
+        }
     }
 
     // ------------------------------------------------------------ Normal Method -------------------------------------------------------------- //

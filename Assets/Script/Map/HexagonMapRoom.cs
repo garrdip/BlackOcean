@@ -50,17 +50,8 @@ public class HexagonMapRoom : NetworkBehaviour
 
     private void OnMouseDown()
     {
-        // TODO : 보스 생성 이후에는 클리어 유무 상관없이 모든 맵은 1칸씩만 이동가능
-
-        if(isRegion && !isActive) return; // 거점지역인 경우 아직 비활성화 상태면 이동 불가
-
-        // if(M_MapManager.instance.GetDistanceFromCurrentCoordinate(this.coordinate) > M_MapManager.instance.mapSight) return; // 맵 시야값 이상은 이동 불가
-
-        // 클릭한 육각형으로 맵플레이어 이동 및 현재 선택된 맵으로 저장
-        NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdSelectHexagonMapRoom(this, NetworkClient.connection.identity);
-        
         // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시
-        NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.connection.identity.netId);
+        NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.connection.identity);
     }
 
     private void OnMouseEnter()
