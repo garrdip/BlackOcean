@@ -394,7 +394,7 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayer currentPlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
-            List<CardBase> currentCharacterCards = CardData.instance.cards.FindAll((cardBase) => cardBase.character == currentPlayer.character);
+            List<CardBase> currentCharacterCards = CardData.instance.cards.FindAll((cardBase) => cardBase.character == currentPlayer.character && !cardBase.cardNumber.Contains("_E"));
             foreach(CardBase cardBase in currentCharacterCards){
                 Card card = new Card(cardBase);
                 cards.Add(card);
