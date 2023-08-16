@@ -22,6 +22,7 @@ public class MapUI : InstanceD<MapUI>
     public Image regionPopUpHeader;
     public TextMeshProUGUI textRegionGradeInfo;
     public TextMeshProUGUI textRegionDesc;
+    public TextMeshProUGUI textTotalActionCostCount;
 
     [Header("현재 마우스 포인터가 채팅메시지 박스 위에 있는지 여부")]
     public bool isMouseOnChatBox = false;

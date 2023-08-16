@@ -2149,6 +2149,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 513046193}
   m_CullTransparentMesh: 1
+--- !u!114 &514127978 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4785142566260006336, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+  m_PrefabInstance: {fileID: 2118407960}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &570776115
 GameObject:
   m_ObjectHideFlags: 0
@@ -7868,25 +7879,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2101351541265723462, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9396927
-      objectReference: {fileID: 0}
-    - target: {fileID: 2101351541265723462, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.3420201
-      objectReference: {fileID: 0}
-    - target: {fileID: 2101351541265723462, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 40
-      objectReference: {fileID: 0}
     - target: {fileID: 4770237055140911796, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_Name
       value: Map
-      objectReference: {fileID: 0}
-    - target: {fileID: 4770237055140911796, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4770237055140911797, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_RootOrder
@@ -7932,21 +7927,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5268937064356060578, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5268937064356060578, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5268937064356060578, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5268937064356060578, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
+    - target: {fileID: 4785142566260006336, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5268937064989819892, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_AnchorMax.x
@@ -7992,8 +7975,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4770237055216254665, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+    - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: textTotalActionCostCount
+      value: 
+      objectReference: {fileID: 514127978}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
 --- !u!1 &2118407961 stripped
 GameObject:

@@ -442,6 +442,7 @@ public class M_MapManager : NetworkBehaviour
     public void OnChangedTotalActionCost(int oldValue, int newValue)
     {
         Debug.Log($"행동 비용이 {oldValue} -> {newValue} 감소했습니다.");
+        MapUI.instance.textTotalActionCostCount.text = $"{newValue.ToString()}턴";
         if(isServer){
             if(newValue == 0 && mapBoss == null){
                 GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
