@@ -220,22 +220,21 @@ public class TargetObject : NetworkBehaviour
     }
 
     // ----------------------------------------------           Buff 관련 함수          ---------------------------------------------------//
-    public void GainBuff(BuffType buffType,int value)
+    public void GainBuff(BuffType buffType, int value, bool isDebuff, bool isInfinity, bool isDecrease, TargetObject tar)
     {
         if(buffs.Find(buff => buff.type == buffType) == null) // 버프 신규 등록
         {
-            Buff newBuff = Buff.builder().SetBuffType(buffType).SetValue(value).Build();
+            Buff newBuff = new Buff(buffType,value,isDebuff,isInfinity,isDecrease,tar);
             buffs.Add(newBuff);
         }
         else // 버프가 있을경우 중첩 상승
         {
-            buffs.Find(buff => buff.type == buffType).value += value;
+            Buff oldItem = buffs.Find(buff => buff.type == buffType);
+            int indexOfOldItem = buffs.FindIndex(buff => buff.type == buffType);
+            oldItem.value += value;
+            buffs.RemoveAt(indexOfOldItem);
+            buffs.Insert(indexOfOldItem,oldItem);
         }
-
-        if((buffType == BuffType.ICHI_ATTACK || buffType == BuffType.ICHI_DEFENSE) && objectType == ObjectType.PLAYER)
-            foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
-                cardOnHand.CardInfoChangedEvent.Invoke();
-            
     }
 
     public int GetBuffValue(BuffType buffType)
@@ -253,7 +252,10 @@ public class TargetObject : NetworkBehaviour
 
     public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
     {
-        //Buff 추가 제거시 UI 효과 여기서 해야할듯
+        if(newBuff != null)
+            if((newBuff.type == BuffType.ICHI_ATTACK || newBuff.type == BuffType.ICHI_DEFENSE) && objectType == ObjectType.PLAYER)
+                foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
+                    cardOnHand.CardInfoChangedEvent.Invoke();
     }
 
     void OnChangedPlayerHP(int oldVal, int newVal)

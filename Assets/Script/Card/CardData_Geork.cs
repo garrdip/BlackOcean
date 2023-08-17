@@ -20,7 +20,7 @@ public partial class CardData : SingletonD<CardData>
         }
         else
         {
-            GeneralAddBuff(tar,BuffType.APDO,1,user);
+            //GeneralAddBuff(tar,BuffType.APDO,1,user);
         }
     }
 
@@ -76,7 +76,7 @@ public partial class CardData : SingletonD<CardData>
         }
         else // 변신 전 효과
         {
-            GeneralAddBuff(tar[0],BuffType.CARDCOSTONE,1);
+            //GeneralAddBuff(tar[0],BuffType.CARDCOSTONE,1);
         }
         if(!tar[0].isCloneData) isCardOperating = false;
     }
@@ -90,7 +90,7 @@ public partial class CardData : SingletonD<CardData>
     {
         GeneralSingleAttack(tar[0],tar[1],9);
         if(!tar[0].isCloneData) yield return tempWait;
-        GeneralAddBuff(tar[1],BuffType.SOIRAK,1,true);
+        //GeneralAddBuff(tar[1],BuffType.SOIRAK,1,true);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator G5(Card card,List<TargetObject> tar)
@@ -137,7 +137,7 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator G11(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
-        GeneralAddBuff(tar[0],BuffType.THEREISNOJABI,1);
+        //GeneralAddBuff(tar[0],BuffType.THEREISNOJABI,1);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator G12(Card card,List<TargetObject> tar)
@@ -200,7 +200,7 @@ public partial class CardData : SingletonD<CardData>
         }
         else // 변신 전 효과
         {
-            GeneralAddBuff(tar[0],BuffType.CARDCOSTONE,1);
+            //GeneralAddBuff(tar[0],BuffType.CARDCOSTONE,1);
         }
         if(!tar[0].isCloneData) isCardOperating = false;
     }
@@ -214,7 +214,7 @@ public partial class CardData : SingletonD<CardData>
     {
         GeneralSingleAttack(tar[0],tar[1],9);
         if(!tar[0].isCloneData) yield return tempWait;
-        GeneralAddBuff(tar[1],BuffType.SOIRAK,1,true);
+        //GeneralAddBuff(tar[1],BuffType.SOIRAK,1,true);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator G5_E(Card card,List<TargetObject> tar)
@@ -261,7 +261,7 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator G11_E(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
-        GeneralAddBuff(tar[0],BuffType.THEREISNOJABI,1);
+        //GeneralAddBuff(tar[0],BuffType.THEREISNOJABI,1);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator G12_E(Card card,List<TargetObject> tar)

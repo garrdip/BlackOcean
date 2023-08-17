@@ -125,56 +125,10 @@ public partial class CardData : SingletonD<CardData>
     {
         tar.DamageToMonster(damage);
     }
-
-    public void GeneralAddBuff(TargetObject tar, BuffType type, int value)
+   
+    public void GeneralAddBuff(TargetObject tar, BuffType type, int value,bool isDebuff, bool isInfinity, bool isDecrease, TargetObject user) //고유 디버프 사용시
     {
-        if(tar.buffs.Find(buff => buff.type == type) == null)
-        {
-            Buff newBuff = Buff.builder()
-                .SetBuffType(type)
-                .SetValue(value)
-                .Build();
-            tar.buffs.Add(newBuff);
-        }
-        else
-        {
-            tar.buffs.Find(buff => buff.type == type).value += value;
-        }
-    }
-    
-    public void GeneralAddBuff(TargetObject tar, BuffType type, int value, TargetObject user) //고유 디버프 사용시
-    {
-        if(tar.buffs.Find(buff => buff.type == type && buff.user == user) == null)
-        {
-            Buff newBuff = Buff.builder()
-                .SetBuffType(type)
-                .SetValue(value)
-                .SetIsDebuff(true)
-                .SetUser(user)
-                .Build();
-            tar.buffs.Add(newBuff);
-        }
-        else
-        {
-            tar.buffs.Find(buff => buff.type == type && buff.user == user).value += value;
-        }
-    }
-
-    public void GeneralAddBuff(TargetObject tar, BuffType type, int value, bool isDebuff)
-    {
-        if(tar.buffs.Find(buff => buff.type == type) == null)
-        {
-            Buff newBuff = Buff.builder()
-                .SetBuffType(type)
-                .SetValue(value)
-                .SetIsDebuff(true)
-                .Build();
-            tar.buffs.Add(newBuff);
-        }
-        else
-        {
-            tar.buffs.Find(buff => buff.type == type).value += value;
-        }
+        tar.GainBuff(type,value,isDebuff,isInfinity,isDecrease,user);
     }
 
     public void GeneralGetDefense(TargetObject from, TargetObject tar, int value, Card card)

@@ -22,8 +22,8 @@ public class Soldier_Axe : SpawnedMonster
                 ReturnToIdleAnimation();
                 break;
             case "힘증가" :
-                parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue);
-                parent.clone.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue);
+                parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,null);
+                parent.clone.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,null);
                 DoAnimation("1Buff");
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
