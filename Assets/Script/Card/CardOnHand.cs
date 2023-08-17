@@ -221,6 +221,12 @@ public class CardOnHand : NetworkBehaviour
     // 카드 정보 뷰 업데이트
     public void OnChangeCardData(Card oldCard, Card newCard)
     {
+        // 정상적으로 Card가 동기화 되지 않았을경우 업데이트 취소
+        if(card == null)return;
+        if(card.baseCard == null)return;
+        if(card.baseCard.name == null)return;
+        if(card.baseCard.name == "")return;
+
         if(card.experience >= card.baseCard.maxExperience)
         {
             textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").name;
@@ -243,7 +249,7 @@ public class CardOnHand : NetworkBehaviour
     private string GetAdditionalValueFromDescription(string str)
     {
         TargetObject tar = null;
-        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerSyncList)
         {
             if(target.player == NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>())
                 tar = target;
@@ -270,7 +276,7 @@ public class CardOnHand : NetworkBehaviour
 
     void OnChangedCardInfo()
     {
-        OnChangeCardData(null,null);
+        OnChangeCardData(card,card);
     }
 
 }

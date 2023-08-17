@@ -66,7 +66,6 @@ public partial class CardData : SingletonD<CardData>
     {
         int colorCnt = 0;
         string[] values = desc.Trim().Split(" ");
-        string retVal = "";
         for(int i = 0 ;i < values.Length ; i++)
         {
             if(values[i].ToCharArray()[0] == '@')
@@ -76,9 +75,8 @@ public partial class CardData : SingletonD<CardData>
                 values[i] = colorList[colorCnt] + values[i] + "</color>";
                 colorCnt++;
             }
-            retVal += " " + values[i];
         }
-        return retVal.Remove(0,1); // Concat 메서드를 사용하여 배열의 요소들을 하나로 합침
+        return string.Join(" ",values); // Concat 메서드를 사용하여 배열의 요소들을 하나로 합침
     }
 
     public void RunCard(Card card,List<TargetObject> targets)
