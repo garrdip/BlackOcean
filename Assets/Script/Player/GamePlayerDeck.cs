@@ -33,7 +33,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public Queue<(Card,TargetObject,NetworkIdentity,CardCtrlArrow)> serverCardPredictQueue = new Queue<(Card, TargetObject, NetworkIdentity, CardCtrlArrow)>();// Server에서 Card Queue 관리를 위한 Queue
 
-
+    [SyncVar(hook = nameof(PreviousCardTypeChanged))]
+    public CardType previousCardType;
 
     public override void OnStartServer()
     {
@@ -157,6 +158,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         TargetObject targetObject;
         NetworkIdentity conn;
         CardCtrlArrow cardCtrlArrow;
+        int totalCost;
 
         while(true)
         {
@@ -188,14 +190,30 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         break;
                 }
             }
-
-            if((card.baseCard.cost + card.costAddition) > currentIchi) // 카드 코스트 계산 하는곳
+            if(card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
+            {
+                if(card.baseCard.cardType == previousCardType)
+                {
+                    totalCost = ( card.baseCard.cost + card.costAddition - 1 );
+                    if(totalCost < 0)totalCost = 0;
+                }
+                else
+                {
+                     totalCost = ( card.baseCard.cost + card.costAddition + 1 );
+                }
+            }
+            else
+                totalCost = card.baseCard.cost + card.costAddition ;
+            if(totalCost > currentIchi) // 카드 코스트 계산 하는곳
                 continue;
-            currentIchi -= card.baseCard.cost + card.costAddition;
+            currentIchi -= totalCost ;
 
             if(card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
                 continue;
             
+            // 여기부터 카드사용이 확정 되는곳
+            previousCardType = card.baseCard.cardType;
+
             List<TargetObject> tar = new List<TargetObject>();
             tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
             if(card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
@@ -412,6 +430,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void OnChangeCurrentDeckCount(int oldCount, int newCount)
     {
         Debug.Log("현재 댁 갯수 변경 :" + newCount);
+    }
+
+    public void PreviousCardTypeChanged(CardType oldVal, CardType newVal)
+    {
+        foreach(CardOnHand cardOnHand in cardOnHands)
+            if(!cardOnHand.isMoving)cardOnHand.CardInfoChangedEvent.Invoke();
     }
 
     // -------------------------------------------------SyncList Callback ---------------------------------------------------//

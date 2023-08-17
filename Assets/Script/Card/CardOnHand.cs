@@ -241,9 +241,20 @@ public class CardOnHand : NetworkBehaviour
         textCardDescription.text += '\n';
         textCardDescription.text += '\n';
         foreach(CardCharacteristic character in card.baseCard.cardCharacteristics)
-            textCardDescription.text += " <b><color=yellow>" + character.ToString() + "</color></b>";
+            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>";
         
-        textCardCost.text = (card.baseCard.cost + card.costAddition).ToString();
+        if(card.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO))
+        {
+            if(card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
+            {
+                textCardCost.text = "<b><color=green>" +((card.baseCard.cost + card.costAddition - 1) <= 0 ? "0" : (card.baseCard.cost + card.costAddition - 1).ToString()) + "</color></b>";
+            }
+            else
+            {
+                textCardCost.text = "<b><color=red>"+ (card.baseCard.cost + card.costAddition + 1).ToString() + "</color></b>";
+            }
+        }
+        else textCardCost.text = (card.baseCard.cost + card.costAddition).ToString();
     }
 
     private string GetAdditionalValueFromDescription(string str)
