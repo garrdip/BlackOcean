@@ -176,20 +176,21 @@ public class M_TurnManager : NetworkBehaviour
     {
         if(isServer)
         {
-            Debug.Log("전투시작");
             GeneratePlayerUnit();
             if(roomType == RoomType.MONSTER || roomType == RoomType.ELITE)
             {
-                Debug.Log("몬스터방");
                 GenerateMonster();
                 phase = BattleTurn.BATTLE_STANDBY;
             }
             else
             {
-                Debug.Log("몬스터방 아님");
                 GenerateNPC();
                 phase = BattleTurn.NONE_BATTLE_SCENE;
             }
+
+            // 전투 시작 이치 초기화
+            foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
+                gamePlayerDeck.SetInitialIchi();
         }
     }
  
