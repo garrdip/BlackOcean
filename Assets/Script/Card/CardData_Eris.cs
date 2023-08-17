@@ -39,14 +39,14 @@ public partial class CardData : SingletonD<CardData>
     {
         if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],3);
-        GeneralAddBuff(tar[1],BuffType.BOONGGUI,1,true);
+        //GeneralAddBuff(tar[1],BuffType.BOONGGUI,1,true);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator E5(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],2);
-        GeneralAddBuff(tar[0],BuffType.BYEOLMURI,1);
+        //GeneralAddBuff(tar[0],BuffType.BYEOLMURI,1);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator E6(Card card,List<TargetObject> tar)
@@ -137,14 +137,14 @@ public partial class CardData : SingletonD<CardData>
     {
         if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],3);
-        GeneralAddBuff(tar[1],BuffType.BOONGGUI,1,true);
+        //GeneralAddBuff(tar[1],BuffType.BOONGGUI,1,true);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator E5_E(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
         GeneralSingleAttack(tar[0],tar[1],2);
-        GeneralAddBuff(tar[0],BuffType.BYEOLMURI,1);
+        //GeneralAddBuff(tar[0],BuffType.BYEOLMURI,1);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator E6_E(Card card,List<TargetObject> tar)

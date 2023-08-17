@@ -45,10 +45,7 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
                 // 몬스터 이름이 없을경우 스킬 LIST만 추가
                 if(values[2] == "Buff")
                 {
-                    Buff newBuff = Buff.builder()
-                        .SetBuffType(GetEnumData<BuffType>(values[3]))
-                        .SetValue(int.Parse(values[4]))
-                        .Build();
+                    Buff newBuff = new Buff(GetEnumData<BuffType>(values[3]),(int.Parse(values[4])),false,true,false,null);
                     monsterData.buffList.Add(newBuff);
                 }
                 else

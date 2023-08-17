@@ -176,14 +176,17 @@ public class M_TurnManager : NetworkBehaviour
     {
         if(isServer)
         {
+            Debug.Log("전투시작");
             GeneratePlayerUnit();
             if(roomType == RoomType.MONSTER || roomType == RoomType.ELITE)
             {
+                Debug.Log("몬스터방");
                 GenerateMonster();
                 phase = BattleTurn.BATTLE_STANDBY;
             }
             else
             {
+                Debug.Log("몬스터방 아님");
                 GenerateNPC();
                 phase = BattleTurn.NONE_BATTLE_SCENE;
             }
@@ -421,7 +424,7 @@ public class M_TurnManager : NetworkBehaviour
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
             spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
             spawnedPlayerSyncList.Add(avatar.GetComponent<TargetObject>());
-
+            
             // 타겟 유효 판단을 위한 클론 데이터 //
             GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
             NetworkServer.Spawn(clone);

@@ -27,7 +27,7 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator H0_E(Card card,List<TargetObject> tar)
-    {
+    { 
         if(!tar[0].isCloneData)
         {
             yield return tempWait;
@@ -97,13 +97,13 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator H5(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
-        GeneralAddBuff(tar[0],BuffType.MOMISPOWERFUL,1);
+        //GeneralAddBuff(tar[0],BuffType.MOMISPOWERFUL,1);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator H5_E(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
-        GeneralAddBuff(tar[0],BuffType.MOMISPOWERFUL,1);
+        //GeneralAddBuff(tar[0],BuffType.MOMISPOWERFUL,1);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator H6(Card card,List<TargetObject> tar)
@@ -161,13 +161,13 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator H10(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
-        GeneralAddBuff(tar[1],BuffType.FLOWERPOWDER, 5,tar[0]);
+        //GeneralAddBuff(tar[1],BuffType.FLOWERPOWDER, 5,tar[0]);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator H10_E(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
-        GeneralAddBuff(tar[1],BuffType.FLOWERPOWDER, 5,tar[0]);
+        //GeneralAddBuff(tar[1],BuffType.FLOWERPOWDER, 5,tar[0]);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator H11(Card card,List<TargetObject> tar)
