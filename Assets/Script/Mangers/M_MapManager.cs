@@ -360,7 +360,9 @@ public class M_MapManager : NetworkBehaviour
             );
         NetworkServer.Spawn(mapBossObject);
 
-        mapBoss = mapBossObject.GetComponent<MapBoss>(); // 서버에 참조값 생성
+        MapBoss mapBoss = mapBossObject.GetComponent<MapBoss>();
+        this.mapBoss = mapBoss; // 서버에 참조값 생성
+        mapBoss.coordinate = new Vector2Int((int)centerPos.x, (int)centerPos.y); // 고유 좌표계 설정
     }
 
     // 방 완료상태로 변경
@@ -385,6 +387,24 @@ public class M_MapManager : NetworkBehaviour
             }else{
                 totaActionCost = Mathf.Max(0, totaActionCost - reduceActionCost);
             }
+        }
+    }
+
+    // 행동비용이 0이 되어 보스가 생성되었을때, 매 ReturnToMap 호출시마다 한칸씩 보스가 플레이어에게 가까워지게 위치 이동
+    [Server]
+    public void ApproachBossToPlayer()
+    {
+        if(mapBoss != null){
+            Vector2Int mapPlayerCoordinate = currentRoom.coordinate;
+            Vector2Int bossCoordinate = mapBoss.coordinate;
+            Vector2Int direction = mapPlayerCoordinate - bossCoordinate;
+            direction.x = Mathf.Clamp(direction.x, -1, 1);
+            direction.y = Mathf.Clamp(direction.y, -1, 1);
+
+            if (direction != Vector2Int.zero) {
+                mapBoss.coordinate += direction;
+            }
+            mapBoss.bossPosition = GetPosition(mapBoss.coordinate.x, mapBoss.coordinate.y);
         }
     }
 
