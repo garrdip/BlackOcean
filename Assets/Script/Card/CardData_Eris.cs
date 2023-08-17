@@ -13,13 +13,23 @@ public partial class CardData : SingletonD<CardData>
     //에리스
     public IEnumerator E0(Card card,List<TargetObject> tar)
     {
-        if(!tar[0].isCloneData) yield return tempWait;
+        if(!tar[0].isCloneData){
+            yield return tempWait;
+            M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
+            yield return new WaitForSeconds(0.2f);
+            StartCoroutine(tar[1].monster.OnHitAnimation());
+        } 
         GeneralSingleAttack(tar[0],tar[1],5);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator E1(Card card,List<TargetObject> tar)
     {
-        if(!tar[0].isCloneData) yield return tempWait;
+        if(!tar[0].isCloneData) {
+            yield return tempWait;
+            M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
+            yield return new WaitForSeconds(0.2f);
+            StartCoroutine(tar[1].monster.OnHitAnimation());
+        }
         GeneralSingleAttack(tar[0],tar[1],8);
         if(!tar[0].isCloneData) isCardOperating = false;
     }

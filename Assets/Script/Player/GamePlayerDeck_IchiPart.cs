@@ -17,6 +17,21 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public TextMeshProUGUI ichiText;
 
+    [Server]
+    public void SetInitialIchi()
+    {
+        if(GetComponent<GamePlayer>().character == Character.ERIS)
+        {
+            currentIchi = 2;
+            maxIchi = 2;
+        }
+        else
+        {
+            currentIchi = 3;
+            maxIchi = 3;
+        }
+    }
+
     void InitIchi()
     {
         ichiText = GameUIManager.instance.ichiText;
@@ -25,7 +40,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     void OnChangedIchi(int oldVal, int newVal)
     {
-        if(isOwned)
+        if(isOwned && ichiText != null)
             ichiText.text = currentIchi.ToString() + " / " + maxIchi.ToString();
     }
 
