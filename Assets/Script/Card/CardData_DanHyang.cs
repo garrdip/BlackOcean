@@ -17,7 +17,6 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData)
         {
             yield return tempWait;
-            M_TurnManager.instance.ChangePlayerOrder(tar[0].player,MoveDirection.FORWARD);
             yield return new WaitForSeconds(0.5f);
             M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
             yield return new WaitForSeconds(0.2f);

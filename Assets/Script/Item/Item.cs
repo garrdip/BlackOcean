@@ -1,18 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using ProjectD;
-public class Item
+using Mirror;
+public class Item : NetworkBehaviour
 {
-    public string name;
+    [SyncVar]
+    public string itemName;
+    [SyncVar]
     public string itemNumber;
+    [SyncVar]
     public int value;
+    [SyncVar]
     public ItemGrade itemGrade;
+    [SyncVar]
     public ItemEffectTime effectTime;
 
     public Item(){}
     public Item(string nameIn, string itemNumberIn, ItemGrade itemGradeIn, ItemEffectTime itemEffectTimeIn)
     {
-        name = nameIn;
+        itemName = nameIn;
         itemNumber = itemNumberIn;
         itemGrade = itemGradeIn;
         effectTime = itemEffectTimeIn;
