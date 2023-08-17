@@ -2614,6 +2614,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 660308823, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
   m_PrefabInstance: {fileID: 2118407960}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &672241331 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7739541846669519693, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+  m_PrefabInstance: {fileID: 2118407960}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &701132273
 GameObject:
   m_ObjectHideFlags: 0
@@ -7931,6 +7936,22 @@ PrefabInstance:
       propertyPath: m_text
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5268937064356060578, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5268937064356060578, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5268937064356060578, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5268937064356060578, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5268937064989819892, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -7976,9 +7997,45 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 842314909}
+    - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: mapRooms
+      value: 
+      objectReference: {fileID: 2118407961}
+    - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: mapBackground
+      value: 
+      objectReference: {fileID: 672241331}
+    - target: {fileID: 7332994543592235493, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
       propertyPath: textTotalActionCostCount
       value: 
       objectReference: {fileID: 514127978}
+    - target: {fileID: 9082533537084806630, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082533537084806630, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082533537084806630, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082533537084806630, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082533537084806630, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082533537084806630, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c392ef103b08844ca6ea023afd296ac, type: 3}
 --- !u!1 &2118407961 stripped

@@ -37,6 +37,15 @@ public class MapUI : InstanceD<MapUI>
     [SerializeField]
     private float scrollSpeed = 10000f;
 
+    [Header("맵 카메라")]
+    public Camera cam;
+
+    [Header("맵 배경 오브젝트")]
+    public GameObject mapBackground;
+
+    [Header("카메라 이동 속도")]
+    float cameraMoveSpeed = 20;
+
     public void Start()
     {
         readyButton.onClick.AddListener(() => OnChangeReadyState());
@@ -44,12 +53,44 @@ public class MapUI : InstanceD<MapUI>
 
     void Update()
     { 
-        HandleChatMessageInput();
-        if(isMouseOnChatBox){
-            HandleChatMessageScrollBarByMouseWheel();
-        }else{
-            HandleMapCameraByMouseWheel();
+        if(Application.isFocused){
+            //HandleCameraEdgeScrolling();
+            HandleChatMessageInput();
+            if(isMouseOnChatBox){
+                HandleChatMessageScrollBarByMouseWheel();
+            }else{
+                HandleMapCameraByMouseWheel();
+            }
         }
+    }
+
+    // 스크린 상하좌우 각 변에 마우스 도달 시 카메라 위치 이동
+    private void HandleCameraEdgeScrolling()
+    {
+        Vector3 inputDir = Vector3.zero;
+        int edgeScrollSize = 20;
+        if (Input.mousePosition.x < edgeScrollSize)
+        {
+            inputDir.x = -1f;
+        }
+        if (Input.mousePosition.y < edgeScrollSize)
+        {
+            inputDir.z = -1f;
+            inputDir.y = -1f;
+        }
+        if (Input.mousePosition.x > Screen.width - edgeScrollSize)
+        {
+            inputDir.x = +1f;
+        }
+        if (Input.mousePosition.y > Screen.height - edgeScrollSize)
+        {
+            inputDir.z = +1f;
+            inputDir.y = +1f;
+        }
+        Vector3 moveDir = cam.transform.forward * inputDir.z + cam.transform.right * inputDir.x + cam.transform.up * inputDir.y;
+
+        cam.transform.position += moveDir * cameraMoveSpeed * Time.deltaTime; // 카메라 이동
+        mapBackground.transform.position += moveDir * cameraMoveSpeed * Time.deltaTime; // 맵 배경 이동
     }
 
     // Enter 키로 채팅 메시지 입력
