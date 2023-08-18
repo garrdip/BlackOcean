@@ -36,6 +36,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [SyncVar(hook = nameof(PreviousCardTypeChanged))]
     public CardType previousCardType;
 
+    
+
     public override void OnStartServer()
     {
         SetInitialValue();

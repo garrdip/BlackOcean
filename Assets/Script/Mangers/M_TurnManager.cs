@@ -45,7 +45,8 @@ public class M_TurnManager : NetworkBehaviour
     public List<TargetObject> spawnedMonsterList = new List<TargetObject>();
     public List<TargetObject> cloneMonsterList = new List<TargetObject>();
     List<TargetObject> monsterOrderList = new List<TargetObject>();
-
+    
+    bool cardQueueOperating = false;
     // 카드와 타겟을 한쌍으로 저장하는 큐
     public Queue<(Card, List<TargetObject>)> cardTargetPairQueue = new Queue<(Card, List<TargetObject>)>();
     // TargetObject List 구조 : 
@@ -178,22 +179,44 @@ public class M_TurnManager : NetworkBehaviour
         {
             GeneratePlayerUnit();
             if(roomType == RoomType.MONSTER || roomType == RoomType.ELITE)
-            {
                 GenerateMonster();
-                phase = BattleTurn.BATTLE_STANDBY;
-            }
             else
-            {
                 GenerateNPC();
-                phase = BattleTurn.NONE_BATTLE_SCENE;
-            }
 
             // 전투 시작 이치 초기화
             foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
                 gamePlayerDeck.SetInitialIchi();
+            
+            StartCoroutine(WaitingForPlayer());
         }
     }
  
+    IEnumerator WaitingForPlayer()
+    {
+        int cnt = 0;
+        while(true)
+        {
+            cnt = 0;
+            yield return new WaitForSeconds(0.1f);
+            foreach(GamePlayer user in players)
+                if(user.isTargetObjectInitDone) cnt++;
+            if(cnt != players.Count) continue;
+
+            if(roomType == RoomType.MONSTER || roomType == RoomType.ELITE)
+                phase = BattleTurn.BATTLE_STANDBY;
+            else
+                phase = BattleTurn.NONE_BATTLE_SCENE;
+            break;
+        }
+        ClearTargetObjectInitFlag();
+    }
+
+    [ClientRpc]
+    void ClearTargetObjectInitFlag()
+    {
+        NetworkClient.connection.identity.GetComponent<GamePlayer>().isTargetObjectInitDone = false;
+    }
+
     public IEnumerator ProcessCardQueue()
     {
         // 무한루프에서 인스턴스 생성시 생기는 가비지 방지를 위해 함수호출에서 미리 인스턴스 생성하여 캐싱후 루프 안에서 사용
@@ -479,6 +502,7 @@ public class M_TurnManager : NetworkBehaviour
             cloneAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
             cloneAvatar.GetComponent<TargetObject>().monster = cloneMonster;
             cloneAvatar.GetComponent<TargetObject>().isCloneData = true;
+            cloneAvatar.GetComponent<TargetObject>().origin = avatar.GetComponent<TargetObject>();
             avatar.GetComponent<TargetObject>().clone = cloneAvatar.GetComponent<TargetObject>();
 
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());

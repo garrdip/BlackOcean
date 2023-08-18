@@ -437,8 +437,22 @@ public class M_MapManager : NetworkBehaviour
             if(isServer)M_MapManager.instance.MoveToRoom(); // 이순간에 새로운 맵 생성
             // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
             M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
+            StartCoroutine(CheckTargetObject());
             
         });
+    }
+    
+    public IEnumerator CheckTargetObject()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(0.1f);
+            if( NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject != 0 )
+            {
+                NetworkClient.connection.identity.GetComponent<GamePlayer>().isTargetObjectInitDone = true;
+                break;
+            }
+        }
     }
     
     // 방이동후 카메라 전환 (자유 이동으로 할지)

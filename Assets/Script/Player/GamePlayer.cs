@@ -35,6 +35,9 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar (hook = nameof(OnEndTurnStateChanged))]
     public bool endTurnActive = false;
 
+    [SyncVar]
+    public bool isTargetObjectInitDone = false;
+
     public void OnEndTurnStateChanged(bool oldVal, bool newVal)
     {
         if(isServer)

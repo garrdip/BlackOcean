@@ -51,6 +51,7 @@ public class TargetObject : NetworkBehaviour
     public List<GameObject> monsters;
 
     public TargetObject clone;
+    public TargetObject origin;
     
     [SyncVar]
     public bool isCloneData = false;
@@ -211,6 +212,7 @@ public class TargetObject : NetworkBehaviour
             int remind = damage - defense;
             defense = 0;
             monster.HP -= remind;
+            monster.OnChangedHpValue(monster.HP,monster.HP);
         }
     }
 

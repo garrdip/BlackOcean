@@ -148,7 +148,10 @@ public class SpawnedMonster : NetworkBehaviour
         {
             if(isServer){
                 if(parent.isCloneData)
+                {
                     M_TurnManager.instance.cloneMonsterList.Remove(parent);
+                    parent.origin.clone = null;
+                }
                 else
                     M_TurnManager.instance.spawnedMonsterList.Remove(parent);
                 NetworkServer.Destroy(this.gameObject);
