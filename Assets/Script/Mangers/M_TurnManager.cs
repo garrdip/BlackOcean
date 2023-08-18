@@ -314,13 +314,14 @@ public class M_TurnManager : NetworkBehaviour
     IEnumerator MonsterActionSeuqence()
     {
         WaitForSeconds loopWait = new WaitForSeconds(0.01f);
-        foreach(TargetObject monster in spawnedMonsterList)
+        foreach(TargetObject target in spawnedMonsterList)
         {
-            monster.monster.isActive = true;
-            StartCoroutine(monster.monster.DoAction());
+
+            target.monster.isActive = true;
+            StartCoroutine(target.monster.DoAction());
             while(true)
             {
-                if(monster.monster.isActive == false) break;
+                if(target.monster.isActive == false) break;
                 yield return loopWait;
             }
         }

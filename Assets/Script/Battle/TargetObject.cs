@@ -130,11 +130,6 @@ public class TargetObject : NetworkBehaviour
             {
                 if(monster == null)
                 {
-                    if(isCloneData)
-                        M_TurnManager.instance.cloneMonsterList.Remove(this);
-                    else
-                        M_TurnManager.instance.spawnedMonsterList.Remove(this);
-                        
                     NetworkServer.Destroy(this.gameObject);
                     if(!isCloneData)M_TurnManager.instance.OnChangedMonsterList(); 
                 }

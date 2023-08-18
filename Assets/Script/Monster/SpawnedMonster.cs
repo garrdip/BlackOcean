@@ -146,7 +146,13 @@ public class SpawnedMonster : NetworkBehaviour
     {
         if(HP <= 0)
         {
-            if(isServer)NetworkServer.Destroy(this.gameObject);
+            if(isServer){
+                if(parent.isCloneData)
+                    M_TurnManager.instance.cloneMonsterList.Remove(parent);
+                else
+                    M_TurnManager.instance.spawnedMonsterList.Remove(parent);
+                NetworkServer.Destroy(this.gameObject);
+            }
             return;
         }
         if(transform.parent != null){
