@@ -18,6 +18,11 @@ public class TEST : MonoBehaviour
             tar.GainBuff(ProjectD.BuffType.ICHI_ATTACK,1,false,true,false,tar);
             tar.GainBuff(ProjectD.BuffType.ICHI_DEFENSE,1,false,true,false,tar);
         }
+        foreach(TargetObject tar in M_TurnManager.instance.clonePlayerList)
+        {
+            tar.GainBuff(ProjectD.BuffType.ICHI_ATTACK,1,false,true,false,tar);
+            tar.GainBuff(ProjectD.BuffType.ICHI_DEFENSE,1,false,true,false,tar);
+        }
     }
 
 }
