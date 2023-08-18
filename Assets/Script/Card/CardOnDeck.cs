@@ -62,7 +62,16 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                       
                     // 턴 매니저에 저장된 현재 참가한 플레이어들의 타겟오브젝트 리스트에서 로컬플레이어의 타겟오브젝트 조회
                     GamePlayer gamePlayer = gamePlayerDeck.GetComponent<GamePlayer>();
-                    TargetObject currentPlayer = M_TurnManager.instance.spawnedPlayerSyncList.Find((targetObject) => targetObject.player == gamePlayer);
+                    TargetObject currentPlayer;
+                    if(NetworkServer.activeHost)
+                    {
+                        currentPlayer = NetworkServer.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkServer.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
+                    }
+                    else
+                    {
+                        currentPlayer = NetworkClient.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkClient.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
+                    }
+                    //TargetObject currentPlayer = M_TurnManager.instance.spawnedPlayerSyncList.Find((targetObject) => targetObject.player == gamePlayer);
 
                     // 이동 위치는 현재 플레이어 타겟오브젝트 위치
                     Vector3 targetPosition = currentPlayer.transform.position;

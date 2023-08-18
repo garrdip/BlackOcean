@@ -6323,6 +6323,8 @@ MonoBehaviour:
   transport: {fileID: 862470415}
   networkAddress: localhost
   maxConnections: 100
+  disconnectInactiveConnections: 0
+  disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 354743714609597316, guid: a7092fdea86b65142a3ac3d1fea9f252, type: 3}
   autoCreatePlayer: 1
@@ -6344,6 +6346,18 @@ MonoBehaviour:
   - {fileID: 4813194014757939247, guid: bd4e3ee47460b5447a0c345a3a044847, type: 3}
   - {fileID: 8715637313035057607, guid: 9a6ba97bce7a1974b81c911cb6e3b5bd, type: 3}
   - {fileID: 8715637313035057607, guid: af2d8931256d070468b953a12be7648e, type: 3}
+  snapshotSettings:
+    bufferTimeMultiplier: 2
+    bufferLimit: 32
+    catchupNegativeThreshold: -1
+    catchupPositiveThreshold: 1
+    catchupSpeed: 0.019999999552965164
+    slowdownSpeed: 0.03999999910593033
+    driftEmaDuration: 1
+    dynamicAdjustment: 1
+    dynamicAdjustmentTolerance: 1
+    deliveryTimeEmaDuration: 2
+  connectionQualityInterval: 3
   timeInterpolationGui: 0
   showRoomGUI: 1
   minPlayers: 1
@@ -6396,18 +6410,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Port: 27015
+  port: 7777
   DualMode: 1
   NoDelay: 1
   Interval: 10
   Timeout: 10000
+  RecvBufferSize: 7361536
+  SendBufferSize: 7361536
   FastResend: 2
-  SendWindowSize: 4096
   ReceiveWindowSize: 4096
+  SendWindowSize: 4096
   MaxRetransmit: 40
   MaximizeSocketBuffers: 1
-  ReliableMaxMessageSize: 298449
-  UnreliableMaxMessageSize: 1199
+  ReliableMaxMessageSize: 297433
+  UnreliableMaxMessageSize: 1195
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0

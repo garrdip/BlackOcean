@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4891119633565535031}
   - component: {fileID: -5967311515642577051}
   - component: {fileID: 102687483241659189}
+  - component: {fileID: -7450075196787643413}
   m_Layer: 0
   m_Name: GamePlayer
   m_TagString: Untagged
@@ -73,8 +74,9 @@ MonoBehaviour:
   isInitializeDone: 0
   selectOrder: 0
   isReady: 0
-  destination: {x: 0, y: 0}
+  isRewardDone: 0
   steamID: 0
+  endTurnActive: 0
 --- !u!114 &-5967311515642577051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91,10 +93,16 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   currentDeckCount: 0
+  cardPocket: {fileID: 0}
   cardCtrlArrow: {fileID: 0}
-  isArrowSpawned: 0
-  currentMapPlayerPiece: {fileID: 0}
-  currentMapPlayerPosition: {x: 0, y: 0, z: 0}
+  choosedCardOnHands:
+  - {fileID: 0}
+  - {fileID: 0}
+  previousCardType: 0
+  currentIchi: 3
+  maxIchi: 3
+  limitiChi: 6
+  ichiText: {fileID: 0}
 --- !u!114 &102687483241659189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,3 +115,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dbdd873f76c4404fbfa6d6f018205c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  currentMapPlayerPiece: {fileID: 0}
+  currentMapPlayerDestination: {fileID: 0}
+  currentMapPlayerDestinationPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &-7450075196787643413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 354743714609597316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ca77a81de3f84045a755bcd1d2f476f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  targetObject: {fileID: 0}

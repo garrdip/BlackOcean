@@ -433,11 +433,11 @@ public class M_MapManager : NetworkBehaviour
 
             // 모든 MapPlayerDestination 비활성화
             ChangeAllMapPlayerDestinationState(false);
-
-            // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
-            M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
             if(isServer)M_TurnManager.instance.GenerateBattleObject();
             if(isServer)M_MapManager.instance.MoveToRoom(); // 이순간에 새로운 맵 생성
+            // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
+            M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
+            
         });
     }
     

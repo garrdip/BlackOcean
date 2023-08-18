@@ -21,7 +21,7 @@ public class M_TurnManager : NetworkBehaviour
     public readonly SyncList<GamePlayer> playerOrder = new SyncList<GamePlayer>();
 
     // 각 클라이언트에서 참조할 현재 참가한 플레이어들의 타겟오브젝트 목록
-    public readonly SyncList<TargetObject> spawnedPlayerSyncList = new SyncList<TargetObject>();
+    public readonly SyncList<uint> spawnedPlayerSyncList = new SyncList<uint>();
 
     public GameObject orderUI;
 
@@ -424,8 +424,9 @@ public class M_TurnManager : NetworkBehaviour
             avatar.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
             avatar.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+            playerOrder[i].GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
             spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
-            spawnedPlayerSyncList.Add(avatar.GetComponent<TargetObject>());
+            spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);
             
             // 타겟 유효 판단을 위한 클론 데이터 //
             GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);

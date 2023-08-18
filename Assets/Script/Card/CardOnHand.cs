@@ -9,7 +9,7 @@ using TMPro;
 
 public class CardOnHand : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(OnChangeCardData))]
+    [SyncVar (hook = nameof(OnChangeCardData))]
     public Card card;
 
     [SyncVar]
@@ -243,7 +243,7 @@ public class CardOnHand : NetworkBehaviour
         foreach(CardCharacteristic character in card.baseCard.cardCharacteristics)
             textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>";
         
-        if(card.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO))
+        if(card.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
         {
             if(card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
             {
@@ -260,11 +260,11 @@ public class CardOnHand : NetworkBehaviour
     private string GetAdditionalValueFromDescription(string str)
     {
         TargetObject tar = null;
-        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerSyncList)
-        {
-            if(target.player == NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>())
-                tar = target;
-        }
+        if(isServer)
+            tar = NetworkServer.spawned[NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
+        else
+            tar = NetworkClient.spawned[NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
+
         string[] splitString = str.Trim().Split(" ");
         for(int i = 0 ;i < splitString.Length ; i++)
         {
