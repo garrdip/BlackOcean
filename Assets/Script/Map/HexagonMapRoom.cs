@@ -50,6 +50,9 @@ public class HexagonMapRoom : NetworkBehaviour
 
     private void OnMouseDown()
     {
+        // 네트워크 딜레이를 감안하여 로컬플레이어의 MapPlayerDestination의 위치이동 및 애니매이션은 서버요청과 별도로 수행하고, 데이터 공유만 서버를 통하도록함.
+        NetworkClient.localPlayer.GetComponent<GamePlayerMap>().currentMapPlayerDestination.transform.localPosition = GetComponent<Transform>().position;
+        NetworkClient.localPlayer.GetComponent<GamePlayerMap>().currentMapPlayerDestination.MoveBounce(true);
         // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시
         NetworkClient.localPlayer.GetComponent<GamePlayerMap>().CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.connection.identity);
     }

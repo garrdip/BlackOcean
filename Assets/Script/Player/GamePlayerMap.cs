@@ -168,8 +168,10 @@ public class GamePlayerMap : NetworkBehaviour
     {
         if(currentMapPlayerDestination != null){
             currentMapPlayerDestination.gameObject.SetActive(true);
-            currentMapPlayerDestination.transform.localPosition = newPosition;
-            currentMapPlayerDestination.MoveBounce(oldPosition != newPosition);
+            if(!currentMapPlayerDestination.isOwned){
+                currentMapPlayerDestination.transform.localPosition = newPosition;
+                currentMapPlayerDestination.MoveBounce(oldPosition != newPosition);
+            }
         }
     }
 
