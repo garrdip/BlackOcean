@@ -129,7 +129,6 @@ public class M_TurnManager : NetworkBehaviour
     {
         base.OnStartServer();
         StartCoroutine(ProcessCardQueue());
-        Debug.Log("Card Queue 코루틴 시작 ");
     }
 
     public override void OnStartClient()

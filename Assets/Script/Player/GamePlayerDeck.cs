@@ -31,17 +31,20 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public CardOnHand[] choosedCardOnHands = new CardOnHand[2];  // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
 
-    public Queue<(Card,TargetObject,NetworkIdentity,CardCtrlArrow)> serverCardPredictQueue = new Queue<(Card, TargetObject, NetworkIdentity, CardCtrlArrow)>();// Server에서 Card Queue 관리를 위한 Queue
+    public Queue<(CardOnHand,TargetObject,NetworkIdentity)> serverCardPredictQueue = new Queue<(CardOnHand, TargetObject, NetworkIdentity)>();// Server에서 Card Queue 관리를 위한 Queue
 
     [SyncVar(hook = nameof(PreviousCardTypeChanged))]
     public CardType previousCardType;
 
-    
+    public List<CardOnHand> destroyCardList = new List<CardOnHand>();
+
+    public CardOnHand TEST;
 
     public override void OnStartServer()
     {
         SetInitialValue();
         StartCoroutine(EnQueueCardTargetPair());
+        StartCoroutine(ServerDestroyCardOnHand());
     }
 
     public override void OnStartClient()
@@ -156,10 +159,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
             이후 : 모든 플레이어 및 몬스터
         */
         WaitForSeconds loopTime = new WaitForSeconds(0.01f);
-        Card card;
+        CardOnHand cardOnHand;
         TargetObject targetObject;
         NetworkIdentity conn;
-        CardCtrlArrow cardCtrlArrow;
         int totalCost;
 
         while(true)
@@ -168,78 +170,61 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
             if(serverCardPredictQueue.Count == 0) continue; //카드큐가 비어있을경우 스킵 
             
-            (card,targetObject,conn,cardCtrlArrow) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
+            ( cardOnHand,targetObject,conn) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
+            TEST = cardOnHand;
 
-            if(targetObject == null) // 타겟이 널일경우 후속조치 하지 않음 (카드 사용이 안됨)
-                continue;
-
-            if(card.baseCard.isTargetable)
+            if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
             {
-                switch(card.baseCard.validTarget)
+                if(cardOnHand.card.baseCard.cardType == previousCardType)
                 {
-                    case ValidTarget.ENEMY :
-                        if(targetObject.objectType != ObjectType.ENEMY) continue;
-                        break;
-                    case ValidTarget.MEMBER :
-                        if(targetObject.objectType == ObjectType.ENEMY)
-                            continue;
-                        if(targetObject.player == GetComponent<GamePlayer>())
-                            continue;
-                        break;
-                    case ValidTarget.TEAM :
-                        if(targetObject.objectType != ObjectType.PLAYER)
-                            continue;
-                        break;
-                }
-            }
-            if(card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
-            {
-                if(card.baseCard.cardType == previousCardType)
-                {
-                    totalCost = ( card.baseCard.cost + card.costAddition - 1 );
+                    totalCost = ( cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition - 1 );
                     if(totalCost < 0)totalCost = 0;
                 }
                 else
                 {
-                     totalCost = ( card.baseCard.cost + card.costAddition + 1 );
+                     totalCost = ( cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition + 1 );
                 }
             }
             else
-                totalCost = card.baseCard.cost + card.costAddition ;
+                totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition ;
             if(totalCost > currentIchi) // 카드 코스트 계산 하는곳
                 continue;
-            currentIchi -= totalCost ;
 
-            if(card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
+            if(targetObject == null)
+            {
+                ReturnToCardOnHand(cardOnHand,conn);
                 continue;
-            
-            // 여기부터 카드사용이 확정 되는곳
-            previousCardType = card.baseCard.cardType;
+            }
 
+            if(cardOnHand.card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
+            {
+                //카드와 이치 다시 돌려보내는곳
+                ReturnToCardOnHand(cardOnHand,conn);
+                continue;
+            }
+
+            currentIchi -= totalCost ;
+            
+            destroyCardList.Add(cardOnHand);
+
+            // 여기부터 카드사용이 확정 되는곳
+            previousCardType = cardOnHand.card.baseCard.cardType;
             List<TargetObject> tar = new List<TargetObject>();
             tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
-            if(card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
+            if(cardOnHand.card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
             tar.AddRange(M_TurnManager.instance.GetClonePlayerObjects());
             tar.AddRange(M_TurnManager.instance.GetCloneMonsterObjects());
-            if(card.baseCard.isTargetable)cardCtrlArrow.RpcAcceptCardUse(conn); // TargetAble이 유효한 타겟이었을 경우 화살표 제거
-            M_TurnManager.instance.ProcessCardPredict(card,tar);
+            M_TurnManager.instance.ProcessCardPredict(cardOnHand.card,tar);
             
             List<TargetObject> targetObjects = new List<TargetObject>();
             targetObjects.Add(M_TurnManager.instance.GetPlayer(conn)); // Index 0 
-            if(card.baseCard.isTargetable)targetObjects.Add(targetObject);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
+            if(cardOnHand.card.baseCard.isTargetable)targetObjects.Add(targetObject);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
             targetObjects.AddRange(M_TurnManager.instance.GetPlayerObjects());
             targetObjects.AddRange(M_TurnManager.instance.GetMonsterObjects());
 
-            M_TurnManager.instance.cardTargetPairQueue.Enqueue((card, targetObjects));
+            M_TurnManager.instance.cardTargetPairQueue.Enqueue((cardOnHand.card, targetObjects));
         }
     }
-
-    // 카드데이터와 카드의 액션수행 대상을 Dictionary로 key, value 쌍으로 묶어 저장
-    public void TESTEnQueueCardData(Card card, TargetObject targetObject, NetworkIdentity conn, CardCtrlArrow cardCtrlArrow)
-    {
-        serverCardPredictQueue.Enqueue((card,targetObject,conn,cardCtrlArrow));
-    }
-
 
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
 
@@ -376,6 +361,32 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void ReturnToCardOnHand(CardOnHand cardOnHand,NetworkIdentity conn)
+    {
+        if(conn == NetworkClient.connection.identity)
+        {
+           StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
+        }
+    }
+   
+    IEnumerator ReturnToCardOnHandCoroutine(CardOnHand cardOnHand)
+    {
+        GamePlayer gamePlayer = GetComponent<GamePlayer>();
+        while(true)
+        {
+            if(gamePlayer.destroyCards.FindIndex(x => x == cardOnHand) != -1)
+            {
+                cardOnHand.isUsed = false;
+                M_CardManager.instance.ResetCardAllState(cardOnHand,false);
+                cardOnHand.GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
+                GetComponent<GamePlayer>().destroyCards.Remove(cardOnHand);
+                break;
+            }
+            yield return new WaitForSeconds(0.01f);
+        }
+    }
+
     // 카드 리스트에서 삭제, 댁카운트 감소, 카드 오브젝트 삭제, 사용된 댁에 추가
     [Command]
     public void CmdDestroyCardOnHand(CardOnHand cardOnHand)
@@ -384,6 +395,33 @@ public partial class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Remove(cardOnHand);
         NetworkServer.Destroy(cardOnHand.gameObject);
     }
+
+    IEnumerator ServerDestroyCardOnHand()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(0.01f);
+            for(int i = 0 ;i < destroyCardList.Count ; i++)
+            {
+                CardOnHand cardOnHand = destroyCardList[i];
+                if(GetComponent<GamePlayer>().destroyCards.FindIndex(x => x == cardOnHand) != -1)
+                { 
+                    GetComponent<GamePlayer>().RemoveDestroyCardList(cardOnHand);
+                    trashDeck.Add(cardOnHand.card);
+                    cardOnHands.Remove(cardOnHand);
+                    destroyCardList.Remove(cardOnHand);
+                    while(true)
+                    {
+                        if(GetComponent<GamePlayer>().destroyCards.FindIndex(x => x == cardOnHand) == -1)
+                            break;
+                        yield return new WaitForSeconds(0.01f);
+                    }
+                    NetworkServer.Destroy(cardOnHand.gameObject);
+                }
+            }
+        }
+    }
+
 
     // 플레이어의  손에 든 모든 카드 제거 및 댁카운트 0으로 초기화, 리스트 초기화, 사용된 댁에 추가
     [Command]
@@ -440,6 +478,19 @@ public partial class GamePlayerDeck : NetworkBehaviour
             if(!cardOnHand.isMoving)cardOnHand.CardInfoChangedEvent.Invoke();
     }
 
+    IEnumerator CardOnHandDrawSequenceFromTrashDeckCoroutine(CardOnHand cardOnHand, int index)
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(0.01f);
+            if(true)
+            {
+                M_CardManager.instance.CardOnHandDrawSequenceFromTrashDeck(cardOnHand, index);
+                break;
+            }
+        }
+    }
+
     // -------------------------------------------------SyncList Callback ---------------------------------------------------//
     
     // CardOnHand Callback
@@ -448,7 +499,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<CardOnHand>.Operation.OP_ADD:
-                M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
+                if(newCardOnHand.transform.position.x < 0)
+                    M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
+                else
+                    StartCoroutine(CardOnHandDrawSequenceFromTrashDeckCoroutine(newCardOnHand, index));
                 break;
             case SyncList<CardOnHand>.Operation.OP_INSERT:
                 

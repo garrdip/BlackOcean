@@ -38,6 +38,21 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public bool isTargetObjectInitDone = false;
 
+    public readonly SyncList<CardOnHand> destroyCards = new SyncList<CardOnHand>();
+
+    public CardOnHand TEST;
+
+    [ClientRpc]
+    public void RemoveDestroyCardList(CardOnHand cardOnHand)
+    {
+        if(isOwned)
+        {
+            destroyCards.Remove(cardOnHand);
+            Debug.Log("Card Removed!");
+        }
+    }
+
+
     public void OnEndTurnStateChanged(bool oldVal, bool newVal)
     {
         if(isServer)

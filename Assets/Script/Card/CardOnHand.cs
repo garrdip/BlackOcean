@@ -41,6 +41,7 @@ public class CardOnHand : NetworkBehaviour
     // 카드 제거 팝업창에서 선택한 상태인지 여부
     public bool isChoosed = false;
 
+    public bool isUsed = false;
 
     [Header("현재 게임 플레이어의 GamePlayerDeck 클래스 참조값")]
     public GamePlayerDeck currentPlayerDeck;
@@ -73,7 +74,7 @@ public class CardOnHand : NetworkBehaviour
     void OnMouseEnter()
     {
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
-            if(!isMoving && !isChoosed && !IsArrowActive() && !IsCardControllablePopUpActive()){
+            if(!isUsed && !isMoving && !isChoosed && !IsArrowActive() && !IsCardControllablePopUpActive()){
                 isMouseOver = true;
                 originSortOrder = index;
                 transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
@@ -87,7 +88,7 @@ public class CardOnHand : NetworkBehaviour
     void OnMouseExit()
     {
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
-            if(!isMoving && !IsArrowActive() && !IsCardControllablePopUpActive()){
+            if(!isUsed && !isMoving && !IsArrowActive() && !IsCardControllablePopUpActive()){
                 isMouseOver = false;
                 transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
                 cardOnHandCanvas.sortingOrder = originSortOrder;
@@ -100,7 +101,7 @@ public class CardOnHand : NetworkBehaviour
     void OnMouseDown()
     {
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
-            if(!isMoving && !IsArrowActive()){
+            if(!isUsed && !isMoving && !IsArrowActive()){
                 // 덱 [목록] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
                 if(!IsCardControllablePopUpActive()){
                     isDrag = true;
@@ -121,7 +122,7 @@ public class CardOnHand : NetworkBehaviour
     // 오브젝트를 마우스로 드래그 할 때 이벤트
     void OnMouseDrag()
     {
-        if(isOwned && M_TurnManager.instance.IsActivePhase()){
+        if(!isUsed &&isOwned && M_TurnManager.instance.IsActivePhase()){
             if(isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
                 DragCardOnHand(this);
                 MovePositionArrowSpawnedCardOnHand(this);
@@ -150,7 +151,7 @@ public class CardOnHand : NetworkBehaviour
     void CmdEnQueueCardData()
     {
         GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-        gamePlayerDeck.serverCardPredictQueue.Enqueue((card, null, NetworkClient.connection.identity, null));
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null, NetworkClient.connection.identity));
     }
 
     // 마우스 좌표에 따라 카드 오브젝트 드래그

@@ -102,7 +102,7 @@ public class M_CardManager : NetworkBehaviour
                 for(int i=0; i<count; i++){      
                     CardOnHand cardOnHand = cardOnHandsIsNotChoosed[i];
                     if(cardOnHand != null){
-                        if(!cardOnHand.isMoving && !cardOnHand.isDrag){
+                        if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed){
                             if(cardOnHand.isMouseOver){
                                 Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
@@ -169,43 +169,66 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
+    public void CardOnHandDrawSequenceFromTrashDeck(CardOnHand cardOnHand, int index)
+    {
+        if(!cardOnHand.isChoosed){
+            cardOnHand.isMoving = true;
+            cardOnHand.transform.position = GameUIManager.instance.buttonTrashDeck.transform.position;
+            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            cardOnHand.transform.localScale = new Vector3(0.02f, 0.02f, 0f);
+
+            // Dotween 애니매이션 시퀀스 생성
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
+            sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
+                .SetDelay(index * 0.1f)
+                .SetEase(Ease.OutSine)
+                .OnComplete(() => {
+                    cardOnHand.isMoving = false;
+                    sequence.Kill();
+                }));      
+        }
+    }
+
     // CardOnHand 오브젝트 trashDeck으로 버리는 애니매이션 + 오브젝트 파괴 커맨드 호출
     public void CardOnHandThrowAwaySequence(CardOnHand cardOnHand)
     {
-        GameUIManager.instance.buttonEndTurn.interactable = false;        
-        cardOnHand.isMoving = true;
-        float duration = 0.3f;
-        Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
+        if(NetworkClient.connection != null && NetworkClient.active){   
+            GameUIManager.instance.buttonEndTurn.interactable = false;        
+            cardOnHand.isMoving = true;
+            float duration = 0.3f;
+            Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
 
-        // Dotween 애니매이션 시퀀스 생성
-        Sequence sequence = DOTween.Sequence();
-        
-        // 시퀸스에 회전 초기화, 현재위치에서 중앙 0.5f위쪽 위치로 이동 애니매이션 추가
-        sequence.Prepend(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f));
-        sequence.Join(cardOnHand.transform
-                            .DOMove(new Vector3(0f, 0.5f, 0f), 0.5f)
-                            .SetEase(Ease.OutSine));
+            // Dotween 애니매이션 시퀀스 생성
+            Sequence sequence = DOTween.Sequence();
+            
+            // 시퀸스에 회전 초기화, 현재위치에서 중앙 0.5f위쪽 위치로 이동 애니매이션 추가
+            sequence.Prepend(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f));
+            sequence.Join(cardOnHand.transform
+                                .DOMove(new Vector3(0f, 0.5f, 0f), 0.5f)
+                                .SetEase(Ease.OutSine));
 
-        // 시퀀스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 화면의 우측하단 방향으로 포물선 이동 애니매이션 추가
-        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration));
-        sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
-        sequence.Join(cardOnHand.transform
-                            .DOMove(trashDeckPosition, duration)
-                            .SetEase(Ease.InOutCirc));
-        sequence.OnComplete(() =>
-        {
-            // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행
-            if(NetworkClient.connection != null && NetworkClient.active){   
-                GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            // 시퀀스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 화면의 우측하단 방향으로 포물선 이동 애니매이션 추가
+            sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration));
+            sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
+            sequence.Join(cardOnHand.transform
+                                .DOMove(trashDeckPosition, duration)
+                                .SetEase(Ease.InOutCirc));
+            sequence.OnComplete(() =>
+            {
+                // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행
                 if (gamePlayerDeck.isLocalPlayer)
                 {
                     cardOnHand.isMoving = false;
-                    gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
+                    cardOnHand.GetComponent<SpriteRenderer>().color = new Color(1,1,1,0);
                     GameUIManager.instance.buttonEndTurn.interactable = true;
                     sequence.Kill();
+                    NetworkClient.connection.identity.GetComponent<GamePlayer>().destroyCards.Add(cardOnHand);
+                    NetworkClient.connection.identity.GetComponent<GamePlayer>().TEST = cardOnHand;
                 }
-            }
-        });
+            });
+        }
     }
 
     // CardOnHand 모두 trashDeck으로 버리는 애니매이션(역순으로 크기, 방향, 위치 변경)

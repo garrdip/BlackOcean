@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
+using ProjectD;
 
 
 public class CardCtrlArrow : NetworkBehaviour
@@ -86,8 +87,50 @@ public class CardCtrlArrow : NetworkBehaviour
             if(NetworkClient.connection != null && NetworkClient.active){
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                 if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
-                    TargetObject targetObjects = currentTarget.transform.parent.GetComponent<TargetObject>();
-                    CmdEnQueueCardData(gamePlayerDeck, arrowOwnedCardOnHand,targetObjects, NetworkClient.connection.identity); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
+                    if(arrowOwnedCardOnHand.isUsed == false)
+                    {
+                        TargetObject targetObject = currentTarget.transform.parent.GetComponent<TargetObject>();
+                        //카드 사용 유무 판단 위치
+                        int totalCost = 0;
+                        if(targetObject == null)return;
+                        if(arrowOwnedCardOnHand.card.baseCard.isTargetable)
+                        {
+                            switch(arrowOwnedCardOnHand.card.baseCard.validTarget)
+                            {
+                                case ValidTarget.ENEMY :
+                                    if(targetObject.objectType != ObjectType.ENEMY) return;
+                                    break;
+                                case ValidTarget.MEMBER :
+                                    if(targetObject.objectType == ObjectType.ENEMY)
+                                        return;
+                                    if(targetObject.player == GetComponent<GamePlayer>())
+                                        return;
+                                    break;
+                                case ValidTarget.TEAM :
+                                    if(targetObject.objectType != ObjectType.PLAYER)
+                                        return;
+                                    break;
+                            }
+                        }
+                        if(arrowOwnedCardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
+                        {
+                            if(arrowOwnedCardOnHand.card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
+                            {
+                                totalCost = ( arrowOwnedCardOnHand.card.baseCard.cost + arrowOwnedCardOnHand.card.costAddition - 1 );
+                                if(totalCost < 0)totalCost = 0;
+                            }
+                            else
+                                totalCost = ( arrowOwnedCardOnHand.card.baseCard.cost + arrowOwnedCardOnHand.card.costAddition + 1 );
+                        }
+                        else
+                            totalCost = arrowOwnedCardOnHand.card.baseCard.cost + arrowOwnedCardOnHand.card.costAddition ;
+                        if(totalCost > NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().currentIchi) // 카드 코스트 계산 하는곳
+                            return;
+                        //
+                        arrowOwnedCardOnHand.isUsed = true;
+                        CmdEnQueueCardData(gamePlayerDeck, arrowOwnedCardOnHand,targetObject, NetworkClient.connection.identity); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
+                        AcceptCardUse();
+                    }
                 }
             }
         }
@@ -96,7 +139,7 @@ public class CardCtrlArrow : NetworkBehaviour
     [Command]
     void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, CardOnHand cardOnHand, TargetObject tar, NetworkIdentity conn)
     {
-        gamePlayerDeck.serverCardPredictQueue.Enqueue((cardOnHand.card, tar, conn, this));
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((cardOnHand, tar, conn));
     }
 
     // 화살표 초기화(위치설정, visible상태 활성화, 베지어 곡선 조작점 설정, 화살표 활성화 상태 변수 변경)
@@ -165,12 +208,9 @@ public class CardCtrlArrow : NetworkBehaviour
     }
 
     // 화살표를 소환한 카드의 액션 수행 이벤트 수신
-    [ClientRpc]
-    public void RpcAcceptCardUse(NetworkIdentity conn)
+    public void AcceptCardUse()
     {
-        if(conn == NetworkClient.connection.identity){
-            ChangeArrowVisible(false, GameUIManager.instance.CardOnHandsPanel.transform); // 화살표 활성화 상태 변경
-            M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
-        }
+        ChangeArrowVisible(false, GameUIManager.instance.CardOnHandsPanel.transform); // 화살표 활성화 상태 변경
+        M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
     }
 }
