@@ -64,7 +64,7 @@ public class GamePlayerMap : NetworkBehaviour
     }
 
 
-    // 맵 플레이어가 이동하려는 방 표시 오브젝트의 위치 변경 및 거리값 계산
+    // 맵 플레이어가 이동하려는 방 표시 오브젝트의 위치 변경 및 거리값 계산 (서버 전용)
     [Command]
     public void CmdChangeMapPlayerDestinationPosition(HexagonMapRoom endAt, Vector3 position, NetworkIdentity networkIdentity)
     {
@@ -78,8 +78,26 @@ public class GamePlayerMap : NetworkBehaviour
             return;
         } 
 
-        // 맵 플레이어 표시 위치변경 및 경로검색
-        ChangeMapPlayerPositionAndFindPath(endAt, position, netIdentity);
+        // MapPlayerDestination 오브젝트의 위치 변경
+        currentMapPlayerDestinationPosition = position;
+        
+        // 시작지점은 CurretnRoom 또는 StartPosition
+        HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : M_MapManager.instance.hexagonMapRooms[0];
+        
+        // 거리 계산을 위해 시작지점과 끝지점 설정
+        M_MapManager.instance.startAt = startAt;
+        M_MapManager.instance.endAt = endAt;
+        
+        // 경로검색
+        List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
+        if(findPath.Count > 0){
+            RpcVisualizePath(findPath, networkIdentity.netId); // 경로표시
+        }else{
+            RpcHidePath(networkIdentity.netId); // 경로제거
+        }
+        
+        // findPath 리스트의 카운트 = 거리값
+        currentMapPlayerDestination.distanceFromCurrentCoordinate = findPath.Count;
     
         // 선택한 MapRoom 투표
         VoteHexagonMapRoom(endAt, netIdentity);
@@ -103,32 +121,6 @@ public class GamePlayerMap : NetworkBehaviour
 
     // ------------------------------------------------------------------------------ Server Method ----------------------------------------------------------------------------//
 
-    // 맵플레이어 표시 오브젝트 위치 변경 및 경로 검색하여 경로 표시
-    [Server]
-    private void ChangeMapPlayerPositionAndFindPath(HexagonMapRoom endAt, Vector3 position, NetworkIdentity networkIdentity)
-    {
-        // MapPlayerDestination 오브젝트의 위치 변경
-        currentMapPlayerDestinationPosition = position;
-        
-        // 시작지점은 CurretnRoom 또는 StartPosition
-        HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : M_MapManager.instance.hexagonMapRooms[0];
-        
-        // 거리 계산을 위해 시작지점과 끝지점 설정
-        M_MapManager.instance.startAt = startAt;
-        M_MapManager.instance.endAt = endAt;
-        
-        // 경로검색
-        List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
-        if(findPath.Count > 0){
-            RpcVisualizePath(findPath, networkIdentity.netId); // 경로표시
-        }else{
-            RpcHidePath(networkIdentity.netId); // 경로제거
-        }
-        
-        // findPath 리스트의 카운트 = 거리값
-        currentMapPlayerDestination.distanceFromCurrentCoordinate = findPath.Count;
-    }
-
     // 맵플레이어가 선택한 MapRoom값을 Dictionary<NetworkIdentity, MapRoom> 형태로 저장
     [Server]
     private void VoteHexagonMapRoom(HexagonMapRoom hexagonMapRoom, NetworkIdentity networkIdentity)
@@ -140,6 +132,52 @@ public class GamePlayerMap : NetworkBehaviour
         }
     }
 
+    // ------------------------------------------------------------------------------ Client Method -------------------------------------------------------------------------------//
+
+    // 맵 플레이어가 이동하려는 방 표시 오브젝트의 위치 변경 및 거리값 계산 (로컬 클라이언트 전용)
+    // : 네트워크 딜레이를 감안하여 로컬플레이어의 MapPlayerDestination의 위치이동 및 애니매이션은 서버요청과 별도로 로컬에서 수행.
+    // : 각 플레이어는 [로컬 로직] + [커맨드를 통한 서버요청 로직]을 둘다 수행하지만 수신되는 이벤트에서 로컬유저 소유가 아닌 경우로 분기처리하여, 다른유저의 변경 이벤트만 뷰 업데이트 수행.
+    [Client]
+    public void ClientChangeMapPlayerDestinationPosition(HexagonMapRoom endAt, Vector3 position, NetworkIdentity networkIdentity)
+    {
+        // 맵에 보스 출현 시 1칸 이상 이동 불가
+        if(M_MapManager.instance.mapBoss != null && M_MapManager.instance.GetDistanceFromCurrentCoordinate(endAt.coordinate) > 1){
+            return;
+        }
+
+        // 거점지역인 경우 아직 비활성화 상태면 이동 불가
+        if(endAt.isRegion && !endAt.isActive){
+            return;
+        } 
+
+        // MapPlayerDestination 오브젝트의 위치 변경
+        currentMapPlayerDestination.gameObject.SetActive(true);
+        currentMapPlayerDestination.transform.localPosition = position;
+        currentMapPlayerDestination.MoveBounce(true);
+
+        // 시작지점은 CurretnRoom 또는 StartPosition
+        HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : NetworkClient.spawned[M_MapManager.instance.hexagonMapRoomNetIds[0]].GetComponent<HexagonMapRoom>();
+        
+        // 거리 계산을 위해 시작지점과 끝지점 설정
+        M_MapManager.instance.startAt = startAt;
+        M_MapManager.instance.endAt = endAt;
+        
+        // 경로검색
+        List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
+        if(findPath.Count > 0){
+            // 경로표시
+            M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
+            M_MapManager.instance.RenderVisualizePath(findPath, networkIdentity.netId, currentMapPlayerDestination); 
+            currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
+        }else{
+            // 경로제거
+            M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
+            currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(false);
+        }
+        
+        // findPath 리스트의 카운트 = 거리값
+        currentMapPlayerDestination.textDistanceCount.text = findPath.Count.ToString();
+    }
 
     // ------------------------------------------------------------------------------ ClientRpc Method ----------------------------------------------------------------------------//
 
@@ -147,17 +185,21 @@ public class GamePlayerMap : NetworkBehaviour
     [ClientRpc]
     public void RpcVisualizePath(List<HexagonMapRoom> findPath, uint netId)
     {   
-        M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
-        M_MapManager.instance.RenderVisualizePath(findPath, netId, currentMapPlayerDestination); // 새 경로 랜더링
-        currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
+        if(currentMapPlayerDestination != null && !currentMapPlayerDestination.isOwned){
+            M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
+            M_MapManager.instance.RenderVisualizePath(findPath, netId, currentMapPlayerDestination); // 새 경로 랜더링
+            currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
+        }
     }
 
     // 검색된 경로를 표시하는 라인랜더러 및 카운트 마크 제거
     [ClientRpc]
     public void RpcHidePath(uint netId)
-    {    
-        M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
-        currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(false);
+    {   
+        if(currentMapPlayerDestination != null && !currentMapPlayerDestination.isOwned){
+            M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
+            currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(false);
+        }
     }
 
 
@@ -166,12 +208,10 @@ public class GamePlayerMap : NetworkBehaviour
     // 맵 플레이어가 이동하려는 방의 위치를 알려주는 표시 변경 수신
     public void OnChangeCurrentMapPlayerDestination(Vector3 oldPosition, Vector3 newPosition)
     {
-        if(currentMapPlayerDestination != null){
+        if(currentMapPlayerDestination != null && !currentMapPlayerDestination.isOwned){
             currentMapPlayerDestination.gameObject.SetActive(true);
-            if(!currentMapPlayerDestination.isOwned){
-                currentMapPlayerDestination.transform.localPosition = newPosition;
-                currentMapPlayerDestination.MoveBounce(oldPosition != newPosition);
-            }
+            currentMapPlayerDestination.transform.localPosition = newPosition;
+            currentMapPlayerDestination.MoveBounce(oldPosition != newPosition);
         }
     }
 

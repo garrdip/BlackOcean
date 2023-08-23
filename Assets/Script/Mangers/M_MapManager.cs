@@ -54,10 +54,6 @@ public class M_MapManager : NetworkBehaviour
     public Transform gridParent;
     public GameObject regionIndicator;
 
-    public readonly SyncList<Region> regions = new SyncList<Region>();
-
-    //public readonly SyncList<Vector2> colorRegion;
-
     [Header("맵에서 플레이어가 컨트롤하는 오브젝트 리스트")]
     public List<GameObject> mapPlayerPieces;
 
@@ -67,6 +63,10 @@ public class M_MapManager : NetworkBehaviour
 
     [Header("HexagonMapRoom 리스트")]
     public List<HexagonMapRoom> hexagonMapRooms = new List<HexagonMapRoom>();
+
+    public readonly SyncList<uint> hexagonMapRoomNetIds = new SyncList<uint>(); // hexagonMapRoom 오브젝트 NetId 리스트
+
+    public readonly SyncList<Region> regions = new SyncList<Region>(); // 거점지역 리스트
 
     public const float rangeExistOtherHexagon = 0.5f; // 현재 위치한 육각형 주위에 다른 육각형이 존재하는지 확인용 중심점 간의 거리 차이 계산값
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
@@ -183,6 +183,7 @@ public class M_MapManager : NetworkBehaviour
 
         // 육각형 위치 리스트에 추가
         hexagonMapRooms.Add(centerRoom);
+        hexagonMapRoomNetIds.Add(centerRoom.GetComponent<NetworkIdentity>().netId);
         
         // 가운데 주위에 6개 생성
         for (int i = 0; i < 6; i++)
@@ -209,6 +210,7 @@ public class M_MapManager : NetworkBehaviour
             aroundRoom.coordinate = centerRoom.coordinate + offSets[i];
             // 육각형 위치 및 오브젝트 클래스 리스트에 추가
             hexagonMapRooms.Add(aroundRoom);
+            hexagonMapRoomNetIds.Add(aroundRoom.GetComponent<NetworkIdentity>().netId);
         }
     }
 
@@ -249,6 +251,7 @@ public class M_MapManager : NetworkBehaviour
                     hexagonMapRoom.coordinate = currentHexagonMapRoom.coordinate + new Vector2Int(q, r);
                     // 육각형 위치 및 오브젝트 클래스 리스트에 추가
                     hexagonMapRooms.Add(hexagonMapRoom);
+                    hexagonMapRoomNetIds.Add(hexagonMapRoom.GetComponent<NetworkIdentity>().netId);
                 }
             }
         }
@@ -336,6 +339,7 @@ public class M_MapManager : NetworkBehaviour
                     hexagonMapRoom.coordinate = new Vector2Int((int)loc.coordinate.x, (int)loc.coordinate.y);
                     // 육각형 위치 및 오브젝트 클래스 리스트에 추가
                     hexagonMapRooms.Add(hexagonMapRoom);
+                    hexagonMapRoomNetIds.Add(hexagonMapRoom.GetComponent<NetworkIdentity>().netId);
                 }
             }
         }
@@ -406,6 +410,23 @@ public class M_MapManager : NetworkBehaviour
             }
             mapBoss.bossPosition = GetPosition(mapBoss.coordinate.x, mapBoss.coordinate.y);
         }
+    }
+
+    // 서버에서 이웃 방 검색 : hexagonMapRooms List에서 검색
+    [Server]
+    private HexagonMapRoom FindNeighboursForServer(int index, HexagonMapRoom currentHexagonRoom)
+    {
+        return hexagonMapRooms.Find((room) => room.coordinate == currentHexagonRoom.coordinate + offSets[index]); 
+    }
+
+    // ------------------------------------------------------------ Client Method ----------------------------------------------------------------- //
+
+    // 클라에서 이웃 방 검색 : NetworkClient.spawned Dictionary에서 NetId를 통해 검색
+    [Client]
+    private HexagonMapRoom FindNeighboursForClient(int index, HexagonMapRoom currentHexagonRoom)
+    {
+        uint findNetId = hexagonMapRoomNetIds.Find((netId) => NetworkClient.spawned[netId].GetComponent<HexagonMapRoom>().coordinate == currentHexagonRoom.coordinate + offSets[index]);
+        return NetworkClient.spawned[findNetId].GetComponent<HexagonMapRoom>();
     }
 
     // ------------------------------------------------------------ ClientRpc Method -------------------------------------------------------------- //
@@ -739,7 +760,7 @@ public class M_MapManager : NetworkBehaviour
         List<HexagonMapRoom> neighbours = new List<HexagonMapRoom>();
         for(int i = 0; i < 6; i++)
         {
-            HexagonMapRoom neighbour = hexagonMapRooms.Find((room) => room.coordinate == currentHexagonRoom.coordinate + offSets[i]);
+            HexagonMapRoom neighbour = isServer ? FindNeighboursForServer(i, currentHexagonRoom) : FindNeighboursForClient(i, currentHexagonRoom); // 서버, 클라 분기 처리하여 이웃방 검색
             if(neighbour != null && neighbour.isComplete){ // 완료된 방의 경우에만 경로 탐색 가능
                 neighbours.Add(neighbour);
             }
