@@ -128,6 +128,7 @@ public class CardCtrlArrow : NetworkBehaviour
                             return;
                         //
                         arrowOwnedCardOnHand.isUsed = true;
+                        arrowOwnedCardOnHand.isMoving = false;
                         CmdEnQueueCardData(gamePlayerDeck, arrowOwnedCardOnHand,targetObject, NetworkClient.connection.identity); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
                         AcceptCardUse();
                     }

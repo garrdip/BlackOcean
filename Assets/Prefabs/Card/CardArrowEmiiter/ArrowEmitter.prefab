@@ -71,6 +71,12 @@ MonoBehaviour:
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
@@ -91,12 +97,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83884b8bf49e8014a8954a6c9b420280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
+  syncDirection: 1
   syncMode: 0
   syncInterval: 0.1
   arrowOwnedCardOnHand: {fileID: 0}
-  arrowHeadPrefab: {fileID: 387816068712704334, guid: ced8dc11b1bd51c4abdb0adc2c1c882b, type: 3}
-  arrowNodePrefab: {fileID: 1804995873757050396, guid: dbd1c9886aa648347b11354c1a3c2343, type: 3}
   currentTarget: {fileID: 0}
   scaleFactor: 2
   arrowNodes: []

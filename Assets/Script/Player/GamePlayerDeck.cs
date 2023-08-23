@@ -446,7 +446,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     // 화살표 주인 카드 참조값 설정
-    [Command]
     public void CmdSetArrowOwnCardOnHand(CardOnHand cardOnHand)
     {
         cardCtrlArrow.arrowOwnedCardOnHand = cardOnHand;
