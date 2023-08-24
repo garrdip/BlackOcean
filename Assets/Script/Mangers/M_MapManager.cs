@@ -422,8 +422,13 @@ public class M_MapManager : NetworkBehaviour
     [Client]
     private HexagonMapRoom FindNeighboursForClient(int index, HexagonMapRoom currentHexagonRoom)
     {
-        uint findNetId = hexagonMapRoomNetIds.Find((netId) => NetworkClient.spawned[netId].GetComponent<HexagonMapRoom>().coordinate == currentHexagonRoom.coordinate + offSets[index]);
-        return NetworkClient.spawned[findNetId].GetComponent<HexagonMapRoom>();
+        foreach (uint netId in hexagonMapRoomNetIds){
+            HexagonMapRoom mapRoom = NetworkClient.spawned[netId].GetComponent<HexagonMapRoom>();
+            if(mapRoom.coordinate == currentHexagonRoom.coordinate + offSets[index]){
+                return mapRoom;
+            }
+        }
+        return null;
     }
 
     // ------------------------------------------------------------ ClientRpc Method -------------------------------------------------------------- //
@@ -758,7 +763,7 @@ public class M_MapManager : NetworkBehaviour
         for(int i = 0; i < 6; i++)
         {
             HexagonMapRoom neighbour = isServer ? FindNeighboursForServer(i, currentHexagonRoom) : FindNeighboursForClient(i, currentHexagonRoom); // 서버, 클라 분기 처리하여 이웃방 검색
-            if(neighbour != null && neighbour.isComplete){ // 완료된 방의 경우에만 경로 탐색 가능
+            if(neighbour != null){
                 neighbours.Add(neighbour);
             }
         }
@@ -793,28 +798,32 @@ public class M_MapManager : NetworkBehaviour
     }
 
     // netId에 해당하는 유저의 경로 랜더링
-    public void RenderVisualizePath(List<HexagonMapRoom> findPath, uint netId, MapPlayerDestination currentMapPlayerDestination)
+    public void RenderVisualizePath(HexagonMapRoom startAt, List<HexagonMapRoom> findPath, uint netId, MapPlayerDestination currentMapPlayerDestination)
     {
+        // 현재 플레이어 위치 시작지점으로 경로 추가
+        GameObject startPathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity);
+        PathLineRenderer path = startPathLineRenderer.GetComponent<PathLineRenderer>();
+        SpriteRenderer sprite = startPathLineRenderer.GetComponent<SpriteRenderer>();
+        sprite.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
+        path.netId = netId;
+        path.rotationZ = GetAngleFromCoordinate(startAt.coordinate, findPath[0].coordinate); // 선의 회전값 계산
+
+        Vector3 startPosition = ((startAt.transform.position) + (findPath[0].transform.position)) / 2f; // 선의 중심 위치 계산
+        startPathLineRenderer.transform.position = startPosition;
+        pathLineRenderers.Add(startPathLineRenderer);
+
+        // 검색된 경로 추가
         for(int i=0; i<findPath.Count-1; i++)
         {
             GameObject pathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity);
             PathLineRenderer pathLineRendererComponent = pathLineRenderer.GetComponent<PathLineRenderer>();
             SpriteRenderer spriteRenderer = pathLineRenderer.GetComponent<SpriteRenderer>();
-
-            spriteRenderer.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color; // 경로표시 색상은 MapPlayerDestination과 동일한 색으로 설정
-
+            spriteRenderer.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
             pathLineRendererComponent.netId = netId;
-            pathLineRendererComponent.rotationZ = GetAngleFromCoordinate(findPath[i].coordinate, findPath[i + 1].coordinate);
+            pathLineRendererComponent.rotationZ = GetAngleFromCoordinate(findPath[i].coordinate, findPath[i + 1].coordinate); // 선의 회전값 계산
 
-            // 선의 방향과 길이 계산
-            Vector3 startPos = findPath[i].transform.position;
-            Vector3 endPos = findPath[i + 1].transform.position;
-            Vector3 direction = endPos - startPos;
-
-            // 선의 중심 위치 계산
-            Vector3 centerPoint = (startPos + endPos) / 2f;
-
-            pathLineRenderer.transform.position = centerPoint;
+            Vector3 pathPosition = ((findPath[i].transform.position) + (findPath[i + 1].transform.position)) / 2f; // 선의 중심 위치 계산
+            pathLineRenderer.transform.position = pathPosition;
             pathLineRenderers.Add(pathLineRenderer);
         }
     }
