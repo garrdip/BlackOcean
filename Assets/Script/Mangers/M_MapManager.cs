@@ -86,9 +86,6 @@ public class M_MapManager : NetworkBehaviour
         new Vector2Int(1, -1) // 1시
     };
 
-    public HexagonMapRoom startAt;
-    public HexagonMapRoom endAt;
-
 
     public static M_MapManager instance
     {

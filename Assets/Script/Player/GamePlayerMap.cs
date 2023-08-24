@@ -84,13 +84,9 @@ public class GamePlayerMap : NetworkBehaviour
             
             // 시작지점은 CurretnRoom 또는 StartPosition
             HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : M_MapManager.instance.hexagonMapRooms[0];
-            
-            // 거리 계산을 위해 시작지점과 끝지점 설정
-            M_MapManager.instance.startAt = startAt;
-            M_MapManager.instance.endAt = endAt;
-            
+     
             // 경로검색
-            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
+            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt , endAt);
             if(findPath.Count > 0){
                 RpcVisualizePath(findPath, networkIdentity.netId); // 경로표시
             }else{
@@ -160,13 +156,9 @@ public class GamePlayerMap : NetworkBehaviour
 
             // 시작지점은 CurretnRoom 또는 StartPosition
             HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : NetworkClient.spawned[M_MapManager.instance.hexagonMapRoomNetIds[0]].GetComponent<HexagonMapRoom>();
-            
-            // 거리 계산을 위해 시작지점과 끝지점 설정
-            M_MapManager.instance.startAt = startAt;
-            M_MapManager.instance.endAt = endAt;
-            
+
             // 경로검색
-            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
+            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt , endAt);
             if(findPath.Count > 0){
                 // 경로표시
                 M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
