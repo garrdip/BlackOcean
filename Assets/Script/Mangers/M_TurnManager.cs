@@ -22,6 +22,8 @@ public class M_TurnManager : NetworkBehaviour
 
     // 각 클라이언트에서 참조할 현재 참가한 플레이어들의 타겟오브젝트 목록
     public readonly SyncList<uint> spawnedPlayerSyncList = new SyncList<uint>();
+    
+    Vector3[] targetObjectPosition = {new Vector3(-7,-3,0),new Vector3(-11,-3,0),new Vector3(-15,-3,0),new Vector3(7,-3,0),new Vector3(11,-3,0),new Vector3(15,-3,0)};
 
     public GameObject orderUI;
 
@@ -439,7 +441,7 @@ public class M_TurnManager : NetworkBehaviour
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         for(int i = 0 ;i < playerOrder.Count ; i ++)
         {
-            GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),playerSpawnLocation.GetChild(i).transform.position,Quaternion.identity);
+            GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[i],Quaternion.identity);
             NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().player = playerOrder[i];
             avatar.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
@@ -479,7 +481,7 @@ public class M_TurnManager : NetworkBehaviour
         for(int i = 0 ; i < M_MonsterManager.instance.monsterGroups[num].monsters.Count ; i ++)
         {
             Debug.Log(M_MonsterManager.instance.monsterGroups[num].monsters[i].name);
-            var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == M_MonsterManager.instance.monsterGroups[num].monsters[i].name),monsterSpawnLocation.GetChild(i).transform.position,Quaternion.identity).GetComponent<SpawnedMonster>();
+            var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == M_MonsterManager.instance.monsterGroups[num].monsters[i].name),targetObjectPosition[i+3],Quaternion.identity).GetComponent<SpawnedMonster>();
             var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == M_MonsterManager.instance.monsterGroups[num].monsters[i].name),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
 
             NetworkServer.Spawn(monster.gameObject);
@@ -489,7 +491,7 @@ public class M_TurnManager : NetworkBehaviour
             cloneMonster.monsterData = M_MonsterManager.instance.monsterGroups[num].monsters[i];
 
 
-            var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),monsterSpawnLocation.GetChild(i).transform.position,Quaternion.identity);
+            var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[i+3],Quaternion.identity);
             var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
 
             NetworkServer.Spawn(avatar);
