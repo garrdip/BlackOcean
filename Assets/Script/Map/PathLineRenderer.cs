@@ -11,5 +11,6 @@ public class PathLineRenderer : MonoBehaviour
     {
         transform.SetParent(M_MapManager.instance.MapPathLines.transform);
         transform.localRotation = Quaternion.Euler(0f, 0f, rotationZ);
+        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, 0f);
     }
 }
