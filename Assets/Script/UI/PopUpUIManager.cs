@@ -35,6 +35,12 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public delegate void OnChangeDeckRemovePopUpHide();
     public OnChangeDeckRemovePopUpHide onChangeDeckRemovePopUpHide;
 
+    // Mercurius PopUp Delegate
+    public delegate void OnMercuriusPopUpShow();
+    public OnMercuriusPopUpShow onMercuriusPopUpShow;
+    public delegate void OnMercuriusPopUpHide();
+    public OnMercuriusPopUpHide onMercuriusPopUpHide;
+
 
     [Header("팝업 UI 오브젝트")]
     public GameObject deckListPopUp; // 덱 목록 팝업
@@ -43,6 +49,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject battleResultPopUp; // 전투 종료 후 카드 선택 팝업
     public GameObject layoutCardOnHandForRemove; // 카드 제거 팝업의 선택된 카드가 움직일 위치의 레이아웃
     public GameObject selectableCardList; // 전투 종료 보상 카드 목록 레이아웃 
+    public GameObject mercuriusPopUp;
 
 
     [Header("댁 리스트 팝업에 사용되는 카드 프리팹")]
@@ -138,6 +145,21 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         if(onChangeDeckRemovePopUpHide != null){
             onChangeDeckRemovePopUpHide.Invoke();
+        }
+    }
+
+    public void HandleMercuriusPopUp(bool isPopUp)
+    {
+        if(isPopUp)
+        {
+            mercuriusPopUp.SetActive(true);
+            if(onMercuriusPopUpShow != null)
+                onMercuriusPopUpShow.Invoke();   
+        }
+        else
+        {
+            if(onMercuriusPopUpHide != null)
+                onMercuriusPopUpHide.Invoke();
         }
     }
 }
