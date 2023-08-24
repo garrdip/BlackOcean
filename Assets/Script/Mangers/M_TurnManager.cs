@@ -182,7 +182,7 @@ public class M_TurnManager : NetworkBehaviour
             if(roomType == RoomType.MONSTER || roomType == RoomType.ELITE)
                 GenerateMonster();
             else
-                GenerateNPC();
+                GenerateNPC("NPC_Mercurius");
 
             // 전투 시작 이치 초기화
             foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
@@ -516,9 +516,36 @@ public class M_TurnManager : NetworkBehaviour
     }
 
     [Server]
-    void GenerateNPC()
+    public void GenerateNPC(string npcName)
     {
-        // 이벤트 , 상점, 전초기지 NPC 생성 위치
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
+        var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(11,3,0),Quaternion.identity).GetComponent<SpawnedMonster>();
+        var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
+        NetworkServer.Spawn(monster.gameObject);
+        NetworkServer.Spawn(cloneMonster.gameObject);
+
+        monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
+        cloneMonster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
+
+        var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(11,3,0),Quaternion.identity);
+        var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
+
+        NetworkServer.Spawn(avatar);
+        NetworkServer.Spawn(cloneAvatar);
+        avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+        avatar.GetComponent<TargetObject>().monster = monster;
+        cloneAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+        cloneAvatar.GetComponent<TargetObject>().monster = cloneMonster;
+        cloneAvatar.GetComponent<TargetObject>().isCloneData = true;
+        cloneAvatar.GetComponent<TargetObject>().origin = avatar.GetComponent<TargetObject>();
+        avatar.GetComponent<TargetObject>().clone = cloneAvatar.GetComponent<TargetObject>();
+        spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
+        cloneMonsterList.Add(cloneAvatar.GetComponent<TargetObject>());
+        // monster 오브젝트의 부모오브젝트 참조값 설정
+        monster.parent = avatar.GetComponent<TargetObject>();
+        cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
+
     }
 
     [Server]
