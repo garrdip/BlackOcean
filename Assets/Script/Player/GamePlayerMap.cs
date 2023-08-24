@@ -88,7 +88,7 @@ public class GamePlayerMap : NetworkBehaviour
             // 경로검색
             List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt , endAt);
             if(findPath.Count > 0){
-                RpcVisualizePath(findPath, networkIdentity.netId); // 경로표시
+                RpcVisualizePath(startAt, findPath, networkIdentity.netId); // 경로표시
             }else{
                 RpcHidePath(networkIdentity.netId); // 경로제거
             }
@@ -162,7 +162,7 @@ public class GamePlayerMap : NetworkBehaviour
             if(findPath.Count > 0){
                 // 경로표시
                 M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
-                M_MapManager.instance.RenderVisualizePath(findPath, networkIdentity.netId, currentMapPlayerDestination); 
+                M_MapManager.instance.RenderVisualizePath(startAt, findPath, networkIdentity.netId, currentMapPlayerDestination); 
                 currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
             }else{
                 // 경로제거
@@ -179,11 +179,11 @@ public class GamePlayerMap : NetworkBehaviour
 
     // 검색된 경로를 표시하는 라인랜더러 랜더링
     [ClientRpc]
-    public void RpcVisualizePath(List<HexagonMapRoom> findPath, uint netId)
+    public void RpcVisualizePath(HexagonMapRoom startAt, List<HexagonMapRoom> findPath, uint netId)
     {   
         if(currentMapPlayerDestination != null && !currentMapPlayerDestination.isOwned){
             M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
-            M_MapManager.instance.RenderVisualizePath(findPath, netId, currentMapPlayerDestination); // 새 경로 랜더링
+            M_MapManager.instance.RenderVisualizePath(startAt, findPath, netId, currentMapPlayerDestination); // 새 경로 랜더링
             currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
         }
     }
