@@ -68,39 +68,41 @@ public class GamePlayerMap : NetworkBehaviour
     [Command]
     public void CmdChangeMapPlayerDestinationPosition(HexagonMapRoom endAt, Vector3 position, NetworkIdentity networkIdentity)
     {
-        // 맵에 보스 출현 시 1칸 이상 이동 불가
-        if(M_MapManager.instance.mapBoss != null && M_MapManager.instance.GetDistanceFromCurrentCoordinate(endAt.coordinate) > 1){
-            return;
-        }
+        if(currentMapPlayerDestination != null){
+            // 맵에 보스 출현 시 1칸 이상 이동 불가
+            if(M_MapManager.instance.mapBoss != null && M_MapManager.instance.GetDistanceFromCurrentCoordinate(endAt.coordinate) > 1){
+                return;
+            }
 
-        // 거점지역인 경우 아직 비활성화 상태면 이동 불가
-        if(endAt.isRegion && !endAt.isActive){
-            return;
-        } 
+            // 거점지역인 경우 아직 비활성화 상태면 이동 불가
+            if(endAt.isRegion && !endAt.isActive){
+                return;
+            } 
 
-        // MapPlayerDestination 오브젝트의 위치 변경
-        currentMapPlayerDestinationPosition = position;
+            // MapPlayerDestination 오브젝트의 위치 변경
+            currentMapPlayerDestinationPosition = position;
+            
+            // 시작지점은 CurretnRoom 또는 StartPosition
+            HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : M_MapManager.instance.hexagonMapRooms[0];
+            
+            // 거리 계산을 위해 시작지점과 끝지점 설정
+            M_MapManager.instance.startAt = startAt;
+            M_MapManager.instance.endAt = endAt;
+            
+            // 경로검색
+            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
+            if(findPath.Count > 0){
+                RpcVisualizePath(findPath, networkIdentity.netId); // 경로표시
+            }else{
+                RpcHidePath(networkIdentity.netId); // 경로제거
+            }
+            
+            // findPath 리스트의 카운트 = 거리값
+            currentMapPlayerDestination.distanceFromCurrentCoordinate = findPath.Count;
         
-        // 시작지점은 CurretnRoom 또는 StartPosition
-        HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : M_MapManager.instance.hexagonMapRooms[0];
-        
-        // 거리 계산을 위해 시작지점과 끝지점 설정
-        M_MapManager.instance.startAt = startAt;
-        M_MapManager.instance.endAt = endAt;
-        
-        // 경로검색
-        List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
-        if(findPath.Count > 0){
-            RpcVisualizePath(findPath, networkIdentity.netId); // 경로표시
-        }else{
-            RpcHidePath(networkIdentity.netId); // 경로제거
+            // 선택한 MapRoom 투표
+            VoteHexagonMapRoom(endAt, netIdentity);
         }
-        
-        // findPath 리스트의 카운트 = 거리값
-        currentMapPlayerDestination.distanceFromCurrentCoordinate = findPath.Count;
-    
-        // 선택한 MapRoom 투표
-        VoteHexagonMapRoom(endAt, netIdentity);
     }
 
     // 생성된 MapPlayerPiece 참조값 세팅
@@ -140,43 +142,45 @@ public class GamePlayerMap : NetworkBehaviour
     [Client]
     public void ClientChangeMapPlayerDestinationPosition(HexagonMapRoom endAt, Vector3 position, NetworkIdentity networkIdentity)
     {
-        // 맵에 보스 출현 시 1칸 이상 이동 불가
-        if(M_MapManager.instance.mapBoss != null && M_MapManager.instance.GetDistanceFromCurrentCoordinate(endAt.coordinate) > 1){
-            return;
+        if(currentMapPlayerDestination != null){
+            // 맵에 보스 출현 시 1칸 이상 이동 불가
+            if(M_MapManager.instance.mapBoss != null && M_MapManager.instance.GetDistanceFromCurrentCoordinate(endAt.coordinate) > 1){
+                return;
+            }
+
+            // 거점지역인 경우 아직 비활성화 상태면 이동 불가
+            if(endAt.isRegion && !endAt.isActive){
+                return;
+            } 
+
+            // MapPlayerDestination 오브젝트의 위치 변경
+            currentMapPlayerDestination.gameObject.SetActive(true);
+            currentMapPlayerDestination.transform.localPosition = position;
+            currentMapPlayerDestination.MoveBounce(true);
+
+            // 시작지점은 CurretnRoom 또는 StartPosition
+            HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : NetworkClient.spawned[M_MapManager.instance.hexagonMapRoomNetIds[0]].GetComponent<HexagonMapRoom>();
+            
+            // 거리 계산을 위해 시작지점과 끝지점 설정
+            M_MapManager.instance.startAt = startAt;
+            M_MapManager.instance.endAt = endAt;
+            
+            // 경로검색
+            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
+            if(findPath.Count > 0){
+                // 경로표시
+                M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
+                M_MapManager.instance.RenderVisualizePath(findPath, networkIdentity.netId, currentMapPlayerDestination); 
+                currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
+            }else{
+                // 경로제거
+                M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
+                currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(false);
+            }
+            
+            // findPath 리스트의 카운트 = 거리값
+            currentMapPlayerDestination.textDistanceCount.text = findPath.Count.ToString();
         }
-
-        // 거점지역인 경우 아직 비활성화 상태면 이동 불가
-        if(endAt.isRegion && !endAt.isActive){
-            return;
-        } 
-
-        // MapPlayerDestination 오브젝트의 위치 변경
-        currentMapPlayerDestination.gameObject.SetActive(true);
-        currentMapPlayerDestination.transform.localPosition = position;
-        currentMapPlayerDestination.MoveBounce(true);
-
-        // 시작지점은 CurretnRoom 또는 StartPosition
-        HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : NetworkClient.spawned[M_MapManager.instance.hexagonMapRoomNetIds[0]].GetComponent<HexagonMapRoom>();
-        
-        // 거리 계산을 위해 시작지점과 끝지점 설정
-        M_MapManager.instance.startAt = startAt;
-        M_MapManager.instance.endAt = endAt;
-        
-        // 경로검색
-        List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(M_MapManager.instance.startAt , M_MapManager.instance.endAt);
-        if(findPath.Count > 0){
-            // 경로표시
-            M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
-            M_MapManager.instance.RenderVisualizePath(findPath, networkIdentity.netId, currentMapPlayerDestination); 
-            currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
-        }else{
-            // 경로제거
-            M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
-            currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(false);
-        }
-        
-        // findPath 리스트의 카운트 = 거리값
-        currentMapPlayerDestination.textDistanceCount.text = findPath.Count.ToString();
     }
 
     // ------------------------------------------------------------------------------ ClientRpc Method ----------------------------------------------------------------------------//
