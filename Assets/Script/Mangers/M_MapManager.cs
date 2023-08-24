@@ -763,7 +763,7 @@ public class M_MapManager : NetworkBehaviour
         for(int i = 0; i < 6; i++)
         {
             HexagonMapRoom neighbour = isServer ? FindNeighboursForServer(i, currentHexagonRoom) : FindNeighboursForClient(i, currentHexagonRoom); // 서버, 클라 분기 처리하여 이웃방 검색
-            if(neighbour != null){
+            if(neighbour != null && neighbour.isComplete){
                 neighbours.Add(neighbour);
             }
         }
