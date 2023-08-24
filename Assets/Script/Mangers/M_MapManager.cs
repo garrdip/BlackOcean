@@ -801,7 +801,7 @@ public class M_MapManager : NetworkBehaviour
     public void RenderVisualizePath(HexagonMapRoom startAt, List<HexagonMapRoom> findPath, uint netId, MapPlayerDestination currentMapPlayerDestination)
     {
         // 현재 플레이어 위치 시작지점으로 경로 추가
-        GameObject startPathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity);
+        GameObject startPathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity, M_MapManager.instance.MapPathLines.transform);
         PathLineRenderer path = startPathLineRenderer.GetComponent<PathLineRenderer>();
         SpriteRenderer sprite = startPathLineRenderer.GetComponent<SpriteRenderer>();
         sprite.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
@@ -815,7 +815,7 @@ public class M_MapManager : NetworkBehaviour
         // 검색된 경로 추가
         for(int i=0; i<findPath.Count-1; i++)
         {
-            GameObject pathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity);
+            GameObject pathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity, M_MapManager.instance.MapPathLines.transform);
             PathLineRenderer pathLineRendererComponent = pathLineRenderer.GetComponent<PathLineRenderer>();
             SpriteRenderer spriteRenderer = pathLineRenderer.GetComponent<SpriteRenderer>();
             spriteRenderer.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
