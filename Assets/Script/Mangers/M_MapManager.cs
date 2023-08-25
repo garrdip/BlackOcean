@@ -171,9 +171,10 @@ public class M_MapManager : NetworkBehaviour
         HexagonMapRoom centerRoom = centerRoomObject.GetComponent<HexagonMapRoom>();
         // 방 타입, 고유 좌표계값, 인게임 좌표계값, 활성화 상태 초기값 설정
         centerRoom.roomType = RoomType.START_LOCATION;
-        centerRoom.coordinate = new Vector2Int(0, 0);
+        centerRoom.coordinate = Vector2Int.zero;
         centerRoom.position = Vector3.zero;
         centerRoom.isActive = true;
+        centerRoom.isComplete = true;
 
         // 시작지점을 현재방으로 설정
         currentRoom = centerRoom;

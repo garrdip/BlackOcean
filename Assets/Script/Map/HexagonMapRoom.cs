@@ -138,9 +138,11 @@ public class HexagonMapRoom : NetworkBehaviour
     // 방 완료시 상태변경
     void OnChangedIsComplete(bool oldValue, bool newValue)
     {
-        spriteRenderer.color = Color.gray;
-        textRoomType.color = Color.green;
-        textRoomType.text = Const.RoomState_Complete;
+        if(roomType != RoomType.START_LOCATION){
+            spriteRenderer.color = Color.gray;
+            textRoomType.color = Color.green;
+            textRoomType.text = Const.RoomState_Complete;
+        }
     }
 
 }
