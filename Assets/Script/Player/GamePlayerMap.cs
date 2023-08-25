@@ -86,7 +86,7 @@ public class GamePlayerMap : NetworkBehaviour
             HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : M_MapManager.instance.hexagonMapRooms[0];
      
             // 경로검색
-            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt , endAt);
+            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt, endAt);
             if(findPath.Count > 0){
                 RpcVisualizePath(startAt, findPath, networkIdentity.netId); // 경로표시
             }else{
@@ -158,7 +158,7 @@ public class GamePlayerMap : NetworkBehaviour
             HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : NetworkClient.spawned[M_MapManager.instance.hexagonMapRoomNetIds[0]].GetComponent<HexagonMapRoom>();
 
             // 경로검색
-            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt , endAt);
+            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt, endAt);
             if(findPath.Count > 0){
                 // 경로표시
                 M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);

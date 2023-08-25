@@ -674,11 +674,11 @@ public class M_MapManager : NetworkBehaviour
     }
 
     // Axial 좌표계를 이용한 시스템에서 현재 좌표에서 목표 좌표까지의 거리를 반환
-    public int GetDistanceFromCurrentCoordinate(Vector2Int targetCoordinate)
+    public int GetDistanceFromCurrentCoordinate(Vector2Int destinationCoord)
     {
         if(currentRoom != null){
-            int dQ = targetCoordinate.x - currentRoom.coordinate.x;
-            int dR = targetCoordinate.y - currentRoom.coordinate.y;
+            int dQ = destinationCoord.x - currentRoom.coordinate.x;
+            int dR = destinationCoord.y - currentRoom.coordinate.y;
             int distance = (Mathf.Abs(dQ) + Mathf.Abs(dR) + Mathf.Abs(dQ + dR)) / 2;
             return distance;
         }
@@ -699,7 +699,7 @@ public class M_MapManager : NetworkBehaviour
     // ------------------------------------------------------------ A* Algorithm Method -------------------------------------------------------------- //
 
     // A* 알고리즘을 이용한 경로검색
-    public List<HexagonMapRoom> FindPath(HexagonMapRoom start, HexagonMapRoom target)
+    public List<HexagonMapRoom> FindPath(HexagonMapRoom start, HexagonMapRoom destination)
     { 
         List<HexagonMapRoom> openSet = new List<HexagonMapRoom>(); // 아직 방문하지 않은 노드들 목록
         HashSet<HexagonMapRoom> closedSet = new HashSet<HexagonMapRoom>(); // 이미 방문한 노드들의 목록(중복제거)
@@ -722,12 +722,12 @@ public class M_MapManager : NetworkBehaviour
             closedSet.Add(currentNode); // closedSet에 현재 노드 추가
 
             // 현재 노트가 목적지 노드와 같다면 목적지에 도달한 것이므로 경로를 생성해서 반환
-            if(currentNode.coordinate == target.coordinate)
+            if(currentNode.coordinate == destination.coordinate)
             {
                 return CreatePath(start, currentNode);
             }
 
-            List<HexagonMapRoom> neighbours = GetNeighbours(currentNode); // 현재 노드의 주변 이웃 노드 조회
+            List<HexagonMapRoom> neighbours = GetNeighbours(currentNode, destination.coordinate); // 현재 노드의 주변 이웃 노드 조회
             foreach (HexagonMapRoom neighbour in neighbours)
             {
                 if(closedSet.Contains(neighbour)) // 이웃노드가 방문한 목록에 있으면 그대로 진행
@@ -735,7 +735,7 @@ public class M_MapManager : NetworkBehaviour
 
                 // Cost값 갱신
                 int newGCost = currentNode.GCost + 1;
-                int newHCost = CalculateHeuristics(neighbour.coordinate, target.coordinate);
+                int newHCost = CalculateHeuristics(neighbour.coordinate, destination.coordinate);
                 int newFCost = newGCost + newHCost;
 
                 if(newFCost < neighbour.FCost || !openSet.Contains(neighbour))
@@ -757,13 +757,13 @@ public class M_MapManager : NetworkBehaviour
     }
 
     // 현재 방의 6방향좌표에 있는 이웃 방 검색
-    private List<HexagonMapRoom> GetNeighbours(HexagonMapRoom currentHexagonRoom)
+    private List<HexagonMapRoom> GetNeighbours(HexagonMapRoom currentHexagonRoom, Vector2Int destinationCoord)
     {
         List<HexagonMapRoom> neighbours = new List<HexagonMapRoom>();
         for(int i = 0; i < 6; i++)
         {
             HexagonMapRoom neighbour = isServer ? FindNeighboursForServer(i, currentHexagonRoom) : FindNeighboursForClient(i, currentHexagonRoom); // 서버, 클라 분기 처리하여 이웃방 검색
-            if(neighbour != null && neighbour.isComplete){
+            if(neighbour != null && (neighbour.isComplete || neighbour.coordinate == destinationCoord)){
                 neighbours.Add(neighbour);
             }
         }
@@ -773,10 +773,10 @@ public class M_MapManager : NetworkBehaviour
     // [휴리스틱함수]
     // A* 알고리즘에서 목적지까지 가는데 걸리는 비용 예측 함수. 해당함수의 로직에 따라 알고리즘 효율성 결정.
     // 현재는 단순 두 지점간의 좌표계에 따른 거리값만 계산(Axial 좌표계에서의 맨해튼거리 계산식)
-    private int CalculateHeuristics(Vector2Int currentCoord, Vector2Int targetCoord)
+    private int CalculateHeuristics(Vector2Int currentCoord, Vector2Int destinationCoord)
     {
-        int dQ = currentCoord.x - targetCoord.x;
-        int dR = currentCoord.y - targetCoord.y;
+        int dQ = currentCoord.x - destinationCoord.x;
+        int dR = currentCoord.y - destinationCoord.y;
         int distance = (Mathf.Abs(dQ) + Mathf.Abs(dR) + Mathf.Abs(dQ + dR)) / 2;
         return distance;
     }
