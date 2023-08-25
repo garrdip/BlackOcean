@@ -167,13 +167,26 @@ public class M_TurnManager : NetworkBehaviour
     }
 
     [Server]
-    public void HandleStartBattle(HexagonMapRoom hexagonMapRoom)
+    public void EnterTheRoom(HexagonMapRoom hexagonMapRoom)
     {
-        roomType = hexagonMapRoom.roomType;
-        if(hexagonMapRoom.isComplete){
-            M_MapManager.instance.MoveOnCompleteRoom();
+        int actionCost = M_MapManager.instance.FindPath(M_MapManager.instance.currentRoom, hexagonMapRoom).Count;
+        if(actionCost > M_MapManager.instance.totaActionCost){
+            Debug.Log($"[행동 비용이 모자랍니다] 총 비용 : {M_MapManager.instance.totaActionCost} / 남은 비용 : {actionCost}");
         }else{
-            M_MapManager.instance.StartBattle();
+            // 맵 플레이어들 위치 이동
+            foreach(GameObject mapPlayerPieceObject in M_MapManager.instance.mapPlayerPieces){
+                MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
+                mapPlayerPiece.RpcChangeMapPlayerPiecePosition(hexagonMapRoom.transform.position);
+                M_MapManager.instance.SetDirection(hexagonMapRoom);
+            }
+            // 방 타입 설정
+            roomType = hexagonMapRoom.roomType;
+            // 방 클리어 상태 유무에 따라 전투 or 이동 처리
+            if(hexagonMapRoom.isComplete){
+                M_MapManager.instance.MoveOnCompleteRoom();
+            }else{
+                M_MapManager.instance.StartBattle();
+            }
         }
     }
 

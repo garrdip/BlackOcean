@@ -159,12 +159,7 @@ public class GamePlayer : NetworkBehaviour
             // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
             HexagonMapRoom hexagonMapRoom = M_MapManager.instance.GetVoteHexagonMapRoomResult();
             if(hexagonMapRoom != null){
-                foreach(GameObject mapPlayerPieceObject in M_MapManager.instance.mapPlayerPieces){
-                    MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
-                    mapPlayerPiece.RpcChangeMapPlayerPiecePosition(hexagonMapRoom.transform.position);
-                    M_MapManager.instance.SetDirection(hexagonMapRoom);
-                }
-                M_TurnManager.instance.HandleStartBattle(hexagonMapRoom); // 모든 플레이어 레디상태 확인 시 전투 시작
+                M_TurnManager.instance.EnterTheRoom(hexagonMapRoom); // 모든 플레이어 레디상태 확인 시 전투 시작
             }
         }    
     }
