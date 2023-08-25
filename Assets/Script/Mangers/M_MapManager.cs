@@ -433,6 +433,7 @@ public class M_MapManager : NetworkBehaviour
 
     // ------------------------------------------------------------ ClientRpc Method -------------------------------------------------------------- //
     
+    // 전투 시작 이벤트 클라이언트 수신
     [ClientRpc]
     public void StartBattle()
     {
@@ -451,18 +452,23 @@ public class M_MapManager : NetworkBehaviour
             blackCurtain.gameObject.SetActive(false);
             blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
 
-            // 검색된 경로 모두 삭제
-            RemoveAllExistLineRenderer();
-
-            // 모든 MapPlayerDestination 비활성화
-            ChangeAllMapPlayerDestinationState(false);
+            RemoveAllExistLineRenderer(); // 검색된 경로 모두 삭제
+            ChangeAllMapPlayerDestinationState(false); // 모든 MapPlayerDestination 비활성화
             if(isServer)M_TurnManager.instance.GenerateBattleObject();
-            if(isServer)M_MapManager.instance.MoveToRoom(); // 이순간에 새로운 맵 생성
+            if(isServer)M_MapManager.instance.MoveToRoom(); // 새로운 맵 생성
             // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
             M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
             StartCoroutine(CheckTargetObject());
-            
         });
+    }
+
+    // 완료된 방은 이동만 수행
+    [ClientRpc]
+    public void MoveOnCompleteRoom()
+    {
+        RemoveAllExistLineRenderer(); // 검색된 경로 모두 삭제
+        ChangeAllMapPlayerDestinationState(false); // 모든 MapPlayerDestination 비활성화
+        if(isServer)M_MapManager.instance.MoveToRoom(); // 새로운 맵 생성
     }
     
     public IEnumerator CheckTargetObject()
@@ -869,7 +875,7 @@ public class M_MapManager : NetworkBehaviour
     }
 
     // MapPlayerDestination 모두 상태 변경
-    private void ChangeAllMapPlayerDestinationState(bool isActive)
+    public void ChangeAllMapPlayerDestinationState(bool isActive)
     {
         foreach(GamePlayer gamePlayer in M_TurnManager.instance.playerOrder)
         {

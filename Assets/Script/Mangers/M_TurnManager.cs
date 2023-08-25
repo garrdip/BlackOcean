@@ -170,7 +170,11 @@ public class M_TurnManager : NetworkBehaviour
     public void HandleStartBattle(HexagonMapRoom hexagonMapRoom)
     {
         roomType = hexagonMapRoom.roomType;
-        M_MapManager.instance.StartBattle();
+        if(hexagonMapRoom.isComplete){
+            M_MapManager.instance.MoveOnCompleteRoom();
+        }else{
+            M_MapManager.instance.StartBattle();
+        }
     }
 
     [Server]
