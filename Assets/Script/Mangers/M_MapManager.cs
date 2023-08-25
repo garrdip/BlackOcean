@@ -27,7 +27,7 @@ public class M_MapManager : NetworkBehaviour
     public int mapSight; // 맵 시야 변수값
 
     [SyncVar (hook = nameof(OnChangedTotalActionCost))]
-    public int totaActionCost; // 맵에서 소모되는 행동 비용 총량
+    public int totalActionCost; // 맵에서 소모되는 행동 비용 총량
     
     [SyncVar (hook = nameof(OnChangedActionCost))]
     public int actionCost; // 행동시 소모되는 행동 비용
@@ -104,7 +104,7 @@ public class M_MapManager : NetworkBehaviour
     {
         mapSight = 1; // 맵시야
         actionCost = 1; // 행동 비용
-        totaActionCost = 30; // 행동 비용 총량
+        totalActionCost = 30; // 행동 비용 총량
     }
 
     // ------------------------------------------------------------ Server Method -------------------------------------------------------------- //
@@ -382,12 +382,10 @@ public class M_MapManager : NetworkBehaviour
     [Server]
     public void DecreaseTotalActionCost(int cost = 0)
     {
-        if(totaActionCost > 0){
+        if(totalActionCost > 0){
             int reduceActionCost = (cost > 0) ? cost : actionCost; // 비용값이 설정된 경우 그 비용값 만큼 감소, 아닐 경우 기본 비용값 만큼 감소
-            if(reduceActionCost > totaActionCost){
-                Debug.Log("행동 비용이 부족합니다.");
-            }else{
-                totaActionCost = Mathf.Max(0, totaActionCost - reduceActionCost);
+            if(reduceActionCost <= totalActionCost){
+                totalActionCost = Mathf.Max(0, totalActionCost - reduceActionCost);
             }
         }
     }
@@ -801,6 +799,15 @@ public class M_MapManager : NetworkBehaviour
             currentNode = currentNode.previousNode;
         }
         path.Reverse();
+
+        // 이동하려는 위치까지의 비용이 현재 남은 비용보다 작은 경우, 검색된 경로에서 모자라는 만큼 노드를 제거(= 검색된 경로중 현재 남은 비용으로 이동 가능한 만큼의 노드만 반환)
+        if(M_MapManager.instance.totalActionCost < path.Count){
+            int numToRemove = path.Count - M_MapManager.instance.totalActionCost;
+            for(int i = 0; i < numToRemove; i++){
+                int lastIndex = path.Count - 1;
+                path.RemoveAt(lastIndex);
+            }
+        }
         return path;
     }
 

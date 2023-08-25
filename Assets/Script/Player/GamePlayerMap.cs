@@ -77,17 +77,15 @@ public class GamePlayerMap : NetworkBehaviour
             // 거점지역인 경우 아직 비활성화 상태면 이동 불가
             if(endAt.isRegion && !endAt.isActive){
                 return;
-            } 
-
-            // MapPlayerDestination 오브젝트의 위치 변경
-            currentMapPlayerDestinationPosition = position;
-            
+            }
+     
             // 시작지점은 CurretnRoom 또는 StartPosition
             HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : M_MapManager.instance.hexagonMapRooms[0];
      
             // 경로검색
             List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt, endAt);
             if(findPath.Count > 0){
+                currentMapPlayerDestinationPosition = findPath[findPath.Count-1].transform.position; // MapPlayerDestination 위치는 findPath 마지막 노드 위치
                 RpcVisualizePath(startAt, findPath, networkIdentity.netId); // 경로표시
             }else{
                 RpcHidePath(networkIdentity.netId); // 경로제거
@@ -149,21 +147,21 @@ public class GamePlayerMap : NetworkBehaviour
                 return;
             } 
 
-            // MapPlayerDestination 오브젝트의 위치 변경
-            currentMapPlayerDestination.gameObject.SetActive(true);
-            currentMapPlayerDestination.transform.localPosition = position;
-            currentMapPlayerDestination.MoveBounce(true);
-
             // 시작지점은 CurretnRoom 또는 StartPosition
             HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : NetworkClient.spawned[M_MapManager.instance.hexagonMapRoomNetIds[0]].GetComponent<HexagonMapRoom>();
 
             // 경로검색
             List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt, endAt);
             if(findPath.Count > 0){
+                // MapPlayerDestination 오브젝트의 위치 변경
+                currentMapPlayerDestination.gameObject.SetActive(true);
+                currentMapPlayerDestination.transform.localPosition = findPath[findPath.Count-1].transform.position; // MapPlayerDestination 위치는 findPath 마지막 노드 위치
+                currentMapPlayerDestination.MoveBounce(true);
+
                 // 경로표시
                 M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
-                M_MapManager.instance.RenderVisualizePath(startAt, findPath, networkIdentity.netId, currentMapPlayerDestination); 
-                currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
+                M_MapManager.instance.RenderVisualizePath(startAt, findPath, networkIdentity.netId, currentMapPlayerDestination);
+                currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true); 
             }else{
                 // 경로제거
                 M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
