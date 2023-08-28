@@ -176,10 +176,10 @@ public class GamePlayerMap : NetworkBehaviour
     // ------------------------------------------------------------------------------ ClientRpc Method ----------------------------------------------------------------------------//
 
     // 검색된 경로를 표시하는 라인랜더러 랜더링
-    [ClientRpc]
+    [ClientRpc (includeOwner = false)]
     public void RpcVisualizePath(HexagonMapRoom startAt, List<HexagonMapRoom> findPath, uint netId)
     {   
-        if(currentMapPlayerDestination != null && !currentMapPlayerDestination.isOwned){
+        if(currentMapPlayerDestination != null){
             M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
             M_MapManager.instance.RenderVisualizePath(startAt, findPath, netId, currentMapPlayerDestination); // 새 경로 랜더링
             currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
@@ -187,10 +187,10 @@ public class GamePlayerMap : NetworkBehaviour
     }
 
     // 검색된 경로를 표시하는 라인랜더러 및 카운트 마크 제거
-    [ClientRpc]
+    [ClientRpc (includeOwner = false)]
     public void RpcHidePath(uint netId)
     {   
-        if(currentMapPlayerDestination != null && !currentMapPlayerDestination.isOwned){
+        if(currentMapPlayerDestination != null){
             M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
             currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(false);
         }
@@ -202,7 +202,7 @@ public class GamePlayerMap : NetworkBehaviour
     // 맵 플레이어가 이동하려는 방의 위치를 알려주는 표시 변경 수신
     public void OnChangeCurrentMapPlayerDestination(Vector3 oldPosition, Vector3 newPosition)
     {
-        if(currentMapPlayerDestination != null && !currentMapPlayerDestination.isOwned){
+        if(currentMapPlayerDestination != null){
             currentMapPlayerDestination.gameObject.SetActive(true);
             currentMapPlayerDestination.transform.localPosition = newPosition;
             currentMapPlayerDestination.MoveBounce(oldPosition != newPosition);
