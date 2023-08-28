@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ProjectD
 {
@@ -28,6 +29,15 @@ namespace ProjectD
             return input.Replace("\u200B", "");
         }
     }
+
+    public static class ColorUtils{
+        public static string ToHex(Color color)
+        {
+            Color32 color32 = color;
+            return $"#{color32.r:X2}{color32.g:X2}{color32.b:X2}{color32.a:X2}";
+        }
+    }
+
     public delegate IEnumerator ExecuteCard(Card card,List<TargetObject> target);
     public delegate void ItemEventHanddler(TargetObject sender);
 }

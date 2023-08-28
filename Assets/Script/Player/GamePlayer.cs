@@ -205,15 +205,15 @@ public class GamePlayer : NetworkBehaviour
     {
         if (!string.IsNullOrWhiteSpace(message)){
             string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-            RpcReceiveChatMessage(playerName, message.Trim());
+            RpcReceiveChatMessage(selectOrder, playerName, message.Trim());
         }
     }
 
     // 채팅 메시지 이벤트 수신
     [ClientRpc]
-    void RpcReceiveChatMessage(string playerName, string message)
+    void RpcReceiveChatMessage(int selectOrder, string playerName, string message)
     {
-        MapUI.instance.AppendMessage(playerName, message);
+        MapUI.instance.AppendMessage(selectOrder, playerName, message);
     }
 
     [Server]

@@ -176,9 +176,24 @@ public class MapUI : InstanceD<MapUI>
     }
 
     // 채팅 메시지 추가
-    public void AppendMessage(string playerName, string message)
+    public void AppendMessage(int selectOrder, string playerName, string message)
     {
-        chatMessage.text += playerName + " : " + message + "\n";
+        Color color = Color.white;
+        switch(selectOrder){
+            case 0:
+                color = Color.red;
+                break;
+            case 1:
+                color = Color.blue;
+                break;
+            case 2:
+                color = Color.green;
+                break;
+            default:
+                color = Color.white;
+                break;
+        }
+        chatMessage.text += $"<size=18><color={ColorUtils.ToHex(color)}>{playerName}</color></size> : {message}\n";
         StartCoroutine(ScrollToBottom());
     }
 

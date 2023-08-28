@@ -42,15 +42,15 @@ public class RoomPlayer : NetworkRoomPlayer
     {
         if(!string.IsNullOrWhiteSpace(message)){
             string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-            RpcReceiveChatMessage(playerName, message.Trim());
+            RpcReceiveChatMessage(order, playerName, message.Trim());
         }
     }
 
     // 채팅 메시지 이벤트 수신
     [ClientRpc]
-    void RpcReceiveChatMessage(string playerName, string message)
+    void RpcReceiveChatMessage(PlayOrder playOrder, string playerName, string message)
     {
-        RoomUI.instance.AppendMessage(playerName, message);
+        RoomUI.instance.AppendMessage(playOrder, playerName, message);
     }
 }
 
