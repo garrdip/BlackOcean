@@ -749,6 +749,9 @@ public class M_TurnManager : NetworkBehaviour
                 (target == ActionTarget.FRONT_BACK && tar.player.selectOrder != 1) )
                 retVal.Add(tar);
         }
+        if(retVal.Count == 0)
+            retVal.AddRange(spawnedPlayerList);
+
         return retVal.ToArray();
     }
 
