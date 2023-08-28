@@ -202,7 +202,7 @@ public class GamePlayerMap : NetworkBehaviour
     // 맵 플레이어가 이동하려는 방의 위치를 알려주는 표시 변경 수신
     public void OnChangeCurrentMapPlayerDestination(Vector3 oldPosition, Vector3 newPosition)
     {
-        if(currentMapPlayerDestination != null){
+        if(currentMapPlayerDestination != null && !currentMapPlayerDestination.isOwned){
             currentMapPlayerDestination.gameObject.SetActive(true);
             currentMapPlayerDestination.transform.localPosition = newPosition;
             currentMapPlayerDestination.MoveBounce(oldPosition != newPosition);
