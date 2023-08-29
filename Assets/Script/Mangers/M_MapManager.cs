@@ -122,6 +122,7 @@ public class M_MapManager : NetworkBehaviour
         currentRoom = moveToRoomDestination; // 위치 이동
         DecreaseTotalActionCost(actionCost); // 거리차 만큼 행동 비용 감소
         GenerateHexagonRoom(currentRoom); // 주변 방 생성
+        ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
         return;
     }
 
@@ -390,16 +391,17 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
-    // 행동비용이 0이 되어 보스가 생성되었을때, 매 ReturnToMap 호출시마다 한칸씩 보스가 플레이어에게 가까워지게 위치 이동
+    // 행동비용이 0이 되어 보스가 생성되었을때, 매 ReturnToMap 호출시마다 정해진 칸만큼 보스가 플레이어에게 가까워지게 위치 이동
     [Server]
     public void ApproachBossToPlayer()
     {
         if(mapBoss != null){
+            int stepCount = 2; // 보스가 한번에 이동하는 칸 수
             Vector2Int mapPlayerCoordinate = currentRoom.coordinate;
             Vector2Int bossCoordinate = mapBoss.coordinate;
             Vector2Int direction = mapPlayerCoordinate - bossCoordinate;
-            direction.x = Mathf.Clamp(direction.x, -1, 1);
-            direction.y = Mathf.Clamp(direction.y, -1, 1);
+            direction.x = Mathf.Clamp(direction.x, -stepCount, stepCount);
+            direction.y = Mathf.Clamp(direction.y, -stepCount, stepCount);
 
             if (direction != Vector2Int.zero) {
                 mapBoss.coordinate += direction;
