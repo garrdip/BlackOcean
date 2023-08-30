@@ -181,8 +181,8 @@ public class M_TurnManager : NetworkBehaviour
             }
             // 방 타입 설정
             roomType = hexagonMapRoom.roomType;
-            // 방 클리어 상태 유무에 따라 전투 or 이동 처리
-            if(hexagonMapRoom.isComplete){
+            // 방 클리어 상태 유무에 따라 전투 or 이동 분기처리 (보스가 위치하는 방은 이동하지 않고 보스전 시작)
+            if(hexagonMapRoom.isComplete && hexagonMapRoom.mapBoss == null){
                 M_MapManager.instance.MoveOnCompleteRoom();
             }else{
                 M_MapManager.instance.StartBattle();
@@ -196,7 +196,10 @@ public class M_TurnManager : NetworkBehaviour
         if(isServer)
         {
             GeneratePlayerUnit();
-            if(roomType == RoomType.MONSTER || roomType == RoomType.ELITE)
+            if(M_MapManager.instance.currentRoom.mapBoss != null){
+                // TODO : 보스몹 생성
+                Debug.Log("보스전 ㄱㄱ");
+            }else if(roomType == RoomType.MONSTER || roomType == RoomType.ELITE)
                 GenerateMonster();
             else
                 GenerateNPC("NPC_Mercurius");

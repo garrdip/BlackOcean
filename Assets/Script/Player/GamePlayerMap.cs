@@ -82,6 +82,9 @@ public class GamePlayerMap : NetworkBehaviour
             // 시작지점은 CurretnRoom 또는 StartPosition
             HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : M_MapManager.instance.hexagonMapRooms[0];
      
+            // MapPlayerDestination 초기 위치 설정
+            currentMapPlayerDestinationPosition = position;
+                    
             // 경로검색
             List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt, endAt);
             if(findPath.Count > 0){
@@ -149,6 +152,11 @@ public class GamePlayerMap : NetworkBehaviour
 
             // 시작지점은 CurretnRoom 또는 StartPosition
             HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : NetworkClient.spawned[M_MapManager.instance.hexagonMapRoomNetIds[0]].GetComponent<HexagonMapRoom>();
+
+            // MapPlayerDestination 활성화 및 초기 위치 설정
+            currentMapPlayerDestination.gameObject.SetActive(true); 
+            currentMapPlayerDestination.transform.localPosition = position;
+            currentMapPlayerDestination.MoveBounce(true);
 
             // 경로검색
             List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt, endAt);
