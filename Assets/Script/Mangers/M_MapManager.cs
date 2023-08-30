@@ -406,7 +406,15 @@ public class M_MapManager : NetworkBehaviour
             if (direction != Vector2Int.zero) {
                 mapBoss.coordinate += direction;
             }
+
+            // 보스 위치 변경
             mapBoss.bossPosition = GetPosition(mapBoss.coordinate.x, mapBoss.coordinate.y);
+
+            // 
+            HexagonMapRoom bossRoom = hexagonMapRooms.Find((room) => room.coordinate == mapBoss.coordinate);
+            if(bossRoom != null && bossRoom.coordinate == currentRoom.coordinate){
+                bossRoom.mapBoss = mapBoss;
+            }
         }
     }
 

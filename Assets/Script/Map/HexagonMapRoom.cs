@@ -16,6 +16,9 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar]
     public Vector3 position; // 인게임 좌표계 값
 
+    [SyncVar]
+    public MapBoss mapBoss;
+
     [SyncVar (hook = nameof(OnChangedIsRegion))]
     public bool isRegion = false; // 거점지역 구분값
 
