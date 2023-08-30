@@ -352,6 +352,9 @@ MonoBehaviour:
   objectType: 0
   shieldText: {fileID: 2708055257990721556}
   player: {fileID: 0}
+  ironDemonData:
+  - {fileID: 11400000, guid: a2473eec38dcb134ca7b2bba3cb9b70d, type: 2}
+  - {fileID: 11400000, guid: d89e29a69d7259e4ca9f9240acda9272, type: 2}
   playerHP: 0
   playerMaxHP: 0
   conn: {fileID: 0}
@@ -360,13 +363,15 @@ MonoBehaviour:
   - {fileID: 1238078986054683857, guid: d547f9af7596d4f4e9c8bba8024996e3, type: 3}
   - {fileID: 1238078986054683857, guid: 19decaaa4c666534494b39af1cee56b8, type: 3}
   - {fileID: 1238078986054683857, guid: c9b6d7b83beb28c46b6dfd46a0abaf4c, type: 3}
+  - {fileID: 1238078986054683857, guid: bbfdd8ca06184df4fa0339d236132534, type: 3}
   monsters:
   - {fileID: 7282913678413976495, guid: b9a0165d22875e044b8c8a0d37a31d50, type: 3}
   clone: {fileID: 0}
+  origin: {fileID: 0}
   isCloneData: 0
   avatar: {fileID: 0}
+  ironDemon: {fileID: 0}
   anim: {fileID: 0}
-  isAnimating: 0
   defense: 0
   currentIchi: 3
   maxIchi: 3
@@ -409,6 +414,12 @@ MonoBehaviour:
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}

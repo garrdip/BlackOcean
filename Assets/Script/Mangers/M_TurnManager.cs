@@ -273,6 +273,22 @@ public class M_TurnManager : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void MoveIronDemon(TargetObject target ,List<TargetObject> tar)
+    {
+        tar[0].ironDemon.transform.position = target.transform.position;
+        if(target.objectType == ObjectType.PLAYER) tar[0].ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar[0].ironDemonData[0];
+        else tar[0].ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar[0].ironDemonData[1];
+        tar[0].ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
+    }
+
+    [ClientRpc]
+    public void AnimIronDemon(string anim ,List<TargetObject> tar)
+    {
+        bool isLoop = anim == "Idle" ? true : false;
+        tar[0].ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
+    }
+
     [Server]
     public void ProcessCardPredict(Card card,List<TargetObject> tar)
     {

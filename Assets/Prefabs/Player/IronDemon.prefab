@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7821855001177509042}
   - component: {fileID: -3013813304460486306}
   m_Layer: 0
-  m_Name: DanHyang
+  m_Name: IronDemon
   m_TagString: TargetObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,7 +55,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 563b5773816b07f43b87156d10fa6ac3, type: 2}
+  - {fileID: 2100000, guid: f50c4ce9d46e113479abb2f294d1248d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -89,7 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 00a3de02653a44b46b316f9b3cf66b38, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: a2473eec38dcb134ca7b2bba3cb9b70d, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0

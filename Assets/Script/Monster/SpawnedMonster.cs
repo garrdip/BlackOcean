@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using Mirror;
 using ProjectD;
+using Spine.Unity;
 public class SpawnedMonster : NetworkBehaviour
 {
     public string monsterName;
@@ -179,12 +180,18 @@ public class SpawnedMonster : NetworkBehaviour
         if(nextTarget == ActionTarget.FIXEDPLAYER)
         {
             nextTargetPlayer.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
+            M_TurnManager.instance.StartAnimation(nextTargetPlayer,0,"Defense",false);
+            if(nextTargetPlayer.player.character == Character.HONGDANHYANG)
+                nextTargetPlayer.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
         }
         else
         {
             foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
             {
                 tar.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
+                M_TurnManager.instance.StartAnimation(tar,0,"Defense",false);
+                if(tar.player.character == Character.HONGDANHYANG)
+                    tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
             }
         }
     }

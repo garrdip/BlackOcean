@@ -35,6 +35,7 @@ public class TargetObject : NetworkBehaviour
     // Player 의 경우 
     [SyncVar (hook = nameof(InitTargetObjectPlayer))]
     public GamePlayer player;
+    public SkeletonDataAsset[] ironDemonData = new SkeletonDataAsset[2];
 
     [SyncVar (hook = nameof(OnChangedPlayerHP))]
     public int playerHP;
@@ -45,6 +46,7 @@ public class TargetObject : NetworkBehaviour
     public NetworkIdentity conn;
 
     // Monster 의 경우
+    [SyncVar]
     public SpawnedMonster monster;
 
     public List<GameObject> characters;
@@ -56,10 +58,8 @@ public class TargetObject : NetworkBehaviour
     [SyncVar]
     public bool isCloneData = false;
     public GameObject avatar;
-
+    public GameObject ironDemon;
     public SkeletonAnimation anim;
-
-    public bool isAnimating = false;
 
     public readonly SyncList<Buff> buffs = new SyncList<Buff>();
 
@@ -77,19 +77,9 @@ public class TargetObject : NetworkBehaviour
     [SyncVar]
     public bool isTransformed = false;
 
-    void Awake()
-    {
-        buffs.Callback += OnChangedBuff;
-        anim = GetComponentInChildren<SkeletonAnimation>();
-        if(anim != null){
-            anim.state.Event += OnAnimationEvent;
-            anim.state.Start += OnAnimationStart;
-            anim.state.Complete += OnAnimationComplete;
-        }
-    }
-
     void Start()
     {
+        buffs.Callback += OnChangedBuff;
         StartCoroutine(FindChildObjects());
     }
 
@@ -97,15 +87,36 @@ public class TargetObject : NetworkBehaviour
     {
         while(true)
         {
-            anim = GetComponentInChildren<SkeletonAnimation>();
+            yield return new WaitForSeconds(0.01f);
+            if(avatar == null && monster == null)
+                continue;
+
+            if(objectType == ObjectType.PLAYER)
+            {
+                anim = avatar.GetComponent<SkeletonAnimation>();
+                if(player.character == Character.HONGDANHYANG)
+                    ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
+            }
+            else
+                anim = monster.GetComponent<SkeletonAnimation>();
             if(anim != null){
                 anim.state.Event += OnAnimationEvent;
                 anim.state.Start += OnAnimationStart;
                 anim.state.Complete += OnAnimationComplete;
                 anim.timeScale = Random.Range(0.9f,1.1f); // 칼군무 방지 코드
+                if(objectType == ObjectType.PLAYER)
+                    if(player.character == Character.HONGDANHYANG)StartCoroutine(HongDanHyangEyeFlicker());
                 break;
             }
-            yield return new WaitForSeconds(0.01f);
+        }
+    }
+
+    IEnumerator HongDanHyangEyeFlicker()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(Random.Range(2f,5f));
+            anim.state.SetAnimation(1,"Eye",false);
         }
     }
 
@@ -153,6 +164,7 @@ public class TargetObject : NetworkBehaviour
                 break;
                 case Character.HONGDANHYANG :
                     avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
+                    ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
                 break;
             }
             textTargetName.text = SteamFriends.GetFriendPersonaName((CSteamID)newVal.steamID);
@@ -277,10 +289,7 @@ public class TargetObject : NetworkBehaviour
     // Animation Event 총괄 처리
     public virtual void OnAnimationEvent(Spine.TrackEntry trackEntry, Spine.Event e)
     {    
-        if(e.Data.Name == "AttackEnd") // 공격모션 종료시 
-        {
-            isAnimating = false; // 공격 애니메이팅 종료를 알림
-        }
+
     }
 
     // Animation Event 시작 시 처리
@@ -292,7 +301,21 @@ public class TargetObject : NetworkBehaviour
     // Animationm Event 완료 시 처리
     public void OnAnimationComplete(Spine.TrackEntry trackEntry)
     {
-        // TODO : Animation Event 종료 시점 처리
+        // 플레이어 아바타의 경우 이곳에서 아이들 애니메이션 처리
+        if(objectType == ObjectType.PLAYER)
+        {
+            if(trackEntry.Animation.Name != "Idle" && trackEntry.Animation.Name != "Eye")
+            {
+                anim.state.ClearTrack(0);
+                anim.state.SetAnimation(0,"Idle",true);
+            }
+        }
+    }
+
+    public void OnIronDemonAnimationComplete(Spine.TrackEntry trackEntry)
+    {
+        if(trackEntry.Animation.Name == "Defense")
+            ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Idle",true);
     }
 
 }

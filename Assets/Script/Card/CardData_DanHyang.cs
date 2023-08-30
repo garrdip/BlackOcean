@@ -10,19 +10,40 @@ using Spine.Unity;
 
 public partial class CardData : SingletonD<CardData>
 {
-      // Card Method List 
+
+
+    // Card Method List 
     // HONG DAN HYANG
     public IEnumerator H0(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData)
         {
-            yield return tempWait;
-            yield return new WaitForSeconds(0.5f);
-            M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
-            yield return new WaitForSeconds(0.2f);
-            StartCoroutine(tar[1].monster.OnHitAnimation());
+            yield return tempWait; // 임시 딜레이
+
+            M_TurnManager.instance.AnimIronDemon("TeleportGo",tar); // 철귀 사라짐
+            M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+
+            yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
+
+            M_TurnManager.instance.MoveIronDemon(tar[1],tar); // 철귀 적으로 이동
+            M_TurnManager.instance.AnimIronDemon("TeleportBack",tar); // 철귀 나타나기 시작
+            yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
+
+            M_TurnManager.instance.AnimIronDemon("Attack0",tar); // 철귀 공격 모션 시작
+            yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
+            StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
+            GeneralSingleAttack(tar[0],tar[1],6); // 실제 데미지 적용시점
+            yield return new WaitForSeconds(0.6f); // 공격모션 끝남
+
+            M_TurnManager.instance.AnimIronDemon("TeleportGo",tar); // 다시 사라짐
+            yield return new WaitForSeconds(0.33f);// 완전히 사라지는 시간
+            M_TurnManager.instance.MoveIronDemon(tar[0],tar); // 플레이어에게 다시 이동
+            M_TurnManager.instance.AnimIronDemon("TeleportBack",tar); // 다시 나타남
+            yield return new WaitForSeconds(0.33f); // 완전히 나타날때까지 기다림
+            M_TurnManager.instance.AnimIronDemon("Idle",tar); // 아이들 모션
         }
-        GeneralSingleAttack(tar[0],tar[1],6);
+        else
+            GeneralSingleAttack(tar[0],tar[1],6);
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator H0_E(Card card,List<TargetObject> tar)
@@ -30,9 +51,8 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData)
         {
             yield return tempWait;
-            M_TurnManager.instance.ChangePlayerOrder(tar[0].player,MoveDirection.FORWARD);
             yield return new WaitForSeconds(0.5f);
-            M_TurnManager.instance.StartAnimation(tar[0],1,"01Attack",false);
+            M_TurnManager.instance.StartAnimation(tar[0],0,"Attack0",false);
             yield return new WaitForSeconds(0.2f);
             StartCoroutine(tar[1].monster.OnHitAnimation());
             

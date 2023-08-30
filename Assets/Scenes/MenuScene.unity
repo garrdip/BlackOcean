@@ -6333,7 +6333,6 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 6401606778164361385, guid: 3740b90e74c0e1d47b2244af5b966290, type: 3}
   - {fileID: 2153712344633156845, guid: 4fc3aa0dc4717124e88a0e2274161e50, type: 3}
-  - {fileID: 2438374660219488752, guid: 211b011cd7a3b6845aff5b3d9ce65a69, type: 3}
   - {fileID: 3624024140002001778, guid: 34869d7c042cb0744929e1f3a3606061, type: 3}
   - {fileID: 209357282904150780, guid: ac2464dcd67e7d746af4fbd7ec49adff, type: 3}
   - {fileID: 387816068712704334, guid: ced8dc11b1bd51c4abdb0adc2c1c882b, type: 3}
@@ -6347,6 +6346,7 @@ MonoBehaviour:
   - {fileID: 8715637313035057607, guid: 9a6ba97bce7a1974b81c911cb6e3b5bd, type: 3}
   - {fileID: 8715637313035057607, guid: af2d8931256d070468b953a12be7648e, type: 3}
   - {fileID: 8715637313035057607, guid: fcbd6214289f7db4e927b16526741287, type: 3}
+  - {fileID: 2438374660219488752, guid: 211b011cd7a3b6845aff5b3d9ce65a69, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     bufferLimit: 32

@@ -48,7 +48,6 @@ public class GamePlayer : NetworkBehaviour
         if(isOwned)
         {
             destroyCards.Remove(cardOnHand);
-            Debug.Log("Card Removed!");
         }
     }
 
