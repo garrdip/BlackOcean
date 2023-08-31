@@ -202,8 +202,8 @@ public class CardCtrlArrow : NetworkBehaviour
                 // Calculate scales for each arrow node
                 var scale = this.scaleFactor * (0.4f - 0.02f * (this.arrowNodes.Count -1 -i));
                 this.arrowNodes[i].localScale = (i == (arrowNodes.Count-1)) 
-                    ? new Vector3(scale + 0.2f, scale + 0.2f, 0f) // Arrow Head Scale
-                    : new Vector3(scale, scale - 0.2f, 0f); // Arrow Node Scale
+                    ? new Vector3(scale + 0.5f, scale + 0.5f, 0f) // Arrow Head Scale
+                    : new Vector3(scale + 0.3f, scale + 0.3f, 0f); // Arrow Node Scale
             }
         }
     }
