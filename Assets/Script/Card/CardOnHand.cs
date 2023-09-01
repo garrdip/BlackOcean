@@ -13,8 +13,11 @@ public class CardOnHand : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeCardData))]
     public Card card;
 
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChangeIndex))]
     public int index;
+
+    [SyncVar (hook = nameof(OnChangeParent))]
+    public CardPocket parent;
 
     [Header("CardOnHand Transform 및 컴포넌트 관련 값들")]
     // 랜더링 순서값
@@ -74,7 +77,28 @@ public class CardOnHand : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            InitCardExpBar();
         }
+    }
+
+    // 카드 경험치 바 초기화 : card 데이터에서 최대 경험치 정보를 가져와 해당 숫자 만큼의 경험치 바 내부 블록 생성
+    private void InitCardExpBar()
+    {
+        // 철귀 이동카드는 경험치 오브젝트 초기화 제외
+        if(!card.baseCard.cardNumber.Equals("HA")){
+            // 최대 경험치 만큼 내부 블록 생성
+            for(int i=0; i<card.baseCard.maxExperience; i++){
+                GameObject expBlock = Instantiate(expBlockPrefab);
+                expBlock.transform.SetParent(verticalLayoutGroup.transform, false);
+                expBlocks.Add(expBlock);
+            }
+            // expBlocks 역순으로 전환(블록이 아래부터 쌓이도록)
+            expBlocks.Reverse();
+            // 경험치 블록 리스트에서 현재 카드의 경험치 숫자 만큼 블록 생상을 변경
+            for(int j=0; j<card.experience; j++){
+                expBlocks[j].GetComponent<Image>().color = Color.black;
+            }
+        }   
     }
 
     // 오브젝트에 마우스 포인터 진입할 때 이벤트
@@ -246,18 +270,6 @@ public class CardOnHand : NetworkBehaviour
             textCardDescription.text = GetAdditionalValueFromDescription(newCard.baseCard.description);
         }
 
-        if(expBlocks.Count != card.baseCard.maxExperience){
-            expBlocks.Clear();
-            for(int i=0; i<card.baseCard.maxExperience; i++){
-                GameObject expBlock = Instantiate(expBlockPrefab);
-                expBlock.transform.SetParent(verticalLayoutGroup.transform, false);
-                expBlocks.Add(expBlock);
-            }
-        }
-
-        Debug.Log($"{card.baseCard.name} 카드 경험치 : {card.experience} / {card.baseCard.maxExperience}");
-        Debug.Log($"경험치 블록 갯수: {expBlocks.Count}");
-
         textCardInfo.text = newCard.baseCard.cardType.ToString();
         textCardDescription.text += '\n';
         textCardDescription.text += '\n';
@@ -311,4 +323,17 @@ public class CardOnHand : NetworkBehaviour
         OnChangeCardData(card,card);
     }
 
+    // 카드 부모오브젝트인 CardPocket 참조값 변경 이벤트 수신
+    public void OnChangeParent(CardPocket oldCardPocket, CardPocket newCardPocket)
+    {
+        transform.SetParent(newCardPocket.transform);
+    }
+
+    // 카드 인덱스값 변경 이벤트 수신
+    public void OnChangeIndex(int oldValue, int newValue)
+    {
+        transform.GetComponent<SpriteRenderer>().sortingOrder = index;
+        cardOnHandCanvas.sortingOrder = index;
+        transform.SetSiblingIndex(index);
+    }
 }
