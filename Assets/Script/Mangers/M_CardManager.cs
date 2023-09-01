@@ -74,7 +74,7 @@ public class M_CardManager : NetworkBehaviour
             GetCurrentCharacterCardData();
         }
         InitSymmetryValue();
-        cardOriginSize = new Vector3(0.2f, 0.2f, 0.2f);
+        cardOriginSize = new Vector3(1f, 1f, 1f);
         cardOverSize = cardOriginSize + new Vector3(0.1f, 0.1f, 0.1f);
     }
 
