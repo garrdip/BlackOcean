@@ -47,6 +47,9 @@ TagManager:
   - name: Monster
     uniqueID: 150335661
     locked: 0
+  - name: IronDemon
+    uniqueID: 3472482551
+    locked: 0
   - name: Player
     uniqueID: 744391573
     locked: 0
