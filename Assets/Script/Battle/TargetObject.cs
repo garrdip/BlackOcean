@@ -59,6 +59,10 @@ public class TargetObject : NetworkBehaviour
     public bool isCloneData = false;
     public GameObject avatar;
     public GameObject ironDemon;
+
+    [SyncVar]
+    public TargetObject ironDemonLocation;
+
     public SkeletonAnimation anim;
 
     public readonly SyncList<Buff> buffs = new SyncList<Buff>();
@@ -152,7 +156,7 @@ public class TargetObject : NetworkBehaviour
 
     public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
     {
-        if(objectType == ObjectType.PLAYER)
+        if(objectType == ObjectType.PLAYER && !isCloneData)
         {
             switch(player.character)
             {
@@ -165,6 +169,7 @@ public class TargetObject : NetworkBehaviour
                 case Character.HONGDANHYANG :
                     avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
                     ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
+                    ironDemonLocation = this;
                 break;
             }
             textTargetName.text = SteamFriends.GetFriendPersonaName((CSteamID)newVal.steamID);
@@ -180,6 +185,7 @@ public class TargetObject : NetworkBehaviour
             }
         }
     }
+
 
 
     // ----------------------------------------------           Damage 관련 함수        ---------------------------------------------------//

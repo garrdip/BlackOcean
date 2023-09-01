@@ -52,6 +52,8 @@ public class M_CardManager : NetworkBehaviour
     [Header("화살표 활성화 상태 여부")]
     public bool isArrowActive = false;
 
+    [Header("어빌리티 화살표 활성화 상태 여부")]
+    public bool isAbilityArrowActive = false;
 
     public static M_CardManager instance
     {

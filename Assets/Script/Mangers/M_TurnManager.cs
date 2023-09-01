@@ -207,11 +207,20 @@ public class M_TurnManager : NetworkBehaviour
             // 전투 시작 이치 초기화
             foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
                 gamePlayerDeck.SetInitialIchi();
-            
+            GenerateAbilityButton();
             StartCoroutine(WaitingForPlayer());
         }
     }
+
+    [ClientRpc]
+    void GenerateAbilityButton()
+    {
+        if(NetworkClient.connection.identity.GetComponent<GamePlayer>().character == Character.HONGDANHYANG)
+            NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().CmdGenerateAbilityButton();
+    }
  
+
+
     IEnumerator WaitingForPlayer()
     {
         int cnt = 0;

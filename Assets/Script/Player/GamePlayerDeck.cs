@@ -17,6 +17,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public CardCtrlArrow cardCtrlArrow; // 현재 소환된 카드 화살표
 
+    [SyncVar]
+    public AbilityCtrlArrow abilityCtrlArrow; // 현재 소환된 어빌리티 화살표
+
     public const int arrowNodeNum = 13; // 카드 컨트롤 화살표 몸통 개수
 
     public readonly SyncList<Card> deck =  new SyncList<Card>(); // 댁 총괄 데이터
@@ -38,7 +41,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public List<CardOnHand> destroyCardList = new List<CardOnHand>();
 
-    public CardOnHand TEST;
+    [SyncVar]
+    public CardOnHand abilityCard;
 
     public override void OnStartServer()
     {
@@ -58,6 +62,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
     {
         CmdSpawnCardPocket(); // 카드 포켓 생성 서버 요청
         CmdSpawnArrowEmitter(); // 화살표 생성 서버 요청
+        if(GetComponent<GamePlayer>().character == Character.HONGDANHYANG)
+            CmdSpawnAbilityArrowEmitter();
         InitIchi();
     }
 
@@ -139,7 +145,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H3")));
                         deck.Add(defenseCard);
                     }
-                    
                 }
                 break;
             default:
@@ -171,7 +176,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
             if(serverCardPredictQueue.Count == 0) continue; //카드큐가 비어있을경우 스킵 
             
             ( cardOnHand,targetObject,conn) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
-            TEST = cardOnHand;
 
             if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
             {
@@ -278,6 +282,53 @@ public partial class GamePlayerDeck : NetworkBehaviour
         cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();
     }
 
+    [Command]
+    public void CmdGenerateAbilityButton()
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        GameObject abilityButton = Instantiate(
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityButton")),
+            new Vector3(-100,0,0),
+            Quaternion.identity);
+        NetworkServer.Spawn(abilityButton, connectionToClient);
+    }
+
+    [Command]
+    public void CmdSpawnAbilityArrowEmitter()
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
+        // 화살표 생성 초기 위치는 화면 밖
+        Vector3 arrowSpawnPosition = new Vector3(-100f, 0f, 0f);
+
+        // 화살표 인디케이터 오브젝트 생성
+        GameObject abilityEmitter = Instantiate(
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowEmitter")),
+            arrowSpawnPosition,
+            Quaternion.identity);
+        NetworkServer.Spawn(abilityEmitter, connectionToClient);
+
+        // 화살표 인디케이터 몸체 생성
+        for(int i=0; i<arrowNodeNum; i++){
+            GameObject arrowNode = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowNode")),
+                arrowSpawnPosition,
+                Quaternion.identity);
+            NetworkServer.Spawn(arrowNode, connectionToClient);
+            arrowNode.GetComponent<AbilityCtrlArrowNode>().abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>(); // 화살표 몸통에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
+        }
+
+        // 화살표 인디케이터 머리 생성
+        GameObject arrowHead = Instantiate(
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowHead")),
+            arrowSpawnPosition,
+            Quaternion.identity);
+        NetworkServer.Spawn(arrowHead, connectionToClient);
+        arrowHead.GetComponent<AbilityCtrlArrowHead>().abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>();  // 화살표 머리에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
+    
+        abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>();
+    }
+
     // deck에 추가
     [Command]
     public void CmdAddDeck(Card card)
@@ -359,6 +410,28 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
             cardOnHands.Add(cardOnHand.GetComponent<CardOnHand>()); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
         }
+        // 어빌리티 카드 생성
+        Card abilityCardBase = new Card();
+        switch(GetComponent<GamePlayer>().character)
+        {
+            case Character.HONGDANHYANG :
+                abilityCardBase = new Card(CardData.instance.cards.Find(c => c.cardNumber.Equals("HA"))); 
+                break;
+            case Character.ERIS :
+                abilityCardBase = new Card(CardData.instance.cards.Find(c => c.cardNumber.Equals("HA"))); 
+                break;
+            case Character.GEORK :
+                abilityCardBase = new Card(CardData.instance.cards.Find(c => c.cardNumber.Equals("HA"))); 
+                break;
+        }
+        GameObject abilityCardObject = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+                cardSpawnPosition,
+                Quaternion.identity
+        );
+        NetworkServer.Spawn(abilityCardObject, connectionToClient);
+        abilityCardObject.GetComponent<CardOnHand>().card = abilityCardBase;
+        abilityCard = abilityCardObject.GetComponent<CardOnHand>();
     }
 
     [ClientRpc]

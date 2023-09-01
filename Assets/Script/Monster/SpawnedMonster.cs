@@ -181,7 +181,7 @@ public class SpawnedMonster : NetworkBehaviour
         {
             nextTargetPlayer.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
             M_TurnManager.instance.StartAnimation(nextTargetPlayer,0,"Defense",false);
-            if(nextTargetPlayer.player.character == Character.HONGDANHYANG)
+            if(nextTargetPlayer.player.character == Character.HONGDANHYANG && nextTargetPlayer.ironDemonLocation == nextTargetPlayer)
                 nextTargetPlayer.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
         }
         else
@@ -190,7 +190,7 @@ public class SpawnedMonster : NetworkBehaviour
             {
                 tar.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
                 M_TurnManager.instance.StartAnimation(tar,0,"Defense",false);
-                if(tar.player.character == Character.HONGDANHYANG)
+                if(tar.player.character == Character.HONGDANHYANG && tar.ironDemonLocation == tar)
                     tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
             }
         }
