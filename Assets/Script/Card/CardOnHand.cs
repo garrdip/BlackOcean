@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 using ProjectD;
 using Mirror;
 using DG.Tweening;
@@ -52,6 +53,12 @@ public class CardOnHand : NetworkBehaviour
     public TextMeshProUGUI textCardInfo;
     public TextMeshProUGUI textCardDescription;
     public TextMeshProUGUI textCardCost;
+
+    // 카드 경험치 (진행중)
+    public GameObject cardExpBar; // 경험치 바 
+    public GameObject expBlockPrefab; // 경험치 바 내부 블록 오브젝트 프리팹
+    public VerticalLayoutGroup verticalLayoutGroup;
+    public List<GameObject> expBlocks = new List<GameObject>(); // 경험치 바 내부 블록 리스트
 
     public delegate void CardInfoChanged();
     public CardInfoChanged CardInfoChangedEvent;
@@ -223,39 +230,52 @@ public class CardOnHand : NetworkBehaviour
     public void OnChangeCardData(Card oldCard, Card newCard)
     {
         // 정상적으로 Card가 동기화 되지 않았을경우 업데이트 취소
-        if(card == null)return;
-        if(card.baseCard == null)return;
-        if(card.baseCard.name == null)return;
-        if(card.baseCard.name == "")return;
+        if(newCard == null)return;
+        if(newCard.baseCard == null)return;
+        if(newCard.baseCard.name == null)return;
+        if(newCard.baseCard.name == "")return;
 
-        if(card.experience >= card.baseCard.maxExperience)
+        if(newCard.experience >= newCard.baseCard.maxExperience)
         {
-            textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").name;
-            textCardDescription.text = GetAdditionalValueFromDescription(CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").description);
+            textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == newCard.baseCard.cardNumber + "_E").name;
+            textCardDescription.text = GetAdditionalValueFromDescription(CardData.instance.cards.Find(x => x.cardNumber == newCard.baseCard.cardNumber + "_E").description);
         }
         else
         {
-            textCardName.text = card.baseCard.name;
-            textCardDescription.text = GetAdditionalValueFromDescription(card.baseCard.description);
+            textCardName.text = newCard.baseCard.name;
+            textCardDescription.text = GetAdditionalValueFromDescription(newCard.baseCard.description);
         }
-        textCardInfo.text = card.baseCard.cardType.ToString();
+
+        if(expBlocks.Count != card.baseCard.maxExperience){
+            expBlocks.Clear();
+            for(int i=0; i<card.baseCard.maxExperience; i++){
+                GameObject expBlock = Instantiate(expBlockPrefab);
+                expBlock.transform.SetParent(verticalLayoutGroup.transform, false);
+                expBlocks.Add(expBlock);
+            }
+        }
+
+        Debug.Log($"{card.baseCard.name} 카드 경험치 : {card.experience} / {card.baseCard.maxExperience}");
+        Debug.Log($"경험치 블록 갯수: {expBlocks.Count}");
+
+        textCardInfo.text = newCard.baseCard.cardType.ToString();
         textCardDescription.text += '\n';
         textCardDescription.text += '\n';
-        foreach(CardCharacteristic character in card.baseCard.cardCharacteristics)
+        foreach(CardCharacteristic character in newCard.baseCard.cardCharacteristics)
             textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>";
         
-        if(card.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
+        if(newCard.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
         {
-            if(card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
+            if(newCard.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
             {
-                textCardCost.text = "<b><color=green>" +((card.baseCard.cost + card.costAddition - 1) <= 0 ? "0" : (card.baseCard.cost + card.costAddition - 1).ToString()) + "</color></b>";
+                textCardCost.text = "<b><color=green>" +((newCard.baseCard.cost + newCard.costAddition - 1) <= 0 ? "0" : (newCard.baseCard.cost + newCard.costAddition - 1).ToString()) + "</color></b>";
             }
             else
             {
-                textCardCost.text = "<b><color=red>"+ (card.baseCard.cost + card.costAddition + 1).ToString() + "</color></b>";
+                textCardCost.text = "<b><color=red>"+ (newCard.baseCard.cost + newCard.costAddition + 1).ToString() + "</color></b>";
             }
         }
-        else textCardCost.text = (card.baseCard.cost + card.costAddition).ToString();
+        else textCardCost.text = (newCard.baseCard.cost + newCard.costAddition).ToString();
     }
 
     private string GetAdditionalValueFromDescription(string str)

@@ -18,6 +18,7 @@ public class CardCtrlArrowHead : NetworkBehaviour
     {
         if(collider != null && collider.tag.Equals("TargetObject") && cardCtrlArrow != null){
             cardCtrlArrow.currentTarget = collider.gameObject;
+            cardCtrlArrow.ChangeArrowNodesColor(Color.red);
         }
     }
 
@@ -26,6 +27,7 @@ public class CardCtrlArrowHead : NetworkBehaviour
     {
         if(collider != null && collider.tag.Equals("TargetObject") && cardCtrlArrow != null){
             cardCtrlArrow.currentTarget = null;
+            cardCtrlArrow.ChangeArrowNodesColor(Color.white);
         }
     }
 

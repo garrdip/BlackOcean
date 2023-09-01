@@ -214,4 +214,13 @@ public class CardCtrlArrow : NetworkBehaviour
         ChangeArrowVisible(false, GameUIManager.instance.CardOnHandsPanel.transform); // 화살표 활성화 상태 변경
         M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
     }
+
+    // 화살표 노드들 색상변경
+    public void ChangeArrowNodesColor(Color color)
+    {
+        foreach(Transform transform in arrowNodes){
+            SpriteRenderer spriteRenderer = transform.GetComponent<SpriteRenderer>();
+            spriteRenderer.color = color;
+        }
+    }
 }
