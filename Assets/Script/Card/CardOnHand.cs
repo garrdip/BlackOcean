@@ -212,7 +212,7 @@ public class CardOnHand : NetworkBehaviour
 
     // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
     [ClientRpc]
-    public void RpcCardOnHandSetParent(CardPocket cardPocket)
+    public void RpcCardOnHandSetParent(GameObject cardPocket)
     {
         transform.SetParent(cardPocket.transform);
     }

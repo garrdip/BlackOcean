@@ -204,9 +204,12 @@ public class M_TurnManager : NetworkBehaviour
             else
                 GenerateNPC("NPC_Mercurius");
 
-            // 전투 시작 이치 초기화
+            // 전투 시작 이치 초기화 및 어빌리티 카드 생성
             foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
+            {
                 gamePlayerDeck.SetInitialIchi();
+                if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.CmdSpawnAbilityCard();
+            }
             GenerateAbilityButton();
             StartCoroutine(WaitingForPlayer());
         }

@@ -213,6 +213,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
             // 여기부터 카드사용이 확정 되는곳
             previousCardType = cardOnHand.card.baseCard.cardType;
+
             List<TargetObject> tar = new List<TargetObject>();
             tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
             if(cardOnHand.card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
@@ -402,7 +403,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
             // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
             if(cardPocket != null){
-                cardOnHand.GetComponent<CardOnHand>().RpcCardOnHandSetParent(cardPocket);
+                cardOnHand.GetComponent<CardOnHand>().RpcCardOnHandSetParent(cardPocket.gameObject);
             }
 
             // 소환된 카드의 정렬 순서값을 설정하기 위해 클라이언트에 이벤트 전송
@@ -410,7 +411,13 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
             cardOnHands.Add(cardOnHand.GetComponent<CardOnHand>()); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
         }
-        // 어빌리티 카드 생성
+    }
+
+    [Command]
+    public void CmdSpawnAbilityCard()
+    {
+        Vector3 cardSpawnPosition = new Vector3(-100f, 0f, 0f);
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         Card abilityCardBase = new Card();
         switch(GetComponent<GamePlayer>().character)
         {
@@ -431,6 +438,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         );
         NetworkServer.Spawn(abilityCardObject, connectionToClient);
         abilityCardObject.GetComponent<CardOnHand>().card = abilityCardBase;
+        abilityCardObject.GetComponent<CardOnHand>().RpcCardOnHandSetParent(gameObject);
         abilityCard = abilityCardObject.GetComponent<CardOnHand>();
     }
 
