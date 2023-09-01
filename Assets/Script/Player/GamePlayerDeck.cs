@@ -62,8 +62,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     {
         CmdSpawnCardPocket(); // 카드 포켓 생성 서버 요청
         CmdSpawnArrowEmitter(); // 화살표 생성 서버 요청
-        if(GetComponent<GamePlayer>().character == Character.HONGDANHYANG)
-            CmdSpawnAbilityArrowEmitter();
+        CmdSpawnAbilityArrowEmitter();
         InitIchi();
     }
 
@@ -411,6 +410,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
             cardOnHands.Add(cardOnHand.GetComponent<CardOnHand>()); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
         }
+    }
+
+    [ClientRpc]
+    public void SpawnAbilityCardRPC()
+    {
+        if(isOwned)CmdSpawnAbilityCard();
     }
 
     [Command]

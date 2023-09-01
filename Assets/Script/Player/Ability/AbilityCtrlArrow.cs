@@ -15,12 +15,13 @@ public class AbilityCtrlArrow : NetworkBehaviour
     public List<Transform> arrowNodes = new List<Transform>();
     public Vector2[] controlPoints = new Vector2[2];
 
+    bool isInitialized;
+
     void Start()
     {
         origin = GetComponent<Transform>();
         ChangeArrowVisible(isOwned, GameUIManager.instance.CardOnHandsPanel.transform);
         M_CardManager.instance.isArrowActive = false; // 생성 시점에는 오브젝트가 활성화 되어있지만(네트워크 오브젝트는 생성시 Active 상태), 활성화 상태 변수값은 false로 초기화
-        RemoveAbilityCtrlArrow();
     }
 
     void Update()
@@ -36,7 +37,7 @@ public class AbilityCtrlArrow : NetworkBehaviour
     // 화살표 노드들의 위치, 회전값 조절
     private void HandleArrowNodesTrasnform()
     {
-        if(controlPoints.Length > 0){
+        if(isInitialized == true){
             // P3 is at the mouse position
             Vector3 mousePosition = Input.mousePosition; // 마우스 좌표 가져오기
             mousePosition.z = Camera.main.nearClipPlane; // 카메라가 바라보는 위치로 설정
@@ -93,6 +94,7 @@ public class AbilityCtrlArrow : NetworkBehaviour
     {
         transform.position = abilityButton.transform.position;
         ChangeArrowVisible(true, abilityButton.transform);
+        isInitialized = true;
         InitBezierCurvePoint(abilityButton);
     }
 
@@ -106,6 +108,7 @@ public class AbilityCtrlArrow : NetworkBehaviour
     public void RemoveAbilityCtrlArrow()
     {
         ChangeArrowVisible(false, GameUIManager.instance.CardOnHandsPanel.transform);
+        isInitialized = false;
     }
 
     // 화살표의 활성화 상태 변경 및 부모 오브젝트 설정 변경

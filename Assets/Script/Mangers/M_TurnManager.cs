@@ -208,7 +208,7 @@ public class M_TurnManager : NetworkBehaviour
             foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
             {
                 gamePlayerDeck.SetInitialIchi();
-                if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.CmdSpawnAbilityCard();
+                if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.SpawnAbilityCardRPC();
             }
             GenerateAbilityButton();
             StartCoroutine(WaitingForPlayer());
