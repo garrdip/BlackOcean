@@ -23,7 +23,7 @@ public partial class CardData : SingletonD<CardData>
 
     string[] colorList = {"<#ff0000>","<#00ff00>","<#0000ff>","<#ffff00>","<#00ffff>","<#ff00ff>"};
 
-    WaitForSeconds tempWait = new WaitForSeconds(1f);
+    WaitForSeconds tempWait = new WaitForSeconds(0.3f);
 
     //Version 3
     public void LoadCardDataFromDB()

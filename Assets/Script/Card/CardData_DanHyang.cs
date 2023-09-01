@@ -17,6 +17,8 @@ public partial class CardData : SingletonD<CardData>
         {
             yield return tempWait; // 임시 딜레이
 
+            M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+
             if(tar[1] != tar[0].ironDemonLocation)
             {
                 M_TurnManager.instance.AnimIronDemon("TeleportGo",tar); // 철귀 사라짐
@@ -35,6 +37,8 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData)
         {
             yield return tempWait; // 임시 딜레이
+
+            M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
 
             if(tar[1] != tar[0].ironDemonLocation)
             {
