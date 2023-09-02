@@ -49,6 +49,7 @@ public class AbilityCtrlArrowHead : NetworkBehaviour
     public void OnChangeCardCtrlArrow(AbilityCtrlArrow oldAbilityCtrlArrow, AbilityCtrlArrow newAbilityCtrlAroow)
     {
         transform.SetParent(newAbilityCtrlAroow.transform);
+        transform.localPosition = new Vector3(0f, 0f, 0f); // 동적으로 부모 설정시 localPosition이 변경되므로 부모와 같은 위치가 되도록 localPosition 0으로 설정
         newAbilityCtrlAroow.arrowNodes.Add(GetComponent<Transform>());
     }
 }

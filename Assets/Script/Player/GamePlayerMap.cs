@@ -30,21 +30,20 @@ public class GamePlayerMap : NetworkBehaviour
     public void CmdSpawnMapPlayerPiece()
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        GameObject mapPlayerPiece = Instantiate(
+        GameObject mapPlayerPieceObject = Instantiate(
             M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerPiece"),
             Vector3.zero,
             Quaternion.identity
         );
-        NetworkServer.Spawn(mapPlayerPiece, connectionToClient);
 
-        // 스팀아이디 값 세팅
+        MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
         GamePlayer gamePlayer = GetComponent<GamePlayer>();
-        mapPlayerPiece.GetComponent<MapPlayerPiece>().steamId =  SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
-        mapPlayerPiece.GetComponent<MapPlayerPiece>().gamePlayer = GetComponent<GamePlayer>();  // 게임 플레이어 참조값 세팅
-        currentMapPlayerPiece = mapPlayerPiece.GetComponent<MapPlayerPiece>(); // 자신소유의 mapPlayerPiece 참조값 세팅
+        mapPlayerPiece.steamId =  SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID); // 스팀아이디 값 세팅
+        mapPlayerPiece.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
+        currentMapPlayerPiece = mapPlayerPiece; // 자신소유의 mapPlayerPiece 참조값 세팅
+        M_MapManager.instance.mapPlayerPieces.Add(mapPlayerPieceObject); // 매니저의 리스트에 생성된 맵 플레이어 추가
 
-        // 매니저의 리스트에 생성된 맵 플레이어 추가
-        M_MapManager.instance.mapPlayerPieces.Add(mapPlayerPiece);
+        NetworkServer.Spawn(mapPlayerPieceObject, connectionToClient);
     }
 
     // 맵플레이어가 이동할 위치를 표시하는 오브젝트 생성
@@ -52,15 +51,16 @@ public class GamePlayerMap : NetworkBehaviour
     public void CmdSpawnMapPlayerDestination()
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        GameObject mapPlayerDestination = Instantiate(
+        GameObject mapPlayerDestinationObject = Instantiate(
             M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerDestination"),
             Vector3.zero,
             Quaternion.identity
         );
-        NetworkServer.Spawn(mapPlayerDestination, connectionToClient);
+        MapPlayerDestination mapPlayerDestination = mapPlayerDestinationObject.GetComponent<MapPlayerDestination>();
+        mapPlayerDestination.gamePlayer = GetComponent<GamePlayer>(); // 게임 플레이어 참조값 세팅
+        NetworkServer.Spawn(mapPlayerDestinationObject, connectionToClient);
 
-        mapPlayerDestination.GetComponent<MapPlayerDestination>().gamePlayer = GetComponent<GamePlayer>();   // 게임 플레이어 참조값 세팅
-        currentMapPlayerDestination = mapPlayerDestination.GetComponent<MapPlayerDestination>(); // 자신소유의 currentMapPlayerDestination 참조값 세팅
+        currentMapPlayerDestination = mapPlayerDestination; // 자신소유의 currentMapPlayerDestination 참조값 세팅
     }
 
 
