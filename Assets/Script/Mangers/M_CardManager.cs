@@ -73,9 +73,7 @@ public class M_CardManager : NetworkBehaviour
             gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             GetCurrentCharacterCardData();
         }
-        InitSymmetryValue();
-        cardOriginSize = new Vector3(1f, 1f, 1f);
-        cardOverSize = cardOriginSize + new Vector3(0.1f, 0.1f, 0.1f);
+        InitCardConfigValue();
     }
 
     void FixedUpdate()
@@ -83,15 +81,17 @@ public class M_CardManager : NetworkBehaviour
         SetCardOnHandPositionSymmetry();
     }
 
-    // Range로 변경가능한 값들 초기화
-    private void InitSymmetryValue()
+    // 카드 관련 기본값 설정(카드 크기, 위치, 회전과 관련된 값, Range로 조정 가능한 값들의 초기값)
+    private void InitCardConfigValue()
     {
+        cardOriginSize = new Vector3(1f, 1f, 1f);
+        cardOverSize = cardOriginSize + new Vector3(0.45f, 0.45f, 0.45f);
         symmetryRange = 1.6f;
         symmetryPositionX_Range = 2.0f;
         symmetryPositionY_Range = 0.35f;
         symmetryRotationRange = 5.0f;
-        cardOnHandShiftedRange = 1f;
-        hoveredPositionY = 1.6f;
+        cardOnHandShiftedRange = 1.7f;
+        hoveredPositionY = 2.8f;
     }
 
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
@@ -441,5 +441,33 @@ public class M_CardManager : NetworkBehaviour
             }
         }
         return extractedCards;
+    }
+
+    public string GetAdditionalValueFromDescription(string str)
+    {
+        TargetObject tar = null;
+        if(isServer)
+            tar = NetworkServer.spawned[NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
+        else
+            tar = NetworkClient.spawned[NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
+
+        string[] splitString = str.Trim().Split(" ");
+        for(int i = 0 ;i < splitString.Length ; i++)
+        {
+            if(splitString[i].ToCharArray()[0] == '!')
+            {
+                splitString[i] = splitString[i].Remove(0,1);
+                int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + tar.GetBuffValue(BuffType.FLOWER);
+                splitString[i] = "<color=green>" + result.ToString() + "</color>";
+            }
+            if(splitString[i].ToCharArray()[0] == '#')
+            {
+                splitString[i] = splitString[i].Remove(0,1);
+                int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_DEFENSE);
+                splitString[i] = "<color=green>" + result.ToString() + "</color>";
+            }
+        }
+        
+        return string.Join(" ",splitString);
     }
 }

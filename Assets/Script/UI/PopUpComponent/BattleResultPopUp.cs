@@ -36,7 +36,7 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
             GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
             cardOnDeck.transform.SetParent(PopUpUIManager.instance.selectableCardList.transform);
             cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
-            cardOnDeck.GetComponent<RectTransform>().sizeDelta = new Vector2(350, 500);
+            cardOnDeck.GetComponent<RectTransform>().sizeDelta = new Vector2(586, 864); // 보상팝업에서 카드 크기 네이티브 사이즈로 설정
             cardOnDeck.GetComponent<CardOnDeck>().card = card;
             extractCardObjects.Add(cardOnDeck);
         }
