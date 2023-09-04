@@ -25,4 +25,10 @@ public class AbilityButton : NetworkBehaviour
         mydeck.abilityCtrlArrow.InitCardCtrlArrow(this);
     }
 
+    // 드래그 후 마우스 땔때
+    void OnMouseUp()
+    {
+   
+    }
+
 }

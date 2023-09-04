@@ -36,6 +36,7 @@ public class Soldier_Axe : SpawnedMonster
     public void DoAnimation(string actionName)
     {
         parent.anim.state.SetAnimation(1,actionName,false);
+        Invoke("OnHitAnimationPlayer",0.3f);
     }
 
     [Server]
@@ -51,6 +52,7 @@ public class Soldier_Axe : SpawnedMonster
     {
         parent.anim.state.SetAnimation(1,"1Defence",false);
     }
+    
     [ClientRpc]
     public override void ReturnToIdleAnimation()
     {

@@ -229,6 +229,10 @@ public class TargetObject : NetworkBehaviour
         {
             int remind = damage - defense;
             defense = 0;
+            if(isServer && monster.HP <= remind && !isCloneData){
+                M_TurnManager.instance.monsterDeathOperating = true;
+                M_TurnManager.instance.ProcessMonsterDeath(this);
+            }
             monster.HP -= remind;
             monster.OnChangedHpValue(monster.HP,monster.HP);
         }

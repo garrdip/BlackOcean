@@ -48,7 +48,8 @@ public class M_TurnManager : NetworkBehaviour
     public List<TargetObject> cloneMonsterList = new List<TargetObject>();
     List<TargetObject> monsterOrderList = new List<TargetObject>();
     
-    bool cardQueueOperating = false;
+    public bool monsterDeathOperating = false;
+
     // 카드와 타겟을 한쌍으로 저장하는 큐
     public Queue<(Card, List<TargetObject>)> cardTargetPairQueue = new Queue<(Card, List<TargetObject>)>();
     // TargetObject List 구조 : 
@@ -257,7 +258,7 @@ public class M_TurnManager : NetworkBehaviour
         while (true)
         {
             yield return waitForLoop;
-            if(CardData.instance.isCardOperating){
+            if(CardData.instance.isCardOperating || monsterDeathOperating){
                 continue;
             }
             else
@@ -278,6 +279,37 @@ public class M_TurnManager : NetworkBehaviour
         }
     }
 
+    public void ProcessMonsterDeath(TargetObject tar)
+    {
+        StartCoroutine(ProcessMonsterDeathCoroutine(tar));
+    }
+
+    public IEnumerator ProcessMonsterDeathCoroutine(TargetObject tar)
+    {
+        while(true)
+        {
+            // 철구 돌려 보내기
+            yield return new WaitForSeconds(0.01f);
+            if(CardData.instance.isCardOperating) continue;
+            foreach(TargetObject target in spawnedPlayerList)
+            {
+                if(target.ironDemonLocation == tar || target.ironDemonLocation == null)
+                {
+                    M_TurnManager.instance.AnimIronDemon("TeleportGo",target); // 철귀 사라짐
+                    yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
+                    M_TurnManager.instance.MoveIronDemon(target,target); // 철귀 적으로 이동
+                    M_TurnManager.instance.AnimIronDemon("TeleportBack",target); // 철귀 나타나기 시작
+                    yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
+                    M_TurnManager.instance.AnimIronDemon("Idle",target); // 철귀 나타나기 시작
+                }
+            }
+            monsterDeathOperating = false;
+            break;
+        }
+      
+    }
+
+
     [ClientRpc]
     public void StartAnimation(TargetObject tar, int trackIndex,string animationName, bool loop )
     {
@@ -289,19 +321,19 @@ public class M_TurnManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void MoveIronDemon(TargetObject target ,List<TargetObject> tar)
+    public void MoveIronDemon(TargetObject target ,TargetObject tar)
     {
-        tar[0].ironDemon.transform.position = target.transform.position;
-        if(target.objectType == ObjectType.PLAYER) tar[0].ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar[0].ironDemonData[0];
-        else tar[0].ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar[0].ironDemonData[1];
-        tar[0].ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
+        tar.ironDemon.transform.position = target.transform.position;
+        if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0];
+        else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1];
+        tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
     }
 
     [ClientRpc]
-    public void AnimIronDemon(string anim ,List<TargetObject> tar)
+    public void AnimIronDemon(string anim ,TargetObject tar)
     {
         bool isLoop = anim == "Idle" ? true : false;
-        tar[0].ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
+        tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
     }
 
     [Server]

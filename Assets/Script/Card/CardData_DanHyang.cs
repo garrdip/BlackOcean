@@ -10,7 +10,6 @@ using Spine.Unity;
 
 public partial class CardData : SingletonD<CardData>
 {
-
     public IEnumerator HA(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData)
@@ -21,15 +20,17 @@ public partial class CardData : SingletonD<CardData>
 
             if(tar[1] != tar[0].ironDemonLocation)
             {
-                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar); // 철귀 사라짐
+                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar[0]); // 철귀 사라짐
                 yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
-                M_TurnManager.instance.MoveIronDemon(tar[1],tar); // 철귀 적으로 이동
-                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar); // 철귀 나타나기 시작
+                M_TurnManager.instance.MoveIronDemon(tar[1],tar[0]); // 철귀 적으로 이동
+                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 철귀 나타나기 시작
                 yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
             }
-            tar[0].ironDemonLocation = tar[1];
-            M_TurnManager.instance.AnimIronDemon("Idle",tar); // 아이들 모션
+            tar[0].ironDemonLocation = tar[1]; // 철귀 적으로 이동
+            M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
         }
+        else 
+            tar[0].ironDemonLocation = tar[1]; // 철귀 적으로 이동
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator HA_E(Card card,List<TargetObject> tar)
@@ -42,15 +43,17 @@ public partial class CardData : SingletonD<CardData>
 
             if(tar[1] != tar[0].ironDemonLocation)
             {
-                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar); // 철귀 사라짐
+                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar[0]); // 철귀 사라짐
                 yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
-                M_TurnManager.instance.MoveIronDemon(tar[1],tar); // 철귀 적으로 이동
-                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar); // 철귀 나타나기 시작
+                M_TurnManager.instance.MoveIronDemon(tar[1],tar[0]); // 철귀 적으로 이동
+                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 철귀 나타나기 시작
                 yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
             }
             tar[0].ironDemonLocation = tar[1];
-            M_TurnManager.instance.AnimIronDemon("Idle",tar); // 아이들 모션
+            M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
         }
+        else
+            tar[0].ironDemonLocation = tar[1]; // 철귀 적으로 이동
         if(!tar[0].isCloneData) isCardOperating = false;
     }
 
@@ -66,14 +69,14 @@ public partial class CardData : SingletonD<CardData>
 
             if(tar[1] != tar[0].ironDemonLocation)
             {
-                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar); // 철귀 사라짐
+                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar[0]); // 철귀 사라짐
                 yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
-                M_TurnManager.instance.MoveIronDemon(tar[1],tar); // 철귀 적으로 이동
-                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar); // 철귀 나타나기 시작
+                M_TurnManager.instance.MoveIronDemon(tar[1],tar[0]); // 철귀 적으로 이동
+                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 철귀 나타나기 시작
                 yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
             }
 
-            M_TurnManager.instance.AnimIronDemon("Attack0",tar); // 철귀 공격 모션 시작
+            M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]); // 철귀 공격 모션 시작
             yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
             StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
             GeneralSingleAttack(tar[0],tar[1],6); // 실제 데미지 적용시점
@@ -81,14 +84,14 @@ public partial class CardData : SingletonD<CardData>
 
             if(tar[1] != tar[0].ironDemonLocation)
             {
-                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar); // 다시 사라짐
+                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar[0]); // 다시 사라짐
                 yield return new WaitForSeconds(0.33f);// 완전히 사라지는 시간
-                M_TurnManager.instance.MoveIronDemon(tar[0].ironDemonLocation,tar); // 플레이어에게 다시 이동
-                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar); // 다시 나타남
+                M_TurnManager.instance.MoveIronDemon(tar[0].ironDemonLocation,tar[0]); // 플레이어에게 다시 이동
+                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 다시 나타남
                 yield return new WaitForSeconds(0.33f); // 완전히 나타날때까지 기다림
             }
 
-            M_TurnManager.instance.AnimIronDemon("Idle",tar); // 아이들 모션
+            M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
         }
         else
             GeneralSingleAttack(tar[0],tar[1],6);
