@@ -53,7 +53,7 @@ public class CardOnHand : NetworkBehaviour
     [Header("CardOnHand UI 컴포넌트")]
     public Canvas cardOnHandCanvas;
     public TextMeshProUGUI textCardName;
-    public TextMeshProUGUI textCardInfo;
+    public TextMeshProUGUI textCardType;
     public TextMeshProUGUI textCardDescription;
     public TextMeshProUGUI textCardCost;
 
@@ -262,15 +262,15 @@ public class CardOnHand : NetworkBehaviour
         if(newCard.experience >= newCard.baseCard.maxExperience)
         {
             textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == newCard.baseCard.cardNumber + "_E").name;
-            textCardDescription.text = GetAdditionalValueFromDescription(CardData.instance.cards.Find(x => x.cardNumber == newCard.baseCard.cardNumber + "_E").description);
+            textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(CardData.instance.cards.Find(x => x.cardNumber == newCard.baseCard.cardNumber + "_E").description);
         }
         else
         {
             textCardName.text = newCard.baseCard.name;
-            textCardDescription.text = GetAdditionalValueFromDescription(newCard.baseCard.description);
+            textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(newCard.baseCard.description);
         }
 
-        textCardInfo.text = newCard.baseCard.cardType.ToString();
+        textCardType.text = newCard.baseCard.cardType.ToString();
         textCardDescription.text += '\n';
         textCardDescription.text += '\n';
         foreach(CardCharacteristic character in newCard.baseCard.cardCharacteristics)
@@ -288,34 +288,6 @@ public class CardOnHand : NetworkBehaviour
             }
         }
         else textCardCost.text = (newCard.baseCard.cost + newCard.costAddition).ToString();
-    }
-
-    private string GetAdditionalValueFromDescription(string str)
-    {
-        TargetObject tar = null;
-        if(isServer)
-            tar = NetworkServer.spawned[NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
-        else
-            tar = NetworkClient.spawned[NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
-
-        string[] splitString = str.Trim().Split(" ");
-        for(int i = 0 ;i < splitString.Length ; i++)
-        {
-            if(splitString[i].ToCharArray()[0] == '!')
-            {
-                splitString[i] = splitString[i].Remove(0,1);
-                int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + tar.GetBuffValue(BuffType.FLOWER);
-                splitString[i] = "<color=green>" + result.ToString() + "</color>";
-            }
-            if(splitString[i].ToCharArray()[0] == '#')
-            {
-                splitString[i] = splitString[i].Remove(0,1);
-                int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_DEFENSE);
-                splitString[i] = "<color=green>" + result.ToString() + "</color>";
-            }
-        }
-        
-        return string.Join(" ",splitString);
     }
 
     void OnChangedCardInfo()

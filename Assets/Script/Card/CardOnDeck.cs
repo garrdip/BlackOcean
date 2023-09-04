@@ -6,21 +6,23 @@ using UnityEngine.EventSystems;
 using Mirror;
 using DG.Tweening;
 using TMPro;
+using ProjectD;
 
 public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Card card;
     public TextMeshProUGUI textCardName;
-    public TextMeshProUGUI textCardInfo;
+    public TextMeshProUGUI textCardType;
+    public TextMeshProUGUI textCardDescription;
+    public TextMeshProUGUI textCardCost;
 
     private Vector3 originScale;
     private bool isTweening = false; // Dotween 애니매이션 함수들 실행중인지 여부
 
     void Start()
     {
-        textCardName.text = card.baseCard.name;
-        textCardInfo.text = card.baseCard.cardType.ToString();
         originScale = transform.localScale;
+        initCardData();
     }
 
     void OnDisable()
@@ -31,7 +33,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         if(!isTweening){
-            transform.DOScale(originScale * 1.2f, 0.3f);
+            transform.DOScale(originScale * 1.3f, 0.3f);
         }
     }
 
@@ -113,5 +115,39 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 Destroy(cardOnDeckChoosed.gameObject);
                 NetworkClient.connection.identity.GetComponent<GamePlayer>().isRewardDone = true;
             });
+    }
+
+    // 카드 정보 뷰 설정
+    private void initCardData()
+    {
+        if(card.experience >= card.baseCard.maxExperience)
+        {
+            textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").name;
+            textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").description);
+        }
+        else
+        {
+            textCardName.text = card.baseCard.name;
+            textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(card.baseCard.description);
+        }
+
+        textCardType.text = card.baseCard.cardType.ToString();
+        textCardDescription.text += '\n';
+        textCardDescription.text += '\n';
+        foreach(CardCharacteristic character in card.baseCard.cardCharacteristics)
+            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>";
+        
+        if(card.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
+        {
+            if(card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
+            {
+                textCardCost.text = "<b><color=green>" +((card.baseCard.cost + card.costAddition - 1) <= 0 ? "0" : (card.baseCard.cost + card.costAddition - 1).ToString()) + "</color></b>";
+            }
+            else
+            {
+                textCardCost.text = "<b><color=red>"+ (card.baseCard.cost + card.costAddition + 1).ToString() + "</color></b>";
+            }
+        }
+        else textCardCost.text = (card.baseCard.cost + card.costAddition).ToString();
     }
 }
