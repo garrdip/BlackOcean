@@ -49,6 +49,7 @@ public class M_TurnManager : NetworkBehaviour
     List<TargetObject> monsterOrderList = new List<TargetObject>();
     
     public bool monsterDeathOperating = false;
+    public bool ironDemonPassiveOperating = false;
 
     // 카드와 타겟을 한쌍으로 저장하는 큐
     public Queue<(Card, List<TargetObject>)> cardTargetPairQueue = new Queue<(Card, List<TargetObject>)>();
@@ -290,7 +291,7 @@ public class M_TurnManager : NetworkBehaviour
         {
             // 철구 돌려 보내기
             yield return new WaitForSeconds(0.01f);
-            if(CardData.instance.isCardOperating) continue;
+            if(CardData.instance.isCardOperating || ironDemonPassiveOperating) continue;
             foreach(TargetObject target in spawnedPlayerList)
             {
                 if(target.ironDemonLocation == tar || target.ironDemonLocation == null)
@@ -411,7 +412,7 @@ public class M_TurnManager : NetworkBehaviour
                 phase = BattleTurn.MONSTER_PREEFFECT;
                 break;
             case BattleTurn.MONSTER_PREEFFECT :
-                MonsterPreEffect();
+                StartCoroutine(MonsterPreEffect());
                 break;
             case BattleTurn.MONSTER_ACTIVE :
                 MonsterActive();
@@ -471,12 +472,64 @@ public class M_TurnManager : NetworkBehaviour
     }
 
     [Server]
-    public void MonsterPreEffect()
+    IEnumerator MonsterPreEffect()
     {
+        // 몬스터 방어도 초기화
         foreach(TargetObject tar in spawnedMonsterList)
         {
             tar.clone.defense = 0;
             tar.defense = 0;
+        }
+
+        //철귀 패시브 발동
+        foreach(TargetObject tar in spawnedPlayerList)
+        {
+            if(tar.player.character == Character.HONGDANHYANG)
+            {
+                ironDemonPassiveOperating = true;
+                while(true)
+                {
+                    yield return new WaitForSeconds(0.01f);
+                    if(monsterDeathOperating) continue;
+                    break;
+                }
+                if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
+                {
+                    AnimIronDemon("Buff0",tar);
+                    tar.ironDemonLocation.defense += tar.sizeOfIronDemon;
+                    yield return new WaitForSeconds(1.33f);
+                }
+                else // 몬스터의 경우 데미지
+                {
+                    while(true)
+                    {
+                        yield return new WaitForSeconds(0.01f);
+                        if(monsterDeathOperating) continue;
+                        break;
+                    }
+                    if(Random.Range(0,2) == 0)AnimIronDemon("Attack0",tar);
+                    else AnimIronDemon("Attack1",tar);
+                    yield return new WaitForSeconds(0.4f);
+                    tar.ironDemonLocation.DamageToMonster(100);
+                    yield return new WaitForSeconds(0.6f);
+                }
+                ironDemonPassiveOperating = false;
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+        foreach(TargetObject tar in clonePlayerList) // 클론도 적용
+        {
+            if(tar.player.character == Character.HONGDANHYANG)
+            {
+                if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
+                {
+                    tar.ironDemonLocation.defense += tar.sizeOfIronDemon;
+                }
+                else // 몬스터의 경우 데미지
+                {
+                    tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon);
+                }
+            }
         }
         phase = BattleTurn.MONSTER_ACTIVE;
     }
@@ -553,6 +606,7 @@ public class M_TurnManager : NetworkBehaviour
             avatar.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
             avatar.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+            avatar.GetComponent<TargetObject>().sizeOfIronDemon = 4;
             playerOrder[i].GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
             spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
             spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);
@@ -565,6 +619,7 @@ public class M_TurnManager : NetworkBehaviour
             clone.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
             clone.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
             clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+            clone.GetComponent<TargetObject>().sizeOfIronDemon = 4;
             clone.GetComponent<TargetObject>().isCloneData = true;
 
             avatar.GetComponent<TargetObject>().clone = clone.GetComponent<TargetObject>();

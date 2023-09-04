@@ -58,10 +58,16 @@ public class TargetObject : NetworkBehaviour
     [SyncVar]
     public bool isCloneData = false;
     public GameObject avatar;
-    public GameObject ironDemon;
 
+    // 철귀
+    public GameObject ironDemon;
     [SyncVar]
     public TargetObject ironDemonLocation;
+
+    [SyncVar]
+    public int sizeOfIronDemon;
+
+
 
     public SkeletonAnimation anim;
 
