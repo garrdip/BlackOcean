@@ -1,0 +1,16 @@
+02_IronDemon_Ally_Opacity70_Ver.png
+size:1420,693
+filter:Linear,Linear
+pma:true
+ArmLeft
+bounds:1138,267,280,424
+ArmRight
+bounds:821,2,315,689
+Body
+bounds:2,38,653,817
+rotate:90
+FaceMouth
+bounds:1138,2,63,105
+rotate:90
+HandLeft
+bounds:1138,67,139,198

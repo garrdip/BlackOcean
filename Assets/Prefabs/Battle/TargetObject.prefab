@@ -355,6 +355,8 @@ MonoBehaviour:
   ironDemonData:
   - {fileID: 11400000, guid: a2473eec38dcb134ca7b2bba3cb9b70d, type: 2}
   - {fileID: 11400000, guid: d89e29a69d7259e4ca9f9240acda9272, type: 2}
+  - {fileID: 11400000, guid: 697dfd2b3effdec4fbabe0ebe88e4627, type: 2}
+  - {fileID: 11400000, guid: cb68462dedc7b334eb79c97fe59502f6, type: 2}
   playerHP: 0
   playerMaxHP: 0
   conn: {fileID: 0}
@@ -364,6 +366,7 @@ MonoBehaviour:
   - {fileID: 1238078986054683857, guid: 19decaaa4c666534494b39af1cee56b8, type: 3}
   - {fileID: 1238078986054683857, guid: c9b6d7b83beb28c46b6dfd46a0abaf4c, type: 3}
   - {fileID: 1238078986054683857, guid: bbfdd8ca06184df4fa0339d236132534, type: 3}
+  - {fileID: 1238078986054683857, guid: eb4413cae8a772c45bbcd7c5ccf62ad9, type: 3}
   monsters:
   - {fileID: 7282913678413976495, guid: b9a0165d22875e044b8c8a0d37a31d50, type: 3}
   clone: {fileID: 0}
@@ -371,6 +374,7 @@ MonoBehaviour:
   isCloneData: 0
   avatar: {fileID: 0}
   ironDemon: {fileID: 0}
+  ironDemonLocation: {fileID: 0}
   anim: {fileID: 0}
   defense: 0
   currentIchi: 3

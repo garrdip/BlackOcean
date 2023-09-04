@@ -12,10 +12,9 @@ GameObject:
   - component: {fileID: 1046600963234684866}
   - component: {fileID: 5125707426590756295}
   - component: {fileID: 7821855001177509042}
-  - component: {fileID: -3013813304460486306}
   m_Layer: 0
-  m_Name: DanHyang
-  m_TagString: TargetObject
+  m_Name: IronDemonTransparent
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -55,7 +54,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 563b5773816b07f43b87156d10fa6ac3, type: 2}
+  - {fileID: 2100000, guid: f50c4ce9d46e113479abb2f294d1248d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -73,8 +72,8 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 744391573
-  m_SortingLayer: 3
+  m_SortingLayerID: -822484745
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &5125707426590756295
@@ -89,7 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 00a3de02653a44b46b316f9b3cf66b38, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 697dfd2b3effdec4fbabe0ebe88e4627, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -125,49 +124,3 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1238078986054683857}
   m_Mesh: {fileID: 0}
---- !u!60 &-3013813304460486306
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1238078986054683857}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 1.7621367, y: 2.4032338}
-      - {x: 0.83314496, y: 4.014757}
-      - {x: 1.1364411, y: 5.2614846}
-      - {x: 1.7113292, y: 5.083051}
-      - {x: 2.0736585, y: 6.329087}
-      - {x: 1.2017977, y: 6.5661545}
-      - {x: 0.51083285, y: 6.449479}
-      - {x: -0.054784417, y: 6.388156}
-      - {x: -0.7685297, y: 6.083431}
-      - {x: -1.825063, y: 4.3875356}
-      - {x: -1.7737676, y: 2.2254498}
-      - {x: -2.557851, y: 2.206296}
-      - {x: -2.3225348, y: 1.7835311}
-      - {x: -1.3000854, y: 1.6184156}
-      - {x: -1.4943643, y: -0.2627998}
-      - {x: 0.4357593, y: -0.117862284}
-      - {x: 0.12346974, y: 0.5084517}
-      - {x: 0.80723333, y: 1.8112402}
-      - {x: 1.3731229, y: 0.68101114}
-      - {x: 2.0843217, y: 0.6810112}
-      - {x: 2.7727997, y: 0.60521555}

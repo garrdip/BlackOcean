@@ -323,10 +323,34 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     public void MoveIronDemon(TargetObject target ,TargetObject tar)
     {
-        tar.ironDemon.transform.position = target.transform.position;
-        if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0];
-        else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1];
+        int transformOffset = CalcOffset(tar); 
+        tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
+        int offset = (NetworkClient.connection.identity.GetComponent<GamePlayer>() == tar.player) ? 0 : 2;
+        if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0+offset];
+        else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
         tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
+    }
+
+    int CalcOffset(TargetObject tar)
+    {
+        int retVal = 0;
+        if(tar.player == (NetworkClient.connection.identity.GetComponent<GamePlayer>())) retVal = 0;
+        else
+        {
+            int addval = 0;
+            foreach(TargetObject target in spawnedPlayerList)
+            {
+                if(target == tar)
+                    break;
+                if(target.player == (NetworkClient.connection.identity.GetComponent<GamePlayer>()))
+                    continue;
+                else
+                    addval++;
+            }
+            if(addval == 0) retVal = -1;
+            else retVal = 1;
+        }
+        return retVal;
     }
 
     [ClientRpc]

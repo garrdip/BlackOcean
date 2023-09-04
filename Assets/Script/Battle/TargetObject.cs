@@ -156,7 +156,7 @@ public class TargetObject : NetworkBehaviour
 
     public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
     {
-        if(objectType == ObjectType.PLAYER && !isCloneData)
+        if(objectType == ObjectType.PLAYER)
         {
             switch(player.character)
             {
@@ -168,7 +168,13 @@ public class TargetObject : NetworkBehaviour
                 break;
                 case Character.HONGDANHYANG :
                     avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
-                    ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
+                    if(NetworkClient.connection.identity.GetComponent<GamePlayer>() == player)
+                    {
+                        ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
+                        ironDemon.GetComponent<MeshRenderer>().sortingOrder = 1;
+                    }
+                    else
+                        ironDemon = Instantiate(characters.Find(x => x.name == "IronDemonTransparent"),transform.position,Quaternion.identity,transform);
                     ironDemonLocation = this;
                 break;
             }
