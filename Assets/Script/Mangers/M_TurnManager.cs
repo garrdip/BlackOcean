@@ -301,6 +301,7 @@ public class M_TurnManager : NetworkBehaviour
                     M_TurnManager.instance.AnimIronDemon("TeleportBack",target); // 철귀 나타나기 시작
                     yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
                     M_TurnManager.instance.AnimIronDemon("Idle",target); // 철귀 나타나기 시작
+                    target.ironDemonLocation = target;
                 }
             }
             monsterDeathOperating = false;
