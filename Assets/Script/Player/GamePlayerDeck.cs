@@ -239,7 +239,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
         // CardPocket 오브젝트 생성
-        GameObject cardPocketObject = Instantiate(M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")));
+        GameObject cardPocketObject = Instantiate(
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")),
+            Vector3.zero,
+            Quaternion.identity);
         NetworkServer.Spawn(cardPocketObject, connectionToClient);
 
         cardPocket = cardPocketObject.GetComponent<CardPocket>();

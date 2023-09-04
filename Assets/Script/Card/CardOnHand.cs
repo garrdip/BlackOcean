@@ -327,6 +327,7 @@ public class CardOnHand : NetworkBehaviour
     public void OnChangeParent(CardPocket oldCardPocket, CardPocket newCardPocket)
     {
         transform.SetParent(newCardPocket.transform);
+        transform.position = GameUIManager.instance.buttonPrefareDeck.transform.position;
     }
 
     // 카드 인덱스값 변경 이벤트 수신

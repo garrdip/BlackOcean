@@ -243,6 +243,7 @@ public class M_CardManager : NetworkBehaviour
                 float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
                 Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
                 cardOnHand.isMoving = true;
+                cardOnHand.isUsed = true;
 
                 cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.3f);
                 cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), 0.3f);
