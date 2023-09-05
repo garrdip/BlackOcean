@@ -304,17 +304,6 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
-    // 로컬 플레이어의 PrefareDeck에 셔플 수행후 추가
-    public void SpawnPlayerOwnedCardAndArrow()
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
-            }
-        }
-    }
-
     // 로컬 플레이어의 모든 카드 제거
     public void RemoveAllCurrentPlayerCardOnHands()
     {

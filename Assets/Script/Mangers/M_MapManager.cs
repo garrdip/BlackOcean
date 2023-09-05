@@ -118,6 +118,7 @@ public class M_MapManager : NetworkBehaviour
     [Server]    
     public void MoveToRoom()
     {
+        playerVoteHexagonMapRoom.Clear(); // 방 투표 목록 비움
         int actionCost = FindPath(currentRoom, moveToRoomDestination).Count; // 현재 위치와 목적지 간 거리차 계산
         currentRoom = moveToRoomDestination; // 위치 이동
         DecreaseTotalActionCost(actionCost); // 거리차 만큼 행동 비용 감소
@@ -363,11 +364,11 @@ public class M_MapManager : NetworkBehaviour
                 position,
                 Quaternion.identity
             );
-        NetworkServer.Spawn(mapBossObject);
-
         MapBoss mapBoss = mapBossObject.GetComponent<MapBoss>();
-        this.mapBoss = mapBoss; // 서버에 참조값 생성
         mapBoss.coordinate = new Vector2Int((int)centerPos.x, (int)centerPos.y); // 고유 좌표계 설정
+        NetworkServer.Spawn(mapBossObject);
+        
+        this.mapBoss = mapBoss; // 서버에 참조값 생성
     }
 
     // 방 완료상태로 변경
@@ -412,10 +413,11 @@ public class M_MapManager : NetworkBehaviour
             // 보스 위치 변경
             mapBoss.bossPosition = GetPosition(mapBoss.coordinate.x, mapBoss.coordinate.y);
 
-            // 
-            HexagonMapRoom bossRoom = hexagonMapRooms.Find((room) => room.coordinate == mapBoss.coordinate);
-            if(bossRoom != null && bossRoom.coordinate == currentRoom.coordinate){
-                bossRoom.mapBoss = mapBoss;
+            foreach(HexagonMapRoom hexagonMapRoom in hexagonMapRooms){
+                hexagonMapRoom.mapBoss = null;
+                if(hexagonMapRoom.coordinate == mapBoss.coordinate){
+                    hexagonMapRoom.mapBoss = mapBoss;
+                }
             }
         }
     }
@@ -446,7 +448,40 @@ public class M_MapManager : NetworkBehaviour
     
     // 전투 시작 이벤트 클라이언트 수신
     [ClientRpc]
-    public void StartBattle()
+    public void StartBattle(HexagonMapRoom hexagonMapRoom)
+    {
+        if(mapBoss != null){ // 보스가 출현한 경우
+            if(currentRoom.coordinate == mapBoss.coordinate){ // 현재 플레이어들이 위치한 방과 보스의 위치가 같을 경우 -> 보스전
+                EngageBattle(hexagonMapRoom);
+            }else{
+                if(hexagonMapRoom.isComplete){ // 목적지가 완료된 방인 경우
+                    if(hexagonMapRoom.mapBoss == null){ 
+                        RemoveAllExistLineRenderer(); // 목적지에 보스가 없을 경우 -> 이동만
+                        ChangeAllMapPlayerDestinationState(false); 
+                    }else{ 
+                        EngageBattle(hexagonMapRoom); // 목적지에 보스가 있을 경우 -> 보스전
+                    }
+                }else{ // 목적지가 완료되지 않은 방인 경우
+                    if(hexagonMapRoom.mapBoss != null){ 
+                        EngageBattle(hexagonMapRoom); // 목적지에 보스가 있을 경우 -> 보스전
+                    }else{ 
+                        EngageBattle(hexagonMapRoom); // 목적지에 보스가 없을 경우 -> 전투 혹은 이벤트 시작
+                    }
+                }
+            }
+        }else{ // 보스가 출현하지 않은 경우
+            if(hexagonMapRoom.isComplete){
+                RemoveAllExistLineRenderer(); // 목적지가 완료된 방의 경우 -> 이동만
+                ChangeAllMapPlayerDestinationState(false);
+            }else{
+                EngageBattle(hexagonMapRoom); // 목적지가 완료되지 않은 방의 경우 -> 전투 혹은 이벤트 시작
+            }
+        }
+        if(isServer)M_MapManager.instance.MoveToRoom(); // 새로운 맵 생성
+    }
+
+    // 교전 시작
+    private void EngageBattle(HexagonMapRoom hexagonMapRoom)
     {
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
             // 카메라 위치 리셋
@@ -465,21 +500,11 @@ public class M_MapManager : NetworkBehaviour
 
             RemoveAllExistLineRenderer(); // 검색된 경로 모두 삭제
             ChangeAllMapPlayerDestinationState(false); // 모든 MapPlayerDestination 비활성화
-            if(isServer)M_TurnManager.instance.GenerateBattleObject();
-            if(isServer)M_MapManager.instance.MoveToRoom(); // 새로운 맵 생성
-            // 각 플레이어들의 카드와 화살표, 몬스터 오브젝트 생성 요청
-            M_CardManager.instance.SpawnPlayerOwnedCardAndArrow();
+            if(isServer){
+                M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
+            }
             StartCoroutine(CheckTargetObject());
         });
-    }
-
-    // 완료된 방은 이동만 수행
-    [ClientRpc]
-    public void MoveOnCompleteRoom()
-    {
-        RemoveAllExistLineRenderer(); // 검색된 경로 모두 삭제
-        ChangeAllMapPlayerDestinationState(false); // 모든 MapPlayerDestination 비활성화
-        if(isServer)M_MapManager.instance.MoveToRoom(); // 새로운 맵 생성
     }
     
     public IEnumerator CheckTargetObject()

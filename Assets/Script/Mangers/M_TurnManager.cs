@@ -31,7 +31,6 @@ public class M_TurnManager : NetworkBehaviour
     public bool isMyTurn = false;
     public bool isCardQueueOperating = false;
 
-    public RoomType roomType;
     [Header("Scene Change Black Curtain")]
     public GameObject blackCurtain;
 
@@ -183,56 +182,82 @@ public class M_TurnManager : NetworkBehaviour
                 mapPlayerPiece.RpcChangeMapPlayerPiecePosition(hexagonMapRoom.transform.position);
                 M_MapManager.instance.SetDirection(hexagonMapRoom);
             }
-            // 방 타입 설정
-            roomType = hexagonMapRoom.roomType;
-            // 방 클리어 상태 유무에 따라 전투 or 이동 분기처리 (보스가 위치하는 방은 이동하지 않고 보스전 시작)
-            if(hexagonMapRoom.isComplete){
-                if(hexagonMapRoom.mapBoss != null){
-                    M_MapManager.instance.StartBattle();
-                }else{
-                    M_MapManager.instance.MoveOnCompleteRoom();
-                }
-            }else{
-                M_MapManager.instance.StartBattle();
-            }
+            M_MapManager.instance.StartBattle(hexagonMapRoom);
         }
     }
 
     [Server]
-    public void GenerateBattleObject()
+    public void GenerateBattleObject(HexagonMapRoom hexagonMapRoom)
     {
         if(isServer)
         {
             GeneratePlayerUnit();
-            if(M_MapManager.instance.currentRoom.mapBoss != null){
-                // TODO : 보스몹 생성
-                Debug.Log("보스전 ㄱㄱ");
-            }else if(roomType == RoomType.MONSTER || roomType == RoomType.ELITE)
+            if(hexagonMapRoom.mapBoss != null){
+                GenerateBossMonster();
+                RpcCardPrefareForBattle();
+                RpcStartBossBattle();
+            }else if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE){
                 GenerateMonster();
-            else
+                RpcCardPrefareForBattle();
+                RpcStartMonsterBattle();
+            }else{
                 GenerateNPC("NPC_Mercurius");
-
+                RpcStartNpcVisit();
+            }
             // 전투 시작 이치 초기화 및 어빌리티 카드 생성
             foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
             {
                 gamePlayerDeck.SetInitialIchi();
                 if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.SpawnAbilityCardRPC();
             }
-            GenerateAbilityButton();
-            StartCoroutine(WaitingForPlayer());
+            RpcGenerateAbilityButton();
+            StartCoroutine(WaitingForPlayer(hexagonMapRoom));
         }
     }
 
+    // 플레이어 패시브 버튼 생성 요청
     [ClientRpc]
-    void GenerateAbilityButton()
+    void RpcGenerateAbilityButton()
     {
         if(NetworkClient.connection.identity.GetComponent<GamePlayer>().character == Character.HONGDANHYANG)
             NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().CmdGenerateAbilityButton();
     }
+
+    // 전투 준비에 필요한 기능 수행
+    [ClientRpc]
+    void RpcCardPrefareForBattle()
+    {
+        // 플레이어 카드 셔플 수행후 PrefareDeck에 추가 요청
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
+            }
+        }
+    }
  
+    // 보스전 시작 수신 이벤트
+    [ClientRpc]
+    public void RpcStartBossBattle()
+    {
+        Debug.Log("========================= 보스와 전투가 시작되었습니다. =========================");
+    }
 
+    // 일반 몬스토 혹은 엘리트전 시작 수신 이벤트
+    [ClientRpc]
+    public void RpcStartMonsterBattle()
+    {
+        Debug.Log("====== 몬스터와 전투가 시작되었습니다. ======");
+    }
 
-    IEnumerator WaitingForPlayer()
+    // 엔피씨 방문 수신 이벤트
+    [ClientRpc]
+    public void RpcStartNpcVisit()
+    {
+        Debug.Log("== 엔피씨를 방문했습니다. ==");
+    }
+
+    IEnumerator WaitingForPlayer(HexagonMapRoom hexagonMapRoom)
     {
         int cnt = 0;
         while(true)
@@ -243,7 +268,7 @@ public class M_TurnManager : NetworkBehaviour
                 if(user.isTargetObjectInitDone) cnt++;
             if(cnt != players.Count) continue;
 
-            if(roomType == RoomType.MONSTER || roomType == RoomType.ELITE)
+            if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE)
                 phase = BattleTurn.BATTLE_STANDBY;
             else
                 phase = BattleTurn.NONE_BATTLE_SCENE;
@@ -719,7 +744,12 @@ public class M_TurnManager : NetworkBehaviour
         // monster 오브젝트의 부모오브젝트 참조값 설정
         monster.parent = avatar.GetComponent<TargetObject>();
         cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
+    }
 
+    [Server]
+    public void GenerateBossMonster()
+    {
+        // TODO : 보스 몬스터 생성
     }
 
     [Server]
@@ -819,7 +849,6 @@ public class M_TurnManager : NetworkBehaviour
             M_MapManager.instance.SetRoomStateComplete(); // 방 완료상태로 변경
             M_MapManager.instance.DecreaseTotalActionCost(); // 행동비용 감소
             M_MapManager.instance.ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
-            M_MapManager.instance.playerVoteHexagonMapRoom.Clear(); // 방 투표 목록 비움
         }
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
             // 카메라 위치 리셋
