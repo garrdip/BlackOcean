@@ -155,6 +155,13 @@ public class SpawnedMonster : NetworkBehaviour
                 }
                 else
                     M_TurnManager.instance.spawnedMonsterList.Remove(parent);
+                foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList)
+                {
+                    if(tar.ironDemonLocation == parent.GetComponent<TargetObject>())
+                    {
+                        tar.SetIronDemonParent(tar.transform);
+                    }
+                }
                 NetworkServer.Destroy(this.gameObject);
             }
             return;
