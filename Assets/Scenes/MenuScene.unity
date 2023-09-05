@@ -6293,8 +6293,8 @@ GameObject:
   - component: {fileID: 862470413}
   - component: {fileID: 862470412}
   - component: {fileID: 862470414}
-  - component: {fileID: 862470415}
   - component: {fileID: 862470416}
+  - component: {fileID: 862470417}
   m_Layer: 0
   m_Name: M_NetworkRoomManager
   m_TagString: Untagged
@@ -6403,7 +6403,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: 50
   offsetY: 20
---- !u!114 &862470415
+--- !u!114 &862470416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 862470410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96b149f511061407fb54895c057b7736, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wrap: {fileID: 862470417}
+  jitter: 0.02
+  jitterSpeed: 1
+  reliableLatency: 100
+  unreliableLoss: 2
+  unreliableLatency: 100
+  unreliableScramble: 2
+--- !u!114 &862470417
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6432,25 +6451,6 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
---- !u!114 &862470416
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 862470410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96b149f511061407fb54895c057b7736, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wrap: {fileID: 862470415}
-  jitter: 0.02
-  jitterSpeed: 1
-  reliableLatency: 100
-  unreliableLoss: 2
-  unreliableLatency: 100
-  unreliableScramble: 2
 --- !u!1 &870892632
 GameObject:
   m_ObjectHideFlags: 0

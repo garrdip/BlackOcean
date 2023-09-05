@@ -175,7 +175,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
             if(serverCardPredictQueue.Count == 0) continue; //카드큐가 비어있을경우 스킵 
             
             ( cardOnHand,targetObject,conn) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
-
             if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
             {
                 if(cardOnHand.card.baseCard.cardType == previousCardType)
@@ -192,20 +191,17 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition ;
             if(totalCost > currentIchi) // 카드 코스트 계산 하는곳
                 continue;
-
-            if(targetObject == null)
+            if(cardOnHand.card.baseCard.isTargetable && targetObject == null)
             {
                 ReturnToCardOnHand(cardOnHand,conn);
                 continue;
             }
-
             if(cardOnHand.card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
             {
                 //카드와 이치 다시 돌려보내는곳
                 ReturnToCardOnHand(cardOnHand,conn);
                 continue;
             }
-
             currentIchi -= totalCost ;
             
             destroyCardList.Add(cardOnHand);

@@ -514,10 +514,11 @@ public class M_TurnManager : NetworkBehaviour
                     if(Random.Range(0,2) == 0)AnimIronDemon("Attack0",tar);
                     else AnimIronDemon("Attack1",tar);
                     yield return new WaitForSeconds(0.4f);
-                    tar.ironDemonLocation.DamageToMonster(100);
+                    tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon);
                     yield return new WaitForSeconds(0.6f);
                 }
                 ironDemonPassiveOperating = false;
+                AnimIronDemon("Idle",tar);
                 yield return new WaitForSeconds(0.1f);
             }
         }
@@ -827,7 +828,7 @@ public class M_TurnManager : NetworkBehaviour
         });
     }
 
-    public void ChangePlayerOrder(GamePlayer player, MoveDirection direction)
+    public void MoveToPlayer(GamePlayer player, MoveDirection direction)
     {
         Debug.Log("ChangePlayerOrder Called");
         TargetObject forwarding = null,backwarding = null;

@@ -306,6 +306,12 @@ public class TargetObject : NetworkBehaviour
         shieldText.text = newVal.ToString();
     }
 
+    [ClientRpc]
+    public void SetIronDemonParent(Transform p)
+    {
+        ironDemon.transform.parent = p;
+    }
+
     // ---------------------------------------------- Spine Animation Event 처리 구간 ---------------------------------------------------//
     
     // Animation Event 총괄 처리

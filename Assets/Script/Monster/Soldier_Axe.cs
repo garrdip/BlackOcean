@@ -36,7 +36,6 @@ public class Soldier_Axe : SpawnedMonster
     public void DoAnimation(string actionName)
     {
         parent.anim.state.SetAnimation(1,actionName,false);
-        Invoke("OnHitAnimationPlayer",0.3f);
     }
 
     [Server]

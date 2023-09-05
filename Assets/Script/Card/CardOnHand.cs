@@ -168,20 +168,20 @@ public class CardOnHand : NetworkBehaviour
             if(isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
                 // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
                 if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
-                    CmdEnQueueCardData();
+                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                    CmdEnQueueCardData(gamePlayerDeck);
                     M_CardManager.instance.CardOnHandThrowAwaySequence(this);
                 }
-                isDrag = false;
-                isMoving = false;
-                isMouseOver = false;
+                //isDrag = false;
+                //isMoving = false;
+                //isMouseOver = false;
             }
         }
     }
 
     [Command]
-    void CmdEnQueueCardData()
+    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck)
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
         gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null, NetworkClient.connection.identity));
     }
 
@@ -247,6 +247,7 @@ public class CardOnHand : NetworkBehaviour
     {
         transform.SetParent(cardPocket.transform);
     }
+
 
     // --------------------------------------------------------------- SyncVar Hook -----------------------------------------------------------------//
 
