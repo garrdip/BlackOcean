@@ -159,6 +159,7 @@ MonoBehaviour:
   roomType: 7
   coordinate: {x: 0, y: 0}
   position: {x: 0, y: 0, z: 0}
+  mapBoss: {fileID: 0}
   isRegion: 0
   region:
     tiles: []
@@ -343,8 +344,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f3497af29a859354ead5945befca2704, type: 2}
-  m_sharedMaterial: {fileID: -4485047234570997242, guid: f3497af29a859354ead5945befca2704, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ab232065684e218499710c892389edd0, type: 2}
+  m_sharedMaterial: {fileID: 8134970826649821829, guid: ab232065684e218499710c892389edd0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -480,8 +481,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f3497af29a859354ead5945befca2704, type: 2}
-  m_sharedMaterial: {fileID: -4485047234570997242, guid: f3497af29a859354ead5945befca2704, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ab232065684e218499710c892389edd0, type: 2}
+  m_sharedMaterial: {fileID: 8134970826649821829, guid: ab232065684e218499710c892389edd0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
