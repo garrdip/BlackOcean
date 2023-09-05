@@ -10,6 +10,8 @@ using Spine.Unity;
 
 public partial class CardData : SingletonD<CardData>
 {
+    public TargetObject TEST0;
+    public TargetObject TEST1;
     void MoveIronDemonLocation(TargetObject owner, TargetObject target)
     {
         owner.ironDemonLocation = target;
@@ -29,6 +31,9 @@ public partial class CardData : SingletonD<CardData>
             {
                 M_TurnManager.instance.AnimIronDemon("TeleportGo",tar[0]); // 철귀 사라짐
                 yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
+                Debug.Log(" 철귀 이동 시작  ");
+                TEST0 = tar[0];
+                TEST1 = tar[1];
                 M_TurnManager.instance.MoveIronDemon(tar[1],tar[0]); // 철귀 적으로 이동
                 M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 철귀 나타나기 시작
                 yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림

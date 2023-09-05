@@ -309,6 +309,13 @@ public class M_TurnManager : NetworkBehaviour
                     target.ironDemonLocation = target;
                 }
             }
+            foreach(TargetObject target in clonePlayerList)
+            {
+                if(target.ironDemonLocation == tar || target.ironDemonLocation == null)
+                {
+                    target.ironDemonLocation = target;
+                }
+            }
             monsterDeathOperating = false;
             break;
         }

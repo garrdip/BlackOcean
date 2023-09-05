@@ -125,11 +125,6 @@ public partial class CardData : SingletonD<CardData>
     {
         tar.DamageToMonster(damage);
     }
-   
-    public void GeneralAddBuff(TargetObject tar, BuffType type, int value,bool isDebuff, bool isInfinity, bool isDecrease, TargetObject user) //고유 디버프 사용시
-    {
-        tar.GainBuff(type,value,isDebuff,isInfinity,isDecrease,user);
-    }
 
     public void GeneralGetDefense(TargetObject from, TargetObject tar, int value, Card card)
     {

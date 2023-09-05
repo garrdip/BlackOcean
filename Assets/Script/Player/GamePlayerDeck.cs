@@ -137,13 +137,15 @@ public partial class GamePlayerDeck : NetworkBehaviour
             case Character.HONGDANHYANG:
                 for(int i = 0 ; i <8 ;i++)
                 {
-                    if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
-                        deck.Add(attackCard);
-                    }else{
-                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H3")));
-                        deck.Add(defenseCard);
-                    }
+                    Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
+                    deck.Add(attackCard);
+                    //if(i % 2 == 0){
+                    //    Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
+                    //    deck.Add(attackCard);
+                    //}else{
+                    //    Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H3")));
+                    //    deck.Add(defenseCard);
+                    //}
                 }
                 break;
             default:

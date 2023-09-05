@@ -172,9 +172,12 @@ public class CardOnHand : NetworkBehaviour
                     CmdEnQueueCardData(gamePlayerDeck);
                     M_CardManager.instance.CardOnHandThrowAwaySequence(this);
                 }
-                //isDrag = false;
-                //isMoving = false;
-                //isMouseOver = false;
+                else
+                {
+                    isDrag = false;
+                    isMoving = false;
+                    isMouseOver = false;
+                }
             }
         }
     }
