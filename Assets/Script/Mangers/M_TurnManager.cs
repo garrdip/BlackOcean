@@ -76,18 +76,20 @@ public class M_TurnManager : NetworkBehaviour
     {     
         foreach(TargetObject tar in spawnedPlayerList)
         {
-            if(tar.conn == conn)
-            return tar;
+            if(tar.player.netIdentity == conn){
+                Debug.Log(tar.player.netIdentity + " and " + conn);
+                return tar;
+            }
         }
         return null;
     }
 
     public TargetObject GetClonePlayer(NetworkIdentity conn)
     {
-        foreach(TargetObject tar in clonePlayerList)
+        foreach(TargetObject tar in spawnedPlayerList)
         {
-            if(tar.conn == conn)
-            return tar;
+            if(tar.player.netIdentity == conn)
+            return tar.clone;
         }
         return null;
     }

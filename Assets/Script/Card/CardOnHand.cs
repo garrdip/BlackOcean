@@ -169,7 +169,7 @@ public class CardOnHand : NetworkBehaviour
                 // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
                 if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-                    CmdEnQueueCardData(gamePlayerDeck);
+                    CmdEnQueueCardData(gamePlayerDeck,NetworkClient.connection.identity);
                     M_CardManager.instance.CardOnHandThrowAwaySequence(this);
                 }
                 else
@@ -183,9 +183,9 @@ public class CardOnHand : NetworkBehaviour
     }
 
     [Command]
-    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck)
+    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, NetworkIdentity conn)
     {
-        gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null, NetworkClient.connection.identity));
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null, conn));
     }
 
     // 마우스 좌표에 따라 카드 오브젝트 드래그
