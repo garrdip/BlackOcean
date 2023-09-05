@@ -40,10 +40,10 @@ public class GamePlayerMap : NetworkBehaviour
         GamePlayer gamePlayer = GetComponent<GamePlayer>();
         mapPlayerPiece.steamId =  SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID); // 스팀아이디 값 세팅
         mapPlayerPiece.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
+        NetworkServer.Spawn(mapPlayerPieceObject, connectionToClient);
+
         currentMapPlayerPiece = mapPlayerPiece; // 자신소유의 mapPlayerPiece 참조값 세팅
         M_MapManager.instance.mapPlayerPieces.Add(mapPlayerPieceObject); // 매니저의 리스트에 생성된 맵 플레이어 추가
-
-        NetworkServer.Spawn(mapPlayerPieceObject, connectionToClient);
     }
 
     // 맵플레이어가 이동할 위치를 표시하는 오브젝트 생성
