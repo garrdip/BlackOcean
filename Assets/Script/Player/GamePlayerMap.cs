@@ -102,22 +102,6 @@ public class GamePlayerMap : NetworkBehaviour
         }
     }
 
-    // 생성된 MapPlayerPiece 참조값 세팅
-    [Command]
-    public void CmdSetOwnMapPlayerPiece(MapPlayerPiece mapPlayerPiece)
-    {
-        currentMapPlayerPiece = mapPlayerPiece;
-        currentMapPlayerPiece.gamePlayer = GetComponent<GamePlayer>();  // 게임 플레이어 참조값 세팅
-    }
-
-    // 생성된 MapPlayerPiece 참조값 세팅
-    [Command]
-    public void CmdSetOwnMapPlayerDestination(MapPlayerDestination mapPlayerDestination)
-    {
-        currentMapPlayerDestination = mapPlayerDestination;
-        currentMapPlayerDestination.gamePlayer = GetComponent<GamePlayer>();   // 게임 플레이어 참조값 세팅
-    }
-
     // ------------------------------------------------------------------------------ Server Method ----------------------------------------------------------------------------//
 
     // 맵플레이어가 선택한 MapRoom값을 Dictionary<NetworkIdentity, MapRoom> 형태로 저장

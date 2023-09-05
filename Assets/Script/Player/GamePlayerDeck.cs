@@ -387,22 +387,23 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     prefareDeck.Add(card);
                 }
             }
-            int randomIndex = Random.Range(0, prefareDeck.Count);
             GameObject cardOnHandObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
                 cardSpawnPosition,
                 Quaternion.identity
             );
 
+            int randomIndex = Random.Range(0, prefareDeck.Count);
             CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
             cardOnHand.index = i; // 카드 인덱스
             cardOnHand.card = prefareDeck[randomIndex]; // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
-            prefareDeck.RemoveAt(randomIndex); 
-            cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
+            prefareDeck.RemoveAt(randomIndex);
             if(cardPocket != null){
                 cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
             }
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
+
+            cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
         }
     }
 

@@ -6,8 +6,6 @@ using Mirror;
 using ProjectD;
 using Steamworks;
 using Spine.Unity;
-using Spine;
-using TMPro;
 using DG.Tweening;
 
 public class M_TurnManager : NetworkBehaviour
@@ -223,7 +221,7 @@ public class M_TurnManager : NetworkBehaviour
             NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().CmdGenerateAbilityButton();
     }
 
-    // 전투 준비에 필요한 기능 수행
+    // 전투에 필요한 카드 준비 요청
     [ClientRpc]
     void RpcCardPrefareForBattle()
     {
@@ -243,7 +241,7 @@ public class M_TurnManager : NetworkBehaviour
         Debug.Log("========================= 보스와 전투가 시작되었습니다. =========================");
     }
 
-    // 일반 몬스토 혹은 엘리트전 시작 수신 이벤트
+    // 일반 몬스터 혹은 엘리트전 시작 수신 이벤트
     [ClientRpc]
     public void RpcStartMonsterBattle()
     {
