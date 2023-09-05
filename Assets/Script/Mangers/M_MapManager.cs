@@ -123,7 +123,6 @@ public class M_MapManager : NetworkBehaviour
         DecreaseTotalActionCost(actionCost); // 거리차 만큼 행동 비용 감소
         GenerateHexagonRoom(currentRoom); // 주변 방 생성
         ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
-        return;
     }
 
     [Server]
@@ -196,8 +195,6 @@ public class M_MapManager : NetworkBehaviour
                 position,
                 Quaternion.identity
             );
-            NetworkServer.Spawn(aroundRoomObject);
-
             HexagonMapRoom aroundRoom = aroundRoomObject.GetComponent<HexagonMapRoom>();
             // 방 타입 설정
             aroundRoom.roomType = GetRoomType();
@@ -207,6 +204,9 @@ public class M_MapManager : NetworkBehaviour
             aroundRoom.isActive = true;
             // 고유 좌표계 값 설정
             aroundRoom.coordinate = centerRoom.coordinate + offSets[i];
+            
+            NetworkServer.Spawn(aroundRoomObject);
+
             // 육각형 위치 및 오브젝트 클래스 리스트에 추가
             hexagonMapRooms.Add(aroundRoom);
             hexagonMapRoomNetIds.Add(aroundRoom.GetComponent<NetworkIdentity>().netId);
@@ -237,8 +237,6 @@ public class M_MapManager : NetworkBehaviour
                         position,
                         Quaternion.identity
                     );
-                    NetworkServer.Spawn(hexagonMapRoomObject);
-
                     HexagonMapRoom hexagonMapRoom = hexagonMapRoomObject.GetComponent<HexagonMapRoom>();
                     // 방 타입 설정
                     hexagonMapRoom.roomType = GetRoomType();
@@ -248,6 +246,9 @@ public class M_MapManager : NetworkBehaviour
                     hexagonMapRoom.isActive = true;
                     // 고유 좌표계 값(Axial 좌표계) 설정
                     hexagonMapRoom.coordinate = currentHexagonMapRoom.coordinate + new Vector2Int(q, r);
+                    
+                    NetworkServer.Spawn(hexagonMapRoomObject);
+
                     // 육각형 위치 및 오브젝트 클래스 리스트에 추가
                     hexagonMapRooms.Add(hexagonMapRoom);
                     hexagonMapRoomNetIds.Add(hexagonMapRoom.GetComponent<NetworkIdentity>().netId);
@@ -321,8 +322,6 @@ public class M_MapManager : NetworkBehaviour
                         position,
                         Quaternion.identity
                     );
-                    NetworkServer.Spawn(hexagonMapRoomObject);
-
                     HexagonMapRoom hexagonMapRoom = hexagonMapRoomObject.GetComponent<HexagonMapRoom>();
                     // 방 타입 설정
                     hexagonMapRoom.roomType = GetRoomType();
@@ -336,6 +335,9 @@ public class M_MapManager : NetworkBehaviour
                     hexagonMapRoom.position = position;
                     // 고유 좌표계값
                     hexagonMapRoom.coordinate = new Vector2Int((int)loc.coordinate.x, (int)loc.coordinate.y);
+
+                    NetworkServer.Spawn(hexagonMapRoomObject);
+
                     // 육각형 위치 및 오브젝트 클래스 리스트에 추가
                     hexagonMapRooms.Add(hexagonMapRoom);
                     hexagonMapRoomNetIds.Add(hexagonMapRoom.GetComponent<NetworkIdentity>().netId);

@@ -184,8 +184,12 @@ public class M_TurnManager : NetworkBehaviour
             // 방 타입 설정
             roomType = hexagonMapRoom.roomType;
             // 방 클리어 상태 유무에 따라 전투 or 이동 분기처리 (보스가 위치하는 방은 이동하지 않고 보스전 시작)
-            if(hexagonMapRoom.isComplete && hexagonMapRoom.mapBoss == null){
-                M_MapManager.instance.MoveOnCompleteRoom();
+            if(hexagonMapRoom.isComplete){
+                if(hexagonMapRoom.mapBoss != null){
+                    M_MapManager.instance.StartBattle();
+                }else{
+                    M_MapManager.instance.MoveOnCompleteRoom();
+                }
             }else{
                 M_MapManager.instance.StartBattle();
             }
@@ -805,6 +809,7 @@ public class M_TurnManager : NetworkBehaviour
             M_MapManager.instance.SetRoomStateComplete(); // 방 완료상태로 변경
             M_MapManager.instance.DecreaseTotalActionCost(); // 행동비용 감소
             M_MapManager.instance.ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
+            M_MapManager.instance.playerVoteHexagonMapRoom.Clear(); // 방 투표 목록 비움
         }
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
             // 카메라 위치 리셋
