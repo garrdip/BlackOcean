@@ -46,39 +46,43 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        HandleClickCardOnDeckOnBattleResultPopUp();
+        // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
+        if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
+            HandleClickCardOnDeckOnPopUp(() => {
+                PopUpUIManager.instance.HandleHideBattleResultPopUp();
+            });
+        }
+        // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
+        if(PopUpUIManager.instance.mercuriusPopUp.activeSelf){
+            HandleClickCardOnDeckOnPopUp(() => {
+                PopUpUIManager.instance.HandleMercuriusPopUp(false);
+            });
+        }
     }
 
-    // BattleResultPopUp이 활성화 된 경우의 CardOnDeck 클릭 이벤트 처리
-    private void HandleClickCardOnDeckOnBattleResultPopUp()
+    // 팝업이 활성화된 상태에서 CardOnDeck 공통 클릭 이벤트
+    private void HandleClickCardOnDeckOnPopUp(System.Action callback)
     {
-        if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
-            if(NetworkClient.connection != null && NetworkClient.active){
-                GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-                if(gamePlayerDeck.isLocalPlayer){
-                    // 전투 결과 팝업 비활성화
-                    PopUpUIManager.instance.HandleHideBattleResultPopUp();
-
-                    // 애니매이션용 카드 오브젝트 복사본 생성
-                    GameObject cardOnDeckChoosed = CreateChoosedCardOnDeck(this.card);
-                      
-                    // 턴 매니저에 저장된 현재 참가한 플레이어들의 타겟오브젝트 리스트에서 로컬플레이어의 타겟오브젝트 조회
-                    GamePlayer gamePlayer = gamePlayerDeck.GetComponent<GamePlayer>();
-                    TargetObject currentPlayer;
-                    if(NetworkServer.activeHost)
-                    {
-                        currentPlayer = NetworkServer.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkServer.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
-                    }
-                    else
-                    {
-                        currentPlayer = NetworkClient.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkClient.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
-                    }
-                    //TargetObject currentPlayer = M_TurnManager.instance.spawnedPlayerSyncList.Find((targetObject) => targetObject.player == gamePlayer);
-
-                    // 이동 위치는 현재 플레이어 타겟오브젝트 위치
-                    Vector3 targetPosition = currentPlayer.transform.position;
-                    StartMoveToTarget(cardOnDeckChoosed.GetComponent<CardOnDeck>(), targetPosition);
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                // 애니매이션용 카드 오브젝트 복사본 생성
+                GameObject cardOnDeckChoosed = CreateChoosedCardOnDeck(this.card);
+                    
+                // 턴 매니저에 저장된 현재 참가한 플레이어들의 타겟오브젝트 리스트에서 로컬플레이어의 타겟오브젝트 조회
+                GamePlayer gamePlayer = gamePlayerDeck.GetComponent<GamePlayer>();
+                TargetObject currentPlayer;
+                if(NetworkServer.activeHost){
+                    currentPlayer = NetworkServer.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkServer.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
+                }else{
+                    currentPlayer = NetworkClient.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkClient.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
                 }
+                //TargetObject currentPlayer = M_TurnManager.instance.spawnedPlayerSyncList.Find((targetObject) => targetObject.player == gamePlayer);
+
+                // 이동 위치는 현재 플레이어 타겟오브젝트 위치
+                Vector3 targetPosition = currentPlayer.transform.position;
+                StartMoveToTarget(cardOnDeckChoosed.GetComponent<CardOnDeck>(), targetPosition);
+                callback();
             }
         }
     }
