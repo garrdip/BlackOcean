@@ -492,6 +492,7 @@ public class M_MapManager : NetworkBehaviour
             roommaps.SetActive(false);
             game.SetActive(true);
             GameUIManager.instance.GameUI.gameObject.SetActive(true);
+            GameUIManager.instance.ChatUI.gameObject.SetActive(true);
             GameUIManager.instance.GameBackGround.gameObject.SetActive(true);
 
             // Dim배경 상태 변경
