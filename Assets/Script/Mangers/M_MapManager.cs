@@ -495,6 +495,9 @@ public class M_MapManager : NetworkBehaviour
             GameUIManager.instance.ChatUI.gameObject.SetActive(true);
             GameUIManager.instance.GameBackGround.gameObject.SetActive(true);
 
+            // 임시 테스트용 UI
+            GameUIManager.instance.TestUI.gameObject.SetActive(true);
+
             // Dim배경 상태 변경
             blackCurtain.gameObject.SetActive(false);
             blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
