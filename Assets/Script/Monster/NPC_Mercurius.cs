@@ -17,7 +17,7 @@ public class NPC_Mercurius : SpawnedMonster
     void Start()
     {
         // NPC_Mercurius 생성될 때 현재 플레이어의 카드 데이터에서 6개의 랜덤 카드데이터를 추출하여 팝업에 6개의 상점카드 세팅
-        if(transform.parent.GetComponent<TargetObject>().isCloneData){
+        if(transform.parent.GetComponent<TargetObject>().isCloneData && mercuriusPopUp != null){
             foreach(Card card in M_CardManager.instance.ExtractRandomCards(6)){
                 mercuriusPopUp.storeCards.Add(card);
             }
