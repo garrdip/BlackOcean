@@ -148,6 +148,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }
     }
 
+    // Mercurius NPC 팝업
     public void HandleMercuriusPopUp(bool isPopUp)
     {
         if(isPopUp)
