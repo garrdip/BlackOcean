@@ -17,6 +17,12 @@ public class NPC_Mercurius : SpawnedMonster
         }
     }
 
+    void OnDestroy()
+    {
+        // NPC_Mercurius 파괴될 때 리스트 비움
+        PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>().storeCards.Clear();
+    }
+
     void OnMouseDown()
     {
         if(!EventSystem.current.IsPointerOverGameObject()){ // NPC_Mercurius가 UI에 가려져 있을 경우(팝업이 활성화 된 경우) 클릭 이벤트 방지

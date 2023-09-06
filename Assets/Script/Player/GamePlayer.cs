@@ -215,6 +215,23 @@ public class GamePlayer : NetworkBehaviour
         MapUI.instance.AppendMessage(selectOrder, playerName, message);
     }
 
+    // 채팅 메시지 이벤트 송신
+    [Command]
+    public void CmdSendChatMessageGameScene(string message, NetworkConnectionToClient sender = null)
+    {
+        if (!string.IsNullOrWhiteSpace(message)){
+            string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
+            RpcReceiveChatMessageGameScene(selectOrder, playerName, message.Trim());
+        }
+    }
+
+    // 채팅 메시지 이벤트 수신
+    [ClientRpc]
+    void RpcReceiveChatMessageGameScene(int selectOrder, string playerName, string message)
+    {
+        GameUIManager.instance.AppendMessage(selectOrder, playerName, message);
+    }
+
     [Server]
     public void SetPlayerOrder(int num)
     {

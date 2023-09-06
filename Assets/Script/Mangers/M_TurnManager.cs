@@ -857,6 +857,7 @@ public class M_TurnManager : NetworkBehaviour
             M_MapManager.instance.roommaps.SetActive(true);
             M_MapManager.instance.game.SetActive(false);
             GameUIManager.instance.GameUI.gameObject.SetActive(false);
+            GameUIManager.instance.ChatUI.gameObject.SetActive(false);
             GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
             // Dim배경 상태 변경
             blackCurtain.gameObject.SetActive(false);
