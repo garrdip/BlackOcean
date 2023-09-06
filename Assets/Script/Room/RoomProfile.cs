@@ -26,6 +26,7 @@ public class RoomProfile : MonoBehaviour
     public GameObject CharacterSelectUIObject;
     public TextMeshProUGUI steamID;
     public RawImage steamAvatar;
+    bool isPlayerChanged = false;
 
     void Awake()
     {
@@ -60,13 +61,20 @@ public class RoomProfile : MonoBehaviour
                 player = user;
             }
         }
+
+        if(!isPlayerChanged)
+            isPlayerChanged = (prePlayer == player)? false : true;
+
         if(player == null)
             SetEmpty();
         else
         {
             UpdateCharacter();
             UpdateReadyState();
-            if(prePlayer != player)ChangeSteamProfile();
+            if(isPlayerChanged && player.steamID != 0){
+                ChangeSteamProfile();
+                isPlayerChanged = false;
+            }
             if(!player.isLocalPlayer)
             {
                 EnableButton();
