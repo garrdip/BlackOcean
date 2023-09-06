@@ -192,7 +192,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
             else
                 totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition ;
             if(totalCost > currentIchi) // 카드 코스트 계산 하는곳
+            {
+                ReturnToCardOnHand(cardOnHand,conn);
                 continue;
+            }
             if(cardOnHand.card.baseCard.isTargetable && targetObject == null)
             {
                 ReturnToCardOnHand(cardOnHand,conn);
