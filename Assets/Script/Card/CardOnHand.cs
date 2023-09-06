@@ -168,6 +168,27 @@ public class CardOnHand : NetworkBehaviour
             if(isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
                 // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
                 if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
+                    int totalCost = 0;
+                    if(card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
+                    {
+                        if(card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
+                        {
+                            totalCost = ( card.baseCard.cost + card.costAddition - 1 );
+                            if(totalCost < 0)totalCost = 0;
+                        }
+                        else
+                            totalCost = ( card.baseCard.cost + card.costAddition + 1 );
+                    }
+                    else
+                        totalCost = card.baseCard.cost + card.costAddition ;
+                    if(totalCost > NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().currentIchi) // 카드 코스트 계산 하는곳
+                    {
+                        isDrag = false;
+                        isMoving = false;
+                        isMouseOver = false;
+                        return;
+                    }
+
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
                     CmdEnQueueCardData(gamePlayerDeck,NetworkClient.connection.identity);
                     M_CardManager.instance.CardOnHandThrowAwaySequence(this);
