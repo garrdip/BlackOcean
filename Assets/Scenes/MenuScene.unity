@@ -10151,8 +10151,8 @@ MonoBehaviour:
   backButton: {fileID: 87480487}
   refreshButton: {fileID: 1071811038}
   popUpUI: {fileID: 109723654}
-  multiPlayerUI: {fileID: 0}
-  mainMenuUI: {fileID: 0}
+  multiPlayerUI: {fileID: 2079226587}
+  mainMenuUI: {fileID: 1577234952}
   prefabLobbyData: {fileID: 3147464749390584309, guid: fce1f6465b649bc4585279d16af56b39, type: 3}
   lobbyListTransform: {fileID: 667784734}
 --- !u!114 &1716722583
@@ -10351,6 +10351,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards: []
   isCardOperatingTEST: 0
+  TEST0: {fileID: 0}
+  TEST1: {fileID: 0}
 --- !u!1 &1732529131
 GameObject:
   m_ObjectHideFlags: 0
