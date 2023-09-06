@@ -19,9 +19,10 @@ public class GameUIManager : SingletonD<GameUIManager>
     public GameObject PrefareDeck;
     public GameObject TrashDeck;
     public GameObject ChatUI;
+    public GameObject TestUI;
 
     [Header("UI 컴포넌트")]
-    
+
     // 카드 전투 UI
     public Button buttonEndTurn;
     public Button buttonPrefareDeck;

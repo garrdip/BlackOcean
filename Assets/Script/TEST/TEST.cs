@@ -5,13 +5,18 @@ using UnityEngine.UI;
 
 public class TEST : MonoBehaviour
 {
-    public Button testBtn;
+    public GameObject gameSceneChatBox;
+    public Button buttonEnhance;
+    public Button buttonChangeChatBoxState;
+    public bool isChatBoxActive = false;
+
     void Start()
     {
-        testBtn.onClick.AddListener(()=>TESTHandler());
+        buttonEnhance.onClick.AddListener(() => TestEnhance());
+        buttonChangeChatBoxState.onClick.AddListener(() => TestChatBoxState());
     }
 
-    void TESTHandler()
+    void TestEnhance()
     {
         foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList)
         {
@@ -25,4 +30,9 @@ public class TEST : MonoBehaviour
         }
     }
 
+    void TestChatBoxState()
+    {
+        isChatBoxActive = !isChatBoxActive;
+        gameSceneChatBox.SetActive(isChatBoxActive);
+    }
 }

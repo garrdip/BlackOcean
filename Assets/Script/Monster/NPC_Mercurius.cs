@@ -7,12 +7,19 @@ using Mirror;
 
 public class NPC_Mercurius : SpawnedMonster
 {
+    public MercuriusPopUp mercuriusPopUp;
+
+    void Awake()
+    {
+        mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
+    }
+
     void Start()
     {
         // NPC_Mercurius 생성될 때 현재 플레이어의 카드 데이터에서 6개의 랜덤 카드데이터를 추출하여 팝업에 6개의 상점카드 세팅
         if(transform.parent.GetComponent<TargetObject>().isCloneData){
             foreach(Card card in M_CardManager.instance.ExtractRandomCards(6)){
-                PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>().storeCards.Add(card);
+                mercuriusPopUp.storeCards.Add(card);
             }
         }
     }
@@ -20,7 +27,9 @@ public class NPC_Mercurius : SpawnedMonster
     void OnDestroy()
     {
         // NPC_Mercurius 파괴될 때 리스트 비움
-        PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>().storeCards.Clear();
+        if(mercuriusPopUp != null){
+            mercuriusPopUp.storeCards.Clear();
+        }
     }
 
     void OnMouseDown()
