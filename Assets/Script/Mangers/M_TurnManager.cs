@@ -800,6 +800,7 @@ public class M_TurnManager : NetworkBehaviour
     {   
         // TODO : 전투 종료 혹은 이벤트방에서 개인별로 먼저 수행하고 넘어가는게 맞을지?, 팀원이 모두 수행을 끝낼때까지 기다리는게 맞을지?
         EachPlayerBattleEnd();
+        ResetEndTurnState();
     }
 
     [Server]
