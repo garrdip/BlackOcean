@@ -61,7 +61,7 @@ public class TargetObject : NetworkBehaviour
 
     // 철귀
     public GameObject ironDemon;
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChangedIronDemonLocation))]
     public TargetObject ironDemonLocation;
 
     [SyncVar]
@@ -104,8 +104,6 @@ public class TargetObject : NetworkBehaviour
             if(objectType == ObjectType.PLAYER)
             {
                 anim = avatar.GetComponent<SkeletonAnimation>();
-                if(player.character == Character.HONGDANHYANG)
-                    ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
             }
             else
                 anim = monster.GetComponent<SkeletonAnimation>();
@@ -115,7 +113,10 @@ public class TargetObject : NetworkBehaviour
                 anim.state.Complete += OnAnimationComplete;
                 anim.timeScale = Random.Range(0.9f,1.1f); // 칼군무 방지 코드
                 if(objectType == ObjectType.PLAYER)
-                    if(player.character == Character.HONGDANHYANG)StartCoroutine(HongDanHyangEyeFlicker());
+                    if(player.character == Character.HONGDANHYANG){
+                        StartCoroutine(HongDanHyangEyeFlicker());
+                        if(!isCloneData)ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
+                    }
                 break;
             }
         }
@@ -137,6 +138,10 @@ public class TargetObject : NetworkBehaviour
             anim.state.Event -= OnAnimationEvent;
             anim.state.Start -= OnAnimationStart;
             anim.state.Complete -= OnAnimationComplete;
+        }
+        if(ironDemon != null)
+        {
+            ironDemon.GetComponent<SkeletonAnimation>().state.Complete -= OnIronDemonAnimationComplete;
         }
     }
 
@@ -345,5 +350,15 @@ public class TargetObject : NetworkBehaviour
         if(trackEntry.Animation.Name == "Defense")
             ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Idle",true);
     }
+
+    void OnChangedIronDemonLocation(TargetObject oldVal, TargetObject newVal)
+    {
+        if(newVal == this)
+        {
+            Debug.Log(" 철귀 애니메이션 복귀 " );       
+            ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
+        }
+    }
+
 
 }
