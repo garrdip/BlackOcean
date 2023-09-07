@@ -719,6 +719,8 @@ public class M_TurnManager : NetworkBehaviour
 
         var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(11,3,0),Quaternion.identity).GetComponent<SpawnedMonster>();
         var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
+        
+        monster.GetComponent<NPC_Mercurius>().isOrigin = true;
         NetworkServer.Spawn(monster.gameObject);
         NetworkServer.Spawn(cloneMonster.gameObject);
 
