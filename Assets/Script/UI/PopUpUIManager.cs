@@ -58,6 +58,9 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     [Header("선택한 보상카드 애니매이션에 사용되는 카드 프리팹")]
     public GameObject CardOnDeckChoosedPrefab;
 
+    public GameObject CardShopSlot;
+    public GameObject CardShopPrice;
+
 
     [Header("팝업 제어 변수")]
     public bool isOpenPrefareDeckPopUp = false;

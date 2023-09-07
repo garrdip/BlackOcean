@@ -8,10 +8,11 @@ public class TEST : MonoBehaviour
     public GameObject gameSceneChatBox;
     public Button buttonEnhance;
     public Button buttonChangeChatBoxState;
-    public bool isChatBoxActive = false;
+    public bool isChatBoxActive;
 
     void Start()
     {
+        isChatBoxActive = true;
         buttonEnhance.onClick.AddListener(() => TestEnhance());
         buttonChangeChatBoxState.onClick.AddListener(() => TestChatBoxState());
     }
