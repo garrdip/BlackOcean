@@ -37,7 +37,6 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
             GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
             cardOnDeck.transform.SetParent(PopUpUIManager.instance.selectableCardList.transform);
             cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
-            cardOnDeck.GetComponent<Image>().SetNativeSize();
             cardOnDeck.GetComponent<CardOnDeck>().card = card;
             extractCardObjects.Add(cardOnDeck);
         }

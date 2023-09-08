@@ -1374,7 +1374,7 @@ MonoBehaviour:
   selectableCardList: {fileID: 1983393684}
   mercuriusPopUp: {fileID: 1869874384}
   CardOnDeckPrefab: {fileID: 6285776433173605381, guid: 5f8c496d1b06c2549a3d0dc4c225442b, type: 3}
-  CardOnDeckChoosedPrefab: {fileID: 2153712344633156845, guid: 3a7dddb8d92aa3b4baadd533d2df1104, type: 3}
+  CardOnHandChoosedPrefab: {fileID: 2153712344633156845, guid: e21527256343cf342863946fca6650f2, type: 3}
   CardShopSlot: {fileID: 5235822292280976930, guid: db47a490d44ab9c438edc2cc870bccc4, type: 3}
   CardShopPrice: {fileID: 699038395719878503, guid: 7b8a022e6ba32394595f341de0613fa3, type: 3}
   isOpenPrefareDeckPopUp: 0

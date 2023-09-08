@@ -56,7 +56,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject CardOnDeckPrefab;
 
     [Header("선택한 보상카드 애니매이션에 사용되는 카드 프리팹")]
-    public GameObject CardOnDeckChoosedPrefab;
+    public GameObject CardOnHandChoosedPrefab;
 
     public GameObject CardShopSlot;
     public GameObject CardShopPrice;

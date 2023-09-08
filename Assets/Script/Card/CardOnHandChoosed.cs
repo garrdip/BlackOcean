@@ -8,16 +8,16 @@ using DG.Tweening;
 using TMPro;
 using ProjectD;
 
-public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class CardOnHandChoosed : MonoBehaviour
 {
     public Card card;
 
     [Header("CardOnDeck Image 컴포넌트")]
-    public Image cardBackground;
-    public Image cardIllust;
-    public Image cardImageFrame;
-    public Image cardGradeFrame;
-    public Image cardEmblem;
+    public SpriteRenderer cardBackground;
+    public SpriteRenderer cardIllust;
+    public SpriteRenderer cardImageFrame;
+    public SpriteRenderer cardGradeFrame;
+    public SpriteRenderer cardEmblem;
 
     [Header("CardOnDeck Text 컴포넌트")]
     public TextMeshProUGUI textCardName;
@@ -50,13 +50,12 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     [Header("CardOnHand 경험치 바")]
     public Sprite activeExpbar;
     public Sprite inActiveExpbar;
-    public GameObject cardExpBar; // 경험치 바 
     public GameObject expBlockPrefab; // 경험치 바 내부 블록 오브젝트 프리팹
     public VerticalLayoutGroup verticalLayoutGroup;
     public List<GameObject> expBlocks = new List<GameObject>(); // 경험치 바 내부 블록 리스트
 
     private Vector3 originScale;
-    private bool isTweening = false; // Dotween 애니매이션 함수들 실행중인지 여부
+    public bool isTweening = false; // Dotween 애니매이션 함수들 실행중인지 여부
 
     void Start()
     {
@@ -137,97 +136,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         DOTween.Kill(transform); // 비활성화 될 때 DoTween 프로세스 킬
     }
 
-    public void OnPointerEnter(PointerEventData pointerEventData)
-    {
-        if(!isTweening){
-            transform.DOScale(originScale * 1.3f, 0.3f);
-        }
-    }
-
-    public void OnPointerExit(PointerEventData pointerEventData)
-    {
-        if(!isTweening){
-            transform.DOScale(originScale, 0.3f);
-        }
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
-        if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
-            HandleClickCardOnDeckOnPopUp(() => {
-                PopUpUIManager.instance.HandleHideBattleResultPopUp();
-            });
-        }
-        // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
-        if(PopUpUIManager.instance.mercuriusPopUp.activeSelf){
-            HandleClickCardOnDeckOnPopUp(() => {
-                PopUpUIManager.instance.HandleMercuriusPopUp(false);
-            });
-        }
-    }
-
-    // 팝업이 활성화된 상태에서 CardOnDeck 공통 클릭 이벤트
-    private void HandleClickCardOnDeckOnPopUp(System.Action callback)
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                // 애니매이션용 카드 오브젝트 복사본 생성
-                GameObject cardOnHandChoosed = CreateCardOnHandChoosed(this.card);
-                    
-                // 턴 매니저에 저장된 현재 참가한 플레이어들의 타겟오브젝트 리스트에서 로컬플레이어의 타겟오브젝트 조회
-                GamePlayer gamePlayer = gamePlayerDeck.GetComponent<GamePlayer>();
-                TargetObject currentPlayer;
-                if(NetworkServer.activeHost){
-                    currentPlayer = NetworkServer.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkServer.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
-                }else{
-                    currentPlayer = NetworkClient.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkClient.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
-                }
-                //TargetObject currentPlayer = M_TurnManager.instance.spawnedPlayerSyncList.Find((targetObject) => targetObject.player == gamePlayer);
-
-                // 이동 위치는 현재 플레이어 타겟오브젝트 위치
-                Vector3 targetPosition = currentPlayer.transform.position;
-                StartMoveToTarget(cardOnHandChoosed.GetComponent<CardOnHandChoosed>(), targetPosition);
-                callback();
-            }
-        }
-    }
-
-    // 애니매이션용으로 사용될 선택된 보상카드의 복사 오브젝트 생성
-    private GameObject CreateCardOnHandChoosed(Card card)
-    {
-        GameObject cardOnHandChoosed = Instantiate(PopUpUIManager.instance.CardOnHandChoosedPrefab);
-        cardOnHandChoosed.GetComponent<CardOnHandChoosed>().card = card;
-        cardOnHandChoosed.GetComponent<CardOnHandChoosed>().isTweening = true;
-        cardOnHandChoosed.transform.SetParent(GameUIManager.instance.RootGameObject.transform);
-        cardOnHandChoosed.transform.position = new Vector3(0f, 0f, 0f);
-
-        return cardOnHandChoosed;
-    }
-
-    // 포물선을 그리며 타겟 위치로 이동
-    private void StartMoveToTarget(CardOnHandChoosed cardOnHandChoosed, Vector3 targetPosition)
-    {
-        float height = 2f;
-        float duration = 1f;
-        Vector3 startPos = cardOnHandChoosed.transform.position;
-        Vector3 midPos = (startPos + targetPosition) / 2f;
-        midPos.y += height;
-        Vector3[] path = new Vector3[] { startPos, midPos, targetPosition };
-        
-        // DOTween을 사용하여 포물선 이동 애니메이션 생성
-        cardOnHandChoosed.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.5f);
-        cardOnHandChoosed.transform.DOPath(path, duration, PathType.CatmullRom)
-            .SetEase(Ease.OutQuint)
-            .OnComplete(() => {
-                cardOnHandChoosed.isTweening = false;
-                M_CardManager.instance.AddCardDataToCurrentPlayerDeck(cardOnHandChoosed.card);
-                Destroy(cardOnHandChoosed.gameObject);
-                NetworkClient.connection.identity.GetComponent<GamePlayer>().isRewardDone = true;
-            });
-    }
-
+ 
     // 카드 정보 뷰 설정
     private void initCardData()
     {
