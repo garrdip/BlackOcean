@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 using ProjectD;
 using Mirror;
 using DG.Tweening;
@@ -50,14 +51,48 @@ public class CardOnHand : NetworkBehaviour
     [Header("현재 게임 플레이어의 GamePlayerDeck 클래스 참조값")]
     public GamePlayerDeck currentPlayerDeck;
 
-    [Header("CardOnHand UI 컴포넌트")]
+        [Header("CardOnHand UI Canvas 컴포넌트")]
     public Canvas cardOnHandCanvas;
+
+    [Header("CardOnHand Sprite 컴포넌트")]
+    public SpriteRenderer cardBackground;
+    public SpriteRenderer cardIllust;
+    public SpriteRenderer cardImageFrame;
+    public SpriteRenderer cardGradeFrame;
+    public SpriteRenderer cardEmblem;
+
+    [Header("CardOnHand Text 컴포넌트")]
     public TextMeshProUGUI textCardName;
     public TextMeshProUGUI textCardType;
     public TextMeshProUGUI textCardDescription;
     public TextMeshProUGUI textCardCost;
 
-    // 카드 경험치 (진행중)
+    [Header("CardOnHand 배경 이미지")]
+    public Sprite attackCardBackground;
+    public Sprite blessCardBackground;
+    public Sprite strategyCardBackground;
+
+    [Header("CardOnHand 내부 일러스트 액자 틀")]
+    public Sprite attackCardImageFrame;
+    public Sprite blessCardImageFrame;
+    public Sprite strategyCardImageFrame;
+
+    [Header("CardOnHand 등급 및 강화 틀")]
+    public Sprite enhancedLegendCardGradFrame;
+    public Sprite legendCardGradeFrame;
+    public Sprite enhancedNormalCardGradFrame;
+    public Sprite normalCardGradeFrame;
+    public Sprite enhancedRareCardGradFrame;
+    public Sprite rareCardGradeFrame;
+
+    [Header("CardOnHand 앰블럼")]
+    public Sprite attackEmblem;
+    public Sprite blessEmblem;
+    public Sprite strategyEmblem;
+
+    [Header("CardOnHand 경험치 바")]
+    public Sprite activeExpbar;
+    public Sprite inActiveExpbar;
     public GameObject cardExpBar; // 경험치 바 
     public GameObject expBlockPrefab; // 경험치 바 내부 블록 오브젝트 프리팹
     public VerticalLayoutGroup verticalLayoutGroup;
@@ -77,12 +112,57 @@ public class CardOnHand : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            InitCardExpBar();
+            InitCardIllust(card);
+            InitCardTemplateByCardType(card);
+            InitCardTemplateByCardEnhanced(card);
+            InitCardExpBar(card);
+        }
+    }
+
+    // 카드 타입에 따라 외형 틀 세팅
+    private void InitCardTemplateByCardType(Card card)
+    {
+        if(!card.baseCard.cardNumber.Equals("HA")){
+            switch(card.baseCard.cardType){
+                case CardType.ATTACK:
+                    cardBackground.sprite = attackCardBackground;
+                    cardImageFrame.sprite = attackCardImageFrame;
+                    cardEmblem.sprite = attackEmblem;
+                    break;
+                case CardType.BLESS:
+                    cardBackground.sprite = blessCardBackground;
+                    cardImageFrame.sprite = blessCardImageFrame;
+                    cardEmblem.sprite = blessEmblem;
+                    break;
+                case CardType.STRATEGY:
+                    cardBackground.sprite = strategyCardBackground;
+                    cardImageFrame.sprite = strategyCardImageFrame;
+                    cardEmblem.sprite = strategyEmblem;
+                    break;
+            }
+        }
+    }
+
+    // 카드 이미지 세팅
+    private void InitCardIllust(Card card)
+    {
+        if(!string.IsNullOrEmpty(card.baseCard.cardImage)){
+            cardIllust.sprite = Resources.Load<Sprite>(card.baseCard.cardImage);
+        }
+    }
+
+    // 카드 강화 상태 프레임 세팅
+    private void InitCardTemplateByCardEnhanced(Card card)
+    {
+        if(card.isEnhanced){
+            cardGradeFrame.sprite = enhancedNormalCardGradFrame;
+        }else{
+            cardGradeFrame.sprite = normalCardGradeFrame;
         }
     }
 
     // 카드 경험치 바 초기화 : card 데이터에서 최대 경험치 정보를 가져와 해당 숫자 만큼의 경험치 바 내부 블록 생성
-    private void InitCardExpBar()
+    private void InitCardExpBar(Card card)
     {
         // 철귀 이동카드는 경험치 오브젝트 초기화 제외
         if(!card.baseCard.cardNumber.Equals("HA")){
@@ -90,13 +170,14 @@ public class CardOnHand : NetworkBehaviour
             for(int i=0; i<card.baseCard.maxExperience; i++){
                 GameObject expBlock = Instantiate(expBlockPrefab);
                 expBlock.transform.SetParent(verticalLayoutGroup.transform, false);
+                expBlock.GetComponent<Image>().sprite = inActiveExpbar;
                 expBlocks.Add(expBlock);
             }
             // expBlocks 역순으로 전환(블록이 아래부터 쌓이도록)
             expBlocks.Reverse();
             // 경험치 블록 리스트에서 현재 카드의 경험치 숫자 만큼 블록 생상을 변경
             for(int j=0; j<card.experience; j++){
-                expBlocks[j].GetComponent<Image>().color = Color.black;
+                expBlocks[j].GetComponent<Image>().sprite = activeExpbar;
             }
         }   
     }
@@ -108,7 +189,7 @@ public class CardOnHand : NetworkBehaviour
             if(!isUsed && !isMoving && !isChoosed && !IsArrowActive() && !IsCardControllablePopUpActive()){
                 isMouseOver = true;
                 originSortOrder = index;
-                transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
+                transform.GetComponent<SortingGroup>().sortingOrder =  M_CardManager.instance.maxSortOrder;
                 cardOnHandCanvas.sortingOrder =  M_CardManager.instance.maxSortOrder;
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
             }
@@ -121,7 +202,7 @@ public class CardOnHand : NetworkBehaviour
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
             if(!isUsed && !isMoving && !IsArrowActive() && !IsCardControllablePopUpActive()){
                 isMouseOver = false;
-                transform.GetComponent<SpriteRenderer>().sortingOrder =  originSortOrder;
+                transform.GetComponent<SortingGroup>().sortingOrder =  originSortOrder;
                 cardOnHandCanvas.sortingOrder = originSortOrder;
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
             }
@@ -213,7 +294,7 @@ public class CardOnHand : NetworkBehaviour
     private void DragCardOnHand(CardOnHand cardOnHand)
     {
         // 드래그 중 오브젝트의 정렬값은 최대값. 항상 맨 위에 랜더링
-        cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder =  M_CardManager.instance.maxSortOrder;
+        cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder =  M_CardManager.instance.maxSortOrder;
         cardOnHand.cardOnHandCanvas.sortingOrder = M_CardManager.instance.maxSortOrder;
         // 오브젝트 위치는 마우스 커서 위치
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -228,7 +309,7 @@ public class CardOnHand : NetworkBehaviour
         if(cardOnHand.card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 3)){
             cardOnHand.isMoving = true;
             cardOnHand.isDrag = false;
-            cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = M_CardManager.instance.maxSortOrder;
+            cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = M_CardManager.instance.maxSortOrder;
             currentPlayerDeck.cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
             currentPlayerDeck.CmdSetArrowOwnCardOnHand(cardOnHand);
             cardOnHand.transform
@@ -260,7 +341,7 @@ public class CardOnHand : NetworkBehaviour
     [ClientRpc]
     public void RpcSortOrder(int index)
     {
-        transform.GetComponent<SpriteRenderer>().sortingOrder = index;
+        transform.GetComponent<SortingGroup>().sortingOrder = index;
         cardOnHandCanvas.sortingOrder = index;
         transform.SetSiblingIndex(index);
     }
@@ -330,7 +411,7 @@ public class CardOnHand : NetworkBehaviour
     // 카드 인덱스값 변경 이벤트 수신
     public void OnChangeIndex(int oldValue, int newValue)
     {
-        transform.GetComponent<SpriteRenderer>().sortingOrder = index;
+        transform.GetComponent<SortingGroup>().sortingOrder = index;
         cardOnHandCanvas.sortingOrder = index;
         transform.SetSiblingIndex(index);
     }

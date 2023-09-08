@@ -14,6 +14,7 @@ public class CardBase
     public CardType cardType;
     public int cost;
     public int maxExperience;
+    public string cardImage;
     public ValidTarget validTarget;
     public List<Infomation> info = new List<Infomation>();
     public List<CardCharacteristic> cardCharacteristics;

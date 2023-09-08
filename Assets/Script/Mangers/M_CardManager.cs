@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Mirror;
 using DG.Tweening;
 using ProjectD;
@@ -91,7 +92,7 @@ public class M_CardManager : NetworkBehaviour
         symmetryPositionY_Range = 0.35f;
         symmetryRotationRange = 5.0f;
         cardOnHandShiftedRange = 1.7f;
-        hoveredPositionY = 2.8f;
+        hoveredPositionY = 2.2f;
     }
 
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
@@ -111,7 +112,7 @@ public class M_CardManager : NetworkBehaviour
                                 cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
                                 cardOnHand.transform.localScale = cardOverSize;
                             }else{
-                                cardOnHand.transform.GetComponent<SpriteRenderer>().sortingOrder = i; // 스프라이트 정렬 인덱스
+                                cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = i; // 스프라이트 정렬 인덱스
                                 cardOnHand.cardOnHandCanvas.sortingOrder = i; // 카드 이름 및 설명 텍스트 요소의 정렬 인덱스
                                 cardOnHand.transform.SetSiblingIndex(i); // 오브젝트 스택 순서 인덱스
 
@@ -223,7 +224,6 @@ public class M_CardManager : NetworkBehaviour
                 if (gamePlayerDeck.isLocalPlayer)
                 {
                     cardOnHand.isMoving = false;
-                    cardOnHand.GetComponent<SpriteRenderer>().color = new Color(1,1,1,0);
                     GameUIManager.instance.buttonEndTurn.interactable = true;
                     sequence.Kill();
                     NetworkClient.connection.identity.GetComponent<GamePlayer>().destroyCards.Add(cardOnHand);
