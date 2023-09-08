@@ -128,25 +128,37 @@ public class M_SteamManager : InstanceD<M_SteamManager>
         }
     }
 
-    public Texture2D GetSteamImageAsTexture(int iImage)
+    public byte[] GetSteamImageAsByteArray(int iImage, out bool pIsValid, out uint pWidth, out uint pHeight)
     {
-        Texture2D texture = null;
         bool isValid = SteamUtils.GetImageSize(iImage, out uint width, out uint height);
 
         if(isValid)
         {
             byte[] image = new byte[width * height * 4];
             isValid = SteamUtils.GetImageRGBA(iImage, image, (int)(width * height * 4));
-            
-
-            if(isValid)
-            {
-                texture = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false, true);
-                texture.LoadRawTextureData(image);
-                FlipTextureVertically(texture);
-                texture.Apply();
+            if(isValid) {
+                pIsValid = true;
+                pWidth = width;
+                pHeight = height;
+                return image;
             }
         }
+      
+        pIsValid = false;
+        pWidth = 0;
+        pHeight = 0;
+        return null;
+    }
+
+    public Texture2D GetSteamImageAsTexture(byte[] image, int width, int height)
+    {
+        Texture2D texture = null;
+
+        texture = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false, true);
+        texture.LoadRawTextureData(image);
+        FlipTextureVertically(texture);
+        texture.Apply();
+
         return texture;
     }
 
