@@ -63,7 +63,6 @@ public class CardOnHand : NetworkBehaviour
 
     [Header("CardOnHand Text 컴포넌트")]
     public TextMeshProUGUI textCardName;
-    public TextMeshProUGUI textCardType;
     public TextMeshProUGUI textCardDescription;
     public TextMeshProUGUI textCardCost;
 
@@ -376,7 +375,6 @@ public class CardOnHand : NetworkBehaviour
             textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(newCard.baseCard.description);
         }
 
-        textCardType.text = newCard.baseCard.cardType.ToString();
         textCardDescription.text += '\n';
         textCardDescription.text += '\n';
         foreach(CardCharacteristic character in newCard.baseCard.cardCharacteristics)
