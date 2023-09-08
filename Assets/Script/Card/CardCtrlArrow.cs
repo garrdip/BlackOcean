@@ -13,6 +13,10 @@ public class CardCtrlArrow : NetworkBehaviour
     [SyncVar]
     public CardOnHand arrowOwnedCardOnHand; // 현재 소환된 화살표의 주인 카드
     public GameObject currentTarget; // 현재 소환된 화살표가 타겟으로 잡은 오브젝트
+    public Sprite targetEnterStateArrowHead; // 화살표가 타겟에 진입할 때 헤드 이미지
+    public Sprite targetExitStateArrowHead; // 화살표가 타겟에 나갈 때 헤드 이미지
+    public Sprite targetEnterStateArrowNode; // 화살표가 타겟에 진입할 때 노드 이미지
+    public Sprite targetExitStateArrowNode; // 화살표가 타겟에 나갈 때 노드 이미지
 
     public float scaleFactor = 1f;
     private Transform origin;
@@ -216,12 +220,16 @@ public class CardCtrlArrow : NetworkBehaviour
         M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
     }
 
-    // 화살표 노드들 색상변경
-    public void ChangeArrowNodesColor(Color color)
+    // 화살표 노드들 이미지를 타겟에 진입 or 벗어날 때 상태에 따라 다른 이미지 설정
+    public void ChangeArrowNodesColor(bool isEnter)
     {
-        foreach(Transform transform in arrowNodes){
-            SpriteRenderer spriteRenderer = transform.GetComponent<SpriteRenderer>();
-            spriteRenderer.color = color;
+        for(int i=0; i<arrowNodes.Count; i++){
+            SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
+            if(i == arrowNodes.Count-1){
+                spriteRenderer.sprite = isEnter ? targetEnterStateArrowHead : targetExitStateArrowHead;
+            }else{
+                spriteRenderer.sprite = isEnter ? targetEnterStateArrowNode : targetExitStateArrowNode;
+            }
         }
     }
 }
