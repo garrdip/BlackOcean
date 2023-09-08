@@ -103,7 +103,7 @@ public class GamePlayer : NetworkBehaviour
         {
             byte[] uploadableImage;
             M_MapManager.instance.GenerateHexgonGrid(40);
-                    int imageId = SteamFriends.GetLargeFriendAvatar((CSteamID)steamID);
+                    int imageId = SteamFriends.GetSmallFriendAvatar((CSteamID)steamID);
             uploadableImage = M_SteamManager.instance.GetSteamImageAsByteArray(imageId,out bool isValid, out uint width, out uint height);
             if(isValid)
             {
