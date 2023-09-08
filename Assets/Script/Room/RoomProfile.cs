@@ -72,7 +72,7 @@ public class RoomProfile : MonoBehaviour
             UpdateCharacter();
             UpdateReadyState();
             if(isPlayerChanged && player.steamID != 0){
-                ChangeSteamProfile();
+                ChangeSteamProfile(player);
                 isPlayerChanged = false;
             }
             if(!player.isLocalPlayer)
@@ -116,14 +116,19 @@ public class RoomProfile : MonoBehaviour
         readyState.SetActive(player.isReady);
     }
 
-    public void ChangeSteamProfile()
+    public void ChangeSteamProfile(RoomPlayer roomPlayer)
     {
         // Name 
-        steamID.text = SteamFriends.GetFriendPersonaName((CSteamID)player.steamID);
+        steamID.text = roomPlayer.steamPersonaName;
         // Avatar
-        int imageId = SteamFriends.GetLargeFriendAvatar((CSteamID)player.steamID);
-        steamAvatar.texture = M_SteamManager.instance.GetSteamImageAsTexture(imageId);
-        steamAvatar.color = new Color(1,1,1,1);
+        if(roomPlayer.isValidAvatar)
+        {
+            byte[] avatarImage = new byte[roomPlayer.imageWidth * roomPlayer.imageHeight * 4];
+            for(int i = 0 ;i < roomPlayer.image.Count ; i++)
+                avatarImage[i] = roomPlayer.image[i];
+            steamAvatar.texture = M_SteamManager.instance.GetSteamImageAsTexture(avatarImage,(int)roomPlayer.imageWidth, (int)roomPlayer.imageHeight);
+            steamAvatar.color = new Color(1,1,1,1);
+        }
     }
 
 

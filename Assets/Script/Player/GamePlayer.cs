@@ -38,6 +38,11 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public bool isTargetObjectInitDone = false;
 
+    public SyncList<byte> avatarImage = new SyncList<byte>();
+
+    [SyncVar]
+    public int avatarWidth,avatarHeight;
+
     public readonly SyncList<CardOnHand> destroyCards = new SyncList<CardOnHand>();
 
     public CardOnHand TEST;
@@ -96,7 +101,17 @@ public class GamePlayer : NetworkBehaviour
         }
         if(isLocalPlayer)
         {
+            byte[] uploadableImage;
             M_MapManager.instance.GenerateHexgonGrid(40);
+                    int imageId = SteamFriends.GetLargeFriendAvatar((CSteamID)steamID);
+            uploadableImage = M_SteamManager.instance.GetSteamImageAsByteArray(imageId,out bool isValid, out uint width, out uint height);
+            if(isValid)
+            {
+                avatarWidth = (int)width;
+                avatarHeight = (int)height;
+                for(int i = 0 ;i < uploadableImage.Length ; i ++)
+                    avatarImage.Add(uploadableImage[i]);
+            }
             HP = 100;
             MaxHP = 100;
             isInitializeDone = true;
