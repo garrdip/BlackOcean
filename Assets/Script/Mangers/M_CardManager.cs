@@ -282,7 +282,7 @@ public class M_CardManager : NetworkBehaviour
             GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                    cardOnHand.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+                    cardOnHand.GetComponent<SortingGroup>().sortingLayerName = layerName;
                     cardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
                 }
             }
