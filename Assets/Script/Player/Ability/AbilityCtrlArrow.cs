@@ -15,6 +15,11 @@ public class AbilityCtrlArrow : NetworkBehaviour
     public List<Transform> arrowNodes = new List<Transform>();
     public Vector2[] controlPoints = new Vector2[2];
 
+    public Sprite targetEnterStateArrowHead; // 화살표가 타겟에 진입할 때 헤드 이미지
+    public Sprite targetExitStateArrowHead; // 화살표가 타겟에 나갈 때 헤드 이미지
+    public Sprite targetEnterStateArrowNode; // 화살표가 타겟에 진입할 때 노드 이미지
+    public Sprite targetExitStateArrowNode; // 화살표가 타겟에 나갈 때 노드 이미지
+
     bool isInitialized;
 
     void Start()
@@ -133,4 +138,16 @@ public class AbilityCtrlArrow : NetworkBehaviour
         }
     }
 
+     // 화살표 노드들 이미지를 타겟에 진입 or 벗어날 때 상태에 따라 다른 이미지 설정
+    public void ChangeArrowNodesColor(bool isEnter)
+    {
+        for(int i=0; i<arrowNodes.Count; i++){
+            SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
+            if(i == arrowNodes.Count-1){
+                spriteRenderer.sprite = isEnter ? targetEnterStateArrowHead : targetExitStateArrowHead;
+            }else{
+                spriteRenderer.sprite = isEnter ? targetEnterStateArrowNode : targetExitStateArrowNode;
+            }
+        }
+    }
 }

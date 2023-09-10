@@ -18,6 +18,7 @@ public class AbilityCtrlArrowHead : NetworkBehaviour
     {
         if(collider != null && collider.tag.Equals("TargetObject") && abilityCtrlArrow != null){
             abilityCtrlArrow.currentTarget = collider.gameObject.transform.parent.GetComponent<TargetObject>();
+            abilityCtrlArrow.ChangeArrowNodesColor(true);
         }
     }
 
@@ -26,6 +27,7 @@ public class AbilityCtrlArrowHead : NetworkBehaviour
     {
         if(collider != null && collider.tag.Equals("TargetObject") && abilityCtrlArrow != null){
             abilityCtrlArrow.currentTarget = null;
+            abilityCtrlArrow.ChangeArrowNodesColor(false);
         }
     }
 
