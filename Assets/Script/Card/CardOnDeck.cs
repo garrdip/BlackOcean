@@ -25,6 +25,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public TextMeshProUGUI textCardName;
     public TextMeshProUGUI textCardDescription;
     public TextMeshProUGUI textCardCost;
+    public GameObject cardSoldOut;
 
     [Header("CardOnHand 배경 이미지")]
     public Sprite attackCardBackground;
@@ -166,14 +167,32 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         }
         // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.mercuriusPopUp.activeSelf){
-            if(!isSoldOut){
-                isSoldOut = true;
-                canvasGroup.alpha = 0.5f;
-                HandleClickCardOnDeckOnPopUp(() => {
-                    M_TurnManager.instance.npc_Mercurius.shopCards.Remove(this.card);
-                });
-            }
+            ChangeCardOnDeckSoldOutState();
+            HandleClickCardOnDeckOnPopUp(() => {
+                M_TurnManager.instance.npc_Mercurius.shopCards.Remove(this.card);
+            });
         }
+    }
+
+    // CardOnDeck SoldOut 상태로 변경 및 컴포넌트들 알파값 0.5 변경
+    public void ChangeCardOnDeckSoldOutState()
+    {
+        isSoldOut = true;
+        cardSoldOut.SetActive(true);
+        // 캔버스 그룹 요소들 상호작용 이벤트 비활성화 
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+        // cardSoldOut 오브젝트도 canvasGroup에 포함되기 때문에 카드요소들 하나씩 직접 알파값 변경
+        cardBackground.color = new Color(cardBackground.color.r, cardBackground.color.g, cardBackground.color.b, 0.5f);
+        cardIllust.color = new Color(cardIllust.color.r, cardIllust.color.g, cardIllust.color.b, 0.5f);
+        cardImageFrame.color = new Color(cardImageFrame.color.r, cardImageFrame.color.g, cardImageFrame.color.b, 0.5f);
+        cardGradeFrame.color = new Color(cardGradeFrame.color.r, cardGradeFrame.color.g, cardGradeFrame.color.b, 0.5f);
+        cardEmblem.color = new Color(cardEmblem.color.r, cardEmblem.color.g, cardEmblem.color.b, 0.5f);
+        textCardName.color = new Color(textCardName.color.r, textCardName.color.g, textCardName.color.b, 0.5f);
+        textCardDescription.color = new Color(textCardDescription.color.r, textCardDescription.color.g, textCardDescription.color.b, 0.5f);
+        textCardCost.color = new Color(textCardCost.color.r, textCardCost.color.g, textCardCost.color.b, 0.5f);
+        // 카드 경험치바 하위요소도 캔버스 그룹으로 묶어 한번에 알파값 변경
+        cardExpBar.GetComponent<CanvasGroup>().alpha = 0.5f;
     }
 
     // 팝업이 활성화된 상태에서 CardOnDeck 공통 클릭 이벤트

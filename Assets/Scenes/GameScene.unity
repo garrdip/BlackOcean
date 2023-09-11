@@ -1377,6 +1377,7 @@ MonoBehaviour:
   CardOnHandChoosedPrefab: {fileID: 2153712344633156845, guid: e21527256343cf342863946fca6650f2, type: 3}
   CardShopSlot: {fileID: 5235822292280976930, guid: db47a490d44ab9c438edc2cc870bccc4, type: 3}
   CardShopPrice: {fileID: 699038395719878503, guid: 7b8a022e6ba32394595f341de0613fa3, type: 3}
+  CardSoldOut: {fileID: 4508853424439647897, guid: 21c6dab96fbe31141b5df663224b4378, type: 3}
   isOpenPrefareDeckPopUp: 0
   isOpenTrashDeckPopUp: 0
 --- !u!1 &213638928
@@ -10651,8 +10652,6 @@ MonoBehaviour:
   textCardEnhancePrice: {fileID: 447829997}
   textCardRemovePrice: {fileID: 1412134103}
   isMouseOnFrame: 0
-  storeCards: []
-  storeCardObjectList: []
 --- !u!225 &1869874387
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -16587,6 +16586,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  npc_Mercurius: {fileID: 0}
   players: []
   orderUI: {fileID: 4770237054017695281}
   isOrderSelect: 0
