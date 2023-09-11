@@ -48,8 +48,26 @@ public class CardOnHandRemovePopUp : SingletonD<CardOnHandRemovePopUp>
      // CardOnHandRemovePop 비활성화 콜백
     public void OnChangeCardOnHandRemovePopUpHide()
     {
+        if(PopUpUIManager.instance.deckListPopUp.activeSelf){
+            Button buttonPrefareDeck =  GameUIManager.instance.buttonPrefareDeck;
+            buttonPrefareDeck.transform.SetParent(PopUpUIManager.instance.deckListPopUp.transform);
+            buttonPrefareDeck.transform.SetAsLastSibling();
+
+            Button buttonTrashDeck = GameUIManager.instance.buttonTrashDeck;
+            buttonTrashDeck.transform.SetParent(PopUpUIManager.instance.deckListPopUp.transform);
+            buttonTrashDeck.transform.SetAsLastSibling();
+        }else{
+            Button buttonPrefareDeck =  GameUIManager.instance.buttonPrefareDeck;
+            buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
+            buttonPrefareDeck.transform.SetAsLastSibling();
+
+            Button buttonTrashDeck = GameUIManager.instance.buttonTrashDeck;
+            buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
+            buttonTrashDeck.transform.SetAsLastSibling();
+        }
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
             gameObject.SetActive(false);
+            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         });
     }
 }

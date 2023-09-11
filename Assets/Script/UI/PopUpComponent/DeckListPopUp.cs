@@ -30,22 +30,6 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
         DOTween.Kill(canvasGroup);
     }
 
-    // 팝업 닫고 게임으로 돌아가기
-    public void HandleReturnGame()
-    {
-        // 버튼들의 랜더 순서 인덱스값 초기상태로 변경
-        GameUIManager.instance.buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
-        GameUIManager.instance.buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
-        GameUIManager.instance.buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);
-        GameUIManager.instance.buttonTrashDeck.transform.SetSiblingIndex(originSiblingIndex);
-        PopUpUIManager.instance.isOpenPrefareDeckPopUp = false;
-        PopUpUIManager.instance.isOpenTrashDeckPopUp = false;
-        canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
-            ClearDeckList();
-            gameObject.SetActive(false);
-        });
-    }
-
     // Deck정보 리스트 요소 추가
     private void AddDeckList(SyncList<Card> cards, GridLayoutGroup gridLayoutGroup)
     {
@@ -104,6 +88,25 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
     // 댁 리스트 팝업 비활성화 콜백
     public void OnChangeDeckListPopUpHide(DeckListType type)
     {
-        HandleReturnGame();
+        // 버튼들의 랜더 순서 인덱스값 초기상태로 변경
+        if(PopUpUIManager.instance.cardOnHandRemovePopUp.activeSelf){
+            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(PopUpUIManager.instance.cardOnHandRemovePopUp.transform);
+            GameUIManager.instance.buttonTrashDeck.transform.SetParent(PopUpUIManager.instance.cardOnHandRemovePopUp.transform);
+            GameUIManager.instance.buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);
+            GameUIManager.instance.buttonTrashDeck.transform.SetSiblingIndex(originSiblingIndex);
+            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
+        }else{
+            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
+            GameUIManager.instance.buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
+            GameUIManager.instance.buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);
+            GameUIManager.instance.buttonTrashDeck.transform.SetSiblingIndex(originSiblingIndex);
+            M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
+        }
+        PopUpUIManager.instance.isOpenPrefareDeckPopUp = false;
+        PopUpUIManager.instance.isOpenTrashDeckPopUp = false;
+        canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
+            ClearDeckList();
+            gameObject.SetActive(false);
+        });
     }
 }
