@@ -227,7 +227,6 @@ public class M_CardManager : NetworkBehaviour
                     GameUIManager.instance.buttonEndTurn.interactable = true;
                     sequence.Kill();
                     NetworkClient.connection.identity.GetComponent<GamePlayer>().destroyCards.Add(cardOnHand);
-                    NetworkClient.connection.identity.GetComponent<GamePlayer>().TEST = cardOnHand;
                 }
             });
         }
