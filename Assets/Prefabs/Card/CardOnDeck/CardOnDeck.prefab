@@ -450,6 +450,7 @@ GameObject:
   - component: {fileID: 6285776433173605382}
   - component: {fileID: 6285776433173605400}
   - component: {fileID: -2197036657687744966}
+  - component: {fileID: 1169466258647471963}
   m_Layer: 0
   m_Name: CardOnDeck
   m_TagString: Untagged
@@ -481,8 +482,8 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 586, y: 864}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -524,6 +525,8 @@ MonoBehaviour:
     costAddition: 0
     cardCharacteristics: 
     experience: 0
+  isSoldOut: 0
+  canvasGroup: {fileID: 1169466258647471963}
   cardBackground: {fileID: 5672053711782125212}
   cardIllust: {fileID: 1323456622138383489}
   cardImageFrame: {fileID: 5004063315363468590}
@@ -553,6 +556,18 @@ MonoBehaviour:
   expBlockPrefab: {fileID: 5956088442796586194, guid: 70f18470fbccaf64abab6ceed8e58d8b, type: 3}
   verticalLayoutGroup: {fileID: 149250206704163165}
   expBlocks: []
+--- !u!225 &1169466258647471963
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6285776433173605381}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6285776433897151711
 GameObject:
   m_ObjectHideFlags: 0

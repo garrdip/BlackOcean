@@ -12,6 +12,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 {
     public Card card;
 
+    public CanvasGroup canvasGroup;
+
     [Header("CardOnDeck Image 컴포넌트")]
     public Image cardBackground;
     public Image cardIllust;
@@ -57,6 +59,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     private Vector3 originScale;
     private bool isTweening = false; // Dotween 애니매이션 함수들 실행중인지 여부
+    public bool isSoldOut; // 판매 완료된 카드인지 여부
 
     void Start()
     {
@@ -155,15 +158,21 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
+            gameObject.SetActive(false);
             HandleClickCardOnDeckOnPopUp(() => {
                 PopUpUIManager.instance.HandleHideBattleResultPopUp();
+                NetworkClient.connection.identity.GetComponent<GamePlayer>().isRewardDone = true;
             });
         }
         // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.mercuriusPopUp.activeSelf){
-            HandleClickCardOnDeckOnPopUp(() => {
-                PopUpUIManager.instance.HandleMercuriusPopUp(false);
-            });
+            if(!isSoldOut){
+                isSoldOut = true;
+                canvasGroup.alpha = 0.5f;
+                HandleClickCardOnDeckOnPopUp(() => {
+                    M_TurnManager.instance.npc_Mercurius.shopCards.Remove(this.card);
+                });
+            }
         }
     }
 
@@ -178,18 +187,13 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     
                 // 턴 매니저에 저장된 현재 참가한 플레이어들의 타겟오브젝트 리스트에서 로컬플레이어의 타겟오브젝트 조회
                 GamePlayer gamePlayer = gamePlayerDeck.GetComponent<GamePlayer>();
-                TargetObject currentPlayer;
-                if(NetworkServer.activeHost){
-                    currentPlayer = NetworkServer.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkServer.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
-                }else{
-                    currentPlayer = NetworkClient.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkClient.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
-                }
-                //TargetObject currentPlayer = M_TurnManager.instance.spawnedPlayerSyncList.Find((targetObject) => targetObject.player == gamePlayer);
+                TargetObject currentPlayer = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
 
                 // 이동 위치는 현재 플레이어 타겟오브젝트 위치
                 Vector3 targetPosition = currentPlayer.transform.position;
-                StartMoveToTarget(cardOnHandChoosed.GetComponent<CardOnHandChoosed>(), targetPosition);
-                callback();
+                StartMoveToTarget(cardOnHandChoosed.GetComponent<CardOnHandChoosed>(), targetPosition, () => {
+                    callback();
+                });
             }
         }
     }
@@ -207,7 +211,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
 
     // 포물선을 그리며 타겟 위치로 이동
-    private void StartMoveToTarget(CardOnHandChoosed cardOnHandChoosed, Vector3 targetPosition)
+    private void StartMoveToTarget(CardOnHandChoosed cardOnHandChoosed, Vector3 targetPosition, System.Action callback)
     {
         float height = 2f;
         float duration = 1f;
@@ -224,7 +228,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 cardOnHandChoosed.isTweening = false;
                 M_CardManager.instance.AddCardDataToCurrentPlayerDeck(cardOnHandChoosed.card);
                 Destroy(cardOnHandChoosed.gameObject);
-                NetworkClient.connection.identity.GetComponent<GamePlayer>().isRewardDone = true;
+                callback();
             });
     }
 

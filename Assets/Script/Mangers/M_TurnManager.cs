@@ -12,6 +12,9 @@ public class M_TurnManager : NetworkBehaviour
 {
     public static M_TurnManager Instance = null;
 
+    [SyncVar]
+    public NPC_Mercurius npc_Mercurius;
+
     // 서버에서 관리할 player 리스트
     public List<GamePlayer> players;
 
@@ -108,6 +111,16 @@ public class M_TurnManager : NetworkBehaviour
     public List<TargetObject> GetCloneMonsterObjects()
     {
         return cloneMonsterList;
+    }
+
+    // 현재 플레이어의 TargetObject를 반환
+    public TargetObject GetCurrentPlayerTargetObject(GamePlayer gamePlayer)
+    {
+        if(NetworkServer.activeHost){
+            return NetworkServer.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkServer.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
+        }else{
+            return NetworkClient.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkClient.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
+        }
     }
 
     // 현재 페이즈가 PLAYER_ACTIVE 상태인지 체크
@@ -723,6 +736,8 @@ public class M_TurnManager : NetworkBehaviour
         monster.GetComponent<NPC_Mercurius>().isOrigin = true;
         NetworkServer.Spawn(monster.gameObject);
         NetworkServer.Spawn(cloneMonster.gameObject);
+
+        npc_Mercurius = monster.GetComponent<NPC_Mercurius>();
 
         monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
         cloneMonster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
