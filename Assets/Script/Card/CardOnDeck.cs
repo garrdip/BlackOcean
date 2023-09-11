@@ -180,8 +180,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         isSoldOut = true;
         cardSoldOut.SetActive(true);
         // 캔버스 그룹 요소들 상호작용 이벤트 비활성화 
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
+        //canvasGroup.interactable = false;
+        //canvasGroup.blocksRaycasts = false;
         // cardSoldOut 오브젝트도 canvasGroup에 포함되기 때문에 카드요소들 하나씩 직접 알파값 변경
         cardBackground.color = new Color(cardBackground.color.r, cardBackground.color.g, cardBackground.color.b, 0.5f);
         cardIllust.color = new Color(cardIllust.color.r, cardIllust.color.g, cardIllust.color.b, 0.5f);
@@ -209,7 +209,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 TargetObject currentPlayer = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
 
                 // 이동 위치는 현재 플레이어 타겟오브젝트 위치
-                Vector3 targetPosition = currentPlayer.transform.position;
+                Vector3 targetPosition = currentPlayer.avatar.GetComponent<PolygonCollider2D>().bounds.center;
                 StartMoveToTarget(cardOnHandChoosed.GetComponent<CardOnHandChoosed>(), targetPosition, () => {
                     callback();
                 });
