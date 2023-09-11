@@ -374,6 +374,8 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     public void MoveIronDemon(TargetObject target ,TargetObject tar)
     {
+        tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "default";
+        tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = -1;
         int transformOffset = CalcOffset(tar); 
         tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
         int offset = (NetworkClient.connection.identity.GetComponent<GamePlayer>() == tar.player) ? 0 : 2;
@@ -381,7 +383,6 @@ public class M_TurnManager : NetworkBehaviour
         else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
         tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
     }
-
     int CalcOffset(TargetObject tar)
     {
         int retVal = 0;
@@ -409,6 +410,13 @@ public class M_TurnManager : NetworkBehaviour
     {
         bool isLoop = anim == "Idle" ? true : false;
         tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
+    }
+
+    [ClientRpc]
+    public void ShowIronDemon(TargetObject tar)
+    {
+        tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "IronDemon";
+        tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
     }
 
     [Server]

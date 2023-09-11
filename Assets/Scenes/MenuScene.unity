@@ -10650,8 +10650,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards: []
   isCardOperatingTEST: 0
-  TEST0: {fileID: 0}
-  TEST1: {fileID: 0}
 --- !u!1 &1732529131
 GameObject:
   m_ObjectHideFlags: 0
