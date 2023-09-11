@@ -463,7 +463,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
             {
                 cardOnHand.isUsed = false;
                 M_CardManager.instance.ResetCardAllState(cardOnHand,false);
-                cardOnHand.GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
                 GetComponent<GamePlayer>().destroyCards.Remove(cardOnHand);
                 break;
             }

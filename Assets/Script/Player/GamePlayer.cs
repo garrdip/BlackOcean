@@ -48,8 +48,6 @@ public class GamePlayer : NetworkBehaviour
 
     public readonly SyncList<CardOnHand> destroyCards = new SyncList<CardOnHand>();
 
-    public CardOnHand TEST;
-
     [ClientRpc]
     public void RemoveDestroyCardList(CardOnHand cardOnHand)
     {
