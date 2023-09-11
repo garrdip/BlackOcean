@@ -409,7 +409,12 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayer currentPlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
-            List<CardBase> currentCharacterCards = CardData.instance.cards.FindAll((cardBase) => cardBase.character == currentPlayer.character && !cardBase.cardNumber.Contains("_E"));
+            List<CardBase> currentCharacterCards = CardData.instance.cards.FindAll((cardBase) => 
+                cardBase.character == currentPlayer.character && // 현재 선택한 캐릭터 카드
+                !cardBase.cardNumber.Contains("_E") &&
+                !cardBase.cardNumber.Equals("HA") && // 철귀 이동 카드
+                !cardBase.cardCharacteristics.Exists((c) => c == CardCharacteristic.GOHENG) // 고행카드
+            );
             foreach(CardBase cardBase in currentCharacterCards){
                 Card card = new Card(cardBase);
                 cards.Add(card);
@@ -425,9 +430,7 @@ public class M_CardManager : NetworkBehaviour
         {
             int randomIndex = UnityEngine.Random.Range(0, cards.Count); // 랜덤한 인덱스 선택
             Card extractedCard = cards[randomIndex]; // 랜덤한 카드 추출
-            if(!extractedCard.baseCard.cardCharacteristics.Exists((c) => c == CardCharacteristic.GOHENG) || !extractedCard.baseCard.cardNumber.Equals("HA")){ // 고행 카드, 철귀 이동 카드 제외
-                extractedCards.Add(extractedCard); // 추출한 카드를 추출된 카드 리스트에 추가
-            }
+            extractedCards.Add(extractedCard); // 추출한 카드를 추출된 카드 리스트에 추가
         }
         return extractedCards;
     }
