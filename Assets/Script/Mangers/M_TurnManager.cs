@@ -410,9 +410,16 @@ public class M_TurnManager : NetworkBehaviour
     {
         bool isLoop = anim == "Idle" ? true : false;
         tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
+
+        StartCoroutine(DelayToShowIronDemon(tar));
     }
 
-    [ClientRpc]
+    IEnumerator DelayToShowIronDemon(TargetObject tar)
+    {
+        yield return new WaitForSeconds(0.03f);
+        ShowIronDemon(tar);
+    }
+
     public void ShowIronDemon(TargetObject tar)
     {
         tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "IronDemon";

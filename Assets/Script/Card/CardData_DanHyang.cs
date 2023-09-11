@@ -31,9 +31,7 @@ public partial class CardData : SingletonD<CardData>
                 yield return new WaitForSeconds(0.34f); // 철귀 완전히 사라지는 시간
                 M_TurnManager.instance.MoveIronDemon(tar[1],tar[0]); // 철귀 적으로 이동
                 M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 철귀 나타나기 시작
-                yield return new WaitForSeconds(0.033f); // 적당히 나타날때까지 기다림
-                M_TurnManager.instance.ShowIronDemon(tar[0]); // 철귀 나타나기 시작
-                yield return new WaitForSeconds(0.3f); // 적당히 나타날때까지 기다림
+                yield return new WaitForSeconds(0.333f); // 적당히 나타날때까지 기다림
             }
             MoveIronDemonLocation(tar[0],tar[1]); // 철귀 적으로 이동
             M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
