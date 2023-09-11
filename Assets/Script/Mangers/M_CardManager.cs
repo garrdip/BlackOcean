@@ -265,11 +265,11 @@ public class M_CardManager : NetworkBehaviour
     {
         // 카드 제거 팝업 위치로 카드 위치, 크기, 회전 변경
         removeCardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-        removeCardOnHand.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
+        removeCardOnHand.transform.localScale = new Vector3(1f, 1f, 1f);
 
         Vector3 centerPosition = PopUpUIManager.instance.layoutCardOnHandForRemove.GetComponent<RectTransform>().position;
-        Vector3 left = centerPosition - new Vector3(2f, 0f, 0f);
-        Vector3 right = centerPosition + new Vector3(2f, 0f, 0f);
+        Vector3 left = centerPosition - new Vector3(3.5f, 0f, 0f);
+        Vector3 right = centerPosition + new Vector3(3.5f, 0f, 0f);
         Vector3 targetPosition = (index == 0) ? left : right;
         removeCardOnHand.transform.DOMove(targetPosition, 0.2f).SetEase(Ease.OutSine);
     }
@@ -425,7 +425,7 @@ public class M_CardManager : NetworkBehaviour
         {
             int randomIndex = UnityEngine.Random.Range(0, cards.Count); // 랜덤한 인덱스 선택
             Card extractedCard = cards[randomIndex]; // 랜덤한 카드 추출
-            if(!extractedCard.baseCard.cardCharacteristics.Exists((c) => c == CardCharacteristic.GOHENG)){ // 고행 카드 제외
+            if(!extractedCard.baseCard.cardCharacteristics.Exists((c) => c == CardCharacteristic.GOHENG) || !extractedCard.baseCard.cardNumber.Equals("HA")){ // 고행 카드, 철귀 이동 카드 제외
                 extractedCards.Add(extractedCard); // 추출한 카드를 추출된 카드 리스트에 추가
             }
         }
