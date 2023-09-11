@@ -390,11 +390,11 @@ public class M_TurnManager : NetworkBehaviour
         else
         {
             int addval = 0;
-            foreach(TargetObject target in spawnedPlayerList)
+            foreach(GamePlayer user in playerOrder)
             {
-                if(target == tar)
+                if(tar.player == user)
                     break;
-                if(target.player == (NetworkClient.connection.identity.GetComponent<GamePlayer>()))
+                if(tar.player == (NetworkClient.connection.identity.GetComponent<GamePlayer>()))
                     continue;
                 else
                     addval++;
