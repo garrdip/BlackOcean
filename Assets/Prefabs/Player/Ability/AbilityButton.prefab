@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3091663467569850544}
   - component: {fileID: 3091663467569850546}
   - component: {fileID: 3091663467569850547}
-  - component: {fileID: 2507413584255722443}
+  - component: {fileID: 1055808014424652008}
   m_Layer: 0
   m_Name: AbilityButton
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 3091663467569850510}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -119,16 +119,19 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
---- !u!65 &2507413584255722443
-BoxCollider:
+--- !u!58 &1055808014424652008
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3091663467569850510}
+  m_Enabled: 1
+  m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Size: {x: 0.64, y: 0.64, z: 0.2}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Radius: 1.9
