@@ -96,7 +96,6 @@ public class CardCtrlArrow : NetworkBehaviour
                     {
                         TargetObject targetObject = currentTarget.transform.parent.GetComponent<TargetObject>();
                         //카드 사용 유무 판단 위치
-                        int totalCost = 0;
                         if(targetObject == null)return;
                         if(arrowOwnedCardOnHand.card.baseCard.isTargetable)
                         {
@@ -117,19 +116,8 @@ public class CardCtrlArrow : NetworkBehaviour
                                     break;
                             }
                         }
-                        if(arrowOwnedCardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
-                        {
-                            if(arrowOwnedCardOnHand.card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
-                            {
-                                totalCost = ( arrowOwnedCardOnHand.card.baseCard.cost + arrowOwnedCardOnHand.card.costAddition - 1 );
-                                if(totalCost < 0)totalCost = 0;
-                            }
-                            else
-                                totalCost = ( arrowOwnedCardOnHand.card.baseCard.cost + arrowOwnedCardOnHand.card.costAddition + 1 );
-                        }
-                        else
-                            totalCost = arrowOwnedCardOnHand.card.baseCard.cost + arrowOwnedCardOnHand.card.costAddition ;
-                        if(totalCost > NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().currentIchi) // 카드 코스트 계산 하는곳
+                        gamePlayerDeck =  NetworkClient.connection.identity.GetComponent<GamePlayerDeck>();
+                        if(gamePlayerDeck.GetTotalCostOfCardOnHand(arrowOwnedCardOnHand) > gamePlayerDeck.currentIchi) // 카드 코스트 계산 하는곳
                             return;
                         //
                         arrowOwnedCardOnHand.isUsed = true;
@@ -141,6 +129,7 @@ public class CardCtrlArrow : NetworkBehaviour
             }
         }
     }
+
 
     [Command]
     void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, CardOnHand cardOnHand, TargetObject tar, NetworkIdentity conn)

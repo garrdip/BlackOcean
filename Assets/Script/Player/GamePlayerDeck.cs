@@ -152,7 +152,24 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 break;
         }
     }
-
+    
+    public int GetTotalCostOfCardOnHand(CardOnHand cardOnHand)
+    {
+        int totalCost;
+        if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
+        {
+            if(cardOnHand.card.baseCard.cardType == previousCardType)
+            {
+                totalCost = ( cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition - 1 );
+                if(totalCost < 0)totalCost = 0;
+            }
+            else
+                totalCost = ( cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition + 1 );
+        }
+        else
+            totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition;
+        return totalCost;
+    }
 
     [Server]
     IEnumerator EnQueueCardTargetPair()
@@ -168,7 +185,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         CardOnHand cardOnHand;
         TargetObject targetObject;
         NetworkIdentity conn;
-        int totalCost;
 
         while(true)
         {
@@ -177,20 +193,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
             if(serverCardPredictQueue.Count == 0) continue; //카드큐가 비어있을경우 스킵 
             
             ( cardOnHand,targetObject,conn) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
-            if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
-            {
-                if(cardOnHand.card.baseCard.cardType == previousCardType)
-                {
-                    totalCost = ( cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition - 1 );
-                    if(totalCost < 0)totalCost = 0;
-                }
-                else
-                {
-                     totalCost = ( cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition + 1 );
-                }
-            }
-            else
-                totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition ;
+
+            int totalCost = GetTotalCostOfCardOnHand(cardOnHand);
+            
             if(totalCost > currentIchi) // 카드 코스트 계산 하는곳
             {
                 ReturnToCardOnHand(cardOnHand,conn);

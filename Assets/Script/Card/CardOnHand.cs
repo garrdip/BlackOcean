@@ -305,15 +305,24 @@ public class CardOnHand : NetworkBehaviour
     // 타겟팅 카드일 경우, 드래그중 위치가 화면 하단부 3분의1을 넘어가면 화살표 생성 후 카드의 위치를 중앙으로 이동
     private void MovePositionArrowSpawnedCardOnHand(CardOnHand cardOnHand)
     {
-        if(cardOnHand.card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 3)){
-            cardOnHand.isMoving = true;
-            cardOnHand.isDrag = false;
-            cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = M_CardManager.instance.maxSortOrder;
-            currentPlayerDeck.cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
-            currentPlayerDeck.CmdSetArrowOwnCardOnHand(cardOnHand);
-            cardOnHand.transform
-                .DOMove(new Vector3(0f, arrowSpawnedCardPosition.y, arrowSpawnedCardPosition.z), 0.4f)
-                .SetEase(Ease.OutSine);
+        if( Input.mousePosition.y > Screen.height / 3 ){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.GetTotalCostOfCardOnHand(cardOnHand) > NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().currentIchi) 
+            {
+                cardOnHand.isMoving = false;
+                cardOnHand.isDrag = false;
+            }
+            else if(cardOnHand.card.baseCard.isTargetable)
+            {
+                cardOnHand.isMoving = true;
+                cardOnHand.isDrag = false;
+                cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = M_CardManager.instance.maxSortOrder;
+                currentPlayerDeck.cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
+                currentPlayerDeck.CmdSetArrowOwnCardOnHand(cardOnHand);
+                cardOnHand.transform
+                    .DOMove(new Vector3(0f, arrowSpawnedCardPosition.y, arrowSpawnedCardPosition.z), 0.4f)
+                    .SetEase(Ease.OutSine);
+            }
         }
     }
 
