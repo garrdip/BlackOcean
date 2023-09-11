@@ -144,10 +144,13 @@ public class MapUI : InstanceD<MapUI>
         {
             if(!user.isInitializeDone)return;
             // Avatar
-            byte[] avatarImage = new byte[user.avatarWidth * user.avatarHeight * 4];
-            for(int i = 0 ;i < user.avatarImage.Count ; i++)
-                avatarImage[i] = user.avatarImage[i];
-            playerProfiles[user.selectOrder].transform.GetChild(6).GetComponent<RawImage>().texture = M_SteamManager.instance.GetSteamImageAsTexture(avatarImage,user.avatarWidth,user.avatarHeight);
+            if(user.isAvatarUploadDone)
+            {
+                byte[] avatarImage = new byte[user.avatarWidth * user.avatarHeight * 4];
+                for(int i = 0 ;i < user.avatarImage.Count ; i++)
+                    avatarImage[i] = user.avatarImage[i];
+                playerProfiles[user.selectOrder].transform.GetChild(6).GetComponent<RawImage>().texture = M_SteamManager.instance.GetSteamImageAsTexture(avatarImage,user.avatarWidth,user.avatarHeight);
+            }
             playerProfiles[user.selectOrder].transform.GetChild(6).GetComponent<RawImage>().color = new Color(1,1,1,1);
             // Show ID
             playerProfiles[user.selectOrder].transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = SteamFriends.GetFriendPersonaName((CSteamID)user.steamID);

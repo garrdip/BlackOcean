@@ -43,6 +43,9 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public int avatarWidth,avatarHeight;
 
+    [SyncVar (hook = nameof(OnChangedAvatar))]
+    public bool isAvatarUploadDone = false;
+
     public readonly SyncList<CardOnHand> destroyCards = new SyncList<CardOnHand>();
 
     public CardOnHand TEST;
@@ -101,9 +104,22 @@ public class GamePlayer : NetworkBehaviour
         }
         if(isLocalPlayer)
         {
-            byte[] uploadableImage;
+           
             M_MapManager.instance.GenerateHexgonGrid(40);
-                    int imageId = SteamFriends.GetSmallFriendAvatar((CSteamID)steamID);
+            HP = 100;
+            MaxHP = 100;
+            isInitializeDone = true;
+            StartCoroutine(nameof(WaitPlayerList));
+        }
+    }
+
+    [ClientRpc]
+    void UploadAvatar()
+    {
+        if(isLocalPlayer)
+        {
+            byte[] uploadableImage;
+            int imageId = SteamFriends.GetSmallFriendAvatar((CSteamID)steamID);
             uploadableImage = M_SteamManager.instance.GetSteamImageAsByteArray(imageId,out bool isValid, out uint width, out uint height);
             if(isValid)
             {
@@ -112,10 +128,7 @@ public class GamePlayer : NetworkBehaviour
                 for(int i = 0 ;i < uploadableImage.Length ; i ++)
                     avatarImage.Add(uploadableImage[i]);
             }
-            HP = 100;
-            MaxHP = 100;
-            isInitializeDone = true;
-            StartCoroutine(nameof(WaitPlayerList));
+            isAvatarUploadDone = true;
         }
     }
 
@@ -146,7 +159,12 @@ public class GamePlayer : NetworkBehaviour
         M_TurnManager.instance.SetOrderButtonListener();
         // 플레이어 로딩이 끝나면 턴매니저로 플레이어 리스트를 전달함
         if(isServer)
+        {
             M_TurnManager.instance.InitiateGamePlayerList();
+            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+            foreach(GamePlayer user in users)
+                user.UploadAvatar();
+        }
 
         //UI Update
         MapUI.instance.UpdateProfile();
@@ -261,4 +279,13 @@ public class GamePlayer : NetworkBehaviour
             selectOrder = num;
         }
     }
+
+    void OnChangedAvatar(bool oldVal, bool newVal)
+    {
+        if(newVal == true)
+        {
+            MapUI.instance.UpdateProfile();
+        }
+    }
+
 }
