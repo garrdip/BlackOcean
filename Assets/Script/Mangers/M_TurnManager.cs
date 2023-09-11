@@ -423,7 +423,10 @@ public class M_TurnManager : NetworkBehaviour
     public void ShowIronDemon(TargetObject tar)
     {
         tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "IronDemon";
-        tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
+        if(tar.player == NetworkClient.connection.identity.GetComponent<GamePlayer>())
+            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = 1;
+        else
+            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
     }
 
     [Server]

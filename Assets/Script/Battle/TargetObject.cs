@@ -188,6 +188,7 @@ public class TargetObject : NetworkBehaviour
                         ironDemon = Instantiate(characters.Find(x => x.name == "IronDemonTransparent"),transform.position,Quaternion.identity,transform);
                     ironDemonLocation = this;
                     ironDemon.GetComponent<SkeletonAnimation>().timeScale = Random.Range(0.9f,1.1f);
+                    
                 break;
             }
             textTargetName.text = SteamFriends.GetFriendPersonaName((CSteamID)newVal.steamID);
