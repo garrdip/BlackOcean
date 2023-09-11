@@ -51,13 +51,11 @@ public class NPC_Mercurius : SpawnedMonster
             cardShopSlot.transform.localScale = new Vector3(1, 1, 1);
 
             // 상점 카드
-            GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
-            cardOnDeck.transform.SetParent(cardShopSlot.transform);
-            cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
-            cardOnDeck.GetComponent<CardOnDeck>().card = card;
-            if(cardOnDeck.GetComponent<CardOnDeck>().isSoldOut){
-                cardOnDeck.GetComponent<CardOnDeck>().canvasGroup.alpha = 0.5f;
-            }
+            GameObject cardOnDeckObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
+            cardOnDeckObject.transform.SetParent(cardShopSlot.transform);
+            cardOnDeckObject.transform.localScale = new Vector3(1, 1, 1);
+            CardOnDeck cardOnDeck = cardOnDeckObject.GetComponent<CardOnDeck>();
+            cardOnDeck.card = card;
 
             // 상점 카드 가격 아이콘 + 텍스트
             GameObject cardShopPrice = Instantiate(PopUpUIManager.instance.CardShopPrice);
