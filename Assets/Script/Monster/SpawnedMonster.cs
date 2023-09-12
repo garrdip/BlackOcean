@@ -22,7 +22,7 @@ public class SpawnedMonster : NetworkBehaviour
 
     public int[] aggro = new int[3];
 
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChanedNextAction))]
     public MonsterAction nextAction;
 
     public MonsterActionList currentBehavior;
@@ -96,6 +96,11 @@ public class SpawnedMonster : NetworkBehaviour
                 }
             }
         }
+    }
+
+    public virtual void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
+    {
+
     }
 
     [Server]

@@ -78,4 +78,9 @@ public class NPC_Mercurius : SpawnedMonster
             }
         }
     }
+
+    public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
+    {
+        
+    }
 }

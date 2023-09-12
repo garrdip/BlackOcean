@@ -57,4 +57,16 @@ public class Soldier_Axe : SpawnedMonster
     {
         parent.anim.state.SetAnimation(1,"1Idle",true);
     }
+
+    public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
+    {
+        switch(nextAction.actionName){
+            case "두번찍기" :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKX2,true,newVal.actionTarget);
+                break;
+            case "힘증가" :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,newVal.actionTarget);
+                break;
+        }
+    }
 }

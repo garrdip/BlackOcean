@@ -13,8 +13,9 @@ public class TargetObject : NetworkBehaviour
     public GameObject playerNamePlate;
     public GameObject monsterNamePlate;
     public NamePlate selectedNamePlate;
-
     public TextMeshProUGUI targetObjectName;
+
+    public NextActionIndicator nextActionIndicator;
 
     [Header("타겟 오브젝트 타입")]
     [SyncVar]

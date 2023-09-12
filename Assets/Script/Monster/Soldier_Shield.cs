@@ -55,4 +55,16 @@ public class Soldier_Shield : SpawnedMonster
         parent.anim.state.SetAnimation(1,"2Idle",true);
     }
 
+    public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
+    {
+        switch(nextAction.actionName){
+            case "혼자방어" :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,newVal.actionTarget);
+                break;
+            case "팀방어" :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,true,ActionTarget.WHOLE);
+                break;
+        }
+    }
+
 }
