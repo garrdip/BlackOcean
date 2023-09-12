@@ -670,8 +670,8 @@ public class M_TurnManager : NetworkBehaviour
             GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[i],Quaternion.identity);
             NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().player = playerOrder[i];
-            avatar.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
             avatar.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
+            avatar.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
             avatar.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
             avatar.GetComponent<TargetObject>().sizeOfIronDemon = 4;
@@ -684,8 +684,8 @@ public class M_TurnManager : NetworkBehaviour
             NetworkServer.Spawn(clone);
             clone.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
             clone.GetComponent<TargetObject>().player = playerOrder[i];
-            clone.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
             clone.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
+            clone.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
             clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
             clone.GetComponent<TargetObject>().sizeOfIronDemon = 4;
             clone.GetComponent<TargetObject>().isCloneData = true;

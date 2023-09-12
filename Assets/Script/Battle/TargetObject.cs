@@ -10,27 +10,15 @@ using Spine.Unity;
 
 public class TargetObject : NetworkBehaviour
 {
-    [Header("HP 슬라이더")]
-    public Slider hpbar;
+    public GameObject playerNamePlate;
+    public GameObject monsterNamePlate;
+    public NamePlate selectedNamePlate;
 
-    [Header("타겟 이름")]
-    public TextMeshProUGUI textTargetName;
-
-    [Header("삼각형 화살표")]
-    public GameObject currentPlayerMark;
-
-    [Header("Cost 아이콘")]
-    public GameObject currentPlayerTargetCosts;
-
-    [Header("바닥 오오라")]
-    public GameObject currentPlayerGroundIndicator;
+    public TextMeshProUGUI targetObjectName;
 
     [Header("타겟 오브젝트 타입")]
     [SyncVar]
     public ObjectType objectType;
-
-    [Header("쉴드 표시")]
-    public TextMeshProUGUI shieldText;
 
     // Player 의 경우 
     [SyncVar (hook = nameof(InitTargetObjectPlayer))]
@@ -66,8 +54,6 @@ public class TargetObject : NetworkBehaviour
 
     [SyncVar]
     public int sizeOfIronDemon;
-
-
 
     public SkeletonAnimation anim;
 
@@ -106,7 +92,9 @@ public class TargetObject : NetworkBehaviour
                 anim = avatar.GetComponent<SkeletonAnimation>();
             }
             else
+            {
                 anim = monster.GetComponent<SkeletonAnimation>();
+            }
             if(anim != null){
                 anim.state.Event += OnAnimationEvent;
                 anim.state.Start += OnAnimationStart;
@@ -119,7 +107,14 @@ public class TargetObject : NetworkBehaviour
                     }
                 break;
             }
+
         }
+    }
+
+    public void InitMonsterNamePlate()
+    {
+        selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
+        playerNamePlate.SetActive(false);
     }
 
     IEnumerator HongDanHyangEyeFlicker()
@@ -191,17 +186,9 @@ public class TargetObject : NetworkBehaviour
                     
                 break;
             }
-            textTargetName.text = SteamFriends.GetFriendPersonaName((CSteamID)newVal.steamID);
-            hpbar.maxValue = newVal.MaxHP;
-            hpbar.value = newVal.HP;
-            if(newVal.isLocalPlayer){
-                currentPlayerMark.SetActive(true);
-                currentPlayerTargetCosts.SetActive(true);
-                currentPlayerGroundIndicator.SetActive(true);
-                float hpbarWidth = hpbar.GetComponent<RectTransform>().rect.width;
-                float hpbarHeight = hpbar.GetComponent<RectTransform>().rect.height;
-                hpbar.GetComponent<RectTransform>().sizeDelta = new Vector2(hpbarWidth + 300f, hpbarHeight + 100f);
-            }
+            selectedNamePlate = playerNamePlate.GetComponent<NamePlate>();
+            targetObjectName.text = player.steamPersonaName;
+            monsterNamePlate.SetActive(false);
         }
     }
 
@@ -304,13 +291,13 @@ public class TargetObject : NetworkBehaviour
             {
                 player.HP = newVal;
             }
-            hpbar.value = newVal; // HP 슬라이더값 업데이트
+            selectedNamePlate.SetHPValue(playerHP,playerMaxHP);
         }
     }
 
     void OnChangedDefense(int oldVal, int newVal)
     {
-        shieldText.text = newVal.ToString();
+       selectedNamePlate.SetShieldValue(newVal,oldVal == 0,objectType != ObjectType.PLAYER);
     }
 
     [ClientRpc]

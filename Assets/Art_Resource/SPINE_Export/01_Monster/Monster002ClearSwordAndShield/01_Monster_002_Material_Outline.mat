@@ -32,7 +32,7 @@ Material:
     - _OutlineOpaqueAlpha: 1
     - _OutlineReferenceTexWidth: 1024
     - _OutlineSmoothness: 1
-    - _OutlineWidth: 5.96
+    - _OutlineWidth: 3.14
     - _StencilComp: 8
     - _StencilRef: 1
     - _StraightAlphaInput: 0

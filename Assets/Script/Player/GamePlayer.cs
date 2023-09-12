@@ -32,6 +32,9 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public ulong steamID;
 
+    [SyncVar]
+    public string steamPersonaName;
+
     [SyncVar (hook = nameof(OnEndTurnStateChanged))]
     public bool endTurnActive = false;
 

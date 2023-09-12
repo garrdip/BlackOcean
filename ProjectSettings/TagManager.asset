@@ -53,6 +53,9 @@ TagManager:
   - name: Player
     uniqueID: 744391573
     locked: 0
+  - name: InGameUI
+    uniqueID: 2708073443
+    locked: 0
   - name: CardOnHand
     uniqueID: 2834536435
     locked: 0

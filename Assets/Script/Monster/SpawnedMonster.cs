@@ -174,18 +174,15 @@ public class SpawnedMonster : NetworkBehaviour
             return;
         }
         if(transform.parent != null){
-            transform.parent.GetComponent<TargetObject>().hpbar.value = newHpValue;
+            transform.parent.GetComponent<TargetObject>().selectedNamePlate.SetHPValue(newHpValue,MAXHP);
         }
     }
 
     public void OnChangeParent(TargetObject oldPrent, TargetObject newParent)
     {
         transform.SetParent(newParent.transform);
-        Slider hpbar = newParent.transform.GetChild(0).GetChild(3).GetComponent<Slider>();
-        TextMeshProUGUI textMonsterName = newParent.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();
-        textMonsterName.text = monsterName;
-        hpbar.maxValue = MAXHP;;
-        hpbar.value = MAXHP;
+        newParent.InitMonsterNamePlate();
+        newParent.targetObjectName.text = monsterName;
     }
     
     //-------------------------------------- Battle Method ----------------------------------//

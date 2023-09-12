@@ -49,6 +49,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
     {
         gamePlayer.GetComponent<GamePlayer>().character = roomPlayer.GetComponent<RoomPlayer>().character;
         gamePlayer.GetComponent<GamePlayer>().selectOrder = (int)roomPlayer.GetComponent<RoomPlayer>().order; //int => PlayOder Type으로 변경 필요
+        gamePlayer.GetComponent<GamePlayer>().steamPersonaName = roomPlayer.GetComponent<RoomPlayer>().steamPersonaName; //int => PlayOder Type으로 변경 필요
         gamePlayer.GetComponent<GamePlayer>().steamID = roomPlayer.GetComponent<RoomPlayer>().steamID; //int => PlayOder Type으로 변경 필요
         return true;
     }
