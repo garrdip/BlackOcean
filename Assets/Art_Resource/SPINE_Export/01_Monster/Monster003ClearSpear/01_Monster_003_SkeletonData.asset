@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1b3b4b945939a54ea0b23d3396115fb, type: 3}
-  m_Name: 01_Monster_001_SkeletonData
+  m_Name: 01_Monster_003_SkeletonData
   m_EditorClassIdentifier: 
   atlasAssets:
-  - {fileID: 11400000, guid: 6d702b7c2e8ce6f418051649b4e01d6f, type: 2}
+  - {fileID: 11400000, guid: a47c9cae87d392245b6eb2e0969913b9, type: 2}
   scale: 0.01
-  skeletonJSON: {fileID: 4900000, guid: b2381df62368c0b4d82172e7f6441fba, type: 3}
+  skeletonJSON: {fileID: 4900000, guid: 7e0d9d3fc2cd77449aefb7b2f250603b, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
     requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials:
-    - pageName: 01_Monster_001.png
-      material: {fileID: 2100000, guid: d2b97d2a4f2109945b0de20133735e76, type: 2}
+    - pageName: 01_Monster_003.png
+      material: {fileID: 2100000, guid: 9a2cd3b938cd47f4997e1d4f55a1815a, type: 2}
     multiplyMaterials: []
     screenMaterials:
-    - pageName: 01_Monster_001.png
-      material: {fileID: 2100000, guid: 4254cf1825bf98a4ea835811a4c0a593, type: 2}
+    - pageName: 01_Monster_003.png
+      material: {fileID: 2100000, guid: 49c2eabf370e16847b0b7b7705d73936, type: 2}
   skeletonDataModifiers: []
   fromAnimation: []
   toAnimation: []

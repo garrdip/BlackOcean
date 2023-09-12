@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 531fb31c2f268ae48a4150ea116b1c32, type: 2}
+  - {fileID: 2100000, guid: 428266b5d71f95947adf6f21299b0906, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -84,7 +84,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 150335661
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2526679034711088660
@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: ea53ba1d480d0124196bce7d78fd191e, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: efad9f980141e1243a7c9115f5f015a3, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -232,5 +232,5 @@ MonoBehaviour:
   parent: {fileID: 0}
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
-  defaultMaterial: {fileID: 2100000, guid: 531fb31c2f268ae48a4150ea116b1c32, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 61d4b65ce9ee39f40b1409708690f4b1, type: 2}
+  defaultMaterial: {fileID: 2100000, guid: 428266b5d71f95947adf6f21299b0906, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 3dff8eba5fe9dad43bfa4cf5921cfed9, type: 2}
