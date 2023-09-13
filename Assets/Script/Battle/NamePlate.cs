@@ -33,9 +33,8 @@ public class NamePlate : MonoBehaviour
                 shield.SetActive(true);
                 Sequence sequence;
                 sequence = DOTween.Sequence()
-                    .Append(shield.GetComponent<SpriteRenderer>().DOColor(new Color(1,1,1,1),0.5f))
-                    .Append(shield.transform.DOLocalMove((isEnemy)?new Vector3(-0.9f,0.075f) : new Vector3(1,0.075f),0.5f));
-                // 생성 애니메이션
+                    .Join(shield.GetComponent<SpriteRenderer>().DOColor(new Color(1,1,1,1),0.5f))
+                    .Join(shield.transform.DOLocalMove((isEnemy)?new Vector3(-0.9f,0.075f) : new Vector3(1,0.075f),0.5f));
             }
             else
             {

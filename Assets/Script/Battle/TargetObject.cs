@@ -15,6 +15,7 @@ public class TargetObject : NetworkBehaviour
     public NamePlate selectedNamePlate;
     public TextMeshProUGUI targetObjectName;
 
+    public BuffIndicator buffIndicator;
     public NextActionIndicator nextActionIndicator;
 
     [Header("타겟 오브젝트 타입")]
@@ -279,9 +280,32 @@ public class TargetObject : NetworkBehaviour
     public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
     {
         if(newBuff != null)
+        {
             if((newBuff.type == BuffType.ICHI_ATTACK || newBuff.type == BuffType.ICHI_DEFENSE) && objectType == ObjectType.PLAYER)
                 foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
                     cardOnHand.CardInfoChangedEvent.Invoke();
+            switch (op)
+            {
+                case SyncList<Buff>.Operation.OP_ADD:
+                    buffIndicator.SetBuff(newBuff);
+                    Debug.Log("BUFF ADD");
+                    break;
+                case SyncList<Buff>.Operation.OP_INSERT:
+                    buffIndicator.SetBuff(newBuff);
+                    Debug.Log("BUFF Insert");
+                    break;
+                case SyncList<Buff>.Operation.OP_REMOVEAT:
+
+                    break;
+                case SyncList<Buff>.Operation.OP_SET:
+                    buffIndicator.SetBuff(newBuff);
+                    Debug.Log("BUFF set");
+                    break;
+                case SyncList<Buff>.Operation.OP_CLEAR:
+
+                    break;
+            }
+        }
     }
 
     void OnChangedPlayerHP(int oldVal, int newVal)
