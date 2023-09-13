@@ -179,7 +179,7 @@ public class SpawnedMonster : NetworkBehaviour
             return;
         }
         if(transform.parent != null){
-            transform.parent.GetComponent<TargetObject>().selectedNamePlate.SetHPValue(newHpValue,MAXHP);
+            transform.parent.GetComponent<TargetObject>().selectedNamePlate.SetHPValue(newHpValue,MAXHP,(int)transform.parent.position.x);
         }
     }
 
