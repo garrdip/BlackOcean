@@ -2,18 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectD;
+using TMPro;
 
 public class NextActionIndicator : MonoBehaviour
 {
     public List<Sprite> actionIcons;
     public GameObject actionIcon;
     public GameObject actionTarget;
+    public TextMeshProUGUI actionValue;
 
-    public void SetNextTargetAction(ActionType type, bool isTargetable, ActionTarget tar)
+    public void SetNextTargetAction(ActionType type, bool isTargetable, ActionTarget tar, string value)
     {
         //Action Type
         actionIcon.SetActive(true);
         actionIcon.GetComponent<SpriteRenderer>().sprite = actionIcons[(int)type];
+        actionValue.text = value.ToString();
         if(isTargetable)
         {
             actionTarget.SetActive(true);
@@ -23,6 +26,5 @@ public class NextActionIndicator : MonoBehaviour
         }
         else
             actionTarget.SetActive(false);
-
     }
 }

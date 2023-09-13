@@ -15,7 +15,7 @@ public class TargetObject : NetworkBehaviour
     public NamePlate selectedNamePlate;
     public TextMeshProUGUI targetObjectName;
 
-    public BuffIndicator buffIndicator;
+    public BuffIndicatorController buffIndicator;
     public NextActionIndicator nextActionIndicator;
 
     [Header("타겟 오브젝트 타입")]
@@ -54,7 +54,7 @@ public class TargetObject : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedIronDemonLocation))]
     public TargetObject ironDemonLocation;
 
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChangedIronDemonSize))]
     public int sizeOfIronDemon;
 
     public SkeletonAnimation anim;
@@ -79,6 +79,20 @@ public class TargetObject : NetworkBehaviour
     {
         buffs.Callback += OnChangedBuff;
         StartCoroutine(FindChildObjects());
+        StartCoroutine(InitNamePlate());
+    }
+
+    IEnumerator InitNamePlate()
+    {
+        while(true)
+        {
+            if(playerHP > 0 && playerMaxHP >0)
+            {
+                selectedNamePlate.SetHPValue(playerHP,playerMaxHP);
+                break;
+            }
+            yield return new WaitForSeconds(0.01f);
+        }
     }
 
     IEnumerator FindChildObjects()
@@ -116,6 +130,7 @@ public class TargetObject : NetworkBehaviour
     public void InitMonsterNamePlate()
     {
         selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
+        selectedNamePlate.SetHPValue(monster.HP,monster.MAXHP);
         playerNamePlate.SetActive(false);
     }
 
@@ -316,9 +331,11 @@ public class TargetObject : NetworkBehaviour
             {
                 player.HP = newVal;
             }
-            selectedNamePlate.SetHPValue(playerHP,playerMaxHP);
         }
+        if(playerMaxHP != 0)
+            selectedNamePlate.SetHPValue(playerHP,playerMaxHP);
     }
+
 
     void OnChangedDefense(int oldVal, int newVal)
     {
@@ -329,6 +346,12 @@ public class TargetObject : NetworkBehaviour
     public void SetIronDemonParent(Transform p)
     {
         ironDemon.transform.parent = p;
+    }
+
+    public void OnChangedIronDemonSize(int oldVal, int newVal)
+    {
+        Buff ironDemonBuff = new Buff(BuffType.IRONDEMON,newVal,false,false,false,this);
+        buffIndicator.SetBuff(ironDemonBuff);
     }
 
     // ---------------------------------------------- Spine Animation Event 처리 구간 ---------------------------------------------------//

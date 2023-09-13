@@ -59,10 +59,10 @@ public class Soldier_Shield : SpawnedMonster
     {
         switch(nextAction.actionName){
             case "혼자방어" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,newVal.actionTarget);
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,newVal.actionTarget,newVal.actionValue.ToString());
                 break;
             case "팀방어" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,true,ActionTarget.WHOLE);
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,true,ActionTarget.WHOLE,newVal.actionValue.ToString());
                 break;
         }
     }

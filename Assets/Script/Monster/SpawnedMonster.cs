@@ -186,8 +186,17 @@ public class SpawnedMonster : NetworkBehaviour
     public void OnChangeParent(TargetObject oldPrent, TargetObject newParent)
     {
         transform.SetParent(newParent.transform);
-        newParent.InitMonsterNamePlate();
         newParent.targetObjectName.text = monsterName;
+        Debug.Log(monsterData.name + " : " + monsterData.MAXHP);
+        parent.InitMonsterNamePlate();
+    }
+
+    IEnumerator InitMonsterNamePlate()
+    {
+        while(true)
+        {
+
+        }
     }
     
     //-------------------------------------- Battle Method ----------------------------------//

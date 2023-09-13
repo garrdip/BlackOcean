@@ -60,10 +60,10 @@ public class Soldier_Spear : SpawnedMonster
     {
         switch(nextAction.actionName){
             case "찌르기" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,newVal.actionTarget);
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,newVal.actionTarget,newVal.actionValue.ToString());
                 break;
             case "방어" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,newVal.actionTarget);
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,newVal.actionTarget,newVal.actionValue.ToString());
                 break;
         }
     }

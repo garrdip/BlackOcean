@@ -760,7 +760,7 @@ public class M_TurnManager : NetworkBehaviour
         monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
         cloneMonster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
 
-        var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(11,3,0),Quaternion.identity);
+        var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(11,-3,0),Quaternion.identity);
         var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
 
         NetworkServer.Spawn(avatar);
