@@ -562,20 +562,22 @@ public partial class CardData : SingletonD<CardData>
     }
     public IEnumerator H9_E(Card card,List<TargetObject> tar)
     {
-        if(!tar[0].isCloneData) yield return tempWait;
+         if(!tar[0].isCloneData) yield return tempWait;
         tar[0].sizeOfIronDemon += 2;
 
         if(tar[0].ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
         {
-            M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]);
+             if(!tar[0].isCloneData)M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]);
             tar[0].ironDemonLocation.defense += tar[0].sizeOfIronDemon;
             yield return new WaitForSeconds(1.33f);
         }
         else // 몬스터의 경우 데미지
         {
-            if(UnityEngine.Random.Range(0,2) == 0)M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]);
-            else M_TurnManager.instance.AnimIronDemon("Attack1",tar[0]);
-            if(!tar[0].isCloneData)yield return new WaitForSeconds(0.4f);
+            if(!tar[0].isCloneData){
+                if(UnityEngine.Random.Range(0,2) == 0)M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]);
+                else M_TurnManager.instance.AnimIronDemon("Attack1",tar[0]);
+                if(!tar[0].isCloneData)yield return new WaitForSeconds(0.4f);
+            }
             tar[0].ironDemonLocation.DamageToMonster(tar[0].sizeOfIronDemon);
             yield return new WaitForSeconds(0.6f);
         }
