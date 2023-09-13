@@ -384,16 +384,20 @@ public class TargetObject : NetworkBehaviour
 
     public void OnIronDemonAnimationComplete(Spine.TrackEntry trackEntry)
     {
-        Debug.Log("Called IronDemon CallBack Animation" + trackEntry.Animation.Name);
         if(trackEntry.Animation.Name == "Defense")
             ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Idle",true);
+    }
+
+    public void ApllyIronDemonAnimationCallbackFunction()
+    {
+        OnChangedIronDemonLocation(this,this);
     }
 
     void OnChangedIronDemonLocation(TargetObject oldVal, TargetObject newVal)
     {
         if(newVal == this)
-        {
-            Debug.Log(" 철귀 애니메이션 복귀 " );       
+        { 
+            ironDemon.GetComponent<SkeletonAnimation>().state.Complete -= OnIronDemonAnimationComplete;
             ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
         }
     }

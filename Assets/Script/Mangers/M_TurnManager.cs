@@ -410,7 +410,7 @@ public class M_TurnManager : NetworkBehaviour
     {
         bool isLoop = anim == "Idle" ? true : false;
         tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
-
+        tar.ApllyIronDemonAnimationCallbackFunction();
         StartCoroutine(DelayToShowIronDemon(tar));
     }
 
