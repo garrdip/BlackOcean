@@ -187,15 +187,21 @@ public class SpawnedMonster : NetworkBehaviour
     {
         transform.SetParent(newParent.transform);
         newParent.targetObjectName.text = monsterName;
-        Debug.Log(monsterData.name + " : " + monsterData.MAXHP);
-        parent.InitMonsterNamePlate();
+        StartCoroutine(InitMonsterNamePlate());
     }
 
     IEnumerator InitMonsterNamePlate()
     {
         while(true)
         {
-
+            if(parent.monster != null)
+            {
+                if(parent.monster.MAXHP != 0)
+                {
+                    parent.InitMonsterNamePlate();
+                }
+            }
+            yield return new WaitForSeconds(0.01f);
         }
     }
     

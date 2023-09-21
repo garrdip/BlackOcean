@@ -88,7 +88,7 @@ public class TargetObject : NetworkBehaviour
         {
             if(playerHP > 0 && playerMaxHP >0)
             {
-                selectedNamePlate.SetHPValue(playerHP,playerMaxHP,(int)transform.position.x);
+                selectedNamePlate.SetHPValue(playerHP,playerMaxHP,10);
                 break;
             }
             yield return new WaitForSeconds(0.01f);
