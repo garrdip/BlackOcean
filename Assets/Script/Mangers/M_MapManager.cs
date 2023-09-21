@@ -717,6 +717,7 @@ public class M_MapManager : NetworkBehaviour
                 newRegion.transform.localRotation = Quaternion.Euler(0,0,-60*i);
             }
         }
+        NetworkClient.connection.identity.GetComponent<GamePlayer>().isLoadDone = true;
     }
 
     // Axial 좌표계를 이용한 시스템에서 현재 좌표에서 목표 좌표까지의 거리를 반환

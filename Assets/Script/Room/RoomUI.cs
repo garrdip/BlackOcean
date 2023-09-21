@@ -83,6 +83,7 @@ public class RoomUI : InstanceD<RoomUI>
     // 게임 씬으로 이동
     public void HandleChangeGameScene()
     {
+        M_LoadingManager.instance.SetLoadingScreen(true);
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         M_NetworkRoomManager.ServerChangeScene(M_NetworkRoomManager.GameplayScene);
     }

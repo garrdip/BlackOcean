@@ -51,6 +51,9 @@ public class GamePlayer : NetworkBehaviour
 
     public readonly SyncList<CardOnHand> destroyCards = new SyncList<CardOnHand>();
 
+    [SyncVar]
+    public bool isLoadDone = false;
+
     [ClientRpc]
     public void RemoveDestroyCardList(CardOnHand cardOnHand)
     {
@@ -170,7 +173,28 @@ public class GamePlayer : NetworkBehaviour
         //UI Update
         MapUI.instance.UpdateProfile();
         MapUI.instance.SetOrderIndicator(selectOrder);
-        if(isServer)M_MapManager.instance.SetRegionWithColorRPC();
+        if(isServer){
+            M_MapManager.instance.SetRegionWithColorRPC();
+            StartCoroutine(WaitLoadDone());
+        }
+    }
+
+    IEnumerator WaitLoadDone()
+    {
+        M_NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        WaitForSeconds loopSecond = new WaitForSeconds(0.01f);
+        while(true)
+        {
+            int cnt = 0;
+            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+            foreach(GamePlayer user in users)
+            {
+                if(user.isLoadDone) cnt++;
+            }
+            if(cnt == netManger.roomSlots.Count) break;
+            yield return loopSecond;
+        }
+        M_LoadingManager.instance.SetLoadingScreen(false);
     }
 
     public void SetUserStatusUI()
