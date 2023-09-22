@@ -27,7 +27,7 @@ public class RoomPlayer : NetworkRoomPlayer
     [SyncVar]
     public bool isValidAvatar;
 
-    public SyncList<byte> image = new SyncList<byte>();
+    public readonly SyncList<byte> image = new SyncList<byte>();
 
     [SyncVar]
     public int imageWidth, imageHeight;

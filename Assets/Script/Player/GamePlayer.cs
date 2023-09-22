@@ -41,7 +41,7 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public bool isTargetObjectInitDone = false;
 
-    public SyncList<byte> avatarImage = new SyncList<byte>();
+    public readonly SyncList<byte> avatarImage = new SyncList<byte>();
 
     [SyncVar]
     public int avatarWidth,avatarHeight;
