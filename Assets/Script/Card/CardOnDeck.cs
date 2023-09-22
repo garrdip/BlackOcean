@@ -169,7 +169,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(PopUpUIManager.instance.mercuriusPopUp.activeSelf){
             ChangeCardOnDeckSoldOutState();
             HandleClickCardOnDeckOnPopUp(() => {
-                M_TurnManager.instance.npc_Mercurius.shopCards.Remove(this.card);
+                //M_TurnManager.instance.npc_Mercurius.shopCards.Remove(this.card);
             });
         }
     }

@@ -751,11 +751,19 @@ public class M_TurnManager : NetworkBehaviour
         var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(11,3,0),Quaternion.identity).GetComponent<SpawnedMonster>();
         var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
         
-        monster.GetComponent<NPC_Mercurius>().isOrigin = true;
+        NPC_Mercurius mercurius = monster.GetComponent<NPC_Mercurius>();
+        mercurius.isOrigin = true;
+
+        // 상점판매용 캐릭터별 카드 6개씩 추출해서 NPC_Mercurius SyncList에 추가
+        // TODO : 여러 플레이어가 동일한 캐릭터를 골라도 상점팝업의 내용은 서로 다르도록 
+        ExtractCharacterCardForShop(Character.GEORK, mercurius.georkShopCards);
+        ExtractCharacterCardForShop(Character.ERIS, mercurius.erisShopCards);
+        ExtractCharacterCardForShop(Character.HONGDANHYANG, mercurius.danhyangShopCards);
+
         NetworkServer.Spawn(monster.gameObject);
         NetworkServer.Spawn(cloneMonster.gameObject);
 
-        npc_Mercurius = monster.GetComponent<NPC_Mercurius>();
+        npc_Mercurius = mercurius;
 
         monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
         cloneMonster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
@@ -777,6 +785,20 @@ public class M_TurnManager : NetworkBehaviour
         // monster 오브젝트의 부모오브젝트 참조값 설정
         monster.parent = avatar.GetComponent<TargetObject>();
         cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
+    }
+
+    // 캐릭터별로 6장의 카드를 추출해서 해당 캐릭터의 카드데이터 Synclist에 추가
+    [Server]
+    public void ExtractCharacterCardForShop(Character character, SyncList<Card> cards)
+    {
+        List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
+        if(cardsByCharacter.Count > 0){
+            for(int i = 0; i < 6; i++){
+                int randomIndex = Random.Range(0, cardsByCharacter.Count);
+                cards.Add(cardsByCharacter[randomIndex]);
+                cardsByCharacter.RemoveAt(randomIndex);
+            }
+        }
     }
 
     [Server]
@@ -832,8 +854,24 @@ public class M_TurnManager : NetworkBehaviour
     public void BattleEnd()
     {   
         // TODO : 전투 종료 혹은 이벤트방에서 개인별로 먼저 수행하고 넘어가는게 맞을지?, 팀원이 모두 수행을 끝낼때까지 기다리는게 맞을지?
-        EachPlayerBattleEnd();
-        ResetEndTurnState();
+        
+        // 전투 종료시 플레이어들의 캐릭터별 보상카드 3개씩을 랜덤추출하여 각 플레이어들에게 전달
+        foreach(GamePlayer gamePlayer in playerOrder){
+            Character character = gamePlayer.character;
+            GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+            List<Card> rewardCards = new List<Card>();
+            List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == character);
+            if(cardsByCharacter.Count > 0){
+                // 랜덤카드 3개 추출
+                for(int i = 0; i < 3; i++){
+                    int randomIndex = Random.Range(0, cardsByCharacter.Count);
+                    rewardCards.Add(cardsByCharacter[randomIndex]);
+                    cardsByCharacter.RemoveAt(randomIndex);
+                }
+                gamePlayerDeck.RpcBattleRewardCard(rewardCards); // 플레이어들에게 보상카드 리스트 데이터 전달
+            }
+        }
+        ResetEndTurnState(); // 턴종료 상태 리셋
     }
 
     [Server]
@@ -842,11 +880,6 @@ public class M_TurnManager : NetworkBehaviour
         EachPlayerNoneBattleEnd();
     }
 
-    [ClientRpc]
-    public void EachPlayerBattleEnd()
-    {
-        PopUpUIManager.instance.HandleShowBattleResultPopUp(); // 전투 결과 보상 팝업 활성화
-    }
 
     [ClientRpc]
     public void EachPlayerNoneBattleEnd()

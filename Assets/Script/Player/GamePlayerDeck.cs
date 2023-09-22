@@ -414,11 +414,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void SpawnAbilityCardRPC()
-    {
-        if(isOwned)CmdSpawnAbilityCard();
-    }
 
     [Command]
     public void CmdSpawnAbilityCard()
@@ -449,14 +444,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         abilityCard = abilityCardObject.GetComponent<CardOnHand>();
     }
 
-    [ClientRpc]
-    public void ReturnToCardOnHand(CardOnHand cardOnHand,NetworkIdentity conn)
-    {
-        if(conn == NetworkClient.connection.identity)
-        {
-           StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
-        }
-    }
+   
    
     IEnumerator ReturnToCardOnHandCoroutine(CardOnHand cardOnHand)
     {
@@ -551,8 +539,35 @@ public partial class GamePlayerDeck : NetworkBehaviour
     {
         this.cardCtrlArrow = cardCtrlArrow;
     }
+
+    // ------------------------------------------------- ClientRpc Method ---------------------------------------------------//
+
+    [ClientRpc]
+    public void SpawnAbilityCardRPC()
+    {
+        if(isOwned)CmdSpawnAbilityCard();
+    }
+
+    [ClientRpc]
+    public void ReturnToCardOnHand(CardOnHand cardOnHand,NetworkIdentity conn)
+    {
+        if(conn == NetworkClient.connection.identity)
+        {
+           StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
+        }
+    }
+
+    // 전투 보상 카드 데이터 세팅 수신
+    [ClientRpc]
+    public void RpcBattleRewardCard(List<Card> rewardCards)
+    {
+        if(isLocalPlayer){
+            PopUpUIManager.instance.HandleShowBattleResultPopUp(rewardCards); // 전투 결과 보상 팝업 활성화
+        }
+    }
     
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
+    
     public void OnChangeCurrentDeckCount(int oldCount, int newCount)
     {
         Debug.Log("현재 댁 갯수 변경 :" + newCount);

@@ -23,7 +23,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
 
     
     // BattleResultPopUp Delegate
-    public delegate void OnChangeBattleResultPopUpShow();
+    public delegate void OnChangeBattleResultPopUpShow(List<Card> rewardCards);
     public OnChangeBattleResultPopUpShow onChangeBattleResultPopUpShow;
     public delegate void OnChangeBattleResultPopUpHide();
     public OnChangeBattleResultPopUpHide onChangeBattleResultPopUpHide;
@@ -31,7 +31,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     
     // DeckRemovePopUp Delegate
     public delegate void OnChangeDeckRemovePopUpShow();
-    public OnChangeBattleResultPopUpShow onChangeDeckRemovePopUpShow;
+    public OnChangeDeckRemovePopUpShow onChangeDeckRemovePopUpShow;
     public delegate void OnChangeDeckRemovePopUpHide();
     public OnChangeDeckRemovePopUpHide onChangeDeckRemovePopUpHide;
 
@@ -118,11 +118,11 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     }
 
     // 전투보상 카드선택 팝업창 활성화
-    public void HandleShowBattleResultPopUp()
+    public void HandleShowBattleResultPopUp(List<Card> rewardCards)
     {
         battleResultPopUp.SetActive(true);
         if(onChangeBattleResultPopUpShow != null){
-            onChangeBattleResultPopUpShow.Invoke();
+            onChangeBattleResultPopUpShow.Invoke(rewardCards);
         }
     }
 

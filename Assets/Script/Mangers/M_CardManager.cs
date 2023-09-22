@@ -17,7 +17,7 @@ public class M_CardManager : NetworkBehaviour
     public GamePlayerDeck gamePlayerDeck;
 
     [Header("현재 플레이어가 선택한 캐릭터의 카드 리스트")]
-    public List<Card> cards = new List<Card>();
+    public readonly SyncList<Card> cards = new SyncList<Card>();
 
     [Header("카드 대칭 계산값 변수 범위")]
     [Range(-2.5f, 2.5f)]
@@ -68,11 +68,21 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
+    public override void OnStartServer()
+    {
+        // 카드 DB 데이터에서 강화, 철귀이동, 고행카드를 제외한 카드 데이터를 추출하여 서버가 관리할 Synclist에 추가
+        foreach(CardBase cardBase in CardData.instance.cards){
+            if(!cardBase.cardNumber.Contains("_E") && !cardBase.cardNumber.Equals("HA") && !cardBase.cardCharacteristics.Exists((c) => c == CardCharacteristic.GOHENG)){
+                Card card = new Card(cardBase);
+                cards.Add(card);
+            }
+        }
+    }
+
     void Start()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            GetCurrentCharacterCardData();
         }
         InitCardConfigValue();
     }
@@ -400,24 +410,6 @@ public class M_CardManager : NetworkBehaviour
             T value = list[k];
             list[k] = list[n];
             list[n] = value;
-        }
-    }
-
-    // 로컬 플레이어가 선택한 캐릭터 타입의 카드들을 추출해서 리스트에 추가
-    public void GetCurrentCharacterCardData()
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayer currentPlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
-            List<CardBase> currentCharacterCards = CardData.instance.cards.FindAll((cardBase) => 
-                cardBase.character == currentPlayer.character && // 현재 선택한 캐릭터 카드
-                !cardBase.cardNumber.Contains("_E") &&
-                !cardBase.cardNumber.Equals("HA") && // 철귀 이동 카드
-                !cardBase.cardCharacteristics.Exists((c) => c == CardCharacteristic.GOHENG) // 고행카드
-            );
-            foreach(CardBase cardBase in currentCharacterCards){
-                Card card = new Card(cardBase);
-                cards.Add(card);
-            }
         }
     }
 

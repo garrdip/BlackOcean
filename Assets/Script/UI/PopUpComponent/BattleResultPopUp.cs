@@ -10,9 +10,6 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
 {
     public CanvasGroup canvasGroup;
 
-    [Header("랜덤으로 추출한 카드 리스트")]
-    public List<Card> extractCards = new List<Card>();
-
     [Header("랜덤으로 추출한 카드 오브젝트 리스트")]
     public List<GameObject> extractCardObjects = new List<GameObject>();
 
@@ -28,17 +25,17 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         DOTween.Kill(canvasGroup);
     }
 
-    // 랜덤 보상 카드 N개 생성
-    private void CreateResultCard(int count)
+    // 보상 카드 오브젝트 생성
+    public void CreateResultCard(List<Card> rewardCards)
     {
-        List<Card> randomCards = M_CardManager.instance.ExtractRandomCards(count);
-        foreach(Card card in randomCards){
-            extractCards.Add(card);
-            GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
-            cardOnDeck.transform.SetParent(PopUpUIManager.instance.selectableCardList.transform);
-            cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
-            cardOnDeck.GetComponent<CardOnDeck>().card = card;
-            extractCardObjects.Add(cardOnDeck);
+        foreach(Card card in rewardCards){
+            if(card.baseCard.character == NetworkClient.localPlayer.GetComponent<GamePlayer>().character){
+                GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
+                cardOnDeck.transform.SetParent(PopUpUIManager.instance.selectableCardList.transform);
+                cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
+                cardOnDeck.GetComponent<CardOnDeck>().card = card;
+                extractCardObjects.Add(cardOnDeck);
+            }
         }
     }
 
@@ -48,7 +45,6 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         foreach(GameObject gameObject in extractCardObjects){
             Destroy(gameObject);
         }
-        extractCards.Clear();
         extractCardObjects.Clear();
     }
 
@@ -66,10 +62,10 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //
 
     // BattleResultPopUp 활성화 콜백
-    public void OnChangeBattleResultPopUpShow()
+    public void OnChangeBattleResultPopUpShow(List<Card> rewardCards)
     {
         canvasGroup.DOFade(1.0f, 0.5f);
-        CreateResultCard(3); // 랜덤 보상 카드 3개 생성
+        CreateResultCard(rewardCards);
         M_CardManager.instance.RemoveAllCurrentPlayerArrow(); // 화살표 제거
         M_CardManager.instance.ChangeCurrentPlayerCardOnHandState(false); // 남아있는 CardOnHand 오브젝트들의 상태값 초기화
     }
