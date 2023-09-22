@@ -323,8 +323,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowNode")),
                 arrowSpawnPosition,
                 Quaternion.identity);
-            arrowNode.GetComponent<AbilityCtrlArrowNode>().abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>(); // 화살표 몸통에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
             NetworkServer.Spawn(arrowNode, connectionToClient);
+            arrowNode.GetComponent<AbilityCtrlArrowNode>().abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>(); // 화살표 몸통에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
         }
 
         // 화살표 인디케이터 머리 생성
