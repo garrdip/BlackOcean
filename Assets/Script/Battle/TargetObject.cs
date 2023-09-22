@@ -194,7 +194,7 @@ public class TargetObject : NetworkBehaviour
                     if(NetworkClient.connection.identity.GetComponent<GamePlayer>() == player)
                     {
                         ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
-                        ironDemon.GetComponent<MeshRenderer>().sortingOrder = 1;
+                        ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
                     }
                     else
                         ironDemon = Instantiate(characters.Find(x => x.name == "IronDemonTransparent"),transform.position,Quaternion.identity,transform);

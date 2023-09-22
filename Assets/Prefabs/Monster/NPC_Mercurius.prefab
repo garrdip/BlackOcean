@@ -92,6 +92,10 @@ MonoBehaviour:
   meshRenderer: {fileID: 0}
   defaultMaterial: {fileID: 0}
   outLineMaterial: {fileID: 0}
+  mercuriusPopUp: {fileID: 0}
+  isOrigin: 0
+  shopCards: []
+  shopCardObjectList: []
 --- !u!212 &5313166135399454443
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -130,7 +134,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 150335661
+  m_SortingLayerID: -822484745
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: ac808d1348a9591438e939ad41990101, type: 3}

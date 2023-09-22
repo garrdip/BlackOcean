@@ -15,8 +15,8 @@ public class NamePlate : MonoBehaviour
     public void SetHPValue(int value,int max,int order)
     {
         hpBarFiller.transform.localPosition = new Vector3((3.2f*value/max)-3.2f,0,0);
-        hpBarFiller.GetComponent<SpriteRenderer>().sortingOrder = -order+1;
-        transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = -order;
+        hpBarFiller.GetComponent<SpriteRenderer>().sortingOrder = -order+21;
+        transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = -order + 20;
 
         hpText.text = value + "/" + max;
     }
