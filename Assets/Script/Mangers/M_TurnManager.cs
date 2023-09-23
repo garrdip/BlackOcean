@@ -754,11 +754,19 @@ public class M_TurnManager : NetworkBehaviour
         NPC_Mercurius mercurius = monster.GetComponent<NPC_Mercurius>();
         mercurius.isOrigin = true;
 
-        // 상점판매용 캐릭터별 카드 6개씩 추출해서 NPC_Mercurius SyncList에 추가
-        // TODO : 여러 플레이어가 동일한 캐릭터를 골라도 상점팝업의 내용은 서로 다르도록 
-        ExtractCharacterCardForShop(Character.GEORK, mercurius.georkShopCards);
-        ExtractCharacterCardForShop(Character.ERIS, mercurius.erisShopCards);
-        ExtractCharacterCardForShop(Character.HONGDANHYANG, mercurius.danhyangShopCards);
+        // 상점판매용 캐릭터별 카드 6개씩 추출해서 NPC_Mercurius SyncDictionary에 추가
+        foreach(GamePlayer gamePlayer in playerOrder){
+            List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
+            List<Card> extractCards = new List<Card>();
+            if(cardsByCharacter.Count > 0){
+                for(int i = 0; i < 6; i++){
+                    int randomIndex = Random.Range(0, cardsByCharacter.Count);
+                    extractCards.Add(cardsByCharacter[randomIndex]);
+                    cardsByCharacter.RemoveAt(randomIndex);
+                }
+            }
+            mercurius.shopCardDictionary.Add(gamePlayer, extractCards); // mercurius의 SyncDictionary에 각 플레이어와 추출한 랜덤카드를 한쌍의 데이터로 저장
+        }
 
         NetworkServer.Spawn(monster.gameObject);
         NetworkServer.Spawn(cloneMonster.gameObject);

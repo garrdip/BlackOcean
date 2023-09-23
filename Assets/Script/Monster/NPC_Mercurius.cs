@@ -13,9 +13,7 @@ public class NPC_Mercurius : SpawnedMonster
     
     [SyncVar]
     public bool isOrigin = false; // 원본 오브젝트인지 구분값(타겟오브젝트들은 원본과 클론이 존재해서 둘중 하나만 호출되어야 함)
-    public readonly SyncList<Card> georkShopCards = new SyncList<Card>();
-    public readonly SyncList<Card> erisShopCards = new SyncList<Card>();
-    public readonly SyncList<Card> danhyangShopCards = new SyncList<Card>();
+    public readonly SyncDictionary<GamePlayer, List<Card>> shopCardDictionary = new  SyncDictionary<GamePlayer, List<Card>>(); // 각 플레이어별 상점 카드 페어 데이터
 
 
     void Awake()
@@ -42,25 +40,19 @@ public class NPC_Mercurius : SpawnedMonster
         }
     }
 
-    // 현재 로컬 플레이어의 캐릭터 타입에 따라 상점카드 데이터 분기처리
+    // 현재 로컬 플레이어의 캐릭터에 설정된 상점카드 데이터로 상점카드 오브젝트 생성
     private void InitShopCardByCharacter()
     {
-        Character character = NetworkClient.localPlayer.GetComponent<GamePlayer>().character;
-        switch(character){
-            case Character.GEORK:
-                CreateShopCard(georkShopCards);
-                break;
-            case Character.ERIS:
-                CreateShopCard(erisShopCards);
-                break;
-            case Character.HONGDANHYANG:
-                CreateShopCard(danhyangShopCards);
-                break;
+        foreach(KeyValuePair<GamePlayer, List<Card>> pair in shopCardDictionary){
+            GamePlayer gamePlayer = pair.Key;
+            if(gamePlayer == NetworkClient.localPlayer.GetComponent<GamePlayer>()){
+                CreateShopCard(pair.Value);
+            }
         }
     }
 
     // 상점카드 오브젝트 생성
-    private void CreateShopCard(SyncList<Card> shopCards)
+    private void CreateShopCard(List<Card> shopCards)
     {
         foreach(Card card in shopCards){                    
             // 상점 카드 슬롯(최상단 부모 오브젝트)
