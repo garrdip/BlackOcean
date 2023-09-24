@@ -12,6 +12,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public int currentDeckCount = 0; // 현재 플레이어의 카드 카운트
 
     [SyncVar]
+    public int maxShopCardCount = 0; // 상점에서 구매 가능한 카드 최대 갯수
+
+    [SyncVar]
+    public int maxRewardCardCount = 0; // 전투 보상 팝업에서 선택 가능한 카드 최대 갯수
+
+    [SyncVar]
     public CardPocket cardPocket; // 현재 플레이어 소유의 카드 포켓 오브젝트
 
     [SyncVar]
@@ -106,6 +112,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void SetInitialValue()
     {
         currentDeckCount = 5;
+        maxShopCardCount = 6;
+        maxRewardCardCount = 3;
         Character character = GetComponent<GamePlayer>().character;
         switch(character){
             case Character.GEORK:

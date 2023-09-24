@@ -754,18 +754,20 @@ public class M_TurnManager : NetworkBehaviour
         NPC_Mercurius mercurius = monster.GetComponent<NPC_Mercurius>();
         mercurius.isOrigin = true;
 
-        // 상점판매용 캐릭터별 카드 6개씩 추출해서 NPC_Mercurius SyncDictionary에 추가
+        // 상점판매용 캐릭터별 카드 추출해서 NPC_Mercurius SyncDictionary에 추가
         foreach(GamePlayer gamePlayer in playerOrder){
+            GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+            int shopCardCount = gamePlayerDeck.maxShopCardCount; // 플레이어별로 설정된 구매가능한 상점카드 최대 갯수
+            List<Card> shopCards = new List<Card>();
             List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
-            List<Card> extractCards = new List<Card>();
             if(cardsByCharacter.Count > 0){
-                for(int i = 0; i < 6; i++){
+                for(int i = 0; i < shopCardCount; i++){
                     int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                    extractCards.Add(cardsByCharacter[randomIndex]);
+                    shopCards.Add(cardsByCharacter[randomIndex]);
                     cardsByCharacter.RemoveAt(randomIndex);
                 }
             }
-            mercurius.shopCardDictionary.Add(gamePlayer, extractCards); // mercurius의 SyncDictionary에 각 플레이어와 추출한 랜덤카드를 한쌍의 데이터로 저장
+            mercurius.shopCardDictionary.Add(gamePlayer, shopCards); // NPC_Mercurius의 SyncDictionary에 각 플레이어와 추출한 랜덤카드를 한쌍의 데이터로 저장
         }
 
         NetworkServer.Spawn(monster.gameObject);
@@ -793,20 +795,6 @@ public class M_TurnManager : NetworkBehaviour
         // monster 오브젝트의 부모오브젝트 참조값 설정
         monster.parent = avatar.GetComponent<TargetObject>();
         cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
-    }
-
-    // 캐릭터별로 6장의 카드를 추출해서 해당 캐릭터의 카드데이터 Synclist에 추가
-    [Server]
-    public void ExtractCharacterCardForShop(Character character, SyncList<Card> cards)
-    {
-        List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
-        if(cardsByCharacter.Count > 0){
-            for(int i = 0; i < 6; i++){
-                int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                cards.Add(cardsByCharacter[randomIndex]);
-                cardsByCharacter.RemoveAt(randomIndex);
-            }
-        }
     }
 
     [Server]
@@ -863,21 +851,20 @@ public class M_TurnManager : NetworkBehaviour
     {   
         // TODO : 전투 종료 혹은 이벤트방에서 개인별로 먼저 수행하고 넘어가는게 맞을지?, 팀원이 모두 수행을 끝낼때까지 기다리는게 맞을지?
         
-        // 전투 종료시 플레이어들의 캐릭터별 보상카드 3개씩을 랜덤추출하여 각 플레이어들에게 전달
+        // 전투 종료시 플레이어들의 캐릭터별 보상카드 랜덤추출하여 각 플레이어들에게 전달
         foreach(GamePlayer gamePlayer in playerOrder){
-            Character character = gamePlayer.character;
             GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+            int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
             List<Card> rewardCards = new List<Card>();
-            List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == character);
+            List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
             if(cardsByCharacter.Count > 0){
-                // 랜덤카드 3개 추출
-                for(int i = 0; i < 3; i++){
+                for(int i = 0; i < rewardCardCount; i++){
                     int randomIndex = Random.Range(0, cardsByCharacter.Count);
                     rewardCards.Add(cardsByCharacter[randomIndex]);
                     cardsByCharacter.RemoveAt(randomIndex);
                 }
-                gamePlayerDeck.RpcBattleRewardCard(rewardCards); // 플레이어들에게 보상카드 리스트 데이터 전달
             }
+            gamePlayerDeck.RpcBattleRewardCard(rewardCards); // 플레이어들에게 보상카드 리스트 데이터 전달
         }
         ResetEndTurnState(); // 턴종료 상태 리셋
     }
