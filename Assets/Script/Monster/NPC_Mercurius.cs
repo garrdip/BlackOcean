@@ -43,11 +43,9 @@ public class NPC_Mercurius : SpawnedMonster
     // 현재 로컬 플레이어의 캐릭터에 설정된 상점카드 데이터로 상점카드 오브젝트 생성
     private void InitShopCardByCharacter()
     {
-        foreach(KeyValuePair<GamePlayer, List<Card>> pair in shopCardDictionary){
-            GamePlayer gamePlayer = pair.Key;
-            if(gamePlayer == NetworkClient.localPlayer.GetComponent<GamePlayer>()){
-                CreateShopCard(pair.Value);
-            }
+        GamePlayer localPlayer = NetworkClient.localPlayer.GetComponent<GamePlayer>();
+        if(shopCardDictionary.TryGetValue(localPlayer, out List<Card> shopCards)){
+            CreateShopCard(shopCards);
         }
     }
 
