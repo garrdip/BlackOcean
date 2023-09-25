@@ -28,7 +28,8 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
         Clear();
         foreach(TargetObject tar in targets)
         {
-            tar.GetComponent<SortingGroup>().sortingLayerName = "BackLayer";
+            if(tar != null)
+                tar.GetComponent<SortingGroup>().sortingLayerName = "BackLayer";
         }
     }
 
