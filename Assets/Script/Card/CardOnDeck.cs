@@ -159,9 +159,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
-            gameObject.SetActive(false);
+            PopUpUIManager.instance.HandleHideBattleResultPopUp();
             HandleClickCardOnDeckOnPopUp(() => {
-                PopUpUIManager.instance.HandleHideBattleResultPopUp();
                 NetworkClient.connection.identity.GetComponent<GamePlayer>().isRewardDone = true;
             });
         }
