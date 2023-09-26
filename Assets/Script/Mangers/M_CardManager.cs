@@ -413,19 +413,6 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
-    // 로컬 플레이어가 선택한 캐릭터의 카드들 중 랜덤으로 n개 카드 추출
-    public List<Card> ExtractRandomCards(int count)
-    {
-        List<Card> extractedCards = new List<Card>();
-        while (extractedCards.Count < count && cards.Count > 0)
-        {
-            int randomIndex = UnityEngine.Random.Range(0, cards.Count); // 랜덤한 인덱스 선택
-            Card extractedCard = cards[randomIndex]; // 랜덤한 카드 추출
-            extractedCards.Add(extractedCard); // 추출한 카드를 추출된 카드 리스트에 추가
-        }
-        return extractedCards;
-    }
-
     public string GetAdditionalValueFromDescription(string str)
     {
         TargetObject tar = null;

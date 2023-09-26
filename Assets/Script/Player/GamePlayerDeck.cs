@@ -30,7 +30,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<Card> deck =  new SyncList<Card>(); // 댁 총괄 데이터
 
-    public readonly  SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 카드(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
+    public readonly SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 카드(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
     
     public readonly SyncList<Card> trashDeck = new SyncList<Card>(); // 버릴 카드(사용된 카드 + 턴 종료될때 내 손에 있는 카드)
 
