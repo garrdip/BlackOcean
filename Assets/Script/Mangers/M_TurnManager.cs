@@ -864,7 +864,8 @@ public class M_TurnManager : NetworkBehaviour
                     cardsByCharacter.RemoveAt(randomIndex);
                 }
             }
-            gamePlayerDeck.RpcBattleRewardCard(rewardCards); // 플레이어들에게 보상카드 리스트 데이터 전달
+            NetworkConnectionToClient networkConnectionToClient = gamePlayer.GetComponent<NetworkIdentity>().connectionToClient;
+            gamePlayerDeck.TargetSetBattleRewardCard(networkConnectionToClient, rewardCards); // 플레이어들에게 보상카드 리스트 데이터 전달
         }
         ResetEndTurnState(); // 턴종료 상태 리셋
     }

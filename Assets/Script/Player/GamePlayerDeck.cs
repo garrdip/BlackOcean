@@ -566,12 +566,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     // 전투 보상 카드 데이터 세팅 수신
-    [ClientRpc]
-    public void RpcBattleRewardCard(List<Card> rewardCards)
+    [TargetRpc]
+    public void TargetSetBattleRewardCard(NetworkConnectionToClient target, List<Card> rewardCards)
     {
-        if(isLocalPlayer){
-            PopUpUIManager.instance.HandleShowBattleResultPopUp(rewardCards); // 전투 결과 보상 팝업 활성화
-        }
+        PopUpUIManager.instance.HandleShowBattleResultPopUp(rewardCards); // 전투 결과 보상 팝업 활성화
     }
     
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
