@@ -277,24 +277,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
             Quaternion.identity);
         NetworkServer.Spawn(cardEmitter, connectionToClient);
 
-        // 화살표 인디케이터 몸체 생성
-        for(int i=0; i<arrowNodeNum; i++){
-            GameObject arrowNode = Instantiate(
-                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowNode")),
-                arrowSpawnPosition,
-                Quaternion.identity);
-            arrowNode.GetComponent<CardCtrlArrowNode>().cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>(); // 화살표 몸통에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
-            NetworkServer.Spawn(arrowNode, connectionToClient);
-        }
-
-        // 화살표 인디케이터 머리 생성
-        GameObject arrowHead = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowHead")),
-            arrowSpawnPosition,
-            Quaternion.identity);
-        arrowHead.GetComponent<CardCtrlArrowHead>().cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();  // 화살표 머리에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
-        NetworkServer.Spawn(arrowHead, connectionToClient);
-    
         cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();
     }
 
