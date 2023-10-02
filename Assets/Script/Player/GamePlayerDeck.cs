@@ -26,8 +26,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public AbilityCtrlArrow abilityCtrlArrow; // 현재 소환된 어빌리티 화살표
 
-    public const int arrowNodeNum = 13; // 카드 컨트롤 화살표 몸통 개수
-
     public readonly SyncList<Card> deck =  new SyncList<Card>(); // 댁 총괄 데이터
 
     public readonly SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 카드(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
@@ -305,24 +303,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
             arrowSpawnPosition,
             Quaternion.identity);
         NetworkServer.Spawn(abilityEmitter, connectionToClient);
-
-        // 화살표 인디케이터 몸체 생성
-        for(int i=0; i<arrowNodeNum; i++){
-            GameObject arrowNode = Instantiate(
-                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowNode")),
-                arrowSpawnPosition,
-                Quaternion.identity);
-            arrowNode.GetComponent<AbilityCtrlArrowNode>().abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>(); // 화살표 몸통에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
-            NetworkServer.Spawn(arrowNode, connectionToClient);
-        }
-
-        // 화살표 인디케이터 머리 생성
-        GameObject arrowHead = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowHead")),
-            arrowSpawnPosition,
-            Quaternion.identity);
-        arrowHead.GetComponent<AbilityCtrlArrowHead>().abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>();  // 화살표 머리에 SyncVar로 선언된 부모 오브젝트(화살표) 참조값 설정
-        NetworkServer.Spawn(arrowHead, connectionToClient);
 
         abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>();
     }

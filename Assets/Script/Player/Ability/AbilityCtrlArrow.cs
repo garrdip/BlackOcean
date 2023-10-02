@@ -25,6 +25,7 @@ public class AbilityCtrlArrow : NetworkBehaviour
     void Start()
     {
         origin = GetComponent<Transform>();
+        SetArrowNodesScale();
         ChangeArrowVisible(isOwned, GameUIManager.instance.CardOnHandsPanel.transform);
         M_CardManager.instance.isArrowActive = false; // 생성 시점에는 오브젝트가 활성화 되어있지만(네트워크 오브젝트는 생성시 Active 상태), 활성화 상태 변수값은 false로 초기화
     }
@@ -32,7 +33,6 @@ public class AbilityCtrlArrow : NetworkBehaviour
     void Update()
     {
         if(isOwned){       
-            SetArrowNodesScale();
             HandleArrowAction();
             HandleArrowRemove();
             HandleArrowNodesTrasnform();
