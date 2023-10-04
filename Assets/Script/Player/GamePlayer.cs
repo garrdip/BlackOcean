@@ -18,6 +18,9 @@ public class GamePlayer : NetworkBehaviour
     public Character character;
 
     [SyncVar]
+    public Color color;
+
+    [SyncVar]
     public bool isInitializeDone = false;
 
     [SyncVar (hook = nameof(OnChangedSelectOrder))]
@@ -256,38 +259,38 @@ public class GamePlayer : NetworkBehaviour
             isRewardDone = false;
     }
 
-    // 채팅 메시지 이벤트 송신
+    // 맵 씬 채팅 메시지 이벤트 송신
     [Command]
     public void CmdSendChatMessage(string message, NetworkConnectionToClient sender = null)
     {
         if (!string.IsNullOrWhiteSpace(message)){
             string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-            RpcReceiveChatMessage(selectOrder, playerName, message.Trim());
+            RpcReceiveChatMessage(color, playerName, message.Trim());
         }
     }
 
-    // 채팅 메시지 이벤트 수신
+    // 맵 씬 채팅 메시지 이벤트 수신
     [ClientRpc]
-    void RpcReceiveChatMessage(int selectOrder, string playerName, string message)
+    void RpcReceiveChatMessage(Color color, string playerName, string message)
     {
-        MapUI.instance.AppendMessage(selectOrder, playerName, message);
+        MapUI.instance.AppendMessage(color, playerName, message);
     }
 
-    // 채팅 메시지 이벤트 송신
+    // 전투 씬 채팅 메시지 이벤트 송신
     [Command]
     public void CmdSendChatMessageGameScene(string message, NetworkConnectionToClient sender = null)
     {
         if (!string.IsNullOrWhiteSpace(message)){
             string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-            RpcReceiveChatMessageGameScene(selectOrder, playerName, message.Trim());
+            RpcReceiveChatMessageGameScene(color, playerName, message.Trim());
         }
     }
 
-    // 채팅 메시지 이벤트 수신
+    // 전투 씬 채팅 메시지 이벤트 수신
     [ClientRpc]
-    void RpcReceiveChatMessageGameScene(int selectOrder, string playerName, string message)
+    void RpcReceiveChatMessageGameScene(Color color, string playerName, string message)
     {
-        GameUIManager.instance.AppendMessage(selectOrder, playerName, message);
+        GameUIManager.instance.AppendMessage(color, playerName, message);
     }
 
     [Server]

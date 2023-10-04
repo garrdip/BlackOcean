@@ -101,23 +101,8 @@ public class RoomUI : InstanceD<RoomUI>
     }
 
     // 채팅 메시지 추가
-    public void AppendMessage(PlayOrder playOrder,string playerName, string message)
+    public void AppendMessage(Color color,string playerName, string message)
     {
-        Color color = Color.white;
-        switch(playOrder){
-            case PlayOrder.FIRST:
-                color = Color.red;
-                break;
-            case PlayOrder.SECOND:
-                color = Color.blue;
-                break;
-            case PlayOrder.THIRD:
-                color = Color.green;
-                break;
-            default:
-                color = Color.white;
-                break;
-        }
         chatMessage.text += $"<size=18><color={ColorUtils.ToHex(color)}>{playerName}</color></size> : {message}\n";
         StartCoroutine(ScrollToBottom());
     }

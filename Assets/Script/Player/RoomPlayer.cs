@@ -13,6 +13,9 @@ public class RoomPlayer : NetworkRoomPlayer
     public Character character = Character.NONE;
 
     [SyncVar]
+    public Color color;
+
+    [SyncVar]
     public PlayOrder order = PlayOrder.UNDEFINED;
 
     [SyncVar(hook = nameof(ChangeReadyState))]
@@ -70,15 +73,15 @@ public class RoomPlayer : NetworkRoomPlayer
     {
         if(!string.IsNullOrWhiteSpace(message)){
             string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-            RpcReceiveChatMessage(order, playerName, message.Trim());
+            RpcReceiveChatMessage(color, playerName, message.Trim());
         }
     }
 
     // 채팅 메시지 이벤트 수신
     [ClientRpc]
-    void RpcReceiveChatMessage(PlayOrder playOrder, string playerName, string message)
+    void RpcReceiveChatMessage(Color color, string playerName, string message)
     {
-        RoomUI.instance.AppendMessage(playOrder, playerName, message);
+        RoomUI.instance.AppendMessage(color, playerName, message);
     }
 }
 
