@@ -8,6 +8,7 @@ public class TEST : MonoBehaviour
     public GameObject gameSceneChatBox;
     public Button buttonEnhance;
     public Button buttonChangeChatBoxState;
+    public Button buttonTranfrom;
     public bool isChatBoxActive;
 
     void Start()
@@ -15,6 +16,8 @@ public class TEST : MonoBehaviour
         isChatBoxActive = true;
         buttonEnhance.onClick.AddListener(() => TestEnhance());
         buttonChangeChatBoxState.onClick.AddListener(() => TestChatBoxState());
+        buttonTranfrom.onClick.AddListener(() => TestTransform());
+
     }
 
     void TestEnhance()
@@ -35,5 +38,24 @@ public class TEST : MonoBehaviour
     {
         isChatBoxActive = !isChatBoxActive;
         gameSceneChatBox.SetActive(isChatBoxActive);
+    }
+
+    void TestTransform()
+    {
+        foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList)
+        {
+            if(tar.player.character == ProjectD.Character.GEORK)
+            {
+                tar.isTransformed = true;
+                StartCoroutine(GeorkTransfrom(tar));
+            }
+        }
+    }
+
+    IEnumerator GeorkTransfrom(TargetObject tar)
+    {
+        M_TurnManager.instance.StartAnimation(tar,0,"Transform",false);
+        yield return new WaitForSeconds(2.667f);
+        M_TurnManager.instance.StartAnimation(tar,0,"HIdle",true);
     }
 }

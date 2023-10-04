@@ -210,6 +210,7 @@ public class SpawnedMonster : NetworkBehaviour
     {
         if(nextTarget == ActionTarget.FIXEDPLAYER)
         {
+            // 고정 상대일경우 수정 필요!!//
             nextTargetPlayer.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
             M_TurnManager.instance.StartAnimation(nextTargetPlayer,0,"Defense",false);
             if(nextTargetPlayer.player.character == Character.HONGDANHYANG && nextTargetPlayer.ironDemonLocation == nextTargetPlayer)
@@ -220,7 +221,18 @@ public class SpawnedMonster : NetworkBehaviour
             foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
             {
                 tar.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
-                M_TurnManager.instance.StartAnimation(tar,0,"Defense",false);
+                switch(tar.player.character)
+                {
+                    case Character.GEORK :
+                        M_TurnManager.instance.StartAnimation(tar,0,"Defense0",false);
+                        break;
+                    case Character.ERIS :
+                        break;
+                    case Character.HONGDANHYANG :
+                        M_TurnManager.instance.StartAnimation(tar,0,"Defense",false);
+                        break;
+                }
+                
                 if(tar.player.character == Character.HONGDANHYANG && tar.ironDemonLocation == tar)
                     tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
             }

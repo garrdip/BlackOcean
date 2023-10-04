@@ -6674,8 +6674,10 @@ MonoBehaviour:
   _allPlayersReady: 0
   roomSlots: []
   clientIndex: 0
-  roomPlayerForUI: {fileID: 5712702224796208543, guid: 9efce3e99512ce24c9964065f8d7a404, type: 3}
-  listRoomPlayerForUI: []
+  colors:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0, b: 1, a: 1}
 --- !u!4 &862470413
 Transform:
   m_ObjectHideFlags: 0

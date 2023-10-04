@@ -24,6 +24,12 @@ public partial class CardData : SingletonD<CardData>
         }
     }
 
+    private void GeorkAnimation(TargetObject tar, string normal, string transform, bool loop)
+    {
+        M_TurnManager.instance.StartAnimation(tar,0,tar.isTransformed? transform : normal,loop);
+        SkeletonAnimation anim = tar.avatar.GetComponent<SkeletonAnimation>();
+        //Debug.Log(tar.isTransformed? transform : normal + anim.SkeletonDataAsset.GetSkeletonData(true).FindAnimation(tar.isTransformed? transform : normal).Duration);
+    }
     public IEnumerator G0(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) yield return tempWait;
@@ -82,15 +88,31 @@ public partial class CardData : SingletonD<CardData>
     }
     public IEnumerator G3(Card card,List<TargetObject> tar)
     {
-        if(!tar[0].isCloneData) yield return tempWait;
+        if(!tar[0].isCloneData) {
+            yield return tempWait;
+            GeorkAnimation(tar[0],"Attack0","HAttack0",false);
+            yield return new WaitForSeconds(0.5f);
+        }
         GeneralSingleAttack(tar[0],tar[1],7);
+        if(!tar[0].isCloneData) {
+            yield return new WaitForSeconds(0.433f);
+            GeorkAnimation(tar[0],"Idle","HIdle",true); 
+        }
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator G4(Card card,List<TargetObject> tar)
     {
+        if(!tar[0].isCloneData) {
+            yield return tempWait;
+            GeorkAnimation(tar[0],"Attack1","HAttack1",false); 
+            yield return new WaitForSeconds(0.5f);
+        }
+        tar[1].GainBuff(BuffType.SOIRAK,1,true,false,true,tar[0]);
         GeneralSingleAttack(tar[0],tar[1],9);
-        if(!tar[0].isCloneData) yield return tempWait;
-        //GeneralAddBuff(tar[1],BuffType.SOIRAK,1,true);
+        if(!tar[0].isCloneData) {
+            yield return new WaitForSeconds(0.333f);
+            GeorkAnimation(tar[0],"Idle","HIdle",true);  
+        }
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator G5(Card card,List<TargetObject> tar)
