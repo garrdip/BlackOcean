@@ -159,275 +159,7 @@ public class M_TurnManager : NetworkBehaviour
         selectOrderButtons[2].onClick.AddListener(() => SelectOrder(3));
     }
 
-    [Server]
-    public void StartWaitCardQueue()
-    {
-        StartCoroutine(WaitCardQueue());
-    }
-
-    IEnumerator WaitCardQueue()
-    {
-        WaitForSeconds loopWait = new WaitForSeconds(0.01f);
-        while(true)
-        {
-            if(!isCardQueueOperating && cardTargetPairQueue.Count == 0)
-            {
-                break;
-            }
-            yield return loopWait;
-        }
-        if(phase == BattleTurn.PLAYER_ACTIVE_DONE) // 아무때나 동작하지 않음 (광클방지)
-            phase = BattleTurn.PLAYER_END;
-    }
-
-    [Server]
-    public void EnterTheRoom(HexagonMapRoom hexagonMapRoom)
-    {
-        int actionCost = M_MapManager.instance.FindPath(M_MapManager.instance.currentRoom, hexagonMapRoom).Count;
-        if(actionCost > M_MapManager.instance.totalActionCost){
-            Debug.Log($"[행동 비용이 모자랍니다] 총 비용 : {M_MapManager.instance.totalActionCost} / 남은 비용 : {actionCost}");
-        }else{
-            // 맵 플레이어들 위치 이동
-            foreach(GameObject mapPlayerPieceObject in M_MapManager.instance.mapPlayerPieces){
-                MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
-                mapPlayerPiece.RpcChangeMapPlayerPiecePosition(hexagonMapRoom.transform.position);
-                M_MapManager.instance.SetDirection(hexagonMapRoom);
-            }
-            M_MapManager.instance.StartBattle(hexagonMapRoom);
-        }
-    }
-
-    [Server]
-    public void GenerateBattleObject(HexagonMapRoom hexagonMapRoom)
-    {
-        if(isServer)
-        {
-            GeneratePlayerUnit();
-            if(hexagonMapRoom.mapBoss != null){
-                GenerateBossMonster();
-                RpcCardPrefareForBattle();
-                RpcStartBossBattle();
-            }else if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE){
-                GenerateMonster();
-                RpcCardPrefareForBattle();
-                RpcStartMonsterBattle();
-            }else{
-                GenerateNPC("NPC_Mercurius");
-                RpcStartNpcVisit();
-            }
-            // 전투 시작 이치 초기화 및 어빌리티 카드 생성
-            foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
-            {
-                gamePlayerDeck.SetInitialIchi();
-                if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.SpawnAbilityCardRPC();
-            }
-            RpcGenerateAbilityButton();
-            StartCoroutine(WaitingForPlayer(hexagonMapRoom));
-        }
-    }
-
-    // 플레이어 패시브 버튼 생성 요청
-    [ClientRpc]
-    void RpcGenerateAbilityButton()
-    {
-        if(NetworkClient.connection.identity.GetComponent<GamePlayer>().character == Character.HONGDANHYANG)
-            NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().CmdGenerateAbilityButton();
-    }
-
-    // 전투에 필요한 카드 준비 요청
-    [ClientRpc]
-    void RpcCardPrefareForBattle()
-    {
-        // 플레이어 카드 셔플 수행후 PrefareDeck에 추가 요청
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
-            }
-        }
-    }
- 
-    // 보스전 시작 수신 이벤트
-    [ClientRpc]
-    public void RpcStartBossBattle()
-    {
-        Debug.Log("========================= 보스와 전투가 시작되었습니다. =========================");
-    }
-
-    // 일반 몬스터 혹은 엘리트전 시작 수신 이벤트
-    [ClientRpc]
-    public void RpcStartMonsterBattle()
-    {
-        Debug.Log("====== 몬스터와 전투가 시작되었습니다. ======");
-    }
-
-    // 엔피씨 방문 수신 이벤트
-    [ClientRpc]
-    public void RpcStartNpcVisit()
-    {
-        Debug.Log("== 엔피씨를 방문했습니다. ==");
-    }
-
-    IEnumerator WaitingForPlayer(HexagonMapRoom hexagonMapRoom)
-    {
-        int cnt = 0;
-        while(true)
-        {
-            cnt = 0;
-            yield return new WaitForSeconds(0.1f);
-            foreach(GamePlayer user in players)
-                if(user.isTargetObjectInitDone) cnt++;
-            if(cnt != players.Count) continue;
-
-            if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE)
-                phase = BattleTurn.BATTLE_STANDBY;
-            else
-                phase = BattleTurn.NONE_BATTLE_SCENE;
-            break;
-        }
-        ClearTargetObjectInitFlag();
-    }
-
-    [ClientRpc]
-    void ClearTargetObjectInitFlag()
-    {
-        NetworkClient.connection.identity.GetComponent<GamePlayer>().isTargetObjectInitDone = false;
-    }
-
-    public IEnumerator ProcessCardQueue()
-    {
-        // 무한루프에서 인스턴스 생성시 생기는 가비지 방지를 위해 함수호출에서 미리 인스턴스 생성하여 캐싱후 루프 안에서 사용
-        WaitForSeconds waitForLoop = new WaitForSeconds(0.01f);
-        while (true)
-        {
-            yield return waitForLoop;
-            if(CardData.instance.isCardOperating || monsterDeathOperating){
-                continue;
-            }
-            else
-            {
-                if(cardTargetPairQueue.Count != 0){
-                    CardData.instance.isCardOperating = true;
-                    isCardQueueOperating = true;
-                    // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
-                    (Card card,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
-
-                    CardData.instance.RunCard(card,tar);
-                }
-                else
-                {
-                    isCardQueueOperating = false;
-                }
-            }
-        }
-    }
-
-    public void ProcessMonsterDeath(TargetObject tar)
-    {
-        StartCoroutine(ProcessMonsterDeathCoroutine(tar));
-    }
-
-    public IEnumerator ProcessMonsterDeathCoroutine(TargetObject tar)
-    {
-        while(true)
-        {
-            // 철구 돌려 보내기
-            yield return new WaitForSeconds(0.01f);
-            if(CardData.instance.isCardOperating || ironDemonPassiveOperating) continue;
-            foreach(TargetObject target in spawnedPlayerList)
-            {
-                if(target.ironDemonLocation == tar || target.ironDemonLocation == null)
-                {
-                    M_TurnManager.instance.AnimIronDemon("TeleportGo",target); // 철귀 사라짐
-                    yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
-                    M_TurnManager.instance.MoveIronDemon(target,target); // 철귀 적으로 이동
-                    M_TurnManager.instance.AnimIronDemon("TeleportBack",target); // 철귀 나타나기 시작
-                    yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
-                    M_TurnManager.instance.AnimIronDemon("Idle",target); // 철귀 나타나기 시작
-                    target.ironDemonLocation = target;
-                }
-            }
-            foreach(TargetObject target in clonePlayerList)
-            {
-                if(target.ironDemonLocation == tar || target.ironDemonLocation == null)
-                {
-                    target.ironDemonLocation = target;
-                }
-            }
-            monsterDeathOperating = false;
-            break;
-        }
-      
-    }
-
-
-    [ClientRpc]
-    public void StartAnimation(TargetObject tar, int trackIndex,string animationName, bool loop )
-    {
-        if(!tar.isCloneData) // Clone 데이터 검증은 Animation 스킵
-        {
-            SkeletonAnimation anim = tar.avatar.GetComponent<SkeletonAnimation>();
-            anim.state.SetAnimation(trackIndex,animationName,loop);
-        }
-    }
-
-    [ClientRpc]
-    public void MoveIronDemon(TargetObject target ,TargetObject tar)
-    {
-        tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "default";
-        tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = -1;
-        int transformOffset = CalcOffset(tar); 
-        tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
-        int offset = (NetworkClient.connection.identity.GetComponent<GamePlayer>() == tar.player) ? 0 : 2;
-        if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0+offset];
-        else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
-        tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
-    }
-    int CalcOffset(TargetObject tar)
-    {
-        int retVal = 0;
-        if(tar.player == (NetworkClient.connection.identity.GetComponent<GamePlayer>())) retVal = 0;
-        else
-        {
-            int addval = 0;
-            foreach(GamePlayer user in playerOrder)
-            {
-                if(tar.player == user)
-                    break;
-                if(tar.player == (NetworkClient.connection.identity.GetComponent<GamePlayer>()))
-                    continue;
-                else
-                    addval++;
-            }
-            if(addval == 0) retVal = -1;
-            else retVal = 1;
-        }
-        return retVal;
-    }
-
-    [ClientRpc]
-    public void AnimIronDemon(string anim ,TargetObject tar)
-    {
-        bool isLoop = anim == "Idle" ? true : false;
-        tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
-        tar.ApllyIronDemonAnimationCallbackFunction();
-        StartCoroutine(DelayToShowIronDemon(tar));
-    }
-
-    IEnumerator DelayToShowIronDemon(TargetObject tar)
-    {
-        yield return new WaitForSeconds(0.03f);
-        ShowIronDemon(tar);
-    }
-
-    public void ShowIronDemon(TargetObject tar)
-    {
-        tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "IronDemon";
-        if(tar.player == NetworkClient.connection.identity.GetComponent<GamePlayer>())
-            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = 1;
-        else
-            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
-    }
+    // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
 
     [Server]
     public void ProcessCardPredict(Card card,List<TargetObject> tar)
@@ -491,51 +223,6 @@ public class M_TurnManager : NetworkBehaviour
                 NoneBattleEnd();
                 break;
         }
-    }
-
-    [Server]
-    public void BattleStandby()
-    {
-        foreach(TargetObject monster in spawnedMonsterList)
-        {
-            monster.monster.SetNextAction();
-        }
-        phase = BattleTurn.PLAYER_PREEFFECT;
-    }
-
-    [Server]
-    public void MonsterActive()
-    {
-        StartCoroutine(MonsterActionSeuqence());
-    }
-    IEnumerator MonsterActionSeuqence()
-    {
-        WaitForSeconds loopWait = new WaitForSeconds(0.01f);
-        foreach(TargetObject target in spawnedMonsterList)
-        {
-
-            target.monster.isActive = true;
-            StartCoroutine(target.monster.DoAction());
-            while(true)
-            {
-                if(target.monster.isActive == false) break;
-                yield return loopWait;
-            }
-        }
-        phase = BattleTurn.BATTLE_STANDBY;
-    }
-
-
-    [Server]
-    public void MonsterSetOrder()
-    {
-        monsterOrderList.Clear();
-        // 일반적으로 전열의 몬스터먼저 행동 // 다른경우 이부분 수정
-        for(int i = 0 ;i < spawnedMonsterList.Count ; i ++)
-        {
-            monsterOrderList.Add(spawnedMonsterList[i]);
-        }
-        //phase = BattleTurn.MONSTER_PREEFFECT;
     }
 
     [Server]
@@ -612,17 +299,6 @@ public class M_TurnManager : NetworkBehaviour
         phase = BattleTurn.PLAYER_ACTIVE;
     }
 
-    [ClientRpc]
-    public void EachPlayerCardDraw()
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdSpawnCardOnHand();
-            }
-        }
-    }
-
     [Server]
     public void PlayerPreEffect()
     {
@@ -651,14 +327,173 @@ public class M_TurnManager : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void EachPlayerEndTurn()
-    {
-        // 각 플레이어들의 모든 카드와 화살표 제거
-        M_CardManager.instance.RemoveAllCurrentPlayerArrow();
-        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHands();
+    [Server]
+    public void BattleEnd()
+    {   
+        // TODO : 전투 종료 혹은 이벤트방에서 개인별로 먼저 수행하고 넘어가는게 맞을지?, 팀원이 모두 수행을 끝낼때까지 기다리는게 맞을지?
+        
+        // 전투 종료시 플레이어들의 캐릭터별 보상카드 랜덤추출하여 각 플레이어들에게 전달
+        foreach(GamePlayer gamePlayer in playerOrder){
+            GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+            int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
+            List<Card> rewardCards = new List<Card>();
+            List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
+            if(cardsByCharacter.Count > 0){
+                for(int i = 0; i < rewardCardCount; i++){
+                    int randomIndex = Random.Range(0, cardsByCharacter.Count);
+                    rewardCards.Add(cardsByCharacter[randomIndex]);
+                    cardsByCharacter.RemoveAt(randomIndex);
+                }
+            }
+            NetworkConnectionToClient networkConnectionToClient = gamePlayer.GetComponent<NetworkIdentity>().connectionToClient;
+            gamePlayerDeck.TargetSetBattleRewardCard(networkConnectionToClient, rewardCards); // 플레이어들에게 보상카드 리스트 데이터 전달
+        }
+        ResetEndTurnState(); // 턴종료 상태 리셋
     }
 
+    [Server]
+    public void NoneBattleEnd()
+    {
+        EachPlayerNoneBattleEnd();
+    }
+
+    [Server]
+    public void OnChangedMonsterList()
+    {
+        if(spawnedMonsterList.Count == 0)
+            phase = BattleTurn.BATTLE_END;
+    }
+
+    [Server]
+    public void ClearTargetObject()
+    {
+        ClearTargetObjectList(cloneMonsterList);
+        ClearTargetObjectList(spawnedMonsterList);
+        ClearTargetObjectList(clonePlayerList);
+        ClearTargetObjectList(spawnedPlayerList);
+        spawnedPlayerSyncList.Clear();
+    }
+
+    private void ClearTargetObjectList(List<TargetObject> targets)
+    {
+        for(int i = targets.Count - 1 ; i >=0 ; i--)
+        {
+            TargetObject removeItem = targets[i];
+            targets.Remove(removeItem);
+            NetworkServer.Destroy(removeItem.gameObject);
+        }
+    }
+
+    public IEnumerator ProcessCardQueue()
+    {
+        // 무한루프에서 인스턴스 생성시 생기는 가비지 방지를 위해 함수호출에서 미리 인스턴스 생성하여 캐싱후 루프 안에서 사용
+        WaitForSeconds waitForLoop = new WaitForSeconds(0.01f);
+        while (true)
+        {
+            yield return waitForLoop;
+            if(CardData.instance.isCardOperating || monsterDeathOperating){
+                continue;
+            }
+            else
+            {
+                if(cardTargetPairQueue.Count != 0){
+                    CardData.instance.isCardOperating = true;
+                    isCardQueueOperating = true;
+                    // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
+                    (Card card,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
+
+                    CardData.instance.RunCard(card,tar);
+                }
+                else
+                {
+                    isCardQueueOperating = false;
+                }
+            }
+        }
+    }
+
+    public void ProcessMonsterDeath(TargetObject tar)
+    {
+        StartCoroutine(ProcessMonsterDeathCoroutine(tar));
+    }
+
+    public IEnumerator ProcessMonsterDeathCoroutine(TargetObject tar)
+    {
+        while(true)
+        {
+            // 철구 돌려 보내기
+            yield return new WaitForSeconds(0.01f);
+            if(CardData.instance.isCardOperating || ironDemonPassiveOperating) continue;
+            foreach(TargetObject target in spawnedPlayerList)
+            {
+                if(target.ironDemonLocation == tar || target.ironDemonLocation == null)
+                {
+                    M_TurnManager.instance.AnimIronDemon("TeleportGo",target); // 철귀 사라짐
+                    yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
+                    M_TurnManager.instance.MoveIronDemon(target,target); // 철귀 적으로 이동
+                    M_TurnManager.instance.AnimIronDemon("TeleportBack",target); // 철귀 나타나기 시작
+                    yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
+                    M_TurnManager.instance.AnimIronDemon("Idle",target); // 철귀 나타나기 시작
+                    target.ironDemonLocation = target;
+                }
+            }
+            foreach(TargetObject target in clonePlayerList)
+            {
+                if(target.ironDemonLocation == tar || target.ironDemonLocation == null)
+                {
+                    target.ironDemonLocation = target;
+                }
+            }
+            monsterDeathOperating = false;
+            break;
+        }
+      
+    }
+
+    [Server]
+    public void BattleStandby()
+    {
+        foreach(TargetObject monster in spawnedMonsterList)
+        {
+            monster.monster.SetNextAction();
+        }
+        phase = BattleTurn.PLAYER_PREEFFECT;
+    }
+
+    [Server]
+    public void MonsterActive()
+    {
+        StartCoroutine(MonsterActionSeuqence());
+    }
+
+    IEnumerator MonsterActionSeuqence()
+    {
+        WaitForSeconds loopWait = new WaitForSeconds(0.01f);
+        foreach(TargetObject target in spawnedMonsterList)
+        {
+
+            target.monster.isActive = true;
+            StartCoroutine(target.monster.DoAction());
+            while(true)
+            {
+                if(target.monster.isActive == false) break;
+                yield return loopWait;
+            }
+        }
+        phase = BattleTurn.BATTLE_STANDBY;
+    }
+
+    [Server]
+    public void MonsterSetOrder()
+    {
+        monsterOrderList.Clear();
+        // 일반적으로 전열의 몬스터먼저 행동 // 다른경우 이부분 수정
+        for(int i = 0 ;i < spawnedMonsterList.Count ; i ++)
+        {
+            monsterOrderList.Add(spawnedMonsterList[i]);
+        }
+        //phase = BattleTurn.MONSTER_PREEFFECT;
+    }
 
     [Server]
     public void GeneratePlayerUnit()
@@ -813,23 +648,235 @@ public class M_TurnManager : NetworkBehaviour
         }
     }
 
+    [Server]
+    public void StartWaitCardQueue()
+    {
+        StartCoroutine(WaitCardQueue());
+    }
+
+    IEnumerator WaitCardQueue()
+    {
+        WaitForSeconds loopWait = new WaitForSeconds(0.01f);
+        while(true)
+        {
+            if(!isCardQueueOperating && cardTargetPairQueue.Count == 0)
+            {
+                break;
+            }
+            yield return loopWait;
+        }
+        if(phase == BattleTurn.PLAYER_ACTIVE_DONE) // 아무때나 동작하지 않음 (광클방지)
+            phase = BattleTurn.PLAYER_END;
+    }
+
+    [Server]
+    public void EnterTheRoom(HexagonMapRoom hexagonMapRoom)
+    {
+        int actionCost = M_MapManager.instance.FindPath(M_MapManager.instance.currentRoom, hexagonMapRoom).Count;
+        if(actionCost > M_MapManager.instance.totalActionCost){
+            Debug.Log($"[행동 비용이 모자랍니다] 총 비용 : {M_MapManager.instance.totalActionCost} / 남은 비용 : {actionCost}");
+        }else{
+            // 맵 플레이어들 위치 이동
+            foreach(GameObject mapPlayerPieceObject in M_MapManager.instance.mapPlayerPieces){
+                MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
+                mapPlayerPiece.RpcChangeMapPlayerPiecePosition(hexagonMapRoom.transform.position);
+                M_MapManager.instance.SetDirection(hexagonMapRoom);
+            }
+            M_MapManager.instance.StartBattle(hexagonMapRoom);
+        }
+    }
+
+    [Server]
+    public void GenerateBattleObject(HexagonMapRoom hexagonMapRoom)
+    {
+        if(isServer)
+        {
+            GeneratePlayerUnit();
+            if(hexagonMapRoom.mapBoss != null){
+                GenerateBossMonster();
+                RpcCardPrefareForBattle();
+                RpcStartBossBattle();
+            }else if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE){
+                GenerateMonster();
+                RpcCardPrefareForBattle();
+                RpcStartMonsterBattle();
+            }else{
+                GenerateNPC("NPC_Mercurius");
+                RpcStartNpcVisit();
+            }
+            // 전투 시작 이치 초기화 및 어빌리티 카드 생성
+            foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
+            {
+                gamePlayerDeck.SetInitialIchi();
+                if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.SpawnAbilityCardRPC();
+            }
+            RpcGenerateAbilityButton();
+            StartCoroutine(WaitingForPlayer(hexagonMapRoom));
+        }
+    }
+
+    IEnumerator WaitingForPlayer(HexagonMapRoom hexagonMapRoom)
+    {
+        int cnt = 0;
+        while(true)
+        {
+            cnt = 0;
+            yield return new WaitForSeconds(0.1f);
+            foreach(GamePlayer user in players)
+                if(user.isTargetObjectInitDone) cnt++;
+            if(cnt != players.Count) continue;
+
+            if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE)
+                phase = BattleTurn.BATTLE_STANDBY;
+            else
+                phase = BattleTurn.NONE_BATTLE_SCENE;
+            break;
+        }
+        ClearTargetObjectInitFlag();
+    }
+
+
+    // -------------------------------------------------------------------- ClientRpc Method -----------------------------------------------------------------//
+
+    // 플레이어 패시브 버튼 생성 요청
+    [ClientRpc]
+    void RpcGenerateAbilityButton()
+    {
+        if(NetworkClient.connection.identity.GetComponent<GamePlayer>().character == Character.HONGDANHYANG)
+            NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().CmdGenerateAbilityButton();
+    }
+
+    // 전투에 필요한 카드 준비 요청
+    [ClientRpc]
+    void RpcCardPrefareForBattle()
+    {
+        // 플레이어 카드 셔플 수행후 PrefareDeck에 추가 요청
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
+            }
+        }
+    }
+ 
+    // 보스전 시작 수신 이벤트
+    [ClientRpc]
+    public void RpcStartBossBattle()
+    {
+        Debug.Log("========================= 보스와 전투가 시작되었습니다. =========================");
+    }
+
+    // 일반 몬스터 혹은 엘리트전 시작 수신 이벤트
+    [ClientRpc]
+    public void RpcStartMonsterBattle()
+    {
+        Debug.Log("====== 몬스터와 전투가 시작되었습니다. ======");
+    }
+
+    // 엔피씨 방문 수신 이벤트
+    [ClientRpc]
+    public void RpcStartNpcVisit()
+    {
+        Debug.Log("== 엔피씨를 방문했습니다. ==");
+    }
+
+    [ClientRpc]
+    void ClearTargetObjectInitFlag()
+    {
+        NetworkClient.connection.identity.GetComponent<GamePlayer>().isTargetObjectInitDone = false;
+    }
+
+    [ClientRpc]
+    public void StartAnimation(TargetObject tar, int trackIndex,string animationName, bool loop )
+    {
+        if(!tar.isCloneData) // Clone 데이터 검증은 Animation 스킵
+        {
+            SkeletonAnimation anim = tar.avatar.GetComponent<SkeletonAnimation>();
+            anim.state.SetAnimation(trackIndex,animationName,loop);
+        }
+    }
+
+    [ClientRpc]
+    public void MoveIronDemon(TargetObject target ,TargetObject tar)
+    {
+        tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "default";
+        tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = -1;
+        int transformOffset = CalcOffset(tar); 
+        tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
+        int offset = (NetworkClient.connection.identity.GetComponent<GamePlayer>() == tar.player) ? 0 : 2;
+        if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0+offset];
+        else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
+        tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
+    }
+
+    int CalcOffset(TargetObject tar)
+    {
+        int retVal = 0;
+        if(tar.player == (NetworkClient.connection.identity.GetComponent<GamePlayer>())) retVal = 0;
+        else
+        {
+            int addval = 0;
+            foreach(GamePlayer user in playerOrder)
+            {
+                if(tar.player == user)
+                    break;
+                if(tar.player == (NetworkClient.connection.identity.GetComponent<GamePlayer>()))
+                    continue;
+                else
+                    addval++;
+            }
+            if(addval == 0) retVal = -1;
+            else retVal = 1;
+        }
+        return retVal;
+    }
+
+    [ClientRpc]
+    public void AnimIronDemon(string anim ,TargetObject tar)
+    {
+        bool isLoop = anim == "Idle" ? true : false;
+        tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
+        tar.ApllyIronDemonAnimationCallbackFunction();
+        StartCoroutine(DelayToShowIronDemon(tar));
+    }
+
+    IEnumerator DelayToShowIronDemon(TargetObject tar)
+    {
+        yield return new WaitForSeconds(0.03f);
+        ShowIronDemon(tar);
+    }
+
+    public void ShowIronDemon(TargetObject tar)
+    {
+        tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "IronDemon";
+        if(tar.player == NetworkClient.connection.identity.GetComponent<GamePlayer>())
+            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = 1;
+        else
+            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
+    }
+
+    [ClientRpc]
+    public void EachPlayerCardDraw()
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.isLocalPlayer){
+                gamePlayerDeck.CmdSpawnCardOnHand();
+            }
+        }
+    }
+
+    [ClientRpc]
+    public void EachPlayerEndTurn()
+    {
+        // 각 플레이어들의 모든 카드와 화살표 제거
+        M_CardManager.instance.RemoveAllCurrentPlayerArrow();
+        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHands();
+    }
+
     public void SelectOrder(int num)
     {
         NetworkClient.localPlayer.GetComponent<GamePlayer>().SetOrderByUI(num);
-    }
-
-    // 플레이어 정보 및 턴 정보 뷰 세팅
-    public void SetPlayerOrderView(int index)
-    {
-        GamePlayer gamePlayer = M_TurnManager.instance.playerOrder[index];
-        OrderUI orderUI = GameUIManager.instance.playerOrderList[index].GetComponent<OrderUI>();
-        orderUI.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
-        if(gamePlayer.isLocalPlayer){
-            orderUI.playerOwnMenu.gameObject.SetActive(true); // 전용 메뉴 활성화
-            float width = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.width;
-            float height = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.height;
-            orderUI.buttonPlayerOrder.GetComponent<RectTransform>().sizeDelta = new Vector2(width + 30f, height + 30f); // 버튼 크기 크게 변경(변경된 값이 native size)
-        }
     }
 
     [ClientRpc]
@@ -839,70 +886,12 @@ public class M_TurnManager : NetworkBehaviour
         isOrderSelect = true;
     }
 
-    [Server]
-    public void OnChangedMonsterList()
-    {
-        if(spawnedMonsterList.Count == 0)
-            phase = BattleTurn.BATTLE_END;
-    }
-
-    [Server]
-    public void BattleEnd()
-    {   
-        // TODO : 전투 종료 혹은 이벤트방에서 개인별로 먼저 수행하고 넘어가는게 맞을지?, 팀원이 모두 수행을 끝낼때까지 기다리는게 맞을지?
-        
-        // 전투 종료시 플레이어들의 캐릭터별 보상카드 랜덤추출하여 각 플레이어들에게 전달
-        foreach(GamePlayer gamePlayer in playerOrder){
-            GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
-            int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
-            List<Card> rewardCards = new List<Card>();
-            List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
-            if(cardsByCharacter.Count > 0){
-                for(int i = 0; i < rewardCardCount; i++){
-                    int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                    rewardCards.Add(cardsByCharacter[randomIndex]);
-                    cardsByCharacter.RemoveAt(randomIndex);
-                }
-            }
-            NetworkConnectionToClient networkConnectionToClient = gamePlayer.GetComponent<NetworkIdentity>().connectionToClient;
-            gamePlayerDeck.TargetSetBattleRewardCard(networkConnectionToClient, rewardCards); // 플레이어들에게 보상카드 리스트 데이터 전달
-        }
-        ResetEndTurnState(); // 턴종료 상태 리셋
-    }
-
-    [Server]
-    public void NoneBattleEnd()
-    {
-        EachPlayerNoneBattleEnd();
-    }
-
-
     [ClientRpc]
     public void EachPlayerNoneBattleEnd()
     {
         M_CardManager.instance.RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck(); // 현재 플레이어 손에 있던 카드들을 삭제, 삭제 시 Trash Deck에 추가하지 않음.
         M_CardManager.instance.RemoveAllCurrentPlayerPrefareDeckAndTrashDeck(); // 플레이어의 PrefareDeck, TrashDeck 삭제
         ReturnToMap();
-    }
-
-    [Server]
-    public void ClearTargetObject()
-    {
-        ClearTargetObjectList(cloneMonsterList);
-        ClearTargetObjectList(spawnedMonsterList);
-        ClearTargetObjectList(clonePlayerList);
-        ClearTargetObjectList(spawnedPlayerList);
-        spawnedPlayerSyncList.Clear();
-    }
-
-    private void ClearTargetObjectList(List<TargetObject> targets)
-    {
-        for(int i = targets.Count - 1 ; i >=0 ; i--)
-        {
-            TargetObject removeItem = targets[i];
-            targets.Remove(removeItem);
-            NetworkServer.Destroy(removeItem.gameObject);
-        }
     }
 
     public void ReturnToMap()
@@ -1008,6 +997,20 @@ public class M_TurnManager : NetworkBehaviour
             retVal.AddRange(spawnedPlayerList);
 
         return retVal.ToArray();
+    }
+
+    // 플레이어 정보 및 턴 정보 뷰 세팅
+    public void SetPlayerOrderView(int index)
+    {
+        GamePlayer gamePlayer = M_TurnManager.instance.playerOrder[index];
+        OrderUI orderUI = GameUIManager.instance.playerOrderList[index].GetComponent<OrderUI>();
+        orderUI.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
+        if(gamePlayer.isLocalPlayer){
+            orderUI.playerOwnMenu.gameObject.SetActive(true); // 전용 메뉴 활성화
+            float width = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.width;
+            float height = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.height;
+            orderUI.buttonPlayerOrder.GetComponent<RectTransform>().sizeDelta = new Vector2(width + 30f, height + 30f); // 버튼 크기 크게 변경(변경된 값이 native size)
+        }
     }
 
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//

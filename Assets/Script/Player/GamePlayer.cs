@@ -57,49 +57,6 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public bool isLoadDone = false;
 
-    [ClientRpc]
-    public void RemoveDestroyCardList(CardOnHand cardOnHand)
-    {
-        if(isOwned)
-        {
-            destroyCards.Remove(cardOnHand);
-        }
-    }
-
-
-    public void OnEndTurnStateChanged(bool oldVal, bool newVal)
-    {
-        if(isServer)
-        {
-            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
-            foreach(GamePlayer user in users)
-            {
-                if(!user.endTurnActive)return;
-            }
-            switch(M_TurnManager.instance.phase)
-            {
-                case BattleTurn.PLAYER_ACTIVE :
-                    M_TurnManager.instance.phase = BattleTurn.PLAYER_ACTIVE_DONE;
-                    break;
-                case BattleTurn.NONE_BATTLE_SCENE :
-                    M_TurnManager.instance.phase = BattleTurn.NONE_BATTLE_END;
-                    break;
-            }
-        }
-    }
-
-    public void SetOrderByUI(int num)
-    {
-        if(isLocalPlayer)
-            selectOrder = num;
-    }
-
-    public void OnChangedSelectOrder(int oldVal,int newVal)
-    {
-        MapUI.instance.UpdateProfile();
-        if(isLocalPlayer)
-            MapUI.instance.SetOrderIndicator(newVal);
-    }
 
     public override void OnStartLocalPlayer()
     {
@@ -120,23 +77,10 @@ public class GamePlayer : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    void UploadAvatar()
+    public void SetOrderByUI(int num)
     {
         if(isLocalPlayer)
-        {
-            byte[] uploadableImage;
-            int imageId = SteamFriends.GetSmallFriendAvatar((CSteamID)steamID);
-            uploadableImage = M_SteamManager.instance.GetSteamImageAsByteArray(imageId,out bool isValid, out uint width, out uint height);
-            if(isValid)
-            {
-                avatarWidth = (int)width;
-                avatarHeight = (int)height;
-                for(int i = 0 ;i < uploadableImage.Length ; i ++)
-                    avatarImage.Add(uploadableImage[i]);
-            }
-            isAvatarUploadDone = true;
-        }
+            selectOrder = num;
     }
 
     IEnumerator WaitPlayerList()
@@ -205,6 +149,147 @@ public class GamePlayer : NetworkBehaviour
         //변경 필요
     }
 
+    // ------------------------------------------------------------- Command Method ------------------------------------------------------------------//
+
+    // 맵 씬 채팅 메시지 이벤트 송신
+    [Command]
+    public void CmdSendChatMessage(string message, NetworkConnectionToClient sender = null)
+    {
+        if (!string.IsNullOrWhiteSpace(message)){
+            string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
+            RpcReceiveChatMessage(color, playerName, message.Trim());
+        }
+    }
+
+    // 전투 씬 채팅 메시지 이벤트 송신
+    [Command]
+    public void CmdSendChatMessageGameScene(string message, NetworkConnectionToClient sender = null)
+    {
+        if (!string.IsNullOrWhiteSpace(message)){
+            string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
+            RpcReceiveChatMessageGameScene(color, playerName, message.Trim());
+        }
+    }
+
+    // ---------------------------------------------------------------- Server Method -----------------------------------------------------------------//
+
+    [Server]
+    public void SetPlayerOrder(int num)
+    {
+        SetPlayerOrderRPC(num);
+    }
+
+    // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
+
+    [ClientRpc]
+    public void RemoveDestroyCardList(CardOnHand cardOnHand)
+    {
+        if(isOwned)
+        {
+            destroyCards.Remove(cardOnHand);
+        }
+    }
+
+    [ClientRpc]
+    void UploadAvatar()
+    {
+        if(isLocalPlayer)
+        {
+            byte[] uploadableImage;
+            int imageId = SteamFriends.GetSmallFriendAvatar((CSteamID)steamID);
+            uploadableImage = M_SteamManager.instance.GetSteamImageAsByteArray(imageId,out bool isValid, out uint width, out uint height);
+            if(isValid)
+            {
+                avatarWidth = (int)width;
+                avatarHeight = (int)height;
+                for(int i = 0 ;i < uploadableImage.Length ; i ++)
+                    avatarImage.Add(uploadableImage[i]);
+            }
+            isAvatarUploadDone = true;
+        }
+    }
+
+    [ClientRpc]
+    public void SetIsReadyStateDefault()
+    {
+        if(netIdentity == NetworkClient.connection.identity)
+            isReady = false;
+    }
+
+    [ClientRpc]
+    public void SetEndTurnActiveStateDefault()
+    {
+        if(netIdentity == NetworkClient.connection.identity)
+            endTurnActive = false;
+    }
+
+    [ClientRpc]
+    public void SetCompleteRewardStateDefault()
+    {
+        if(netIdentity == NetworkClient.connection.identity)
+            isRewardDone = false;
+    }
+
+    // 전투 씬 채팅 메시지 이벤트 수신
+    [ClientRpc]
+    void RpcReceiveChatMessageGameScene(Color color, string playerName, string message)
+    {
+        GameUIManager.instance.AppendMessage(color, playerName, message);
+    }
+
+    // 맵 씬 채팅 메시지 이벤트 수신
+    [ClientRpc]
+    void RpcReceiveChatMessage(Color color, string playerName, string message)
+    {
+        MapUI.instance.AppendMessage(color, playerName, message);
+    }
+
+    [ClientRpc]
+    void SetPlayerOrderRPC(int num)
+    {
+        if(isLocalPlayer)
+        {
+            selectOrder = num;
+        }
+    }
+
+    // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
+    
+    public void OnEndTurnStateChanged(bool oldVal, bool newVal)
+    {
+        if(isServer)
+        {
+            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+            foreach(GamePlayer user in users)
+            {
+                if(!user.endTurnActive)return;
+            }
+            switch(M_TurnManager.instance.phase)
+            {
+                case BattleTurn.PLAYER_ACTIVE :
+                    M_TurnManager.instance.phase = BattleTurn.PLAYER_ACTIVE_DONE;
+                    break;
+                case BattleTurn.NONE_BATTLE_SCENE :
+                    M_TurnManager.instance.phase = BattleTurn.NONE_BATTLE_END;
+                    break;
+            }
+        }
+    }
+    
+    public void OnCompleteReward(bool oldVal, bool newVal)
+    {
+        if(isServer)
+        {
+            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+            foreach(GamePlayer player in users)
+            {
+                if(!player.isRewardDone) return;
+            }
+            foreach(GamePlayer player in users)player.SetCompleteRewardStateDefault();
+            M_TurnManager.instance.NoneBattleEnd();
+        }   
+    }
+    
     public void OnReadyStateChanged(bool oldVal, bool newVal)
     {
         MapUI.instance.UpdateProfile();
@@ -224,88 +309,11 @@ public class GamePlayer : NetworkBehaviour
         }    
     }
 
-    [ClientRpc]
-    public void SetIsReadyStateDefault()
+    public void OnChangedSelectOrder(int oldVal,int newVal)
     {
-        if(netIdentity == NetworkClient.connection.identity)
-            isReady = false;
-    }
-
-    [ClientRpc]
-    public void SetEndTurnActiveStateDefault()
-    {
-        if(netIdentity == NetworkClient.connection.identity)
-            endTurnActive = false;
-    }
-
-    public void OnCompleteReward(bool oldVal, bool newVal)
-    {
-        if(isServer)
-        {
-            GamePlayer[] users = FindObjectsOfType<GamePlayer>();
-            foreach(GamePlayer player in users)
-            {
-                if(!player.isRewardDone) return;
-            }
-            foreach(GamePlayer player in users)player.SetCompleteRewardStateDefault();
-            M_TurnManager.instance.NoneBattleEnd();
-        }   
-    }
-
-    [ClientRpc]
-    public void SetCompleteRewardStateDefault()
-    {
-        if(netIdentity == NetworkClient.connection.identity)
-            isRewardDone = false;
-    }
-
-    // 맵 씬 채팅 메시지 이벤트 송신
-    [Command]
-    public void CmdSendChatMessage(string message, NetworkConnectionToClient sender = null)
-    {
-        if (!string.IsNullOrWhiteSpace(message)){
-            string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-            RpcReceiveChatMessage(color, playerName, message.Trim());
-        }
-    }
-
-    // 맵 씬 채팅 메시지 이벤트 수신
-    [ClientRpc]
-    void RpcReceiveChatMessage(Color color, string playerName, string message)
-    {
-        MapUI.instance.AppendMessage(color, playerName, message);
-    }
-
-    // 전투 씬 채팅 메시지 이벤트 송신
-    [Command]
-    public void CmdSendChatMessageGameScene(string message, NetworkConnectionToClient sender = null)
-    {
-        if (!string.IsNullOrWhiteSpace(message)){
-            string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-            RpcReceiveChatMessageGameScene(color, playerName, message.Trim());
-        }
-    }
-
-    // 전투 씬 채팅 메시지 이벤트 수신
-    [ClientRpc]
-    void RpcReceiveChatMessageGameScene(Color color, string playerName, string message)
-    {
-        GameUIManager.instance.AppendMessage(color, playerName, message);
-    }
-
-    [Server]
-    public void SetPlayerOrder(int num)
-    {
-        SetPlayerOrderRPC(num);
-    }
-
-    [ClientRpc]
-    void SetPlayerOrderRPC(int num)
-    {
+        MapUI.instance.UpdateProfile();
         if(isLocalPlayer)
-        {
-            selectOrder = num;
-        }
+            MapUI.instance.SetOrderIndicator(newVal);
     }
 
     void OnChangedAvatar(bool oldVal, bool newVal)
