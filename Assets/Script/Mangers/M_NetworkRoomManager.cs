@@ -56,7 +56,6 @@ public class M_NetworkRoomManager : NetworkRoomManager
         NetworkServer.Spawn(roomPlayer,conn);
         if(roomPlayers.Length == 0){
             roomPlayer.GetComponent<RoomPlayer>().order = PlayOrder.FIRST;
-            roomPlayer.GetComponent<RoomPlayer>().color = colors[0];
         }
         // Play Order 겹치지 않도록 새로운 RoomPlayer에게 배정
         for(int i = 0 ;i < 3 ;i ++)
@@ -66,11 +65,12 @@ public class M_NetworkRoomManager : NetworkRoomManager
                 break;
             else if(j == roomPlayers.Length - 1){
                 roomPlayer.GetComponent<RoomPlayer>().order = (PlayOrder)i;
-                roomPlayer.GetComponent<RoomPlayer>().color = colors[i];
                 i = 3;
                 break;
             }
         }
+        roomPlayer.GetComponent<RoomPlayer>().color = colors[clientIndex - 1];
+
         return roomPlayer;
     }
 }
