@@ -29,7 +29,7 @@ public class GamePlayerItem : NetworkBehaviour
             case SyncList<Item>.Operation.OP_ADD:
                 switch(newArtifact.effectTime){
                     case ItemEffectTime.STARTBATTLE :
-                        ART_OnStartBattleEvent += ItemData.instance.itemEffects[newArtifact.name];
+                        ART_OnStartBattleEvent += ItemData.instance.itemEffects[newArtifact.itemName];
                     break;
                 }
                 break;

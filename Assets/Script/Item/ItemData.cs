@@ -1,18 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Reflection;
 using System.IO;
 using System;
 using ProjectD;
-using Spine.Unity;
 
 public partial class ItemData : SingletonD<ItemData>
 {
     public List<Item> artifacts = new List<Item>();
     public List<Item> legacies = new List<Item>();
+
     // 아이템이름을 키값으로 가지는 DIctionary
-    public Dictionary<string,ItemEventHanddler> itemEffects = new Dictionary<string, ItemEventHanddler>();
+    public Dictionary<string, ItemEventHanddler> itemEffects = new Dictionary<string, ItemEventHanddler>();
 
     //Version 4
     public void LoadArtifactData()
