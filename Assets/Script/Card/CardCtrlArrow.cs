@@ -122,7 +122,7 @@ public class CardCtrlArrow : NetworkBehaviour
                         //
                         arrowOwnedCardOnHand.isUsed = true;
                         arrowOwnedCardOnHand.isMoving = false;
-                        CmdEnQueueCardData(gamePlayerDeck, arrowOwnedCardOnHand,targetObject, NetworkClient.connection.identity); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
+                        CmdEnQueueCardData(gamePlayerDeck, arrowOwnedCardOnHand,targetObject, NetworkClient.connection.identity.connectionToClient); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
                         AcceptCardUse();
                     }
                 }
@@ -132,7 +132,7 @@ public class CardCtrlArrow : NetworkBehaviour
 
 
     [Command]
-    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, CardOnHand cardOnHand, TargetObject tar, NetworkIdentity conn)
+    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, CardOnHand cardOnHand, TargetObject tar, NetworkConnectionToClient conn)
     {
         gamePlayerDeck.serverCardPredictQueue.Enqueue((cardOnHand, tar, conn));
     }

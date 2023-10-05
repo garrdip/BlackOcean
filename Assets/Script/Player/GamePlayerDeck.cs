@@ -38,7 +38,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public CardOnHand[] choosedCardOnHands = new CardOnHand[2];  // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
 
-    public Queue<(CardOnHand,TargetObject,NetworkIdentity)> serverCardPredictQueue = new Queue<(CardOnHand, TargetObject, NetworkIdentity)>();// Server에서 Card Queue 관리를 위한 Queue
+    public Queue<(CardOnHand,TargetObject,NetworkConnectionToClient)> serverCardPredictQueue = new Queue<(CardOnHand, TargetObject, NetworkConnectionToClient)>();// Server에서 Card Queue 관리를 위한 Queue
 
     [SyncVar(hook = nameof(PreviousCardTypeChanged))]
     public CardType previousCardType;
@@ -189,7 +189,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         WaitForSeconds loopTime = new WaitForSeconds(0.01f);
         CardOnHand cardOnHand;
         TargetObject targetObject;
-        NetworkIdentity conn;
+        NetworkConnectionToClient conn;
 
         while(true)
         {
@@ -203,18 +203,18 @@ public partial class GamePlayerDeck : NetworkBehaviour
             
             if(totalCost > currentIchi) // 카드 코스트 계산 하는곳
             {
-                ReturnToCardOnHand(cardOnHand,conn);
+                ReturnToCardOnHand(conn,cardOnHand);
                 continue;
             }
             if(cardOnHand.card.baseCard.isTargetable && targetObject == null)
             {
-                ReturnToCardOnHand(cardOnHand,conn);
+                ReturnToCardOnHand(conn,cardOnHand);
                 continue;
             }
             if(cardOnHand.card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
             {
                 //카드와 이치 다시 돌려보내는곳
-                ReturnToCardOnHand(cardOnHand,conn);
+                ReturnToCardOnHand(conn,cardOnHand);
                 continue;
             }
             currentIchi -= totalCost ;
@@ -518,13 +518,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
         if(isOwned)CmdSpawnAbilityCard();
     }
 
-    [ClientRpc]
-    public void ReturnToCardOnHand(CardOnHand cardOnHand,NetworkIdentity conn)
+    [TargetRpc]
+    public void ReturnToCardOnHand(NetworkConnectionToClient target,CardOnHand cardOnHand)
     {
-        if(conn == NetworkClient.connection.identity)
-        {
-           StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
-        }
+        StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
     }
 
     // 전투 보상 카드 데이터 세팅 수신

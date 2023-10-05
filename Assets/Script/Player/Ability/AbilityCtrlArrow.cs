@@ -82,14 +82,14 @@ public class AbilityCtrlArrow : NetworkBehaviour
         if(Input.GetMouseButtonUp(0) && currentTarget != null){
             if(NetworkClient.connection != null && NetworkClient.active){
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.GetComponent<GamePlayerDeck>();
-                CmdEnQueueCardData(gamePlayerDeck, currentTarget, NetworkClient.connection.identity);
+                CmdEnQueueCardData(gamePlayerDeck, currentTarget, NetworkClient.connection.identity.connectionToClient);
                 RemoveAbilityCtrlArrow();
             }
         }
     }
 
     [Command]
-    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, TargetObject tar, NetworkIdentity conn)
+    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, TargetObject tar, NetworkConnectionToClient conn)
     {
         gamePlayerDeck.serverCardPredictQueue.Enqueue((gamePlayerDeck.abilityCard, tar, conn));
     }

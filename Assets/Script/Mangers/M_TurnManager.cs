@@ -64,11 +64,11 @@ public class M_TurnManager : NetworkBehaviour
         OnChangedPhase();
     }}
 
-    public TargetObject GetPlayer(NetworkIdentity conn)
+    public TargetObject GetPlayer(NetworkConnectionToClient conn)
     {     
         foreach(TargetObject tar in spawnedPlayerList)
         {
-            if(tar.player.netIdentity == conn){
+            if(tar.player.netIdentity.connectionToClient == conn){
                 Debug.Log(tar.player.netIdentity + " and " + conn);
                 return tar;
             }
@@ -76,11 +76,11 @@ public class M_TurnManager : NetworkBehaviour
         return null;
     }
 
-    public TargetObject GetClonePlayer(NetworkIdentity conn)
+    public TargetObject GetClonePlayer(NetworkConnectionToClient conn)
     {
         foreach(TargetObject tar in spawnedPlayerList)
         {
-            if(tar.player.netIdentity == conn)
+            if(tar.player.netIdentity.connectionToClient == conn)
             return tar.clone;
         }
         return null;

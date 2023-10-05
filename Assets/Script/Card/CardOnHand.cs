@@ -270,7 +270,7 @@ public class CardOnHand : NetworkBehaviour
                     }
 
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-                    CmdEnQueueCardData(gamePlayerDeck,NetworkClient.connection.identity);
+                    CmdEnQueueCardData(gamePlayerDeck,NetworkClient.connection.identity.connectionToClient);
                     M_CardManager.instance.CardOnHandThrowAwaySequence(this);
                 }
                 else
@@ -284,7 +284,7 @@ public class CardOnHand : NetworkBehaviour
     }
 
     [Command]
-    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, NetworkIdentity conn)
+    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, NetworkConnectionToClient conn)
     {
         gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null, conn));
     }
