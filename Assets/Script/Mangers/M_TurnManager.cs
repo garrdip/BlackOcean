@@ -791,14 +791,13 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     public void MoveIronDemon(TargetObject target ,TargetObject tar)
     {
-        tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "default";
-        tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = -1;
         int transformOffset = CalcOffset(tar); 
         tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
         int offset = (NetworkClient.connection.identity.GetComponent<GamePlayer>() == tar.player) ? 0 : 2;
         if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0+offset];
         else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
         tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
+        tar.ironDemon.GetComponent<MeshRenderer>().material = null;
     }
 
     int CalcOffset(TargetObject tar)
@@ -829,23 +828,8 @@ public class M_TurnManager : NetworkBehaviour
         bool isLoop = anim == "Idle" ? true : false;
         tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
         tar.ApllyIronDemonAnimationCallbackFunction();
-        StartCoroutine(DelayToShowIronDemon(tar));
     }
 
-    IEnumerator DelayToShowIronDemon(TargetObject tar)
-    {
-        yield return new WaitForSeconds(0.03f);
-        ShowIronDemon(tar);
-    }
-
-    public void ShowIronDemon(TargetObject tar)
-    {
-        tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "IronDemon";
-        if(tar.player == NetworkClient.connection.identity.GetComponent<GamePlayer>())
-            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = 1;
-        else
-            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
-    }
 
     [ClientRpc]
     public void EachPlayerCardDraw()

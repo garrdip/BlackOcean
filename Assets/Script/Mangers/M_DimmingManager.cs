@@ -20,6 +20,8 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
         foreach(TargetObject tar in targets)
         {
             tar.GetComponent<SortingGroup>().sortingLayerName = "FrontLayer";
+            foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>())
+                canvas.sortingLayerName = "FrontLayer";
         }
     }
     [ClientRpc]
@@ -30,6 +32,9 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
         {
             if(tar != null)
                 tar.GetComponent<SortingGroup>().sortingLayerName = "BackLayer";
+
+            foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>())
+                canvas.sortingLayerName = "BackLayer";
         }
     }
 
