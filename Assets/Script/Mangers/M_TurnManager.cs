@@ -29,18 +29,10 @@ public class M_TurnManager : NetworkBehaviour
     public GameObject orderUI;
 
     public bool isOrderSelect = false;
-    public bool isMyTurn = false;
+
     public bool isCardQueueOperating = false;
 
-    [Header("Scene Change Black Curtain")]
-    public GameObject blackCurtain;
-
     public List<Button> selectOrderButtons;
-
-
-    [Header("Spwan Object Transfrom Group")]
-    public Transform playerSpawnLocation;
-    public Transform monsterSpawnLocation;
 
     public List<TargetObject> spawnedPlayerList = new List<TargetObject>();
     public List<TargetObject> clonePlayerList = new List<TargetObject>();

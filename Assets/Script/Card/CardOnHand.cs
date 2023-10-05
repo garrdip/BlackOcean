@@ -51,7 +51,7 @@ public class CardOnHand : NetworkBehaviour
     [Header("현재 게임 플레이어의 GamePlayerDeck 클래스 참조값")]
     public GamePlayerDeck currentPlayerDeck;
 
-        [Header("CardOnHand UI Canvas 컴포넌트")]
+    [Header("CardOnHand UI Canvas 컴포넌트")]
     public Canvas cardOnHandCanvas;
 
     [Header("CardOnHand Sprite 컴포넌트")]

@@ -13,9 +13,6 @@ public class M_MapManager : NetworkBehaviour
     
     [SyncVar]
     public HexagonMapRoom currentRoom;
-   
-    [SyncVar]
-    public int turnsLeft = 10;
 
     [SyncVar]
     HexagonMapRoom moveToRoomDestination;
@@ -68,7 +65,6 @@ public class M_MapManager : NetworkBehaviour
 
     public readonly SyncList<Region> regions = new SyncList<Region>(); // 거점지역 리스트
 
-    public const float rangeExistOtherHexagon = 0.5f; // 현재 위치한 육각형 주위에 다른 육각형이 존재하는지 확인용 중심점 간의 거리 차이 계산값
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
 
     [Header("경로 표시용 스프라이트 라인랜더러 프리팹")]
