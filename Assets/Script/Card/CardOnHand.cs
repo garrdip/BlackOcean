@@ -311,6 +311,8 @@ public class CardOnHand : NetworkBehaviour
             {
                 cardOnHand.isMoving = false;
                 cardOnHand.isDrag = false;
+                TargetObject currentPlayer = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayerDeck.GetComponent<GamePlayer>());
+                currentPlayer.ShowCostNotReaminBubble();
             }
             else if(cardOnHand.card.baseCard.isTargetable)
             {

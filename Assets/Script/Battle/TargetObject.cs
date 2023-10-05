@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using ProjectD;
-using Steamworks;
+using DG.Tweening;
 using TMPro;
 using Spine.Unity;
 
@@ -14,7 +14,7 @@ public class TargetObject : NetworkBehaviour
     public GameObject monsterNamePlate;
     public NamePlate selectedNamePlate;
     public TextMeshProUGUI targetObjectName;
-
+    public Canvas playerMessageCavnas;
     public BuffIndicatorController buffIndicator;
     public NextActionIndicator nextActionIndicator;
 
@@ -209,6 +209,20 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
+    // 남은 코스트 없음 표시하는 말풍선 페이드인 후 페이드 아웃
+    public void ShowCostNotReaminBubble()
+    {
+        CanvasGroup canvasGroup = playerMessageCavnas.GetComponent<CanvasGroup>();
+        if(DOTween.IsTweening(canvasGroup)){
+            DOTween.Kill(canvasGroup);
+        }
+        canvasGroup.gameObject.SetActive(true);
+        canvasGroup.DOFade(1.0f, 1f).OnComplete(() => {
+            canvasGroup.DOFade(0.0f, 1f).OnComplete(() => {
+                canvasGroup.gameObject.SetActive(false);
+            }); 
+        }); 
+    }
 
 
     // ----------------------------------------------           Damage 관련 함수        ---------------------------------------------------//
