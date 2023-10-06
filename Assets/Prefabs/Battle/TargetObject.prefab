@@ -752,6 +752,7 @@ MonoBehaviour:
   selectedNamePlate: {fileID: 0}
   targetObjectName: {fileID: 521143396071593072}
   playerMessageCavnas: {fileID: 7208020436336796324}
+  playerMessageBubble: {fileID: 1231679801373926788}
   buffIndicator: {fileID: 3626619607479802059}
   nextActionIndicator: {fileID: 2888408972560071505}
   objectType: 0

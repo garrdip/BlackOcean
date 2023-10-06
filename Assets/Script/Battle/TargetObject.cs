@@ -15,6 +15,7 @@ public class TargetObject : NetworkBehaviour
     public NamePlate selectedNamePlate;
     public TextMeshProUGUI targetObjectName;
     public Canvas playerMessageCavnas;
+    public TextMeshProUGUI playerMessageBubble;
     public BuffIndicatorController buffIndicator;
     public NextActionIndicator nextActionIndicator;
 
@@ -209,9 +210,22 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
-    // 남은 코스트 없음 표시하는 말풍선 페이드인 후 페이드 아웃
-    public void ShowCostNotReaminBubble()
+    // 남은 코스트 없음 표시하는 말풍선 페이드인 후 페이드아웃
+    public void ShowCostNotReaminBubble(GamePlayer gamePlayer)
     {
+        // 캐릭터 별로 메시지 버블 텍스트 분기처리
+        switch(gamePlayer.character){
+            case Character.GEORK:
+                playerMessageBubble.text = Const.COST_NOT_REMAIN_TEXT_GEORK;
+                break;
+            case Character.ERIS:
+                playerMessageBubble.text = Const.COST_NOT_REMAIN_TEXT_ERIS;
+                break;
+            case Character.HONGDANHYANG:
+                playerMessageBubble.text = Const.COST_NOT_REMAIN_TEXT_HONGDANHYANG;
+                break;
+        }
+        // 페이드인 1초 후 페이드아웃 1초 
         CanvasGroup canvasGroup = playerMessageCavnas.GetComponent<CanvasGroup>();
         if(DOTween.IsTweening(canvasGroup)){
             DOTween.Kill(canvasGroup);
