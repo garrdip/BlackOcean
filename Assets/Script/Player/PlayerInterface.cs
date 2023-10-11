@@ -63,11 +63,22 @@ public class PlayerInterface : NetworkBehaviour
         if(isLocalPlayer)
         {
             M_MapManager.instance.GenerateHexgonGrid(40);
-            GenerateGamePlayer();           
-            isInitializeDone = true;
-            Debug.Log("Init Done!");
+            GenerateGamePlayer();
+            StartCoroutine(WaitGamePlayerGen());
             StartCoroutine(nameof(WaitPlayerList));
         }
+    }
+
+    IEnumerator WaitGamePlayerGen()
+    {
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        while(true)
+        {
+            GamePlayer[] gamePlayers = FindObjectsOfType<GamePlayer>();
+            if(gamePlayers.Length == netManager.roomSlots.Count) break;
+            yield return new WaitForSeconds(0.01f);
+        }
+        isInitializeDone = true;
     }
 
     [Command]
@@ -83,29 +94,47 @@ public class PlayerInterface : NetworkBehaviour
         gamePlayer.selectOrder = selectOrder;
 
         GamePlayerMap gamePlayerMap = cloneAvatar.GetComponent<GamePlayerMap>();
-        
-        // MapPlayerPiece 생성
+        CmdSpawnMapPlayerPiece(gamePlayerMap);
+        CmdSpawnMapPlayerDestination(gamePlayerMap);
+    }
+
+    
+    // 맵에서 사용될 플레이어 권한을 가진 삼각형 오브젝트 생성
+    [Command]
+    public void CmdSpawnMapPlayerPiece(GamePlayerMap gamePlayerMap)
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         GameObject mapPlayerPieceObject = Instantiate(
-            netManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerPiece"),
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerPiece"),
             Vector3.zero,
             Quaternion.identity
         );
+
         MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
-        mapPlayerPiece.steamId =  SteamFriends.GetFriendPersonaName((CSteamID)steamID); // 스팀아이디 값 세팅
-        mapPlayerPiece.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
+        PlayerInterface gamePlayer = GetComponent<PlayerInterface>();
+        mapPlayerPiece.steamId =  SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID); // 스팀아이디 값 세팅
+        //mapPlayerPiece.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
+        //TODO
         NetworkServer.Spawn(mapPlayerPieceObject, connectionToClient);
+
         gamePlayerMap.currentMapPlayerPiece = mapPlayerPiece; // 자신소유의 mapPlayerPiece 참조값 세팅
         M_MapManager.instance.mapPlayerPieces.Add(mapPlayerPieceObject); // 매니저의 리스트에 생성된 맵 플레이어 추가
+    }
 
-        // MapPlayerDestination 생성
+    // 맵플레이어가 이동할 위치를 표시하는 오브젝트 생성
+    [Command]
+    public void CmdSpawnMapPlayerDestination(GamePlayerMap gamePlayerMap)
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         GameObject mapPlayerDestinationObject = Instantiate(
-            netManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerDestination"),
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerDestination"),
             Vector3.zero,
             Quaternion.identity
         );
         MapPlayerDestination mapPlayerDestination = mapPlayerDestinationObject.GetComponent<MapPlayerDestination>();
-        mapPlayerDestination.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
+        mapPlayerDestination.gamePlayer = GetComponent<GamePlayer>(); // 게임 플레이어 참조값 세팅
         NetworkServer.Spawn(mapPlayerDestinationObject, connectionToClient);
+
         gamePlayerMap.currentMapPlayerDestination = mapPlayerDestination; // 자신소유의 currentMapPlayerDestination 참조값 세팅
     }
 
@@ -114,14 +143,12 @@ public class PlayerInterface : NetworkBehaviour
         M_NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
         WaitForSeconds loopSecond = new WaitForSeconds(0.01f);
         //GamePlayer가 모두 로드 될때까지 기다림
-        Debug.Log("0");
         while(true)
         {
             PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
             if(users.Length == netManger.roomSlots.Count) break;
             yield return loopSecond;
         }
-        Debug.Log("1");
         //GamePlayer가 모두 Initial Value 초기화 될때까지 기다림
         while(true)
         {
@@ -134,7 +161,6 @@ public class PlayerInterface : NetworkBehaviour
             if(cnt == netManger.roomSlots.Count) break;
             yield return loopSecond;
         }
-        Debug.Log("2");
         SetUserStatusUI();
         M_TurnManager.instance.SetOrderButtonListener();
         // 플레이어 로딩이 끝나면 턴매니저로 플레이어 리스트를 전달함
@@ -145,7 +171,6 @@ public class PlayerInterface : NetworkBehaviour
             foreach(PlayerInterface user in users)
                 user.UploadAvatar();
         }
-        Debug.Log("3");
         //UI Update
         MapUI.instance.UpdateProfile();
         if(isServer){
