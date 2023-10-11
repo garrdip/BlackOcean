@@ -6633,10 +6633,11 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 354743714609597316, guid: a7092fdea86b65142a3ac3d1fea9f252, type: 3}
+  playerPrefab: {fileID: 8925827870415029749, guid: 35338e4e9b52b4f45bd96a4d6be34241, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
+  - {fileID: 354743714609597316, guid: a7092fdea86b65142a3ac3d1fea9f252, type: 3}
   - {fileID: 6401606778164361385, guid: 3740b90e74c0e1d47b2244af5b966290, type: 3}
   - {fileID: 2153712344633156845, guid: 4fc3aa0dc4717124e88a0e2274161e50, type: 3}
   - {fileID: 3624024140002001778, guid: 34869d7c042cb0744929e1f3a3606061, type: 3}
