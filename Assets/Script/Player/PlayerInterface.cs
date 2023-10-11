@@ -86,53 +86,69 @@ public class PlayerInterface : NetworkBehaviour
     {
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "GamePlayer"),new Vector3(0,0,0),Quaternion.identity);
-        NetworkServer.Spawn(cloneAvatar,connectionToClient);
         
         GamePlayer gamePlayer = cloneAvatar.GetComponent<GamePlayer>();
         gamePlayer.objectOwner = this;
         gamePlayer.character = character;
         gamePlayer.selectOrder = selectOrder;
+        NetworkServer.Spawn(cloneAvatar,connectionToClient);
 
+        GamePlayerDeck gamePlayerDeck = cloneAvatar.GetComponent<GamePlayerDeck>();
+
+        gamePlayerDeck.InitIchi();
+
+        // CardPocket 오브젝트 생성
+        GameObject cardPocketObject = Instantiate(
+            netManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")),
+            Vector3.zero,
+            Quaternion.identity);
+        NetworkServer.Spawn(cardPocketObject, connectionToClient);
+        gamePlayerDeck.cardPocket = cardPocketObject.GetComponent<CardPocket>();
+
+        
+        // 화살표 생성 초기 위치는 화면 밖
+        Vector3 arrowSpawnPosition = new Vector3(-100f, 0f, 0f);
+        // 화살표 인디케이터 오브젝트 생성
+        GameObject cardEmitter = Instantiate(
+            netManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")),
+            arrowSpawnPosition,
+            Quaternion.identity);
+        NetworkServer.Spawn(cardEmitter, connectionToClient);
+        gamePlayerDeck.cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();
+
+        // 어빌리티 화살표 생성 초기 위치는 화면 밖
+        Vector3 abilityArrowSpawnPosition = new Vector3(-100f, 0f, 0f);
+        // 어빌리티 화살표 인디케이터 오브젝트 생성
+        GameObject abilityEmitter = Instantiate(
+            netManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowEmitter")),
+            abilityArrowSpawnPosition,
+            Quaternion.identity);
+        NetworkServer.Spawn(abilityEmitter, connectionToClient);
+        gamePlayerDeck.abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>();
+
+
+        // MapPlayerPiece 오브젝트 생성
         GamePlayerMap gamePlayerMap = cloneAvatar.GetComponent<GamePlayerMap>();
-        CmdSpawnMapPlayerPiece(gamePlayerMap);
-        CmdSpawnMapPlayerDestination(gamePlayerMap);
-    }
-
-    
-    // 맵에서 사용될 플레이어 권한을 가진 삼각형 오브젝트 생성
-    [Command]
-    public void CmdSpawnMapPlayerPiece(GamePlayerMap gamePlayerMap)
-    {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         GameObject mapPlayerPieceObject = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerPiece"),
+            netManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerPiece"),
             Vector3.zero,
             Quaternion.identity
         );
-
         MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
-        PlayerInterface gamePlayer = GetComponent<PlayerInterface>();
-        mapPlayerPiece.steamId =  SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID); // 스팀아이디 값 세팅
-        //mapPlayerPiece.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
-        //TODO
+        mapPlayerPiece.steamId = SteamFriends.GetFriendPersonaName((CSteamID)steamID); // 스팀아이디 값 세팅
+        mapPlayerPiece.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
         NetworkServer.Spawn(mapPlayerPieceObject, connectionToClient);
-
         gamePlayerMap.currentMapPlayerPiece = mapPlayerPiece; // 자신소유의 mapPlayerPiece 참조값 세팅
         M_MapManager.instance.mapPlayerPieces.Add(mapPlayerPieceObject); // 매니저의 리스트에 생성된 맵 플레이어 추가
-    }
 
-    // 맵플레이어가 이동할 위치를 표시하는 오브젝트 생성
-    [Command]
-    public void CmdSpawnMapPlayerDestination(GamePlayerMap gamePlayerMap)
-    {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        // MapPlayerDestination 오브젝트 생성
         GameObject mapPlayerDestinationObject = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerDestination"),
+            netManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerDestination"),
             Vector3.zero,
             Quaternion.identity
         );
         MapPlayerDestination mapPlayerDestination = mapPlayerDestinationObject.GetComponent<MapPlayerDestination>();
-        mapPlayerDestination.gamePlayer = GetComponent<GamePlayer>(); // 게임 플레이어 참조값 세팅
+        mapPlayerDestination.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
         NetworkServer.Spawn(mapPlayerDestinationObject, connectionToClient);
 
         gamePlayerMap.currentMapPlayerDestination = mapPlayerDestination; // 자신소유의 currentMapPlayerDestination 참조값 세팅

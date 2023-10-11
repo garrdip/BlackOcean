@@ -32,7 +32,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    void InitIchi()
+    public void InitIchi()
     {
         ichiText = GameUIManager.instance.ichiText;
         OnChangedIchi(0,0);

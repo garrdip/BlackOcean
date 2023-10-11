@@ -37,7 +37,7 @@ public class AbilityCtrlArrowHead : MonoBehaviour
         if (mousePosition.y < 0f)
         {
             if(NetworkClient.connection != null && NetworkClient.active && abilityCtrlArrow.isOwned){
-                GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().transform.GetChild(0).GetComponent<GamePlayerDeck>();
                 AbilityCtrlArrow abilityCtrlArrow = gamePlayerDeck.abilityCtrlArrow;
                 abilityCtrlArrow.RemoveAbilityCtrlArrow();
             }

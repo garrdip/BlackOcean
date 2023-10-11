@@ -62,14 +62,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         trashDeck.Callback += OnTrashDeckUpdated;
     }
 
-    public override void OnStartLocalPlayer()
-    {
-        CmdSpawnCardPocket(); // 카드 포켓 생성 서버 요청
-        CmdSpawnArrowEmitter(); // 화살표 생성 서버 요청
-        CmdSpawnAbilityArrowEmitter();
-        InitIchi();
-    }
-
     // choosedCardOnHands 배열에 선택한 카드를 추가
     public void AddChoosedCardOnHands(CardOnHand cardOnHand)
     {
@@ -243,41 +235,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
 
-    // 현재 플레이어의 CardPocket 오브젝트 생성
-    [Command]
-    public void CmdSpawnCardPocket()
-    {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-
-        // CardPocket 오브젝트 생성
-        GameObject cardPocketObject = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")),
-            Vector3.zero,
-            Quaternion.identity);
-        NetworkServer.Spawn(cardPocketObject, connectionToClient);
-
-        cardPocket = cardPocketObject.GetComponent<CardPocket>();
-    }
-
-    // 현재 플레이어의 카드 컨트롤 화살표 인디케이터 생성
-    [Command]
-    public void CmdSpawnArrowEmitter()
-    {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-
-        // 화살표 생성 초기 위치는 화면 밖
-        Vector3 arrowSpawnPosition = new Vector3(-100f, 0f, 0f);
-
-        // 화살표 인디케이터 오브젝트 생성
-        GameObject cardEmitter = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")),
-            arrowSpawnPosition,
-            Quaternion.identity);
-        NetworkServer.Spawn(cardEmitter, connectionToClient);
-
-        cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();
-    }
-
     [Command]
     public void CmdGenerateAbilityButton()
     {
@@ -287,24 +244,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
             new Vector3(-100,0,0),
             Quaternion.identity);
         NetworkServer.Spawn(abilityButton, connectionToClient);
-    }
-
-    [Command]
-    public void CmdSpawnAbilityArrowEmitter()
-    {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-
-        // 화살표 생성 초기 위치는 화면 밖
-        Vector3 arrowSpawnPosition = new Vector3(-100f, 0f, 0f);
-
-        // 화살표 인디케이터 오브젝트 생성
-        GameObject abilityEmitter = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowEmitter")),
-            arrowSpawnPosition,
-            Quaternion.identity);
-        NetworkServer.Spawn(abilityEmitter, connectionToClient);
-
-        abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>();
     }
 
     // deck에 추가

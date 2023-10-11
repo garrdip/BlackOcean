@@ -37,7 +37,7 @@ public class CardCtrlArrowHead : MonoBehaviour
         if (mousePosition.y < 0f)
         {
             if(NetworkClient.connection != null && NetworkClient.active && cardCtrlArrow.isOwned){
-                GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().transform.GetChild(0).GetComponent<GamePlayerDeck>();
                 CardCtrlArrow cardCtrlArrow = gamePlayerDeck.cardCtrlArrow;
                 cardCtrlArrow.RemoveCardCtrlArrow();
             }

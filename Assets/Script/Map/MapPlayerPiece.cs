@@ -28,19 +28,8 @@ public class MapPlayerPiece: NetworkBehaviour
     // GamePlayer참조값에서 selectOrder값에 따라 해당 플레이어 소유의 MapPlayerPiece 색상 변경
     public void OnChangeGamePlayer(GamePlayer oldValue, GamePlayer newValue)
     {
-        if(newValue != null){
-            switch(newValue.selectOrder)
-            {
-                case 0:
-                    spriteRenderer.color = Color.red;
-                    break;
-                case 1:
-                    spriteRenderer.color = Color.blue;
-                    break;
-                case 2:
-                    spriteRenderer.color = Color.green;
-                    break;
-            }
+        if(newValue != null && newValue.objectOwner != null){
+            spriteRenderer.color = newValue.objectOwner.color;
         }
     }
 
