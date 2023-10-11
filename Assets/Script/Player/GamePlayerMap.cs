@@ -37,9 +37,10 @@ public class GamePlayerMap : NetworkBehaviour
         );
 
         MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
-        GamePlayer gamePlayer = GetComponent<GamePlayer>();
+        PlayerInterface gamePlayer = GetComponent<PlayerInterface>();
         mapPlayerPiece.steamId =  SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID); // 스팀아이디 값 세팅
-        mapPlayerPiece.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
+        //mapPlayerPiece.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
+        //TODO
         NetworkServer.Spawn(mapPlayerPieceObject, connectionToClient);
 
         currentMapPlayerPiece = mapPlayerPiece; // 자신소유의 mapPlayerPiece 참조값 세팅

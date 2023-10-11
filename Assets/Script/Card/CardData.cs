@@ -131,6 +131,8 @@ public partial class CardData : SingletonD<CardData>
 
     public void GeneralGetDefense(TargetObject from, TargetObject tar, int value, Card card)
     {
+        //TODO
+        /*
         if(from.player.character == Character.ERIS && from == tar) // 에리스의 경우 피가 닳아있을경우 체력을 채움
         {
             int remind = from.playerMaxHP - from.playerHP;
@@ -152,6 +154,7 @@ public partial class CardData : SingletonD<CardData>
             else
                 tar.defense += ( defenseValue + from.buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value );
         }
+        */
     }
 
     public bool IsGISADO(List<TargetObject> tar)

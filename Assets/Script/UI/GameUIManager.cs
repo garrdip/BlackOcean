@@ -54,7 +54,8 @@ public class GameUIManager : SingletonD<GameUIManager>
     // 턴 종료
     public void HandleEndTurn()
     {
-        NetworkClient.localPlayer.GetComponent<GamePlayer>().endTurnActive = !NetworkClient.localPlayer.GetComponent<GamePlayer>().endTurnActive;
+        //NetworkClient.localPlayer.GetComponent<GamePlayer>().endTurnActive = !NetworkClient.localPlayer.GetComponent<GamePlayer>().endTurnActive;\
+        //TODO
     }
 
 
@@ -102,12 +103,13 @@ public class GameUIManager : SingletonD<GameUIManager>
     // 채팅 메시지 전송
     public void SendChatMessage(string input)
     {
-        if (NetworkClient.connection != null && !string.IsNullOrWhiteSpace(messageInput.text)){
-            GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
-            gamePlayer.CmdSendChatMessageGameScene(messageInput.text.Trim());
-            messageInput.ActivateInputField();
-            messageInput.text = string.Empty;;
-        }
+        //if (NetworkClient.connection != null && !string.IsNullOrWhiteSpace(messageInput.text)){
+        //    GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
+        //    gamePlayer.CmdSendChatMessageGameScene(messageInput.text.Trim());
+        //    messageInput.ActivateInputField();
+        //    messageInput.text = string.Empty;;
+        //}
+        //TODO
     }
 
     // 채팅 메시지 추가

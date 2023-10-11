@@ -139,45 +139,49 @@ public class MapUI : InstanceD<MapUI>
 
     public void UpdateProfile()
     {
-        GamePlayer[] users = FindObjectsOfType<GamePlayer>();
-        foreach(GamePlayer user in users)
-        {
-            if(!user.isInitializeDone)return;
-            // Avatar
-            if(user.isAvatarUploadDone)
-            {
-                byte[] avatarImage = new byte[user.avatarWidth * user.avatarHeight * 4];
-                for(int i = 0 ;i < user.avatarImage.Count ; i++)
-                    avatarImage[i] = user.avatarImage[i];
-                playerProfiles[user.selectOrder].transform.GetChild(6).GetComponent<RawImage>().texture = M_SteamManager.instance.GetSteamImageAsTexture(avatarImage,user.avatarWidth,user.avatarHeight);
-            }
-            playerProfiles[user.selectOrder].transform.GetChild(6).GetComponent<RawImage>().color = new Color(1,1,1,1);
-            // Show ID
-            playerProfiles[user.selectOrder].transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = SteamFriends.GetFriendPersonaName((CSteamID)user.steamID);
-            // Show Ready State
-            playerProfiles[user.selectOrder].transform.GetChild(1).gameObject.SetActive(user.isReady == true ? true : false);
-            // HP (Right 195 -> 0 : 0 -> Max)
-            playerProfiles[user.selectOrder].transform.GetChild(3).GetChild(0).GetComponent<RectTransform>().offsetMax = 
-            new Vector2(( 195 * user.HP / user.MaxHP ) - 195,playerProfiles[user.selectOrder].transform.GetChild(3).GetChild(0).GetComponent<RectTransform>().offsetMax.y);
-            // Ichi
-        }
+
+        //TODO
+        //GamePlayer[] users = FindObjectsOfType<GamePlayer>();
+        //foreach(GamePlayer user in users)
+        //{
+        //    if(!user.isInitializeDone)return;
+        //    // Avatar
+        //    if(user.isAvatarUploadDone)
+        //    {
+        //        byte[] avatarImage = new byte[user.avatarWidth * user.avatarHeight * 4];
+        //        for(int i = 0 ;i < user.avatarImage.Count ; i++)
+        //            avatarImage[i] = user.avatarImage[i];
+        //        playerProfiles[user.selectOrder].transform.GetChild(6).GetComponent<RawImage>().texture = M_SteamManager.instance.GetSteamImageAsTexture(avatarImage,user.avatarWidth,user.avatarHeight);
+        //    }
+        //    playerProfiles[user.selectOrder].transform.GetChild(6).GetComponent<RawImage>().color = new Color(1,1,1,1);
+        //    // Show ID
+        //    playerProfiles[user.selectOrder].transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = SteamFriends.GetFriendPersonaName((CSteamID)user.steamID);
+        //    // Show Ready State
+        //    playerProfiles[user.selectOrder].transform.GetChild(1).gameObject.SetActive(user.isReady == true ? true : false);
+        //    // HP (Right 195 -> 0 : 0 -> Max)
+        //    playerProfiles[user.selectOrder].transform.GetChild(3).GetChild(0).GetComponent<RectTransform>().offsetMax = 
+        //    new Vector2(( 195 * user.HP / user.MaxHP ) - 195,playerProfiles[user.selectOrder].transform.GetChild(3).GetChild(0).GetComponent<RectTransform>().offsetMax.y);
+        //    // Ichi
+        //}
     }
 
     public void OnChangeReadyState()
     {
-        NetworkClient.localPlayer.GetComponent<GamePlayer>().isReady = !NetworkClient.localPlayer.GetComponent<GamePlayer>().isReady;
-        UpdateProfile();
+        //TODO
+        //NetworkClient.localPlayer.GetComponent<GamePlayer>().isReady = !NetworkClient.localPlayer.GetComponent<GamePlayer>().isReady;
+        //UpdateProfile();
     }
 
     // 채팅 메시지 전송
     public void SendChatMessage(string input)
     {
-        if (NetworkClient.connection != null && !string.IsNullOrWhiteSpace(messageInput.text)){
-            GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
-            gamePlayer.CmdSendChatMessage(messageInput.text.Trim());
-            messageInput.ActivateInputField();
-            messageInput.text = string.Empty;;
-        }
+        //TODO
+        //if (NetworkClient.connection != null && !string.IsNullOrWhiteSpace(messageInput.text)){
+        //    GamePlayer gamePlayer = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayer>();
+        //    gamePlayer.CmdSendChatMessage(messageInput.text.Trim());
+        //    messageInput.ActivateInputField();
+        //    messageInput.text = string.Empty;;
+        //}
     }
 
     // 채팅 메시지 추가

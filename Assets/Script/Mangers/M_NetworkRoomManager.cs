@@ -38,13 +38,13 @@ public class M_NetworkRoomManager : NetworkRoomManager
 
 
     // 룸씬에서 게임씬으로 넘어갈때 룸씬의 플레이어 오브젝트와 게임씬의 플레이어 오브젝트의 정보들을 동기화
-    public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject gamePlayer)
+    public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject playerInteface)
     {
-        gamePlayer.GetComponent<GamePlayer>().character = roomPlayer.GetComponent<RoomPlayer>().character;
-        gamePlayer.GetComponent<GamePlayer>().selectOrder = (int)roomPlayer.GetComponent<RoomPlayer>().order; //int => PlayOder Type으로 변경 필요
-        gamePlayer.GetComponent<GamePlayer>().steamPersonaName = roomPlayer.GetComponent<RoomPlayer>().steamPersonaName;
-        gamePlayer.GetComponent<GamePlayer>().steamID = roomPlayer.GetComponent<RoomPlayer>().steamID;
-        gamePlayer.GetComponent<GamePlayer>().color = roomPlayer.GetComponent<RoomPlayer>().color;
+        playerInteface.GetComponent<PlayerInterface>().character = roomPlayer.GetComponent<RoomPlayer>().character;
+        playerInteface.GetComponent<PlayerInterface>().selectOrder = (int)roomPlayer.GetComponent<RoomPlayer>().order; //int => PlayOder Type으로 변경 필요
+        playerInteface.GetComponent<PlayerInterface>().steamPersonaName = roomPlayer.GetComponent<RoomPlayer>().steamPersonaName;
+        playerInteface.GetComponent<PlayerInterface>().steamID = roomPlayer.GetComponent<RoomPlayer>().steamID;
+        playerInteface.GetComponent<PlayerInterface>().color = roomPlayer.GetComponent<RoomPlayer>().color;
         return true;
     }
 

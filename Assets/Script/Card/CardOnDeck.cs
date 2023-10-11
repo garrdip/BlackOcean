@@ -161,7 +161,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
             PopUpUIManager.instance.HandleHideBattleResultPopUp();
             HandleClickCardOnDeckOnPopUp(() => {
-                NetworkClient.connection.identity.GetComponent<GamePlayer>().isRewardDone = true;
+                //TODO
+                //NetworkClient.connection.identity.GetComponent<GamePlayer>().isRewardDone = true;
             });
         }
         // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트

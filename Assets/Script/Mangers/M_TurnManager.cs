@@ -226,58 +226,59 @@ public class M_TurnManager : NetworkBehaviour
             tar.clone.defense = 0;
             tar.defense = 0;
         }
-
+        yield return null; //TODO
         //철귀 패시브 발동
-        foreach(TargetObject tar in spawnedPlayerList)
-        {
-            if(tar.player.character == Character.HONGDANHYANG)
-            {
-                ironDemonPassiveOperating = true;
-                while(true)
-                {
-                    yield return new WaitForSeconds(0.01f);
-                    if(monsterDeathOperating) continue;
-                    break;
-                }
-                if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
-                {
-                    AnimIronDemon("Buff0",tar);
-                    tar.ironDemonLocation.defense += tar.sizeOfIronDemon;
-                    yield return new WaitForSeconds(1.33f);
-                }
-                else // 몬스터의 경우 데미지
-                {
-                    while(true)
-                    {
-                        yield return new WaitForSeconds(0.01f);
-                        if(monsterDeathOperating) continue;
-                        break;
-                    }
-                    if(Random.Range(0,2) == 0)AnimIronDemon("Attack0",tar);
-                    else AnimIronDemon("Attack1",tar);
-                    yield return new WaitForSeconds(0.4f);
-                    tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon);
-                    yield return new WaitForSeconds(0.6f);
-                }
-                ironDemonPassiveOperating = false;
-                AnimIronDemon("Idle",tar);
-                yield return new WaitForSeconds(0.1f);
-            }
-        }
-        foreach(TargetObject tar in clonePlayerList) // 클론도 적용
-        {
-            if(tar.player.character == Character.HONGDANHYANG)
-            {
-                if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
-                {
-                    tar.ironDemonLocation.defense += tar.sizeOfIronDemon;
-                }
-                else // 몬스터의 경우 데미지
-                {
-                    tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon);
-                }
-            }
-        }
+        //TODO
+        //foreach(TargetObject tar in spawnedPlayerList)
+        //{
+        //    if(tar.player.character == Character.HONGDANHYANG)
+        //    {
+        //        ironDemonPassiveOperating = true;
+        //        while(true)
+        //        {
+        //            yield return new WaitForSeconds(0.01f);
+        //            if(monsterDeathOperating) continue;
+        //            break;
+        //        }
+        //        if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
+        //        {
+        //            AnimIronDemon("Buff0",tar);
+        //            tar.ironDemonLocation.defense += tar.sizeOfIronDemon;
+        //            yield return new WaitForSeconds(1.33f);
+        //        }
+        //        else // 몬스터의 경우 데미지
+        //        {
+        //            while(true)
+        //            {
+        //                yield return new WaitForSeconds(0.01f);
+        //                if(monsterDeathOperating) continue;
+        //                break;
+        //            }
+        //            if(Random.Range(0,2) == 0)AnimIronDemon("Attack0",tar);
+        //            else AnimIronDemon("Attack1",tar);
+        //            yield return new WaitForSeconds(0.4f);
+        //            tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon);
+        //            yield return new WaitForSeconds(0.6f);
+        //        }
+        //        ironDemonPassiveOperating = false;
+        //        AnimIronDemon("Idle",tar);
+        //        yield return new WaitForSeconds(0.1f);
+        //    }
+        //}
+        //foreach(TargetObject tar in clonePlayerList) // 클론도 적용
+        //{
+        //    if(tar.player.character == Character.HONGDANHYANG)
+        //    {
+        //        if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
+        //        {
+        //            tar.ironDemonLocation.defense += tar.sizeOfIronDemon;
+        //        }
+        //        else // 몬스터의 경우 데미지
+        //        {
+        //            tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon);
+        //        }
+        //    }
+        //}
         phase = BattleTurn.MONSTER_ACTIVE;
     }
 
@@ -315,7 +316,8 @@ public class M_TurnManager : NetworkBehaviour
     {
         foreach(TargetObject user in spawnedPlayerList)
         {
-            user.player.SetEndTurnActiveStateDefault();
+            //user.player.SetEndTurnActiveStateDefault();
+            //TODO
         }
     }
 
@@ -329,14 +331,15 @@ public class M_TurnManager : NetworkBehaviour
             GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
             int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
             List<Card> rewardCards = new List<Card>();
-            List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
-            if(cardsByCharacter.Count > 0){
-                for(int i = 0; i < rewardCardCount; i++){
-                    int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                    rewardCards.Add(cardsByCharacter[randomIndex]);
-                    cardsByCharacter.RemoveAt(randomIndex);
-                }
-            }
+            //List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
+            //if(cardsByCharacter.Count > 0){
+            //    for(int i = 0; i < rewardCardCount; i++){
+            //        int randomIndex = Random.Range(0, cardsByCharacter.Count);
+            //        rewardCards.Add(cardsByCharacter[randomIndex]);
+            //        cardsByCharacter.RemoveAt(randomIndex);
+            //    }
+            //}
+            //TODO
             NetworkConnectionToClient networkConnectionToClient = gamePlayer.GetComponent<NetworkIdentity>().connectionToClient;
             gamePlayerDeck.TargetSetBattleRewardCard(networkConnectionToClient, rewardCards); // 플레이어들에게 보상카드 리스트 데이터 전달
         }
@@ -494,31 +497,32 @@ public class M_TurnManager : NetworkBehaviour
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         for(int i = 0 ;i < playerOrder.Count ; i ++)
         {
-            GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[i],Quaternion.identity);
-            NetworkServer.Spawn(avatar);
-            avatar.GetComponent<TargetObject>().player = playerOrder[i];
-            avatar.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
-            avatar.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
-            avatar.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
-            avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
-            avatar.GetComponent<TargetObject>().sizeOfIronDemon = 4;
-            playerOrder[i].GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
-            spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
-            spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);
-            
-            // 타겟 유효 판단을 위한 클론 데이터 //
-            GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
-            NetworkServer.Spawn(clone);
-            clone.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
-            clone.GetComponent<TargetObject>().player = playerOrder[i];
-            clone.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
-            clone.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
-            clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
-            clone.GetComponent<TargetObject>().sizeOfIronDemon = 4;
-            clone.GetComponent<TargetObject>().isCloneData = true;
-
-            avatar.GetComponent<TargetObject>().clone = clone.GetComponent<TargetObject>();
-            clonePlayerList.Add(clone.GetComponent<TargetObject>());
+            //TODO
+            //GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[i],Quaternion.identity);
+            //NetworkServer.Spawn(avatar);
+            //avatar.GetComponent<TargetObject>().player = playerOrder[i];
+            //avatar.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
+            //avatar.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
+            //avatar.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
+            //avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+            //avatar.GetComponent<TargetObject>().sizeOfIronDemon = 4;
+            //playerOrder[i].GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
+            //spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
+            //spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);
+            //
+            //// 타겟 유효 판단을 위한 클론 데이터 //
+            //GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
+            //NetworkServer.Spawn(clone);
+            //clone.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
+            //clone.GetComponent<TargetObject>().player = playerOrder[i];
+            //clone.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
+            //clone.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
+            //clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+            //clone.GetComponent<TargetObject>().sizeOfIronDemon = 4;
+            //clone.GetComponent<TargetObject>().isCloneData = true;
+//
+            //avatar.GetComponent<TargetObject>().clone = clone.GetComponent<TargetObject>();
+            //clonePlayerList.Add(clone.GetComponent<TargetObject>());
         }
     }
 
@@ -573,55 +577,56 @@ public class M_TurnManager : NetworkBehaviour
     [Server]
     public void GenerateNPC(string npcName)
     {
-        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-
-        var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(11,3,0),Quaternion.identity).GetComponent<SpawnedMonster>();
-        var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
-        
-        NPC_Mercurius mercurius = monster.GetComponent<NPC_Mercurius>();
-        mercurius.isOrigin = true;
-
-        // 상점판매용 캐릭터별 카드 추출해서 NPC_Mercurius SyncDictionary에 추가
-        foreach(GamePlayer gamePlayer in playerOrder){
-            GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
-            int shopCardCount = gamePlayerDeck.maxShopCardCount; // 플레이어별로 설정된 구매가능한 상점카드 최대 갯수
-            List<Card> shopCards = new List<Card>();
-            List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
-            if(cardsByCharacter.Count > 0){
-                for(int i = 0; i < shopCardCount; i++){
-                    int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                    shopCards.Add(cardsByCharacter[randomIndex]);
-                    cardsByCharacter.RemoveAt(randomIndex);
-                }
-            }
-            mercurius.shopCardDictionary.Add(gamePlayer, shopCards); // NPC_Mercurius의 SyncDictionary에 각 플레이어와 추출한 랜덤카드를 한쌍의 데이터로 저장
-        }
-
-        NetworkServer.Spawn(monster.gameObject);
-        NetworkServer.Spawn(cloneMonster.gameObject);
-
-        npc_Mercurius = mercurius;
-
-        monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
-        cloneMonster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
-
-        var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(11,-3,0),Quaternion.identity);
-        var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
-
-        NetworkServer.Spawn(avatar);
-        NetworkServer.Spawn(cloneAvatar);
-        avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
-        avatar.GetComponent<TargetObject>().monster = monster;
-        cloneAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
-        cloneAvatar.GetComponent<TargetObject>().monster = cloneMonster;
-        cloneAvatar.GetComponent<TargetObject>().isCloneData = true;
-        cloneAvatar.GetComponent<TargetObject>().origin = avatar.GetComponent<TargetObject>();
-        avatar.GetComponent<TargetObject>().clone = cloneAvatar.GetComponent<TargetObject>();
-        spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
-        cloneMonsterList.Add(cloneAvatar.GetComponent<TargetObject>());
-        // monster 오브젝트의 부모오브젝트 참조값 설정
-        monster.parent = avatar.GetComponent<TargetObject>();
-        cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
+        //M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+//
+        //var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(11,3,0),Quaternion.identity).GetComponent<SpawnedMonster>();
+        //var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
+        //
+        //NPC_Mercurius mercurius = monster.GetComponent<NPC_Mercurius>();
+        //mercurius.isOrigin = true;
+//
+        //// 상점판매용 캐릭터별 카드 추출해서 NPC_Mercurius SyncDictionary에 추가
+        //foreach(GamePlayer gamePlayer in playerOrder){
+        //    GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+        //    int shopCardCount = gamePlayerDeck.maxShopCardCount; // 플레이어별로 설정된 구매가능한 상점카드 최대 갯수
+        //    List<Card> shopCards = new List<Card>();
+        //    List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
+        //    if(cardsByCharacter.Count > 0){
+        //        for(int i = 0; i < shopCardCount; i++){
+        //            int randomIndex = Random.Range(0, cardsByCharacter.Count);
+        //            shopCards.Add(cardsByCharacter[randomIndex]);
+        //            cardsByCharacter.RemoveAt(randomIndex);
+        //        }
+        //    }
+        //    mercurius.shopCardDictionary.Add(gamePlayer, shopCards); // NPC_Mercurius의 SyncDictionary에 각 플레이어와 추출한 랜덤카드를 한쌍의 데이터로 저장
+        //}
+//
+        //NetworkServer.Spawn(monster.gameObject);
+        //NetworkServer.Spawn(cloneMonster.gameObject);
+//
+        //npc_Mercurius = mercurius;
+//
+        //monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
+        //cloneMonster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
+//
+        //var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(11,-3,0),Quaternion.identity);
+        //var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
+//
+        //NetworkServer.Spawn(avatar);
+        //NetworkServer.Spawn(cloneAvatar);
+        //avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+        //avatar.GetComponent<TargetObject>().monster = monster;
+        //cloneAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+        //cloneAvatar.GetComponent<TargetObject>().monster = cloneMonster;
+        //cloneAvatar.GetComponent<TargetObject>().isCloneData = true;
+        //cloneAvatar.GetComponent<TargetObject>().origin = avatar.GetComponent<TargetObject>();
+        //avatar.GetComponent<TargetObject>().clone = cloneAvatar.GetComponent<TargetObject>();
+        //spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
+        //cloneMonsterList.Add(cloneAvatar.GetComponent<TargetObject>());
+        //// monster 오브젝트의 부모오브젝트 참조값 설정
+        //monster.parent = avatar.GetComponent<TargetObject>();
+        //cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
+        //TODO
     }
 
     [Server]
@@ -709,22 +714,24 @@ public class M_TurnManager : NetworkBehaviour
 
     IEnumerator WaitingForPlayer(HexagonMapRoom hexagonMapRoom)
     {
-        int cnt = 0;
-        while(true)
-        {
-            cnt = 0;
-            yield return new WaitForSeconds(0.1f);
-            foreach(GamePlayer user in players)
-                if(user.isTargetObjectInitDone) cnt++;
-            if(cnt != players.Count) continue;
-
-            if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE)
-                phase = BattleTurn.BATTLE_STANDBY;
-            else
-                phase = BattleTurn.NONE_BATTLE_SCENE;
-            break;
-        }
-        ClearTargetObjectInitFlag();
+        yield return null;//TODO
+        //int cnt = 0;
+        //while(true)
+        //{
+        //    cnt = 0;
+        //    yield return new WaitForSeconds(0.1f);
+        //    foreach(GamePlayer user in players)
+        //        if(user.isTargetObjectInitDone) cnt++;
+        //    if(cnt != players.Count) continue;
+//
+        //    if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE)
+        //        phase = BattleTurn.BATTLE_STANDBY;
+        //    else
+        //        phase = BattleTurn.NONE_BATTLE_SCENE;
+        //    break;
+        //}
+        //ClearTargetObjectInitFlag();
+        //TODO
     }
 
 
@@ -734,8 +741,9 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     void RpcGenerateAbilityButton()
     {
-        if(NetworkClient.connection.identity.GetComponent<GamePlayer>().character == Character.HONGDANHYANG)
-            NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().CmdGenerateAbilityButton();
+        //TODO
+        //if(NetworkClient.connection.identity.GetComponent<GamePlayer>().character == Character.HONGDANHYANG)
+        //    NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().CmdGenerateAbilityButton();
     }
 
     // 전투에 필요한 카드 준비 요청
@@ -775,7 +783,8 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     void ClearTargetObjectInitFlag()
     {
-        NetworkClient.connection.identity.GetComponent<GamePlayer>().isTargetObjectInitDone = false;
+        //NetworkClient.connection.identity.GetComponent<GamePlayer>().isTargetObjectInitDone = false;
+        //TODO
     }
 
     [ClientRpc]
@@ -980,7 +989,8 @@ public class M_TurnManager : NetworkBehaviour
     {
         GamePlayer gamePlayer = M_TurnManager.instance.playerOrder[index];
         OrderUI orderUI = GameUIManager.instance.playerOrderList[index].GetComponent<OrderUI>();
-        orderUI.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
+        //orderUI.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.steamID);
+        //TODO
         if(gamePlayer.isLocalPlayer){
             orderUI.playerOwnMenu.gameObject.SetActive(true); // 전용 메뉴 활성화
             float width = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.width;

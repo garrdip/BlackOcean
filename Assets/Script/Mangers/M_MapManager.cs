@@ -514,7 +514,8 @@ public class M_MapManager : NetworkBehaviour
             yield return new WaitForSeconds(0.1f);
             if( NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject != 0 )
             {
-                NetworkClient.connection.identity.GetComponent<GamePlayer>().isTargetObjectInitDone = true;
+                //NetworkClient.connection.identity.GetComponent<GamePlayer>().isTargetObjectInitDone = true;
+                //TODO
                 break;
             }
         }
@@ -713,7 +714,8 @@ public class M_MapManager : NetworkBehaviour
                 newRegion.transform.localRotation = Quaternion.Euler(0,0,-60*i);
             }
         }
-        NetworkClient.connection.identity.GetComponent<GamePlayer>().isLoadDone = true;
+       // NetworkClient.connection.identity.GetComponent<GamePlayer>().isLoadDone = true;
+       //TODO
     }
 
     // Axial 좌표계를 이용한 시스템에서 현재 좌표에서 목표 좌표까지의 거리를 반환

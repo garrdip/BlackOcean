@@ -28,15 +28,16 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     // 보상 카드 오브젝트 생성
     public void CreateResultCard(List<Card> rewardCards)
     {
-        foreach(Card card in rewardCards){
-            if(card.baseCard.character == NetworkClient.localPlayer.GetComponent<GamePlayer>().character){
-                GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
-                cardOnDeck.transform.SetParent(PopUpUIManager.instance.selectableCardList.transform);
-                cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
-                cardOnDeck.GetComponent<CardOnDeck>().card = card;
-                extractCardObjects.Add(cardOnDeck);
-            }
-        }
+        //TODO
+        //foreach(Card card in rewardCards){
+        //    if(card.baseCard.character == NetworkClient.localPlayer.GetComponent<GamePlayer>().character){
+        //        GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
+        //        cardOnDeck.transform.SetParent(PopUpUIManager.instance.selectableCardList.transform);
+        //        cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
+        //        cardOnDeck.GetComponent<CardOnDeck>().card = card;
+        //        extractCardObjects.Add(cardOnDeck);
+        //    }
+        //}
     }
 
     // 생성되었던 보상 카드들 제거
@@ -51,12 +52,13 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     // 넘기기 버튼 클릭
     public void HandleClickButtonSkip()
     {
-        PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
-        GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
-            if(NetworkClient.connection != null && NetworkClient.active){
-                NetworkClient.connection.identity.GetComponent<GamePlayer>().isRewardDone = true;
-            }
-        });
+        //TODO
+        //PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
+        //GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+        //    if(NetworkClient.connection != null && NetworkClient.active){
+        //        NetworkClient.connection.identity.GetComponent<GamePlayer>().isRewardDone = true;
+        //    }
+        //});
     }
 
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //
