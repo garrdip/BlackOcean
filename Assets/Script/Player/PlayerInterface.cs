@@ -121,6 +121,7 @@ public class PlayerInterface : NetworkBehaviour
             M_MapManager.instance.SetRegionWithColorRPC();
             StartCoroutine(WaitLoadDone());
         }
+        if(isLocalPlayer)isLoadDone = true;
     }
 
     IEnumerator WaitLoadDone()
