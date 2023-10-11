@@ -42,15 +42,14 @@ public class TEST : MonoBehaviour
 
     void TestTransform()
     {
-        //TODO
-        //foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList)
-        //{
-        //    if(tar.player.character == ProjectD.Character.GEORK)
-        //    {
-        //        tar.isTransformed = true;
-        //        StartCoroutine(GeorkTransfrom(tar));
-        //    }
-        //}
+        foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList)
+        {
+            if(tar.player.character == ProjectD.Character.GEORK)
+            {
+                tar.isTransformed = true;
+                StartCoroutine(GeorkTransfrom(tar));
+            }
+        }
     }
 
     IEnumerator GeorkTransfrom(TargetObject tar)

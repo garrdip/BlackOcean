@@ -8,6 +8,11 @@ using Steamworks;
 
 public class GamePlayer : NetworkBehaviour
 {
+    [SyncVar]
+    public int HP;
+    [SyncVar]
+    public int MaxHP;
+
     [SyncVar (hook = nameof(OnChangedObjectOwner))]
     public PlayerInterface objectOwner;
 

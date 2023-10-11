@@ -98,9 +98,6 @@ public class TargetObject : NetworkBehaviour
 
     IEnumerator FindChildObjects()
     {
-        yield return null;
-        //TODO
-        /*
         while(true)
         {
             yield return new WaitForSeconds(0.01f);
@@ -129,7 +126,6 @@ public class TargetObject : NetworkBehaviour
             }
 
         }
-        */
     }
 
     public void InitMonsterNamePlate()
@@ -184,8 +180,6 @@ public class TargetObject : NetworkBehaviour
 
     public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
     {
-        // TODO
-        /*
         if(objectType == ObjectType.PLAYER)
         {
             switch(player.character)
@@ -211,17 +205,14 @@ public class TargetObject : NetworkBehaviour
                 break;
             }
             selectedNamePlate = playerNamePlate.GetComponent<NamePlate>();
-            targetObjectName.text = player.steamPersonaName;
+            targetObjectName.text = player.objectOwner.steamPersonaName;
             monsterNamePlate.SetActive(false);
         }
-        */
     }
 
     // 남은 코스트 없음 표시하는 말풍선 페이드인 후 페이드아웃
     public void ShowCostNotReaminBubble(GamePlayer gamePlayer)
     {
-        //TODO
-        /*
         // 캐릭터 별로 메시지 버블 텍스트 분기처리
         switch(gamePlayer.character){
             case Character.GEORK:
@@ -245,7 +236,7 @@ public class TargetObject : NetworkBehaviour
                 canvasGroup.gameObject.SetActive(false);
             }); 
         }); 
-        */
+
     }
 
 
@@ -363,8 +354,6 @@ public class TargetObject : NetworkBehaviour
 
     void OnChangedPlayerHP(int oldVal, int newVal)
     {
-        //TODO
-        /*
         if(player != null)
         {
             if(player.netIdentity == NetworkClient.connection.identity)
@@ -374,7 +363,6 @@ public class TargetObject : NetworkBehaviour
         }
         if(playerMaxHP != 0)
             selectedNamePlate.SetHPValue(playerHP,playerMaxHP,(int)transform.position.x);
-        */
     }
 
 
