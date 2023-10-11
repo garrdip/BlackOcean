@@ -63,8 +63,9 @@ public class PlayerInterface : NetworkBehaviour
         if(isLocalPlayer)
         {
             M_MapManager.instance.GenerateHexgonGrid(40);
-            isInitializeDone = true;
             GenerateGamePlayer();           
+            isInitializeDone = true;
+            Debug.Log("Init Done!");
             StartCoroutine(nameof(WaitPlayerList));
         }
     }
@@ -131,12 +132,14 @@ public class PlayerInterface : NetworkBehaviour
         M_NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
         WaitForSeconds loopSecond = new WaitForSeconds(0.01f);
         //GamePlayer가 모두 로드 될때까지 기다림
+        Debug.Log("0");
         while(true)
         {
             PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
             if(users.Length == netManger.roomSlots.Count) break;
             yield return loopSecond;
         }
+        Debug.Log("1");
         //GamePlayer가 모두 Initial Value 초기화 될때까지 기다림
         while(true)
         {
@@ -149,6 +152,7 @@ public class PlayerInterface : NetworkBehaviour
             if(cnt == netManger.roomSlots.Count) break;
             yield return loopSecond;
         }
+        Debug.Log("2");
         SetUserStatusUI();
         M_TurnManager.instance.SetOrderButtonListener();
         // 플레이어 로딩이 끝나면 턴매니저로 플레이어 리스트를 전달함
@@ -159,7 +163,7 @@ public class PlayerInterface : NetworkBehaviour
             foreach(PlayerInterface user in users)
                 user.UploadAvatar();
         }
-
+        Debug.Log("3");
         //UI Update
         MapUI.instance.UpdateProfile();
         if(isServer){

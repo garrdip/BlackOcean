@@ -65,18 +65,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2f36d329890cb54289032bb0ec345be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 1
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
   HP: 0
   MaxHP: 0
-  character: 0
-  isInitializeDone: 0
+  objectOwner: {fileID: 0}
   selectOrder: 0
-  isReady: 0
-  isRewardDone: 0
-  steamID: 0
-  endTurnActive: 0
+  character: 0
 --- !u!114 &-5967311515642577051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,12 +89,17 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   currentDeckCount: 0
+  maxShopCardCount: 0
+  maxRewardCardCount: 0
   cardPocket: {fileID: 0}
   cardCtrlArrow: {fileID: 0}
+  abilityCtrlArrow: {fileID: 0}
   choosedCardOnHands:
   - {fileID: 0}
   - {fileID: 0}
   previousCardType: 0
+  destroyCardList: []
+  abilityCard: {fileID: 0}
   currentIchi: 3
   maxIchi: 3
   limitiChi: 6
@@ -136,4 +137,4 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  targetObject: {fileID: 0}
+  targetObject: 0
