@@ -73,4 +73,17 @@ public class M_NetworkRoomManager : NetworkRoomManager
 
         return roomPlayer;
     }
+
+    // 클라이언트 연결이 끊어졌을 경우 해당 클라이언트 소유의 오브젝트 권한을 서버에게 이전
+    public override void OnServerDisconnect(NetworkConnectionToClient conn)
+    {
+        HashSet<NetworkIdentity> copyHashSet = new HashSet<NetworkIdentity>(conn.owned);
+        
+        foreach(NetworkIdentity networkIdentity in copyHashSet){
+            if(networkIdentity.GetComponent<RoomPlayer>() == null && networkIdentity.GetComponent<PlayerInterface>() == null){
+                networkIdentity.RemoveClientAuthority();
+                networkIdentity.AssignClientAuthority(NetworkClient.connection.identity.connectionToClient);
+            }
+        }
+    }
 }
