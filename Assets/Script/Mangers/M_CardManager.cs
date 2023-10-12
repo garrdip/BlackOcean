@@ -226,12 +226,12 @@ public class M_CardManager : NetworkBehaviour
             sequence.OnComplete(() =>
             {
                 // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행
-                if (gamePlayerDeck.isLocalPlayer)
+                if (gamePlayerDeck.isOwned)
                 {
                     cardOnHand.isMoving = false;
                     GameUIManager.instance.buttonEndTurn.interactable = true;
                     sequence.Kill();
-                    NetworkClient.connection.identity.GetComponent<GamePlayer>().destroyCards.Add(cardOnHand);
+                    NetworkClient.connection.identity.GetComponent<PlayerInterface>().destroyCards.Add(cardOnHand);
                 }
             });
         }
@@ -243,7 +243,7 @@ public class M_CardManager : NetworkBehaviour
         GameUIManager.instance.buttonEndTurn.interactable = false;
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
+            if(gamePlayerDeck.isOwned){
                 float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
                 Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
                 cardOnHand.isMoving = true;

@@ -382,21 +382,22 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     IEnumerator ServerDestroyCardOnHand()
     {
+        PlayerInterface playerInterface = GetComponent<GamePlayer>().objectOwner;
         while(true)
         {
             yield return new WaitForSeconds(0.01f);
             for(int i = 0 ;i < destroyCardList.Count ; i++)
             {
                 CardOnHand cardOnHand = destroyCardList[i];
-                if(GetComponent<GamePlayer>().destroyCards.FindIndex(x => x == cardOnHand) != -1)
+                if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) != -1)
                 { 
-                    GetComponent<GamePlayer>().RemoveDestroyCardList(cardOnHand);
+                    playerInterface.RemoveDestroyCardList(cardOnHand);
                     trashDeck.Add(cardOnHand.card);
                     cardOnHands.Remove(cardOnHand);
                     destroyCardList.Remove(cardOnHand);
                     while(true)
                     {
-                        if(GetComponent<GamePlayer>().destroyCards.FindIndex(x => x == cardOnHand) == -1)
+                        if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) == -1)
                             break;
                         yield return new WaitForSeconds(0.01f);
                     }
