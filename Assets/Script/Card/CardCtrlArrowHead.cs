@@ -34,11 +34,8 @@ public class CardCtrlArrowHead : MonoBehaviour
     private void CheckArrowHeadPosition()
     {
         Vector3 mousePosition = Input.mousePosition;
-        if (mousePosition.y < 0f)
-        {
-            if(NetworkClient.connection != null && NetworkClient.active && cardCtrlArrow.isOwned){
-                GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().transform.GetChild(0).GetComponent<GamePlayerDeck>();
-                CardCtrlArrow cardCtrlArrow = gamePlayerDeck.cardCtrlArrow;
+        if(mousePosition.y < 0f){
+            if(cardCtrlArrow != null && cardCtrlArrow.isOwned){
                 cardCtrlArrow.RemoveCardCtrlArrow();
             }
         }

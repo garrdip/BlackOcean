@@ -34,11 +34,8 @@ public class AbilityCtrlArrowHead : MonoBehaviour
     private void CheckArrowHeadPosition()
     {
         Vector3 mousePosition = Input.mousePosition;
-        if (mousePosition.y < 0f)
-        {
-            if(NetworkClient.connection != null && NetworkClient.active && abilityCtrlArrow.isOwned){
-                GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().transform.GetChild(0).GetComponent<GamePlayerDeck>();
-                AbilityCtrlArrow abilityCtrlArrow = gamePlayerDeck.abilityCtrlArrow;
+        if(mousePosition.y < 0f){
+            if(abilityCtrlArrow != null && abilityCtrlArrow.isOwned){
                 abilityCtrlArrow.RemoveAbilityCtrlArrow();
             }
         }
