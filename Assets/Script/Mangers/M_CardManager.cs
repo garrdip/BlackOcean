@@ -284,11 +284,9 @@ public class M_CardManager : NetworkBehaviour
         // 로컬 플레이어의 카드 정렬 순서 변경
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                    cardOnHand.GetComponent<SortingGroup>().sortingLayerName = layerName;
-                    cardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
-                }
+            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                cardOnHand.GetComponent<SortingGroup>().sortingLayerName = layerName;
+                cardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
             }
         }
     }
@@ -298,11 +296,9 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                    if(cardOnHand != mouseOveredCardOnHand){
-                        cardOnHand.isShifted = isShifted;
-                    }
+            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                if(cardOnHand != mouseOveredCardOnHand){
+                    cardOnHand.isShifted = isShifted;
                 }
             }
         }
@@ -313,13 +309,11 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                    // 영원 타입이 아닌 카드들만 제거
-                    bool isCardTypeImmortal = CardData.instance.CheckCardCharacteristic(cardOnHand.card, ProjectD.CardCharacteristic.YOUNGWON);
-                    if(!isCardTypeImmortal){
-                        CardOnHandAllThrowAwaySequence(cardOnHand);
-                    }
+            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                // 영원 타입이 아닌 카드들만 제거
+                bool isCardTypeImmortal = CardData.instance.CheckCardCharacteristic(cardOnHand.card, ProjectD.CardCharacteristic.YOUNGWON);
+                if(!isCardTypeImmortal){
+                    CardOnHandAllThrowAwaySequence(cardOnHand);
                 }
             }
         }
@@ -330,9 +324,7 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdDestroyAllCardOnHandWithOutTrashDeck();
-            }
+            gamePlayerDeck.CmdDestroyAllCardOnHandWithOutTrashDeck();
         }    
     }
 
@@ -341,9 +333,7 @@ public class M_CardManager : NetworkBehaviour
     {
          if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
-            }
+            gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
         }
     }
 
@@ -352,9 +342,7 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdClearPrefareDeckAndTrashDeck();
-            }
+            gamePlayerDeck.CmdClearPrefareDeckAndTrashDeck();
         }   
     }
 
@@ -363,9 +351,7 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdAddDeck(card);
-            }
+            gamePlayerDeck.CmdAddDeck(card);
         }   
     }
 
@@ -374,10 +360,8 @@ public class M_CardManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                    ResetCardAllState(cardOnHand, state);
-                }
+            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                ResetCardAllState(cardOnHand, state);
             }
         }
     }
