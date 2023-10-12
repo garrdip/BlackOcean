@@ -9,6 +9,11 @@ using Steamworks;
 public class PlayerInterface : NetworkBehaviour
 {
     [SyncVar]
+    public GamePlayer currentGamePlayer;
+
+    public readonly SyncList<GamePlayer> ownedPlayers = new SyncList<GamePlayer>();
+
+    [SyncVar]
     public Character character;
 
     [SyncVar]
@@ -62,7 +67,7 @@ public class PlayerInterface : NetworkBehaviour
         }
         if(isLocalPlayer)
         {
-            M_MapManager.instance.GenerateHexgonGrid(40);
+            M_MapManager.instance.GenerateHexgonGrid(40);         
             GenerateGamePlayer();
             StartCoroutine(WaitGamePlayerGen());
             StartCoroutine(nameof(WaitPlayerList));
@@ -92,66 +97,6 @@ public class PlayerInterface : NetworkBehaviour
         gamePlayer.character = character;
         gamePlayer.selectOrder = selectOrder;
         NetworkServer.Spawn(cloneAvatar,connectionToClient);
-
-        GamePlayerDeck gamePlayerDeck = cloneAvatar.GetComponent<GamePlayerDeck>();
-
-        gamePlayerDeck.InitIchi();
-
-        // CardPocket 오브젝트 생성
-        GameObject cardPocketObject = Instantiate(
-            netManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardPocket")),
-            Vector3.zero,
-            Quaternion.identity);
-        NetworkServer.Spawn(cardPocketObject, connectionToClient);
-        gamePlayerDeck.cardPocket = cardPocketObject.GetComponent<CardPocket>();
-
-        
-        // 화살표 생성 초기 위치는 화면 밖
-        Vector3 arrowSpawnPosition = new Vector3(-100f, 0f, 0f);
-        // 화살표 인디케이터 오브젝트 생성
-        GameObject cardEmitter = Instantiate(
-            netManager.spawnPrefabs.Find(prefab => prefab.name.Equals("ArrowEmitter")),
-            arrowSpawnPosition,
-            Quaternion.identity);
-        NetworkServer.Spawn(cardEmitter, connectionToClient);
-        gamePlayerDeck.cardCtrlArrow = cardEmitter.GetComponent<CardCtrlArrow>();
-
-        // 어빌리티 화살표 생성 초기 위치는 화면 밖
-        Vector3 abilityArrowSpawnPosition = new Vector3(-100f, 0f, 0f);
-        // 어빌리티 화살표 인디케이터 오브젝트 생성
-        GameObject abilityEmitter = Instantiate(
-            netManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowEmitter")),
-            abilityArrowSpawnPosition,
-            Quaternion.identity);
-        NetworkServer.Spawn(abilityEmitter, connectionToClient);
-        gamePlayerDeck.abilityCtrlArrow = abilityEmitter.GetComponent<AbilityCtrlArrow>();
-
-
-        // MapPlayerPiece 오브젝트 생성
-        GamePlayerMap gamePlayerMap = cloneAvatar.GetComponent<GamePlayerMap>();
-        GameObject mapPlayerPieceObject = Instantiate(
-            netManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerPiece"),
-            Vector3.zero,
-            Quaternion.identity
-        );
-        MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
-        mapPlayerPiece.steamId = SteamFriends.GetFriendPersonaName((CSteamID)steamID); // 스팀아이디 값 세팅
-        mapPlayerPiece.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
-        NetworkServer.Spawn(mapPlayerPieceObject, connectionToClient);
-        gamePlayerMap.currentMapPlayerPiece = mapPlayerPiece; // 자신소유의 mapPlayerPiece 참조값 세팅
-        M_MapManager.instance.mapPlayerPieces.Add(mapPlayerPieceObject); // 매니저의 리스트에 생성된 맵 플레이어 추가
-
-        // MapPlayerDestination 오브젝트 생성
-        GameObject mapPlayerDestinationObject = Instantiate(
-            netManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerDestination"),
-            Vector3.zero,
-            Quaternion.identity
-        );
-        MapPlayerDestination mapPlayerDestination = mapPlayerDestinationObject.GetComponent<MapPlayerDestination>();
-        mapPlayerDestination.gamePlayer = gamePlayer; // 게임 플레이어 참조값 세팅
-        NetworkServer.Spawn(mapPlayerDestinationObject, connectionToClient);
-
-        gamePlayerMap.currentMapPlayerDestination = mapPlayerDestination; // 자신소유의 currentMapPlayerDestination 참조값 세팅
     }
 
     IEnumerator WaitPlayerList()
@@ -177,6 +122,14 @@ public class PlayerInterface : NetworkBehaviour
             if(cnt == netManger.roomSlots.Count) break;
             yield return loopSecond;
         }
+        if(isLocalPlayer){
+            foreach(GamePlayer gamePlayer in FindObjectsOfType<GamePlayer>()){
+                if(gamePlayer.isOwned){
+                    currentGamePlayer = gamePlayer;
+                }
+            }
+        }
+        
         SetUserStatusUI();
         M_TurnManager.instance.SetOrderButtonListener();
         // 플레이어 로딩이 끝나면 턴매니저로 플레이어 리스트를 전달함
@@ -241,6 +194,14 @@ public class PlayerInterface : NetworkBehaviour
     }
 
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
+
+    [ClientRpc]
+    public void SetCurrentGamePlayer(GamePlayer gamePlayer)
+    {
+        if(isLocalPlayer){
+            currentGamePlayer = gamePlayer;
+        }
+    }
 
     [ClientRpc]
     public void RemoveDestroyCardList(CardOnHand cardOnHand)
