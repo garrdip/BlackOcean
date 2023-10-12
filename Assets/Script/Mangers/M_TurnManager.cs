@@ -744,9 +744,7 @@ public class M_TurnManager : NetworkBehaviour
         // 플레이어 카드 셔플 수행후 PrefareDeck에 추가 요청
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
-            }
+            gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
         }
     }
  
@@ -835,9 +833,7 @@ public class M_TurnManager : NetworkBehaviour
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                gamePlayerDeck.CmdSpawnCardOnHand();
-            }
+            gamePlayerDeck.CmdSpawnCardOnHand();
         }
     }
 
