@@ -8,8 +8,7 @@ using Steamworks;
 
 public class PlayerInterface : NetworkBehaviour
 {
-    [SyncVar]
-    public GamePlayer currentGamePlayer;
+    public GamePlayer currentGamePlayer {get{return NetworkClient.spawned[currentGamePlayerNetId].GetComponent<GamePlayer>();}}
 
     public readonly SyncList<GamePlayer> ownedPlayers = new SyncList<GamePlayer>();
 
@@ -56,19 +55,22 @@ public class PlayerInterface : NetworkBehaviour
     [SyncVar]
     public bool isLoadDone = false;
 
+    [SyncVar]
+    public uint currentGamePlayerNetId = 0;
+
 
     public override void OnStartLocalPlayer()
     {
         // Server Loading 종료 후 1층 데이터 생성
-        if(isServer)
-        {
-            M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성(진행중)
-            M_MapManager.instance.GenerateColorRegion();
-        }
         if(isLocalPlayer)
         {
-            M_MapManager.instance.GenerateHexgonGrid(40);         
+            if(isServer)
+            {
+                M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성(진행중)
+                M_MapManager.instance.GenerateColorRegion();
+            }
             GenerateGamePlayer();
+            M_MapManager.instance.GenerateHexgonGrid(40);         
             StartCoroutine(WaitGamePlayerGen());
             StartCoroutine(nameof(WaitPlayerList));
         }
@@ -122,14 +124,13 @@ public class PlayerInterface : NetworkBehaviour
             if(cnt == netManger.roomSlots.Count) break;
             yield return loopSecond;
         }
-        if(isLocalPlayer){
-            foreach(GamePlayer gamePlayer in FindObjectsOfType<GamePlayer>()){
-                if(gamePlayer.isOwned){
-                    currentGamePlayer = gamePlayer;
-                }
+        if(isLocalPlayer)
+        {
+            foreach(GamePlayer gamePlayer in FindObjectsOfType<GamePlayer>())
+            {
+                if(gamePlayer.isOwned) currentGamePlayerNetId = gamePlayer.netId;
             }
         }
-        
         SetUserStatusUI();
         M_TurnManager.instance.SetOrderButtonListener();
         // 플레이어 로딩이 끝나면 턴매니저로 플레이어 리스트를 전달함
@@ -194,14 +195,6 @@ public class PlayerInterface : NetworkBehaviour
     }
 
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
-
-    [ClientRpc]
-    public void SetCurrentGamePlayer(GamePlayer gamePlayer)
-    {
-        if(isLocalPlayer){
-            currentGamePlayer = gamePlayer;
-        }
-    }
 
     [ClientRpc]
     public void RemoveDestroyCardList(CardOnHand cardOnHand)
@@ -337,5 +330,4 @@ public class PlayerInterface : NetworkBehaviour
             MapUI.instance.UpdateProfile();
         }
     }
-
 }
