@@ -101,50 +101,52 @@ public class M_CardManager : NetworkBehaviour
 
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
     public void SetCardOnHandPositionSymmetry()
-    {
-        List<CardOnHand> cardOnHandsIsNotChoosed =
+    {   
+        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId != 0){
+            List<CardOnHand> cardOnHandsIsNotChoosed =
             NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
-        int count = cardOnHandsIsNotChoosed.Count;
-        if(count > 0){
-            for(int i=0; i<count; i++){      
-                CardOnHand cardOnHand = cardOnHandsIsNotChoosed[i];
-                if(cardOnHand != null){
-                    if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed){
-                        if(cardOnHand.isMouseOver){
-                            Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
-                            cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
-                            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                            cardOnHand.transform.localScale = cardOverSize;
-                        }else{
-                            cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = i; // 스프라이트 정렬 인덱스
-                            cardOnHand.cardOnHandCanvas.sortingOrder = i; // 카드 이름 및 설명 텍스트 요소의 정렬 인덱스
-                            cardOnHand.transform.SetSiblingIndex(i); // 오브젝트 스택 순서 인덱스
+            int count = cardOnHandsIsNotChoosed.Count;
+            if(count > 0){
+                for(int i=0; i<count; i++){      
+                    CardOnHand cardOnHand = cardOnHandsIsNotChoosed[i];
+                    if(cardOnHand != null){
+                        if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed){
+                            if(cardOnHand.isMouseOver){
+                                Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
+                                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
+                                cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                                cardOnHand.transform.localScale = cardOverSize;
+                            }else{
+                                cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = i; // 스프라이트 정렬 인덱스
+                                cardOnHand.cardOnHandCanvas.sortingOrder = i; // 카드 이름 및 설명 텍스트 요소의 정렬 인덱스
+                                cardOnHand.transform.SetSiblingIndex(i); // 오브젝트 스택 순서 인덱스
 
-                            // 대칭값 계산
-                            int leftCount = (count - 1) / 2;
-                            int rightCount = count - leftCount - 1;
-                            float symmetryValue = (count % 2 == 0) ? ((i - leftCount) * symmetryRange - 0.75f) : ((i - leftCount) * symmetryRange);
+                                // 대칭값 계산
+                                int leftCount = (count - 1) / 2;
+                                int rightCount = count - leftCount - 1;
+                                float symmetryValue = (count % 2 == 0) ? ((i - leftCount) * symmetryRange - 0.75f) : ((i - leftCount) * symmetryRange);
 
-                            // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
-                            Vector3 symmetryPosition = new Vector3(symmetryValue * symmetryPositionX_Range, -Mathf.Abs(symmetryValue) * symmetryPositionY_Range, 0f);
-                            cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
-                            cardOnHand.originPosition = symmetryPosition;
+                                // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
+                                Vector3 symmetryPosition = new Vector3(symmetryValue * symmetryPositionX_Range, -Mathf.Abs(symmetryValue) * symmetryPositionY_Range, 0f);
+                                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
+                                cardOnHand.originPosition = symmetryPosition;
 
-                            // 회전값
-                            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, -symmetryValue * symmetryRotationRange);
+                                // 회전값
+                                cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, -symmetryValue * symmetryRotationRange);
 
-                            // 크기값
-                            cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOriginSize, Time.deltaTime * 10f);
+                                // 크기값
+                                cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOriginSize, Time.deltaTime * 10f);
 
-                            // 마우스 오버되지 않은 나머지 카드들은 shift 되어 밀려남. 마우스 오버된 카드를 기준으로 좌우 대칭으로 멀어질 수록 밀려나는 위치의 정도가 감소.
-                            if(cardOnHand.isShifted){
-                                int mouseOveredIndex = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindIndex((card) =>  card.isMouseOver);
-                                float shiftedValue = 0f;
-                                if(i != mouseOveredIndex){
-                                    shiftedValue = cardOnHandShiftedRange / (i - mouseOveredIndex);
+                                // 마우스 오버되지 않은 나머지 카드들은 shift 되어 밀려남. 마우스 오버된 카드를 기준으로 좌우 대칭으로 멀어질 수록 밀려나는 위치의 정도가 감소.
+                                if(cardOnHand.isShifted){
+                                    int mouseOveredIndex = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindIndex((card) =>  card.isMouseOver);
+                                    float shiftedValue = 0f;
+                                    if(i != mouseOveredIndex){
+                                        shiftedValue = cardOnHandShiftedRange / (i - mouseOveredIndex);
+                                    }
+                                    Vector3 shiftPosition = new Vector3(symmetryPosition.x + shiftedValue, symmetryPosition.y, symmetryPosition.z);
+                                    cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, shiftPosition, Time.deltaTime * 10f);
                                 }
-                                Vector3 shiftPosition = new Vector3(symmetryPosition.x + shiftedValue, symmetryPosition.y, symmetryPosition.z);
-                                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, shiftPosition, Time.deltaTime * 10f);
                             }
                         }
                     }

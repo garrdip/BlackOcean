@@ -733,8 +733,8 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     void RpcGenerateAbilityButton()
     {
-        if(NetworkClient.connection.identity.GetComponent<GamePlayer>().character == Character.HONGDANHYANG)
-            NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().CmdGenerateAbilityButton();
+        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character == Character.HONGDANHYANG)
+            NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().CmdGenerateAbilityButton();
     }
 
     // 전투에 필요한 카드 준비 요청
@@ -743,7 +743,7 @@ public class M_TurnManager : NetworkBehaviour
     {
         // 플레이어 카드 셔플 수행후 PrefareDeck에 추가 요청
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
             }
@@ -792,7 +792,7 @@ public class M_TurnManager : NetworkBehaviour
     {
         int transformOffset = CalcOffset(tar); 
         tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
-        int offset = (NetworkClient.connection.identity.GetComponent<GamePlayer>() == tar.player) ? 0 : 2;
+        int offset = (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer == tar.player) ? 0 : 2;
         if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0+offset];
         else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
         tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
@@ -802,7 +802,7 @@ public class M_TurnManager : NetworkBehaviour
     int CalcOffset(TargetObject tar)
     {
         int retVal = 0;
-        if(tar.player == (NetworkClient.connection.identity.GetComponent<GamePlayer>())) retVal = 0;
+        if(tar.player == (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer)) retVal = 0;
         else
         {
             int addval = 0;
@@ -810,7 +810,7 @@ public class M_TurnManager : NetworkBehaviour
             {
                 if(tar.player == user)
                     break;
-                if(tar.player == (NetworkClient.connection.identity.GetComponent<GamePlayer>()))
+                if(tar.player == (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer))
                     continue;
                 else
                     addval++;
@@ -834,7 +834,7 @@ public class M_TurnManager : NetworkBehaviour
     public void EachPlayerCardDraw()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 gamePlayerDeck.CmdSpawnCardOnHand();
             }
