@@ -90,7 +90,7 @@ public class CardCtrlArrow : NetworkBehaviour
     {
         if(Input.GetMouseButtonUp(0) && currentTarget != null){
             if(NetworkClient.connection != null && NetworkClient.active){
-                GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                 if(gamePlayerDeck.isLocalPlayer && arrowOwnedCardOnHand != null){
                     if(arrowOwnedCardOnHand.isUsed == false)
                     {
@@ -116,7 +116,7 @@ public class CardCtrlArrow : NetworkBehaviour
                                     break;
                             }
                         }
-                        gamePlayerDeck =  NetworkClient.connection.identity.GetComponent<GamePlayerDeck>();
+                        gamePlayerDeck =  NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                         if(gamePlayerDeck.GetTotalCostOfCardOnHand(arrowOwnedCardOnHand) > gamePlayerDeck.currentIchi) // 카드 코스트 계산 하는곳
                             return;
                         //

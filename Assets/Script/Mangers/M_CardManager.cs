@@ -13,9 +13,6 @@ public class M_CardManager : NetworkBehaviour
     [Header("랜덤 시드값")]
     public int seedNumber = 0;
 
-    [Header("GamePlayerDeck 참조값 캐싱")]
-    public GamePlayerDeck gamePlayerDeck;
-
     [Header("현재 플레이어가 선택한 캐릭터의 카드 리스트")]
     public readonly SyncList<Card> cards = new SyncList<Card>();
 
@@ -81,9 +78,6 @@ public class M_CardManager : NetworkBehaviour
 
     void Start()
     {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-        }
         InitCardConfigValue();
     }
 
@@ -108,50 +102,49 @@ public class M_CardManager : NetworkBehaviour
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
     public void SetCardOnHandPositionSymmetry()
     {
-        if(gamePlayerDeck != null){
-            List<CardOnHand> cardOnHandsIsNotChoosed = gamePlayerDeck.cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
-            int count = cardOnHandsIsNotChoosed.Count;
-            if(count > 0){
-                for(int i=0; i<count; i++){      
-                    CardOnHand cardOnHand = cardOnHandsIsNotChoosed[i];
-                    if(cardOnHand != null){
-                        if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed){
-                            if(cardOnHand.isMouseOver){
-                                Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
-                                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
-                                cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                                cardOnHand.transform.localScale = cardOverSize;
-                            }else{
-                                cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = i; // 스프라이트 정렬 인덱스
-                                cardOnHand.cardOnHandCanvas.sortingOrder = i; // 카드 이름 및 설명 텍스트 요소의 정렬 인덱스
-                                cardOnHand.transform.SetSiblingIndex(i); // 오브젝트 스택 순서 인덱스
+        List<CardOnHand> cardOnHandsIsNotChoosed =
+            NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
+        int count = cardOnHandsIsNotChoosed.Count;
+        if(count > 0){
+            for(int i=0; i<count; i++){      
+                CardOnHand cardOnHand = cardOnHandsIsNotChoosed[i];
+                if(cardOnHand != null){
+                    if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed){
+                        if(cardOnHand.isMouseOver){
+                            Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
+                            cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
+                            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                            cardOnHand.transform.localScale = cardOverSize;
+                        }else{
+                            cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = i; // 스프라이트 정렬 인덱스
+                            cardOnHand.cardOnHandCanvas.sortingOrder = i; // 카드 이름 및 설명 텍스트 요소의 정렬 인덱스
+                            cardOnHand.transform.SetSiblingIndex(i); // 오브젝트 스택 순서 인덱스
 
-                                // 대칭값 계산
-                                int leftCount = (count - 1) / 2;
-                                int rightCount = count - leftCount - 1;
-                                float symmetryValue = (count % 2 == 0) ? ((i - leftCount) * symmetryRange - 0.75f) : ((i - leftCount) * symmetryRange);
+                            // 대칭값 계산
+                            int leftCount = (count - 1) / 2;
+                            int rightCount = count - leftCount - 1;
+                            float symmetryValue = (count % 2 == 0) ? ((i - leftCount) * symmetryRange - 0.75f) : ((i - leftCount) * symmetryRange);
 
-                                // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
-                                Vector3 symmetryPosition = new Vector3(symmetryValue * symmetryPositionX_Range, -Mathf.Abs(symmetryValue) * symmetryPositionY_Range, 0f);
-                                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
-                                cardOnHand.originPosition = symmetryPosition;
+                            // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
+                            Vector3 symmetryPosition = new Vector3(symmetryValue * symmetryPositionX_Range, -Mathf.Abs(symmetryValue) * symmetryPositionY_Range, 0f);
+                            cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
+                            cardOnHand.originPosition = symmetryPosition;
 
-                                // 회전값
-                                cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, -symmetryValue * symmetryRotationRange);
+                            // 회전값
+                            cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, -symmetryValue * symmetryRotationRange);
 
-                                // 크기값
-                                cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOriginSize, Time.deltaTime * 10f);
+                            // 크기값
+                            cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOriginSize, Time.deltaTime * 10f);
 
-                                // 마우스 오버되지 않은 나머지 카드들은 shift 되어 밀려남. 마우스 오버된 카드를 기준으로 좌우 대칭으로 멀어질 수록 밀려나는 위치의 정도가 감소.
-                                if(cardOnHand.isShifted){
-                                    int mouseOveredIndex = gamePlayerDeck.cardOnHands.FindIndex((card) =>  card.isMouseOver);
-                                    float shiftedValue = 0f;
-                                    if(i != mouseOveredIndex){
-                                        shiftedValue = cardOnHandShiftedRange / (i - mouseOveredIndex);
-                                    }
-                                    Vector3 shiftPosition = new Vector3(symmetryPosition.x + shiftedValue, symmetryPosition.y, symmetryPosition.z);
-                                    cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, shiftPosition, Time.deltaTime * 10f);
+                            // 마우스 오버되지 않은 나머지 카드들은 shift 되어 밀려남. 마우스 오버된 카드를 기준으로 좌우 대칭으로 멀어질 수록 밀려나는 위치의 정도가 감소.
+                            if(cardOnHand.isShifted){
+                                int mouseOveredIndex = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindIndex((card) =>  card.isMouseOver);
+                                float shiftedValue = 0f;
+                                if(i != mouseOveredIndex){
+                                    shiftedValue = cardOnHandShiftedRange / (i - mouseOveredIndex);
                                 }
+                                Vector3 shiftPosition = new Vector3(symmetryPosition.x + shiftedValue, symmetryPosition.y, symmetryPosition.z);
+                                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, shiftPosition, Time.deltaTime * 10f);
                             }
                         }
                     }
@@ -206,12 +199,12 @@ public class M_CardManager : NetworkBehaviour
     // CardOnHand 오브젝트 trashDeck으로 버리는 애니매이션 + 오브젝트 파괴 커맨드 호출
     public void CardOnHandThrowAwaySequence(CardOnHand cardOnHand)
     {
-        if(NetworkClient.connection != null && NetworkClient.active){   
+        if(NetworkClient.connection != null && NetworkClient.active){
             GameUIManager.instance.buttonEndTurn.interactable = false;        
             cardOnHand.isMoving = true;
             float duration = 0.3f;
             Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
 
             // Dotween 애니매이션 시퀀스 생성
             Sequence sequence = DOTween.Sequence();
@@ -247,7 +240,7 @@ public class M_CardManager : NetworkBehaviour
     {
         GameUIManager.instance.buttonEndTurn.interactable = false;
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
                 Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
@@ -288,7 +281,7 @@ public class M_CardManager : NetworkBehaviour
     {
         // 로컬 플레이어의 카드 정렬 순서 변경
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
                     cardOnHand.GetComponent<SortingGroup>().sortingLayerName = layerName;
@@ -302,7 +295,7 @@ public class M_CardManager : NetworkBehaviour
     public void ChangeCardOnHandShiftState(CardOnHand mouseOveredCardOnHand, bool isShifted)
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
                     if(cardOnHand != mouseOveredCardOnHand){
@@ -317,7 +310,7 @@ public class M_CardManager : NetworkBehaviour
     public void RemoveAllCurrentPlayerCardOnHands()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
                     // 영원 타입이 아닌 카드들만 제거
@@ -334,7 +327,7 @@ public class M_CardManager : NetworkBehaviour
     public void RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 gamePlayerDeck.CmdDestroyAllCardOnHandWithOutTrashDeck();
             }
@@ -345,7 +338,7 @@ public class M_CardManager : NetworkBehaviour
     public void RemoveAllCurrentPlayerArrow()
     {
          if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
             }
@@ -356,7 +349,7 @@ public class M_CardManager : NetworkBehaviour
     public void RemoveAllCurrentPlayerPrefareDeckAndTrashDeck()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 gamePlayerDeck.CmdClearPrefareDeckAndTrashDeck();
             }
@@ -367,7 +360,7 @@ public class M_CardManager : NetworkBehaviour
     public void AddCardDataToCurrentPlayerDeck(Card card)
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 gamePlayerDeck.CmdAddDeck(card);
             }
@@ -378,7 +371,7 @@ public class M_CardManager : NetworkBehaviour
     public void ChangeCurrentPlayerCardOnHandState(bool state)
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             if(gamePlayerDeck.isLocalPlayer){
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
                     ResetCardAllState(cardOnHand, state);
@@ -417,9 +410,9 @@ public class M_CardManager : NetworkBehaviour
     {
         TargetObject tar = null;
         if(isServer)
-            tar = NetworkServer.spawned[NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
+            tar = NetworkServer.spawned[NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
         else
-            tar = NetworkClient.spawned[NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
+            tar = NetworkClient.spawned[NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
 
         string[] splitString = str.Trim().Split(" ");
         for(int i = 0 ;i < splitString.Length ; i++)

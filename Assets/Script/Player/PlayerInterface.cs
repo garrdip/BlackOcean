@@ -130,6 +130,7 @@ public class PlayerInterface : NetworkBehaviour
             {
                 if(gamePlayer.isOwned) currentGamePlayerNetId = gamePlayer.netId;
             }
+            GetComponent<PlayerInterfaceServer>().GenerateGamePlayerOwnedObjects(currentGamePlayer);
         }
         SetUserStatusUI();
         M_TurnManager.instance.SetOrderButtonListener();

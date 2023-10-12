@@ -12,7 +12,7 @@ public class AbilityButton : NetworkBehaviour
         if(isOwned)
             transform.position = new Vector3(16,-5,0);
 
-        mydeck = NetworkClient.connection.identity.GetComponent<GamePlayerDeck>();
+        mydeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
     }
 
     void OnMouseDrag()

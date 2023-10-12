@@ -9,7 +9,7 @@ using TMPro;
 public class MapPlayerDestination : NetworkBehaviour
 {
     [SyncVar(hook = nameof(OnChangeGamePlayer))]
-    public GamePlayer gamePlayer;
+    public uint gamePlayer;
 
     [SyncVar(hook = nameof(OnChangeDistanceFromCurrentCoordinate))]
     public int distanceFromCurrentCoordinate;
@@ -68,11 +68,10 @@ public class MapPlayerDestination : NetworkBehaviour
     }
 
     // GamePlayer참조값에서 selectOrder값에 따라 해당 플레이어 소유의 표시 색상 변경
-    public void OnChangeGamePlayer(GamePlayer oldValue, GamePlayer newValue)
+    public void OnChangeGamePlayer(uint oldValue, uint newValue)
     {
-        if(newValue != null && newValue.objectOwner != null){
-            spriteRenderer.color = newValue.objectOwner.color;
-        }
+        PlayerInterface playerInterface = NetworkClient.spawned[newValue].GetComponent<PlayerInterface>();
+        spriteRenderer.color = playerInterface.color;
     }
 
     // 목적지까지의 거리값 표시

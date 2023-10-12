@@ -10,7 +10,7 @@ public class MapPlayerPiece: NetworkBehaviour
     public string steamId;
 
     [SyncVar(hook = nameof(OnChangeGamePlayer))]
-    public GamePlayer gamePlayer;
+    public uint gamePlayer;
 
     public SpriteRenderer spriteRenderer;
     public TextMeshProUGUI textPlayerName;
@@ -26,31 +26,30 @@ public class MapPlayerPiece: NetworkBehaviour
     }
 
     // GamePlayer참조값에서 selectOrder값에 따라 해당 플레이어 소유의 MapPlayerPiece 색상 변경
-    public void OnChangeGamePlayer(GamePlayer oldValue, GamePlayer newValue)
+    public void OnChangeGamePlayer(uint oldValue, uint newValue)
     {
-        if(newValue != null && newValue.objectOwner != null){
-            spriteRenderer.color = newValue.objectOwner.color;
-        }
+        PlayerInterface playerInterface = NetworkClient.spawned[newValue].GetComponent<PlayerInterface>();
+        spriteRenderer.color = playerInterface.color;
     }
 
     // 맵 플레이어 위치 변경 수신
     [ClientRpc]
     public void RpcChangeMapPlayerPiecePosition(Vector3 position)
     {
-        if(gamePlayer != null){
-            Vector3 offset = new Vector3(0f, 0f, 0f);
-            switch(gamePlayer.selectOrder){
-                case 0:
-                    offset += new Vector3(-0.2f, 0f, 0f);
-                    break;
-                case 1:
-                    offset += new Vector3(0f, 0f, 0f);
-                    break;
-                case 2:
-                     offset += new Vector3(0.2f, 0f, 0f);
-                    break;
-            }
-            transform.position = position + offset;
+        Vector3 offset = new Vector3(0f, 0f, 0f);
+        /*
+        switch(gamePlayer.selectOrder){
+            case 0:
+                offset += new Vector3(-0.2f, 0f, 0f);
+                break;
+            case 1:
+                offset += new Vector3(0f, 0f, 0f);
+                break;
+            case 2:
+                    offset += new Vector3(0.2f, 0f, 0f);
+                break;
         }
+        */
+        transform.position = position + offset;
     }
 }

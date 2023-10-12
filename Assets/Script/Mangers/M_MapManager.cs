@@ -513,7 +513,7 @@ public class M_MapManager : NetworkBehaviour
         while(true)
         {
             yield return new WaitForSeconds(0.1f);
-            if( NetworkClient.connection.identity.GetComponent<GamePlayerTarget>().targetObject != 0 )
+            if(NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject != 0 )
             {
                 NetworkClient.connection.identity.GetComponent<PlayerInterface>().isTargetObjectInitDone = true;
                 break;

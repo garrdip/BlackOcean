@@ -53,7 +53,7 @@ public class HexagonMapRoom : NetworkBehaviour
 
     private void OnMouseDown()
     {
-        GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().transform.GetChild(0).GetComponent<GamePlayerMap>();
+        GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
         // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(로컬 클라이언트 전용)
         gamePlayerMap.ClientChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
         // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(서버 요청)

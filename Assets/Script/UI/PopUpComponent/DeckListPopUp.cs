@@ -66,7 +66,7 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
                 originSiblingIndex = GameUIManager.instance.buttonPrefareDeck.transform.GetSiblingIndex();
                 // 로컬 플레이어의 PrefareDeck 조회
                 if(NetworkClient.connection != null && NetworkClient.active){
-                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                    GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                     AddDeckList(gamePlayerDeck.prefareDeck, deckListPopUpGrid);
                 }
                 break;
@@ -78,7 +78,7 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
                 originSiblingIndex = GameUIManager.instance.buttonTrashDeck.transform.GetSiblingIndex();
                 // 로컬 플레이어의 TrashDeck 조회
                 if(NetworkClient.connection != null && NetworkClient.active){
-                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
+                    GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                     AddDeckList(gamePlayerDeck.trashDeck, deckListPopUpGrid);
                 }
                 break;
