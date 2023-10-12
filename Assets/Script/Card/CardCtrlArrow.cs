@@ -116,13 +116,12 @@ public class CardCtrlArrow : NetworkBehaviour
                                     break;
                             }
                         }
-                        gamePlayerDeck =  NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                         if(gamePlayerDeck.GetTotalCostOfCardOnHand(arrowOwnedCardOnHand) > gamePlayerDeck.currentIchi) // 카드 코스트 계산 하는곳
                             return;
                         //
                         arrowOwnedCardOnHand.isUsed = true;
                         arrowOwnedCardOnHand.isMoving = false;
-                        CmdEnQueueCardData(gamePlayerDeck, arrowOwnedCardOnHand,targetObject, NetworkClient.connection.identity.connectionToClient); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
+                        CmdEnQueueCardData(gamePlayerDeck, arrowOwnedCardOnHand,targetObject); // 카드와 카드 타겟들을 한 쌍으로 하는 Dictionary 데이터 생성
                         AcceptCardUse();
                     }
                 }
@@ -132,9 +131,9 @@ public class CardCtrlArrow : NetworkBehaviour
 
 
     [Command]
-    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, CardOnHand cardOnHand, TargetObject tar, NetworkConnectionToClient conn)
+    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, CardOnHand cardOnHand, TargetObject tar)
     {
-        gamePlayerDeck.serverCardPredictQueue.Enqueue((cardOnHand, tar, conn));
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((cardOnHand, tar, gamePlayerDeck));
     }
 
     // 화살표 초기화(위치설정, visible상태 활성화, 베지어 곡선 조작점 설정, 화살표 활성화 상태 변수 변경)

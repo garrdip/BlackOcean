@@ -38,7 +38,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public CardOnHand[] choosedCardOnHands = new CardOnHand[2];  // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
 
-    public Queue<(CardOnHand,TargetObject,NetworkConnectionToClient)> serverCardPredictQueue = new Queue<(CardOnHand, TargetObject, NetworkConnectionToClient)>();// Server에서 Card Queue 관리를 위한 Queue
+    public Queue<(CardOnHand,TargetObject,GamePlayerDeck)> serverCardPredictQueue = new Queue<(CardOnHand, TargetObject, GamePlayerDeck)>();// Server에서 Card Queue 관리를 위한 Queue
 
     [SyncVar(hook = nameof(PreviousCardTypeChanged))]
     public CardType previousCardType;
@@ -181,7 +181,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         WaitForSeconds loopTime = new WaitForSeconds(0.01f);
         CardOnHand cardOnHand;
         TargetObject targetObject;
-        NetworkConnectionToClient conn;
+        GamePlayerDeck conn;
 
         while(true)
         {
@@ -457,10 +457,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
         if(isOwned)CmdSpawnAbilityCard();
     }
 
-    [TargetRpc]
-    public void ReturnToCardOnHand(NetworkConnectionToClient target,CardOnHand cardOnHand)
+    [ClientRpc]
+    public void ReturnToCardOnHand(GamePlayerDeck target,CardOnHand cardOnHand)
     {
-        StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
+        if(target == this)
+            StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
     }
 
     // 전투 보상 카드 데이터 세팅 수신

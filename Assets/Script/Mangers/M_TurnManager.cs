@@ -64,23 +64,22 @@ public class M_TurnManager : NetworkBehaviour
         OnChangedPhase();
     }}
 
-    public TargetObject GetPlayer(NetworkConnectionToClient conn)
+    public TargetObject GetPlayer(GamePlayerDeck conn)
     {     
         foreach(TargetObject tar in spawnedPlayerList)
         {
-            if(tar.player.netIdentity.connectionToClient == conn){
-                Debug.Log(tar.player.netIdentity + " and " + conn);
+            if(tar.player.GetComponent<GamePlayerDeck>() == conn){
                 return tar;
             }
         }
         return null;
     }
 
-    public TargetObject GetClonePlayer(NetworkConnectionToClient conn)
+    public TargetObject GetClonePlayer(GamePlayerDeck conn)
     {
         foreach(TargetObject tar in spawnedPlayerList)
         {
-            if(tar.player.netIdentity.connectionToClient == conn)
+            if(tar.player.GetComponent<GamePlayerDeck>() == conn)
             return tar.clone;
         }
         return null;
@@ -713,8 +712,9 @@ public class M_TurnManager : NetworkBehaviour
         {
             cnt = 0;
             yield return new WaitForSeconds(0.1f);
-            foreach(RoomPlayer user in netManager.roomSlots)
-                if(user.GetComponent<PlayerInterface>().isTargetObjectInitDone) cnt++;
+            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
+            foreach(PlayerInterface user in users)
+                if(user.isTargetObjectInitDone) cnt++;
             if(cnt != netManager.roomSlots.Count) continue;
 
             if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE)

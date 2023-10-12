@@ -48,9 +48,6 @@ public class CardOnHand : NetworkBehaviour
 
     public bool isUsed = false;
 
-    [Header("현재 게임 플레이어의 GamePlayerDeck 클래스 참조값")]
-    public GamePlayerDeck currentPlayerDeck;
-
     [Header("CardOnHand UI Canvas 컴포넌트")]
     public Canvas cardOnHandCanvas;
 
@@ -110,7 +107,6 @@ public class CardOnHand : NetworkBehaviour
     public override void OnStartClient()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            currentPlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
             InitCardIllust(card);
             InitCardTemplateByCardType(card);
             InitCardTemplateByCardEnhanced(card);
@@ -221,9 +217,9 @@ public class CardOnHand : NetworkBehaviour
                 // 덱 [제거] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
                 if(IsCardOnHandRemovePopUpActive()){
                     if(isChoosed){
-                        currentPlayerDeck.RemoveChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에서 제거
+                        NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().RemoveChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에서 제거
                     }else{
-                        currentPlayerDeck.AddChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에 추가
+                        NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().AddChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에 추가
                     }  
                 }
             }
@@ -251,7 +247,7 @@ public class CardOnHand : NetworkBehaviour
                     int totalCost = 0;
                     if(card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
                     {
-                        if(card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
+                        if(card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().previousCardType)
                         {
                             totalCost = ( card.baseCard.cost + card.costAddition - 1 );
                             if(totalCost < 0)totalCost = 0;
@@ -269,8 +265,8 @@ public class CardOnHand : NetworkBehaviour
                         return;
                     }
 
-                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-                    CmdEnQueueCardData(gamePlayerDeck,NetworkClient.connection.identity.connectionToClient);
+                    GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+                    CmdEnQueueCardData(gamePlayerDeck);
                     M_CardManager.instance.CardOnHandThrowAwaySequence(this);
                 }
                 else
@@ -284,9 +280,9 @@ public class CardOnHand : NetworkBehaviour
     }
 
     [Command]
-    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, NetworkConnectionToClient conn)
+    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck)
     {
-        gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null, conn));
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null, gamePlayerDeck));
     }
 
     // 마우스 좌표에 따라 카드 오브젝트 드래그
@@ -306,8 +302,8 @@ public class CardOnHand : NetworkBehaviour
     private void MovePositionArrowSpawnedCardOnHand(CardOnHand cardOnHand)
     {
         if( Input.mousePosition.y > Screen.height / 3 ){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.GetTotalCostOfCardOnHand(cardOnHand) > NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().currentIchi) 
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+            if(gamePlayerDeck.GetTotalCostOfCardOnHand(cardOnHand) > gamePlayerDeck.currentIchi) 
             {
                 cardOnHand.isMoving = false;
                 cardOnHand.isDrag = false;
@@ -320,8 +316,8 @@ public class CardOnHand : NetworkBehaviour
                 cardOnHand.isMoving = true;
                 cardOnHand.isDrag = false;
                 cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = M_CardManager.instance.maxSortOrder;
-                currentPlayerDeck.cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
-                currentPlayerDeck.CmdSetArrowOwnCardOnHand(cardOnHand);
+                NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
+                NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().CmdSetArrowOwnCardOnHand(cardOnHand);
                 cardOnHand.transform
                     .DOMove(new Vector3(0f, arrowSpawnedCardPosition.y, arrowSpawnedCardPosition.z), 0.4f)
                     .SetEase(Ease.OutSine);
@@ -394,7 +390,7 @@ public class CardOnHand : NetworkBehaviour
         
         if(newCard.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
         {
-            if(newCard.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
+            if(newCard.baseCard.cardType == NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().previousCardType)
             {
                 textCardCost.text = "<b><color=green>" +((newCard.baseCard.cost + newCard.costAddition - 1) <= 0 ? "0" : (newCard.baseCard.cost + newCard.costAddition - 1).ToString()) + "</color></b>";
             }
