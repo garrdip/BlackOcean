@@ -77,13 +77,25 @@ public class M_NetworkRoomManager : NetworkRoomManager
     // 클라이언트 연결이 끊어졌을 경우 해당 클라이언트 소유의 오브젝트 권한을 서버에게 이전
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
-        HashSet<NetworkIdentity> copyHashSet = new HashSet<NetworkIdentity>(conn.owned);
-        
-        foreach(NetworkIdentity networkIdentity in copyHashSet){
-            if(networkIdentity.GetComponent<RoomPlayer>() == null && networkIdentity.GetComponent<PlayerInterface>() == null){
-                networkIdentity.RemoveClientAuthority();
-                networkIdentity.AssignClientAuthority(NetworkClient.connection.identity.connectionToClient);
+        if(Utils.IsSceneActive(GameplayScene)){
+            if(NetworkClient.connection != null && NetworkClient.active){ // 서버 플레이어가 연결끊을 시 NPE 방지
+                PlayerInterface serverPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>(); // 서버 플레이어
+                PlayerInterface disconnectedPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>(); // 방 나간 플레이어
+                GamePlayer disconnectedGamePlayer = NetworkServer.spawned[disconnectedPlayer.currentGamePlayerNetId].GetComponent<GamePlayer>(); // 방 나간 플레이어의 GamePlayer 컴포넌트
+                disconnectedGamePlayer.objectOwner = serverPlayer; // 방 나간 플레이어의 GamePlayer 오브젝트의 부모 오브젝트를 서버 플레이어의 PlayerInterface로 변경
+                serverPlayer.ownedPlayers.Add(disconnectedGamePlayer); // 서버플레이어의 ownedPlayers SyncList에 방 나간 플레이어 추가
+
+                // 방 나간 클라이언트 소유의 오브젝트들 중 플레이어 오브젝트를 제외한 모든 오브젝트의 권한을 서버에게 이전
+                HashSet<NetworkIdentity> copyHashSet = new HashSet<NetworkIdentity>(conn.owned);
+                foreach(NetworkIdentity networkIdentity in copyHashSet){
+                    if(networkIdentity.GetComponent<RoomPlayer>() == null && networkIdentity.GetComponent<PlayerInterface>() == null){
+                        networkIdentity.RemoveClientAuthority();
+                        networkIdentity.AssignClientAuthority(NetworkClient.connection.identity.connectionToClient);
+                    }
+                }
             }
         }
+
+        base.OnServerDisconnect(conn);
     }
 }

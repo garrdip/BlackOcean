@@ -104,7 +104,7 @@ public class M_CardManager : NetworkBehaviour
     {   
         if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId != 0){
             List<CardOnHand> cardOnHandsIsNotChoosed =
-            NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
+                    NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
             int count = cardOnHandsIsNotChoosed.Count;
             if(count > 0){
                 for(int i=0; i<count; i++){      
@@ -331,7 +331,7 @@ public class M_CardManager : NetworkBehaviour
     // 로컬 플레이어 소유의 카드 제어 화살표 제거
     public void RemoveAllCurrentPlayerArrow()
     {
-         if(NetworkClient.connection != null && NetworkClient.active){
+        if(NetworkClient.connection != null && NetworkClient.active){
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
             gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
         }
