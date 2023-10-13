@@ -102,7 +102,7 @@ public class M_CardManager : NetworkBehaviour
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
     public void SetCardOnHandPositionSymmetry()
     {   
-        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId != 0){
+        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>() != null && NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId != 0){
             List<CardOnHand> cardOnHandsIsNotChoosed =
                     NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
             int count = cardOnHandsIsNotChoosed.Count;

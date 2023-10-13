@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5125707426590756295}
   - component: {fileID: 7821855001177509042}
   - component: {fileID: -3013813304460486306}
+  - component: {fileID: -3392130119699030484}
   m_Layer: 0
   m_Name: DanHyang
   m_TagString: TargetObject
@@ -171,3 +172,18 @@ PolygonCollider2D:
       - {x: 1.3731229, y: 0.68101114}
       - {x: 2.0843217, y: 0.6810112}
       - {x: 2.7727997, y: 0.60521555}
+--- !u!114 &-3392130119699030484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238078986054683857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 385d45f9026a2274ebf5a309b789b1e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshRenderer: {fileID: 1046600963234684866}
+  defaultMaterial: {fileID: 2100000, guid: 563b5773816b07f43b87156d10fa6ac3, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: e34d843ebf3da8f4ea8e43cd82180cd1, type: 2}

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5125707426590756295}
   - component: {fileID: 7821855001177509042}
   - component: {fileID: 7772892662727383144}
+  - component: {fileID: -8832475246937749543}
   m_Layer: 0
   m_Name: Eris
   m_TagString: TargetObject
@@ -74,7 +75,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 744391573
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &5125707426590756295
@@ -171,3 +172,18 @@ PolygonCollider2D:
       - {x: 1.3731229, y: 0.68101114}
       - {x: 2.0843217, y: 0.6810112}
       - {x: 2.7727997, y: 0.60521555}
+--- !u!114 &-8832475246937749543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238078986054683857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 385d45f9026a2274ebf5a309b789b1e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshRenderer: {fileID: 1046600963234684866}
+  defaultMaterial: {fileID: 0}
+  outLineMaterial: {fileID: 0}

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5125707426590756295}
   - component: {fileID: 7821855001177509042}
   - component: {fileID: -7493641816544233086}
+  - component: {fileID: 3882302177938675239}
   m_Layer: 0
   m_Name: Geork
   m_TagString: TargetObject
@@ -171,3 +172,18 @@ PolygonCollider2D:
       - {x: 1.3731229, y: 0.68101114}
       - {x: 2.0843217, y: 0.6810112}
       - {x: 2.7727997, y: 0.60521555}
+--- !u!114 &3882302177938675239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238078986054683857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 385d45f9026a2274ebf5a309b789b1e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshRenderer: {fileID: 1046600963234684866}
+  defaultMaterial: {fileID: 2100000, guid: 3074c931016c46949b3b0255199ee353, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 8374e042a94315f49942789a9ba4ba37, type: 2}

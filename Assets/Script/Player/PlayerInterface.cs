@@ -8,9 +8,14 @@ using Steamworks;
 
 public class PlayerInterface : NetworkBehaviour
 {
-    public GamePlayer currentGamePlayer {get{return NetworkClient.spawned[currentGamePlayerNetId].GetComponent<GamePlayer>();}}
+    public GamePlayer currentGamePlayer {
+        get { return isServer ? NetworkServer.spawned[currentGamePlayerNetId].GetComponent<GamePlayer>() : NetworkClient.spawned[currentGamePlayerNetId].GetComponent<GamePlayer>(); }
+    }
 
     public readonly SyncList<GamePlayer> ownedPlayers = new SyncList<GamePlayer>();
+    
+    [SyncVar (hook = nameof(OnChangeCurrentGamePlayerNetId))]
+    public uint currentGamePlayerNetId = 0;
 
     [SyncVar]
     public Character character;
@@ -55,8 +60,6 @@ public class PlayerInterface : NetworkBehaviour
     [SyncVar]
     public bool isLoadDone = false;
 
-    [SyncVar]
-    public uint currentGamePlayerNetId = 0;
 
 
     public override void OnStartLocalPlayer()
@@ -330,5 +333,10 @@ public class PlayerInterface : NetworkBehaviour
         {
             MapUI.instance.UpdateProfile();
         }
+    }
+
+    void OnChangeCurrentGamePlayerNetId(uint oldVal, uint newVal)
+    {
+        // TODO : 선택한 플레이어의 CardPocket위치를 스왑
     }
 }
