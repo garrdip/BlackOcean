@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Mirror;
 using ProjectD;
 using Steamworks;
+using DG.Tweening;
 
 public class PlayerInterface : NetworkBehaviour
 {
@@ -133,6 +133,7 @@ public class PlayerInterface : NetworkBehaviour
             {
                 if(gamePlayer.isOwned) currentGamePlayerNetId = gamePlayer.netId;
             }
+            ownedPlayers.Add(currentGamePlayer);
             GetComponent<PlayerInterfaceServer>().GenerateGamePlayerOwnedObjects(currentGamePlayer);
         }
         SetUserStatusUI();
@@ -337,6 +338,21 @@ public class PlayerInterface : NetworkBehaviour
 
     void OnChangeCurrentGamePlayerNetId(uint oldVal, uint newVal)
     {
-        // TODO : 선택한 플레이어의 CardPocket위치를 스왑
+        if(isServer && oldVal != 0 && newVal != 0){
+            // 이전에 선택한 플레이어 카드포켓
+            CardPocket prevCardPocket = NetworkServer.spawned[oldVal].GetComponent<GamePlayerDeck>().cardPocket;
+            
+            // 현재 선택한 플레이어 카드포켓
+            CardPocket currentCardPocket = NetworkServer.spawned[newVal].GetComponent<GamePlayerDeck>().cardPocket ;
+
+            // 위치 스왑
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(prevCardPocket.transform.DOMoveY(-15f, 0.2f));
+            sequence.Join(currentCardPocket.transform.DOMoveY(-15f, 0.2f));
+            sequence.Append(prevCardPocket.transform.DOMoveX(-100f, 0.2f));
+            sequence.Join(currentCardPocket.transform.DOMoveX(0f, 0.2f));
+            sequence.Append(prevCardPocket.transform.DOMoveY(-8f, 0.2f));
+            sequence.Join(currentCardPocket.transform.DOMoveY(-8f, 0.2f));
+        }
     }
 }
