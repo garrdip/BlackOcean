@@ -20,9 +20,11 @@ public class CardOnHand : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeParent))]
     public CardPocket parent;
 
+    public SortingGroup sortingGroup;
+
     [Header("CardOnHand Transform 및 컴포넌트 관련 값들")]
-    // 랜더링 순서값
-    public int originSortOrder; // 초기값
+    // 랜더링 순서 초기값
+    public int originSortOrder;
 
     // 초기 위치값
     public Vector3 originPosition;

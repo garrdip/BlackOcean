@@ -10,10 +10,13 @@ public class M_CardManager : NetworkBehaviour
 {
     public static M_CardManager Instance = null;
 
+    [Header("현재 선택한 플레이어의 GamePlayerDeck 참조변수")]
+    public GamePlayerDeck currentGamePlayerDeck;
+
     [Header("랜덤 시드값")]
     public int seedNumber = 0;
 
-    [Header("현재 플레이어가 선택한 캐릭터의 카드 리스트")]
+    [Header("DB에서 받아온 카드정보를 저장할 SyncList")]
     public readonly SyncList<Card> cards = new SyncList<Card>();
 
     [Header("카드 대칭 계산값 변수 범위")]
@@ -81,7 +84,7 @@ public class M_CardManager : NetworkBehaviour
         InitCardConfigValue();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         SetCardOnHandPositionSymmetry();
     }
@@ -102,9 +105,8 @@ public class M_CardManager : NetworkBehaviour
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
     public void SetCardOnHandPositionSymmetry()
     {   
-        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>() != null && NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId != 0){
-            List<CardOnHand> cardOnHandsIsNotChoosed =
-                    NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
+        if(currentGamePlayerDeck != null){
+            List<CardOnHand> cardOnHandsIsNotChoosed = currentGamePlayerDeck.cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
             int count = cardOnHandsIsNotChoosed.Count;
             if(count > 0){
                 for(int i=0; i<count; i++){      
@@ -117,7 +119,7 @@ public class M_CardManager : NetworkBehaviour
                                 cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
                                 cardOnHand.transform.localScale = cardOverSize;
                             }else{
-                                cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = i; // 스프라이트 정렬 인덱스
+                                cardOnHand.sortingGroup.sortingOrder = i; // 스프라이트 정렬 인덱스
                                 cardOnHand.cardOnHandCanvas.sortingOrder = i; // 카드 이름 및 설명 텍스트 요소의 정렬 인덱스
                                 cardOnHand.transform.SetSiblingIndex(i); // 오브젝트 스택 순서 인덱스
 
@@ -139,7 +141,7 @@ public class M_CardManager : NetworkBehaviour
 
                                 // 마우스 오버되지 않은 나머지 카드들은 shift 되어 밀려남. 마우스 오버된 카드를 기준으로 좌우 대칭으로 멀어질 수록 밀려나는 위치의 정도가 감소.
                                 if(cardOnHand.isShifted){
-                                    int mouseOveredIndex = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindIndex((card) =>  card.isMouseOver);
+                                    int mouseOveredIndex = currentGamePlayerDeck.cardOnHands.FindIndex((card) =>  card.isMouseOver);
                                     float shiftedValue = 0f;
                                     if(i != mouseOveredIndex){
                                         shiftedValue = cardOnHandShiftedRange / (i - mouseOveredIndex);
@@ -153,6 +155,12 @@ public class M_CardManager : NetworkBehaviour
                 }
             }
         }
+    }
+
+    // 현재 플레이어의 GamePlayerDeck 참조값 설정
+    public void SetCurrentGamePlayerDeck(GamePlayerDeck gamePlayerDeck)
+    {
+        currentGamePlayerDeck = gamePlayerDeck;
     }
 
     // CardOnHand 오브젝트들의 인덱스값에 따라 순차적인 움직임으로 날아오는 애니매이션 + Moving플래그 변수 조정

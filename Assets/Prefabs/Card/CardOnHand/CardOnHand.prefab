@@ -234,6 +234,7 @@ MonoBehaviour:
     experience: 0
   index: 0
   parent: {fileID: 0}
+  sortingGroup: {fileID: 9103925750444945429}
   originSortOrder: 0
   originPosition: {x: 0, y: 0, z: 0}
   arrowSpawnedCardPosition: {x: 0, y: 0, z: 0}
@@ -243,7 +244,6 @@ MonoBehaviour:
   isShifted: 0
   isChoosed: 0
   isUsed: 0
-  currentPlayerDeck: {fileID: 0}
   cardOnHandCanvas: {fileID: 2876669895777172954}
   cardBackground: {fileID: 7955653727073816899}
   cardIllust: {fileID: 1985561083282292296}

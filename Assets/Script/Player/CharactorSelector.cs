@@ -30,6 +30,7 @@ public class CharactorSelector : MonoBehaviour
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
             GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
             playerInterface.currentGamePlayerNetId = gamePlayer.netId;
+            M_CardManager.instance.SetCurrentGamePlayerDeck(gamePlayer.GetComponent<GamePlayerDeck>());
         }
     }
 

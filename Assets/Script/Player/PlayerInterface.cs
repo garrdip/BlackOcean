@@ -118,7 +118,10 @@ public class PlayerInterface : NetworkBehaviour
         {
             foreach(GamePlayer gamePlayer in FindObjectsOfType<GamePlayer>())
             {
-                if(gamePlayer.isOwned) currentGamePlayerNetId = gamePlayer.netId;
+                if(gamePlayer.isOwned){
+                    currentGamePlayerNetId = gamePlayer.netId;
+                    M_CardManager.instance.SetCurrentGamePlayerDeck(gamePlayer.GetComponent<GamePlayerDeck>());
+                }
             }
             ownedPlayers.Add(currentGamePlayer);
             GetComponent<PlayerInterfaceServer>().GenerateGamePlayerOwnedObjects(currentGamePlayer);
@@ -347,12 +350,8 @@ public class PlayerInterface : NetworkBehaviour
 
             // 위치 스왑
             Sequence sequence = DOTween.Sequence();
-            sequence.Append(prevCardPocket.transform.DOMoveY(-15f, 0.2f));
-            sequence.Join(currentCardPocket.transform.DOMoveY(-15f, 0.2f));
-            sequence.Append(prevCardPocket.transform.DOMoveX(-100f, 0.2f));
-            sequence.Join(currentCardPocket.transform.DOMoveX(0f, 0.2f));
-            sequence.Append(prevCardPocket.transform.DOMoveY(-8f, 0.2f));
-            sequence.Join(currentCardPocket.transform.DOMoveY(-8f, 0.2f));
+            sequence.Append(prevCardPocket.transform.DOMoveY(-100f, 0.5f));
+            sequence.Join(currentCardPocket.transform.DOMoveY(-8f, 0.5f));
 
             // 현재 선택한 플레이어의 PrefareDeck, TrashDeck 카운트 텍스트 설정
             GamePlayerDeck currentGamePlayerDeck = NetworkServer.spawned[newVal].GetComponent<GamePlayerDeck>();
