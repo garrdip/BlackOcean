@@ -91,19 +91,6 @@ public class PlayerInterface : NetworkBehaviour
         isInitializeDone = true;
     }
 
-    [Command]
-    void GenerateGamePlayer()
-    {
-        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "GamePlayer"),new Vector3(0,0,0),Quaternion.identity);
-        
-        GamePlayer gamePlayer = cloneAvatar.GetComponent<GamePlayer>();
-        gamePlayer.objectOwner = this;
-        gamePlayer.character = character;
-        gamePlayer.selectOrder = selectOrder;
-        NetworkServer.Spawn(cloneAvatar,connectionToClient);
-    }
-
     IEnumerator WaitPlayerList()
     {
         M_NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
@@ -178,6 +165,19 @@ public class PlayerInterface : NetworkBehaviour
     }
 
     // ------------------------------------------------------------- Command Method ------------------------------------------------------------------//
+
+    [Command]
+    void GenerateGamePlayer()
+    {
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "GamePlayer"),new Vector3(0,0,0),Quaternion.identity);
+        
+        GamePlayer gamePlayer = cloneAvatar.GetComponent<GamePlayer>();
+        gamePlayer.objectOwner = this;
+        gamePlayer.character = character;
+        gamePlayer.selectOrder = selectOrder;
+        NetworkServer.Spawn(cloneAvatar,connectionToClient);
+    }
 
     // 맵 씬 채팅 메시지 이벤트 송신
     [Command]
@@ -353,6 +353,11 @@ public class PlayerInterface : NetworkBehaviour
             sequence.Join(currentCardPocket.transform.DOMoveX(0f, 0.2f));
             sequence.Append(prevCardPocket.transform.DOMoveY(-8f, 0.2f));
             sequence.Join(currentCardPocket.transform.DOMoveY(-8f, 0.2f));
+
+            // 현재 선택한 플레이어의 PrefareDeck, TrashDeck 카운트 텍스트 설정
+            GamePlayerDeck currentGamePlayerDeck = NetworkServer.spawned[newVal].GetComponent<GamePlayerDeck>();
+            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textPrefareDeckCount, currentGamePlayerDeck.prefareDeck.Count);
+            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textTrashDeckCount, currentGamePlayerDeck.trashDeck.Count);
         }
     }
 }

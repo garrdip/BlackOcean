@@ -548,11 +548,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        // 로컬플레이어의 PrefareDeck Count 표시
-        if(isLocalPlayer){
-            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textPrefareDeckCount, prefareDeck.Count);
+        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
+        if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
+            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textPrefareDeckCount, prefareDeck.Count); // 현재 플레이어의 PrefareDeck Count 표시
         }
-        // TODO : 관전하려는 플레이어의 PrefareDeck Count 표시
     }
 
     // TrashDeck Callback
@@ -576,10 +575,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        // 로컬플레이어의 TrashDeck Count 표시
-        if(isLocalPlayer){
-            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textTrashDeckCount, trashDeck.Count);
+        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
+        if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
+            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textTrashDeckCount, trashDeck.Count); // 현재 플레이어의 TrashDeck Count 표시
         }
-        // TODO : 관전하려는 플레이어의 TrashDeck Count 표시
     }
 }
