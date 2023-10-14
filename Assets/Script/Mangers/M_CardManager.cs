@@ -246,30 +246,25 @@ public class M_CardManager : NetworkBehaviour
     }
 
     // CardOnHand 모두 trashDeck으로 버리는 애니매이션(역순으로 크기, 방향, 위치 변경)
-    public void CardOnHandAllThrowAwaySequence(CardOnHand cardOnHand)
+    public void CardOnHandAllThrowAwaySequence(CardOnHand cardOnHand, GamePlayerDeck gamePlayerDeck)
     {
         GameUIManager.instance.buttonEndTurn.interactable = false;
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isOwned){
-                float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
-                Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
-                cardOnHand.isMoving = true;
-                cardOnHand.isUsed = true;
+        float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
+        Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
+        cardOnHand.isMoving = true;
+        cardOnHand.isUsed = true;
 
-                cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.3f);
-                cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), 0.3f);
-                cardOnHand.transform
-                        .DOMove(trashDeckPosition, 0.3f)
-                        .SetEase(Ease.OutCirc)
-                        .SetDelay(delay)
-                        .OnComplete(() => {
-                            cardOnHand.isMoving = false;
-                            gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
-                            GameUIManager.instance.buttonEndTurn.interactable = true;
-                        });
-            }   
-        } 
+        cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.3f);
+        cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), 0.3f);
+        cardOnHand.transform
+                .DOMove(trashDeckPosition, 0.3f)
+                .SetEase(Ease.OutCirc)
+                .SetDelay(delay)
+                .OnComplete(() => {
+                    cardOnHand.isMoving = false;
+                    gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
+                    GameUIManager.instance.buttonEndTurn.interactable = true;
+                });
     }
 
     // 덱 제거를 위해 선택된 카드들의 위치 및 크기 변경
@@ -312,16 +307,31 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
+    // 로컬 플레이어 소유의 카드 제어 화살표 제거
+    public void RemoveAllCurrentPlayerArrow()
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
+                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
+            }
+        }
+    }
+
     // 로컬 플레이어의 모든 카드 제거
     public void RemoveAllCurrentPlayerCardOnHands()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                // 영원 타입이 아닌 카드들만 제거
-                bool isCardTypeImmortal = CardData.instance.CheckCardCharacteristic(cardOnHand.card, ProjectD.CardCharacteristic.YOUNGWON);
-                if(!isCardTypeImmortal){
-                    CardOnHandAllThrowAwaySequence(cardOnHand);
+            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
+                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                    // 영원 타입이 아닌 카드들만 제거
+                    bool isCardTypeImmortal = CardData.instance.CheckCardCharacteristic(cardOnHand.card, ProjectD.CardCharacteristic.YOUNGWON);
+                    if(!isCardTypeImmortal){
+                        CardOnHandAllThrowAwaySequence(cardOnHand, gamePlayerDeck);
+                    }
                 }
             }
         }
@@ -331,26 +341,23 @@ public class M_CardManager : NetworkBehaviour
     public void RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            gamePlayerDeck.CmdDestroyAllCardOnHandWithOutTrashDeck();
+            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
+                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                gamePlayerDeck.CmdDestroyAllCardOnHandWithOutTrashDeck();
+            }
         }    
     }
-
-    // 로컬 플레이어 소유의 카드 제어 화살표 제거
-    public void RemoveAllCurrentPlayerArrow()
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
-        }
-    }
-
+    
     // 로컬 플레이어의 PrefareDeck과 TrashDeck 데이터 모두 제거
     public void RemoveAllCurrentPlayerPrefareDeckAndTrashDeck()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            gamePlayerDeck.CmdClearPrefareDeckAndTrashDeck();
+            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
+                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                gamePlayerDeck.CmdClearPrefareDeckAndTrashDeck();
+            }
         }   
     }
 

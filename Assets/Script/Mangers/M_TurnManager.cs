@@ -832,8 +832,11 @@ public class M_TurnManager : NetworkBehaviour
     public void EachPlayerCardDraw()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            gamePlayerDeck.CmdSpawnCardOnHand();
+            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
+                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                gamePlayerDeck.CmdSpawnCardOnHand();
+            }
         }
     }
 
