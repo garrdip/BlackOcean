@@ -73,7 +73,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
 
         return roomPlayer;
     }
-
+    
     // 클라이언트 연결이 끊어졌을 경우 해당 클라이언트 소유의 오브젝트 권한을 서버에게 이전
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {

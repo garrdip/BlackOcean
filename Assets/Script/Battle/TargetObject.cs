@@ -332,18 +332,15 @@ public class TargetObject : NetworkBehaviour
             {
                 case SyncList<Buff>.Operation.OP_ADD:
                     buffIndicator.SetBuff(newBuff);
-                    Debug.Log("BUFF ADD");
                     break;
                 case SyncList<Buff>.Operation.OP_INSERT:
                     buffIndicator.SetBuff(newBuff);
-                    Debug.Log("BUFF Insert");
                     break;
                 case SyncList<Buff>.Operation.OP_REMOVEAT:
 
                     break;
                 case SyncList<Buff>.Operation.OP_SET:
                     buffIndicator.SetBuff(newBuff);
-                    Debug.Log("BUFF set");
                     break;
                 case SyncList<Buff>.Operation.OP_CLEAR:
 
@@ -426,10 +423,9 @@ public class TargetObject : NetworkBehaviour
     {
         if(newVal == this)
         { 
+            Debug.Log(player.character);
             ironDemon.GetComponent<SkeletonAnimation>().state.Complete -= OnIronDemonAnimationComplete;
             ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
         }
     }
-
-
 }

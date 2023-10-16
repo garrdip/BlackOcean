@@ -31,10 +31,11 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
         foreach(TargetObject tar in targets)
         {
             if(tar != null)
+            {
                 tar.GetComponent<SortingGroup>().sortingLayerName = "BackLayer";
-
-            foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>())
-                canvas.sortingLayerName = "BackLayer";
+                foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>())
+                    canvas.sortingLayerName = "BackLayer";
+            }
         }
     }
 
