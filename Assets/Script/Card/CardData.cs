@@ -1,15 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Reflection;
 using System.IO;
 using System;
+using AYellowpaper.SerializedCollections;
 using ProjectD;
-using Mirror;
-using Spine.Unity;
 
 public partial class CardData : SingletonD<CardData>
 {
+    [Header("캐릭터별 카드 탬플릿")]
+    [SerializedDictionary("Character", "Sprite")]
+    public SerializedDictionary<Character, SerializedDictionary<string, Sprite>> characterCardTemplate = new SerializedDictionary<Character, SerializedDictionary<string, Sprite>>();
+
     public List<CardBase> cards = new List<CardBase>();
     public Dictionary<string,ExecuteCard> CardMethods = new Dictionary<string, ExecuteCard>();
 

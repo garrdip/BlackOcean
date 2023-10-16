@@ -10986,6 +10986,125 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44a8fb3bd282d7d4aabf37dbfd4219e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterCardTemplate:
+    _serializedList:
+    - Key: 3
+      Value:
+        _serializedList:
+        - Key: AttackCardBG
+          Value: {fileID: 21300000, guid: 5ac2503e39a382c4098516db95e0f98f, type: 3}
+        - Key: BlessCardBG
+          Value: {fileID: 21300000, guid: 4cac0ad83e31a00499178975da07c2ee, type: 3}
+        - Key: StrategyCardBG
+          Value: {fileID: 21300000, guid: 8f3a5a048dad53445a6d86e46f2ebaef, type: 3}
+        - Key: AttackImageFrame
+          Value: {fileID: 21300000, guid: 0e1b71720792c6147aa3a122d74eebe0, type: 3}
+        - Key: BlessImageFrame
+          Value: {fileID: 21300000, guid: c57797c76d69d534cabc5b534f842384, type: 3}
+        - Key: StrategyImageFrame
+          Value: {fileID: 21300000, guid: a751cfe1ab957d440a043a6270165832, type: 3}
+        - Key: NormalGradeFrame
+          Value: {fileID: 21300000, guid: 646b257348ec25147b20dd0a440e2666, type: 3}
+        - Key: RareGradeFrame
+          Value: {fileID: 21300000, guid: 0448657a5b07b8644baf841f255e76be, type: 3}
+        - Key: LegendGradeFrame
+          Value: {fileID: 21300000, guid: 42a875c94f29fa746bd0652133a02ab9, type: 3}
+        - Key: EnhanceNormalGradeFrame
+          Value: {fileID: 21300000, guid: 00f22fa2e8e42b44d9b995503dbce8e2, type: 3}
+        - Key: EnhanceRareGradeFrame
+          Value: {fileID: 21300000, guid: a6180ac7e1e189943a167e4ea2132cc6, type: 3}
+        - Key: EnhanceLegendGradeFrame
+          Value: {fileID: 21300000, guid: 21ba2b87245709b42a0766bf6cda2d1b, type: 3}
+        - Key: AttackEmblem
+          Value: {fileID: 21300000, guid: a4107838220c9664c8ef914e474e8eda, type: 3}
+        - Key: BlessEmblem
+          Value: {fileID: 21300000, guid: 7cbb13b89b19b524290f656e3c96519c, type: 3}
+        - Key: StrategyEmblem
+          Value: {fileID: 21300000, guid: d4a449b057e169246b2472c5dd1bdf62, type: 3}
+        - Key: ExpBarActive
+          Value: {fileID: 21300000, guid: 1dd92020751f5514ebacfd6db710def9, type: 3}
+        - Key: ExpBarInActive
+          Value: {fileID: 21300000, guid: 5ef269c745abc044c90a45b710c6a39a, type: 3}
+    - Key: 2
+      Value:
+        _serializedList:
+        - Key: AttackCardBG
+          Value: {fileID: 21300000, guid: cee6211a0c904f44ab76ca5a156b8096, type: 3}
+        - Key: BlessCardBG
+          Value: {fileID: 21300000, guid: b2a0e40890d16ab459c6ebc10c6fffc4, type: 3}
+        - Key: StrategyCardBG
+          Value: {fileID: 21300000, guid: ad0ca2407ec7f914da8e6688095ffa41, type: 3}
+        - Key: AttackImageFrame
+          Value: {fileID: 21300000, guid: c3aef6d85705fbf4e80e905c91986e31, type: 3}
+        - Key: BlessImageFrame
+          Value: {fileID: 21300000, guid: b1d4ed660d9daf74e9bf1c0c88e576e7, type: 3}
+        - Key: StrategyImageFrame
+          Value: {fileID: 21300000, guid: 99e6a0473d760c546a6a700e35808572, type: 3}
+        - Key: NormalGradeFrame
+          Value: {fileID: 21300000, guid: 22bbbd7f5f5384e449d939e6e73651b7, type: 3}
+        - Key: RareGradeFrame
+          Value: {fileID: 21300000, guid: 2f846e7b03084d44a9175ddc625af3a4, type: 3}
+        - Key: LegendGradeFrame
+          Value: {fileID: 21300000, guid: 8006c93890c57ee4b927d31be277e8b4, type: 3}
+        - Key: EnhanceNormalGradeFrame
+          Value: {fileID: 21300000, guid: 2d3e684c8ebdd684a881c98e4b4915ac, type: 3}
+        - Key: EnhanceRareGradeFrame
+          Value: {fileID: 21300000, guid: 04bd4c24f0d338442960d90b48e35b0d, type: 3}
+        - Key: EnhanceLegendGradeFrame
+          Value: {fileID: 21300000, guid: 03d6c339a08cbed418908c24f57b5bab, type: 3}
+        - Key: AttackEmblem
+          Value: {fileID: 21300000, guid: 0c94d34730225834e872a4cb2e3a6afd, type: 3}
+        - Key: BlessEmblem
+          Value: {fileID: 21300000, guid: 67dbcf566b56bf041ba0996ccfbcdcfa, type: 3}
+        - Key: StrategyEmblem
+          Value: {fileID: 21300000, guid: 06fee779acb8ce0439102ea6fd0f0b4d, type: 3}
+        - Key: ExpBarActive
+          Value: {fileID: 21300000, guid: 9dd8532a556d359489108cb916f86904, type: 3}
+        - Key: ExpBarInActive
+          Value: {fileID: 21300000, guid: f4706f2d4741113469abf8a46018054a, type: 3}
+    - Key: 1
+      Value:
+        _serializedList:
+        - Key: AttackCardBG
+          Value: {fileID: 21300000, guid: 414ffffbe29839341a372fe455cfa1ac, type: 3}
+        - Key: BlessCardBG
+          Value: {fileID: 21300000, guid: d0a866400854f6c4b99736b299c98ecb, type: 3}
+        - Key: StrategyCardBG
+          Value: {fileID: 21300000, guid: 82337baa3b2e7124a8897f9bdf561059, type: 3}
+        - Key: HeroCardBG
+          Value: {fileID: 21300000, guid: 9504a93853812ed4fa9b1067be51d034, type: 3}
+        - Key: AttackImageFrame
+          Value: {fileID: 21300000, guid: c05fb35fefb49da448311724dfa11192, type: 3}
+        - Key: BlessImageFrame
+          Value: {fileID: 21300000, guid: 5d768e147622d5c449ea6aad817736ae, type: 3}
+        - Key: StrategyImageFrame
+          Value: {fileID: 21300000, guid: e33c5bc9c82b4f34aa6e8942171adbec, type: 3}
+        - Key: HeroImageFrame
+          Value: {fileID: 21300000, guid: e2069b7b28ab3b9408b243cc2cb32117, type: 3}
+        - Key: NormalGradeFrame
+          Value: {fileID: 21300000, guid: a94804f64593cec468f809dca79502a9, type: 3}
+        - Key: RareGradeFrame
+          Value: {fileID: 21300000, guid: 69aa948bc39e08d4385d9804173a4760, type: 3}
+        - Key: LegendGradeFrame
+          Value: {fileID: 21300000, guid: 457460b591948f646a2bdb293c064ddd, type: 3}
+        - Key: EnhanceNormalGradeFrame
+          Value: {fileID: 21300000, guid: 58ce80c103369304098f0b1932dda009, type: 3}
+        - Key: EnhanceRareGradeFrame
+          Value: {fileID: 21300000, guid: 6c533315a07d7ef4b980636318e2849a, type: 3}
+        - Key: EnhanceLegendGradeFrame
+          Value: {fileID: 21300000, guid: 3ecd5f73516a8b2458626c259ac4d295, type: 3}
+        - Key: AttackEmblem
+          Value: {fileID: 21300000, guid: 050dad8f1faa8614bb17a2326640cb62, type: 3}
+        - Key: BlessEmblem
+          Value: {fileID: 21300000, guid: 8232e5f9e9bf8444f8c88f0cd4622b7d, type: 3}
+        - Key: StrategyEmblem
+          Value: {fileID: 21300000, guid: eae39afac9ae2ea4b8a291b160c57489, type: 3}
+        - Key: HeroEmblem
+          Value: {fileID: 21300000, guid: 36c73ccf7cbb16046b8efe7c0139a790, type: 3}
+        - Key: ExpBarActive
+          Value: {fileID: 21300000, guid: 82f6af1ff9985584d9b07f406ebe3145, type: 3}
+        - Key: ExpBarInActive
+          Value: {fileID: 21300000, guid: 6ba7fb85ced8c104d902b563ae937d7a, type: 3}
   cards: []
   isCardOperatingTEST: 0
 --- !u!1 &1732529131

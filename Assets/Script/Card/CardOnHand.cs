@@ -8,6 +8,7 @@ using ProjectD;
 using Mirror;
 using DG.Tweening;
 using TMPro;
+using AYellowpaper.SerializedCollections;
 
 public class CardOnHand : NetworkBehaviour
 {
@@ -53,7 +54,7 @@ public class CardOnHand : NetworkBehaviour
     [Header("CardOnHand UI Canvas 컴포넌트")]
     public Canvas cardOnHandCanvas;
 
-    [Header("CardOnHand Sprite 컴포넌트")]
+    [Header("CardOnHand SpriteRenderer 컴포넌트")]
     public SpriteRenderer cardBackground;
     public SpriteRenderer cardIllust;
     public SpriteRenderer cardImageFrame;
@@ -65,32 +66,7 @@ public class CardOnHand : NetworkBehaviour
     public TextMeshProUGUI textCardDescription;
     public TextMeshProUGUI textCardCost;
 
-    [Header("CardOnHand 배경 이미지")]
-    public Sprite attackCardBackground;
-    public Sprite blessCardBackground;
-    public Sprite strategyCardBackground;
-
-    [Header("CardOnHand 내부 일러스트 액자 틀")]
-    public Sprite attackCardImageFrame;
-    public Sprite blessCardImageFrame;
-    public Sprite strategyCardImageFrame;
-
-    [Header("CardOnHand 등급 및 강화 틀")]
-    public Sprite enhancedLegendCardGradFrame;
-    public Sprite legendCardGradeFrame;
-    public Sprite enhancedNormalCardGradFrame;
-    public Sprite normalCardGradeFrame;
-    public Sprite enhancedRareCardGradFrame;
-    public Sprite rareCardGradeFrame;
-
-    [Header("CardOnHand 앰블럼")]
-    public Sprite attackEmblem;
-    public Sprite blessEmblem;
-    public Sprite strategyEmblem;
-
     [Header("CardOnHand 경험치 바")]
-    public Sprite activeExpbar;
-    public Sprite inActiveExpbar;
     public GameObject cardExpBar; // 경험치 바 
     public GameObject expBlockPrefab; // 경험치 바 내부 블록 오브젝트 프리팹
     public VerticalLayoutGroup verticalLayoutGroup;
@@ -108,40 +84,68 @@ public class CardOnHand : NetworkBehaviour
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
     public override void OnStartClient()
     {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            InitCardIllust(card);
-            InitCardTemplateByCardType(card);
-            InitCardTemplateByCardEnhanced(card);
-            InitCardExpBar(card);
+        InitCardTemplateByCharacter(card);
+    }
+
+    // CardData의 스프라이트 데이터로부터 선택한 캐릭터의 카드 이미지 세팅
+    private void InitCardTemplateByCharacter(Card car)
+    {
+        switch(card.baseCard.character){
+            case Character.GEORK:
+                SerializedDictionary<string, Sprite> georkCardSprites = CardData.instance.characterCardTemplate[Character.GEORK];
+                InitCardTemplateByCardType(card, georkCardSprites);
+                InitCardIllust(card, georkCardSprites);
+                InitCardTemplateByCardEnhanced(card, georkCardSprites);
+                InitCardExpBar(card, georkCardSprites);
+                break;
+            case Character.ERIS:
+                SerializedDictionary<string, Sprite> erisCardSprites = CardData.instance.characterCardTemplate[Character.ERIS];
+                InitCardTemplateByCardType(card, erisCardSprites);
+                InitCardIllust(card, erisCardSprites);
+                InitCardTemplateByCardEnhanced(card, erisCardSprites);
+                InitCardExpBar(card, erisCardSprites);
+                break;
+            case Character.HONGDANHYANG:
+                SerializedDictionary<string, Sprite> danhyangCardSprites = CardData.instance.characterCardTemplate[Character.HONGDANHYANG];
+                InitCardTemplateByCardType(card, danhyangCardSprites);
+                InitCardIllust(card, danhyangCardSprites);
+                InitCardTemplateByCardEnhanced(card, danhyangCardSprites);
+                InitCardExpBar(card, danhyangCardSprites);
+                break;
         }
     }
 
     // 카드 타입에 따라 외형 틀 세팅
-    private void InitCardTemplateByCardType(Card card)
+    private void InitCardTemplateByCardType(Card card, SerializedDictionary<string, Sprite> sprites)
     {
         if(!card.baseCard.cardNumber.Equals("HA")){
             switch(card.baseCard.cardType){
                 case CardType.ATTACK:
-                    cardBackground.sprite = attackCardBackground;
-                    cardImageFrame.sprite = attackCardImageFrame;
-                    cardEmblem.sprite = attackEmblem;
+                    cardBackground.sprite = sprites[Const.ATTACK_CARD_BG];
+                    cardImageFrame.sprite = sprites[Const.ATTACK_IMAGE_FRAME];
+                    cardEmblem.sprite = sprites[Const.ATTACK_EMBLEM];
                     break;
                 case CardType.BLESS:
-                    cardBackground.sprite = blessCardBackground;
-                    cardImageFrame.sprite = blessCardImageFrame;
-                    cardEmblem.sprite = blessEmblem;
+                    cardBackground.sprite = sprites[Const.BLESS_CARD_BG];
+                    cardImageFrame.sprite = sprites[Const.BLESS_IMAGE_FRAME];
+                    cardEmblem.sprite = sprites[Const.BLESS_EMBLEM];
                     break;
                 case CardType.STRATEGY:
-                    cardBackground.sprite = strategyCardBackground;
-                    cardImageFrame.sprite = strategyCardImageFrame;
-                    cardEmblem.sprite = strategyEmblem;
+                    cardBackground.sprite = sprites[Const.STRATEGY_CARD_BG];
+                    cardImageFrame.sprite = sprites[Const.STRATEGY_IMAGE_FRAME];
+                    cardEmblem.sprite = sprites[Const.STRATEGY_EMBLEM];
+                    break;
+                case CardType.HERO:
+                    cardBackground.sprite = sprites[Const.HERO_CARD_BG];
+                    cardImageFrame.sprite = sprites[Const.HERO_IMAGE_FRAME];
+                    cardEmblem.sprite = sprites[Const.HERO_EMBLEM];
                     break;
             }
         }
     }
 
-    // 카드 이미지 세팅
-    private void InitCardIllust(Card card)
+    // 카드 일러스트 세팅
+    private void InitCardIllust(Card card, SerializedDictionary<string, Sprite> sprites)
     {
         if(!string.IsNullOrEmpty(card.baseCard.cardImage)){
             cardIllust.sprite = Resources.Load<Sprite>(card.baseCard.cardImage);
@@ -149,17 +153,17 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // 카드 강화 상태 프레임 세팅
-    private void InitCardTemplateByCardEnhanced(Card card)
+    private void InitCardTemplateByCardEnhanced(Card card, SerializedDictionary<string, Sprite> sprites)
     {
         if(card.isEnhanced){
-            cardGradeFrame.sprite = enhancedNormalCardGradFrame;
+            cardGradeFrame.sprite = sprites[Const.ENHANCE_NORMAL_GRADE_FRAME];
         }else{
-            cardGradeFrame.sprite = normalCardGradeFrame;
+            cardGradeFrame.sprite = sprites[Const.NORMAL_GRADE_FRAME];
         }
     }
 
     // 카드 경험치 바 초기화 : card 데이터에서 최대 경험치 정보를 가져와 해당 숫자 만큼의 경험치 바 내부 블록 생성
-    private void InitCardExpBar(Card card)
+    private void InitCardExpBar(Card card, SerializedDictionary<string, Sprite> sprites)
     {
         // 철귀 이동카드는 경험치 오브젝트 초기화 제외
         if(!card.baseCard.cardNumber.Equals("HA")){
@@ -167,14 +171,14 @@ public class CardOnHand : NetworkBehaviour
             for(int i=0; i<card.baseCard.maxExperience; i++){
                 GameObject expBlock = Instantiate(expBlockPrefab);
                 expBlock.transform.SetParent(verticalLayoutGroup.transform, false);
-                expBlock.GetComponent<Image>().sprite = inActiveExpbar;
+                expBlock.GetComponent<Image>().sprite = sprites[Const.EXP_BAR_INACTIVE];
                 expBlocks.Add(expBlock);
             }
             // expBlocks 역순으로 전환(블록이 아래부터 쌓이도록)
             expBlocks.Reverse();
             // 경험치 블록 리스트에서 현재 카드의 경험치 숫자 만큼 블록 생상을 변경
             for(int j=0; j<card.experience; j++){
-                expBlocks[j].GetComponent<Image>().sprite = activeExpbar;
+                expBlocks[j].GetComponent<Image>().sprite = sprites[Const.EXP_BAR_ACTIVE];
             }
         }   
     }

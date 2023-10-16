@@ -253,21 +253,6 @@ MonoBehaviour:
   textCardName: {fileID: 2224060468152251558}
   textCardDescription: {fileID: 574930683676740074}
   textCardCost: {fileID: 3024542498396929043}
-  attackCardBackground: {fileID: 21300000, guid: 5ac2503e39a382c4098516db95e0f98f, type: 3}
-  blessCardBackground: {fileID: 21300000, guid: 4cac0ad83e31a00499178975da07c2ee, type: 3}
-  strategyCardBackground: {fileID: 21300000, guid: 8f3a5a048dad53445a6d86e46f2ebaef, type: 3}
-  attackCardImageFrame: {fileID: 21300000, guid: 0e1b71720792c6147aa3a122d74eebe0, type: 3}
-  blessCardImageFrame: {fileID: 21300000, guid: c57797c76d69d534cabc5b534f842384, type: 3}
-  strategyCardImageFrame: {fileID: 21300000, guid: a751cfe1ab957d440a043a6270165832, type: 3}
-  enhancedLegendCardGradFrame: {fileID: 21300000, guid: 21ba2b87245709b42a0766bf6cda2d1b, type: 3}
-  legendCardGradeFrame: {fileID: 21300000, guid: 42a875c94f29fa746bd0652133a02ab9, type: 3}
-  enhancedNormalCardGradFrame: {fileID: 21300000, guid: 00f22fa2e8e42b44d9b995503dbce8e2, type: 3}
-  normalCardGradeFrame: {fileID: 21300000, guid: 646b257348ec25147b20dd0a440e2666, type: 3}
-  enhancedRareCardGradFrame: {fileID: 21300000, guid: a6180ac7e1e189943a167e4ea2132cc6, type: 3}
-  rareCardGradeFrame: {fileID: 21300000, guid: 0448657a5b07b8644baf841f255e76be, type: 3}
-  attackEmblem: {fileID: 21300000, guid: a4107838220c9664c8ef914e474e8eda, type: 3}
-  blessEmblem: {fileID: 21300000, guid: 7cbb13b89b19b524290f656e3c96519c, type: 3}
-  strategyEmblem: {fileID: 21300000, guid: d4a449b057e169246b2472c5dd1bdf62, type: 3}
   activeExpbar: {fileID: 21300000, guid: 1dd92020751f5514ebacfd6db710def9, type: 3}
   inActiveExpbar: {fileID: 21300000, guid: 5ef269c745abc044c90a45b710c6a39a, type: 3}
   cardExpBar: {fileID: 2452631678018167299}
@@ -459,7 +444,7 @@ SpriteRenderer:
   m_SortingLayerID: -1460430861
   m_SortingLayer: 4
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 0e1b71720792c6147aa3a122d74eebe0, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -467,7 +452,7 @@ SpriteRenderer:
   m_Size: {x: 6.5, y: 9}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2886316352611168060
@@ -543,7 +528,7 @@ SpriteRenderer:
   m_SortingLayerID: -1460430861
   m_SortingLayer: 4
   m_SortingOrder: 4
-  m_Sprite: {fileID: 21300000, guid: a4107838220c9664c8ef914e474e8eda, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -551,7 +536,7 @@ SpriteRenderer:
   m_Size: {x: 6.5, y: 9}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &5525332352322709735
@@ -762,7 +747,7 @@ SpriteRenderer:
   m_SortingLayerID: -1460430861
   m_SortingLayer: 4
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 5ac2503e39a382c4098516db95e0f98f, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -770,7 +755,7 @@ SpriteRenderer:
   m_Size: {x: 6.5, y: 9}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &7060022024507412807
@@ -981,7 +966,7 @@ SpriteRenderer:
   m_SortingLayerID: -1460430861
   m_SortingLayer: 4
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 54cb9718018feba4687ba384c98e428f, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -989,7 +974,7 @@ SpriteRenderer:
   m_Size: {x: 6.5, y: 9}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &8414631345030143972
@@ -1065,7 +1050,7 @@ SpriteRenderer:
   m_SortingLayerID: -1460430861
   m_SortingLayer: 4
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: 21ba2b87245709b42a0766bf6cda2d1b, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1073,7 +1058,7 @@ SpriteRenderer:
   m_Size: {x: 6.5, y: 9}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &9018303800232678741
