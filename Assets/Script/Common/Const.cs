@@ -38,4 +38,8 @@ public static class Const
     public const string HERO_EMBLEM = "HeroEmblem";
     public const string EXP_BAR_ACTIVE = "ExpBarActive";
     public const string EXP_BAR_INACTIVE = "ExpBarInActive";
+    public const string CURSE_CARDE_BG = "CurseCardBG";
+    public const string CURSE_IMAGE_FRAME = "CurseImageFrame";
+    public const string CURSE_GRADE_FRAME = "CurseGradeFrame";
+    public const string CURSE_EMBLEM = "CurseEmblem";
 }

@@ -11105,6 +11105,17 @@ MonoBehaviour:
           Value: {fileID: 21300000, guid: 82f6af1ff9985584d9b07f406ebe3145, type: 3}
         - Key: ExpBarInActive
           Value: {fileID: 21300000, guid: 6ba7fb85ced8c104d902b563ae937d7a, type: 3}
+    - Key: 0
+      Value:
+        _serializedList:
+        - Key: CurseCardBG
+          Value: {fileID: 21300000, guid: 5690516860c6ef544aaf4911692dfce0, type: 3}
+        - Key: CurseImageFrame
+          Value: {fileID: 21300000, guid: 8347e9866d064d14d9c35df9dfb69156, type: 3}
+        - Key: CurseGradeFrame
+          Value: {fileID: 21300000, guid: 04d6cf532e969a344a7813d8fab6870d, type: 3}
+        - Key: CurseEmblem
+          Value: {fileID: 21300000, guid: f1730d894780a5d4c902dc3546bd2580, type: 3}
   cards: []
   isCardOperatingTEST: 0
 --- !u!1 &1732529131
