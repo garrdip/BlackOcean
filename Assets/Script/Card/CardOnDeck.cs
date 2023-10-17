@@ -164,9 +164,16 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
-            PopUpUIManager.instance.HandleHideBattleResultPopUp();
+            BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
+            ChangeCardOnDeckRewardedState(battleResultPopUp.extractCardObjects);
             HandleClickCardOnDeckOnPopUp(() => {
-                NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true;
+                battleResultPopUp.playerRewardedDic[cardOwner] = true;
+                if(!battleResultPopUp.playerRewardedDic.ContainsValue(false)){ // 모든 플레이어 보상받았으면 종료
+                    PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
+                    GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+                        NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true; 
+                    });
+                }
             });
         }
         // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
@@ -175,6 +182,19 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             HandleClickCardOnDeckOnPopUp(() => {
                 //M_TurnManager.instance.npc_Mercurius.shopCards.Remove(this.card);
             });
+        }
+    }
+
+    // 보상카드중 선택한 카드의 탭에 있는 카드들은 모두 선택불가 및 알파값 0.5 설정
+    private void ChangeCardOnDeckRewardedState(List<GameObject> rewardCards)
+    {
+        foreach(GameObject gameObject in rewardCards){
+            CardOnDeck cardOnDeck = gameObject.GetComponent<CardOnDeck>();
+            if(cardOnDeck.cardOwner == cardOwner){
+                cardOnDeck.canvasGroup.interactable = false;
+                cardOnDeck.canvasGroup.blocksRaycasts = false;
+                cardOnDeck.canvasGroup.alpha = 0.5f;
+            }
         }
     }
 
@@ -211,8 +231,9 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
             // 이동 위치는 현재 플레이어 타겟오브젝트 위치
             Vector3 targetPosition = currentPlayer.avatar.GetComponent<PolygonCollider2D>().bounds.center;
-            StartMoveToTarget(cardOnHandChoosed.GetComponent<CardOnHandChoosed>(), targetPosition, () => {
+            StartMoveToTarget(cardOnHandChoosed.GetComponent<CardOnHandChoosed>(), targetPosition, cardOwner, () => {
                 callback();
+                Destroy(cardOnHandChoosed.gameObject);
             });
         }
     }
@@ -230,7 +251,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
 
     // 포물선을 그리며 타겟 위치로 이동
-    private void StartMoveToTarget(CardOnHandChoosed cardOnHandChoosed, Vector3 targetPosition, System.Action callback)
+    private void StartMoveToTarget(CardOnHandChoosed cardOnHandChoosed, Vector3 targetPosition, GamePlayer targetPlayer, System.Action callback)
     {
         float height = 2f;
         float duration = 1f;
@@ -245,8 +266,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             .SetEase(Ease.OutQuint)
             .OnComplete(() => {
                 cardOnHandChoosed.isTweening = false;
-                M_CardManager.instance.AddCardDataToCurrentPlayerDeck(cardOnHandChoosed.card);
-                Destroy(cardOnHandChoosed.gameObject);
+                targetPlayer.GetComponent<GamePlayerDeck>().CmdAddDeck(card); // 전투 보상 카드 받은 플레이어의 Deck에 카드 추가
                 callback();
             });
     }

@@ -84,7 +84,9 @@ public class PlayerInterfaceServer : NetworkBehaviour
         BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
         List<GamePlayer> ownedPlayers = new List<GamePlayer>(GetComponent<PlayerInterface>().ownedPlayers);
         for(int i=0; i<ownedPlayers.Count; i++){
+            // TODO: 3인 플레이시 같은 플레이어가 있을경우 3번째 플레이어 보상이 6장되는 이슈 
             battleResultPopUp.playerRewardCardsDic.Add(ownedPlayers[i], rewardCards.FindAll((card) => card.baseCard.character == ownedPlayers[i].character));
+            battleResultPopUp.playerRewardedDic.Add(ownedPlayers[i], false);
         }
         PopUpUIManager.instance.HandleShowBattleResultPopUp(); // 전투 결과 보상 팝업 활성
     }

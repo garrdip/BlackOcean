@@ -872,7 +872,14 @@ MonoBehaviour:
   - {fileID: 949203984}
   - {fileID: 1003433539}
   - {fileID: 935332585}
+  skipButtons:
+  - {fileID: 1732760768}
+  - {fileID: 759029108}
+  - {fileID: 954550890}
+  rewardedPlayer: {fileID: 0}
   playerRewardCardsDic:
+    _serializedList: []
+  playerRewardedDic:
     _serializedList: []
 --- !u!225 &71096700
 CanvasGroup:
@@ -6255,19 +6262,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 759029109}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 71096699}
-        m_TargetAssemblyTypeName: BattleResultPopUp, Assembly-CSharp
-        m_MethodName: HandleClickButtonSkip
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &759029109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7459,19 +7454,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 954550891}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 71096699}
-        m_TargetAssemblyTypeName: BattleResultPopUp, Assembly-CSharp
-        m_MethodName: HandleClickButtonSkip
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &954550891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12601,19 +12584,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1732760769}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 71096699}
-        m_TargetAssemblyTypeName: BattleResultPopUp, Assembly-CSharp
-        m_MethodName: HandleClickButtonSkip
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1732760769
 MonoBehaviour:
   m_ObjectHideFlags: 0

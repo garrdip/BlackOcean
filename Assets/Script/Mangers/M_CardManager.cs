@@ -361,15 +361,6 @@ public class M_CardManager : NetworkBehaviour
         }   
     }
 
-    // 로컬 플레이어의 Deck에 카드 데이터 추가
-    public void AddCardDataToCurrentPlayerDeck(Card card)
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-            gamePlayerDeck.CmdAddDeck(card);
-        }   
-    }
-
     // 로컬 플레이어의 현재 소환된 CardOnHand의 상태 변수들 변경
     public void ChangeCurrentPlayerCardOnHandState(bool state)
     {
