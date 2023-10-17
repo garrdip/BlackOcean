@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 100, y: 100, z: 100, w: 100}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -214,7 +214,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 100, y: 100, z: 100, w: 100}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -290,7 +290,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 100, y: 100, z: 100, w: 100}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -366,7 +366,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 100, y: 100, z: 100, w: 100}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -603,6 +603,7 @@ MonoBehaviour:
     costAddition: 0
     cardCharacteristics: 
     experience: 0
+  cardOwner: {fileID: 0}
   canvasGroup: {fileID: 1169466258647471963}
   cardBackground: {fileID: 5672053711782125212}
   cardIllust: {fileID: 1323456622138383489}
@@ -613,23 +614,6 @@ MonoBehaviour:
   textCardDescription: {fileID: 6285776431920331037}
   textCardCost: {fileID: 2821269574311311381}
   cardSoldOut: {fileID: 2993757689029509762}
-  attackCardBackground: {fileID: 21300000, guid: 5ac2503e39a382c4098516db95e0f98f, type: 3}
-  blessCardBackground: {fileID: 21300000, guid: 4cac0ad83e31a00499178975da07c2ee, type: 3}
-  strategyCardBackground: {fileID: 21300000, guid: 8f3a5a048dad53445a6d86e46f2ebaef, type: 3}
-  attackCardImageFrame: {fileID: 21300000, guid: 0e1b71720792c6147aa3a122d74eebe0, type: 3}
-  blessCardImageFrame: {fileID: 21300000, guid: c57797c76d69d534cabc5b534f842384, type: 3}
-  strategyCardImageFrame: {fileID: 21300000, guid: a751cfe1ab957d440a043a6270165832, type: 3}
-  enhancedLegendCardGradFrame: {fileID: 21300000, guid: 21ba2b87245709b42a0766bf6cda2d1b, type: 3}
-  legendCardGradeFrame: {fileID: 21300000, guid: 42a875c94f29fa746bd0652133a02ab9, type: 3}
-  enhancedNormalCardGradFrame: {fileID: 21300000, guid: 00f22fa2e8e42b44d9b995503dbce8e2, type: 3}
-  normalCardGradeFrame: {fileID: 21300000, guid: 646b257348ec25147b20dd0a440e2666, type: 3}
-  enhancedRareCardGradFrame: {fileID: 21300000, guid: a6180ac7e1e189943a167e4ea2132cc6, type: 3}
-  rareCardGradeFrame: {fileID: 21300000, guid: 0448657a5b07b8644baf841f255e76be, type: 3}
-  attackEmblem: {fileID: 21300000, guid: a4107838220c9664c8ef914e474e8eda, type: 3}
-  blessEmblem: {fileID: 21300000, guid: 7cbb13b89b19b524290f656e3c96519c, type: 3}
-  strategyEmblem: {fileID: 21300000, guid: d4a449b057e169246b2472c5dd1bdf62, type: 3}
-  activeExpbar: {fileID: 21300000, guid: 1dd92020751f5514ebacfd6db710def9, type: 3}
-  inActiveExpbar: {fileID: 21300000, guid: 5ef269c745abc044c90a45b710c6a39a, type: 3}
   cardExpBar: {fileID: 6429091442094605528}
   expBlockPrefab: {fileID: 5956088442796586194, guid: 70f18470fbccaf64abab6ceed8e58d8b, type: 3}
   verticalLayoutGroup: {fileID: 149250206704163165}
@@ -1065,7 +1049,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 100, y: 100, z: 100, w: 100}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

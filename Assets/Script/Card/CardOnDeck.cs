@@ -12,7 +12,7 @@ using ProjectD;
 public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Card card;
-
+    public GamePlayer cardOwner;
     public CanvasGroup canvasGroup;
 
     [Header("CardOnDeck Image 컴포넌트")]
@@ -202,22 +202,18 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // 팝업이 활성화된 상태에서 CardOnDeck 공통 클릭 이벤트
     private void HandleClickCardOnDeckOnPopUp(System.Action callback)
     {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<GamePlayerDeck>();
-            if(gamePlayerDeck.isLocalPlayer){
-                // 애니매이션용 카드 오브젝트 복사본 생성
-                GameObject cardOnHandChoosed = CreateCardOnHandChoosed(this.card);
-                    
-                // 턴 매니저에 저장된 현재 참가한 플레이어들의 타겟오브젝트 리스트에서 로컬플레이어의 타겟오브젝트 조회
-                GamePlayer gamePlayer = gamePlayerDeck.GetComponent<GamePlayer>();
-                TargetObject currentPlayer = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
+        if(cardOwner != null){
+            // 애니매이션용 카드 오브젝트 복사본 생성
+            GameObject cardOnHandChoosed = CreateCardOnHandChoosed(this.card);
+                
+            // 턴 매니저에 저장된 현재 참가한 플레이어들의 타겟오브젝트 리스트에서 로컬플레이어의 타겟오브젝트 조회
+            TargetObject currentPlayer = M_TurnManager.instance.GetCurrentPlayerTargetObject(cardOwner);
 
-                // 이동 위치는 현재 플레이어 타겟오브젝트 위치
-                Vector3 targetPosition = currentPlayer.avatar.GetComponent<PolygonCollider2D>().bounds.center;
-                StartMoveToTarget(cardOnHandChoosed.GetComponent<CardOnHandChoosed>(), targetPosition, () => {
-                    callback();
-                });
-            }
+            // 이동 위치는 현재 플레이어 타겟오브젝트 위치
+            Vector3 targetPosition = currentPlayer.avatar.GetComponent<PolygonCollider2D>().bounds.center;
+            StartMoveToTarget(cardOnHandChoosed.GetComponent<CardOnHandChoosed>(), targetPosition, () => {
+                callback();
+            });
         }
     }
 

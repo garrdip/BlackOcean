@@ -19,6 +19,8 @@ public class NPC_Mercurius : SpawnedMonster
     void Awake()
     {
         mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        networkRoomManager.onClientDisconnected += OnClientDisconnected;
     }
 
     // NPC_Mercurius 각 클라이언트에 생성될 때 현재 플레이어의 카드 데이터에서 6개의 랜덤 카드데이터를 추출하여 팝업에 6개의 상점카드 세팅
@@ -27,6 +29,13 @@ public class NPC_Mercurius : SpawnedMonster
         if(isOrigin && mercuriusPopUp != null){
             InitShopCardByCharacter();
         }
+    }
+
+    // 클라이언트 연결 해제 이벤트 수신시 상점 카드 정보 갱신
+    private void OnClientDisconnected(GamePlayer gamePlayer)
+    {
+        RemoveShopCard();
+        InitShopCardByCharacter();
     }
 
     // NPC_Mercurius 파괴될 때 리스트 비움
@@ -43,19 +52,22 @@ public class NPC_Mercurius : SpawnedMonster
     // 현재 로컬 플레이어의 캐릭터에 설정된 상점카드 데이터로 상점카드 오브젝트 생성
     private void InitShopCardByCharacter()
     {
-        GamePlayer localPlayer = NetworkClient.localPlayer.GetComponent<GamePlayer>();
-        if(shopCardDictionary.TryGetValue(localPlayer, out List<Card> shopCards)){
-            CreateShopCard(shopCards);
+        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
+            GamePlayer gamePlayer = playerInterface.ownedPlayers[i];
+            if(shopCardDictionary.TryGetValue(gamePlayer, out List<Card> shopCards)){
+                CreateShopCard(shopCards, gamePlayer, i);
+            }
         }
     }
 
     // 상점카드 오브젝트 생성
-    private void CreateShopCard(List<Card> shopCards)
+    private void CreateShopCard(List<Card> shopCards, GamePlayer cardOwner, int index)
     {
         foreach(Card card in shopCards){                    
             // 상점 카드 슬롯(최상단 부모 오브젝트)
             GameObject cardShopSlot = Instantiate(PopUpUIManager.instance.CardShopSlot);
-            cardShopSlot.transform.SetParent(mercuriusPopUp.gridLayoutGroup.transform);
+            cardShopSlot.transform.SetParent(mercuriusPopUp.grids[index].transform);
             cardShopSlot.transform.localScale = new Vector3(1, 1, 1);
 
             // 상점 카드
@@ -64,6 +76,7 @@ public class NPC_Mercurius : SpawnedMonster
             cardOnDeckObject.transform.localScale = new Vector3(1, 1, 1);
             CardOnDeck cardOnDeck = cardOnDeckObject.GetComponent<CardOnDeck>();
             cardOnDeck.card = card;
+            cardOnDeck.cardOwner = cardOwner;
 
             // 상점 카드 가격 아이콘 + 텍스트
             GameObject cardShopPrice = Instantiate(PopUpUIManager.instance.CardShopPrice);
@@ -74,6 +87,15 @@ public class NPC_Mercurius : SpawnedMonster
             textPrice.text = "100";
 
             shopCardObjectList.Add(cardShopSlot);
+        }
+    }
+
+    // 상점카드 오브젝트 제거
+    private void RemoveShopCard()
+    {
+        for(int i = shopCardObjectList.Count - 1; i >= 0; i--){
+            Destroy(shopCardObjectList[i]);
+            shopCardObjectList.RemoveAt(i);
         }
     }
 

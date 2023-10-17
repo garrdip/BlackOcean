@@ -5,21 +5,78 @@ using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+using Mirror;
 
 public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
 {
     public CanvasGroup canvasGroup;
-    public GridLayoutGroup gridLayoutGroup;
-    public GameObject frame;
     public TextMeshProUGUI textCardEnhancePrice;
     public TextMeshProUGUI textCardRemovePrice;
     public bool isMouseOnFrame = false;
+    public List<GridLayoutGroup> grids = new List<GridLayoutGroup>();
+    public List<Button> tabButtons = new List<Button>();
+    public List<GameObject> tabFrames = new List<GameObject>();
 
 
     protected override void Awake()
     {
         PopUpUIManager.instance.onMercuriusPopUpShow += OnMercuriusPopUpShow;
         PopUpUIManager.instance.onMercuriusPopUpHide += OnMercuriusPopUpHide;
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        networkRoomManager.onClientDisconnected += OnClientDisconnected;
+    }
+
+    void Start()
+    {
+        for(int i=0; i<tabButtons.Count; i++){
+            int buttonIndex = i; // C# 에서 람다식 클로저
+            tabButtons[i].onClick.AddListener(() => ShowTab(buttonIndex));
+        }
+    }
+
+    // 클라이언트 연결 해제 이벤트 수신
+    private void OnClientDisconnected(GamePlayer gamePlayer)
+    {
+        SetTabButtonByOwnedPlayersCount();
+    }
+
+    // 제어할 플레이어 오브젝트 숫자에 따라 활성화 시킬 탭버튼 갯수 설정
+    private void SetTabButtonByOwnedPlayersCount()
+    {
+        HideAllTabButtons();
+        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
+            GamePlayer gamePlayer = playerInterface.ownedPlayers[i];
+            tabButtons[i].gameObject.SetActive(true); // 제어할 플레이어가 2명 이상이면 플레이어 수만큼 탭버튼 활성화
+            tabButtons[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = gamePlayer.character.ToString();
+        }
+    }
+
+    // 선택한 탭 활성화
+    public void ShowTab(int index)
+    {
+        tabFrames[index].SetActive(true);
+        tabButtons[index].image.color = new Color32(255, 255, 255, 255);
+        HideOtherTabs(index);
+    }
+
+    // 선택한 탭을 제외한 다른 탭 비활성화
+    public void HideOtherTabs(int index)
+    {
+        for(int i=0; i<tabButtons.Count; i++){
+            if(i != index){
+                tabButtons[i].image.color = new Color32(255, 255, 255, 70);
+                tabFrames[i].SetActive(false);
+            }
+        }
+    }
+
+    // 모든 탭버튼 비활성화
+    public void HideAllTabButtons()
+    {
+        foreach(Button tabButton in tabButtons){
+            tabButton.gameObject.SetActive(false);
+        }
     }
 
     void OnDestroy()
@@ -41,6 +98,7 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     {
         canvasGroup.DOFade(1.0f, 0.5f);
         GameUIManager.instance.GameUI.gameObject.SetActive(false);
+        SetTabButtonByOwnedPlayersCount();
     }
 
     // MercuriusPopUp 비활성화 콜백

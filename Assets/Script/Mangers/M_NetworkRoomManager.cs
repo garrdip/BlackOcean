@@ -6,6 +6,8 @@ using Mirror;
 
 public class M_NetworkRoomManager : NetworkRoomManager
 {
+    public delegate void OnClientDisconnected(GamePlayer gamePlayer);
+    public OnClientDisconnected onClientDisconnected;
     public Color[] colors = new Color[]{ Color.red, Color.green, Color.blue };
 
     // 클라이언트에서 호출되는 씬 전환 이벤트 콜백함수
@@ -78,7 +80,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
         if(Utils.IsSceneActive(GameplayScene)){
-            if(NetworkClient.connection != null && NetworkClient.active){ // 서버 플레이어가 연결끊을 시 NPE 방지
+            if(NetworkClient.connection != null && NetworkClient.active && NetworkClient.connection.identity != conn.identity){ // 서버 본인이 나갈때는 이벤트 전송 X
                 PlayerInterface serverPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>(); // 서버 플레이어
                 PlayerInterface disconnectedPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>(); // 방 나간 플레이어
                 GamePlayer disconnectedGamePlayer = NetworkServer.spawned[disconnectedPlayer.currentGamePlayerNetId].GetComponent<GamePlayer>(); // 방 나간 플레이어의 GamePlayer 컴포넌트
@@ -93,9 +95,17 @@ public class M_NetworkRoomManager : NetworkRoomManager
                         networkIdentity.AssignClientAuthority(NetworkClient.connection.identity.connectionToClient);
                     }
                 }
+                onClientDisconnectFromServer(disconnectedGamePlayer); // 클라 연결 해제 델리게이트 구독한 컴포넌트에 이벤트 전송
             }
         }
-
         base.OnServerDisconnect(conn);
+    }
+
+    // 클라연결 끊어지면 컴포넌트들에 델리게이트 이벤트 전송
+    private void onClientDisconnectFromServer(GamePlayer gamePlayer)
+    {
+        if(onClientDisconnected != null){
+            onClientDisconnected.Invoke(gamePlayer);
+        }
     }
 }
