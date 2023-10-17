@@ -77,6 +77,16 @@ public class PlayerInterfaceServer : NetworkBehaviour
 
 
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
-
+    
+    [TargetRpc]
+    public void TargetSetBattleRewardCard(NetworkConnectionToClient target, List<Card> rewardCards)
+    {
+        BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
+        List<GamePlayer> ownedPlayers = new List<GamePlayer>(GetComponent<PlayerInterface>().ownedPlayers);
+        for(int i=0; i<ownedPlayers.Count; i++){
+            battleResultPopUp.playerRewardCardsDic.Add(ownedPlayers[i], rewardCards.FindAll((card) => card.baseCard.character == ownedPlayers[i].character));
+        }
+        PopUpUIManager.instance.HandleShowBattleResultPopUp(); // 전투 결과 보상 팝업 활성
+    }
 
 }

@@ -34,6 +34,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 실제 컨트롤 하는 플레이어 소유의 카드 네트워크 오브젝트 리스트
 
+    public readonly SyncList<Card> rewardCards = new SyncList<Card>(); // 전투 보상 카드
+
     private int currentIndex = 1; // removeCardOnHands SyncList에서 0번, 1번 인덱스 삽입을 반복하기 위해 사용되는 인덱스 변수
 
     public CardOnHand[] choosedCardOnHands = new CardOnHand[2];  // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
@@ -467,13 +469,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
     {
         if(target == this)
             StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
-    }
-
-    // 전투 보상 카드 데이터 세팅 수신
-    [TargetRpc]
-    public void TargetSetBattleRewardCard(NetworkConnectionToClient target, List<Card> rewardCards)
-    {
-        PopUpUIManager.instance.HandleShowBattleResultPopUp(rewardCards); // 전투 결과 보상 팝업 활성화
     }
     
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//

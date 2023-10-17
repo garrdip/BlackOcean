@@ -322,20 +322,24 @@ public class M_TurnManager : NetworkBehaviour
         // TODO : 전투 종료 혹은 이벤트방에서 개인별로 먼저 수행하고 넘어가는게 맞을지?, 팀원이 모두 수행을 끝낼때까지 기다리는게 맞을지?
         
         // 전투 종료시 플레이어들의 캐릭터별 보상카드 랜덤추출하여 각 플레이어들에게 전달
-        foreach(GamePlayer gamePlayer in playerOrder){
-            GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
-            int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
+        foreach(NetworkConnectionToClient conn in NetworkServer.connections.Values){
+            PlayerInterface playerInterface = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>();
+            PlayerInterfaceServer playerInterfaceServer = playerInterface.GetComponent<PlayerInterfaceServer>();
             List<Card> rewardCards = new List<Card>();
-            List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
-            if(cardsByCharacter.Count > 0){
-                for(int i = 0; i < rewardCardCount; i++){
-                    int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                    rewardCards.Add(cardsByCharacter[randomIndex]);
-                    cardsByCharacter.RemoveAt(randomIndex);
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
+                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
+                List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
+                if(cardsByCharacter.Count > 0){
+                    for(int i = 0; i < rewardCardCount; i++){
+                        int randomIndex = Random.Range(0, cardsByCharacter.Count);
+                        rewardCards.Add(cardsByCharacter[randomIndex]);
+                        gamePlayerDeck.rewardCards.Add(cardsByCharacter[randomIndex]);
+                        cardsByCharacter.RemoveAt(randomIndex);
+                    }
                 }
             }
-            NetworkConnectionToClient networkConnectionToClient = gamePlayer.GetComponent<NetworkIdentity>().connectionToClient;
-            gamePlayerDeck.TargetSetBattleRewardCard(networkConnectionToClient, rewardCards); // 플레이어들에게 보상카드 리스트 데이터 전달
+            playerInterfaceServer.TargetSetBattleRewardCard(playerInterface.GetComponent<NetworkIdentity>().connectionToClient, rewardCards);
         }
         ResetEndTurnState(); // 턴종료 상태 리셋
     }
