@@ -290,7 +290,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void CmdSpawnCardOnHand()
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        
+        if(prefareDeck.Count == 0 && trashDeck.Count == 0)
+        {
+            CmdAddPrefareDeckWithShuffle();
+        }
         // 카드 생성 초기 위치는 화면 밖
         Vector3 cardSpawnPosition = new Vector3(-100f, 0f, 0f);
 
