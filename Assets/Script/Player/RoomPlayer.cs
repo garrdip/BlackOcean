@@ -86,9 +86,9 @@ public class RoomPlayer : NetworkRoomPlayer
 
     // 다른 클라 연결해제 이벤트 수신
     [TargetRpc]
-    public void RpcOtherPlayerDisconnected(NetworkConnectionToClient target, RoomPlayer roomPlayer)
+    public void RpcOtherPlayerDisconnected(NetworkConnectionToClient target, RoomPlayer roomPlayer ,RoomPlayer newOwner )
     {
-        ToastMessageManager.instance.SetToastMessageTest($"{roomPlayer.steamPersonaName} 님이 게임을 나갔습니다.");
+        ToastMessageManager.instance.SetToastMessageTest($"{roomPlayer.steamPersonaName} 님이 게임을 나갔습니다. \n {newOwner.steamPersonaName}에게 권한이 이전됩니다.");
         ToastMessageManager.instance.ShowToastMessage();
     }
 }
