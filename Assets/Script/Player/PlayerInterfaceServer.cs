@@ -81,9 +81,9 @@ public class PlayerInterfaceServer : NetworkBehaviour
     
     // 다른 클라 연결해제 이벤트 수신
     [TargetRpc]
-    public void RpcOtherPlayerDisconnected(NetworkConnectionToClient target, PlayerInterface oldPlayer ,PlayerInterface newPlayer)
+    public void TargetOtherPlayerDisconnected(NetworkConnectionToClient target, string oldPlayer ,string newPlayer)
     {
-        ToastMessageManager.instance.SetToastMessageTest($"{oldPlayer.steamPersonaName} 님이 게임을 나갔습니다. \n {newPlayer.steamPersonaName}에게 권한이 이전됩니다.");
+        ToastMessageManager.instance.SetToastMessageTest($"{oldPlayer} 님이 게임을 나갔습니다. \n {newPlayer} 님에게 권한이 이전됩니다.");
         ToastMessageManager.instance.ShowToastMessage();
     }
 
