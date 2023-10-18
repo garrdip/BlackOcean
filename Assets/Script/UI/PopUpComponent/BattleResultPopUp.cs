@@ -49,13 +49,21 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         List<GamePlayer> players = new List<GamePlayer>(playerInterface.ownedPlayers);
         if(players[index] != null){
-            playerRewardedDic[players[index]] = true;
-            if(!playerRewardedDic.ContainsValue(false)){ // 모든 플레이어 보상받았으면 종료
-                PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
-                GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
-                    NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true; 
-                });
-            }
+            GamePlayer gamePlayer = players[index];
+            playerRewardedDic[gamePlayer] = true;
+            CheckAllPlayerRewarded(gamePlayer);
+        }
+    }
+
+    // 소유한 모든 플레이어가 보상 카드 받았으면 팝업 닫고, 보상카드 데이터 비움
+    public void CheckAllPlayerRewarded(GamePlayer gamePlayer)
+    {
+        if(!playerRewardedDic.ContainsValue(false)){ // 소유한 모든 플레이어 보상받았으면 종료
+            PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
+            GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+                NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true; 
+                gamePlayer.GetComponent<GamePlayerDeck>().CmdClearRewardCards();
+            });
         }
     }
 

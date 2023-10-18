@@ -325,8 +325,8 @@ public class M_TurnManager : NetworkBehaviour
         foreach(NetworkConnectionToClient conn in NetworkServer.connections.Values){
             PlayerInterface playerInterface = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>();
             PlayerInterfaceServer playerInterfaceServer = playerInterface.GetComponent<PlayerInterfaceServer>();
-            List<Card> rewardCards = new List<Card>();
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
+                List<Card> rewardCards = new List<Card>();
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
                 List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
@@ -338,8 +338,9 @@ public class M_TurnManager : NetworkBehaviour
                         cardsByCharacter.RemoveAt(randomIndex);
                     }
                 }
+                gamePlayerDeck.TargetSetBattleRewardCard(gamePlayerDeck.GetComponent<NetworkIdentity>().connectionToClient, rewardCards); // 보상 카드 세팅 RPC 이벤트
             }
-            playerInterfaceServer.TargetSetBattleRewardCard(playerInterface.GetComponent<NetworkIdentity>().connectionToClient, rewardCards);
+            playerInterfaceServer.TargetBattleRewardPopUp(playerInterface.GetComponent<NetworkIdentity>().connectionToClient); // 보상 팝업 RPC 이벤트
         }
         ResetEndTurnState(); // 턴종료 상태 리셋
     }

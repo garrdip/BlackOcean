@@ -164,17 +164,14 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
-            BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
-            ChangeCardOnDeckRewardedState(battleResultPopUp.extractCardObjects);
-            HandleClickCardOnDeckOnPopUp(() => {
-                battleResultPopUp.playerRewardedDic[cardOwner] = true;
-                if(!battleResultPopUp.playerRewardedDic.ContainsValue(false)){ // 모든 플레이어 보상받았으면 종료
-                    PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
-                    GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
-                        NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true; 
-                    });
-                }
-            });
+            if(cardOwner != null){
+                BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
+                ChangeCardOnDeckRewardedState(battleResultPopUp.extractCardObjects);
+                HandleClickCardOnDeckOnPopUp(() => {
+                    battleResultPopUp.playerRewardedDic[cardOwner] = true;
+                    battleResultPopUp.CheckAllPlayerRewarded(cardOwner);
+                });
+            }
         }
         // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.mercuriusPopUp.activeSelf){

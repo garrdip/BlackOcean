@@ -413,6 +413,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    // 보상카드 Synclist 요소 모두 제거
+    [Command]
+    public void CmdClearRewardCards()
+    {
+        rewardCards.Clear();
+    }
 
     // 플레이어의  손에 든 모든 카드 제거 및 댁카운트 0으로 초기화, 리스트 초기화, 사용된 댁에 추가
     [Command]
@@ -456,7 +462,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         this.cardCtrlArrow = cardCtrlArrow;
     }
 
-    // ------------------------------------------------- ClientRpc Method ---------------------------------------------------//
+    // ------------------------------------------------- Rpc Method ---------------------------------------------------//
 
     [ClientRpc]
     public void SpawnAbilityCardRPC()
@@ -471,6 +477,17 @@ public partial class GamePlayerDeck : NetworkBehaviour
             StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
     }
     
+    [TargetRpc]
+    public void TargetSetBattleRewardCard(NetworkConnectionToClient target, List<Card> rewardCards)
+    {
+        BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
+        GamePlayer gamePlayer = GetComponent<GamePlayer>();
+        if(!battleResultPopUp.playerRewardCardsDic.ContainsKey(gamePlayer) && !battleResultPopUp.playerRewardedDic.ContainsKey(gamePlayer)){ // 키 중복 방지
+            battleResultPopUp.playerRewardCardsDic.Add(GetComponent<GamePlayer>(), rewardCards);
+            battleResultPopUp.playerRewardedDic.Add(gamePlayer, false);
+        }
+    }
+
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
     
     public void OnChangeCurrentDeckCount(int oldCount, int newCount)
