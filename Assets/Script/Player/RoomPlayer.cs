@@ -83,5 +83,13 @@ public class RoomPlayer : NetworkRoomPlayer
     {
         RoomUI.instance.AppendMessage(color, playerName, message);
     }
+
+    // 다른 클라 연결해제 이벤트 수신
+    [TargetRpc]
+    public void RpcOtherPlayerDisconnected(NetworkConnectionToClient target, RoomPlayer roomPlayer)
+    {
+        ToastMessageManager.instance.SetToastMessageTest($"{roomPlayer.steamPersonaName} 님이 게임을 나갔습니다.");
+        ToastMessageManager.instance.ShowToastMessage();
+    }
 }
 

@@ -76,10 +76,19 @@ public class M_NetworkRoomManager : NetworkRoomManager
         return roomPlayer;
     }
     
-    // 클라이언트 연결이 끊어졌을 경우 해당 클라이언트 소유의 오브젝트 권한을 서버에게 이전
+    // 서버에서 클라이언트가 연결해제 되었을때 호출
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
-        if(Utils.IsSceneActive(GameplayScene)){
+        AssignAuthorityFromDisconnectClientToServer(conn);
+        BroadCastToClientDisconnected();
+
+        base.OnServerDisconnect(conn);
+    }
+
+    // 게임에서 나간 클라이언트 소유의 오브젝트 권한을 서버로 이전
+    private void AssignAuthorityFromDisconnectClientToServer(NetworkConnectionToClient conn)
+    {
+         if(Utils.IsSceneActive(GameplayScene)){
             if(NetworkClient.connection != null && NetworkClient.active && NetworkClient.connection.identity != conn.identity){ // 서버 본인이 나갈때는 이벤트 전송 X
                 PlayerInterface serverPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>(); // 서버 플레이어
                 PlayerInterface disconnectedPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>(); // 방 나간 플레이어
@@ -95,14 +104,30 @@ public class M_NetworkRoomManager : NetworkRoomManager
                         networkIdentity.AssignClientAuthority(NetworkClient.connection.identity.connectionToClient);
                     }
                 }
-                onClientDisconnectFromServer(disconnectedGamePlayer); // 클라 연결 해제 델리게이트 구독한 컴포넌트에 이벤트 전송
+                OnClientDisconnectFromServer(disconnectedGamePlayer); // 클라 연결 해제 델리게이트 구독한 컴포넌트에 이벤트 전송
             }
         }
-        base.OnServerDisconnect(conn);
+    }
+
+    // 접속한 모든 클라에게 어떤 클라이언트가 나갔는지 전송
+    private void BroadCastToClientDisconnected()
+    {
+        if(Utils.IsSceneActive(RoomScene)){
+            foreach(NetworkConnectionToClient connectionToClient in NetworkServer.connections.Values){
+                RoomPlayer roomPlayer = NetworkServer.spawned[connectionToClient.identity.netId].GetComponent<RoomPlayer>();
+                roomPlayer.RpcOtherPlayerDisconnected(connectionToClient, roomPlayer);
+            }
+        }else if(Utils.IsSceneActive(GameplayScene)){
+            foreach(NetworkConnectionToClient connectionToClient in NetworkServer.connections.Values){
+                PlayerInterface playerInterface = NetworkServer.spawned[connectionToClient.identity.netId].GetComponent<PlayerInterface>();
+                PlayerInterfaceServer playerInterfaceServer = playerInterface.GetComponent<PlayerInterfaceServer>();
+                playerInterfaceServer.RpcOtherPlayerDisconnected(connectionToClient, playerInterface);
+            }
+        }
     }
 
     // 클라연결 끊어지면 컴포넌트들에 델리게이트 이벤트 전송
-    private void onClientDisconnectFromServer(GamePlayer gamePlayer)
+    private void OnClientDisconnectFromServer(GamePlayer gamePlayer)
     {
         if(onClientDisconnected != null){
             onClientDisconnected.Invoke(gamePlayer);
