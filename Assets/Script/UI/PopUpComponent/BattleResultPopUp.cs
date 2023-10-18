@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
+using TMPro;
 using AYellowpaper.SerializedCollections;
 
 public class BattleResultPopUp : SingletonD<BattleResultPopUp>
@@ -93,6 +94,7 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
             List<Card> rewardCards = pair.Value;
             CreateResultCard(rewardCards, index, gamePlayer);
             tabButtons[index].gameObject.SetActive(true);
+            tabButtons[index].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = gamePlayer.character.ToString();
             index++;
         }
     }
