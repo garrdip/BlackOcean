@@ -80,7 +80,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
         AssignAuthorityFromDisconnectClientToServer(conn);
-        BroadCastToClientDisconnected();
+        BroadCastToClientDisconnected(conn);
 
         base.OnServerDisconnect(conn);
     }
@@ -111,19 +111,19 @@ public class M_NetworkRoomManager : NetworkRoomManager
     }
 
     // 접속한 모든 클라에게 어떤 클라이언트가 나갔는지 전송
-    private void BroadCastToClientDisconnected()
+    private void BroadCastToClientDisconnected(NetworkConnectionToClient conn)
     {
         if(Utils.IsSceneActive(RoomScene)){
+            RoomPlayer oldRoomPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<RoomPlayer>();
+            RoomPlayer newRoomPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<RoomPlayer>();
             foreach(NetworkConnectionToClient connectionToClient in NetworkServer.connections.Values){
-                RoomPlayer oldRoomPlayer = NetworkServer.spawned[connectionToClient.identity.netId].GetComponent<RoomPlayer>();
-                RoomPlayer newRoomPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<RoomPlayer>();
                 oldRoomPlayer.RpcOtherPlayerDisconnected(connectionToClient, oldRoomPlayer, newRoomPlayer);
             }
         }else if(Utils.IsSceneActive(GameplayScene)){
+            PlayerInterface oldPlayerInterface = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>();
+            PlayerInterfaceServer oldPlayerInterfaceServer = oldPlayerInterface.GetComponent<PlayerInterfaceServer>();
+            PlayerInterface newPlayerInterface = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>();
             foreach(NetworkConnectionToClient connectionToClient in NetworkServer.connections.Values){
-                PlayerInterface oldPlayerInterface = NetworkServer.spawned[connectionToClient.identity.netId].GetComponent<PlayerInterface>();
-                PlayerInterfaceServer oldPlayerInterfaceServer = oldPlayerInterface.GetComponent<PlayerInterfaceServer>();
-                PlayerInterface newPlayerInterface = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>();
                 oldPlayerInterfaceServer.RpcOtherPlayerDisconnected(connectionToClient, oldPlayerInterface, newPlayerInterface);
             }
         }
