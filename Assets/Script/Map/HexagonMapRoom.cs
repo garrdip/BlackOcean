@@ -5,6 +5,7 @@ using Mirror;
 using ProjectD;
 using TMPro;
 
+[System.Serializable]
 public class HexagonMapRoom : NetworkBehaviour
 {
     [SyncVar (hook = nameof(OnChangedRoomType))]
