@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Steamworks;
 using Mirror;
-using AYellowpaper.SerializedCollections;
 
 
 public class PlayerInterfaceServer : NetworkBehaviour
@@ -58,7 +57,7 @@ public class PlayerInterfaceServer : NetworkBehaviour
         );
         MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
         mapPlayerPiece.steamId = SteamFriends.GetFriendPersonaName((CSteamID)GetComponent<PlayerInterface>().steamID); // 스팀아이디 값 세팅
-        mapPlayerPiece.gamePlayer = GetComponent<PlayerInterface>().netId; // 게임 플레이어 참조값 세팅
+        mapPlayerPiece.playerIntefaceNetId = GetComponent<PlayerInterface>().netId; // 게임 플레이어 참조값 세팅
         NetworkServer.Spawn(mapPlayerPieceObject, connectionToClient);
       
         M_MapManager.instance.mapPlayerPieces.Add(mapPlayerPieceObject); // 매니저의 리스트에 생성된 맵 플레이어 추가
@@ -71,7 +70,7 @@ public class PlayerInterfaceServer : NetworkBehaviour
             Quaternion.identity
         );
         MapPlayerDestination mapPlayerDestination = mapPlayerDestinationObject.GetComponent<MapPlayerDestination>();
-        mapPlayerDestination.gamePlayer = GetComponent<PlayerInterface>().netId; // 게임 플레이어 참조값 세팅
+        mapPlayerDestination.playerIntefaceNetId = GetComponent<PlayerInterface>().netId; // 게임 플레이어 참조값 세팅
         NetworkServer.Spawn(mapPlayerDestinationObject, connectionToClient);
         
         gamePlayerMap.currentMapPlayerDestination = mapPlayerDestination; // 자신소유의 currentMapPlayerDestination 참조값 세팅

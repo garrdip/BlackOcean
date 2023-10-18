@@ -9,8 +9,8 @@ public class MapPlayerPiece: NetworkBehaviour
     [SyncVar(hook = nameof(OnChangeSteamId))]
     public string steamId;
 
-    [SyncVar(hook = nameof(OnChangeGamePlayer))]
-    public uint gamePlayer;
+    [SyncVar(hook = nameof(OnChangePlayerInterfaceNetId))]
+    public uint playerIntefaceNetId;
 
     public SpriteRenderer spriteRenderer;
     public TextMeshProUGUI textPlayerName;
@@ -20,13 +20,19 @@ public class MapPlayerPiece: NetworkBehaviour
         transform.SetParent(M_MapManager.instance.roommaps.transform);
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        SetPositionOffsetByOrder(transform.position);
+    }
+
     public void OnChangeSteamId(string oldSteamId, string newSteamId)
     {
         textPlayerName.text = newSteamId;
     }
 
-    // GamePlayer참조값에서 selectOrder값에 따라 해당 플레이어 소유의 MapPlayerPiece 색상 변경
-    public void OnChangeGamePlayer(uint oldValue, uint newValue)
+    // PlayerInterface참조값에서 selectOrder값에 따라 해당 플레이어 소유의 MapPlayerPiece 색상 변경
+    public void OnChangePlayerInterfaceNetId(uint oldValue, uint newValue)
     {
         PlayerInterface playerInterface = NetworkClient.spawned[newValue].GetComponent<PlayerInterface>();
         spriteRenderer.color = playerInterface.color;
@@ -36,9 +42,14 @@ public class MapPlayerPiece: NetworkBehaviour
     [ClientRpc]
     public void RpcChangeMapPlayerPiecePosition(Vector3 position)
     {
+        SetPositionOffsetByOrder(position);
+    }
+
+    private void SetPositionOffsetByOrder(Vector3 position)
+    {
         Vector3 offset = new Vector3(0f, 0f, 0f);
-        /*
-        switch(gamePlayer.selectOrder){
+        PlayerInterface playerInterface = NetworkClient.spawned[playerIntefaceNetId].GetComponent<PlayerInterface>();
+        switch(playerInterface.selectOrder){
             case 0:
                 offset += new Vector3(-0.2f, 0f, 0f);
                 break;
@@ -46,10 +57,9 @@ public class MapPlayerPiece: NetworkBehaviour
                 offset += new Vector3(0f, 0f, 0f);
                 break;
             case 2:
-                    offset += new Vector3(0.2f, 0f, 0f);
+                offset += new Vector3(0.2f, 0f, 0f);
                 break;
         }
-        */
         transform.position = position + offset;
     }
 }

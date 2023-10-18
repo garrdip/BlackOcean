@@ -8,8 +8,8 @@ using TMPro;
 
 public class MapPlayerDestination : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(OnChangeGamePlayer))]
-    public uint gamePlayer;
+    [SyncVar(hook = nameof(OnChangePlayerInterfaceNetId))]
+    public uint playerIntefaceNetId;
 
     [SyncVar(hook = nameof(OnChangeDistanceFromCurrentCoordinate))]
     public int distanceFromCurrentCoordinate;
@@ -67,8 +67,8 @@ public class MapPlayerDestination : NetworkBehaviour
         }
     }
 
-    // GamePlayer참조값에서 selectOrder값에 따라 해당 플레이어 소유의 표시 색상 변경
-    public void OnChangeGamePlayer(uint oldValue, uint newValue)
+    // PlayerInterface참조값에서 selectOrder값에 따라 해당 플레이어 소유의 표시 색상 변경
+    public void OnChangePlayerInterfaceNetId(uint oldValue, uint newValue)
     {
         PlayerInterface playerInterface = NetworkClient.spawned[newValue].GetComponent<PlayerInterface>();
         spriteRenderer.color = playerInterface.color;
