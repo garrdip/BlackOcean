@@ -210,6 +210,42 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
+    [Server]
+    public void RegenerateStartHexsagonRoom(SaveData saveData)
+    {
+        var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        
+        foreach(SaveDataMapRoom saveDataMapRoom in saveData.map.hexagonMapRooms)
+        {
+            Vector3 position = new Vector3(saveDataMapRoom.position.Item1,saveDataMapRoom.position.Item2,saveDataMapRoom.position.Item3);
+            GameObject aroundRoomObject = Instantiate(
+                networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
+                position,
+                Quaternion.identity
+            );
+            HexagonMapRoom aroundRoom = aroundRoomObject.GetComponent<HexagonMapRoom>();
+            // 방 타입 설정
+            aroundRoom.roomType = saveDataMapRoom.roomType;
+            // 인게임 좌표계 값 설정
+            aroundRoom.position = position;
+            // 방 활성화 상태 설정
+            aroundRoom.isActive = saveDataMapRoom.isActive;
+            aroundRoom.isRegion = saveDataMapRoom.isRegion;
+            aroundRoom.isComplete = saveDataMapRoom.isComplete;
+            
+            // 고유 좌표계 값 설정
+            aroundRoom.coordinate = new Vector2Int(saveDataMapRoom.coordinate.Item1,saveDataMapRoom.coordinate.Item2);
+            NetworkServer.Spawn(aroundRoomObject);
+
+            // 육각형 위치 및 오브젝트 클래스 리스트에 추가
+            hexagonMapRooms.Add(aroundRoom);
+            hexagonMapRoomNetIds.Add(aroundRoom.GetComponent<NetworkIdentity>().netId);
+            
+            if(saveData.map.currentRoom == saveDataMapRoom.coordinate)
+                currentRoom = aroundRoom;
+        }
+    }
+
     // 현재 위치를 중심으로 주변 육각형 생성 : mapSight 값에 따라 생성되는 범위 동적으로 변경
     [Server]
     public void GenerateHexagonRoom(HexagonMapRoom currentHexagonMapRoom)
@@ -299,6 +335,25 @@ public class M_MapManager : NetworkBehaviour
                 }
                 newRegion.tiles.Add(new Tile(newPos));
                 centerPos = newPos;
+            }
+        }
+        GenerateHexagonRoomOnRegion(); // 거점지역 생성시 그 위치에 HexagonMapRoom오브젝트도 생성
+    }
+
+    [Server]
+    public void RegenerateColorRegion(SaveData saveData)
+    {
+        foreach(SaveDataRegion saveDataRegion in saveData.map.regions)
+        {
+            Region newRegion = new Region();
+            newRegion.regionGrade = saveDataRegion.regionGrade;
+            regions.Add(newRegion);
+
+            //각각의 타일의 위치를 정의하는 곳.
+            foreach(SaveDataTile saveDataTile in saveDataRegion.tiles)
+            {
+                Tile newTile = new Tile(new Vector3(saveDataTile.coordinate.Item1,saveDataTile.coordinate.Item2,0));                
+                newRegion.tiles.Add(newTile);
             }
         }
         GenerateHexagonRoomOnRegion(); // 거점지역 생성시 그 위치에 HexagonMapRoom오브젝트도 생성

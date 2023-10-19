@@ -52,7 +52,7 @@ public class PlayerInterfaceServer : NetworkBehaviour
         GamePlayerMap gamePlayerMap = gamePlayer.GetComponent<GamePlayerMap>();
         GameObject mapPlayerPieceObject = Instantiate(
             networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerPiece"),
-            Vector3.zero,
+            M_MapManager.instance.currentRoom.position,
             Quaternion.identity
         );
         MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();

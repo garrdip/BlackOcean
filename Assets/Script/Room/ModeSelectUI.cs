@@ -6,7 +6,7 @@ using Mirror;
 using ProjectD;
 using DG.Tweening;
 
-public class ModeSelectUI : NetworkBehaviour
+public class ModeSelectUI : NetworkSingletonD<ModeSelectUI>
 {
     [SyncVar (hook = nameof(OnChangedLevel))]
     public GameLevel gameLevel = GameLevel.EASY;

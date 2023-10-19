@@ -84,6 +84,11 @@ public class RoomUI : InstanceD<RoomUI>
     public void HandleChangeGameScene()
     {
         M_LoadingManager.instance.SetLoadingScreen(true);
+        if( ModeSelectUI.instance.gameLevel == GameLevel.HARD )
+        {
+            M_SaveManager.instance.isSaveGame = true;
+            M_SaveManager.instance.LoadGameDataFromFile();
+        }
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         M_NetworkRoomManager.ServerChangeScene(M_NetworkRoomManager.GameplayScene);
     }

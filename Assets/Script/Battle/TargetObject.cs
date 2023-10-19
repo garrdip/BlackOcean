@@ -423,7 +423,6 @@ public class TargetObject : NetworkBehaviour
     {
         if(newVal == this)
         { 
-            Debug.Log(player.character);
             ironDemon.GetComponent<SkeletonAnimation>().state.Complete -= OnIronDemonAnimationComplete;
             ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
         }

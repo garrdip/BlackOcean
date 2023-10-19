@@ -13,6 +13,7 @@ public class SaveData
 [System.Serializable]
 public class SaveDataPlayer
 {
+    public ulong ownerSteamId;
     public bool isActive;
     public Character character = new Character();
     public int HP, MaxHP;
@@ -23,7 +24,7 @@ public class SaveDataPlayer
 public class SaveDataMap
 {
     public List<SaveDataMapRoom> hexagonMapRooms = new List<SaveDataMapRoom>();
-    public List<Region> regions = new List<Region>();
+    public List<SaveDataRegion> regions = new List<SaveDataRegion>();
     public (int,int) currentRoom;
 }
 

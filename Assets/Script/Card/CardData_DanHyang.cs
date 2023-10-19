@@ -92,7 +92,6 @@ public partial class CardData : SingletonD<CardData>
 
             if(tar[1] != tar[0].ironDemonLocation)
             {
-                Debug.Log(" 철귀 이동 !");
                 M_TurnManager.instance.AnimIronDemon("TeleportGo",tar[0]); // 다시 사라짐
                 yield return new WaitForSeconds(0.33f);// 완전히 사라지는 시간
                 M_TurnManager.instance.MoveIronDemon(tar[0].ironDemonLocation,tar[0]); // 플레이어에게 다시 이동

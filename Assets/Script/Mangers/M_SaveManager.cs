@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class M_SaveManager : SingletonD<M_SaveManager>
 {
-
+    public bool isSaveGame = false;
+    public SaveData loadData;
 
     public void SaveGameDataToFile(GamePlayer[] games)
     {
@@ -18,6 +19,7 @@ public class M_SaveManager : SingletonD<M_SaveManager>
             data.players[i].character = games[i].character;
             data.players[i].HP = games[i].HP;
             data.players[i].MaxHP = games[i].MaxHP;
+            data.players[i].ownerSteamId = games[i].objectOwner.steamID;
             foreach(Card card in games[i].GetComponent<GamePlayerDeck>().deck)
             {
                 data.players[i].cards.Add(card);
@@ -38,6 +40,7 @@ public class M_SaveManager : SingletonD<M_SaveManager>
                 saveDataRegion.tiles.Add(new SaveDataTile(tile));
                 
             }
+            data.map.regions.Add(saveDataRegion);
         }
 
         string filePath = Application.persistentDataPath + "/save.dat";
@@ -57,22 +60,14 @@ public class M_SaveManager : SingletonD<M_SaveManager>
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(filePath, FileMode.Open);
 
-            SaveData loadData = formatter.Deserialize(stream) as SaveData;
+            loadData = formatter.Deserialize(stream) as SaveData;
             stream.Close();
-            foreach(SaveDataPlayer pp in loadData.players)
-            {
-                if(pp == null) continue;
-                Debug.Log("Player : " + pp.character);
-                foreach(Card card in pp.cards)
-                {
-                    Debug.Log(card.baseCard.name);
-                    Debug.Log(card.experience);
-                }
-            }
+
         }
         else
         {
             Debug.Log("Save File does not exist");
+
         }
     }
 }
