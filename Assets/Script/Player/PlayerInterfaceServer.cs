@@ -79,14 +79,6 @@ public class PlayerInterfaceServer : NetworkBehaviour
 
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
     
-    // 다른 클라 연결해제 이벤트 수신
-    [TargetRpc]
-    public void TargetOtherPlayerDisconnected(NetworkConnectionToClient target, string oldPlayer ,string newPlayer)
-    {
-        ToastMessageManager.instance.SetToastMessageTest($"{oldPlayer} 님이 게임을 나갔습니다. \n {newPlayer} 님에게 권한이 이전됩니다.");
-        ToastMessageManager.instance.ShowToastMessage();
-    }
-
     // 전투 결과 보상 팝업 활성화 이벤트 수신
     [TargetRpc]
     public void TargetBattleRewardPopUp(NetworkConnectionToClient target)

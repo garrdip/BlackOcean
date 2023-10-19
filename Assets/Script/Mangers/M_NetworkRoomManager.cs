@@ -116,18 +116,11 @@ public class M_NetworkRoomManager : NetworkRoomManager
         if(Utils.IsSceneActive(RoomScene)){
             RoomPlayer oldRoomPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<RoomPlayer>();
             RoomPlayer newRoomPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<RoomPlayer>();
-            foreach(NetworkConnectionToClient connectionToClient in NetworkServer.connections.Values){
-                RoomPlayer roomPlayer = NetworkServer.spawned[connectionToClient.identity.netId].GetComponent<RoomPlayer>();
-                roomPlayer.TargetOtherPlayerDisconnected(connectionToClient, oldRoomPlayer.steamPersonaName, newRoomPlayer.steamPersonaName);
-            }
+            M_MessageManager.instance.RpcOtherPlayerDisconnectedInRoomScene(oldRoomPlayer.steamPersonaName, newRoomPlayer.steamPersonaName);
         }else if(Utils.IsSceneActive(GameplayScene)){
             PlayerInterface oldPlayerInterface = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>();
             PlayerInterface newPlayerInterface = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>();
-            foreach(NetworkConnectionToClient connectionToClient in NetworkServer.connections.Values){
-                PlayerInterface playerInterface = NetworkServer.spawned[connectionToClient.identity.netId].GetComponent<PlayerInterface>();
-                PlayerInterfaceServer playerInterfaceServer = playerInterface.GetComponent<PlayerInterfaceServer>();
-                playerInterfaceServer.TargetOtherPlayerDisconnected(connectionToClient, oldPlayerInterface.steamPersonaName, newPlayerInterface.steamPersonaName);
-            }
+            M_MessageManager.instance.RpcOtherPlayerDisconnectedInGameScene(oldPlayerInterface.steamPersonaName, newPlayerInterface.steamPersonaName);
         }
     }
 
