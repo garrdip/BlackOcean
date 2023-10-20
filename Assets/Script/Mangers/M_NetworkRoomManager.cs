@@ -83,8 +83,10 @@ public class M_NetworkRoomManager : NetworkRoomManager
     // 서버에서 클라이언트가 연결해제 되었을때 호출
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
-        AssignAuthorityFromDisconnectClientToServer(conn);
-        BroadCastToClientDisconnected(conn);
+        if(NetworkClient.active && NetworkClient.connection != null && NetworkClient.connection.identity != conn.identity){
+            AssignAuthorityFromDisconnectClientToServer(conn);
+            BroadCastToClientDisconnected(conn);
+        }
 
         base.OnServerDisconnect(conn);
     }
@@ -93,24 +95,22 @@ public class M_NetworkRoomManager : NetworkRoomManager
     private void AssignAuthorityFromDisconnectClientToServer(NetworkConnectionToClient conn)
     {
         if(Utils.IsSceneActive(GameplayScene)){
-            if(NetworkClient.connection != null && NetworkClient.active && NetworkClient.connection.identity != conn.identity){ // 서버 본인이 나갈때는 이벤트 전송 X
-                PlayerInterface serverPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>(); // 서버 플레이어
-                PlayerInterface disconnectedPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>(); // 방 나간 플레이어
-                GamePlayer disconnectedGamePlayer = NetworkServer.spawned[disconnectedPlayer.currentGamePlayerNetId].GetComponent<GamePlayer>(); // 방 나간 플레이어의 GamePlayer 컴포넌트
-                disconnectedGamePlayer.objectOwner = serverPlayer; // 방 나간 플레이어의 GamePlayer 오브젝트의 부모 오브젝트를 서버 플레이어의 PlayerInterface로 변경
-                serverPlayer.ownedPlayers.Add(disconnectedGamePlayer); // 서버플레이어의 ownedPlayers SyncList에 방 나간 플레이어 추가
+            PlayerInterface serverPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>(); // 서버 플레이어
+            PlayerInterface disconnectedPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>(); // 방 나간 플레이어
+            GamePlayer disconnectedGamePlayer = NetworkServer.spawned[disconnectedPlayer.currentGamePlayerNetId].GetComponent<GamePlayer>(); // 방 나간 플레이어의 GamePlayer 컴포넌트
+            disconnectedGamePlayer.objectOwner = serverPlayer; // 방 나간 플레이어의 GamePlayer 오브젝트의 부모 오브젝트를 서버 플레이어의 PlayerInterface로 변경
+            serverPlayer.ownedPlayers.Add(disconnectedGamePlayer); // 서버플레이어의 ownedPlayers SyncList에 방 나간 플레이어 추가
 
-                // 방 나간 클라이언트 소유의 오브젝트들 중 플레이어 오브젝트를 제외한 모든 오브젝트의 권한을 서버에게 이전
-                HashSet<NetworkIdentity> copyHashSet = new HashSet<NetworkIdentity>(conn.owned);
-                foreach(NetworkIdentity networkIdentity in copyHashSet){
-                    if(networkIdentity.GetComponent<RoomPlayer>() == null && networkIdentity.GetComponent<PlayerInterface>() == null){
-                        AssignMapPlayerInterfaceNetId(networkIdentity);
-                        networkIdentity.RemoveClientAuthority();
-                        networkIdentity.AssignClientAuthority(NetworkClient.connection.identity.connectionToClient);
-                    }
+            // 방 나간 클라이언트 소유의 오브젝트들 중 플레이어 오브젝트를 제외한 모든 오브젝트의 권한을 서버에게 이전
+            HashSet<NetworkIdentity> copyHashSet = new HashSet<NetworkIdentity>(conn.owned);
+            foreach(NetworkIdentity networkIdentity in copyHashSet){
+                if(networkIdentity.GetComponent<RoomPlayer>() == null && networkIdentity.GetComponent<PlayerInterface>() == null){
+                    AssignMapPlayerInterfaceNetId(networkIdentity);
+                    networkIdentity.RemoveClientAuthority();
+                    networkIdentity.AssignClientAuthority(NetworkClient.connection.identity.connectionToClient);
                 }
-                OnClientDisconnectFromServer(disconnectedGamePlayer); // 클라 연결 해제 델리게이트 구독한 컴포넌트에 이벤트 전송
             }
+            OnClientDisconnectFromServer(disconnectedGamePlayer); // 클라 연결 해제 델리게이트 구독한 컴포넌트에 이벤트 전송
         }
     }
 

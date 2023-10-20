@@ -36,7 +36,7 @@ public class SaveDataMapRoom
     public (float,float,float) position; // 인게임 좌표계 값
     public bool isRegion = false; // 거점지역 구분값
     public bool isActive = false; // 방 활성화 상태 구분값
-    public bool isComplete = false; // 방 정복 완료 상태 구분값
+
 
     public SaveDataMapRoom(HexagonMapRoom hexagonMapRoom)
     {
@@ -45,7 +45,6 @@ public class SaveDataMapRoom
         position = (hexagonMapRoom.position.x,hexagonMapRoom.position.y,hexagonMapRoom.position.z);
         isRegion = hexagonMapRoom.isRegion;
         isActive = hexagonMapRoom.isActive;
-        isComplete = hexagonMapRoom.isComplete;
     }
 }
 

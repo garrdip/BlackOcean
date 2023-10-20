@@ -11,13 +11,16 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedRoomType))]
     public RoomType roomType = RoomType.UNDEFINED; // 방 타입
 
+    [SyncVar]
+    public RoomType prevRoomType = RoomType.UNDEFINED; // 다른 타입의 상태로 바뀌기 이전의 방 타입
+
     [SyncVar (hook = nameof(OnChangedCoordinate))]
     public Vector2Int coordinate; // 각 방의 고유 좌표계 값
 
     [SyncVar]
     public Vector3 position; // 인게임 좌표계 값
 
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChangeMapBoss))]
     public MapBoss mapBoss;
 
     [SyncVar (hook = nameof(OnChangedIsRegion))]
@@ -28,9 +31,6 @@ public class HexagonMapRoom : NetworkBehaviour
 
     [SyncVar (hook = nameof(OnChangedIsActive))]
     public bool isActive = false; // 방 활성화 상태 구분값
-
-    [SyncVar (hook = nameof(OnChangedIsComplete))]
-    public bool isComplete = false; // 방 정복 완료 상태 구분값
 
     [SyncVar]
     public HexagonMapRoom previousNode; // 현재 위치 이전의 노드
@@ -82,32 +82,49 @@ public class HexagonMapRoom : NetworkBehaviour
         switch(newVal)
         {
             case RoomType.START_LOCATION :
+                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.gray;
                 textRoomType.text = Const.RoomType_StartLocation;
                 break;
             case RoomType.MONSTER :
+                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.red;
                 textRoomType.text = Const.RoomType_Monster;
                 break;
             case RoomType.ELITE :
+                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.red;
                 textRoomType.text = Const.RoomType_Elite;
                 break;
             case RoomType.EVENT :
+                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.yellow;
                 textRoomType.text = Const.RoomType_Event;
                 break;
             case RoomType.CAMP :
+                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.green;
                 textRoomType.text = Const.RoomType_Camp;
                 break;
             case RoomType.ITEM_NPC :
+                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.blue;
                 textRoomType.text = Const.RoomType_ItemNpc;
                 break;
             case RoomType.CARD_NPC :
+                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.magenta;
                 textRoomType.text = Const.RoomType_CardNpc;
+                break;
+            case RoomType.COMPLETE :
+                spriteRenderer.color = Color.gray;
+                textRoomType.color = Color.black;
+                textRoomType.text = Const.RoomType_Complete;
+                break;
+            case RoomType.BOSS :
+                spriteRenderer.color = Color.red;
+                textRoomType.color = Color.black;
+                textRoomType.text = Const.RoomType_Boss;
                 break;
         }
     }
@@ -140,14 +157,31 @@ public class HexagonMapRoom : NetworkBehaviour
         //textCoordinate.gameObject.SetActive(isActive);
     }
 
-    // 방 완료시 상태변경
-    void OnChangedIsComplete(bool oldValue, bool newValue)
+    public void OnChangeMapBoss(MapBoss oldValue, MapBoss newValue)
     {
-        if(roomType != RoomType.START_LOCATION){
-            spriteRenderer.color = Color.gray;
-            textRoomType.color = Color.green;
-            textRoomType.text = Const.RoomState_Complete;
+        if(isServer){
+            if(newValue != null && !isRegion){
+                SetRoomTypePreviousType();
+                SetRoomTypeBossRoom();
+            }
         }
     }
 
+    private void SetRoomTypeBossRoom()
+    {
+        roomType = RoomType.BOSS;
+        for(int i=0; i<6; i++){
+            HexagonMapRoom hexagonMapRoom = M_MapManager.instance.hexagonMapRooms.Find((room) => room.coordinate == coordinate + M_MapManager.instance.offSets[i]);
+            if(hexagonMapRoom != null){
+                hexagonMapRoom.roomType = RoomType.BOSS;
+            }
+        }
+    }
+
+    private void SetRoomTypePreviousType()
+    {
+        foreach(HexagonMapRoom hexagonMapRoom in M_MapManager.instance.hexagonMapRooms){
+            hexagonMapRoom.roomType = hexagonMapRoom.prevRoomType;
+        }
+    }
 }

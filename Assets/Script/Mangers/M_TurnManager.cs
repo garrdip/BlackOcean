@@ -678,17 +678,17 @@ public class M_TurnManager : NetworkBehaviour
                 mapPlayerPiece.RpcChangeMapPlayerPiecePosition(hexagonMapRoom.transform.position);
                 M_MapManager.instance.SetDirection(hexagonMapRoom);
             }
-            M_MapManager.instance.StartBattle(hexagonMapRoom);
+            M_MapManager.instance.MoveToRoom();
         }
     }
 
     [Server]
-    public void GenerateBattleObject(HexagonMapRoom hexagonMapRoom)
+    public void GenerateBattleObject(HexagonMapRoom hexagonMapRoom, bool isBossBattle)
     {
         if(isServer)
         {
             GeneratePlayerUnit();
-            if(hexagonMapRoom.mapBoss != null){
+            if(isBossBattle){
                 GenerateBossMonster();
                 RpcCardPrefareForBattle();
                 RpcStartBossBattle();
@@ -879,6 +879,7 @@ public class M_TurnManager : NetworkBehaviour
     {
         if(isServer){
             ClearTargetObject(); // 타겟오브젝트 정리
+            M_MapManager.instance.ClearPlayerVoteHexagonMapRooms(); // 방 투표 목록 비움
             M_MapManager.instance.SetRoomStateComplete(); // 방 완료상태로 변경
             M_MapManager.instance.DecreaseTotalActionCost(); // 행동비용 감소
             M_MapManager.instance.ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
