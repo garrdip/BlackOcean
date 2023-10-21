@@ -683,12 +683,12 @@ public class M_TurnManager : NetworkBehaviour
     }
 
     [Server]
-    public void GenerateBattleObject(HexagonMapRoom hexagonMapRoom, bool isBossBattle)
+    public void GenerateBattleObject(HexagonMapRoom hexagonMapRoom)
     {
         if(isServer)
         {
             GeneratePlayerUnit();
-            if(isBossBattle){
+            if(hexagonMapRoom.roomType == RoomType.BOSS){
                 GenerateBossMonster();
                 RpcCardPrefareForBattle();
                 RpcStartBossBattle();
@@ -724,7 +724,7 @@ public class M_TurnManager : NetworkBehaviour
                 if(user.isTargetObjectInitDone) cnt++;
             if(cnt != netManager.roomSlots.Count) continue;
 
-            if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE)
+            if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE || hexagonMapRoom.roomType == RoomType.BOSS)
                 phase = BattleTurn.BATTLE_STANDBY;
             else
                 phase = BattleTurn.NONE_BATTLE_SCENE;

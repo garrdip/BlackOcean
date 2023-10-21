@@ -11,9 +11,6 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedRoomType))]
     public RoomType roomType = RoomType.UNDEFINED; // 방 타입
 
-    [SyncVar]
-    public RoomType prevRoomType = RoomType.UNDEFINED; // 다른 타입의 상태로 바뀌기 이전의 방 타입
-
     [SyncVar (hook = nameof(OnChangedCoordinate))]
     public Vector2Int coordinate; // 각 방의 고유 좌표계 값
 
@@ -76,6 +73,8 @@ public class HexagonMapRoom : NetworkBehaviour
             MapUI.instance.RegionPopUpHide();
         }
     }
+ 
+    // ------------------------------------------------------------ Syncvar Hook --------------------------------------------------------------- //
 
     void OnChangedRoomType(RoomType oldVal, RoomType newVal)
     {
@@ -121,6 +120,11 @@ public class HexagonMapRoom : NetworkBehaviour
                 textRoomType.color = Color.black;
                 textRoomType.text = Const.RoomType_Complete;
                 break;
+            case RoomType.RUINS :
+                spriteRenderer.color = ColorUtils.HexToColor("#2F745A");
+                textRoomType.color = Color.black;
+                textRoomType.text = Const.RoomType_Ruins;
+                break;
             case RoomType.BOSS :
                 spriteRenderer.color = Color.red;
                 textRoomType.color = Color.black;
@@ -149,7 +153,7 @@ public class HexagonMapRoom : NetworkBehaviour
     }
 
     // HexagonMapRoom의 스프라이트 알파값과 텍스트 상태값 변경
-    public void ChangeHexagonRoomActive(bool isActive)
+    void ChangeHexagonRoomActive(bool isActive)
     {
         float alpha = isActive ? 1f : 0f;
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
@@ -157,31 +161,11 @@ public class HexagonMapRoom : NetworkBehaviour
         //textCoordinate.gameObject.SetActive(isActive);
     }
 
-    public void OnChangeMapBoss(MapBoss oldValue, MapBoss newValue)
+    // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)
+    void OnChangeMapBoss(MapBoss oldValue, MapBoss newValue)
     {
-        if(isServer){
-            if(newValue != null && !isRegion){
-                SetRoomTypePreviousType();
-                SetRoomTypeBossRoom();
-            }
-        }
-    }
-
-    private void SetRoomTypeBossRoom()
-    {
-        roomType = RoomType.BOSS;
-        for(int i=0; i<6; i++){
-            HexagonMapRoom hexagonMapRoom = M_MapManager.instance.hexagonMapRooms.Find((room) => room.coordinate == coordinate + M_MapManager.instance.offSets[i]);
-            if(hexagonMapRoom != null){
-                hexagonMapRoom.roomType = RoomType.BOSS;
-            }
-        }
-    }
-
-    private void SetRoomTypePreviousType()
-    {
-        foreach(HexagonMapRoom hexagonMapRoom in M_MapManager.instance.hexagonMapRooms){
-            hexagonMapRoom.roomType = hexagonMapRoom.prevRoomType;
+        if(isServer && newValue != null){
+            M_MapManager.instance.SetRoomTypeBossRoom(this);
         }
     }
 }

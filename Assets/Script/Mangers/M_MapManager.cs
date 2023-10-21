@@ -61,6 +61,9 @@ public class M_MapManager : NetworkBehaviour
     [Header("HexagonMapRoom 리스트")]
     public List<HexagonMapRoom> hexagonMapRooms = new List<HexagonMapRoom>();
 
+    [Header("Boss Zone HexagonMapRoom 리스트")]
+    public List<HexagonMapRoom> boosZoneMapRooms = new List<HexagonMapRoom>();
+
     public readonly SyncList<uint> hexagonMapRoomNetIds = new SyncList<uint>(); // hexagonMapRoom 오브젝트 NetId 리스트
 
     public readonly SyncList<Region> regions = new SyncList<Region>(); // 거점지역 리스트
@@ -94,6 +97,25 @@ public class M_MapManager : NetworkBehaviour
             return Instance;
         }
     }
+
+    /*
+    // 테스트용 : 마우스 오른쪽 버튼 누를 시 맵 생성(HexagonMap 프리팹의 충돌체를 3D용인 boxCollider로 교체해야 Raycast 가능)
+    void Update()
+    {
+        if(Input.GetMouseButtonDown(1)){
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if(Physics.Raycast(ray, out hit)){
+                GameObject selectedObject = hit.collider.gameObject;
+                HexagonMapRoom hexagonMapRoom = selectedObject.GetComponent<HexagonMapRoom>();
+                if(hexagonMapRoom.roomType != RoomType.START_LOCATION){
+                    hexagonMapRoom.roomType = RoomType.COMPLETE;
+                    GenerateHexagonRoom(hexagonMapRoom);
+                }
+            }
+        }  
+    }
+    */
 
     // 서버에 생성 시 SyncVar 값들 초기화
     public override void OnStartServer()
@@ -168,7 +190,6 @@ public class M_MapManager : NetworkBehaviour
         HexagonMapRoom centerRoom = centerRoomObject.GetComponent<HexagonMapRoom>();
         // 방 타입, 고유 좌표계값, 인게임 좌표계값, 활성화 상태 초기값 설정
         centerRoom.roomType = RoomType.START_LOCATION;
-        centerRoom.prevRoomType = RoomType.START_LOCATION;
         centerRoom.coordinate = Vector2Int.zero;
         centerRoom.position = Vector3.zero;
         centerRoom.isActive = true;
@@ -195,7 +216,6 @@ public class M_MapManager : NetworkBehaviour
             HexagonMapRoom aroundRoom = aroundRoomObject.GetComponent<HexagonMapRoom>();
             // 방 타입 설정
             aroundRoom.roomType = GetRoomType();
-            aroundRoom.prevRoomType = aroundRoom.roomType;
             // 인게임 좌표계 값 설정
             aroundRoom.position = position;
             // 방 활성화 상태 설정
@@ -273,7 +293,6 @@ public class M_MapManager : NetworkBehaviour
                     HexagonMapRoom hexagonMapRoom = hexagonMapRoomObject.GetComponent<HexagonMapRoom>();
                     // 방 타입 설정
                     hexagonMapRoom.roomType = GetRoomType();
-                    hexagonMapRoom.prevRoomType = hexagonMapRoom.roomType;
                     // 인게임 좌표계 값 설정
                     hexagonMapRoom.position = position;
                     // 방 활성화 상태값 설정
@@ -378,7 +397,6 @@ public class M_MapManager : NetworkBehaviour
                     HexagonMapRoom hexagonMapRoom = hexagonMapRoomObject.GetComponent<HexagonMapRoom>();
                     // 방 타입 설정
                     hexagonMapRoom.roomType = GetRoomType();
-                    hexagonMapRoom.prevRoomType = hexagonMapRoom.roomType;
                     // 거점지역 데이터 설정
                     hexagonMapRoom.region = region;
                     // 거점지역 구분 변수값 설정
@@ -482,6 +500,60 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
+    [Server]
+    public void StartBattle(HexagonMapRoom hexagonMapRoom)
+    {
+        if(mapBoss != null){ // 보스가 출현한 경우
+            if(hexagonMapRoom.roomType == RoomType.BOSS){ // 목적지가 보스방일 경우 -> 보스전
+                ChangeBattleScene(hexagonMapRoom);
+            }else{
+                if(hexagonMapRoom.roomType == RoomType.COMPLETE){ // 목적지가 완료된 방인 경우
+                    if(hexagonMapRoom.mapBoss == null){ 
+                        RemoveAllExistLineRenderer(); // 목적지에 보스가 없을 경우 -> 이동만 수행
+                        ChangeAllMapPlayerDestinationState(false);
+                    }else{ 
+                        ChangeBattleScene(hexagonMapRoom); // 목적지에 보스가 있을 경우 -> 보스전
+                    }
+                }else{ // 목적지가 완료되지 않은 방인 경우
+                    if(hexagonMapRoom.mapBoss != null){ 
+                        ChangeBattleScene(hexagonMapRoom); // 목적지에 보스가 있을 경우 -> 보스전
+                    }else{ 
+                        ChangeBattleScene(hexagonMapRoom); // 목적지에 보스가 없을 경우 -> 전투 혹은 이벤트 시작
+                    }
+                }
+            }
+        }else{ // 보스가 출현하지 않은 경우
+            if(hexagonMapRoom.roomType == RoomType.COMPLETE){
+                RemoveAllExistLineRenderer(); // 목적지가 완료된 방의 경우 -> 이동만 수행
+                ChangeAllMapPlayerDestinationState(false);
+            }else{
+                ChangeBattleScene(hexagonMapRoom); // 목적지가 완료되지 않은 방의 경우 -> 전투 혹은 이벤트 시작
+            }
+        }
+    }
+
+    // 보스가 위치한 방의 주변을 보스방 존으로 변경 + 보스가 지나간 방을 폐허로 변경
+    [Server]
+    public void SetRoomTypeBossRoom(HexagonMapRoom currentRoom)
+    {   
+        // 이전에 보스방이었던 곳은 모두 폐허로 변경
+        List<HexagonMapRoom> prevBossRooms = hexagonMapRooms.FindAll((room) => room.roomType == RoomType.BOSS);
+        foreach(HexagonMapRoom prevBossRoom in prevBossRooms){
+            prevBossRoom.roomType = RoomType.RUINS;
+        }
+        // 현재 보스가 위치한 방과 주위 6개의 방을 보스방으로 변경(범위를 다양하게 하도록 추후 리팩토링)
+        currentRoom.roomType = RoomType.BOSS;
+        boosZoneMapRooms.Clear();
+        boosZoneMapRooms.Add(currentRoom);
+        for(int i=0; i<6; i++){
+            HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find((room) => room.coordinate == currentRoom.coordinate + offSets[i]);
+            if(hexagonMapRoom != null){
+                hexagonMapRoom.roomType = RoomType.BOSS;
+                boosZoneMapRooms.Add(hexagonMapRoom);
+            }
+        }
+    }
+
     // 서버에서 이웃 방 검색 : hexagonMapRooms List에서 검색
     [Server]
     private HexagonMapRoom FindNeighboursForServer(int index, HexagonMapRoom currentHexagonRoom)
@@ -506,46 +578,9 @@ public class M_MapManager : NetworkBehaviour
 
     // ------------------------------------------------------------ ClientRpc Method -------------------------------------------------------------- //
     
-    // 전투 시작 이벤트 클라이언트 수신
+    // 화면 딤처리 후 전투씬으로 변경
     [ClientRpc]
-    public void StartBattle(HexagonMapRoom hexagonMapRoom)
-    {
-        if(mapBoss != null){ // 보스가 출현한 경우
-            if(currentRoom.coordinate == mapBoss.coordinate){ // 현재 플레이어들이 위치한 방과 보스의 위치가 같을 경우 -> 보스전
-                EngageBattle(hexagonMapRoom, true);
-            }else{
-                if(hexagonMapRoom.roomType == RoomType.COMPLETE){ // 목적지가 완료된 방인 경우
-                    if(hexagonMapRoom.mapBoss == null){ 
-                        RemovePathAndMapDestination(); // 목적지에 보스가 없을 경우 -> MoveToRoom함수를 통해 이동만 수행하고 맵 위치 관련 오브젝트들 비활성화
-                    }else{ 
-                        EngageBattle(hexagonMapRoom, true); // 목적지에 보스가 있을 경우 -> 보스전
-                    }
-                }else{ // 목적지가 완료되지 않은 방인 경우
-                    if(hexagonMapRoom.mapBoss != null){ 
-                        EngageBattle(hexagonMapRoom, true); // 목적지에 보스가 있을 경우 -> 보스전
-                    }else{ 
-                        EngageBattle(hexagonMapRoom, false); // 목적지에 보스가 없을 경우 -> 전투 혹은 이벤트 시작
-                    }
-                }
-            }
-        }else{ // 보스가 출현하지 않은 경우
-            if(hexagonMapRoom.roomType == RoomType.COMPLETE){
-                RemovePathAndMapDestination(); // 목적지가 완료된 방의 경우 -> MoveToRoom함수를 통해 이동만 수행하고 맵 위치 관련 오브젝트들 비활성화
-            }else{
-                EngageBattle(hexagonMapRoom, false); // 목적지가 완료되지 않은 방의 경우 -> 전투 혹은 이벤트 시작
-            }
-        }
-    }
-
-    // 맵에 사용되는 라인 랜더러와 맵 위치 화살표를 비활성화
-    private void RemovePathAndMapDestination()
-    {
-        RemoveAllExistLineRenderer(); // 라인 랜더러 비활성화
-        ChangeAllMapPlayerDestinationState(false); // 맵 위치 화살표 비활성화
-    }
-
-    // 교전 시작
-    private void EngageBattle(HexagonMapRoom hexagonMapRoom, bool isBossBattle)
+    private void ChangeBattleScene(HexagonMapRoom hexagonMapRoom)
     {
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
             // 카메라 위치 리셋
@@ -566,9 +601,10 @@ public class M_MapManager : NetworkBehaviour
             blackCurtain.gameObject.SetActive(false);
             blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
 
-            RemovePathAndMapDestination();
+            RemoveAllExistLineRenderer(); // 라인 랜더러 비활성화
+            ChangeAllMapPlayerDestinationState(false); // 맵 위치 화살표 비활성화
             if(isServer){
-                M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom, isBossBattle);
+                M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
             }
             StartCoroutine(CheckTargetObject());
         });

@@ -188,7 +188,7 @@ public class MapUI : InstanceD<MapUI>
     // 채팅 메시지 추가
     public void AppendMessage(Color color, string playerName, string message)
     {
-        chatMessage.text += $"<size=18><color={ColorUtils.ToHex(color)}>{playerName}</color></size> : {message}\n";
+        chatMessage.text += $"<size=18><color={ColorUtils.ColorToHex(color)}>{playerName}</color></size> : {message}\n";
         StartCoroutine(ScrollToBottom());
     }
 

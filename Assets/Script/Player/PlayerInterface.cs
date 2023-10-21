@@ -319,11 +319,12 @@ public class PlayerInterface : NetworkBehaviour
         if(isServer)
         {
             PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
-            foreach(PlayerInterface player in users)
-            {
+            foreach(PlayerInterface player in users){
                 if(!player.isReady) return;
             }
-            foreach(PlayerInterface player in users)player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 Flase로 되돌림 (여러군데서 사용 예정)
+            foreach(PlayerInterface player in users){
+                player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 Flase로 되돌림 (여러군데서 사용 예정)
+            }
             // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
             HexagonMapRoom hexagonMapRoom = M_MapManager.instance.GetVoteHexagonMapRoomResult();
             if(hexagonMapRoom != null){

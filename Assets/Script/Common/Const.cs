@@ -9,6 +9,7 @@ public static class Const
     public const string RoomType_Camp = "캠프";
     public const string RoomType_ItemNpc = "아이템상인";
     public const string RoomType_CardNpc = "카드상인";
+    public const string RoomType_Ruins = "폐허";
     public const string RoomType_Boss = "보스전";
 
     // Player Message Bubble
