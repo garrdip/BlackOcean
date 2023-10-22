@@ -165,7 +165,11 @@ public class HexagonMapRoom : NetworkBehaviour
     void OnChangeMapBoss(MapBoss oldValue, MapBoss newValue)
     {
         if(isServer && newValue != null){
-            M_MapManager.instance.SetRoomTypeBossRoom(this);
+            if(!isActive && isRegion){
+                return; // 활성화 되지 않은 거점지역은 보스룸 변화에서 제외
+            }else{
+                M_MapManager.instance.SetRoomTypeBossRoom(this);
+            }
         }
     }
 }

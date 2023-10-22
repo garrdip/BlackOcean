@@ -62,7 +62,10 @@ public class M_MapManager : NetworkBehaviour
     public List<HexagonMapRoom> hexagonMapRooms = new List<HexagonMapRoom>();
 
     [Header("Boss Zone HexagonMapRoom 리스트")]
-    public List<HexagonMapRoom> boosZoneMapRooms = new List<HexagonMapRoom>();
+    public List<HexagonMapRoom> bossZoneMapRooms = new List<HexagonMapRoom>();
+
+    [Header("Boss Zone 영역 범위값")]
+    public int bossZoneRange = 2;
 
     public readonly SyncList<uint> hexagonMapRoomNetIds = new SyncList<uint>(); // hexagonMapRoom 오브젝트 NetId 리스트
 
@@ -500,6 +503,7 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
+    // 방의 타입에 따라 전투 및 이벤트 진입
     [Server]
     public void StartBattle(HexagonMapRoom hexagonMapRoom)
     {
@@ -534,22 +538,22 @@ public class M_MapManager : NetworkBehaviour
 
     // 보스가 위치한 방의 주변을 보스방 존으로 변경 + 보스가 지나간 방을 폐허로 변경
     [Server]
-    public void SetRoomTypeBossRoom(HexagonMapRoom currentRoom)
+    public void SetRoomTypeBossRoom(HexagonMapRoom currentBossRoom)
     {   
         // 이전에 보스방이었던 곳은 모두 폐허로 변경
         List<HexagonMapRoom> prevBossRooms = hexagonMapRooms.FindAll((room) => room.roomType == RoomType.BOSS);
         foreach(HexagonMapRoom prevBossRoom in prevBossRooms){
             prevBossRoom.roomType = RoomType.RUINS;
         }
-        // 현재 보스가 위치한 방과 주위 6개의 방을 보스방으로 변경(범위를 다양하게 하도록 추후 리팩토링)
-        currentRoom.roomType = RoomType.BOSS;
-        boosZoneMapRooms.Clear();
-        boosZoneMapRooms.Add(currentRoom);
-        for(int i=0; i<6; i++){
-            HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find((room) => room.coordinate == currentRoom.coordinate + offSets[i]);
-            if(hexagonMapRoom != null){
-                hexagonMapRoom.roomType = RoomType.BOSS;
-                boosZoneMapRooms.Add(hexagonMapRoom);
+        // 현재 보스가 위치한 방과 주위 방을 보스방으로 변경(변경 범위는 bossZoneRange값에 따라 유동적)
+        for (int q = -bossZoneRange; q <= bossZoneRange; q++) {
+            for (int r = Mathf.Max(-bossZoneRange, -q - bossZoneRange); r <= Mathf.Min(bossZoneRange, -q + bossZoneRange); r++) {
+                Vector2Int axialCoordinates = new Vector2Int(currentBossRoom.coordinate.x + q, currentBossRoom.coordinate.y + r);
+                HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find(room => room.coordinate == axialCoordinates);
+                if (hexagonMapRoom != null) {
+                    hexagonMapRoom.roomType = RoomType.BOSS;
+                    bossZoneMapRooms.Add(hexagonMapRoom);
+                }
             }
         }
     }
@@ -663,8 +667,14 @@ public class M_MapManager : NetworkBehaviour
     public void OnChangeMapBoss(MapBoss oldValue, MapBoss newValue)
     {
         if(newValue != null){
-            M_MessageManager.instance.SetToastMessageTest("맵에 보스가 출현 했습니다.");
-            M_MessageManager.instance.ShowToastMessage();
+            M_MessageManager.instance
+                .Position(ToastPosition.Top)
+                .FadeInTime(1.5f)
+                .FadeOutTime(1.5f)
+                .MessageBoxColor(ColorUtils.HexToColor("#E700FF"))
+                .TextColor(Color.white)
+                .Text("맵에 보스가 출현 했습니다.")
+                .Show();
         }
     }
 
