@@ -80,7 +80,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     }
 
     // 토스트 메시지 출력 후 사라짐
-    public M_MessageManager Show()
+    public void Show()
     {
         canvasGroup.gameObject.SetActive(true);
         canvasGroup.DOFade(1.0f, fadeInTime).OnComplete(() => {
@@ -90,7 +90,6 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
             toastMessageText.text = string.Empty;
             });
         });
-        return this;
     }
 
     // ------------------------------------------------------------ ClientRpc Method -------------------------------------------------------------- //
