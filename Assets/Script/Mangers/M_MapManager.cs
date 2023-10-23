@@ -511,7 +511,7 @@ public class M_MapManager : NetworkBehaviour
             if(hexagonMapRoom.roomType == RoomType.BOSS){ // 목적지가 보스방일 경우 -> 보스전
                 ChangeBattleScene(hexagonMapRoom);
             }else{
-                if(hexagonMapRoom.roomType == RoomType.COMPLETE){ // 목적지가 완료된 방인 경우
+                if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION){ // 목적지가 완료된 방 또는 시작지점인 경우
                     if(hexagonMapRoom.mapBoss == null){ 
                         RemoveAllExistLineRenderer(); // 목적지에 보스가 없을 경우 -> 이동만 수행
                         ChangeAllMapPlayerDestinationState(false);
@@ -527,8 +527,8 @@ public class M_MapManager : NetworkBehaviour
                 }
             }
         }else{ // 보스가 출현하지 않은 경우
-            if(hexagonMapRoom.roomType == RoomType.COMPLETE){
-                RemoveAllExistLineRenderer(); // 목적지가 완료된 방의 경우 -> 이동만 수행
+            if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION){ // 목적지가 완료된 방 또는 시작지점인 경우 -> 이동만 수행
+                RemoveAllExistLineRenderer();
                 ChangeAllMapPlayerDestinationState(false);
             }else{
                 ChangeBattleScene(hexagonMapRoom); // 목적지가 완료되지 않은 방의 경우 -> 전투 혹은 이벤트 시작
