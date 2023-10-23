@@ -45,11 +45,13 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     {
         HideAllTabButtons();
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-        for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
-            GamePlayer gamePlayer = playerInterface.ownedPlayers[i];
-            tabButtons[i].gameObject.SetActive(true); // 제어할 플레이어가 2명 이상이면 플레이어 수만큼 탭버튼 활성화
-            tabButtons[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = gamePlayer.character.ToString();
-        }
+        if(playerInterface.ownedPlayers.Count > 1){
+            for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
+                GamePlayer gamePlayer = playerInterface.ownedPlayers[i];
+                tabButtons[i].gameObject.SetActive(true); // 제어할 플레이어가 2명 이상이면 플레이어 수만큼 탭버튼 활성화
+                tabButtons[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = gamePlayer.character.ToString();
+            }
+        }   
     }
 
     // 선택한 탭 활성화

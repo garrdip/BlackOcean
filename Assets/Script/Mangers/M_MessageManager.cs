@@ -112,8 +112,8 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     {
         M_MessageManager.instance
             .Position(ToastPosition.Bottom)
-            .MessageBoxColor(Color.white)
-            .TextColor(Color.red)
+            .MessageBoxColor(Color.red)
+            .TextColor(Color.white)
             .Text($"{oldPlayer} 님이 게임을 나갔습니다.\n{newPlayer} 님에게 권한이 이전됩니다.")
             .Show();
     }
