@@ -691,14 +691,14 @@ public class M_TurnManager : NetworkBehaviour
             if(hexagonMapRoom.roomType == RoomType.BOSS){
                 GenerateBossMonster();
                 RpcCardPrefareForBattle();
-                RpcStartBossBattle();
+                RpcStartBossBattleEvent();
             }else if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE){
                 GenerateMonster();
                 RpcCardPrefareForBattle();
-                RpcStartMonsterBattle();
+                RpcStartBattleEvent(hexagonMapRoom.roomType);
             }else{
                 GenerateNPC("NPC_Mercurius");
-                RpcStartNpcVisit();
+                RpcStartNoneBattleEvent(hexagonMapRoom.roomType);
             }
             // 전투 시작 이치 초기화 및 어빌리티 카드 생성
             foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
@@ -757,23 +757,94 @@ public class M_TurnManager : NetworkBehaviour
  
     // 보스전 시작 수신 이벤트
     [ClientRpc]
-    public void RpcStartBossBattle()
+    public void RpcStartBossBattleEvent()
     {
-        Debug.Log("========================= 보스와 전투가 시작되었습니다. =========================");
+        M_MessageManager.instance
+            .Position(ToastPosition.Top)
+            .FadeInTime(1.5f)
+            .FadeOutTime(1.5f)
+            .MessageBoxColor(ColorUtils.HexToColor("#E700FF"))
+            .TextColor(Color.white)
+            .Text("전투 : 보스")
+            .Show();
     }
 
     // 일반 몬스터 혹은 엘리트전 시작 수신 이벤트
     [ClientRpc]
-    public void RpcStartMonsterBattle()
+    public void RpcStartBattleEvent(RoomType roomType)
     {
-        Debug.Log("====== 몬스터와 전투가 시작되었습니다. ======");
+        switch(roomType)
+        {
+            case RoomType.MONSTER:
+                M_MessageManager.instance
+                    .Position(ToastPosition.Top)
+                    .FadeInTime(1.5f)
+                    .FadeOutTime(1.5f)
+                    .MessageBoxColor(Color.red)
+                    .TextColor(Color.white)
+                    .Text("전투 : 일반 몬스터")
+                    .Show();
+                break;
+            case RoomType.ELITE:
+                M_MessageManager.instance
+                    .Position(ToastPosition.Top)
+                    .FadeInTime(1.5f)
+                    .FadeOutTime(1.5f)
+                    .MessageBoxColor(Color.red)
+                    .TextColor(Color.white)
+                    .Text("전투 : 엘리트 몬스터")
+                    .Show();
+                break;
+        }
     }
 
     // 엔피씨 방문 수신 이벤트
     [ClientRpc]
-    public void RpcStartNpcVisit()
+    public void RpcStartNoneBattleEvent(RoomType roomType)
     {
-        Debug.Log("== 엔피씨를 방문했습니다. ==");
+        switch(roomType)
+        {
+            case RoomType.EVENT:
+                M_MessageManager.instance
+                    .Position(ToastPosition.Top)
+                    .FadeInTime(2.5f)
+                    .FadeOutTime(1.5f)
+                    .MessageBoxColor(Color.yellow)
+                    .TextColor(Color.white)
+                    .Text("이벤트")
+                    .Show();
+                break;
+            case RoomType.CAMP:
+                M_MessageManager.instance
+                    .Position(ToastPosition.Top)
+                    .FadeInTime(2.5f)
+                    .FadeOutTime(1.5f)
+                    .MessageBoxColor( Color.green)
+                    .TextColor(Color.white)
+                    .Text("전초기지")
+                    .Show();
+                break;
+            case RoomType.CARD_NPC:
+                M_MessageManager.instance
+                    .Position(ToastPosition.Top)
+                    .FadeInTime(2.5f)
+                    .FadeOutTime(1.5f)
+                    .MessageBoxColor(Color.magenta)
+                    .TextColor(Color.white)
+                    .Text("상점 : 카드 상인 NPC")
+                    .Show();
+                break;
+            case RoomType.ITEM_NPC:
+                M_MessageManager.instance
+                    .Position(ToastPosition.Top)
+                    .FadeInTime(2.5f)
+                    .FadeOutTime(1.5f)
+                    .MessageBoxColor(Color.blue)
+                    .TextColor(Color.white)
+                    .Text("상점 : 아이템 상인 NPC")
+                    .Show();
+                break;
+        }
     }
 
     [ClientRpc]
