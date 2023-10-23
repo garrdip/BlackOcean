@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3326656361969211397}
   - component: {fileID: 6925378521302171519}
-  - component: {fileID: 5964597693357969325}
+  - component: {fileID: 4980841496449490868}
   - component: {fileID: 3137669022907339091}
   - component: {fileID: 5445907987022947469}
   m_Layer: 0
@@ -93,7 +93,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &5964597693357969325
+--- !u!60 &4980841496449490868
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -165,7 +165,6 @@ MonoBehaviour:
     tiles: []
     regionGrade: 0
   isActive: 0
-  isComplete: 0
   previousNode: {fileID: 0}
   GCost: 0
   HCost: 0
