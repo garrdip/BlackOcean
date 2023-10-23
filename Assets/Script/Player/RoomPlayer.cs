@@ -9,7 +9,7 @@ using Steamworks;
 
 public class RoomPlayer : NetworkRoomPlayer
 {
-    [SyncVar]
+    [SyncVar(hook = nameof(OnChangedCharacter))]
     public Character character = Character.NONE;
 
     [SyncVar]
@@ -21,7 +21,7 @@ public class RoomPlayer : NetworkRoomPlayer
     [SyncVar(hook = nameof(ChangeReadyState))]
     public bool isReady = false;
 
-    [SyncVar]
+    [SyncVar(hook = nameof(OnChangedSteamID))]
     public ulong steamID;
 
     [SyncVar]
@@ -82,6 +82,35 @@ public class RoomPlayer : NetworkRoomPlayer
     void RpcReceiveChatMessage(Color color, string playerName, string message)
     {
         RoomUI.instance.AppendMessage(color, playerName, message);
+    }
+
+    void OnChangedSteamID(ulong oldVal,  ulong newVal)
+    {
+        if(M_SaveManager.instance.isSaveGame && isServer)
+        {
+            foreach(SaveDataPlayer saveDataPlayer in M_SaveManager.instance.loadData.players)
+            {
+                if(saveDataPlayer == null)return;
+                if(saveDataPlayer.ownerSteamId == newVal)
+                {
+                    ChangeSaveDataFromServer(saveDataPlayer);
+                }
+            }
+        }
+    }
+
+    [ClientRpc]
+    void ChangeSaveDataFromServer(SaveDataPlayer saveDataPlayer)
+    {
+        if(isLocalPlayer)
+        {
+            character = saveDataPlayer.character;
+        }
+    }
+
+    void OnChangedCharacter(Character oldVal, Character newVal)
+    {
+        RoomUI.instance.CMDReadyCheck();
     }
 
 }

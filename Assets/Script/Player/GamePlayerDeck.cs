@@ -103,52 +103,73 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [Server]
     public void SetInitialValue()
     {
-        currentDeckCount = 5;
-        maxShopCardCount = 6;
-        maxRewardCardCount = 3;
-        Character character = GetComponent<GamePlayer>().character;
-        switch(character){
-            case Character.GEORK:
-                for(int i = 0 ; i <8 ;i++)
+        if(M_SaveManager.instance.isSaveGame)
+        {
+            currentDeckCount = 5;
+            maxShopCardCount = 6;
+            maxRewardCardCount = 3;
+            foreach(SaveDataPlayer saveDataPlayer in M_SaveManager.instance.loadData.players)
+            {
+                if(saveDataPlayer == null)break;
+                if(saveDataPlayer.ownerSteamId == GetComponent<GamePlayer>().objectOwner.steamID)
                 {
-                    if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G3")));
-                        deck.Add(attackCard);
-                    }else{
-                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G4")));
-                        deck.Add(defenseCard);
-                    }
-                    
-                }
-                break;
-            case Character.ERIS:
-                for(int i = 0 ; i <8 ;i++)
-                {
-                    if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E0")));
-                        deck.Add(attackCard);
-                    }else{
-                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E1")));
-                        deck.Add(defenseCard);
+                    foreach(Card card in saveDataPlayer.cards)
+                    {
+                        Card savedCard = card;
+                        deck.Add(savedCard);
                     }
                 }
-                break;
-            case Character.HONGDANHYANG:
-                for(int i = 0 ; i <8 ;i++)
-                {
-                    //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
-                    //deck.Add(attackCard);
-                    if(i % 2 == 0){
-                        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
-                        deck.Add(attackCard);
-                    }else{
-                        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H3")));
-                        deck.Add(defenseCard);
+            }
+        }
+        else
+        {
+            currentDeckCount = 5;
+            maxShopCardCount = 6;
+            maxRewardCardCount = 3;
+            Character character = GetComponent<GamePlayer>().character;
+            switch(character){
+                case Character.GEORK:
+                    for(int i = 0 ; i <8 ;i++)
+                    {
+                        if(i % 2 == 0){
+                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G3")));
+                            deck.Add(attackCard);
+                        }else{
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G4")));
+                            deck.Add(defenseCard);
+                        }
+                        
                     }
-                }
-                break;
-            default:
-                break;
+                    break;
+                case Character.ERIS:
+                    for(int i = 0 ; i <8 ;i++)
+                    {
+                        if(i % 2 == 0){
+                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E0")));
+                            deck.Add(attackCard);
+                        }else{
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E1")));
+                            deck.Add(defenseCard);
+                        }
+                    }
+                    break;
+                case Character.HONGDANHYANG:
+                    for(int i = 0 ; i <8 ;i++)
+                    {
+                        //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
+                        //deck.Add(attackCard);
+                        if(i % 2 == 0){
+                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
+                            deck.Add(attackCard);
+                        }else{
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H3")));
+                            deck.Add(defenseCard);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
     

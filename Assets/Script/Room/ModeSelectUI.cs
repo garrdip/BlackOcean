@@ -37,7 +37,7 @@ public class ModeSelectUI : NetworkSingletonD<ModeSelectUI>
     }
     public void SelectLevel(GameLevel level)
     {
-        if(isServer)
+        if(isServer && !M_SaveManager.instance.isSaveGame)
         {
             gameLevel = level;
         }

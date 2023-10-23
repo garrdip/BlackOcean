@@ -29,6 +29,24 @@ public class GamePlayer : NetworkBehaviour
         if(isLocalPlayer)
             selectOrder = num;
     }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        if(M_SaveManager.instance.isSaveGame)
+        {
+            foreach(SaveDataPlayer saveDataPlayer in M_SaveManager.instance.loadData.players)
+            {
+                if(saveDataPlayer == null)break;
+                if(saveDataPlayer.ownerSteamId == objectOwner.steamID)
+                {
+                    HP = saveDataPlayer.HP;
+                    MaxHP = saveDataPlayer.MaxHP;
+                }
+            }
+        }
+    }
+
     // ------------------------------------------------------------- Command Method ------------------------------------------------------------------//
 
     // ------------------------------------------------------------- Server Method --------------------------------------------------------------------//

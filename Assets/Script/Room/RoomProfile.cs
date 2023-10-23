@@ -84,6 +84,7 @@ public class RoomProfile : MonoBehaviour
     
     public void ChangeCharacter()
     {
+        if(M_SaveManager.instance.isSaveGame)return;
         if(player != null)
         if(player.isLocalPlayer)
         {

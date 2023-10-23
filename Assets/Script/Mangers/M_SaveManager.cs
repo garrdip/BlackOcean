@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using Mirror;
 
-public class M_SaveManager : SingletonD<M_SaveManager>
+public class M_SaveManager : NetworkSingletonD<M_SaveManager>
 {
+    [SyncVar]
     public bool isSaveGame = false;
     public SaveData loadData;
 
@@ -38,7 +40,6 @@ public class M_SaveManager : SingletonD<M_SaveManager>
             foreach(Tile tile in region.tiles)
             {
                 saveDataRegion.tiles.Add(new SaveDataTile(tile));
-                
             }
             data.map.regions.Add(saveDataRegion);
         }
@@ -67,7 +68,6 @@ public class M_SaveManager : SingletonD<M_SaveManager>
         else
         {
             Debug.Log("Save File does not exist");
-
         }
     }
 }

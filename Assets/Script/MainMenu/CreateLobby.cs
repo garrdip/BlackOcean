@@ -18,7 +18,12 @@ public class CreateLobby : MonoBehaviour
 
     void HandleCreateRoom()
     {
-       M_SteamManager.instance.HostLobby(lobbyName.text,StringUtils.RemoveZWSP(password.text));
+        M_SteamManager.instance.HostLobby(lobbyName.text,StringUtils.RemoveZWSP(password.text));
+        if(StringUtils.RemoveZWSP(lobbyName.text) == "load")
+        {
+            M_SaveManager.instance.LoadGameDataFromFile();
+            M_SaveManager.instance.isSaveGame = true;
+        }
     }
     
 }

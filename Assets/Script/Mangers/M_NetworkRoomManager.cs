@@ -25,9 +25,11 @@ public class M_NetworkRoomManager : NetworkRoomManager
     public override void OnRoomClientEnter()
     {
         base.OnRoomClientEnter();
-       
+        
         RoomUI.instance.gameObject.SetActive(true);
     }
+
+    
 
     // 룸씬에서 클라연결 종료 시 룸씬의 UI들 비활성화
     // OnClientChangeScene 콜백함수가 룸씬에서 클라연결 종료이벤트를 통해 메뉴씬으로 이동시에는 호출되지 않기때문에 클라연결 종료 시 메인화면으로 가는 경우에도 룸씬의 UI들 비활성화
@@ -38,14 +40,9 @@ public class M_NetworkRoomManager : NetworkRoomManager
         //RoomUI.instance.gameObject.SetActive(false);
     }
 
-
     // 룸씬에서 게임씬으로 넘어갈때 룸씬의 플레이어 오브젝트와 게임씬의 플레이어 오브젝트의 정보들을 동기화
     public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject playerInteface)
     {
-        if(M_SaveManager.instance.isSaveGame)
-        {
-            Debug.Log("Save Game Player Gen");
-        }
         playerInteface.GetComponent<PlayerInterface>().character = roomPlayer.GetComponent<RoomPlayer>().character;
         playerInteface.GetComponent<PlayerInterface>().selectOrder = (int)roomPlayer.GetComponent<RoomPlayer>().order; //int => PlayOder Type으로 변경 필요
         playerInteface.GetComponent<PlayerInterface>().steamPersonaName = roomPlayer.GetComponent<RoomPlayer>().steamPersonaName;
