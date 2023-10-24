@@ -24,7 +24,13 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public CardCtrlArrow cardCtrlArrow; // 현재 소환된 카드 화살표
 
     [SyncVar]
+    public AbilityButton abilityButton; // 현재 소환된 어빌리티 버튼
+
+    [SyncVar]
     public AbilityCtrlArrow abilityCtrlArrow; // 현재 소환된 어빌리티 화살표
+
+    [SyncVar]
+    public CardOnHand abilityCard; // 현재 소환된 어빌리티 카드
 
     public readonly SyncList<Card> deck =  new SyncList<Card>(); // 댁 총괄 데이터
 
@@ -47,11 +53,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public List<CardOnHand> destroyCardList = new List<CardOnHand>();
 
-    [SyncVar]
-    public CardOnHand abilityCard;
 
-    [SyncVar]
-    public AbilityButton abilityButton;
 
     public override void OnStartServer()
     {

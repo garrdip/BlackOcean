@@ -11,7 +11,7 @@ public class PlayerInterfaceServer : NetworkBehaviour
 
     // ------------------------------------------------------------- Command Method ------------------------------------------------------------------//
 
-    // 현재 선택된 플레이어 소유의 오브젝트들 생성(CardPocket, CardArrow, AbilityArrow, MapPlayerPiece, MapPlayerDestination)
+    // 현재 선택된 플레이어 소유의 오브젝트들 생성(CardPocket, CardArrow, AbilityButton, AbilityArrow, MapPlayerPiece, MapPlayerDestination)
     [Command]
     public void GenerateGamePlayerOwnedObjects(GamePlayer gamePlayer)
     {
