@@ -101,6 +101,11 @@ public class M_MapManager : NetworkBehaviour
         }
     }
 
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
     /*
     // 테스트용 : 마우스 오른쪽 버튼 누를 시 맵 생성(HexagonMap 프리팹의 충돌체를 3D용인 boxCollider로 교체해야 Raycast 가능)
     void Update()

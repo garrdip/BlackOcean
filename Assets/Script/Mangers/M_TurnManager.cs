@@ -53,6 +53,11 @@ public class M_TurnManager : NetworkBehaviour
     이후 : 모든 플레이어 및 몬스터
     */
     
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+    
     // Turn 관리는 서버
     [SyncVar]
     public BattleTurn Phase;

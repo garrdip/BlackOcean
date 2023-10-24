@@ -79,6 +79,11 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
     void Start()
     {
         InitCardConfigValue();
