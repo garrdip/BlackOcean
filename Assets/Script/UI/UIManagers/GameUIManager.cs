@@ -102,11 +102,11 @@ public class GameUIManager : SingletonD<GameUIManager>
     // 채팅 메시지 전송
     public void SendChatMessage(string input)
     {
-        if (NetworkClient.connection != null && !string.IsNullOrWhiteSpace(messageInput.text)){
+        if(NetworkClient.connection != null && !string.IsNullOrWhiteSpace(messageInput.text)){
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
             playerInterface.CmdSendChatMessageGameScene(messageInput.text.Trim());
             messageInput.ActivateInputField();
-            messageInput.text = string.Empty;;
+            messageInput.text = string.Empty;
         }
     }
 

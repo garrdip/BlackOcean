@@ -15,12 +15,19 @@ public enum ToastPosition
 
 public class M_MessageManager : NetworkSingletonD<M_MessageManager>
 {
+    public GameObject toastMessageCanvas;
     public CanvasGroup canvasGroup;
     public Image toastMessageContainer;
     public TextMeshProUGUI toastMessageText;
     public float fadeInTime = 1.0f;
     public float fadeOutTime = 1.0f;
 
+
+    protected override void Awake()
+    {
+        base.Awake();
+        DontDestroyOnLoad(toastMessageCanvas); // 토스트 메시지 캔버스 오브젝트는 모든 씬에 필요하므로, 메시지 매니저 초기화 시점에 DontDestroyOnLoad 호출
+    }
 
     // 토스트 메시지의 외곽 박스 색상 설정
     public M_MessageManager MessageBoxColor(Color color)
