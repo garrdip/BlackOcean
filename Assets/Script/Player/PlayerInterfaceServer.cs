@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Steamworks;
 using Mirror;
+using ProjectD;
 
 
 public class PlayerInterfaceServer : NetworkBehaviour
@@ -38,15 +39,27 @@ public class PlayerInterfaceServer : NetworkBehaviour
         NetworkServer.Spawn(cardCtrlArrowObject, connectionToClient);
         gamePlayerDeck.cardCtrlArrow = cardCtrlArrowObject.GetComponent<CardCtrlArrow>();
 
-        // 어빌리티 화살표 생성 초기 위치는 화면 밖
-        Vector3 abilityArrowSpawnPosition = new Vector3(-100f, 0f, 0f);
-        // 어빌리티 화살표 인디케이터 오브젝트 생성
-        GameObject abilityArrowObject = Instantiate(
-            networkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowEmitter")),
-            abilityArrowSpawnPosition,
-            Quaternion.identity);
-        NetworkServer.Spawn(abilityArrowObject, connectionToClient);
-        gamePlayerDeck.abilityCtrlArrow = abilityArrowObject.GetComponent<AbilityCtrlArrow>();
+        // 단향 캐릭터인 경우 어빌리티 버튼 + 어빌리티 화살표 생성
+        if(gamePlayer.character == Character.HONGDANHYANG){
+            // 생성 초기 위치는 화면 밖
+            Vector3 spawnPosition = new Vector3(-100f, 0f, 0f);   
+
+            // 어빌리티 버튼 생성
+            GameObject abilityButtonObject = Instantiate(
+                networkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityButton")),
+                spawnPosition,
+                Quaternion.identity);
+            NetworkServer.Spawn(abilityButtonObject, connectionToClient);
+            gamePlayerDeck.abilityButton = abilityButtonObject.GetComponent<AbilityButton>();
+
+            // 어빌리티 화살표 인디케이터 오브젝트 생성
+            GameObject abilityArrowObject = Instantiate(
+                networkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityArrowEmitter")),
+                spawnPosition,
+                Quaternion.identity);
+            NetworkServer.Spawn(abilityArrowObject, connectionToClient);
+            gamePlayerDeck.abilityCtrlArrow = abilityArrowObject.GetComponent<AbilityCtrlArrow>();
+        }
 
         // MapPlayerPiece 오브젝트 생성
         GamePlayerMap gamePlayerMap = gamePlayer.GetComponent<GamePlayerMap>();

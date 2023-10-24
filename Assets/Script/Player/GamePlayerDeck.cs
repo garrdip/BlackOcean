@@ -50,6 +50,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public CardOnHand abilityCard;
 
+    [SyncVar]
+    public AbilityButton abilityButton;
+
     public override void OnStartServer()
     {
         SetInitialValue();
@@ -257,17 +260,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
-
-    [Command]
-    public void CmdGenerateAbilityButton()
-    {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        GameObject abilityButton = Instantiate(
-            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityButton")),
-            new Vector3(-100,0,0),
-            Quaternion.identity);
-        NetworkServer.Spawn(abilityButton, connectionToClient);
-    }
 
     // deck에 추가
     [Command]

@@ -5,14 +5,12 @@ using Mirror;
 
 public class AbilityButton : NetworkBehaviour
 {
-    GamePlayerDeck mydeck;
-
     public override void OnStartClient()
     {
-        if(isOwned)
+        if(isOwned){
             transform.position = new Vector3(16,-5,0);
-
-        mydeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        }
+        gameObject.SetActive(false); // 초기 시점에 버튼 비활성화
     }
 
     void OnMouseDrag()
@@ -22,7 +20,7 @@ public class AbilityButton : NetworkBehaviour
 
     void OnMouseDown()
     {
-        mydeck.abilityCtrlArrow.InitCardCtrlArrow(this);
+        NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().abilityCtrlArrow.InitCardCtrlArrow(this);
     }
 
     // 드래그 후 마우스 땔때

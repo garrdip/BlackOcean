@@ -711,7 +711,6 @@ public class M_TurnManager : NetworkBehaviour
                 gamePlayerDeck.SetInitialIchi();
                 if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.SpawnAbilityCardRPC();
             }
-            RpcGenerateAbilityButton();
             StartCoroutine(WaitingForPlayer(hexagonMapRoom));
         }
     }
@@ -741,23 +740,12 @@ public class M_TurnManager : NetworkBehaviour
 
     // -------------------------------------------------------------------- ClientRpc Method -----------------------------------------------------------------//
 
-    // 플레이어 패시브 버튼 생성 요청
-    [ClientRpc]
-    void RpcGenerateAbilityButton()
-    {
-        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character == Character.HONGDANHYANG)
-            NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().CmdGenerateAbilityButton();
-    }
-
     // 전투에 필요한 카드 준비 요청
     [ClientRpc]
     void RpcCardPrefareForBattle()
     {
-        // 플레이어 카드 셔플 수행후 PrefareDeck에 추가 요청
-        if(NetworkClient.connection != null && NetworkClient.active){
-            foreach(GamePlayer gamePlayer in NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers)
-                gamePlayer.GetComponent<GamePlayerDeck>().CmdAddPrefareDeckWithShuffle();
-        }
+        M_CardManager.instance.PrefareCardWithSuffle(); // 카드데이터 셔플 수행후 PrefareDeck에 추가
+        M_CardManager.instance.ChangeAbilityButtonActiveState(true); // 어빌리티 버튼 활성화
     }
  
     // 보스전 시작 수신 이벤트
@@ -948,6 +936,7 @@ public class M_TurnManager : NetworkBehaviour
     {
         M_CardManager.instance.RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck(); // 현재 플레이어 손에 있던 카드들을 삭제, 삭제 시 Trash Deck에 추가하지 않음.
         M_CardManager.instance.RemoveAllCurrentPlayerPrefareDeckAndTrashDeck(); // 플레이어의 PrefareDeck, TrashDeck 삭제
+        M_CardManager.instance.ChangeAbilityButtonActiveState(false); // 어빌리티 버튼 비활성화
         ReturnToMap();
     }
 

@@ -377,6 +377,30 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
+    // 로컬 플레이어 카드 셔플 수행후 PrefareDeck에 추가 요청
+    public void PrefareCardWithSuffle()
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            foreach(GamePlayer gamePlayer in NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers){
+                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
+            }
+        }
+    }
+
+    // 어빌리티 버튼 활성화 상태 변경
+    public void ChangeAbilityButtonActiveState(bool isActive)
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            foreach(GamePlayer gamePlayer in NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers){
+                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                if(gamePlayerDeck.abilityButton != null){
+                    gamePlayerDeck.abilityButton.gameObject.SetActive(isActive);
+                }
+            }
+        }
+    }
+
     // CardOnHand의 상태변수값 모두 변경
     public void ResetCardAllState(CardOnHand cardOnHand, bool state)
     {
