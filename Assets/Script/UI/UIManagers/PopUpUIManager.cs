@@ -100,7 +100,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }
     }
 
-    // PrefareDeck + TrashDeck 정보 팝업 활성화, 비활성화
+    // PrefareDeck + TrashDeck 정보 팝업 비활성화
     public void HandleHideDeckListPopUp()
     {
         if(isOpenPrefareDeckPopUp){
