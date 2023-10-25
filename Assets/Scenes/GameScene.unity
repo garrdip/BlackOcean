@@ -10780,9 +10780,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1581196593}
-        m_TargetAssemblyTypeName: DeckListPopUp, Assembly-CSharp
-        m_MethodName: HandleReturnGame
+      - m_Target: {fileID: 204350123}
+        m_TargetAssemblyTypeName: PopUpUIManager, Assembly-CSharp
+        m_MethodName: HandleHideDeckListPopUp
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11768,6 +11768,7 @@ MonoBehaviour:
   deckList: []
   canvasGroup: {fileID: 1581196594}
   deckListPopUpGrid: {fileID: 213638931}
+  returnGameButton: {fileID: 1478530160}
 --- !u!225 &1581196594
 CanvasGroup:
   m_ObjectHideFlags: 0

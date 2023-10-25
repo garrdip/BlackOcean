@@ -100,6 +100,20 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }
     }
 
+    // PrefareDeck + TrashDeck 정보 팝업 활성화, 비활성화
+    public void HandleHideDeckListPopUp()
+    {
+        if(isOpenPrefareDeckPopUp){
+            if(onChangeDeckListPopUpHide != null){
+                onChangeDeckListPopUpHide.Invoke(DeckListType.PREFARE_DECK);
+            }
+        }else{
+            if(onChangeDeckListPopUpHide != null){
+                onChangeDeckListPopUpHide.Invoke(DeckListType.TRASH_DECK);
+            }
+        }
+    }
+
     // CardOnHand 제거 팝업 활성화
     public void HandleShowCardOnHandRemovePopUp()
     {
