@@ -239,10 +239,10 @@ public class M_CardManager : NetworkBehaviour
                 // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행
                 if (gamePlayerDeck.isOwned)
                 {
-                    cardOnHand.isMoving = false;
                     GameUIManager.instance.buttonEndTurn.interactable = true;
                     sequence.Kill();
                     NetworkClient.connection.identity.GetComponent<PlayerInterface>().destroyCards.Add(cardOnHand);
+                    ChangeCurrentPlayerCardOnHandState(false);
                 }
             });
         }
@@ -264,9 +264,9 @@ public class M_CardManager : NetworkBehaviour
                 .SetEase(Ease.OutCirc)
                 .SetDelay(delay)
                 .OnComplete(() => {
-                    cardOnHand.isMoving = false;
-                    gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
                     GameUIManager.instance.buttonEndTurn.interactable = true;
+                    gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
+                    ChangeCurrentPlayerCardOnHandState(false);
                 });
     }
 
