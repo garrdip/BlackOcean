@@ -377,14 +377,14 @@ public partial class GamePlayerDeck : NetworkBehaviour
    
     IEnumerator ReturnToCardOnHandCoroutine(CardOnHand cardOnHand)
     {
-        GamePlayer gamePlayer = GetComponent<GamePlayer>();
+        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         while(true)
         {
-            if(gamePlayer.destroyCards.FindIndex(x => x == cardOnHand) != -1)
+            if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) != -1)
             {
                 cardOnHand.isUsed = false;
                 M_CardManager.instance.ResetCardAllState(cardOnHand,false);
-                GetComponent<GamePlayer>().destroyCards.Remove(cardOnHand);
+                playerInterface.destroyCards.Remove(cardOnHand);
                 break;
             }
             yield return new WaitForSeconds(0.01f);
@@ -402,10 +402,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     IEnumerator ServerDestroyCardOnHand()
     {
-        // TODO : 이부분은 한번만 호출되서 플레이어 변경을 추적하지 못하기 때문에 다른 캐릭터 골라서 카드 사용시 cardOnHands Remove가 되지않아 카드정렬이 안됨. 어떻게 바꿀지 TBD
-        PlayerInterface playerInterface = GetComponent<GamePlayer>().objectOwner;
         while(true)
         {
+            PlayerInterface playerInterface = GetComponent<GamePlayer>().objectOwner;
             yield return new WaitForSeconds(0.01f);
             for(int i = 0 ;i < destroyCardList.Count ; i++)
             {
@@ -488,7 +487,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [ClientRpc]
     public void ReturnToCardOnHand(GamePlayerDeck target,CardOnHand cardOnHand)
     {
-        if(target == this)
+        if(target == this && isOwned)
             StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
     }
     

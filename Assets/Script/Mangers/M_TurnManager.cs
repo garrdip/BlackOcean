@@ -354,6 +354,9 @@ public class M_TurnManager : NetworkBehaviour
     public void NoneBattleEnd()
     {
         EachPlayerNoneBattleEnd();
+        foreach(PlayerInterface player in FindObjectsOfType<PlayerInterface>()){
+            player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 Flase로 되돌림 (여러군데서 사용 예정)
+        }
     }
 
     [Server]
