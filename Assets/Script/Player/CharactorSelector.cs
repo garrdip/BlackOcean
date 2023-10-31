@@ -44,7 +44,8 @@ public class CharactorSelector : MonoBehaviour
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
         if(
-            gamePlayer.isOwned // 선택하려는 플레이어가 소유권이 있는 경우
+            playerInterface.isServer // 서버 권한인 경우
+            && gamePlayer.isOwned // 선택하려는 플레이어가 소유권이 있는 경우
             && playerInterface.ownedPlayers.Count > 1 // 소유권한이 있는 플레이어수가 2명 이상인 경우
             && !M_CardManager.instance.isArrowActive // 화살표가 비활성화 상태인 경우
             && !PopUpUIManager.instance.battleResultPopUp.activeSelf // 전투보상팝업이 비활성화인 경우

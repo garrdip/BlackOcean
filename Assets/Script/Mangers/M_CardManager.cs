@@ -28,8 +28,12 @@ public class M_CardManager : NetworkBehaviour
     public float symmetryPositionX_Range;
 
     [Header("카드 대칭 위치 Y값 범위")]
-    [Range(-5.0f, 5.0f)]
+    [Range(0.01f, 0.5f)]
     public float symmetryPositionY_Range;
+
+    [Header("카드 그룹 곡률 범위")]
+    [Range(0.01f, 0.3f)]
+    public float symmetryCurveRange;
 
     [Header("카드 대칭 회전값 범위")]
     [Range(-20.0f, 20.0f)]
@@ -100,9 +104,10 @@ public class M_CardManager : NetworkBehaviour
         cardOriginSize = new Vector3(1f, 1f, 1f);
         cardOverSize = cardOriginSize + new Vector3(0.45f, 0.45f, 0.45f);
         symmetryRange = 1.6f;
-        symmetryPositionX_Range = 2.0f;
-        symmetryPositionY_Range = 0.35f;
+        symmetryPositionX_Range = 3.0f;
+        symmetryPositionY_Range = 0.1f;
         symmetryRotationRange = 5.0f;
+        symmetryCurveRange = 0.03f;
         cardOnHandShiftedRange = 1.7f;
         hoveredPositionY = 2.2f;
     }
@@ -129,10 +134,13 @@ public class M_CardManager : NetworkBehaviour
                                 cardOnHand.transform.SetSiblingIndex(i); // 오브젝트 스택 순서 인덱스
 
                                 // 대칭값 계산
-                                float symmetryValue = (i - ((count - 1) / 2.0f)) * symmetryRange;
-
+                                float symmetryValue = (i - ((count - 1) / 2.0f));
+                                
                                 // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
-                                Vector3 symmetryPosition = new Vector3((symmetryValue * symmetryPositionX_Range), -Mathf.Abs(symmetryValue * symmetryPositionY_Range), 0f);
+                                float xPosition = symmetryValue * symmetryPositionX_Range;
+                                float yPosition = -0.5f - (Mathf.Pow(Mathf.Abs(symmetryValue), 2f) * (symmetryPositionY_Range + ((10 - count ) * symmetryCurveRange)));
+
+                                Vector3 symmetryPosition = new Vector3(xPosition , yPosition, 0f);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
                                 cardOnHand.originPosition = symmetryPosition;
 

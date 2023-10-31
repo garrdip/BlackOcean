@@ -71,12 +71,12 @@ public class PlayerInterface : NetworkBehaviour
             {
                 if(M_SaveManager.instance.isSaveGame)
                 {
-                    M_MapManager.instance.RegenerateStartHexsagonRoom(M_SaveManager.instance.loadData); // 육각형 방 생성(진행중)
+                    M_MapManager.instance.RegenerateStartHexsagonRoom(M_SaveManager.instance.loadData); // 육각형 방 재생성
                     M_MapManager.instance.RegenerateColorRegion(M_SaveManager.instance.loadData);
                 }
                 else
                 {
-                    M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성(진행중)
+                    M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성
                     M_MapManager.instance.GenerateColorRegion();
                 }
             }
