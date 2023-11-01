@@ -37,6 +37,9 @@ public class CardOnHand : NetworkBehaviour
     // 마우스가 오브젝트 위에 있는지 여부
     public bool isMouseOver = false; 
 
+    // 마우스가 오브젝트에서 벗어난 상태 확인 여부(딜레이를 이용해 이벤트 연속 호출 방지용)
+    public bool isExitComplete = true;
+
     // 카드 오브젝트가 드래그 상태인지 여부
     public bool isDrag = false;
 
@@ -187,7 +190,7 @@ public class CardOnHand : NetworkBehaviour
     void OnMouseEnter()
     {
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
-            if(!isUsed && !isMoving && !isChoosed && !IsArrowActive() && !IsCardControllablePopUpActive()){
+            if(!isUsed && !isMoving && !isChoosed && !IsArrowActive() && !IsCardControllablePopUpActive() && isExitComplete){
                 isMouseOver = true;
                 originSortOrder = index;
                 transform.GetComponent<SortingGroup>().sortingOrder =  M_CardManager.instance.maxSortOrder;
@@ -206,8 +209,17 @@ public class CardOnHand : NetworkBehaviour
                 transform.GetComponent<SortingGroup>().sortingOrder =  originSortOrder;
                 cardOnHandCanvas.sortingOrder = originSortOrder;
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
+                StartCoroutine(MouseExitDelay());
             }
         }
+    }
+
+    // MouseExit 이벤트 딜레이 함수
+    IEnumerator MouseExitDelay()
+    {
+        isExitComplete = false;
+        yield return new WaitForSeconds(0.1f);
+        isExitComplete = true;
     }
 
     // 오브젝트에 마우스 왼쪽버튼 누를 때 이벤트
