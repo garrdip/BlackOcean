@@ -10,6 +10,8 @@ public class M_CardManager : NetworkBehaviour
 {
     public static M_CardManager Instance = null;
 
+    private const int maxCardOnHandCount = 10; // CardOnHand 최대 갯수
+
     [Header("현재 선택한 플레이어의 GamePlayerDeck 참조변수")]
     public GamePlayerDeck currentGamePlayerDeck;
 
@@ -39,6 +41,10 @@ public class M_CardManager : NetworkBehaviour
     [Range(-20.0f, 20.0f)]
     public float symmetryRotationRange;
 
+    [Header("카드 밀려나는 정도값 범위")]
+    [Range(0f, 20.0f)]
+    public float cardOnHandShiftedRange;
+
     [Header("카드 마우스 오버시 Y값")]
     public float hoveredPositionY;
 
@@ -47,9 +53,6 @@ public class M_CardManager : NetworkBehaviour
 
     [Header("카드 마우스 오버 사이즈")]
     public Vector3 cardOverSize;
-
-    [Header("카드 밀려나는 정도값 범위")]
-    public float cardOnHandShiftedRange;
 
     [Header("카드 정렬 순서 최대값")]
     public readonly int maxSortOrder = 999;
@@ -104,11 +107,11 @@ public class M_CardManager : NetworkBehaviour
         cardOriginSize = new Vector3(1f, 1f, 1f);
         cardOverSize = cardOriginSize + new Vector3(0.45f, 0.45f, 0.45f);
         symmetryRange = 1.6f;
-        symmetryPositionX_Range = 3.0f;
+        symmetryPositionX_Range = 2.3f;
         symmetryPositionY_Range = 0.1f;
         symmetryRotationRange = 5.0f;
         symmetryCurveRange = 0.03f;
-        cardOnHandShiftedRange = 1.7f;
+        cardOnHandShiftedRange = 4.5f;
         hoveredPositionY = 2.2f;
     }
 
@@ -138,7 +141,7 @@ public class M_CardManager : NetworkBehaviour
                                 
                                 // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
                                 float xPosition = symmetryValue * symmetryPositionX_Range;
-                                float yPosition = -0.5f - (Mathf.Pow(Mathf.Abs(symmetryValue), 2f) * (symmetryPositionY_Range + ((10 - count ) * symmetryCurveRange)));
+                                float yPosition = -0.5f - (Mathf.Pow(Mathf.Abs(symmetryValue), 2f) * (symmetryPositionY_Range + ((maxCardOnHandCount - count) * symmetryCurveRange)));
 
                                 Vector3 symmetryPosition = new Vector3(xPosition , yPosition, 0f);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
