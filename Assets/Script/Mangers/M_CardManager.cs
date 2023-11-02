@@ -127,9 +127,10 @@ public class M_CardManager : NetworkBehaviour
                     if(cardOnHand != null){
                         if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed){
                             if(cardOnHand.isMouseOver){
-                                Vector3 targetPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
-                                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, targetPosition, Time.deltaTime * 10f);
-                                cardOnHand.transform.localRotation = Quaternion.Lerp(cardOnHand.transform.rotation,Quaternion.Euler(0f, 0f, 0f),Time.deltaTime * 10f);
+                                Vector3 cardOverPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
+                                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, cardOverPosition, Time.deltaTime * 10f);
+                                Quaternion cardOverRotation = Quaternion.Euler(0f, 0f, 0f);
+                                cardOnHand.transform.localRotation = Quaternion.Lerp(cardOnHand.transform.rotation, cardOverRotation, Time.deltaTime * 10f);
                                 cardOnHand.transform.localScale = cardOverSize;
                             }else{
                                 cardOnHand.sortingGroup.sortingOrder = i; // 스프라이트 정렬 인덱스
@@ -142,13 +143,13 @@ public class M_CardManager : NetworkBehaviour
                                 // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
                                 float xPosition = symmetryValue * symmetryPositionX_Range;
                                 float yPosition = -0.5f - (Mathf.Pow(Mathf.Abs(symmetryValue), 2f) * (symmetryPositionY_Range + ((maxCardOnHandCount - count) * symmetryCurveRange)));
-
                                 Vector3 symmetryPosition = new Vector3(xPosition , yPosition, 0f);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
                                 cardOnHand.originPosition = symmetryPosition;
 
                                 // 회전값
-                                cardOnHand.transform.localRotation = Quaternion.Lerp(cardOnHand.transform.rotation,Quaternion.Euler(0f, 0f, -symmetryValue * symmetryRotationRange),Time.deltaTime * 10f);
+                                Quaternion symmetryRotation = Quaternion.Euler(0f, 0f, -symmetryValue * symmetryRotationRange);
+                                cardOnHand.transform.localRotation = Quaternion.Lerp(cardOnHand.transform.rotation,  symmetryRotation, Time.deltaTime * 10f);
 
                                 // 크기값
                                 cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOriginSize, Time.deltaTime * 10f);
