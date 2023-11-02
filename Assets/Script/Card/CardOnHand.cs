@@ -275,7 +275,7 @@ public class CardOnHand : NetworkBehaviour
                     }
                     else
                         totalCost = card.baseCard.cost + card.costAddition ;
-                    if(totalCost > NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().currentIchi) // 카드 코스트 계산 하는곳
+                    if(totalCost > NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().currentIchi) // 카드 코스트 계산 하는곳
                     {
                         isDrag = false;
                         isMoving = false;
