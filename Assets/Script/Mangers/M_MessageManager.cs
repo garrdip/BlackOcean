@@ -34,6 +34,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     public TextMeshProUGUI chatMessage;
     public TMP_InputField messageInput;
     public RectTransform chatMessageBoxRect;
+    public RectTransform chatMessageInputRect;
     public RectTransform buttonChatBoxRect;
     public bool isChatBoxVisible = false; // 채팅창 활성화 상태 여부
     public bool isMouseOnChatBox = false; // 현재 마우스 포인터가 채팅메시지 박스 위에 있는지 여부
@@ -156,9 +157,11 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         isChatBoxVisible = !isChatBoxVisible;
         if(isChatBoxVisible){
             chatMessageBoxRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
+            chatMessageInputRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
             buttonChatBoxRect.DOAnchorPosX((chatMessageBoxRect.rect.width) + (buttonChatBoxRect.rect.width / 2), 0.5f);
         }else{
             chatMessageBoxRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
+            chatMessageInputRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
             buttonChatBoxRect.DOAnchorPosX((buttonChatBoxRect.rect.width / 2), 0.5f);
         }
     }
