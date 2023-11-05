@@ -600,7 +600,6 @@ public class M_MapManager : NetworkBehaviour
             roommaps.SetActive(false);
             game.SetActive(true);
             GameUIManager.instance.GameUI.gameObject.SetActive(true);
-            GameUIManager.instance.ChatUI.gameObject.SetActive(true);
             GameUIManager.instance.GameBackGround.gameObject.SetActive(true);
 
             // 임시 테스트용 UI

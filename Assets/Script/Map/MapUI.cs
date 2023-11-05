@@ -15,17 +15,10 @@ public class MapUI : InstanceD<MapUI>
 
     [Header("UI 컴포넌트")]
     public Button readyButton;
-    public Scrollbar scrollbar;
-    public TextMeshProUGUI chatMessage;
-    public TMP_InputField messageInput;
-    public ScrollRect scrollRect;
     public Image regionPopUpHeader;
     public TextMeshProUGUI textRegionGradeInfo;
     public TextMeshProUGUI textRegionDesc;
     public TextMeshProUGUI textTotalActionCostCount;
-
-    [Header("현재 마우스 포인터가 채팅메시지 박스 위에 있는지 여부")]
-    public bool isMouseOnChatBox = false;
 
     [Header("맵 화면의 카메라 줌 조절 변수값")]
     [SerializeField]
@@ -55,10 +48,7 @@ public class MapUI : InstanceD<MapUI>
     { 
         if(Application.isFocused){
             //HandleCameraEdgeScrolling();
-            HandleChatMessageInput();
-            if(isMouseOnChatBox){
-                HandleChatMessageScrollBarByMouseWheel();
-            }else{
+            if(!M_MessageManager.instance.isMouseOnChatBox){
                 HandleMapCameraByMouseWheel();
             }
         }
@@ -93,22 +83,6 @@ public class MapUI : InstanceD<MapUI>
         mapBackground.transform.position += moveDir * cameraMoveSpeed * Time.deltaTime; // 맵 배경 이동
     }
 
-    // Enter 키로 채팅 메시지 입력
-    private void HandleChatMessageInput()
-    {
-        if(Input.GetKeyDown(KeyCode.Return)){
-            SendChatMessage(messageInput.text);
-            messageInput.ActivateInputField();       
-        }
-    }
-
-    // 마우스 휠로 채팅 메시지 스크롤 이동
-    private void HandleChatMessageScrollBarByMouseWheel()
-    {
-        float scrollDelta = Input.GetAxis("Mouse ScrollWheel");
-        float scrollValue = scrollDelta * 1f;
-        scrollRect.verticalNormalizedPosition += scrollValue;
-    }
 
     // 마우스 휠로 카메라 줌인, 줌아웃
     private void HandleMapCameraByMouseWheel()
@@ -174,33 +148,6 @@ public class MapUI : InstanceD<MapUI>
         UpdateProfile();
     }
 
-    // 채팅 메시지 전송
-    public void SendChatMessage(string input)
-    {
-        if(NetworkClient.connection != null && !string.IsNullOrWhiteSpace(messageInput.text)){
-           PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-           playerInterface.CmdSendChatMessage(messageInput.text.Trim());
-           messageInput.ActivateInputField();
-           messageInput.text = string.Empty;;
-        }
-    }
-
-    // 채팅 메시지 추가
-    public void AppendMessage(Color color, string playerName, string message)
-    {
-        chatMessage.text += $"<size=18><color={ColorUtils.ColorToHex(color)}>{playerName}</color></size> : {message}\n";
-        StartCoroutine(ScrollToBottom());
-    }
-
-    // 스크롤 이동
-    IEnumerator ScrollToBottom()
-    {
-        // 스크롤뷰의 컨텐츠의 크기가 변경되고 한 프레임이 끝날때까지 지연
-        yield return new WaitForEndOfFrame();
-
-        // 스크롤바를 맨 아래로 이동
-        scrollRect.normalizedPosition = new Vector2(0, 0);
-    }
 
     // 거점지역 정보 팝업 활성화 및 팝업에 표시될 데이터 세팅
     public void RegionPopUpShow(Region region)

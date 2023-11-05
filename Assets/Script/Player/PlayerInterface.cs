@@ -190,26 +190,6 @@ public class PlayerInterface : NetworkBehaviour
         NetworkServer.Spawn(cloneAvatar,connectionToClient);
     }
 
-    // 맵 씬 채팅 메시지 이벤트 송신
-    [Command]
-    public void CmdSendChatMessage(string message, NetworkConnectionToClient sender = null)
-    {
-        if (!string.IsNullOrWhiteSpace(message)){
-            string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-            RpcReceiveChatMessage(color, playerName, message.Trim());
-        }
-    }
-
-    // 전투 씬 채팅 메시지 이벤트 송신
-    [Command]
-    public void CmdSendChatMessageGameScene(string message, NetworkConnectionToClient sender = null)
-    {
-        if (!string.IsNullOrWhiteSpace(message)){
-            string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-            RpcReceiveChatMessageGameScene(color, playerName, message.Trim());
-        }
-    }
-
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
 
     [ClientRpc]
@@ -260,21 +240,6 @@ public class PlayerInterface : NetworkBehaviour
         if(netIdentity == NetworkClient.connection.identity)
             isRewardDone = false;
     }
-
-    // 전투 씬 채팅 메시지 이벤트 수신
-    [ClientRpc]
-    void RpcReceiveChatMessageGameScene(Color color, string playerName, string message)
-    {
-        GameUIManager.instance.AppendMessage(color, playerName, message);
-    }
-
-    // 맵 씬 채팅 메시지 이벤트 수신
-    [ClientRpc]
-    void RpcReceiveChatMessage(Color color, string playerName, string message)
-    {
-        MapUI.instance.AppendMessage(color, playerName, message);
-    }
-
 
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
     

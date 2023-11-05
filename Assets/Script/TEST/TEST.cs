@@ -5,9 +5,7 @@ using UnityEngine.UI;
 
 public class TEST : MonoBehaviour
 {
-    public GameObject gameSceneChatBox;
     public Button buttonEnhance;
-    public Button buttonChangeChatBoxState;
     public Button buttonTranfrom;
     public bool isChatBoxActive;
 
@@ -15,7 +13,6 @@ public class TEST : MonoBehaviour
     {
         isChatBoxActive = true;
         buttonEnhance.onClick.AddListener(() => TestEnhance());
-        buttonChangeChatBoxState.onClick.AddListener(() => TestChatBoxState());
         buttonTranfrom.onClick.AddListener(() => TestTransform());
 
     }
@@ -32,12 +29,6 @@ public class TEST : MonoBehaviour
             tar.GainBuff(ProjectD.BuffType.ICHI_ATTACK,3,false,false,false,tar);
             tar.GainBuff(ProjectD.BuffType.ICHI_DEFENSE,3,false,false,false,tar);
         }
-    }
-
-    void TestChatBoxState()
-    {
-        isChatBoxActive = !isChatBoxActive;
-        gameSceneChatBox.SetActive(isChatBoxActive);
     }
 
     void TestTransform()

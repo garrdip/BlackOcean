@@ -67,23 +67,6 @@ public class RoomPlayer : NetworkRoomPlayer
 
     }
 
-    // 채팅 메시지 이벤트 송신
-    [Command]
-    public void CmdSendChatMessage(string message, NetworkConnectionToClient sender = null)
-    {
-        if(!string.IsNullOrWhiteSpace(message)){
-            string playerName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-            RpcReceiveChatMessage(color, playerName, message.Trim());
-        }
-    }
-
-    // 채팅 메시지 이벤트 수신
-    [ClientRpc]
-    void RpcReceiveChatMessage(Color color, string playerName, string message)
-    {
-        RoomUI.instance.AppendMessage(color, playerName, message);
-    }
-
     void OnChangedSteamID(ulong oldVal,  ulong newVal)
     {
         if(M_SaveManager.instance.isSaveGame && isServer)
