@@ -96,7 +96,7 @@ public class M_CardManager : NetworkBehaviour
         InitCardConfigValue();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         SetCardOnHandPositionSymmetry();
     }

@@ -134,7 +134,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             Character character = GetComponent<GamePlayer>().character;
             switch(character){
                 case Character.GEORK:
-                    for(int i = 0 ; i <8 ;i++)
+                    for(int i = 0; i < 8; i++)
                     {
                         if(i % 2 == 0){
                             Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G3")));
@@ -147,7 +147,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     }
                     break;
                 case Character.ERIS:
-                    for(int i = 0 ; i <8 ;i++)
+                    for(int i = 0; i < 8; i++)
                     {
                         if(i % 2 == 0){
                             Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E0")));
@@ -159,7 +159,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     }
                     break;
                 case Character.HONGDANHYANG:
-                    for(int i = 0 ; i <8 ;i++)
+                    for(int i = 0; i < 8; i++)
                     {
                         //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
                         //deck.Add(attackCard);
