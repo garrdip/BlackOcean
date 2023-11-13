@@ -51,7 +51,11 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     {
         if(Input.GetKeyDown(KeyCode.Return)){
             messageInput.ActivateInputField();
-            CmdSendChatMessage(messageInput.text);
+            if(isChatBoxVisible){
+                CmdSendChatMessage(messageInput.text); // 채팅창이 활성화 상태에서 엔터키를 누르면 채팅 메시지 전송
+            }else{
+                ChangeChatBoxVisibileState(); // 채팅창이 비활성화 상태에서 엔터키 누르면 채팅창 활성화
+            }
         }
         if(isMouseOnChatBox){
             HandleChatMessageScrollBarByMouseWheel();
