@@ -25,8 +25,6 @@ public class RoomUI : InstanceD<RoomUI>
     }
     void Start()
     {
-        M_MessageManager.instance.chatContainer.SetActive(true); // 룸씬 진입시 채팅창 활성화
-        M_MessageManager.instance.isChatBoxVisible = true;
         buttonReady.onClick.AddListener(() => HandleRadeyState());
         ExitButton.onClick.AddListener(() => HandleBackToMainScene());
     }
