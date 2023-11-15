@@ -227,6 +227,7 @@ public class SpawnedMonster : NetworkBehaviour
                         M_TurnManager.instance.StartAnimation(tar,0,"Defense0",false);
                         break;
                     case Character.ERIS :
+                        M_TurnManager.instance.StartAnimation(tar,0,tar.GetErisMode() + "Defense0",false);
                         break;
                     case Character.HONGDANHYANG :
                         M_TurnManager.instance.StartAnimation(tar,0,"Defense",false);

@@ -451,7 +451,6 @@ public class TargetObject : NetworkBehaviour
                     track =  anim.state.SetAnimation(1,"VAniRArm1",false);
                 track.MixBlend = Spine.MixBlend.Add;
                 track.Alpha = 1f;
-                Debug.Log("Right Hand Action!");
             }
             haedTimer -= 0.1f;
             lbTimer -= 0.1f;
@@ -481,7 +480,6 @@ public class TargetObject : NetworkBehaviour
         // 플레이어 아바타의 경우 이곳에서 아이들 애니메이션 처리
         if(objectType == ObjectType.PLAYER)
         {
-            Debug.Log(trackEntry.Animation.Name + " Animation END" + trackEntry.TrackIndex);
             if( trackEntry.Animation.Name != "Eye" && !trackEntry.Animation.Name.Contains("Idle") && trackEntry.TrackIndex == 0)
             {
                 anim.state.ClearTrack(0);
