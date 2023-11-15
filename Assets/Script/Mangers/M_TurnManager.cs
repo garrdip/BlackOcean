@@ -755,6 +755,7 @@ public class M_TurnManager : NetworkBehaviour
     [ClientRpc]
     public void RpcStartBossBattleEvent()
     {
+        /*
         M_MessageManager.instance
             .Position(ToastPosition.Top)
             .FadeInTime(1.5f)
@@ -763,12 +764,14 @@ public class M_TurnManager : NetworkBehaviour
             .TextColor(Color.white)
             .Text("전투 : 보스")
             .Show();
+            */
     }
 
     // 일반 몬스터 혹은 엘리트전 시작 수신 이벤트
     [ClientRpc]
     public void RpcStartBattleEvent(RoomType roomType)
     {
+        /*
         switch(roomType)
         {
             case RoomType.MONSTER:
@@ -792,12 +795,14 @@ public class M_TurnManager : NetworkBehaviour
                     .Show();
                 break;
         }
+        */
     }
 
     // 엔피씨 방문 수신 이벤트
     [ClientRpc]
     public void RpcStartNoneBattleEvent(RoomType roomType)
     {
+        /*
         switch(roomType)
         {
             case RoomType.EVENT:
@@ -841,6 +846,7 @@ public class M_TurnManager : NetworkBehaviour
                     .Show();
                 break;
         }
+        */
     }
 
     [ClientRpc]

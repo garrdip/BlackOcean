@@ -670,6 +670,7 @@ public class M_MapManager : NetworkBehaviour
     // 맵 보스 변경 이벤트 수신
     public void OnChangeMapBoss(MapBoss oldValue, MapBoss newValue)
     {
+        /*
         if(newValue != null){
             M_MessageManager.instance
                 .Position(ToastPosition.Top)
@@ -680,6 +681,7 @@ public class M_MapManager : NetworkBehaviour
                 .Text("맵에 보스가 출현 했습니다.")
                 .Show();
         }
+        */
     }
 
     // ------------------------------------------------------------ Normal Method -------------------------------------------------------------- //

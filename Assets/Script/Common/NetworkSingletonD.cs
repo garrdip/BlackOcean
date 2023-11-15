@@ -15,15 +15,6 @@ public class NetworkSingletonD<T> : NetworkBehaviour where T : NetworkBehaviour
             if (Instance == null)
             {
                 Instance = FindObjectOfType<T>();
-
-                if (Instance == null)
-                {
-                    GameObject singletonObject = new GameObject();
-                    Instance = singletonObject.AddComponent<T>();
-                    singletonObject.name = typeof(T).ToString() + " (Singleton)";
-
-                    DontDestroyOnLoad(singletonObject);
-                }
             }
 
             return Instance;

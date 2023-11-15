@@ -65,10 +65,33 @@ public class RoomPlayer : NetworkRoomPlayer
                 image.Add(uploadableImage[i]);
         }
 
+        if(isServer)
+        {
+            GenerateManagers();
+        }
+    }
+
+    public void GenerateManagers()
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+       
+        GameObject loadingManager = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("M_LoadingManager")),
+                Vector3.zero,
+                Quaternion.identity
+        );
+        NetworkServer.Spawn(loadingManager);
+        GameObject saveManager = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("M_SaveManager")),
+                Vector3.zero,
+                Quaternion.identity
+        );
+        NetworkServer.Spawn(saveManager);
     }
 
     void OnChangedSteamID(ulong oldVal,  ulong newVal)
     {
+        /*
         if(M_SaveManager.instance.isSaveGame && isServer)
         {
             foreach(SaveDataPlayer saveDataPlayer in M_SaveManager.instance.loadData.players)
@@ -80,6 +103,7 @@ public class RoomPlayer : NetworkRoomPlayer
                 }
             }
         }
+        */
     }
 
     [ClientRpc]

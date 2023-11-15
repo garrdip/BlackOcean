@@ -117,11 +117,11 @@ public class M_NetworkRoomManager : NetworkRoomManager
         if(Utils.IsSceneActive(RoomScene)){
             RoomPlayer oldRoomPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<RoomPlayer>();
             RoomPlayer newRoomPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<RoomPlayer>();
-            M_MessageManager.instance.RpcOtherPlayerDisconnectedInRoomScene(oldRoomPlayer.steamPersonaName, newRoomPlayer.steamPersonaName);
+            //M_MessageManager.instance.RpcOtherPlayerDisconnectedInRoomScene(oldRoomPlayer.steamPersonaName, newRoomPlayer.steamPersonaName);
         }else if(Utils.IsSceneActive(GameplayScene)){
             PlayerInterface oldPlayerInterface = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>();
             PlayerInterface newPlayerInterface = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>();
-            M_MessageManager.instance.RpcOtherPlayerDisconnectedInGameScene(oldPlayerInterface.steamPersonaName, newPlayerInterface.steamPersonaName);
+            //M_MessageManager.instance.RpcOtherPlayerDisconnectedInGameScene(oldPlayerInterface.steamPersonaName, newPlayerInterface.steamPersonaName);
         }
     }
 

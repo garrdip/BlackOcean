@@ -10,11 +10,11 @@ public class ChatBox : MonoBehaviour,  IPointerEnterHandler, IPointerExitHandler
 {
     public void OnPointerEnter(PointerEventData eventData)
     {
-        M_MessageManager.instance.isMouseOnChatBox = true;
+        //M_MessageManager.instance.isMouseOnChatBox = true;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        M_MessageManager.instance.isMouseOnChatBox = false;
+        //M_MessageManager.instance.isMouseOnChatBox = false;
     }
 }
