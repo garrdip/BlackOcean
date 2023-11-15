@@ -16,7 +16,7 @@ public partial class CardData : SingletonD<CardData>
     {
         if(!tar[0].isCloneData){
             yield return tempWait;
-            M_TurnManager.instance.StartAnimation(tar[0],1, tar[0].GetErisMode() + "Attack0",false);
+            M_TurnManager.instance.StartAnimation(tar[0],0, tar[0].GetErisMode() + "Attack0",false);
             yield return new WaitForSeconds(0.2f);
             StartCoroutine(tar[1].monster.OnHitAnimation());
         } 
@@ -27,7 +27,7 @@ public partial class CardData : SingletonD<CardData>
     {
         if(!tar[0].isCloneData) {
             yield return tempWait;
-            M_TurnManager.instance.StartAnimation(tar[0],1, tar[0].GetErisMode() + "Attack1",false);
+            M_TurnManager.instance.StartAnimation(tar[0],0, tar[0].GetErisMode() + "Attack1",false);
             yield return new WaitForSeconds(0.2f);
             StartCoroutine(tar[1].monster.OnHitAnimation());
         }

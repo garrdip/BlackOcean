@@ -855,7 +855,8 @@ public class M_TurnManager : NetworkBehaviour
         if(!tar.isCloneData) // Clone 데이터 검증은 Animation 스킵
         {
             SkeletonAnimation anim = tar.avatar.GetComponent<SkeletonAnimation>();
-            anim.state.SetAnimation(trackIndex,animationName,loop);
+            Spine.TrackEntry track = anim.state.SetAnimation(trackIndex,animationName,loop);
+            track.MixBlend = Spine.MixBlend.Replace;
         }
     }
 

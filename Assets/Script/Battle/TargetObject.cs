@@ -404,54 +404,59 @@ public class TargetObject : NetworkBehaviour
 
     IEnumerator ErisAdditionalMadAnimation()
     {
-        WaitForSeconds loopTime = new WaitForSeconds(0.01f);
+        WaitForSeconds loopTime = new WaitForSeconds(0.1f);
         float haedTimer = Random.Range(1f,2f);
         float lbTimer = Random.Range(1f,2f);
         float ltTimer = Random.Range(1f,2f);
         float rTimer = Random.Range(1f,2f);
+        Spine.TrackEntry track = null;
         while(erisMode == ErisMode.MAD)
         {
             if(haedTimer <= 0f)
             {
                 haedTimer = Random.Range(1f,2f);
-                Spine.TrackEntry track =  anim.state.SetAnimation(1,"VAniHead",false);
+                track =  anim.state.SetAnimation(1,"VAniHead",false);
                 track.MixBlend = Spine.MixBlend.Add;
-                Debug.Log("Action!");
+                track.Alpha = 1f;
             }
             if(lbTimer <= 0f)
             {
-                Spine.TrackEntry track = new Spine.TrackEntry();
+
                 lbTimer = Random.Range(1f,2f);
                 if(Random.Range(0,2) == 0)
                     track =  anim.state.SetAnimation(1,"VAniLBArm0",false);
                 else
                     track =  anim.state.SetAnimation(1,"VAniLBArm1",false);
                 track.MixBlend = Spine.MixBlend.Add;
+                track.Alpha = 1f;
+
             }
             if(ltTimer <= 0f)
             {
-                Spine.TrackEntry track = new Spine.TrackEntry();
+
                 ltTimer = Random.Range(1f,2f);
                 if(Random.Range(0,2) == 0)
                     track =  anim.state.SetAnimation(1,"VAniLTArm0",false);
                 else
                     track =  anim.state.SetAnimation(1,"VAniLTArm1",false);
                 track.MixBlend = Spine.MixBlend.Add;
+                track.Alpha = 1f;
             }
             if(rTimer <= 0f)
             {
-                Spine.TrackEntry track = new Spine.TrackEntry();
                 rTimer = Random.Range(1f,2f);
                 if(Random.Range(0,2) == 0)
                     track =  anim.state.SetAnimation(1,"VAniRArm0",false);
                 else
                     track =  anim.state.SetAnimation(1,"VAniRArm1",false);
                 track.MixBlend = Spine.MixBlend.Add;
+                track.Alpha = 1f;
+                Debug.Log("Right Hand Action!");
             }
-            haedTimer -= 0.01f;
-            lbTimer -= 0.01f;
-            ltTimer -= 0.01f;
-            rTimer -= 0.01f;
+            haedTimer -= 0.1f;
+            lbTimer -= 0.1f;
+            ltTimer -= 0.1f;
+            rTimer -= 0.1f;
             yield return loopTime;
         }
     }
@@ -476,9 +481,8 @@ public class TargetObject : NetworkBehaviour
         // 플레이어 아바타의 경우 이곳에서 아이들 애니메이션 처리
         if(objectType == ObjectType.PLAYER)
         {
-            if(trackEntry.Animation.Name != "Idle" && trackEntry.Animation.Name != "Eye" && trackEntry.Animation.Name != "ChIdle" && trackEntry.Animation.Name != "VIdle"
-                && trackEntry.Animation.Name != "VAniHead" && trackEntry.Animation.Name != "VAniLBArm0" && trackEntry.Animation.Name != "VAniLBArm1" && trackEntry.Animation.Name != "VAniLTArm0"
-                && trackEntry.Animation.Name != "VAniLTArm1" && trackEntry.Animation.Name != "VAniRArm0" && trackEntry.Animation.Name != "VAniRArm1" )
+            Debug.Log(trackEntry.Animation.Name + " Animation END" + trackEntry.TrackIndex);
+            if( trackEntry.Animation.Name != "Eye" && !trackEntry.Animation.Name.Contains("Idle") && trackEntry.TrackIndex == 0)
             {
                 anim.state.ClearTrack(0);
                 if(player.character == Character.ERIS)
