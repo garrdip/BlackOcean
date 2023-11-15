@@ -1,0 +1,431 @@
+00 IG Eris.png
+size:2996,2978
+filter:Linear,Linear
+pma:true
+ArmLeftBB
+bounds:1092,2821,174,127
+ArmLeftBT
+bounds:254,2641,158,202
+rotate:90
+ArmLeftTB
+bounds:30,2645,155,194
+rotate:90
+ArmLeftTT
+bounds:2598,2200,171,187
+rotate:90
+ArmRightB
+bounds:1901,2802,163,146
+ArmRightT
+bounds:816,2630,237,162
+Body
+bounds:1432,1979,199,284
+rotate:90
+BodyCenterBack
+bounds:1296,2813,135,158
+rotate:90
+BodyCenterRing
+bounds:30,2838,114,110
+BodyT
+bounds:1208,2002,194,186
+Face
+bounds:2466,2797,151,166
+rotate:90
+Hair
+bounds:1068,1733,239,285
+rotate:90
+HairMiddle
+bounds:30,2039,221,176
+HandLeftB
+bounds:2094,2802,146,146
+HandLeftT
+bounds:2270,2800,148,166
+rotate:90
+HandRight
+bounds:1484,2812,157,136
+HeadEye
+bounds:1671,2809,200,139
+HeadRing
+bounds:2473,1952,489,218
+LegLeftB
+bounds:744,2014,175,434
+rotate:90
+LegLeftT
+bounds:1083,2615,168,293
+rotate:90
+LegRightB
+bounds:281,2030,174,433
+rotate:90
+LegRightT
+bounds:486,2637,159,300
+rotate:90
+Light
+bounds:1406,2614,184,168
+P1
+bounds:733,2826,122,144
+rotate:90
+P2
+bounds:907,2822,126,155
+rotate:90
+P3
+bounds:361,2829,119,160
+rotate:90
+P4
+bounds:174,2830,118,157
+rotate:90
+P5
+bounds:551,2828,120,152
+rotate:90
+VFace
+bounds:2662,2797,151,166
+rotate:90
+VHeadRing
+bounds:30,294,489,218
+VHeadRing (1)
+bounds:30,1782,489,218
+VHeadRing (10)
+bounds:549,1766,489,218
+VHeadRing (11)
+bounds:1383,1708,489,218
+VHeadRing (12)
+bounds:1902,1708,489,218
+VHeadRing (13)
+bounds:2421,1704,489,218
+VHeadRing (14)
+bounds:30,1534,489,218
+VHeadRing (15)
+bounds:549,1518,489,218
+VHeadRing (16)
+bounds:1068,1460,489,218
+VHeadRing (17)
+bounds:1587,1460,489,218
+VHeadRing (18)
+bounds:2106,1456,489,218
+VHeadRing (19)
+bounds:30,1286,489,218
+VHeadRing (2)
+bounds:549,1270,489,218
+VHeadRing (20)
+bounds:1068,1212,489,218
+VHeadRing (21)
+bounds:1587,1212,489,218
+VHeadRing (22)
+bounds:2106,1208,489,218
+VHeadRing (23)
+bounds:30,1038,489,218
+VHeadRing (24)
+bounds:549,1022,489,218
+VHeadRing (25)
+bounds:1068,964,489,218
+VHeadRing (26)
+bounds:1587,964,489,218
+VHeadRing (27)
+bounds:2106,960,489,218
+VHeadRing (28)
+bounds:30,790,489,218
+VHeadRing (29)
+bounds:549,774,489,218
+VHeadRing (3)
+bounds:1068,716,489,218
+VHeadRing (30)
+bounds:1587,716,489,218
+VHeadRing (4)
+bounds:2106,712,489,218
+VHeadRing (5)
+bounds:30,542,489,218
+VHeadRing (6)
+bounds:549,526,489,218
+VHeadRing (7)
+bounds:1068,468,489,218
+VHeadRing (8)
+bounds:1587,468,489,218
+VHeadRing (9)
+bounds:2106,464,489,218
+VLight
+bounds:2384,2203,184,168
+VLight (1)
+bounds:1620,2611,184,168
+VLight (10)
+bounds:1834,2604,184,168
+VLight (11)
+bounds:2048,2604,184,168
+VLight (12)
+bounds:2262,2599,184,168
+VLight (13)
+bounds:2476,2599,184,168
+VLight (14)
+bounds:2690,2599,184,168
+VLight (15)
+bounds:30,2447,184,168
+VLight (16)
+bounds:244,2443,184,168
+VLight (17)
+bounds:458,2439,184,168
+VLight (18)
+bounds:672,2432,184,168
+VLight (19)
+bounds:886,2417,184,168
+VLight (2)
+bounds:1100,2417,184,168
+VLight (20)
+bounds:1314,2416,184,168
+VLight (21)
+bounds:1528,2413,184,168
+VLight (22)
+bounds:1742,2406,184,168
+VLight (23)
+bounds:1956,2406,184,168
+VLight (24)
+bounds:2170,2401,184,168
+VLight (25)
+bounds:2384,2401,184,168
+VLight (26)
+bounds:2598,2401,184,168
+VLight (27)
+bounds:30,2249,184,168
+VLight (28)
+bounds:244,2245,184,168
+VLight (29)
+bounds:458,2241,184,168
+VLight (3)
+bounds:672,2234,184,168
+VLight (30)
+bounds:886,2219,184,168
+VLight (4)
+bounds:1100,2219,184,168
+VLight (5)
+bounds:1314,2218,184,168
+VLight (6)
+bounds:1528,2215,184,168
+VLight (7)
+bounds:1742,2208,184,168
+VLight (8)
+bounds:1956,2208,184,168
+VLight (9)
+bounds:2170,2203,184,168
+VWaponRing (1)
+bounds:2625,1440,341,234
+VWaponRing (10)
+bounds:2625,1176,341,234
+VWaponRing (11)
+bounds:2625,912,341,234
+VWaponRing (12)
+bounds:2625,648,341,234
+VWaponRing (13)
+bounds:2625,384,341,234
+VWaponRing (14)
+bounds:549,262,341,234
+VWaponRing (15)
+bounds:920,204,341,234
+VWaponRing (16)
+bounds:1291,204,341,234
+VWaponRing (17)
+bounds:1662,204,341,234
+VWaponRing (18)
+bounds:2033,200,341,234
+VWaponRing (19)
+bounds:2404,120,341,234
+VWaponRing (2)
+bounds:30,30,341,234
+Wapon
+bounds:1746,1956,217,697
+rotate:90
+
+00 IG Eris_2.png
+size:2998,2846
+filter:Linear,Linear
+pma:true
+BodyLight
+bounds:1161,572,680,512
+ChLight
+bounds:1514,2017,290,271
+ChVLight
+bounds:30,850,290,271
+ChVLight (1)
+bounds:1834,2017,290,271
+ChVLight (10)
+bounds:2154,2017,290,271
+ChVLight (11)
+bounds:2474,2017,290,271
+ChVLight (12)
+bounds:30,1753,290,271
+ChVLight (13)
+bounds:350,1753,290,271
+ChVLight (14)
+bounds:670,1753,290,271
+ChVLight (15)
+bounds:990,1753,290,271
+ChVLight (16)
+bounds:1310,1716,290,271
+ChVLight (17)
+bounds:1630,1716,290,271
+ChVLight (18)
+bounds:1950,1716,290,271
+ChVLight (19)
+bounds:2270,1716,290,271
+ChVLight (2)
+bounds:2590,1716,290,271
+ChVLight (20)
+bounds:30,1452,290,271
+ChVLight (21)
+bounds:350,1452,290,271
+ChVLight (22)
+bounds:670,1452,290,271
+ChVLight (23)
+bounds:990,1452,290,271
+ChVLight (24)
+bounds:1310,1415,290,271
+ChVLight (25)
+bounds:1630,1415,290,271
+ChVLight (26)
+bounds:1950,1415,290,271
+ChVLight (27)
+bounds:2270,1415,290,271
+ChVLight (28)
+bounds:2590,1415,290,271
+ChVLight (29)
+bounds:30,1151,290,271
+ChVLight (3)
+bounds:350,1151,290,271
+ChVLight (30)
+bounds:670,1151,290,271
+ChVLight (4)
+bounds:990,1151,290,271
+ChVLight (5)
+bounds:1310,1114,290,271
+ChVLight (6)
+bounds:1630,1114,290,271
+ChVLight (7)
+bounds:1950,1114,290,271
+ChVLight (8)
+bounds:2270,1114,290,271
+ChVLight (9)
+bounds:2590,1114,290,271
+HairBack0
+bounds:350,617,504,781
+rotate:90
+VBodyLight (1)
+bounds:1871,572,680,512
+VBodyLight (2)
+bounds:1871,572,680,512
+VBodyLight (3)
+bounds:1871,572,680,512
+VBodyLight (4)
+bounds:1871,572,680,512
+VBodyLight (5)
+bounds:1871,572,680,512
+VBodyLight (10)
+bounds:30,75,680,512
+VBodyLight (11)
+bounds:740,30,680,512
+VBodyLight (12)
+bounds:1450,30,680,512
+VBodyLight (13)
+bounds:2160,30,680,512
+VWaponRing
+bounds:772,2054,341,234
+VWaponRing (20)
+bounds:30,2582,341,234
+VWaponRing (21)
+bounds:401,2582,341,234
+VWaponRing (22)
+bounds:772,2582,341,234
+VWaponRing (23)
+bounds:1143,2582,341,234
+VWaponRing (24)
+bounds:1514,2582,341,234
+VWaponRing (25)
+bounds:1885,2582,341,234
+VWaponRing (26)
+bounds:2256,2582,341,234
+VWaponRing (27)
+bounds:2627,2582,341,234
+VWaponRing (28)
+bounds:30,2318,341,234
+VWaponRing (29)
+bounds:401,2318,341,234
+VWaponRing (3)
+bounds:772,2318,341,234
+VWaponRing (30)
+bounds:1143,2318,341,234
+VWaponRing (4)
+bounds:1514,2318,341,234
+VWaponRing (5)
+bounds:1885,2318,341,234
+VWaponRing (6)
+bounds:2256,2318,341,234
+VWaponRing (7)
+bounds:2627,2318,341,234
+VWaponRing (8)
+bounds:30,2054,341,234
+VWaponRing (9)
+bounds:401,2054,341,234
+WaponRing
+bounds:1143,2054,341,234
+
+00 IG Eris_3.png
+size:2908,2647
+filter:Linear,Linear
+pma:true
+HairBack1
+bounds:740,1992,625,574
+rotate:90
+HairBack2
+bounds:30,1475,600,570
+rotate:90
+VBodyLight (14)
+bounds:30,2105,680,512
+VBodyLight (15)
+bounds:630,1450,680,512
+VBodyLight (16)
+bounds:30,765,680,512
+rotate:90
+VBodyLight (17)
+bounds:1340,1282,680,512
+rotate:90
+VBodyLight (18)
+bounds:1344,2105,680,512
+VBodyLight (19)
+bounds:572,740,680,512
+rotate:90
+VBodyLight (20)
+bounds:30,55,680,512
+rotate:90
+VBodyLight (21)
+bounds:1114,740,680,512
+VBodyLight (22)
+bounds:1824,572,680,512
+rotate:90
+VBodyLight (23)
+bounds:1882,1563,680,512
+VBodyLight (24)
+bounds:2054,2105,680,512
+VBodyLight (25)
+bounds:572,198,680,512
+VBodyLight (26)
+bounds:1282,30,680,512
+rotate:90
+VBodyLight (27)
+bounds:1824,30,680,512
+VBodyLight (28)
+bounds:2366,853,680,512
+rotate:90
+
+00 IG Eris_4.png
+size:2702,1114
+filter:Linear,Linear
+pma:true
+VBodyLight
+bounds:2160,404,680,512
+rotate:90
+VBodyLight (29)
+bounds:30,572,680,512
+VBodyLight (30)
+bounds:30,30,680,512
+VBodyLight (6)
+bounds:740,572,680,512
+VBodyLight (7)
+bounds:740,30,680,512
+VBodyLight (8)
+bounds:1450,572,680,512
+VBodyLight (9)
+bounds:1450,30,680,512

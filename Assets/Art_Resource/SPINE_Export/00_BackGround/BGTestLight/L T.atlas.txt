@@ -1,0 +1,15 @@
+L T.png
+size:4980,3902
+filter:Linear,Linear
+pma:true
+레이어 58
+bounds:3802,687,1156,1148
+rotate:90
+레이어 58 복사
+bounds:2222,1873,2011,1999
+레이어 59
+bounds:2222,137,1706,1550
+rotate:90
+용지
+bounds:30,30,3842,2162
+rotate:90

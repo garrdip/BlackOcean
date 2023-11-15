@@ -21,6 +21,7 @@ namespace ProjectD
     public enum ItemType {ARTIFACT, LEGACY}
     public enum ItemGrade {NORMAL, RARE, UNIQUE, LEGEND}
     public enum ValidTarget { NONE, ENEMY, MEMBER, TEAM }
+    public enum ErisMode {NORMAL, ANGER, MAD}
 
     public enum MoveDirection {FORWARD, BACKWARD}
     public static class StringUtils{

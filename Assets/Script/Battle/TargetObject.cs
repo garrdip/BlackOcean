@@ -75,6 +75,20 @@ public class TargetObject : NetworkBehaviour
     public int limitiChi = 6;
     [SyncVar]
     public bool isTransformed = false;
+    [SyncVar (hook = nameof(OnChangedErisMode))]
+    public ErisMode erisMode = ErisMode.NORMAL;
+
+    public string GetErisMode()
+    {
+        string retVal = null;
+        switch(erisMode)
+        {
+            case ErisMode.NORMAL : retVal = ""; break;
+            case ErisMode.ANGER : retVal = "Ch"; break;
+            case ErisMode.MAD : retVal = "V"; break;
+        }
+        return retVal;
+    }
 
     void Start()
     {
@@ -380,6 +394,68 @@ public class TargetObject : NetworkBehaviour
         buffIndicator.SetBuff(ironDemonBuff);
     }
 
+    void OnChangedErisMode(ErisMode oldVal, ErisMode newVal)
+    {
+        if(newVal == ErisMode.MAD)
+        {
+            StartCoroutine(ErisAdditionalMadAnimation());
+        }
+    }
+
+    IEnumerator ErisAdditionalMadAnimation()
+    {
+        WaitForSeconds loopTime = new WaitForSeconds(0.01f);
+        float haedTimer = Random.Range(1f,2f);
+        float lbTimer = Random.Range(1f,2f);
+        float ltTimer = Random.Range(1f,2f);
+        float rTimer = Random.Range(1f,2f);
+        while(erisMode == ErisMode.MAD)
+        {
+            if(haedTimer <= 0f)
+            {
+                haedTimer = Random.Range(1f,2f);
+                Spine.TrackEntry track =  anim.state.SetAnimation(1,"VAniHead",false);
+                track.MixBlend = Spine.MixBlend.Add;
+                Debug.Log("Action!");
+            }
+            if(lbTimer <= 0f)
+            {
+                Spine.TrackEntry track = new Spine.TrackEntry();
+                lbTimer = Random.Range(1f,2f);
+                if(Random.Range(0,2) == 0)
+                    track =  anim.state.SetAnimation(1,"VAniLBArm0",false);
+                else
+                    track =  anim.state.SetAnimation(1,"VAniLBArm1",false);
+                track.MixBlend = Spine.MixBlend.Add;
+            }
+            if(ltTimer <= 0f)
+            {
+                Spine.TrackEntry track = new Spine.TrackEntry();
+                ltTimer = Random.Range(1f,2f);
+                if(Random.Range(0,2) == 0)
+                    track =  anim.state.SetAnimation(1,"VAniLTArm0",false);
+                else
+                    track =  anim.state.SetAnimation(1,"VAniLTArm1",false);
+                track.MixBlend = Spine.MixBlend.Add;
+            }
+            if(rTimer <= 0f)
+            {
+                Spine.TrackEntry track = new Spine.TrackEntry();
+                rTimer = Random.Range(1f,2f);
+                if(Random.Range(0,2) == 0)
+                    track =  anim.state.SetAnimation(1,"VAniRArm0",false);
+                else
+                    track =  anim.state.SetAnimation(1,"VAniRArm1",false);
+                track.MixBlend = Spine.MixBlend.Add;
+            }
+            haedTimer -= 0.01f;
+            lbTimer -= 0.01f;
+            ltTimer -= 0.01f;
+            rTimer -= 0.01f;
+            yield return loopTime;
+        }
+    }
+
     // ---------------------------------------------- Spine Animation Event 처리 구간 ---------------------------------------------------//
     
     // Animation Event 총괄 처리
@@ -400,10 +476,15 @@ public class TargetObject : NetworkBehaviour
         // 플레이어 아바타의 경우 이곳에서 아이들 애니메이션 처리
         if(objectType == ObjectType.PLAYER)
         {
-            if(trackEntry.Animation.Name != "Idle" && trackEntry.Animation.Name != "Eye")
+            if(trackEntry.Animation.Name != "Idle" && trackEntry.Animation.Name != "Eye" && trackEntry.Animation.Name != "ChIdle" && trackEntry.Animation.Name != "VIdle"
+                && trackEntry.Animation.Name != "VAniHead" && trackEntry.Animation.Name != "VAniLBArm0" && trackEntry.Animation.Name != "VAniLBArm1" && trackEntry.Animation.Name != "VAniLTArm0"
+                && trackEntry.Animation.Name != "VAniLTArm1" && trackEntry.Animation.Name != "VAniRArm0" && trackEntry.Animation.Name != "VAniRArm1" )
             {
                 anim.state.ClearTrack(0);
-                anim.state.SetAnimation(0,"Idle",true);
+                if(player.character == Character.ERIS)
+                    anim.state.SetAnimation(0,GetErisMode() + "Idle",true);
+                else
+                    anim.state.SetAnimation(0,"Idle",true);
             }
         }
     }

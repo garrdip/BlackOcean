@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectD;
+using Spine;
+using Spine.Unity;
 
 public class TEST : MonoBehaviour
 {
     public Button buttonEnhance;
     public Button buttonTranfrom;
     public bool isChatBoxActive;
+    bool isIncrease = true;
 
     void Start()
     {
@@ -40,6 +44,10 @@ public class TEST : MonoBehaviour
                 tar.isTransformed = true;
                 StartCoroutine(GeorkTransfrom(tar));
             }
+            if(tar.player.character == ProjectD.Character.ERIS)
+            {
+                StartCoroutine(ErisTransform(tar));
+            }
         }
     }
 
@@ -48,5 +56,43 @@ public class TEST : MonoBehaviour
         M_TurnManager.instance.StartAnimation(tar,0,"Transform",false);
         yield return new WaitForSeconds(2.667f);
         M_TurnManager.instance.StartAnimation(tar,0,"HIdle",true);
+    }
+
+    IEnumerator ErisTransform(TargetObject tar)
+    {
+        switch(tar.erisMode)
+        {
+            case ErisMode.NORMAL :
+                isIncrease = true;
+                M_TurnManager.instance.StartAnimation(tar,0,"Change0",false);
+                yield return new WaitForSeconds(2f);
+                M_TurnManager.instance.StartAnimation(tar,0,"ChIdle",true);
+                tar.erisMode = ErisMode.ANGER;
+                Debug.Log("Action!");
+                break;
+            case ErisMode.ANGER :
+                if(isIncrease)
+                {
+                    M_TurnManager.instance.StartAnimation(tar,0,"Change1",false);
+                    yield return new WaitForSeconds(2f);
+                    M_TurnManager.instance.StartAnimation(tar,0,"VIdle",true);
+                    tar.erisMode = ErisMode.MAD;
+                }
+                else
+                {
+                    M_TurnManager.instance.StartAnimation(tar,0,"RChange0",false);
+                    yield return new WaitForSeconds(2f);
+                    M_TurnManager.instance.StartAnimation(tar,0,"Idle",true);
+                    tar.erisMode = ErisMode.NORMAL;
+                }
+                break;
+            case ErisMode.MAD :
+                isIncrease = false;
+                M_TurnManager.instance.StartAnimation(tar,0,"RChange1",false);
+                yield return new WaitForSeconds(2f);
+                M_TurnManager.instance.StartAnimation(tar,0,"ChIdle",true);
+                tar.erisMode = ErisMode.ANGER;
+                break;
+        }
     }
 }

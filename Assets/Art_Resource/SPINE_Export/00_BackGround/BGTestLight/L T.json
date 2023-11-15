@@ -1,0 +1,152 @@
+{
+"skeleton": {
+	"hash": "bgCBlREZBFI",
+	"spine": "4.1.24",
+	"x": -1004.57,
+	"y": -1461.65,
+	"width": 2724,
+	"height": 2460,
+	"images": "",
+	"audio": "C:/Users/Nullaby/Desktop/GJ_ing/spine/00_Background/01_Test"
+},
+"bones": [
+	{ "name": "root" },
+	{ "name": "레이어 58", "parent": "root", "x": -2.57, "y": 22.47 },
+	{ "name": "레이어 58 복사", "parent": "레이어 58", "x": 3.33, "y": -16.17 },
+	{ "name": "레이어 59", "parent": "root", "length": 1738.96, "rotation": -38.31, "x": 57.95, "y": -66.31 }
+],
+"slots": [
+	{ "name": "용지", "bone": "root" },
+	{ "name": "레이어 58", "bone": "레이어 58", "color": "ffffff70", "attachment": "레이어 58", "blend": "screen" },
+	{ "name": "레이어 58 복사", "bone": "레이어 58 복사", "color": "ffffff70", "attachment": "레이어 58 복사", "blend": "screen" },
+	{ "name": "레이어 59", "bone": "레이어 59", "color": "ffffff70", "attachment": "레이어 59", "blend": "screen" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"레이어 58": {
+				"레이어 58": { "x": 3, "y": -22.12, "width": 1156, "height": 1148 }
+			},
+			"레이어 58 복사": {
+				"레이어 58 복사": { "x": 0.17, "y": -7.45, "width": 2011, "height": 1999 }
+			},
+			"레이어 59": {
+				"레이어 59": { "x": 1018.95, "y": 14.43, "rotation": 38.31, "width": 1706, "height": 1550 }
+			},
+			"용지": {
+				"용지": { "x": 1920, "y": -1080, "width": 3842, "height": 2162 }
+			}
+		}
+	}
+],
+"animations": {
+	"animation": {
+		"slots": {
+			"레이어 59": {
+				"rgba": [
+					{ "color": "ffffffff" },
+					{
+						"time": 5,
+						"color": "ffffffbe",
+						"curve": [ 6.667, 1, 8.333, 1, 6.667, 1, 8.333, 1, 6.667, 1, 8.333, 1, 6.667, 0.75, 8.333, 1 ]
+					},
+					{ "time": 10, "color": "ffffffff" }
+				]
+			}
+		},
+		"bones": {
+			"root": {
+				"rotate": [
+					{ "curve": "stepped" },
+					{ "time": 5 }
+				],
+				"translate": [
+					{ "curve": "stepped" },
+					{ "time": 5 }
+				],
+				"scale": [
+					{ "curve": "stepped" },
+					{ "time": 5 }
+				]
+			},
+			"레이어 59": {
+				"rotate": [
+					{},
+					{ "time": 2.6667, "value": -0.62 },
+					{ "time": 5 },
+					{ "time": 8, "value": 0.14 },
+					{ "time": 10 }
+				],
+				"translate": [
+					{ "curve": "stepped" },
+					{ "time": 5, "curve": "stepped" },
+					{ "time": 10 }
+				],
+				"scale": [
+					{},
+					{
+						"time": 2.6667,
+						"x": 0.99,
+						"curve": [ 3.444, 0.998, 4.222, 1, 3.444, 1, 4.222, 1 ]
+					},
+					{
+						"time": 5,
+						"curve": [ 6, 1, 7.512, 0.985, 6, 1, 7, 1 ]
+					},
+					{
+						"time": 8,
+						"x": 0.99,
+						"curve": [ 8.778, 0.998, 9.333, 1, 8.778, 1, 9.333, 1 ]
+					},
+					{ "time": 10 }
+				]
+			},
+			"레이어 58 복사": {
+				"rotate": [
+					{ "curve": "stepped" },
+					{ "time": 5 }
+				],
+				"translate": [
+					{ "curve": "stepped" },
+					{ "time": 5 }
+				],
+				"scale": [
+					{ "curve": "stepped" },
+					{ "time": 5 }
+				]
+			},
+			"레이어 58": {
+				"rotate": [
+					{ "curve": "stepped" },
+					{ "time": 5 }
+				],
+				"translate": [
+					{ "curve": "stepped" },
+					{ "time": 5 }
+				],
+				"scale": [
+					{},
+					{
+						"time": 1,
+						"x": 1.005,
+						"y": 1.005,
+						"curve": [ 1.5, 0.991, 2, 1, 1.5, 0.991, 2, 1 ]
+					},
+					{
+						"time": 2.5,
+						"curve": [ 2.883, 1, 3.493, 1.01, 2.883, 1, 3.493, 1.01 ]
+					},
+					{
+						"time": 3.6667,
+						"x": 1.005,
+						"y": 1.005,
+						"curve": [ 4.167, 0.991, 4.55, 1, 4.167, 0.991, 4.55, 1 ]
+					},
+					{ "time": 5 }
+				]
+			}
+		}
+	}
+}
+}
