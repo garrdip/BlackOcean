@@ -6,10 +6,8 @@ using Mirror;
 using DG.Tweening;
 using ProjectD;
 
-public class M_CardManager : NetworkBehaviour
+public class M_CardManager : NetworkSingletonD<M_CardManager>
 {
-    public static M_CardManager Instance = null;
-
     private const int maxCardOnHandCount = 10; // CardOnHand 최대 갯수
 
     [Header("현재 선택한 플레이어의 GamePlayerDeck 참조변수")]
@@ -63,17 +61,6 @@ public class M_CardManager : NetworkBehaviour
     [Header("어빌리티 화살표 활성화 상태 여부")]
     public bool isAbilityArrowActive = false;
 
-    public static M_CardManager instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                Instance = FindObjectOfType<M_CardManager>();
-            }
-            return Instance;
-        }
-    }
 
     public override void OnStartServer()
     {
@@ -86,13 +73,9 @@ public class M_CardManager : NetworkBehaviour
         }
     }
 
-    void Awake()
+    protected override void Start()
     {
         DontDestroyOnLoad(gameObject);
-    }
-
-    void Start()
-    {
         InitCardConfigValue();
     }
 

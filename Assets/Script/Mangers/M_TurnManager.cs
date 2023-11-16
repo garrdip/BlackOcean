@@ -8,10 +8,8 @@ using Steamworks;
 using Spine.Unity;
 using DG.Tweening;
 
-public class M_TurnManager : NetworkBehaviour
+public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 {
-    public static M_TurnManager Instance = null;
-
     [SyncVar]
     public NPC_Mercurius npc_Mercurius;
 
@@ -53,7 +51,7 @@ public class M_TurnManager : NetworkBehaviour
     이후 : 모든 플레이어 및 몬스터
     */
     
-    void Awake()
+    protected override void Start()
     {
         DontDestroyOnLoad(gameObject);
     }
@@ -125,17 +123,6 @@ public class M_TurnManager : NetworkBehaviour
         return phase == BattleTurn.PLAYER_ACTIVE ? true : false;
     }
 
-    public static M_TurnManager instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                Instance = FindObjectOfType<M_TurnManager>();
-            }
-            return Instance;
-        }
-    }
 
     public override void OnStartServer()
     {

@@ -21,7 +21,10 @@ public class NetworkSingletonD<T> : NetworkBehaviour where T : NetworkBehaviour
         }
     }
 
-    protected virtual void Awake()
+    // NetworkBehavior 클래스의 경우 Awake함수에서 DDOL을 호출 시 에디터와 빌드간의 차이로 인해 오류발생 이슈 있음.
+    // : https://mirror-networking.gitbook.io/docs/manual/components/networkbehaviour - 공식문서 경고문구
+    // : https://github.com/MirrorNetworking/Mirror/issues/1748 - 이슈 트래커
+    protected virtual void Start()
     {
         if (Instance == null)
         {

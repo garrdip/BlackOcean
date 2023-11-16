@@ -39,12 +39,12 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     public bool isChatBoxVisible = false; // 채팅창 활성화 상태 여부
     public bool isMouseOnChatBox = false; // 현재 마우스 포인터가 채팅메시지 박스 위에 있는지 여부
 
-    protected override void Awake()
+    protected override void Start()
     {
-        base.Awake();
-        chatStringBuilder = new StringBuilder();
+        DontDestroyOnLoad(gameObject);
         DontDestroyOnLoad(toastMessageCanvas); // 토스트 메시지 캔버스 오브젝트는 모든 씬에 필요하므로, 메시지 매니저 초기화 시점에 DontDestroyOnLoad 호출
         DontDestroyOnLoad(chatCanvas); // 채팅 캔버스 오브젝트는 모든 씬에 필요하므로, 메시지 매니저 초기화 시점에 DontDestroyOnLoad 호출
+        chatStringBuilder = new StringBuilder();
     }
 
     void Update()

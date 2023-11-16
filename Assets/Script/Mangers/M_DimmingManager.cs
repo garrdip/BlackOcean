@@ -8,10 +8,12 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
 {
     SpriteRenderer dim;
 
-    void Start()
+    protected override void Start()
     {
+        DontDestroyOnLoad(gameObject);
         dim = GetComponent<SpriteRenderer>();
     }
+
     [ClientRpc]
     public void StartDimming(List<TargetObject> targets)
     {

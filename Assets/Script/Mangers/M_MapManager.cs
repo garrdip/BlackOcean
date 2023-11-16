@@ -7,10 +7,8 @@ using DG.Tweening;
 using ProjectD;
 using AYellowpaper.SerializedCollections;
 
-public class M_MapManager : NetworkBehaviour
+public class M_MapManager : NetworkSingletonD<M_MapManager>
 {  
-    public static M_MapManager Instance = null; 
-    
     [SyncVar]
     public HexagonMapRoom currentRoom;
 
@@ -88,20 +86,7 @@ public class M_MapManager : NetworkBehaviour
         new Vector2Int(1, -1) // 1시
     };
 
-
-    public static M_MapManager instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                Instance = FindObjectOfType<M_MapManager>();
-            }
-            return Instance;
-        }
-    }
-
-    void Awake()
+    protected override void Start()
     {
         DontDestroyOnLoad(gameObject);
     }
