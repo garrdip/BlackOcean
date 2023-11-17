@@ -43,8 +43,6 @@ public class LobbyPlayer : NetworkBehaviour
     [SyncVar]
     public RoomPlayer roomPlayer;
 
-    [SyncVar]
-    public PlayOrder playOrder;
 
     void Start()
     {
@@ -56,7 +54,7 @@ public class LobbyPlayer : NetworkBehaviour
         base.OnStartClient();
 
         SetLobbyPlayerParent();
-        RoomUI.instance.topIconImages[(int)playOrder].sprite = isOwned ? topIconMy : topIconExChange;
+        RoomUI.instance.topIconImages[(int)roomPlayer.order].sprite = isOwned ? topIconMy : topIconExChange;
         selectorBaseLayout.SetActive(isOwned);
         classLayout.SetActive(isOwned);
         classIconLayout.SetActive(!classLayout.activeSelf);
@@ -92,7 +90,7 @@ public class LobbyPlayer : NetworkBehaviour
     // LobbyPlayer 부모 오브젝트 설정 및 트랜스폼 값 설정
     private void SetLobbyPlayerParent()
     {
-        transform.SetParent(RoomUI.instance.topIcons[(int)playOrder].transform); // 플레이어 Order값에 따라 룸씬의 각 아이콘 순서에 맞춰 자식오브젝트로 설정
+        transform.SetParent(RoomUI.instance.topIcons[(int)roomPlayer.order].transform); // 플레이어 Order값에 따라 룸씬의 각 아이콘 순서에 맞춰 자식오브젝트로 설정
         transform.localScale = new Vector3(1f, 1f, 1f); // SetParent 수행시 스케일이 부모에 따라 변동되므로 수동으로 스케일 기본값인 1로 조정
         transform.localPosition = Vector3.zero;
         transform.SetAsFirstSibling(); // TopIcon보다 먼저 그려지도록 SiblingIndex를 맨 처음으로 설정

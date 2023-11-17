@@ -56,7 +56,6 @@ public class M_NetworkRoomManager : NetworkRoomManager
         NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
         RoomPlayer[] roomPlayers = FindObjectsOfType<RoomPlayer>();
         GameObject roomPlayer = Instantiate(netManger.spawnPrefabs.Find(pref => pref.name == "RoomPlayer"));
-        NetworkServer.Spawn(roomPlayer,conn);
         if(roomPlayers.Length == 0){
             roomPlayer.GetComponent<RoomPlayer>().order = PlayOrder.FIRST;
         }
@@ -73,12 +72,12 @@ public class M_NetworkRoomManager : NetworkRoomManager
             }
         }
         roomPlayer.GetComponent<RoomPlayer>().color = colors[clientIndex - 1];
+        NetworkServer.Spawn(roomPlayer, conn);
 
         // RoomPlayer정보를 참조하는 LobbyPlayer오브젝트 생성 및 SyncVar변수 설정
         GameObject lobbyPlayerObject = Instantiate(netManger.spawnPrefabs.Find(pref => pref.name == "LobbyPlayer"));
         LobbyPlayer lobbyPlayer = lobbyPlayerObject.GetComponent<LobbyPlayer>();
         lobbyPlayer.roomPlayer = roomPlayer.GetComponent<RoomPlayer>();
-        lobbyPlayer.playOrder = roomPlayer.GetComponent<RoomPlayer>().order;
         NetworkServer.Spawn(lobbyPlayerObject, conn);
 
         return roomPlayer;
