@@ -48,9 +48,9 @@ public class MapUI : InstanceD<MapUI>
     { 
         if(Application.isFocused){
             //HandleCameraEdgeScrolling();
-            //if(!M_MessageManager.instance.isMouseOnChatBox){
+            if(!M_MessageManager.instance.isMouseOnChatBox){
                 HandleMapCameraByMouseWheel();
-            //}
+            }
         }
     }
 

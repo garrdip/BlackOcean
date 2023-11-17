@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectD;
 using Mirror;
+using Steamworks;
 
 public class M_NetworkRoomManager : NetworkRoomManager
 {
@@ -74,10 +75,26 @@ public class M_NetworkRoomManager : NetworkRoomManager
         roomPlayer.GetComponent<RoomPlayer>().color = colors[clientIndex - 1];
         NetworkServer.Spawn(roomPlayer, conn);
 
-        // RoomPlayer정보를 참조하는 LobbyPlayer오브젝트 생성 및 SyncVar변수 설정
+        // RoomPlayer 정보를 참조하는 LobbyPlayer 오브젝트 생성 
         GameObject lobbyPlayerObject = Instantiate(netManger.spawnPrefabs.Find(pref => pref.name == "LobbyPlayer"));
+
+        // LobbyPlayer에 RoomPlayer SyncVar 변수 설정
         LobbyPlayer lobbyPlayer = lobbyPlayerObject.GetComponent<LobbyPlayer>();
         lobbyPlayer.roomPlayer = roomPlayer.GetComponent<RoomPlayer>();
+
+        // LobbyPlayer에 Steam API 데이터를 조회하여 SyncVar 변수 설정
+        lobbyPlayer.steamID = (ulong)SteamUser.GetSteamID();
+        lobbyPlayer.steamPersonaName = SteamFriends.GetFriendPersonaName((CSteamID)lobbyPlayer.steamID);
+        int imageID = SteamFriends.GetLargeFriendAvatar((CSteamID)lobbyPlayer.steamID);
+        byte[] uploadableImage = M_SteamManager.instance.GetSteamImageAsByteArray(imageID, out bool isValid, out uint width, out uint height);
+        if(isValid){
+            lobbyPlayer.imageWidth = (int)width;
+            lobbyPlayer.imageHeight = (int)height;
+            lobbyPlayer.isValidAvatar = true;
+            for(int i = 0 ;i < uploadableImage.Length ; i ++){
+                lobbyPlayer.image.Add(uploadableImage[i]);
+            }
+        }
         NetworkServer.Spawn(lobbyPlayerObject, conn);
 
         return roomPlayer;
