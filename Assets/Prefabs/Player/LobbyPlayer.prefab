@@ -2687,7 +2687,15 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   selectorBaseLayout: {fileID: 1507683924078980465}
+  selectLeft: {fileID: 1507683922339736143}
+  selectMiddle: {fileID: 1507683924038357355}
+  selectRight: {fileID: 1507683922916616162}
+  baseDark: {fileID: 1507683923179403581}
   characterSelectCompleteImage: {fileID: 6726175897229974017}
+  topIconMy: {fileID: 21300000, guid: 8d9e8a9a6b9addb45a30064cbc543974, type: 3}
+  topIconMyLight: {fileID: 21300000, guid: c297e8b5690474c44bf776a06869f8ea, type: 3}
+  topIconExChange: {fileID: 21300000, guid: 4303e50d0726d164b8bc3ac485020a94, type: 3}
+  topIconExChangeLight: {fileID: 21300000, guid: 653c41dbdda4b18458bc83aa10383277, type: 3}
   classLayout: {fileID: 1507683922352878863}
   classIconLayout: {fileID: 1507683922897785864}
   profileLayout: {fileID: 1507683922835432909}
@@ -2701,6 +2709,7 @@ MonoBehaviour:
   erisSprite: {fileID: 21300000, guid: 6a83a376548e5fb4bbd3cfe779b9d036, type: 3}
   georkSprite: {fileID: 21300000, guid: f33ce2a416f184f4e9754536d47bf0b4, type: 3}
   roomPlayer: {fileID: 0}
+  playOrder: 0
 --- !u!1 &1507683923716549370
 GameObject:
   m_ObjectHideFlags: 0

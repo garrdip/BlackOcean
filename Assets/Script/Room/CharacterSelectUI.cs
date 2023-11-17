@@ -26,8 +26,8 @@ public class CharacterSelectUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        RoomPlayer roomPlayer = NetworkClient.localPlayer.GetComponent<RoomPlayer>();
-        if(roomPlayer.isLocalPlayer){
+        if(NetworkClient.active && NetworkClient.localPlayer != null){
+            RoomPlayer roomPlayer = NetworkClient.localPlayer.GetComponent<RoomPlayer>();
             roomPlayer.character = character;
             roomPlayer.OnChangedCharacter(character, character);
         }

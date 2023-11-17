@@ -12,15 +12,16 @@ public class RoomUI : InstanceD<RoomUI>
     [Header("UI 컴포넌트")]
     public Button buttonReady;
     //public TextMeshProUGUI readyButton;
-    public Button ExitButton;
+    //public Button ExitButton;
     public HorizontalLayoutGroup horizontalLayoutGroup;
-    public List<GameObject> topIconList = new List<GameObject>();
+    public List<GameObject> topIcons = new List<GameObject>();
+    public List<Image> topIconImages = new List<Image>();
 
 
     void Start()
     {
         buttonReady.onClick.AddListener(() => HandleRadeyState());
-        ExitButton.onClick.AddListener(() => HandleBackToMainScene());
+        //ExitButton.onClick.AddListener(() => HandleBackToMainScene());
     }
 
     public void SetReadyButton(string str)
