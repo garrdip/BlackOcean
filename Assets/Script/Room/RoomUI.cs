@@ -11,8 +11,8 @@ public class RoomUI : InstanceD<RoomUI>
 {
     [Header("UI 컴포넌트")]
     public Button buttonReady;
-    //public TextMeshProUGUI readyButton;
-    //public Button ExitButton;
+    public Button ExitButton;
+    public TextMeshProUGUI textReady;
     public HorizontalLayoutGroup horizontalLayoutGroup;
     public List<GameObject> topIcons = new List<GameObject>();
     public List<Image> topIconImages = new List<Image>();
@@ -21,12 +21,12 @@ public class RoomUI : InstanceD<RoomUI>
     void Start()
     {
         buttonReady.onClick.AddListener(() => HandleRadeyState());
-        //ExitButton.onClick.AddListener(() => HandleBackToMainScene());
+        ExitButton.onClick.AddListener(() => HandleBackToMainScene());
     }
 
     public void SetReadyButton(string str)
     {
-        //readyButton.text = str;
+        textReady.text = str;
     }
     
     // 레디 상태 제어 
@@ -39,7 +39,7 @@ public class RoomUI : InstanceD<RoomUI>
                     roomPlayer.isReady = !roomPlayer.isReady;
                 else //서버 케이스
                 {
-                    //if(readyButton.text == "START" )HandleChangeGameScene();
+                    if(textReady.text == "START" )HandleChangeGameScene();
                 }
             }
             
