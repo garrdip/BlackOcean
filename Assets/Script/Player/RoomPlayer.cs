@@ -9,6 +9,9 @@ using Steamworks;
 
 public class RoomPlayer : NetworkRoomPlayer
 {
+    public delegate void OnSelectCompleteCharacter(Character character);
+    public OnSelectCompleteCharacter onSelectCompleteCharacter;
+
     [SyncVar(hook = nameof(OnChangedCharacter))]
     public Character character = Character.NONE;
 
@@ -16,7 +19,7 @@ public class RoomPlayer : NetworkRoomPlayer
     public Color color;
 
     [SyncVar]
-    public PlayOrder order = PlayOrder.UNDEFINED;
+    public PlayOrder order = PlayOrder.FIRST;
 
     [SyncVar(hook = nameof(ChangeReadyState))]
     public bool isReady = false;
@@ -46,7 +49,6 @@ public class RoomPlayer : NetworkRoomPlayer
     {
         byte[] uploadableImage;
 
-        RoomUI.instance.SetActiveSelectedOrderMark(order);
         if(!isServer)RoomUI.instance.SetReadyButton("READY");
         else RoomUI.instance.SetReadyButton("");
         steamID = (ulong)SteamUser.GetSteamID();
@@ -115,10 +117,12 @@ public class RoomPlayer : NetworkRoomPlayer
         }
     }
 
-    void OnChangedCharacter(Character oldVal, Character newVal)
+    public void OnChangedCharacter(Character oldVal, Character newVal)
     {
         RoomUI.instance.CMDReadyCheck();
+        if(onSelectCompleteCharacter != null){
+            onSelectCompleteCharacter.Invoke(newVal);
+        }
     }
-
 }
 

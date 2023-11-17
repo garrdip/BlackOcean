@@ -271,6 +271,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // 카드 정보 뷰 설정
     private void initCardData()
     {
+        PlayerInterface playerInterface = NetworkClient.connection.identity.GetComponent<PlayerInterface>();
+        GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayer>().GetComponent<GamePlayerDeck>();
         if(card.experience >= card.baseCard.maxExperience)
         {
             textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").name;
@@ -289,7 +291,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         
         if(card.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
         {
-            if(card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<GamePlayerDeck>().previousCardType)
+            if(card.baseCard.cardType == gamePlayerDeck.previousCardType)
             {
                 textCardCost.text = "<b><color=green>" +((card.baseCard.cost + card.costAddition - 1) <= 0 ? "0" : (card.baseCard.cost + card.costAddition - 1).ToString()) + "</color></b>";
             }

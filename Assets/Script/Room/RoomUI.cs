@@ -11,24 +11,23 @@ public class RoomUI : InstanceD<RoomUI>
 {
     [Header("UI 컴포넌트")]
     public Button buttonReady;
-    public TextMeshProUGUI readyButton;
+    //public TextMeshProUGUI readyButton;
     public Button ExitButton;
+    public HorizontalLayoutGroup horizontalLayoutGroup;
+    public List<GameObject> topIconList = new List<GameObject>();
 
-    [Header("플레이어 순서 표시용 컴포넌트 리스트")]
-    public List<GameObject> orderEffector;
 
-    public float scrollSpeed = 1f;
-
-    public void SetReadyButton(string str)
-    {
-        readyButton.text = str;
-    }
     void Start()
     {
         buttonReady.onClick.AddListener(() => HandleRadeyState());
         ExitButton.onClick.AddListener(() => HandleBackToMainScene());
     }
 
+    public void SetReadyButton(string str)
+    {
+        //readyButton.text = str;
+    }
+    
     // 레디 상태 제어 
     public void HandleRadeyState()
     {
@@ -39,7 +38,7 @@ public class RoomUI : InstanceD<RoomUI>
                     roomPlayer.isReady = !roomPlayer.isReady;
                 else //서버 케이스
                 {
-                    if(readyButton.text == "START" )HandleChangeGameScene();
+                    //if(readyButton.text == "START" )HandleChangeGameScene();
                 }
             }
             
@@ -59,14 +58,6 @@ public class RoomUI : InstanceD<RoomUI>
         M_LoadingManager.instance.SetLoadingScreen(true);
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         M_NetworkRoomManager.ServerChangeScene(M_NetworkRoomManager.GameplayScene);
-    }
-
-    // 순서 바뀜에 따른 자리 표시
-    public void SetActiveSelectedOrderMark(PlayOrder order)
-    {
-        orderEffector[0].SetActive((int)order == 0 ? true : false);
-        orderEffector[1].SetActive((int)order == 1 ? true : false);
-        orderEffector[2].SetActive((int)order == 2 ? true : false);
     }
 
     [Server]

@@ -162,8 +162,15 @@ MonoBehaviour:
   readyToBegin: 0
   index: 0
   character: 0
-  order: 3
+  color: {r: 0, g: 0, b: 0, a: 0}
+  order: 0
   isReady: 0
+  steamID: 0
+  steamPersonaName: 
+  isValidAvatar: 0
+  imageWidth: 0
+  imageHeight: 0
+  lobbyPlayer: {fileID: 0}
 --- !u!1 &5712702226319657176
 GameObject:
   m_ObjectHideFlags: 0

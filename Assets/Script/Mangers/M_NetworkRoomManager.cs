@@ -74,6 +74,13 @@ public class M_NetworkRoomManager : NetworkRoomManager
         }
         roomPlayer.GetComponent<RoomPlayer>().color = colors[clientIndex - 1];
 
+        // RoomPlayer정보를 참조하는 LobbyPlayer오브젝트 생성 및 SyncVar변수 설정
+        GameObject lobbyPlayerObject = Instantiate(netManger.spawnPrefabs.Find(pref => pref.name == "LobbyPlayer"));
+        LobbyPlayer lobbyPlayer = lobbyPlayerObject.GetComponent<LobbyPlayer>();
+        lobbyPlayer.roomPlayer = roomPlayer.GetComponent<RoomPlayer>();
+        lobbyPlayer.playOrder = roomPlayer.GetComponent<RoomPlayer>().order;
+        NetworkServer.Spawn(lobbyPlayerObject, conn);
+
         return roomPlayer;
     }
     
@@ -117,11 +124,11 @@ public class M_NetworkRoomManager : NetworkRoomManager
         if(Utils.IsSceneActive(RoomScene)){
             RoomPlayer oldRoomPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<RoomPlayer>();
             RoomPlayer newRoomPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<RoomPlayer>();
-            //M_MessageManager.instance.RpcOtherPlayerDisconnectedInRoomScene(oldRoomPlayer.steamPersonaName, newRoomPlayer.steamPersonaName);
+            M_MessageManager.instance.RpcOtherPlayerDisconnectedInRoomScene(oldRoomPlayer.steamPersonaName, newRoomPlayer.steamPersonaName);
         }else if(Utils.IsSceneActive(GameplayScene)){
             PlayerInterface oldPlayerInterface = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>();
             PlayerInterface newPlayerInterface = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>();
-            //M_MessageManager.instance.RpcOtherPlayerDisconnectedInGameScene(oldPlayerInterface.steamPersonaName, newPlayerInterface.steamPersonaName);
+            M_MessageManager.instance.RpcOtherPlayerDisconnectedInGameScene(oldPlayerInterface.steamPersonaName, newPlayerInterface.steamPersonaName);
         }
     }
 

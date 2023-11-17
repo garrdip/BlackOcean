@@ -207,27 +207,23 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     [ClientRpc]
     public void RpcOtherPlayerDisconnectedInRoomScene(string oldOwner, string newOwner)
     {
-        /*
         M_MessageManager.instance
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.red)
             .TextColor(Color.white)
             .Text($"{oldOwner} 님이 대기방을 나갔습니다.\n{newOwner} 님에게 권한이 이전됩니다.")
             .Show();
-            */
     }
 
     // 게임씬에서 다른 클라 연결해제 이벤트 수신
     [ClientRpc]
     public void RpcOtherPlayerDisconnectedInGameScene(string oldPlayer ,string newPlayer)
     {
-        /*
         M_MessageManager.instance
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.red)
             .TextColor(Color.white)
             .Text($"{oldPlayer} 님이 게임을 나갔습니다.\n{newPlayer} 님에게 권한이 이전됩니다.")
             .Show();
-            */
     }
 }
