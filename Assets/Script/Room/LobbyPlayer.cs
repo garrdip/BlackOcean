@@ -112,7 +112,7 @@ public class LobbyPlayer : NetworkBehaviour
         classIconLayout.SetActive(!classLayout.activeSelf);
     }
 
-    [Command (requiresAuthority = false)]
+    [Command]
     public void CmdSetSteamId(ulong steamId)
     {
         steamID = steamId;
