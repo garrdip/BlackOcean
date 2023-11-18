@@ -81,20 +81,6 @@ public class M_NetworkRoomManager : NetworkRoomManager
         // LobbyPlayer에 RoomPlayer SyncVar 변수 설정
         LobbyPlayer lobbyPlayer = lobbyPlayerObject.GetComponent<LobbyPlayer>();
         lobbyPlayer.roomPlayer = roomPlayer.GetComponent<RoomPlayer>();
-
-        // LobbyPlayer에 Steam API 데이터를 조회하여 SyncVar 변수 설정
-        lobbyPlayer.steamID = (ulong)SteamUser.GetSteamID();
-        lobbyPlayer.steamPersonaName = SteamFriends.GetFriendPersonaName((CSteamID)lobbyPlayer.steamID);
-        int imageID = SteamFriends.GetLargeFriendAvatar((CSteamID)lobbyPlayer.steamID);
-        byte[] uploadableImage = M_SteamManager.instance.GetSteamImageAsByteArray(imageID, out bool isValid, out uint width, out uint height);
-        if(isValid){
-            lobbyPlayer.imageWidth = (int)width;
-            lobbyPlayer.imageHeight = (int)height;
-            lobbyPlayer.isValidAvatar = true;
-            for(int i = 0 ;i < uploadableImage.Length ; i ++){
-                lobbyPlayer.image.Add(uploadableImage[i]);
-            }
-        }
         NetworkServer.Spawn(lobbyPlayerObject, conn);
 
         return roomPlayer;

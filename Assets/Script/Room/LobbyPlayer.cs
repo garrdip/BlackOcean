@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using ProjectD;
 using Mirror;
 using TMPro;
+using Steamworks;
 
 public class LobbyPlayer : NetworkBehaviour
 {
@@ -46,19 +47,8 @@ public class LobbyPlayer : NetworkBehaviour
     [SyncVar]
     public RoomPlayer roomPlayer;
 
-    [SyncVar]
+    [SyncVar(hook = nameof(OnChangedSteamID))]
     public ulong steamID;
-
-    [SyncVar]
-    public string steamPersonaName;
-
-    [SyncVar]
-    public bool isValidAvatar;
-
-    public readonly SyncList<byte> image = new SyncList<byte>();
-
-    [SyncVar]
-    public int imageWidth, imageHeight;
 
 
     void Start()
@@ -72,8 +62,10 @@ public class LobbyPlayer : NetworkBehaviour
 
         SetLobbyPlayerParent();
         InitLobbyPlayerView(isOwned);
-        SetSteamProfile(); // 스팀 프로필 세팅
         OnSelectCompleteCharacter(roomPlayer.character); // 클라 생성 시점에도 캐릭터 선택 정보 세팅(클라이언트가 방에 접속할때 다른 유저가 이미 선택한 상태일 경우 그 값을 수신받아 설정하는 용도)
+        if(isOwned){
+            CmdSetSteamId((ulong)SteamUser.GetSteamID());// 로컬유저의 스팀아이디를 조회하여 다른 클라이언트들에 공유
+        }
     }
 
     public void OnSelectCompleteCharacter(Character character)
@@ -120,17 +112,19 @@ public class LobbyPlayer : NetworkBehaviour
         classIconLayout.SetActive(!classLayout.activeSelf);
     }
 
-    // Steam API에서 플레이어 아이디와 프로필사진 데이터를 조회하여 뷰요소에 설정
-    private void SetSteamProfile()
+    [Command (requiresAuthority = false)]
+    public void CmdSetSteamId(ulong steamId)
     {
-        steamDisplayName.text = steamPersonaName;
-        if(isValidAvatar){
-            byte[] avatarImage = new byte[imageWidth * imageHeight * 4];
-            for(int i = 0 ;i < image.Count ; i++)
-                avatarImage[i] = image[i];
-            steamAvatar.texture = M_SteamManager.instance.GetSteamImageAsTexture(avatarImage, (int)imageWidth, (int)imageHeight);
-            steamAvatar.GetComponent<RectTransform>().sizeDelta = new Vector2(150f, 150f);
-            steamAvatar.color = new Color(1,1,1,1);
-        }
+        steamID = steamId;
+    }
+
+    // SteamID를 이용하여 플레이어 아이디와  프로필사진 데이터를 조회하여 뷰요소에 설정
+    private void OnChangedSteamID(ulong oldVal,  ulong newVal)
+    {
+        var cSteamId = new CSteamID(newVal);
+        steamDisplayName.text = SteamFriends.GetFriendPersonaName(cSteamId);
+        int imageId = SteamFriends.GetLargeFriendAvatar(cSteamId);
+        if(imageId == -1) return;
+        steamAvatar.texture = M_SteamManager.instance.GetSteamImageAsTextureByImageId(imageId);
     }
 }
