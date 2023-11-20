@@ -590,10 +590,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             // 임시 테스트용 UI
             GameUIManager.instance.TestUI.gameObject.SetActive(true);
 
-            // Dim배경 상태 변경
-            blackCurtain.gameObject.SetActive(false);
-            blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
-
             RemoveAllExistLineRenderer(); // 라인 랜더러 비활성화
             ChangeAllMapPlayerDestinationState(false); // 맵 위치 화살표 비활성화
             if(isServer){
@@ -615,6 +611,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 break;
             }
         }
+        GameUIManager.instance.FadeOffBlackCurtain((blackCurtain)=>{
+            blackCurtain.gameObject.SetActive(false);
+        });
     }
     
     // 방이동후 카메라 전환 (자유 이동으로 할지)
@@ -627,7 +626,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [ClientRpc]
     public void SetRegionWithColorRPC()
     {
-        Debug.Log("Color Region Start!" + regions.Count);
         foreach(Region region in regions)
             SetRegionWithColor(region);
     }
@@ -817,7 +815,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 newRegion.transform.localRotation = Quaternion.Euler(0,0,-60*i);
             }
         }
-        NetworkClient.connection.identity.GetComponent<PlayerInterface>().isLoadDone = true;
     }
 
     // Axial 좌표계를 이용한 시스템에서 현재 좌표에서 목표 좌표까지의 거리를 반환

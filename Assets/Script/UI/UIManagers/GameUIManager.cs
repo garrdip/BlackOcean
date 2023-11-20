@@ -70,4 +70,13 @@ public class GameUIManager : SingletonD<GameUIManager>
             }
         }); 
     }
+
+    public void FadeOffBlackCurtain(System.Action<Image> callback = null)
+    {
+        blackCurtain.DOFade(0.0f, 0.5f).OnComplete(() => {
+            if(callback != null){
+                callback(blackCurtain);
+            }
+        }); 
+    }
 }

@@ -116,7 +116,7 @@ public class MapUI : InstanceD<MapUI>
         PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
         foreach(PlayerInterface user in users)
         {
-            if(!user.isInitializeDone)return;
+            if(M_LoadingManager.instance.state != LOADING_STATE.MAP_SCENE)return;
             // Avatar
             if(user.isAvatarUploadDone)
             {

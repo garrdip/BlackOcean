@@ -26,9 +26,6 @@ public class PlayerInterface : NetworkBehaviour
     [SyncVar]
     public int selectOrder;
 
-    [SyncVar]
-    public bool isInitializeDone = false;
-
     [SyncVar (hook = nameof(OnReadyStateChanged))]
     public bool isReady = false;
 
@@ -57,117 +54,40 @@ public class PlayerInterface : NetworkBehaviour
 
     public readonly SyncList<CardOnHand> destroyCards = new SyncList<CardOnHand>();
 
-    [SyncVar]
-    public bool isLoadDone = false;
+    [SyncVar (hook = nameof(OnChangedWorkDoneState))]
+    public bool workDone = false;
 
-
+    [ClientRpc]
+    public void ClearWorkDone()
+    {
+        if(isLocalPlayer)
+        {
+            workDone = false;
+        }
+    }
 
     public override void OnStartLocalPlayer()
     {
-        // Server Loading 종료 후 1층 데이터 생성
         if(isLocalPlayer)
         {
-            if(isServer)
-            {
-                if(M_SaveManager.instance.isSaveGame)
-                {
-                    M_MapManager.instance.RegenerateStartHexsagonRoom(M_SaveManager.instance.loadData); // 육각형 방 재생성
-                    M_MapManager.instance.RegenerateColorRegion(M_SaveManager.instance.loadData);
-                }
-                else
-                {
-                    M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성
-                    M_MapManager.instance.GenerateColorRegion();
-                }
-            }
             GenerateGamePlayer();
-            M_MapManager.instance.GenerateHexgonGrid(40);         
-            StartCoroutine(WaitGamePlayerGen());
-            StartCoroutine(nameof(WaitPlayerList));
+            M_MapManager.instance.GenerateHexgonGrid(40);
+            StartCoroutine(WaitInitState());
         }
     }
 
-    IEnumerator WaitGamePlayerGen()
+    IEnumerator WaitInitState()
     {
-        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        while(true)
+        while(!workDone)
         {
-            GamePlayer[] gamePlayers = FindObjectsOfType<GamePlayer>();
-            if(gamePlayers.Length == netManager.roomSlots.Count) break;
             yield return new WaitForSeconds(0.01f);
-        }
-        isInitializeDone = true;
-    }
-
-    IEnumerator WaitPlayerList()
-    {
-        M_NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        WaitForSeconds loopSecond = new WaitForSeconds(0.01f);
-        //GamePlayer가 모두 로드 될때까지 기다림
-        while(true)
-        {
-            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
-            if(users.Length == netManger.roomSlots.Count) break;
-            yield return loopSecond;
-        }
-        //GamePlayer가 모두 Initial Value 초기화 될때까지 기다림
-        while(true)
-        {
-            int cnt = 0;
-            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
-            foreach(PlayerInterface user in users)
-            {
-                if(user.isInitializeDone) cnt++;
-            }
-            if(cnt == netManger.roomSlots.Count) break;
-            yield return loopSecond;
-        }
-        if(isLocalPlayer)
-        {
-            foreach(GamePlayer gamePlayer in FindObjectsOfType<GamePlayer>())
-            {
-                if(gamePlayer.isOwned){
-                    currentGamePlayerNetId = gamePlayer.netId;
-                    M_CardManager.instance.SetCurrentGamePlayerDeck(gamePlayer.GetComponent<GamePlayerDeck>());
+            GamePlayer[] gamePlayers = FindObjectsOfType<GamePlayer>();
+            foreach(GamePlayer gamePlayer in gamePlayers)
+                if(gamePlayer.isOwned)
+                {
+                    workDone = true;
                 }
-            }
-            ownedPlayers.Add(currentGamePlayer);
-            GetComponent<PlayerInterfaceServer>().GenerateGamePlayerOwnedObjects(currentGamePlayer);
         }
-        SetUserStatusUI();
-        M_TurnManager.instance.SetOrderButtonListener();
-        // 플레이어 로딩이 끝나면 턴매니저로 플레이어 리스트를 전달함
-        if(isServer)
-        {
-            M_TurnManager.instance.InitiateGamePlayerList();
-            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
-            foreach(PlayerInterface user in users)
-                user.UploadAvatar();
-        }
-        //UI Update
-        MapUI.instance.UpdateProfile();
-        if(isServer){
-            M_MapManager.instance.SetRegionWithColorRPC();
-            StartCoroutine(WaitLoadDone());
-        }
-    }
-
-    IEnumerator WaitLoadDone()
-    {
-        M_NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        WaitForSeconds loopSecond = new WaitForSeconds(0.01f);
-        while(true)
-        {
-            int cnt = 0;
-            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
-            foreach(PlayerInterface user in users)
-            {
-                if(user.isLoadDone) cnt++;
-            }
-            if(cnt == netManger.roomSlots.Count) break;
-            yield return loopSecond;
-        }
-        M_LoadingManager.instance.SetLoadingScreen(false);
     }
 
     public void SetUserStatusUI()
@@ -193,6 +113,26 @@ public class PlayerInterface : NetworkBehaviour
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
 
     [ClientRpc]
+    public void GenerateGamePlayerDeck()
+    {
+        if(isLocalPlayer)
+        {
+            foreach(GamePlayer gamePlayer in FindObjectsOfType<GamePlayer>())
+            {
+                if(gamePlayer.isOwned){
+                    currentGamePlayerNetId = gamePlayer.netId;
+                    M_CardManager.instance.SetCurrentGamePlayerDeck(gamePlayer.GetComponent<GamePlayerDeck>());
+                }
+            }
+            ownedPlayers.Add(currentGamePlayer);
+            GetComponent<PlayerInterfaceServer>().GenerateGamePlayerOwnedObjects(currentGamePlayer);
+        }
+        SetUserStatusUI();
+        M_TurnManager.instance.SetOrderButtonListener();
+        workDone = true;
+    }
+
+    [ClientRpc]
     public void RemoveDestroyCardList(CardOnHand cardOnHand)
     {
         if(isOwned)
@@ -202,7 +142,7 @@ public class PlayerInterface : NetworkBehaviour
     }
 
     [ClientRpc]
-    void UploadAvatar()
+    public void UploadAvatar()
     {
         if(isLocalPlayer)
         {
@@ -217,6 +157,7 @@ public class PlayerInterface : NetworkBehaviour
                     avatarImage.Add(uploadableImage[i]);
             }
             isAvatarUploadDone = true;
+            workDone = true;
         }
     }
 
@@ -239,6 +180,12 @@ public class PlayerInterface : NetworkBehaviour
     {
         if(netIdentity == NetworkClient.connection.identity)
             isRewardDone = false;
+    }
+
+    [ClientRpc]
+    public void UpdateProfile()
+    {
+        MapUI.instance.UpdateProfile();
     }
 
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
@@ -334,5 +281,16 @@ public class PlayerInterface : NetworkBehaviour
             GamePlayer gamePlayer = currentGamePlayerDeck.GetComponent<GamePlayer>();
             M_CardManager.instance.ChangeAbilityButtonActiveState(gamePlayer.character == Character.HONGDANHYANG);
         }
+    }
+
+    void OnChangedWorkDoneState(bool oldVal, bool newVal)
+    {
+        if(isServer)
+        {
+            if(newVal)
+                M_LoadingManager.instance.CheckWorkDone();
+            else
+                M_LoadingManager.instance.CheckWorkDoneClear(); 
+        }       
     }
 }

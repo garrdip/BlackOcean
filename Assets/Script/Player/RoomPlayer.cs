@@ -62,7 +62,6 @@ public class RoomPlayer : NetworkRoomPlayer
             imageWidth = (int)width;
             imageHeight = (int)height;
             isValidAvatar = true;
-            Debug.Log(uploadableImage.Length);
             for(int i = 0 ;i < uploadableImage.Length ; i ++)
                 image.Add(uploadableImage[i]);
         }

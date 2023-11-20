@@ -22,6 +22,7 @@ namespace ProjectD
     public enum ItemGrade {NORMAL, RARE, UNIQUE, LEGEND}
     public enum ValidTarget { NONE, ENEMY, MEMBER, TEAM }
     public enum ErisMode {NORMAL, ANGER, MAD}
+    public enum LOADING_STATE { ROOM_SCENE = 0, SCENE_LOADING, MAP_GENERATE, GAMEPLAYER_COMPONENT_GEN, UPLOAD_AVATAR, MAP_SCENE, LOADING_GAME_SCENE, GAME_SCENE }
 
     public enum MoveDirection {FORWARD, BACKWARD}
     public static class StringUtils{
