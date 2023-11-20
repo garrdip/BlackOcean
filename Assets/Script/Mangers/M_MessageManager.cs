@@ -217,7 +217,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.red)
             .TextColor(Color.white)
-            .Text($"{oldOwner} 님이 대기방을 나갔습니다.\n{newOwner} 님에게 권한이 이전됩니다.")
+            .Text($"{oldOwner} 님이 대기방을 나갔습니다.")
             .Show();
     }
 

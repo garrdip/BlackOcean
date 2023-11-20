@@ -65,6 +65,7 @@ public class LobbyPlayer : NetworkBehaviour
         OnSelectCompleteCharacter(roomPlayer.character); // 클라 생성 시점에도 캐릭터 선택 정보 세팅(클라이언트가 방에 접속할때 다른 유저가 이미 선택한 상태일 경우 그 값을 수신받아 설정하는 용도)
         if(isOwned){
             CmdSetSteamId((ulong)SteamUser.GetSteamID());// 로컬유저의 스팀아이디를 조회하여 다른 클라이언트들에 공유
+            M_LobbyMananger.instance.ownedLobbyPlayer = GetComponent<NetworkIdentity>().netId;
         }
     }
 

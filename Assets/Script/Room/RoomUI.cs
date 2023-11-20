@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 using ProjectD;
-using Steamworks;
 
 public class RoomUI : InstanceD<RoomUI>
 {
@@ -13,7 +12,6 @@ public class RoomUI : InstanceD<RoomUI>
     public Button buttonReady;
     public Button ExitButton;
     public TextMeshProUGUI textReady;
-    public HorizontalLayoutGroup horizontalLayoutGroup;
     public List<GameObject> topIcons = new List<GameObject>();
     public List<Image> topIconImages = new List<Image>();
     public List<Button> swapButtons = new List<Button>();
@@ -31,10 +29,9 @@ public class RoomUI : InstanceD<RoomUI>
 
     public void HandleLobbyPlayerSwap(int swapTargetIndex)
     {
-        int localPlayerOrder = (int)NetworkClient.localPlayer.GetComponent<RoomPlayer>().order;
-        if(localPlayerOrder != swapTargetIndex){
-            Debug.Log($"{swapTargetIndex}번 플레이어 스왑버튼 클릭");
-        }
+        Debug.Log(swapTargetIndex + "번째 버튼");
+        int owndLobbyPlayer = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == M_LobbyMananger.instance.ownedLobbyPlayer);
+        M_LobbyMananger.instance.CmdSwapLobbyPlayer(owndLobbyPlayer, swapTargetIndex);
     }
 
     public void SetReadyButton(string str)
