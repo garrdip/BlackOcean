@@ -172,6 +172,7 @@ public class M_SteamManager : InstanceD<M_SteamManager>
             if(isValid){
                 texture = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false , true);
                 texture.LoadRawTextureData(image);
+                FlipTextureVertically(texture);
                 texture.Apply();
             }
         }

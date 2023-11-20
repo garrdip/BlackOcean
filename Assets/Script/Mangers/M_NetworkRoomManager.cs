@@ -3,42 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectD;
 using Mirror;
-using Steamworks;
+using UnityEngine.SceneManagement;
 
 public class M_NetworkRoomManager : NetworkRoomManager
 {
     public delegate void OnClientDisconnected(GamePlayer gamePlayer);
     public OnClientDisconnected onClientDisconnected;
     public Color[] colors = new Color[]{ Color.red, Color.green, Color.blue };
+    public List<GameObject> managers = new List<GameObject>(); // 네트워크 매니저에서 관리할 NetworkBehaviour 매니저클래스 오브젝트 리스트
+    public List<GameObject> components = new List<GameObject>(); // 네트워크 매니저에서 관리할 뷰 컴포넌트 오브젝트 리스트
 
-    // 클라이언트에서 호출되는 씬 전환 이벤트 콜백함수
-    public override void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling)
+    public override void Start()
     {
-        base.OnClientChangeScene(newSceneName, sceneOperation, customHandling);
-
-        // 게임씬으로 넘어갈 경우 룸씬의 UI들 비활성화
-        if(newSceneName.Equals(GameplayScene)){
-            RoomUI.instance.gameObject.SetActive(false);
-        }
-    }
-
-    // 룸씬 진입 시 RoomUI 활성화
-    public override void OnRoomClientEnter()
-    {
-        base.OnRoomClientEnter();
-        
-        RoomUI.instance.gameObject.SetActive(true);
-    }
-
-    
-
-    // 룸씬에서 클라연결 종료 시 룸씬의 UI들 비활성화
-    // OnClientChangeScene 콜백함수가 룸씬에서 클라연결 종료이벤트를 통해 메뉴씬으로 이동시에는 호출되지 않기때문에 클라연결 종료 시 메인화면으로 가는 경우에도 룸씬의 UI들 비활성화
-    public override void OnRoomStopClient()
-    {
-        base.OnRoomStopClient();
-        
-        //RoomUI.instance.gameObject.SetActive(false);
+        base.Start(); // 부모클래스인 NetworkRoomManager의 Start로직은 유지
+        SceneManager.activeSceneChanged += OnChangedActiveScene; // 씬 전환 이벤트 연결
     }
 
     // 룸씬에서 게임씬으로 넘어갈때 룸씬의 플레이어 오브젝트와 게임씬의 플레이어 오브젝트의 정보들을 동기화
@@ -72,7 +50,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
                 break;
             }
         }
-        roomPlayer.GetComponent<RoomPlayer>().color = colors[clientIndex - 1];
+        roomPlayer.GetComponent<RoomPlayer>().color = colors[(int)roomPlayer.GetComponent<RoomPlayer>().order];
         NetworkServer.Spawn(roomPlayer, conn);
 
         // RoomPlayer 정보를 참조하는 LobbyPlayer 오브젝트 생성 
@@ -150,6 +128,22 @@ public class M_NetworkRoomManager : NetworkRoomManager
         }
         if(networkIdentity.GetComponent<MapPlayerDestination>() != null){
             networkIdentity.GetComponent<MapPlayerDestination>().playerIntefaceNetId = NetworkClient.connection.identity.netId;
+        }
+    }
+
+    // 씬 전환 이벤트(Offline Scene에서도 씬 전환 이벤트 수신 가능)
+    private void OnChangedActiveScene(Scene current, Scene next)
+    {
+        // 메뉴씬 갈때 managers에 할당되었던 DDOL 매니저 오브젝트들 + 뷰 컴포넌트들 모두 제거 
+        if(next.name.Equals("MenuScene")){
+            foreach(GameObject manager in managers){
+                Destroy(manager.gameObject);
+            }
+            managers.Clear();
+            foreach(GameObject component in components){
+                Destroy(component);
+            }
+            components.Clear();
         }
     }
 }

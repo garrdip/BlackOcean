@@ -2,11 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Console : MonoBehaviour
+public class Console : SingletonD<Console>
 {
-    void Start()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
 
 }

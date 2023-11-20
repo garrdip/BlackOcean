@@ -16,12 +16,25 @@ public class RoomUI : InstanceD<RoomUI>
     public HorizontalLayoutGroup horizontalLayoutGroup;
     public List<GameObject> topIcons = new List<GameObject>();
     public List<Image> topIconImages = new List<Image>();
+    public List<Button> swapButtons = new List<Button>();
 
 
     void Start()
     {
         buttonReady.onClick.AddListener(() => HandleRadeyState());
         ExitButton.onClick.AddListener(() => HandleBackToMainScene());
+        for(int i=0; i<swapButtons.Count; i++){
+            int buttonIndex = i; 
+            swapButtons[i].onClick.AddListener(() => HandleLobbyPlayerSwap(buttonIndex));
+        }
+    }
+
+    public void HandleLobbyPlayerSwap(int swapTargetIndex)
+    {
+        int localPlayerOrder = (int)NetworkClient.localPlayer.GetComponent<RoomPlayer>().order;
+        if(localPlayerOrder != swapTargetIndex){
+            Debug.Log($"{swapTargetIndex}번 플레이어 스왑버튼 클릭");
+        }
     }
 
     public void SetReadyButton(string str)

@@ -41,9 +41,15 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
 
     protected override void Start()
     {
+        // 메시지매니저, 토스트 캔버스, 채팅 캔버스를 DDOL로 전환하고, 네트워크 매니저에 관리용 리스트에 해당 값들 추가하여 관리되도록 할당
         DontDestroyOnLoad(gameObject);
-        DontDestroyOnLoad(toastMessageCanvas); // 토스트 메시지 캔버스 오브젝트는 모든 씬에 필요하므로, 메시지 매니저 초기화 시점에 DontDestroyOnLoad 호출
-        DontDestroyOnLoad(chatCanvas); // 채팅 캔버스 오브젝트는 모든 씬에 필요하므로, 메시지 매니저 초기화 시점에 DontDestroyOnLoad 호출
+        DontDestroyOnLoad(toastMessageCanvas);
+        DontDestroyOnLoad(chatCanvas);
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        networkRoomManager.managers.Add(gameObject);
+        networkRoomManager.components.Add(toastMessageCanvas);
+        networkRoomManager.components.Add(chatCanvas);
+        
         chatStringBuilder = new StringBuilder();
     }
 

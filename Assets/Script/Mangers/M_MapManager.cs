@@ -89,6 +89,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     protected override void Start()
     {
         DontDestroyOnLoad(gameObject);
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        networkRoomManager.managers.Add(gameObject);
     }
 
     /*
