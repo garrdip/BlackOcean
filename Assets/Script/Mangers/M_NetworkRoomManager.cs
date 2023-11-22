@@ -61,9 +61,8 @@ public class M_NetworkRoomManager : NetworkRoomManager
         lobbyPlayer.roomPlayer = roomPlayer.GetComponent<RoomPlayer>();
         NetworkServer.Spawn(lobbyPlayerObject, conn);
 
-        // 로비플레이어 관리하는 SyncList
-        M_LobbyMananger.instance.lobbyPlayers.Add(lobbyPlayer.netId);
-
+        // 로비플레이어 리스트에 추가
+        M_LobbyMananger.instance.AddLobbyPlayer(lobbyPlayer.netId);
         return roomPlayer;
     }
     

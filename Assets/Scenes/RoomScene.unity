@@ -658,7 +658,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  myLobbyPlayer: 0
+  ownedLobbyPlayer: 0
+  lobbyPlayersCount: 0
 --- !u!114 &303193678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3365,14 +3366,12 @@ MonoBehaviour:
   - {fileID: 1378613316}
   - {fileID: 229277393}
   - {fileID: 1335509977}
-  topRects:
-  - {fileID: 8968590605043395824}
-  - {fileID: 8968590604370123896}
-  - {fileID: 8968590605292856461}
-  orderPosition:
-  - {x: -750, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 750, y: 0, z: 0}
+  topIconMy: {fileID: 21300000, guid: 8d9e8a9a6b9addb45a30064cbc543974, type: 3}
+  topIconMyLight: {fileID: 21300000, guid: c297e8b5690474c44bf776a06869f8ea, type: 3}
+  topIconExChange: {fileID: 21300000, guid: 4303e50d0726d164b8bc3ac485020a94, type: 3}
+  topIconExChangeLight: {fileID: 21300000, guid: 653c41dbdda4b18458bc83aa10383277, type: 3}
+  topIconReady: {fileID: 21300000, guid: 8f711cc5ad5c38b46877fc3526e35a5d, type: 3}
+  topIconReadyLight: {fileID: 21300000, guid: 6872d9f6b95b6f7438311279c9fef563, type: 3}
 --- !u!1 &1781215236
 GameObject:
   m_ObjectHideFlags: 0

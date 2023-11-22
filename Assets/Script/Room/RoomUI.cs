@@ -16,6 +16,14 @@ public class RoomUI : InstanceD<RoomUI>
     public List<Image> topIconImages = new List<Image>();
     public List<Button> swapButtons = new List<Button>();
 
+    [Header("스왑버튼 아이콘 이미지")]
+    public Sprite topIconMy;
+    public Sprite topIconMyLight;
+    public Sprite topIconExChange;
+    public Sprite topIconExChangeLight;
+    public Sprite topIconReady;
+    public Sprite topIconReadyLight;
+
 
     void Start()
     {
@@ -27,11 +35,11 @@ public class RoomUI : InstanceD<RoomUI>
         }
     }
 
+    // 오더 스왑 제어
     public void HandleLobbyPlayerSwap(int swapTargetIndex)
     {
-        Debug.Log(swapTargetIndex + "번째 버튼");
-        int owndLobbyPlayer = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == M_LobbyMananger.instance.ownedLobbyPlayer);
-        M_LobbyMananger.instance.CmdSwapLobbyPlayer(owndLobbyPlayer, swapTargetIndex);
+        int ownedLobbyPlayer = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == M_LobbyMananger.instance.ownedLobbyPlayer);
+        M_LobbyMananger.instance.CmdSwapLobbyPlayer(ownedLobbyPlayer, swapTargetIndex);
     }
 
     public void SetReadyButton(string str)

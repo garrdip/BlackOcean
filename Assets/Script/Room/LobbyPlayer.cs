@@ -6,9 +6,11 @@ using ProjectD;
 using Mirror;
 using TMPro;
 using Steamworks;
+using DG.Tweening;
 
 public class LobbyPlayer : NetworkBehaviour
 {
+    public CanvasGroup canvasGroup;
 
     [Header("SelectorBaseLayout")]
     public GameObject selectorBaseLayout;
@@ -17,10 +19,6 @@ public class LobbyPlayer : NetworkBehaviour
     public Image selectRight;
     public Image baseDark;
     public Image characterSelectCompleteImage;
-    public Sprite topIconMy;
-    public Sprite topIconMyLight;
-    public Sprite topIconExChange;
-    public Sprite topIconExChangeLight;
 
     [Header("ClassLayout")]
     public GameObject classLayout;
@@ -54,19 +52,28 @@ public class LobbyPlayer : NetworkBehaviour
     void Start()
     {
         roomPlayer.onSelectCompleteCharacter += OnSelectCompleteCharacter; // 캐릭터 선택 이벤트 수신
+        InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-
-        SetLobbyPlayerParent();
-        InitLobbyPlayerView(isOwned);
         OnSelectCompleteCharacter(roomPlayer.character); // 클라 생성 시점에도 캐릭터 선택 정보 세팅(클라이언트가 방에 접속할때 다른 유저가 이미 선택한 상태일 경우 그 값을 수신받아 설정하는 용도)
         if(isOwned){
             CmdSetSteamId((ulong)SteamUser.GetSteamID());// 로컬유저의 스팀아이디를 조회하여 다른 클라이언트들에 공유
-            M_LobbyMananger.instance.ownedLobbyPlayer = GetComponent<NetworkIdentity>().netId;
         }
+    }
+
+    public override void OnStartAuthority()
+    {
+        base.OnStartAuthority();
+        M_LobbyMananger.instance.ownedLobbyPlayer = GetComponent<NetworkIdentity>().netId; // 로비매니저에 로컬플레이어 소유의 로비플레이어 오브젝트 참조값 설정
+    }
+
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
+        M_LobbyMananger.instance.RemoveLobbyPlayer(GetComponent<NetworkIdentity>().netId); // 로비플레이어가 서버에서 사라질 때 리스트에서 제거
     }
 
     public void OnSelectCompleteCharacter(Character character)
@@ -95,22 +102,46 @@ public class LobbyPlayer : NetworkBehaviour
         }
     }
 
-    // LobbyPlayer 부모 오브젝트 설정 및 트랜스폼 값 설정
-    private void SetLobbyPlayerParent()
-    {
-        transform.SetParent(RoomUI.instance.topIcons[(int)roomPlayer.order].transform); // 플레이어 Order값에 따라 룸씬의 각 아이콘 순서에 맞춰 자식오브젝트로 설정
-        transform.localScale = new Vector3(1f, 1f, 1f); // SetParent 수행시 스케일이 부모에 따라 변동되므로 수동으로 스케일 기본값인 1로 조정
-        transform.localPosition = Vector3.zero;
-        transform.SetAsFirstSibling(); // TopIcon보다 먼저 그려지도록 SiblingIndex를 맨 처음으로 설정
-    }
-
-    // LobbyPlayer의 초기화 시점의 뷰요소 활성화, 비활성화 상태값 설정
+    // 로비플레이어 초기 뷰 컴포넌트 설정(부모 오브젝트 설정 및 트랜스폼 값 설정)
     private void InitLobbyPlayerView(bool isOwned)
     {
-        RoomUI.instance.topIconImages[(int)roomPlayer.order].sprite = isOwned ? topIconMy : topIconExChange;
-        selectorBaseLayout.SetActive(isOwned);
-        classLayout.SetActive(isOwned);
-        classIconLayout.SetActive(!classLayout.activeSelf);
+        int index = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
+        if(index != -1){
+            transform.SetParent(RoomUI.instance.topIcons[index].transform); // 플레이어 Order값에 따라 룸씬의 각 아이콘 순서에 맞춰 자식오브젝트로 설정
+            transform.localScale = new Vector3(1f, 1f, 1f); // SetParent 수행시 스케일이 부모에 따라 변동되므로 수동으로 스케일 기본값인 1로 조정
+            transform.localPosition = new Vector3(0f, 200f, 0f);
+            transform.SetAsFirstSibling(); // TopIcon보다 먼저 그려지도록 SiblingIndex를 맨 처음으로 설정
+            selectorBaseLayout.SetActive(isOwned);
+            classLayout.SetActive(isOwned);
+            classIconLayout.SetActive(!classLayout.activeSelf);
+            if(isOwned){
+                RoomUI.instance.topIconImages[index].sprite = RoomUI.instance.topIconMy;
+            }
+            canvasGroup.DOFade(1.0f, 0.5f);
+            transform.DOLocalMoveY(0f, 0.5f);
+        }
+    }
+
+    // 로비플레이어 뷰 컴포넌트 변경사항 업데이트
+    public void ChangeLobbyPlayerView(int index)
+    {
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(canvasGroup.DOFade(0.0f, 0.5f));
+        sequence.Join(transform.DOLocalMoveY(200f, 0.5f).OnComplete(() => {
+            transform.SetParent(RoomUI.instance.topIcons[index].transform);
+            transform.localPosition = new Vector3(0f, 200f, 0f);
+            transform.localScale = new Vector3(1f, 1f, 1f);
+            transform.SetAsFirstSibling();
+        }));
+        sequence.Append(transform.DOLocalMoveY(0f, 0.5f));
+        sequence.Join(canvasGroup.DOFade(1.0f, 0.5f));   
+        for(int i=0; i<RoomUI.instance.swapButtons.Count; i++){
+            RoomUI.instance.topIconImages[i].sprite =  RoomUI.instance.topIconExChange;
+        }
+        int ownedLobbyPlayerIndex = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == M_LobbyMananger.instance.ownedLobbyPlayer);
+        if(ownedLobbyPlayerIndex != -1){
+            RoomUI.instance.topIconImages[ownedLobbyPlayerIndex].sprite =  RoomUI.instance.topIconMy;
+        }
     }
 
     [Command]
