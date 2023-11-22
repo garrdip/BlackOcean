@@ -10,8 +10,6 @@ using DG.Tweening;
 
 public class LobbyPlayer : NetworkBehaviour
 {
-    public CanvasGroup canvasGroup;
-
     [Header("SelectorBaseLayout")]
     public GameObject selectorBaseLayout;
     public Image selectLeft;
@@ -48,11 +46,23 @@ public class LobbyPlayer : NetworkBehaviour
     [SyncVar(hook = nameof(OnChangedSteamID))]
     public ulong steamID;
 
+    // Dotween 참조값
+    private Sequence sequence;
+    private Tween fadeInTween;
+    private Tween fadeOutTween;
+    private Tween upTween;
+    private Tween downTween;
+
 
     void Start()
     {
         roomPlayer.onSelectCompleteCharacter += OnSelectCompleteCharacter; // 캐릭터 선택 이벤트 수신
         InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
+    }
+
+    void OnDestroy()
+    {
+        KillTweenLobbyPlayer(); // 로비플레이어 오브젝트 파괴시 sequence, tween kill
     }
 
     public override void OnStartClient()
@@ -105,36 +115,30 @@ public class LobbyPlayer : NetworkBehaviour
     // 로비플레이어 초기 뷰 컴포넌트 설정(부모 오브젝트 설정 및 트랜스폼 값 설정)
     private void InitLobbyPlayerView(bool isOwned)
     {
-        int index = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
-        if(index != -1){
-            transform.SetParent(RoomUI.instance.topIcons[index].transform); // 플레이어 Order값에 따라 룸씬의 각 아이콘 순서에 맞춰 자식오브젝트로 설정
-            transform.localScale = new Vector3(1f, 1f, 1f); // SetParent 수행시 스케일이 부모에 따라 변동되므로 수동으로 스케일 기본값인 1로 조정
-            transform.localPosition = new Vector3(0f, 200f, 0f);
-            transform.SetAsFirstSibling(); // TopIcon보다 먼저 그려지도록 SiblingIndex를 맨 처음으로 설정
-            selectorBaseLayout.SetActive(isOwned);
-            classLayout.SetActive(isOwned);
-            classIconLayout.SetActive(!classLayout.activeSelf);
-            if(isOwned){
-                RoomUI.instance.topIconImages[index].sprite = RoomUI.instance.topIconMy;
+        CanvasGroup canvasGroup = GetComponent<CanvasGroup>();
+        if(canvasGroup != null){
+            int index = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
+            if(index != -1){
+                transform.SetParent(RoomUI.instance.topIcons[index].transform); // 플레이어 Order값에 따라 룸씬의 각 아이콘 순서에 맞춰 자식오브젝트로 설정
+                transform.localScale = new Vector3(1f, 1f, 1f); // SetParent 수행시 스케일이 부모에 따라 변동되므로 수동으로 스케일 기본값인 1로 조정
+                transform.localPosition = new Vector3(0f, 200f, 0f);
+                transform.SetAsFirstSibling(); // TopIcon보다 먼저 그려지도록 SiblingIndex를 맨 처음으로 설정
+                canvasGroup.DOFade(1.0f, 0.5f);
+                transform.DOLocalMoveY(0f, 0.5f);
+                selectorBaseLayout.SetActive(isOwned);
+                classLayout.SetActive(isOwned);
+                classIconLayout.SetActive(!classLayout.activeSelf);
+                if(isOwned){
+                    RoomUI.instance.topIconImages[index].sprite = RoomUI.instance.topIconMy;
+                }
             }
-            canvasGroup.DOFade(1.0f, 0.5f);
-            transform.DOLocalMoveY(0f, 0.5f);
         }
     }
 
     // 로비플레이어 뷰 컴포넌트 변경사항 업데이트
     public void ChangeLobbyPlayerView(int index)
     {
-        Sequence sequence = DOTween.Sequence();
-        sequence.Append(canvasGroup.DOFade(0.0f, 0.5f));
-        sequence.Join(transform.DOLocalMoveY(200f, 0.5f).OnComplete(() => {
-            transform.SetParent(RoomUI.instance.topIcons[index].transform);
-            transform.localPosition = new Vector3(0f, 200f, 0f);
-            transform.localScale = new Vector3(1f, 1f, 1f);
-            transform.SetAsFirstSibling();
-        }));
-        sequence.Append(transform.DOLocalMoveY(0f, 0.5f));
-        sequence.Join(canvasGroup.DOFade(1.0f, 0.5f));   
+        DOTweenLobbyPlayer(index);
         for(int i=0; i<RoomUI.instance.swapButtons.Count; i++){
             RoomUI.instance.topIconImages[i].sprite =  RoomUI.instance.topIconExChange;
         }
@@ -142,6 +146,38 @@ public class LobbyPlayer : NetworkBehaviour
         if(ownedLobbyPlayerIndex != -1){
             RoomUI.instance.topIconImages[ownedLobbyPlayerIndex].sprite =  RoomUI.instance.topIconMy;
         }
+    }
+
+    // 트위닝, 시퀀스 등록
+    private void DOTweenLobbyPlayer(int index)
+    {
+        CanvasGroup canvasGroup = GetComponent<CanvasGroup>();
+        if(canvasGroup != null){
+            fadeInTween = canvasGroup.DOFade(0.0f, 0.5f);
+            upTween = transform.DOLocalMoveY(200f, 0.5f).OnComplete(() => {
+                transform.SetParent(RoomUI.instance.topIcons[index].transform);
+                transform.localPosition = new Vector3(0f, 200f, 0f);
+                transform.localScale = new Vector3(1f, 1f, 1f);
+                transform.SetAsFirstSibling();
+            });
+            downTween = transform.DOLocalMoveY(0f, 0.5f);
+            fadeOutTween = canvasGroup.DOFade(1.0f, 0.5f);
+            sequence = DOTween.Sequence();
+            sequence.Append(fadeInTween);
+            sequence.Join(upTween);
+            sequence.Append(downTween);
+            sequence.Join(fadeOutTween);
+        }
+    }
+
+    // 트위닝, 시퀀스 제거
+    private void KillTweenLobbyPlayer()
+    {
+        fadeInTween.Kill();
+        fadeOutTween.Kill();
+        upTween.Kill();
+        downTween.Kill();
+        sequence.Kill();
     }
 
     [Command]
