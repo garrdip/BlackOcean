@@ -12,6 +12,7 @@ public class LobbyPlayer : NetworkBehaviour
 {
     [Header("SelectorBaseLayout")]
     public GameObject selectorBaseLayout;
+    public Image selectorBaseMyLine;
     public Image selectLeft;
     public Image selectMiddle;
     public Image selectRight;
@@ -126,6 +127,7 @@ public class LobbyPlayer : NetworkBehaviour
                 canvasGroup.DOFade(1.0f, 0.5f);
                 transform.DOLocalMoveY(0f, 0.5f);
                 selectorBaseLayout.SetActive(isOwned);
+                selectorBaseMyLine.gameObject.SetActive(isOwned);
                 classLayout.SetActive(isOwned);
                 classIconLayout.SetActive(!classLayout.activeSelf);
                 if(isOwned){

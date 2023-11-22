@@ -2688,8 +2688,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  canvasGroup: {fileID: 5321080288425205383}
   selectorBaseLayout: {fileID: 1507683924078980465}
+  selectorBaseMyLine: {fileID: 1507683923975280139}
   selectLeft: {fileID: 1507683922339736143}
   selectMiddle: {fileID: 1507683924038357355}
   selectRight: {fileID: 1507683922916616162}

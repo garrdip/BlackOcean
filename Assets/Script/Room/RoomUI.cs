@@ -5,12 +5,14 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 using ProjectD;
+using DG.Tweening;
 
 public class RoomUI : InstanceD<RoomUI>
 {
     [Header("UI 컴포넌트")]
     public Button buttonReady;
     public Button ExitButton;
+    public Button buttonOption;
     public TextMeshProUGUI textReady;
     public List<GameObject> topIcons = new List<GameObject>();
     public List<Image> topIconImages = new List<Image>();
@@ -29,6 +31,7 @@ public class RoomUI : InstanceD<RoomUI>
     {
         buttonReady.onClick.AddListener(() => HandleRadeyState());
         ExitButton.onClick.AddListener(() => HandleBackToMainScene());
+        buttonOption.onClick.AddListener(() => HandleOPtionButtonClick());
         for(int i=0; i<swapButtons.Count; i++){
             int buttonIndex = i; 
             swapButtons[i].onClick.AddListener(() => HandleLobbyPlayerSwap(buttonIndex));
@@ -78,6 +81,22 @@ public class RoomUI : InstanceD<RoomUI>
         M_LoadingManager.instance.state = LOADING_STATE.SCENE_LOADING;
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         M_NetworkRoomManager.ServerChangeScene(M_NetworkRoomManager.GameplayScene);
+    }
+
+    // 옵션버튼 클릭
+    public void HandleOPtionButtonClick()
+    {
+        OptionButton optionButton = buttonOption.GetComponent<OptionButton>();
+        optionButton.isButtonClick = !optionButton.isButtonClick;
+        if(optionButton.isButtonClick){
+            optionButton.optionIconLight.gameObject.SetActive(true);
+            optionButton.optionIconRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 90f), 0.3f);
+            optionButton.optionIconLightRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 90f), 0.3f);
+        }else{
+            optionButton.optionIconLight.gameObject.SetActive(false);
+            optionButton.optionIconRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 0f), 0.3f);
+            optionButton.optionIconLightRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 0f), 0.3f);
+        }
     }
 
     [Server]
