@@ -580,7 +580,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
             // 카메라 위치 리셋
-            Camera.main.orthographic = true;
+            //Camera.main.orthographic = true;
             Camera.main.transform.position = new Vector3(0f, 0f, -10f);
 
             // UI 활성화 상태 변경

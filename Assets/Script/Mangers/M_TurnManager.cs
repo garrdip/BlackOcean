@@ -946,7 +946,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             // 카메라 위치 리셋
             Vector3 currLoc = M_MapManager.instance.currentRoom.transform.position;
             Camera.main.transform.position = currLoc + new Vector3(0,0,-8);
-            Camera.main.orthographic = false; 
+            //Camera.main.orthographic = false; 
             // UI 활성화 상태 변경
             M_MapManager.instance.roommaps.SetActive(true);
             M_MapManager.instance.game.SetActive(false);
