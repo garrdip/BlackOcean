@@ -43,6 +43,14 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     public GameObject chatNotificationIcon;
     public GameObject chatNotificationIconLight; // 애니매이션으로 무한루프로 깜빡이도록
 
+    // Dotween 참조값
+    private Tween chatMessageBoxTween;
+    private Tween chatInputTween;
+    private Tween buttonChatBoxTween;
+    private Tween fadeInTweener;
+    private Tweener fadeOutTweener;
+    private Sequence notiLoopSequence;
+
     protected override void Start()
     {
         // 메시지매니저, 토스트 캔버스, 채팅 캔버스를 DDOL로 전환하고, 네트워크 매니저에 관리용 리스트에 해당 값들 추가하여 관리되도록 할당
@@ -55,6 +63,16 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         networkRoomManager.components.Add(chatCanvas);
         
         chatStringBuilder = new StringBuilder();
+    }
+
+    void OnDestroy()
+    {
+        chatMessageBoxTween.Kill();
+        chatInputTween.Kill();
+        buttonChatBoxTween.Kill();
+        fadeInTweener.Kill();
+        fadeOutTweener.Kill();
+        notiLoopSequence.Kill();
     }
 
     void Update()
@@ -135,9 +153,9 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         canvasGroup.gameObject.SetActive(true);
         canvasGroup.DOFade(1.0f, fadeInTime).OnComplete(() => {
             canvasGroup.DOFade(0.0f, fadeOutTime).OnComplete(() => {
-            canvasGroup.gameObject.SetActive(false);
-            canvasGroup.transform.DOKill();
-            toastMessageText.text = string.Empty;
+                canvasGroup.gameObject.SetActive(false);
+                canvasGroup.transform.DOKill();
+                toastMessageText.text = string.Empty;
             });
         });
     }
@@ -170,15 +188,18 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     {
         isChatBoxVisible = !isChatBoxVisible;
         if(isChatBoxVisible){
-            chatMessageBoxRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
-            chatMessageInputRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
-            buttonChatBoxRect.DOAnchorPosX((chatMessageBoxRect.rect.width) - 10f, 0.5f);
+            chatMessageBoxTween = chatMessageBoxRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
+            chatInputTween = chatMessageInputRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
+            buttonChatBoxTween = buttonChatBoxRect.DOAnchorPosX((chatMessageBoxRect.rect.width) - 10f, 0.5f);
             chatNotificationIcon.SetActive(false);
             chatNotificationIconLight.SetActive(false);
+            fadeInTweener.Kill();
+            fadeOutTweener.Kill();
+            notiLoopSequence.Kill();
         }else{
-            chatMessageBoxRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
-            chatMessageInputRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
-            buttonChatBoxRect.DOAnchorPosX((buttonChatBoxRect.rect.width / 2) + 100f, 0.5f);
+            chatMessageBoxTween = chatMessageBoxRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
+            chatInputTween =  chatMessageInputRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
+            buttonChatBoxTween = buttonChatBoxRect.DOAnchorPosX((buttonChatBoxRect.rect.width / 2) + 100f, 0.5f);
         }
     }
 
@@ -216,9 +237,9 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         if(!isChatBoxVisible){
             chatNotificationIcon.SetActive(true);
             chatNotificationIconLight.SetActive(true);
-            Tweener fadeInTweener = chatNotificationIconLight.GetComponent<Image>().DOFade(0f, 0.3f);
-            Tweener fadeOutTweener = chatNotificationIconLight.GetComponent<Image>().DOFade(1f, 0.3f);
-            Sequence sequence = DOTween.Sequence()
+            fadeInTweener = chatNotificationIconLight.GetComponent<Image>().DOFade(0f, 0.3f);
+            fadeOutTweener = chatNotificationIconLight.GetComponent<Image>().DOFade(1f, 0.3f);
+            notiLoopSequence = DOTween.Sequence()
                 .Append(fadeInTweener)
                 .Append(fadeOutTweener)
                 .SetLoops(-1);
