@@ -39,6 +39,10 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     public bool isChatBoxVisible = false; // 채팅창 활성화 상태 여부
     public bool isMouseOnChatBox = false; // 현재 마우스 포인터가 채팅메시지 박스 위에 있는지 여부
 
+    [Header("ChatBoxVisibilityButton")]
+    public GameObject chatNotificationIcon;
+    public GameObject chatNotificationIconLight; // 애니매이션으로 무한루프로 깜빡이도록
+
     protected override void Start()
     {
         // 메시지매니저, 토스트 캔버스, 채팅 캔버스를 DDOL로 전환하고, 네트워크 매니저에 관리용 리스트에 해당 값들 추가하여 관리되도록 할당
@@ -168,11 +172,13 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         if(isChatBoxVisible){
             chatMessageBoxRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
             chatMessageInputRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
-            buttonChatBoxRect.DOAnchorPosX((chatMessageBoxRect.rect.width) + (buttonChatBoxRect.rect.width / 2), 0.5f);
+            buttonChatBoxRect.DOAnchorPosX((chatMessageBoxRect.rect.width) - 10f, 0.5f);
+            chatNotificationIcon.SetActive(false);
+            chatNotificationIconLight.SetActive(false);
         }else{
             chatMessageBoxRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
             chatMessageInputRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
-            buttonChatBoxRect.DOAnchorPosX((buttonChatBoxRect.rect.width / 2), 0.5f);
+            buttonChatBoxRect.DOAnchorPosX((buttonChatBoxRect.rect.width / 2) + 100f, 0.5f);
         }
     }
 
@@ -207,6 +213,16 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         AppendMessage(color, playerName, message);
         messageInput.ActivateInputField();
         messageInput.text = string.Empty;;
+        if(!isChatBoxVisible){
+            chatNotificationIcon.SetActive(true);
+            chatNotificationIconLight.SetActive(true);
+            Tweener fadeInTweener = chatNotificationIconLight.GetComponent<Image>().DOFade(0f, 0.3f);
+            Tweener fadeOutTweener = chatNotificationIconLight.GetComponent<Image>().DOFade(1f, 0.3f);
+            Sequence sequence = DOTween.Sequence()
+                .Append(fadeInTweener)
+                .Append(fadeOutTweener)
+                .SetLoops(-1);
+        }
     }
 
     // 룸씬에서 다른 클라 연결해제 이벤트 수신
