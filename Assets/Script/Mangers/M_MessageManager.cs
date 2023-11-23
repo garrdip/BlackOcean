@@ -73,6 +73,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         fadeInTweener.Kill();
         fadeOutTweener.Kill();
         notiLoopSequence.Kill();
+        DOTween.Kill(canvasGroup);
     }
 
     void Update()
