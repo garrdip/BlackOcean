@@ -36,16 +36,14 @@ public class LobbyPlayer : NetworkBehaviour
     [Header("CapIconLayout")]
     public GameObject capIconLayout;
     public List<GameObject> selectableCharacters = new List<GameObject>();
-
     public Sprite danhyangSprite;
     public Sprite erisSprite;
     public Sprite georkSprite;
 
-    [SyncVar]
-    public RoomPlayer roomPlayer;
-
-    [SyncVar(hook = nameof(OnChangedSteamID))]
-    public ulong steamID;
+    [Header("SwapRequestLayout")]
+    public GameObject swapRequestLayout;
+    public Button buttonSwapAccept;
+    public Button buttonSwapReject;
 
     // Dotween 참조값
     private Sequence sequence;
@@ -54,11 +52,37 @@ public class LobbyPlayer : NetworkBehaviour
     private Tween upTween;
     private Tween downTween;
 
+    [SyncVar]
+    public RoomPlayer roomPlayer;
+
+    [SyncVar(hook = nameof(OnChangedSteamID))]
+    public ulong steamID;
+
+    [SyncVar]
+    public int oldIndex;
+    
+    [SyncVar]
+    public int newIndex;
+
 
     void Start()
     {
         roomPlayer.onSelectCompleteCharacter += OnSelectCompleteCharacter; // 캐릭터 선택 이벤트 수신
         InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
+        buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
+        buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
+    }
+
+    private void HandleClickButtonSwapAccept()
+    {
+        swapRequestLayout.SetActive(false);
+        CmdSwapAccept(oldIndex, newIndex);
+    }
+
+    private void HandleClickButtonSwapReject()
+    {
+        swapRequestLayout.SetActive(false);
+        CmdSwapReject(oldIndex);
     }
 
     void OnDestroy()
@@ -122,7 +146,7 @@ public class LobbyPlayer : NetworkBehaviour
             if(index != -1){
                 transform.SetParent(RoomUI.instance.topIcons[index].transform); // 플레이어 Order값에 따라 룸씬의 각 아이콘 순서에 맞춰 자식오브젝트로 설정
                 transform.localScale = new Vector3(1f, 1f, 1f); // SetParent 수행시 스케일이 부모에 따라 변동되므로 수동으로 스케일 기본값인 1로 조정
-                transform.localPosition = new Vector3(0f, 200f, 0f);
+                transform.localPosition = new Vector3(0f, 100f, 0f);
                 transform.SetAsFirstSibling(); // TopIcon보다 먼저 그려지도록 SiblingIndex를 맨 처음으로 설정
                 canvasGroup.DOFade(1.0f, 0.5f);
                 transform.DOLocalMoveY(0f, 0.5f);
@@ -156,9 +180,9 @@ public class LobbyPlayer : NetworkBehaviour
         CanvasGroup canvasGroup = GetComponent<CanvasGroup>();
         if(canvasGroup != null){
             fadeInTween = canvasGroup.DOFade(0.0f, 0.5f);
-            upTween = transform.DOLocalMoveY(200f, 0.5f).OnComplete(() => {
+            upTween = transform.DOLocalMoveY(100f, 0.5f).OnComplete(() => {
                 transform.SetParent(RoomUI.instance.topIcons[index].transform);
-                transform.localPosition = new Vector3(0f, 200f, 0f);
+                transform.localPosition = new Vector3(0f, 100f, 0f);
                 transform.localScale = new Vector3(1f, 1f, 1f);
                 transform.SetAsFirstSibling();
             });
@@ -188,6 +212,32 @@ public class LobbyPlayer : NetworkBehaviour
         steamID = steamId;
     }
 
+    // 교환요청 수락 커맨드
+    [Command]
+    public void CmdSwapAccept(int oldIndex, int newIndex)
+    {
+        // 스왑로직 수행
+        M_LobbyMananger.instance.CmdSwapLobbyPlayer(oldIndex, newIndex);
+
+        // 교환요청자와 상대방 모두에게 요청이 수락되었음을 알리는 TargetRpc 이벤트 전달
+        uint ownedNetId = M_LobbyMananger.instance.lobbyPlayers[oldIndex];
+        uint targetNetID = M_LobbyMananger.instance.lobbyPlayers[newIndex];
+        LobbyPlayer ownedlobbyPlayer = NetworkServer.spawned[ownedNetId].GetComponent<LobbyPlayer>();
+        LobbyPlayer targetLobbyPlayer = NetworkServer.spawned[targetNetID].GetComponent<LobbyPlayer>();
+        TargetResponseSwapAccept(ownedlobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+        TargetResponseSwapAccept(targetLobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+    }
+
+    // 교환요청 거절 커맨드
+    [Command]
+    public void CmdSwapReject(int targetIndex)
+    {
+        // 교환요청자에게 요청이 거절되었음을 알리는 TargetRpc 이벤트 전달
+        uint targetNetID = M_LobbyMananger.instance.lobbyPlayers[targetIndex];
+        LobbyPlayer lobbyPlayer = NetworkServer.spawned[targetNetID].GetComponent<LobbyPlayer>();
+        TargetResponseSwapReject(lobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+    }
+
     // SteamID를 이용하여 플레이어 아이디와  프로필사진 데이터를 조회하여 뷰요소에 설정
     private void OnChangedSteamID(ulong oldVal,  ulong newVal)
     {
@@ -196,5 +246,36 @@ public class LobbyPlayer : NetworkBehaviour
         int imageId = SteamFriends.GetLargeFriendAvatar(cSteamId);
         if(imageId == -1) return;
         steamAvatar.texture = M_SteamManager.instance.GetSteamImageAsTextureByImageId(imageId);
+    }
+
+    // 교환요청 응답 : 승인, 거절 버튼 UI 활성화
+    [TargetRpc]
+    public void TargetResponseSwap(NetworkConnectionToClient target)
+    {
+        swapRequestLayout.SetActive(true);
+    }
+
+    // 교환요청 수락 응답 : 교환요청자와 상대방 모두에게 수락 메시지 표시
+    [TargetRpc]
+    public void TargetResponseSwapAccept(NetworkConnectionToClient target)
+    {
+        M_MessageManager.instance
+            .Position(ToastPosition.Bottom)
+            .MessageBoxColor(Color.green)
+            .TextColor(Color.white)
+            .Text($"위치 교환 요청이 수락되었습니다.")
+            .Show();
+    }
+
+    // 교환요청 거절 응답 : 교환요청자에게만 거절 메시지 표시
+    [TargetRpc]
+    public void TargetResponseSwapReject(NetworkConnectionToClient target)
+    {
+        M_MessageManager.instance
+            .Position(ToastPosition.Bottom)
+            .MessageBoxColor(Color.red)
+            .TextColor(Color.white)
+            .Text($"위치 교환 요청이 거절되었습니다.")
+            .Show();
     }
 }

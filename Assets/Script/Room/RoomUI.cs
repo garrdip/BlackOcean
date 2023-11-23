@@ -41,8 +41,14 @@ public class RoomUI : InstanceD<RoomUI>
     // 오더 스왑 제어
     public void HandleLobbyPlayerSwap(int swapTargetIndex)
     {
-        int ownedLobbyPlayer = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == M_LobbyMananger.instance.ownedLobbyPlayer);
-        M_LobbyMananger.instance.CmdSwapLobbyPlayer(ownedLobbyPlayer, swapTargetIndex);
+        int myIndex = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == M_LobbyMananger.instance.ownedLobbyPlayer);
+        if(myIndex != swapTargetIndex){ // 로컬유저 본인에 대한 요청은 제외
+            if( M_LobbyMananger.instance.lobbyPlayers[swapTargetIndex] == 0){
+                M_LobbyMananger.instance.CmdSwapLobbyPlayer(myIndex, swapTargetIndex); // 스왑 타겟이 빈슬롯이면 해당 슬롯으로 이동되도록 요청
+            }else{
+                M_LobbyMananger.instance.CmdRequestSwap(myIndex, swapTargetIndex); // 스왑 타겟에 이미 로비플레이어가 있으면, 커맨드 전송하여 타겟에게 승인, 거절 UI활성화 되도록 요청
+            }
+        }
     }
 
     public void SetReadyButton(string str)

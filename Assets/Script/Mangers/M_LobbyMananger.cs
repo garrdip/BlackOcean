@@ -25,6 +25,7 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
         lobbyPlayers.Callback += OnChangeLobbyPlayerOrderChanged;
     }
 
+    // 로비플레이어들 오더 관리용 Synclist의 요소를 인덱스에 맞게 스왑 수행
     [Command (requiresAuthority = false)]
     public void CmdSwapLobbyPlayer(int oldIndex, int newIndex)
     {
@@ -33,12 +34,23 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
         lobbyPlayers[newIndex] = temp;
     }
 
+    // 스왑 요청을 받은 로비플레이어의 SyncVar 변수에 인덱스 저장 + 요청받은 로비플레이어만 수락,거절 UI 활성화되도록 TargetRpc 전송
+    [Command (requiresAuthority = false)]
+    public void CmdRequestSwap(int oldIndex, int newIndex)
+    {
+        uint targetNetId = lobbyPlayers[newIndex];
+        LobbyPlayer targetLobbyPlayer = NetworkServer.spawned[targetNetId].GetComponent<LobbyPlayer>();
+        targetLobbyPlayer.TargetResponseSwap(targetLobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+        targetLobbyPlayer.oldIndex = oldIndex; // 요청한 로비플레이어의 인덱스
+        targetLobbyPlayer.newIndex = newIndex; // 요청한 로비플레이어의 교환상대 인덱스
+    }
+
     // 로비 플레이어 리스트에 추가
     [Server]
     public void AddLobbyPlayer(uint targetNetId)
     {
         if(lobbyPlayersCount <= lobbyPlayers.Count){
-            if(lobbyPlayersCount == 0){ // 처음엔 0번에 할당
+            if(lobbyPlayersCount == 0 || lobbyPlayers[0] == 0){ // 로비플레이어 인원이 0인 경우 or 0번이 빈 슬롯인 경우
                 lobbyPlayers.RemoveAt(0);
                 lobbyPlayers.Insert(0, targetNetId);
             }else if(lobbyPlayers[lobbyPlayersCount] == 0){ // 현재 LobbyPlayer 리스트에 있는 유저의 다음 인덱스 위치가 빈 슬롯인 경우 해당 인덱스에 새로 들어온 LobbyPlayer 추가
@@ -60,7 +72,8 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
     public void RemoveLobbyPlayer(uint targetNetId)
     {
         int index = lobbyPlayers.FindIndex((netId) => netId == targetNetId);
-        lobbyPlayers[index] = 0;
+        lobbyPlayers.RemoveAt(index);
+        lobbyPlayers.Insert(index, 0);
         lobbyPlayersCount--; // LobbyPlayer Count 감소
     }
 
