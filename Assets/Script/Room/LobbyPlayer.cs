@@ -52,6 +52,8 @@ public class LobbyPlayer : NetworkBehaviour
     private Tween upTween;
     private Tween downTween;
 
+    private float positionY;
+
     [SyncVar]
     public RoomPlayer roomPlayer;
 
@@ -67,6 +69,7 @@ public class LobbyPlayer : NetworkBehaviour
 
     void Start()
     {
+        positionY = -30f;
         roomPlayer.onSelectCompleteCharacter += OnSelectCompleteCharacter; // 캐릭터 선택 이벤트 수신
         InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
         buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
@@ -149,7 +152,7 @@ public class LobbyPlayer : NetworkBehaviour
                 transform.localPosition = new Vector3(0f, 100f, 0f);
                 transform.SetAsFirstSibling(); // TopIcon보다 먼저 그려지도록 SiblingIndex를 맨 처음으로 설정
                 canvasGroup.DOFade(1.0f, 0.5f);
-                transform.DOLocalMoveY(0f, 0.5f);
+                transform.DOLocalMoveY(positionY, 0.5f);
                 selectorBaseLayout.SetActive(isOwned);
                 selectorBaseMyLine.gameObject.SetActive(isOwned);
                 classLayout.SetActive(isOwned);
@@ -186,7 +189,7 @@ public class LobbyPlayer : NetworkBehaviour
                 transform.localScale = new Vector3(1f, 1f, 1f);
                 transform.SetAsFirstSibling();
             });
-            downTween = transform.DOLocalMoveY(0f, 0.5f);
+            downTween = transform.DOLocalMoveY(positionY, 0.5f);
             fadeOutTween = canvasGroup.DOFade(1.0f, 0.5f);
             sequence = DOTween.Sequence();
             sequence.Append(fadeInTween);

@@ -26,16 +26,22 @@ public class RoomUI : InstanceD<RoomUI>
     public Sprite topIconReady;
     public Sprite topIconReadyLight;
 
+    public GameObject optionCanvas;
+    public GameObject readyCanvas;
+
 
     void Start()
     {
-        buttonReady.onClick.AddListener(() => HandleRadeyState());
-        ExitButton.onClick.AddListener(() => HandleBackToMainScene());
-        buttonOption.onClick.AddListener(() => HandleOPtionButtonClick());
+        DontDestroyOnLoad(optionCanvas);
+        DontDestroyOnLoad(readyCanvas);
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        networkRoomManager.components.Add(optionCanvas);
+        networkRoomManager.components.Add(readyCanvas);
         for(int i=0; i<swapButtons.Count; i++){
             int buttonIndex = i; 
             swapButtons[i].onClick.AddListener(() => HandleLobbyPlayerSwap(buttonIndex));
         }
+        ExitButton.onClick.AddListener(() => HandleBackToMainScene());
     }
 
     // 오더 스왑 제어
@@ -55,54 +61,13 @@ public class RoomUI : InstanceD<RoomUI>
     {
         textReady.text = str;
     }
-    
-    // 레디 상태 제어 
-    public void HandleRadeyState()
-    {
-        if (NetworkClient.connection != null){
-            RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.GetComponent<RoomPlayer>();
-            if(roomPlayer.character != Character.NONE){
-                if(!roomPlayer.isServer) //클라이언트만 레디
-                    roomPlayer.isReady = !roomPlayer.isReady;
-                else //서버 케이스
-                {
-                    if(textReady.text == "START" )HandleChangeGameScene();
-                }
-            }
-            
-        }
-    }
+
     public void HandleBackToMainScene()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
         NetworkServer.Shutdown();
         NetworkClient.Disconnect();
         M_SteamManager.LeaveLobby();
-    }
-
-    // 게임 씬으로 이동
-    public void HandleChangeGameScene()
-    {
-        M_LoadingManager.instance.SetLoadingScreen(true);
-        M_LoadingManager.instance.state = LOADING_STATE.SCENE_LOADING;
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        M_NetworkRoomManager.ServerChangeScene(M_NetworkRoomManager.GameplayScene);
-    }
-
-    // 옵션버튼 클릭
-    public void HandleOPtionButtonClick()
-    {
-        OptionButton optionButton = buttonOption.GetComponent<OptionButton>();
-        optionButton.isButtonClick = !optionButton.isButtonClick;
-        if(optionButton.isButtonClick){
-            optionButton.optionIconLight.gameObject.SetActive(true);
-            optionButton.optionIconRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 90f), 0.3f);
-            optionButton.optionIconLightRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 90f), 0.3f);
-        }else{
-            optionButton.optionIconLight.gameObject.SetActive(false);
-            optionButton.optionIconRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 0f), 0.3f);
-            optionButton.optionIconLightRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 0f), 0.3f);
-        }
     }
 
     [Server]

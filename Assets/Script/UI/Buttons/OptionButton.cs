@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using DG.Tweening;
 
 
-public class OptionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class OptionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public GameObject optionButtonBaseLight;
     public GameObject optionIcon;
@@ -13,6 +13,21 @@ public class OptionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public RectTransform optionIconRect;
     public RectTransform optionIconLightRect;
     public bool isButtonClick = false;
+
+
+    public void OnPointerClick(PointerEventData pointerEventData)
+    {
+        isButtonClick = !isButtonClick;
+        if(isButtonClick){
+            optionIconLight.gameObject.SetActive(true);
+            optionIconRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 90f), 0.3f);
+            optionIconLightRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 90f), 0.3f);
+        }else{
+            optionIconLight.gameObject.SetActive(false);
+            optionIconRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 0f), 0.3f);
+            optionIconLightRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 0f), 0.3f);
+        }
+    }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
