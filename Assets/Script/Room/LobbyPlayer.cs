@@ -47,10 +47,6 @@ public class LobbyPlayer : NetworkBehaviour
 
     // Dotween 참조값
     private Sequence sequence;
-    private Tween fadeInTween;
-    private Tween fadeOutTween;
-    private Tween upTween;
-    private Tween downTween;
 
     private float positionY;
 
@@ -143,23 +139,21 @@ public class LobbyPlayer : NetworkBehaviour
     // 로비플레이어 초기 뷰 컴포넌트 설정(부모 오브젝트 설정 및 트랜스폼 값 설정)
     private void InitLobbyPlayerView(bool isOwned)
     {
-        CanvasGroup canvasGroup = GetComponent<CanvasGroup>();
-        if(canvasGroup != null){
-            int index = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
-            if(index != -1){
-                transform.SetParent(RoomUI.instance.topIcons[index].transform); // 플레이어 Order값에 따라 룸씬의 각 아이콘 순서에 맞춰 자식오브젝트로 설정
-                transform.localScale = new Vector3(1f, 1f, 1f); // SetParent 수행시 스케일이 부모에 따라 변동되므로 수동으로 스케일 기본값인 1로 조정
-                transform.localPosition = new Vector3(0f, 100f, 0f);
-                transform.SetAsFirstSibling(); // TopIcon보다 먼저 그려지도록 SiblingIndex를 맨 처음으로 설정
-                canvasGroup.DOFade(1.0f, 0.5f);
-                transform.DOLocalMoveY(positionY, 0.5f);
-                selectorBaseLayout.SetActive(isOwned);
-                selectorBaseMyLine.gameObject.SetActive(isOwned);
-                classLayout.SetActive(isOwned);
-                classIconLayout.SetActive(!classLayout.activeSelf);
-                if(isOwned){
-                    RoomUI.instance.topIconImages[index].sprite = RoomUI.instance.topIconMy;
-                }
+        int index = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
+        if(index != -1){
+            RoomUI.instance.ChangeSwapButtonsState(GetComponent<NetworkIdentity>().netId, index);
+            transform.SetParent(RoomUI.instance.topIcons[index].transform); // 플레이어 Order값에 따라 룸씬의 각 아이콘 순서에 맞춰 자식오브젝트로 설정
+            transform.localScale = new Vector3(1f, 1f, 1f); // SetParent 수행시 스케일이 부모에 따라 변동되므로 수동으로 스케일 기본값인 1로 조정
+            transform.localPosition = new Vector3(0f, 100f, 0f);
+            transform.SetAsFirstSibling(); // TopIcon보다 먼저 그려지도록 SiblingIndex를 맨 처음으로 설정
+            GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
+            transform.DOLocalMoveY(positionY, 0.5f);
+            selectorBaseLayout.SetActive(isOwned);
+            selectorBaseMyLine.gameObject.SetActive(isOwned);
+            classLayout.SetActive(isOwned);
+            classIconLayout.SetActive(!classLayout.activeSelf);
+            if(isOwned){
+                RoomUI.instance.topIconImages[index].sprite = RoomUI.instance.topIconMy;
             }
         }
     }
@@ -180,33 +174,27 @@ public class LobbyPlayer : NetworkBehaviour
     // 트위닝, 시퀀스 등록
     private void DOTweenLobbyPlayer(int index)
     {
-        CanvasGroup canvasGroup = GetComponent<CanvasGroup>();
-        if(canvasGroup != null){
-            fadeInTween = canvasGroup.DOFade(0.0f, 0.5f);
-            upTween = transform.DOLocalMoveY(100f, 0.5f).OnComplete(() => {
-                transform.SetParent(RoomUI.instance.topIcons[index].transform);
-                transform.localPosition = new Vector3(0f, 100f, 0f);
-                transform.localScale = new Vector3(1f, 1f, 1f);
-                transform.SetAsFirstSibling();
-            });
-            downTween = transform.DOLocalMoveY(positionY, 0.5f);
-            fadeOutTween = canvasGroup.DOFade(1.0f, 0.5f);
-            sequence = DOTween.Sequence();
-            sequence.Append(fadeInTween);
-            sequence.Join(upTween);
-            sequence.Append(downTween);
-            sequence.Join(fadeOutTween);
-        }
+        Tween fadeInTween = GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f);
+        Tween upTween = transform.DOLocalMoveY(100f, 0.5f).OnComplete(() => {
+            transform.SetParent(RoomUI.instance.topIcons[index].transform);
+            transform.localPosition = new Vector3(0f, 100f, 0f);
+            transform.localScale = new Vector3(1f, 1f, 1f);
+            transform.SetAsFirstSibling();
+        });
+        Tween downTween = transform.DOLocalMoveY(positionY, 0.5f);
+        Tween fadeOutTween = GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
+        sequence = DOTween.Sequence();
+        sequence.Append(fadeInTween);
+        sequence.Join(upTween);
+        sequence.Append(downTween);
+        sequence.Join(fadeOutTween);
     }
 
     // 트위닝, 시퀀스 제거
     private void KillTweenLobbyPlayer()
     {
-        fadeInTween.Kill();
-        fadeOutTween.Kill();
-        upTween.Kill();
-        downTween.Kill();
-        sequence.Kill();
+        GetComponent<CanvasGroup>().DOKill(); // 로비플레이어 캔버스그룹 트위닝 제거
+        GetComponent<RectTransform>().DOKill(); // 로비플레이어 트랜스폼 트위닝 제거
     }
 
     [Command]

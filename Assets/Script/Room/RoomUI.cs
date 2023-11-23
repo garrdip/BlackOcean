@@ -26,7 +26,10 @@ public class RoomUI : InstanceD<RoomUI>
     public Sprite topIconReady;
     public Sprite topIconReadyLight;
 
+    [Header("옵션 버튼 캔버스")]
     public GameObject optionCanvas;
+
+    [Header("레디 버튼 캔버스")]
     public GameObject readyCanvas;
 
 
@@ -38,10 +41,21 @@ public class RoomUI : InstanceD<RoomUI>
         networkRoomManager.components.Add(optionCanvas);
         networkRoomManager.components.Add(readyCanvas);
         for(int i=0; i<swapButtons.Count; i++){
-            int buttonIndex = i; 
+            int buttonIndex = i;
+            topIconImages[i].gameObject.SetActive(false);
+            swapButtons[i].transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+            swapButtons[i].transform.localRotation = Quaternion.Euler(0f, 0f, 45f);
             swapButtons[i].onClick.AddListener(() => HandleLobbyPlayerSwap(buttonIndex));
         }
         ExitButton.onClick.AddListener(() => HandleBackToMainScene());
+    }
+
+    void OnDestroy()
+    {
+        foreach(Button swapButtons in swapButtons){
+            swapButtons.GetComponent<CanvasGroup>().DOKill();
+            swapButtons.GetComponent<RectTransform>().DOKill();
+        }
     }
 
     // 오더 스왑 제어
@@ -82,5 +96,19 @@ public class RoomUI : InstanceD<RoomUI>
         }
         if( num == players.Length - 1 ) RoomUI.instance.SetReadyButton("START");
         else RoomUI.instance.SetReadyButton("");
+    }
+
+    // 스왑버튼 상태 변경
+    public void ChangeSwapButtonsState(uint netId, int index)
+    {
+        if(netId == 0){
+            topIconImages[index].gameObject.SetActive(false);
+            swapButtons[index].transform.DOScale(new Vector3(0.8f, 0.8f, 0.8f), 0.5f);
+            swapButtons[index].transform.DORotate(new Vector3(0f, 0f, 45f), 0.5f);
+        }else{
+            topIconImages[index].gameObject.SetActive(true);
+            swapButtons[index].transform.DOScale(new Vector3(1f, 1f, 1f), 0.5f);
+            swapButtons[index].transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f);
+        }  
     }
 }

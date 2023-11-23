@@ -72,8 +72,7 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
     public void RemoveLobbyPlayer(uint targetNetId)
     {
         int index = lobbyPlayers.FindIndex((netId) => netId == targetNetId);
-        lobbyPlayers.RemoveAt(index);
-        lobbyPlayers.Insert(index, 0);
+        lobbyPlayers[index] = 0;
         lobbyPlayersCount--; // LobbyPlayer Count 감소
     }
 
@@ -93,8 +92,9 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
             case SyncList<uint>.Operation.OP_SET: // SyncList 스왑 이벤트 수신
                 if(NetworkClient.spawned.TryGetValue(newVal, out NetworkIdentity networkIdentity)){
                     LobbyPlayer lobbyPlayer = NetworkClient.spawned[newVal].GetComponent<LobbyPlayer>();
-                    lobbyPlayer.ChangeLobbyPlayerView(index);   
+                    lobbyPlayer.ChangeLobbyPlayerView(index); 
                 }
+                RoomUI.instance.ChangeSwapButtonsState(newVal, index);
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
                 
