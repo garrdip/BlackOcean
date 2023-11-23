@@ -68,8 +68,22 @@ public class LobbyPlayer : NetworkBehaviour
         positionY = -30f;
         roomPlayer.onSelectCompleteCharacter += OnSelectCompleteCharacter; // 캐릭터 선택 이벤트 수신
         InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
-        buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
-        buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
+        if(isOwned){
+            buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
+            buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
+            characterSelectCompleteImage.GetComponent<Button>().onClick.AddListener(() => HandleClickSelectCompleteImage()); // 캐릭터 선택 완료된 상태에서 캐릭터 이미지 클릭
+        }
+    }
+
+    private void HandleClickSelectCompleteImage()
+    {
+        selectLeft.gameObject.SetActive(true);
+        selectMiddle.gameObject.SetActive(true);
+        selectRight.gameObject.SetActive(true);
+        baseDark.gameObject.SetActive(true);
+        classLayout.SetActive(true);
+        characterSelectCompleteImage.gameObject.SetActive(false);
+        classIconLayout.SetActive(!classLayout.activeSelf);
     }
 
     private void HandleClickButtonSwapAccept()
@@ -121,7 +135,6 @@ public class LobbyPlayer : NetworkBehaviour
             characterSelectCompleteImage.gameObject.SetActive(true);
             selectorBaseLayout.SetActive(true);
             classIconLayout.SetActive(!classLayout.activeSelf);
-            
             switch(character){
                 case Character.HONGDANHYANG:
                     characterSelectCompleteImage.sprite = danhyangSprite;
