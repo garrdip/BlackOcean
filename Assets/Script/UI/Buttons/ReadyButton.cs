@@ -38,12 +38,12 @@ public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (NetworkClient.connection != null){
             RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.GetComponent<RoomPlayer>();
             if(roomPlayer.character != Character.NONE){
-                if(!roomPlayer.isServer) //클라이언트만 레디
+                if(!roomPlayer.isServer){ //클라이언트만 레디
                     roomPlayer.isReady = !roomPlayer.isReady;
-                else //서버 케이스
-                {
+                }else{ //서버케이스
                     if(textReady.text == "START" )HandleChangeGameScene();
                 }
+                roomPlayer.ChangeReadyState(roomPlayer.isReady, roomPlayer.isReady);
             }
         }
     }

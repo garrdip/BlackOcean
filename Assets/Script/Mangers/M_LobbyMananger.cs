@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using DG.Tweening;
+using ProjectD;
 
 public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
 {
@@ -92,7 +92,9 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
             case SyncList<uint>.Operation.OP_SET: // SyncList 스왑 이벤트 수신
                 if(NetworkClient.spawned.TryGetValue(newVal, out NetworkIdentity networkIdentity)){
                     LobbyPlayer lobbyPlayer = NetworkClient.spawned[newVal].GetComponent<LobbyPlayer>();
-                    lobbyPlayer.ChangeLobbyPlayerView(index); 
+                    lobbyPlayer.roomPlayer.order = (PlayOrder)index;
+                    lobbyPlayer.roomPlayer.OnChangeOrder((PlayOrder)index, (PlayOrder)index);
+                    lobbyPlayer.ChangeLobbyPlayerView(index);
                 }
                 RoomUI.instance.ChangeSwapButtonsState(newVal, index);
                 break;

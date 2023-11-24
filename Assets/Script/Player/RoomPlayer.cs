@@ -12,13 +12,19 @@ public class RoomPlayer : NetworkRoomPlayer
     public delegate void OnSelectCompleteCharacter(Character character);
     public OnSelectCompleteCharacter onSelectCompleteCharacter;
 
+    public delegate void OnChangeRoomPlayerOrder(PlayOrder order);
+    public OnChangeRoomPlayerOrder onChangeRoomPlayerOrder;
+
+    public delegate void OnChangeReadyState(bool isReady);
+    public OnChangeReadyState onChangeReadyState;
+
     [SyncVar(hook = nameof(OnChangedCharacter))]
     public Character character = Character.NONE;
 
     [SyncVar]
     public Color color;
 
-    [SyncVar]
+     [SyncVar(hook = nameof(OnChangeOrder))]
     public PlayOrder order = PlayOrder.FIRST;
 
     [SyncVar(hook = nameof(ChangeReadyState))]
@@ -42,6 +48,9 @@ public class RoomPlayer : NetworkRoomPlayer
     {
         if(isServer)
             RoomUI.instance.CMDReadyCheck();
+        if(onChangeReadyState != null){
+            onChangeReadyState.Invoke(newVal);
+        }
     }
 
     // 로컬 플레이어로 시작 시 상단바 인디케이터 변경  Todo
@@ -121,6 +130,13 @@ public class RoomPlayer : NetworkRoomPlayer
         RoomUI.instance.CMDReadyCheck();
         if(onSelectCompleteCharacter != null){
             onSelectCompleteCharacter.Invoke(newVal);
+        }
+    }
+
+    public void OnChangeOrder(PlayOrder oldVal, PlayOrder newVal)
+    {
+        if(onChangeRoomPlayerOrder != null){
+            onChangeRoomPlayerOrder.Invoke(newVal);
         }
     }
 }

@@ -59,6 +59,9 @@ public class M_NetworkRoomManager : NetworkRoomManager
         // LobbyPlayer에 RoomPlayer SyncVar 변수 설정
         LobbyPlayer lobbyPlayer = lobbyPlayerObject.GetComponent<LobbyPlayer>();
         lobbyPlayer.roomPlayer = roomPlayer.GetComponent<RoomPlayer>();
+        if(M_LobbyMananger.instance.lobbyPlayersCount == 0){
+            lobbyPlayer.isHostLobbyPlayer = true;
+        }
         NetworkServer.Spawn(lobbyPlayerObject, conn);
 
         // 로비플레이어 리스트에 추가
