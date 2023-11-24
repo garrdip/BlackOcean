@@ -17,7 +17,7 @@ public class BackButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     void Awake()
     {
         moveTime = 0.3f;
-        movePositionX = -20f;
+        movePositionX = -29f;
     }
 
     void OnDestroy()

@@ -6397,19 +6397,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8742021730877577328}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5303173381360616019}
-        m_TargetAssemblyTypeName: M_MessageManager, Assembly-CSharp
-        m_MethodName: ChangeChatBoxVisibileState
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &8742021730877577328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6460,6 +6448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce7247cc2b1a3ab4fa22ddd6dc1118b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buttonIcon: {fileID: 808975763}
   buttonIconLight: {fileID: 9860570}
 --- !u!1 &8742021731008685549
 GameObject:

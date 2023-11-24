@@ -243,7 +243,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
             notiLoopSequence = DOTween.Sequence()
                 .Append(fadeInTweener)
                 .Append(fadeOutTweener)
-                .SetLoops(-1);
+                .SetLoops(-1, LoopType.Restart);
         }
     }
 
