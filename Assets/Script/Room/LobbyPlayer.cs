@@ -98,7 +98,7 @@ public class LobbyPlayer : NetworkBehaviour
         }
     }
 
-    // 로비플레이어 오브젝트 파괴시 tween kill
+    // 로비플레이어 오브젝트 파괴시 수행중인 트위닝 제거
     void OnDestroy()
     {
         GetComponent<CanvasGroup>().DOKill(); // 로비플레이어 캔버스그룹 트위닝 제거
@@ -110,6 +110,8 @@ public class LobbyPlayer : NetworkBehaviour
         classDanhyang.GetComponent<RectTransform>().DOKill();
         classEris.GetComponent<RectTransform>().DOKill();
         classGeork.GetComponent<RectTransform>().DOKill();
+        sequence.Kill(); // FadeIn, FadeOut, Up, Down 트위닝 시퀀스 제거
+        RoomUI.instance.KillTweenSwapButtons(); // 로비플레이어의 SetLobbyPlayerFadeEffect 함수에서 작동시킨 스왑버튼 트위닝 제거
     }
 
     public override void OnStartClient()
@@ -287,7 +289,7 @@ public class LobbyPlayer : NetworkBehaviour
         RoomUI.instance.ChangeSwapButtonsState(GetComponent<NetworkIdentity>().netId, index);
         SetLobbyPlayerParent(index);
         GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
-        transform.DOLocalMoveY(downPositionY, 0.5f);
+        GetComponent<RectTransform>().DOLocalMoveY(downPositionY, 0.5f);
         selectorBaseLayout.SetActive(isOwned);
         selectorBaseMyLine.SetActive(isOwned);
         classLayout.SetActive(isOwned);
@@ -345,8 +347,8 @@ public class LobbyPlayer : NetworkBehaviour
     public void ChangeLobbyPlayerView(int index)
     {
         Tween fadeInTween = GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f);
-        Tween upTween = transform.DOLocalMoveY(upPositionY, 0.5f).OnComplete(() => { SetLobbyPlayerParent(index); });
-        Tween downTween = transform.DOLocalMoveY(downPositionY, 0.5f);
+        Tween upTween = GetComponent<RectTransform>().DOLocalMoveY(upPositionY, 0.5f).OnComplete(() => { SetLobbyPlayerParent(index); });
+        Tween downTween = GetComponent<RectTransform>().DOLocalMoveY(downPositionY, 0.5f);
         Tween fadeOutTween = GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
         sequence = DOTween.Sequence();
         sequence.Append(fadeInTween);

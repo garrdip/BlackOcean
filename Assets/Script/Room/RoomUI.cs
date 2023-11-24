@@ -52,6 +52,12 @@ public class RoomUI : InstanceD<RoomUI>
 
     void OnDestroy()
     {
+        KillTweenSwapButtons();
+    }
+
+    // RoomUI에 있는 오브젝트에 등록된 트위닝 제거
+    public void KillTweenSwapButtons()
+    {
         foreach(Button swapButtons in swapButtons){
             swapButtons.GetComponent<CanvasGroup>().DOKill();
             swapButtons.GetComponent<RectTransform>().DOKill();
