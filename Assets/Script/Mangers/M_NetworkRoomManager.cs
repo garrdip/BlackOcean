@@ -34,7 +34,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
     {
         NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
         RoomPlayer[] roomPlayers = FindObjectsOfType<RoomPlayer>();
-        GameObject roomPlayer = Instantiate(netManger.spawnPrefabs.Find(pref => pref.name == "RoomPlayer"));
+        GameObject roomPlayer = Instantiate(roomPlayerPrefab.gameObject);
         if(roomPlayers.Length == 0){
             roomPlayer.GetComponent<RoomPlayer>().order = PlayOrder.FIRST;
         }

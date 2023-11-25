@@ -6440,12 +6440,12 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
+  - {fileID: 1507683923663927885, guid: 64df8d9a5fd166348ae062b7f47dc7f0, type: 3}
   - {fileID: 354743714609597316, guid: a7092fdea86b65142a3ac3d1fea9f252, type: 3}
   - {fileID: 6401606778164361385, guid: 3740b90e74c0e1d47b2244af5b966290, type: 3}
   - {fileID: 2153712344633156845, guid: 4fc3aa0dc4717124e88a0e2274161e50, type: 3}
   - {fileID: 3624024140002001778, guid: 34869d7c042cb0744929e1f3a3606061, type: 3}
   - {fileID: 209357282904150780, guid: ac2464dcd67e7d746af4fbd7ec49adff, type: 3}
-  - {fileID: 5712702224796208543, guid: f7ce3938832aaef41aad5da46f699ddc, type: 3}
   - {fileID: 5882475437771884861, guid: 443da8a1ca412094ba07cc9f3460e4fc, type: 3}
   - {fileID: 590561824302976873, guid: 3d16db062879a3649b1eeedf8f866591, type: 3}
   - {fileID: 228074111813693655, guid: 42b7de88613098844ad1c1f81f5a9151, type: 3}
@@ -6459,7 +6459,6 @@ MonoBehaviour:
   - {fileID: 209357282904150780, guid: 9c99a630ec00844428ba54277acd98ee, type: 3}
   - {fileID: 6052112556404499211, guid: 3c8491056e412e64c8c7860509a97eca, type: 3}
   - {fileID: 8002333439771186571, guid: cb5ef1123e9d9f2488c01f3c5b793eb6, type: 3}
-  - {fileID: 1507683923663927885, guid: 64df8d9a5fd166348ae062b7f47dc7f0, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     bufferLimit: 32
