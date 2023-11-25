@@ -25,6 +25,8 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
         lobbyPlayers.Callback += OnChangeLobbyPlayerOrderChanged;
     }
 
+    // ----------------------------------------------------------------- Command Method --------------------------------------------------------------------------------//
+
     // 로비플레이어들 오더 관리용 Synclist의 요소를 인덱스에 맞게 스왑 수행
     [Command (requiresAuthority = false)]
     public void CmdSwapLobbyPlayer(int oldIndex, int newIndex)
@@ -44,6 +46,8 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
         targetLobbyPlayer.oldIndex = oldIndex; // 요청한 로비플레이어의 인덱스
         targetLobbyPlayer.newIndex = newIndex; // 요청한 로비플레이어의 교환상대 인덱스
     }
+
+    // ----------------------------------------------------------------- Server Method --------------------------------------------------------------------------------//
 
     // 로비 플레이어 리스트에 추가
     [Server]
@@ -76,6 +80,15 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
         lobbyPlayersCount--; // LobbyPlayer Count 감소
     }
 
+    // 로비 플레이어 강제 퇴장
+    [Server]
+    public void LobbyPlayerKickOut(RoomPlayer roomPlayer)
+    {
+        roomPlayer.GetComponent<NetworkIdentity>().connectionToClient.Disconnect();
+    }
+
+    // ----------------------------------------------------------------- SyncVar Hook --------------------------------------------------------------------------------//
+    
     void OnChangeLobbyPlayerOrderChanged(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
     {
         switch (op)
@@ -94,7 +107,7 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
                     LobbyPlayer lobbyPlayer = NetworkClient.spawned[newVal].GetComponent<LobbyPlayer>();
                     lobbyPlayer.roomPlayer.order = (PlayOrder)index;
                     lobbyPlayer.roomPlayer.OnChangeOrder((PlayOrder)index, (PlayOrder)index);
-                    lobbyPlayer.ChangeLobbyPlayerView(index);
+                    lobbyPlayer.ChangeLobbyPlayerViewByOrder(index);
                 }
                 RoomUI.instance.ChangeSwapButtonsState(newVal, index);
                 break;

@@ -85,7 +85,6 @@ public class LobbyPlayer : NetworkBehaviour
         upPositionY = 60f;
         downPositionY = -30f;
         roomPlayer.onSelectCompleteCharacter += OnChangeSelectCharacter; // 캐릭터 선택 이벤트 등록
-        roomPlayer.onChangeRoomPlayerOrder += OnChangePlayerOrder; // 오더 변경 이벤트 등록
         roomPlayer.onChangeReadyState += OnChangeReadyState; // 레디 상태 변경 이벤트 등록
         InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
         if(isOwned){
@@ -94,7 +93,7 @@ public class LobbyPlayer : NetworkBehaviour
             characterSelectCompleteImage.GetComponent<Button>().onClick.AddListener(() => HandleClickSelectCompleteImage()); // 캐릭터 선택 완료된 상태에서 캐릭터 이미지 클릭
         }
         if(isServer){
-            outIconLayout.GetComponent<Button>().onClick.AddListener(() => HandleClickLobbyPlayerOut()); // 강퇴 버튼 클릭 이벤트(서버 유저만 이벤트 등록)
+            outIconLayout.GetComponent<Button>().onClick.AddListener(() => HandleClickLobbyPlayerKickOut()); // 강퇴 버튼 클릭 이벤트(서버 유저만 이벤트 등록)
         }
     }
 
@@ -135,21 +134,26 @@ public class LobbyPlayer : NetworkBehaviour
         M_LobbyMananger.instance.RemoveLobbyPlayer(GetComponent<NetworkIdentity>().netId); // 로비플레이어가 서버에서 사라질 때 리스트에서 제거
     }
 
+    // 스왑 승인 버튼 클릭
     private void HandleClickButtonSwapAccept()
     {
         swapRequestLayout.SetActive(false);
         CmdSwapAccept(oldIndex, newIndex);
     }
 
+    // 스왑 거절 버튼 클릭
     private void HandleClickButtonSwapReject()
     {
         swapRequestLayout.SetActive(false);
         CmdSwapReject(oldIndex);
     }
 
-    public void HandleClickLobbyPlayerOut()
+    // 강퇴 버튼 클릭
+    public void HandleClickLobbyPlayerKickOut()
     {
-        Debug.Log("강퇴 버튼 클릭");
+        if(((roomPlayer.isServer && roomPlayer.index > 0) || roomPlayer.isServerOnly)){
+            M_LobbyMananger.instance.LobbyPlayerKickOut(roomPlayer);
+        }
     }
 
     // ----------------------------------------------------------------- Command Method --------------------------------------------------------------------------------//
@@ -344,10 +348,10 @@ public class LobbyPlayer : NetworkBehaviour
     }
 
     // 로비플레이어 뷰 컴포넌트 변경사항 업데이트
-    public void ChangeLobbyPlayerView(int index)
+    public void ChangeLobbyPlayerViewByOrder(int index)
     {
-        Tween fadeInTween = GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f);
-        Tween upTween = GetComponent<RectTransform>().DOLocalMoveY(upPositionY, 0.5f).OnComplete(() => { SetLobbyPlayerParent(index); });
+        Tween fadeInTween = GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).OnComplete(() => { SetLobbyPlayerParent(index); });
+        Tween upTween = GetComponent<RectTransform>().DOLocalMoveY(upPositionY, 0.5f).OnComplete(() => { OnChangePlayerOrder((PlayOrder)index); });
         Tween downTween = GetComponent<RectTransform>().DOLocalMoveY(downPositionY, 0.5f);
         Tween fadeOutTween = GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
         sequence = DOTween.Sequence();
