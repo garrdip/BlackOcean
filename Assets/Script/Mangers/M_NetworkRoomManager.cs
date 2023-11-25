@@ -13,9 +13,9 @@ public class M_NetworkRoomManager : NetworkRoomManager
     public List<GameObject> managers = new List<GameObject>(); // 네트워크 매니저에서 관리할 NetworkBehaviour 매니저클래스 오브젝트 리스트
     public List<GameObject> components = new List<GameObject>(); // 네트워크 매니저에서 관리할 뷰 컴포넌트 오브젝트 리스트
 
-    public override void Start()
+    public override void Awake()
     {
-        base.Start(); // 부모클래스인 NetworkRoomManager의 Start로직은 유지
+        base.Awake(); // 부모클래스인 NetworkRoomManager의 Awake로직은 유지
         SceneManager.activeSceneChanged += OnChangedActiveScene; // 씬 전환 이벤트 연결
     }
 
