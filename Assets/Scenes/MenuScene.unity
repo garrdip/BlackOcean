@@ -6449,6 +6449,7 @@ MonoBehaviour:
   - {fileID: 5882475437771884861, guid: 443da8a1ca412094ba07cc9f3460e4fc, type: 3}
   - {fileID: 590561824302976873, guid: 3d16db062879a3649b1eeedf8f866591, type: 3}
   - {fileID: 228074111813693655, guid: 42b7de88613098844ad1c1f81f5a9151, type: 3}
+  - {fileID: 2199264480363645995, guid: 6dd6d54b28b6baf418bb5cb38e93941f, type: 3}
   - {fileID: 8715637313035057607, guid: 4f50d02574f599a4bb2a2ab0da1277fd, type: 3}
   - {fileID: 4813194014757939247, guid: bd4e3ee47460b5447a0c345a3a044847, type: 3}
   - {fileID: 8715637313035057607, guid: 9a6ba97bce7a1974b81c911cb6e3b5bd, type: 3}
@@ -6484,8 +6485,10 @@ MonoBehaviour:
   - {r: 1, g: 0, b: 0, a: 1}
   - {r: 0, g: 1, b: 0, a: 1}
   - {r: 0, g: 0, b: 1, a: 1}
-  managers: []
-  components: []
+  persistentManagers:
+    _serializedList: []
+  persistentComponents:
+    _serializedList: []
 --- !u!4 &862470413
 Transform:
   m_ObjectHideFlags: 0

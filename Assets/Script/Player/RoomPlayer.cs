@@ -12,9 +12,6 @@ public class RoomPlayer : NetworkRoomPlayer
     public delegate void OnSelectCompleteCharacter(Character character);
     public OnSelectCompleteCharacter onSelectCompleteCharacter;
 
-    public delegate void OnChangeRoomPlayerOrder(PlayOrder order);
-    public OnChangeRoomPlayerOrder onChangeRoomPlayerOrder;
-
     public delegate void OnChangeReadyState(bool isReady);
     public OnChangeReadyState onChangeReadyState;
 
@@ -24,7 +21,7 @@ public class RoomPlayer : NetworkRoomPlayer
     [SyncVar]
     public Color color;
 
-     [SyncVar(hook = nameof(OnChangeOrder))]
+    [SyncVar]
     public PlayOrder order = PlayOrder.FIRST;
 
     [SyncVar(hook = nameof(ChangeReadyState))]
@@ -130,13 +127,6 @@ public class RoomPlayer : NetworkRoomPlayer
         RoomUI.instance.CMDReadyCheck();
         if(onSelectCompleteCharacter != null){
             onSelectCompleteCharacter.Invoke(newVal);
-        }
-    }
-
-    public void OnChangeOrder(PlayOrder oldVal, PlayOrder newVal)
-    {
-        if(onChangeRoomPlayerOrder != null){
-            onChangeRoomPlayerOrder.Invoke(newVal);
         }
     }
 }

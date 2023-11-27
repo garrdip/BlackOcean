@@ -244,7 +244,7 @@ public class LobbyPlayer : NetworkBehaviour
         if(index != -1){
             SetLobbyPlayerFadeEffect(index);
             OnChangeSelectCharacter(roomPlayer.character); // 룸플레이어의 캐릭터 값으로 초기 설정
-            OnChangePlayerOrder(roomPlayer.order); // 룸플레이어의 오더값으로 초기 설정
+            SetOrderTextByPlayerOrder(roomPlayer.order); // 룸플레이어의 오더값으로 초기 설정
             ChangeClassLayoutFade();
             SetCapAndOutIconByPermission(); // 로비플레이어 상단 좌측의 방장표시 및 강퇴 아이콘을 권한에 따라 설정
             if(isOwned){
@@ -323,8 +323,8 @@ public class LobbyPlayer : NetworkBehaviour
         }
     }
 
-    // 룸플레이어 오더 변경 수신
-    public void OnChangePlayerOrder(PlayOrder playOrder)
+    // 룸플레이어 오더 텍스트 변경
+    public void SetOrderTextByPlayerOrder(PlayOrder playOrder)
     {
         switch(playOrder){
             case PlayOrder.FIRST:
@@ -351,7 +351,7 @@ public class LobbyPlayer : NetworkBehaviour
     public void ChangeLobbyPlayerViewByOrder(int index)
     {
         Tween fadeInTween = GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).OnComplete(() => { SetLobbyPlayerParent(index); });
-        Tween upTween = GetComponent<RectTransform>().DOLocalMoveY(upPositionY, 0.5f).OnComplete(() => { OnChangePlayerOrder((PlayOrder)index); });
+        Tween upTween = GetComponent<RectTransform>().DOLocalMoveY(upPositionY, 0.5f).OnComplete(() => { SetOrderTextByPlayerOrder((PlayOrder)index); });
         Tween downTween = GetComponent<RectTransform>().DOLocalMoveY(downPositionY, 0.5f);
         Tween fadeOutTween = GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
         sequence = DOTween.Sequence();

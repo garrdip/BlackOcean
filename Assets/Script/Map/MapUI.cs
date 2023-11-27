@@ -19,6 +19,8 @@ public class MapUI : InstanceD<MapUI>
     public TextMeshProUGUI textRegionDesc;
     public TextMeshProUGUI textTotalActionCostCount;
 
+    public List<GameObject> topButtons = new List<GameObject>();
+
     [Header("맵 화면의 카메라 줌 조절 변수값")]
     [SerializeField]
     private float minCameraFOV = 30f;
@@ -38,6 +40,15 @@ public class MapUI : InstanceD<MapUI>
     [Header("카메라 이동 속도")]
     float cameraMoveSpeed = 20;
 
+
+    void Start()
+    {
+        for(int i=0; i<topButtons.Count; i++){
+            int buttonIndex = i;
+            Button swapButton = topButtons[i].GetComponent<Button>();
+            swapButton.onClick.AddListener(() => HandleLobbyPlayerSwap(buttonIndex));
+        }
+    }
 
     void Update()
     { 
@@ -95,6 +106,18 @@ public class MapUI : InstanceD<MapUI>
             if(Camera.main.fieldOfView < maxCameraFOV)
             {
                 Camera.main.fieldOfView += scrollWhell * Time.deltaTime * scrollSpeed;
+            }
+        }
+    }
+
+    public void HandleLobbyPlayerSwap(int swapTargetIndex)
+    {
+        int myIndex = M_MapManager.instance.mapPlayers.FindIndex((netId) => netId == M_MapManager.instance.ownedMapPlayer);
+        if(myIndex != swapTargetIndex){ // 로컬유저 본인에 대한 요청은 제외
+            if(M_MapManager.instance.mapPlayers[swapTargetIndex] == 0){
+                M_MapManager.instance.CmdSwapMapPlayer(myIndex, swapTargetIndex); // 스왑 타겟이 빈슬롯이면 해당 슬롯으로 이동되도록 요청
+            }else{
+                M_MapManager.instance.CmdRequestSwap(myIndex, swapTargetIndex);
             }
         }
     }

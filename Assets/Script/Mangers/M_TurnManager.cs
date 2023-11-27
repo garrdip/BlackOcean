@@ -30,7 +30,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     public bool isCardQueueOperating = false;
 
-    public List<Button> selectOrderButtons;
 
     public List<TargetObject> spawnedPlayerList = new List<TargetObject>();
     public List<TargetObject> clonePlayerList = new List<TargetObject>();
@@ -135,13 +134,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public override void OnStartClient()
     {
         playerOrder.Callback += OnPlayerOrderUpdated;
-    }
-
-    public void SetOrderButtonListener()
-    {
-        selectOrderButtons[0].onClick.AddListener(() => SelectOrder(1));
-        selectOrderButtons[1].onClick.AddListener(() => SelectOrder(2));
-        selectOrderButtons[2].onClick.AddListener(() => SelectOrder(3));
     }
 
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//

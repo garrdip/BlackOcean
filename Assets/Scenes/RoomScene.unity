@@ -935,7 +935,7 @@ GameObject:
   m_Component:
   - component: {fileID: 346274194}
   m_Layer: 5
-  m_Name: CharacterSelect
+  m_Name: LobbyPlayers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5093,7 +5093,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 150, y: 190}
+  m_AnchoredPosition: {x: 150, y: 87}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &8742021729514458917
@@ -5114,7 +5114,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -450, y: -639}
+  m_AnchoredPosition: {x: -450, y: -742}
   m_SizeDelta: {x: 877, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &8742021729514458918
@@ -5136,7 +5136,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -450, y: -200}
+  m_AnchoredPosition: {x: -450, y: -303}
   m_SizeDelta: {x: 877, y: 788}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8742021729514458919

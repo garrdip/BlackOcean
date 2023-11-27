@@ -128,7 +128,6 @@ public class PlayerInterface : NetworkBehaviour
             GetComponent<PlayerInterfaceServer>().GenerateGamePlayerOwnedObjects(currentGamePlayer);
         }
         SetUserStatusUI();
-        M_TurnManager.instance.SetOrderButtonListener();
         workDone = true;
     }
 

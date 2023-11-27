@@ -106,7 +106,6 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
                 if(NetworkClient.spawned.TryGetValue(newVal, out NetworkIdentity networkIdentity)){
                     LobbyPlayer lobbyPlayer = NetworkClient.spawned[newVal].GetComponent<LobbyPlayer>();
                     lobbyPlayer.roomPlayer.order = (PlayOrder)index;
-                    lobbyPlayer.roomPlayer.OnChangeOrder((PlayOrder)index, (PlayOrder)index);
                     lobbyPlayer.ChangeLobbyPlayerViewByOrder(index);
                 }
                 RoomUI.instance.ChangeSwapButtonsState(newVal, index);

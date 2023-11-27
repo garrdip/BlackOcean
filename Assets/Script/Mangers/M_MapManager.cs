@@ -9,6 +9,10 @@ using AYellowpaper.SerializedCollections;
 
 public class M_MapManager : NetworkSingletonD<M_MapManager>
 {  
+    public readonly SyncList<uint> mapPlayers = new SyncList<uint>(){ 0, 0, 0 };
+    public int mapPlayerCount = 0;
+    public uint ownedMapPlayer;
+
     [SyncVar]
     public HexagonMapRoom currentRoom;
 
@@ -120,7 +124,54 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         totalActionCost = 30; // 행동 비용 총량
     }
 
+     public override void OnStartClient()
+    {
+        mapPlayers.Callback += OnChangeMapPlayerOrderChanged;
+    }
+
+    // ------------------------------------------------------------ Command Method -------------------------------------------------------------- //
+
+    // 맵플레이어들 오더 관리용 Synclist의 요소를 인덱스에 맞게 스왑 수행
+    [Command (requiresAuthority = false)]
+    public void CmdSwapMapPlayer(int oldIndex, int newIndex)
+    {
+        uint temp = mapPlayers[oldIndex];
+        mapPlayers[oldIndex] = mapPlayers[newIndex];
+        mapPlayers[newIndex] = temp;
+    }
+
+    // 스왑 요청을 받은 맵플레이어의 SyncVar 변수에 인덱스 저장 + 요청받은 맵플레이어만 수락,거절 UI 활성화되도록 TargetRpc 전송
+    [Command (requiresAuthority = false)]
+    public void CmdRequestSwap(int oldIndex, int newIndex)
+    {
+        uint targetNetId = mapPlayers[newIndex];
+        MapPlayer targetMapPlayer = NetworkServer.spawned[targetNetId].GetComponent<MapPlayer>();
+        targetMapPlayer.TargetResponseSwap(targetMapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+        targetMapPlayer.oldIndex = oldIndex; // 요청한 맵플레이어의 인덱스
+        targetMapPlayer.newIndex = newIndex; // 요청한 맵플레이어의 교환상대 인덱스
+    }
+
+
     // ------------------------------------------------------------ Server Method -------------------------------------------------------------- //
+
+    // 맵 플레이어 리스트에 추가
+    [Server]
+    public void AddMapPlayer(int index, uint targetNetId)
+    {
+        // 맵플레이어 오더는 룸플레이어에서 가져오므로 룸플레이어의 오더에 해당하는 인덱스에 세팅
+        mapPlayers.RemoveAt(index);
+        mapPlayers.Insert(index, targetNetId);
+        mapPlayerCount++;
+    }
+
+    // 맵 플레이어 리스트에서 제거
+    [Server]
+    public void RemoveLobbyPlayer(uint targetNetId)
+    {
+        int index = mapPlayers.FindIndex((netId) => netId == targetNetId);
+        mapPlayers[index] = 0;
+        mapPlayerCount--;
+    }
 
     [Server]
     public void SetDirection(HexagonMapRoom to)
@@ -668,6 +719,33 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 .TextColor(Color.white)
                 .Text("맵에 보스가 출현 했습니다.")
                 .Show();
+        }
+    }
+
+    // 맵 플레이어 오더 변경 이벤트 수신
+    void OnChangeMapPlayerOrderChanged(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
+    {
+        switch (op)
+        {
+            case SyncList<uint>.Operation.OP_ADD:
+                
+                break;
+            case SyncList<uint>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<uint>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<uint>.Operation.OP_SET:
+                if(NetworkClient.spawned.TryGetValue(newVal, out NetworkIdentity networkIdentity)){
+                    MapPlayer mapPlayer = NetworkClient.spawned[newVal].GetComponent<MapPlayer>();
+                    mapPlayer.playerInterface.selectOrder = index;
+                    mapPlayer.ChangeMapPlayerViewByOrder(index);
+                }
+                break;
+            case SyncList<uint>.Operation.OP_CLEAR:
+                
+                break;
         }
     }
 
