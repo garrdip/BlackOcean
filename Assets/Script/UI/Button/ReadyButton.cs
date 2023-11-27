@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 using Mirror;
 using ProjectD;
+using DG.Tweening;
 
 public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
@@ -16,6 +17,11 @@ public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public GameObject readyS2;
     public TextMeshProUGUI textReady;
 
+    void OnDestroy()
+    {
+        readyS1.GetComponent<RectTransform>().DOKill();
+        readyS2.GetComponent<RectTransform>().DOKill();
+    }
 
     public void OnPointerClick(PointerEventData pointerEventData)
     {
@@ -36,6 +42,7 @@ public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void HandleRadeyState()
     {
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        // 룸씬에서 레디버튼 제어
         if(Utils.IsSceneActive(networkRoomManager.RoomScene)){
             RoomPlayer roomPlayer = NetworkClient.localPlayer.gameObject.GetComponent<RoomPlayer>();
             if(roomPlayer.character != Character.NONE){
@@ -45,10 +52,42 @@ public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                     if(textReady.text == "START" )HandleChangeGameScene();
                 }
                 roomPlayer.ChangeReadyState(roomPlayer.isReady, roomPlayer.isReady);
+                SetReadyButtonViewByReadyState(roomPlayer.isServer, roomPlayer.isReady);
             }
+        // 게임씬에서 레디버튼 제어    
         }else if(Utils.IsSceneActive(networkRoomManager.GameplayScene)){
-            NetworkClient.localPlayer.GetComponent<PlayerInterface>().isReady = !NetworkClient.localPlayer.GetComponent<PlayerInterface>().isReady;
-        }       
+            PlayerInterface playerInterface =  NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            playerInterface.isReady = !playerInterface.isReady;
+            SetReadyButtonViewByReadyState(playerInterface.isServer, playerInterface.isReady);
+        }
+    }
+
+    // 레디버튼 상태 변경
+    private void SetReadyButtonViewByReadyState(bool isServer, bool isReady)
+    {
+        
+        readyBaseL1.SetActive(isReady);
+        readyBaseL2.SetActive(isReady);
+        readyBaseL3.SetActive(isReady);
+        readySBase.SetActive(isReady);
+        readyS1.SetActive(isReady);
+        readyS2.SetActive(isReady);
+        if(isReady){
+            //SetReadyCircleRotateInfinite();
+        }
+    }
+
+    // 레디버튼 원형 컴포넌트 회전루프 트위닝
+    private void SetReadyCircleRotateInfinite()
+    {
+        if(!DOTween.IsTweening(readyS1.GetComponent<RectTransform>()) && !DOTween.IsTweening(readyS2.GetComponent<RectTransform>())){
+            readyS1.GetComponent<RectTransform>().DORotate(new Vector3(0, 0, 360), 4.5f, RotateMode.FastBeyond360)
+                .SetEase(Ease.Linear)
+                .SetLoops(-1, LoopType.Incremental);
+            readyS2.GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 4.5f, RotateMode.FastBeyond360)
+                .SetEase(Ease.Linear)
+                .SetLoops(-1, LoopType.Incremental);
+        }
     }
 
     // 게임씬 이동

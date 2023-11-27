@@ -368,9 +368,10 @@ public class LobbyPlayer : NetworkBehaviour
         }
     }
     
-    // 캐릭터 선택 완료 상태 뷰 업데이트
+    // 캐릭터 선택 완료 상태에서 이미지 클릭 이벤트
     private void HandleClickSelectCompleteImage()
     {
+        roomPlayer.character = Character.NONE; // 캐릭터 선택값 NONE으로 리셋
         selectLeft.SetActive(true);
         selectMiddle.SetActive(true);
         selectRight.SetActive(true);

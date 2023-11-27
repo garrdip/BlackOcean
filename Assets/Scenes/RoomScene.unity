@@ -1911,7 +1911,7 @@ GameObject:
   - component: {fileID: 740275313}
   - component: {fileID: 740275312}
   m_Layer: 5
-  m_Name: 2-5.Ready S 1
+  m_Name: 2-6.Ready S 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2848,7 +2848,7 @@ GameObject:
   - component: {fileID: 1315719775}
   - component: {fileID: 1315719774}
   m_Layer: 5
-  m_Name: 2-4.Ready S Base
+  m_Name: 2-5.Ready S Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3410,7 +3410,7 @@ GameObject:
   - component: {fileID: 1484120485}
   - component: {fileID: 1484120484}
   m_Layer: 5
-  m_Name: 2-6.Ready S 2
+  m_Name: 2-7.Ready S 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
