@@ -35,8 +35,9 @@ public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     // 레디 상태 제어 
     public void HandleRadeyState()
     {
-        if (NetworkClient.connection != null){
-            RoomPlayer roomPlayer = NetworkClient.connection.identity.gameObject.GetComponent<RoomPlayer>();
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        if(Utils.IsSceneActive(networkRoomManager.RoomScene)){
+            RoomPlayer roomPlayer = NetworkClient.localPlayer.gameObject.GetComponent<RoomPlayer>();
             if(roomPlayer.character != Character.NONE){
                 if(!roomPlayer.isServer){ //클라이언트만 레디
                     roomPlayer.isReady = !roomPlayer.isReady;
@@ -45,7 +46,9 @@ public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 }
                 roomPlayer.ChangeReadyState(roomPlayer.isReady, roomPlayer.isReady);
             }
-        }
+        }else if(Utils.IsSceneActive(networkRoomManager.GameplayScene)){
+            NetworkClient.localPlayer.GetComponent<PlayerInterface>().isReady = !NetworkClient.localPlayer.GetComponent<PlayerInterface>().isReady;
+        }       
     }
 
     // 게임씬 이동

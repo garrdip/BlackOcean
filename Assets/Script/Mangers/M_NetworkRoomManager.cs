@@ -1,17 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using ProjectD;
 using Mirror;
-using UnityEngine.SceneManagement;
+using AYellowpaper.SerializedCollections;
 
 public class M_NetworkRoomManager : NetworkRoomManager
 {
     public delegate void OnClientDisconnected(GamePlayer gamePlayer);
     public OnClientDisconnected onClientDisconnected;
     public Color[] colors = new Color[]{ Color.red, Color.green, Color.blue };
-    public List<GameObject> managers = new List<GameObject>(); // 네트워크 매니저에서 관리할 NetworkBehaviour 매니저클래스 오브젝트 리스트
-    public List<GameObject> components = new List<GameObject>(); // 네트워크 매니저에서 관리할 뷰 컴포넌트 오브젝트 리스트
+
+    [Header("DDOL 매니저 오브젝트")]
+    [SerializedDictionary("Name", "Manager")]
+    public SerializedDictionary<string, GameObject> persistentManagers = new SerializedDictionary<string, GameObject>(); // 네트워크 매니저에서 관리할 NetworkBehaviour 매니저클래스 오브젝트 목록
+
+    [Header("DDOL 컴포넌트 오브젝트")]
+    [SerializedDictionary("Name", "Component")]
+    public SerializedDictionary<string, GameObject> persistentComponents = new SerializedDictionary<string, GameObject>(); // 네트워크 매니저에서 관리할 뷰 컴포넌트 오브젝트 목록
 
     public override void Awake()
     {
@@ -141,14 +148,14 @@ public class M_NetworkRoomManager : NetworkRoomManager
     {
         // 메뉴씬 갈때 managers에 할당되었던 DDOL 매니저 오브젝트들 + 뷰 컴포넌트들 모두 제거 
         if(next.name.Equals("MenuScene")){
-            foreach(GameObject manager in managers){
+            foreach(GameObject manager in persistentManagers.Values){
                 Destroy(manager.gameObject);
             }
-            managers.Clear();
-            foreach(GameObject component in components){
+            persistentManagers.Clear();
+            foreach(GameObject component in persistentComponents.Values){
                 Destroy(component);
             }
-            components.Clear();
+            persistentComponents.Clear();
         }
     }
 }

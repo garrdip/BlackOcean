@@ -14,7 +14,6 @@ public class MapUI : InstanceD<MapUI>
     public GameObject regionPopUp;
 
     [Header("UI 컴포넌트")]
-    public Button readyButton;
     public Image regionPopUpHeader;
     public TextMeshProUGUI textRegionGradeInfo;
     public TextMeshProUGUI textRegionDesc;
@@ -39,10 +38,6 @@ public class MapUI : InstanceD<MapUI>
     [Header("카메라 이동 속도")]
     float cameraMoveSpeed = 20;
 
-    public void Start()
-    {
-        readyButton.onClick.AddListener(() => OnChangeReadyState());
-    }
 
     void Update()
     { 

@@ -58,10 +58,9 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         DontDestroyOnLoad(toastMessageCanvas);
         DontDestroyOnLoad(chatCanvas);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.managers.Add(gameObject);
-        networkRoomManager.components.Add(toastMessageCanvas);
-        networkRoomManager.components.Add(chatCanvas);
-        
+        networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
+        networkRoomManager.persistentComponents.Add(toastMessageCanvas.name, toastMessageCanvas);
+        networkRoomManager.persistentComponents.Add(chatCanvas.name, chatCanvas);
         chatStringBuilder = new StringBuilder();
     }
 

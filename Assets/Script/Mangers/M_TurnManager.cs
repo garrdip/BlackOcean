@@ -55,7 +55,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         DontDestroyOnLoad(gameObject);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.managers.Add(gameObject);
+        networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
     }
     
     // Turn 관리는 서버
@@ -952,6 +952,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             M_MapManager.instance.game.SetActive(false);
             GameUIManager.instance.GameUI.gameObject.SetActive(false);
             GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
+            M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            if(networkRoomManager.persistentComponents.TryGetValue("ReadyCanvas", out GameObject readyCanvas)){
+                readyCanvas.SetActive(true); // 레디버튼 활성화
+            }
 
             // 임시 테스트용 UI
             GameUIManager.instance.TestUI.gameObject.SetActive(false);

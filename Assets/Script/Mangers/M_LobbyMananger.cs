@@ -17,7 +17,7 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
     {
         DontDestroyOnLoad(gameObject);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.managers.Add(gameObject);
+        networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
     }
 
     public override void OnStartClient()

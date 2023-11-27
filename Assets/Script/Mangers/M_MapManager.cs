@@ -90,7 +90,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         DontDestroyOnLoad(gameObject);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.managers.Add(gameObject);
+        networkRoomManager.persistentManagers.Add(gameObject.name, game);
     }
 
     /*
@@ -588,6 +588,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             game.SetActive(true);
             GameUIManager.instance.GameUI.gameObject.SetActive(true);
             GameUIManager.instance.GameBackGround.gameObject.SetActive(true);
+            M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            if(networkRoomManager.persistentComponents.TryGetValue("ReadyCanvas", out GameObject readyCanvas)){
+                readyCanvas.SetActive(false); // 레디버튼 비활성화
+            }
 
             // 임시 테스트용 UI
             GameUIManager.instance.TestUI.gameObject.SetActive(true);

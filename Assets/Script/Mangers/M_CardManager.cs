@@ -77,7 +77,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     {
         DontDestroyOnLoad(gameObject);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.managers.Add(gameObject);
+        networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
         InitCardConfigValue();
     }
 

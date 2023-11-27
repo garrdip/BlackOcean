@@ -38,8 +38,8 @@ public class RoomUI : InstanceD<RoomUI>
         DontDestroyOnLoad(optionCanvas);
         DontDestroyOnLoad(readyCanvas);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.components.Add(optionCanvas);
-        networkRoomManager.components.Add(readyCanvas);
+        networkRoomManager.persistentComponents.Add(optionCanvas.name, optionCanvas);
+        networkRoomManager.persistentComponents.Add(readyCanvas.name, readyCanvas);
         for(int i=0; i<swapButtons.Count; i++){
             int buttonIndex = i;
             topIconImages[i].gameObject.SetActive(false);
