@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using Mirror;
 using DG.Tweening;
 using Steamworks;
 
-public class MapPlayer : NetworkBehaviour
+public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("맵 플레이어 뷰 컴포넌트 레이아웃")]
     public GameObject swapRequestLayout;
@@ -19,6 +20,7 @@ public class MapPlayer : NetworkBehaviour
     public GameObject p_INFO_M_L_L;
     public GameObject p_INFO_C_B;
     public GameObject p_INFO_C_B_L;
+    public GameObject hoverLine;
 
     [Header("SwapRequestLayout")]
     public Button buttonSwapAccept;
@@ -80,6 +82,21 @@ public class MapPlayer : NetworkBehaviour
     {
         swapRequestLayout.SetActive(false);
         CmdSwapReject(oldIndex);
+    }
+
+    public void OnPointerClick(PointerEventData pointerEventData)
+    {
+        M_MapManager.instance.ownedMapPlayer = GetComponent<NetworkIdentity>().netId;
+    }
+
+    public void OnPointerEnter(PointerEventData pointerEventData)
+    {
+        hoverLine.GetComponent<Image>().color = Color.red;
+    }
+
+    public void OnPointerExit(PointerEventData pointerEventData)
+    {
+        hoverLine.GetComponent<Image>().color = Color.white;
     }
 
     // ----------------------------------------------------------------- Command Method --------------------------------------------------------------------------------//
