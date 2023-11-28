@@ -245,8 +245,6 @@ public class PlayerInterface : NetworkBehaviour
     public void OnChangedSelectOrder(int oldVal,int newVal)
     {
         MapUI.instance.UpdateProfile();
-        if(isLocalPlayer)
-            MapUI.instance.SetOrderIndicator(newVal);
     }
 
     void OnChangedAvatar(bool oldVal, bool newVal)

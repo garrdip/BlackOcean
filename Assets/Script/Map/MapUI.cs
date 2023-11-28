@@ -10,8 +10,6 @@ using DG.Tweening;
 
 public class MapUI : InstanceD<MapUI>
 {
-    public GameObject[] orderSelected;
-    public GameObject[] playerProfiles;
     public GameObject regionPopUp;
 
     [Header("UI 컴포넌트")]
@@ -147,41 +145,12 @@ public class MapUI : InstanceD<MapUI>
         }  
     }
 
-    public void SetOrderIndicator(int order)
-    {
-        orderSelected[0].SetActive(order == 0 ? true : false);
-        orderSelected[1].SetActive(order == 1 ? true : false);
-        orderSelected[2].SetActive(order == 2 ? true : false);
-    }
-
     public void UpdateProfile()
     {
         PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
         foreach(PlayerInterface user in users)
         {
             if(M_LoadingManager.instance.state != LOADING_STATE.MAP_SCENE)return;
-            // Avatar
-            if(user.isAvatarUploadDone)
-            {
-                byte[] avatarImage = new byte[user.avatarWidth * user.avatarHeight * 4];
-                for(int i = 0 ;i < user.avatarImage.Count ; i++)
-                    avatarImage[i] = user.avatarImage[i];
-                playerProfiles[user.selectOrder].transform.GetChild(6).GetComponent<RawImage>().texture = M_SteamManager.instance.GetSteamImageAsTexture(avatarImage,user.avatarWidth,user.avatarHeight);
-            }
-            playerProfiles[user.selectOrder].transform.GetChild(6).GetComponent<RawImage>().color = new Color(1,1,1,1);
-            // Show ID
-            playerProfiles[user.selectOrder].transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = SteamFriends.GetFriendPersonaName((CSteamID)user.steamID);
-            // Show Ready State
-            playerProfiles[user.selectOrder].transform.GetChild(1).gameObject.SetActive(user.isReady == true ? true : false);
-            // HP (Right 195 -> 0 : 0 -> Max)
-            
-            /*
-            TODO
-            playerProfiles[user.selectOrder].transform.GetChild(3).GetChild(0).GetComponent<RectTransform>().offsetMax = 
-                new Vector2(( 195 * user.HP / user.MaxHP ) - 195,playerProfiles[user.selectOrder].transform.GetChild(3).GetChild(0).GetComponent<RectTransform>().offsetMax.y);
-            */
-            
-            // Ichi
         }
     }
 

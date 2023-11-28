@@ -750,6 +750,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 if(NetworkClient.spawned.TryGetValue(newVal, out NetworkIdentity networkIdentity)){
                     MapPlayer mapPlayer = NetworkClient.spawned[newVal].GetComponent<MapPlayer>();
                     mapPlayer.gamePlayer.selectOrder = index;
+                    mapPlayer.gamePlayer.objectOwner.selectOrder = index;
                     mapPlayer.ChangeMapPlayerViewByOrder(index);
                 }
                 MapUI.instance.ChangeSwapButtonsState(newVal, index);
