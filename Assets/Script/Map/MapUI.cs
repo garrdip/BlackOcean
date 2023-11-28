@@ -20,6 +20,7 @@ public class MapUI : InstanceD<MapUI>
     public TextMeshProUGUI textRegionDesc;
     public TextMeshProUGUI textCurrentActionCost;
     public TextMeshProUGUI textMaxActionCostCount;
+    public Image turnGageBar;
 
     public List<GameObject> topIcons = new List<GameObject>();
     public List<Button> swapButtons = new List<Button>();

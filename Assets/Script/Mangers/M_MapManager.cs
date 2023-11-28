@@ -28,7 +28,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [SyncVar (hook = nameof(OnChangedMaxActionCost))]
     public int maxActionCost; // 맵에서 소모되는 행동 비용 최대값
     
-    [SyncVar (hook = nameof(OnChangedTotalActionCost))]
+    [SyncVar (hook = nameof(OnChangedCurrentActionCost))]
     public int currentActionCost; // 현재 남은 액션 비용
     
     [SyncVar (hook = nameof(OnChangedActionCost))]
@@ -124,8 +124,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         mapSight = 1; // 맵시야
         actionCost = 1; // 행동 비용
+        maxActionCost = 30; // 행동비용 최대값
         currentActionCost = 30; // 현재 남은 행동비용
-        maxActionCost = currentActionCost; // 행동비용 최대값
     }
 
      public override void OnStartClient()
@@ -694,10 +694,11 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     // ------------------------------------------------------------ Syncvar Hook --------------------------------------------------------------- //
 
     // 행동비용 총량 변경 이벤트 수신
-    public void OnChangedTotalActionCost(int oldValue, int newValue)
+    public void OnChangedCurrentActionCost(int oldValue, int newValue)
     {
         Debug.Log($"행동 비용이 {oldValue} -> {newValue} 감소했습니다.");
         MapUI.instance.textCurrentActionCost.text = $"{newValue.ToString()}턴";
+        MapUI.instance.turnGageBar.fillAmount = ((float)newValue / (float)maxActionCost);
         if(isServer){
             if(newValue == 0 && mapBoss == null){
                 GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
