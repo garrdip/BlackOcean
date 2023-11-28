@@ -15,16 +15,7 @@ public class RoomUI : InstanceD<RoomUI>
     public Button buttonOption;
     public TextMeshProUGUI textReady;
     public List<GameObject> topIcons = new List<GameObject>();
-    public List<Image> topIconImages = new List<Image>();
     public List<Button> swapButtons = new List<Button>();
-
-    [Header("스왑버튼 아이콘 이미지")]
-    public Sprite topIconMy;
-    public Sprite topIconMyLight;
-    public Sprite topIconExChange;
-    public Sprite topIconExChangeLight;
-    public Sprite topIconReady;
-    public Sprite topIconReadyLight;
 
     [Header("옵션 버튼 캔버스")]
     public GameObject optionCanvas;
@@ -42,7 +33,6 @@ public class RoomUI : InstanceD<RoomUI>
         networkRoomManager.persistentComponents.Add(readyCanvas.name, readyCanvas);
         for(int i=0; i<swapButtons.Count; i++){
             int buttonIndex = i;
-            topIconImages[i].gameObject.SetActive(false);
             swapButtons[i].transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
             swapButtons[i].transform.localRotation = Quaternion.Euler(0f, 0f, 45f);
             swapButtons[i].onClick.AddListener(() => HandleLobbyPlayerSwap(buttonIndex));
@@ -108,11 +98,9 @@ public class RoomUI : InstanceD<RoomUI>
     public void ChangeSwapButtonsState(uint netId, int index)
     {
         if(netId == 0){
-            topIconImages[index].gameObject.SetActive(false);
             swapButtons[index].transform.DOScale(new Vector3(0.8f, 0.8f, 0.8f), 0.5f);
             swapButtons[index].transform.DORotate(new Vector3(0f, 0f, 45f), 0.5f);
         }else{
-            topIconImages[index].gameObject.SetActive(true);
             swapButtons[index].transform.DOScale(new Vector3(1f, 1f, 1f), 0.5f);
             swapButtons[index].transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f);
         }  

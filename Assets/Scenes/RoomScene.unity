@@ -513,6 +513,7 @@ GameObject:
   - component: {fileID: 229277395}
   - component: {fileID: 229277394}
   - component: {fileID: 229277393}
+  - component: {fileID: 229277396}
   m_Layer: 5
   m_Name: ButtonSwap
   m_TagString: Untagged
@@ -538,8 +539,8 @@ RectTransform:
   - {fileID: 8968590605291982090}
   - {fileID: 8968590604119859620}
   - {fileID: 8968590604881645091}
-  - {fileID: 8968590605210310284}
   - {fileID: 8968590604490406410}
+  - {fileID: 8968590605210310284}
   m_Father: {fileID: 8968590604370123896}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -630,6 +631,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 229277391}
   m_CullTransparentMesh: 1
+--- !u!114 &229277396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 229277391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a22dfb224e14b74485f5e7f7c3128e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topBase: {fileID: 8968590605628684379}
+  topBaseLight: {fileID: 8968590604024648934}
+  topMy: {fileID: 8968590604363102586}
+  topMyLight: {fileID: 8968590605291982091}
+  topC: {fileID: 8968590604119859621}
+  topCLight: {fileID: 8968590604881645092}
+  topR: {fileID: 8968590604490406411}
+  topRLight: {fileID: 8968590605210310285}
 --- !u!1 &268281116
 GameObject:
   m_ObjectHideFlags: 0
@@ -3000,6 +3021,7 @@ GameObject:
   - component: {fileID: 1335509979}
   - component: {fileID: 1335509978}
   - component: {fileID: 1335509977}
+  - component: {fileID: 1335509980}
   m_Layer: 5
   m_Name: ButtonSwap
   m_TagString: Untagged
@@ -3025,8 +3047,8 @@ RectTransform:
   - {fileID: 8968590604369163775}
   - {fileID: 8968590605613111633}
   - {fileID: 8968590605804484310}
-  - {fileID: 8968590604522401401}
   - {fileID: 8968590605178340095}
+  - {fileID: 8968590604522401401}
   m_Father: {fileID: 8968590605292856461}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3117,6 +3139,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1335509975}
   m_CullTransparentMesh: 1
+--- !u!114 &1335509980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1335509975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a22dfb224e14b74485f5e7f7c3128e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topBase: {fileID: 8968590604974342318}
+  topBaseLight: {fileID: 8968590605517745171}
+  topMy: {fileID: 8968590605319274895}
+  topMyLight: {fileID: 8968590604369163774}
+  topC: {fileID: 8968590605613111632}
+  topCLight: {fileID: 8968590605804484305}
+  topR: {fileID: 8968590605178340094}
+  topRLight: {fileID: 8968590604522401400}
 --- !u!1 &1344849859
 GameObject:
   m_ObjectHideFlags: 0
@@ -3205,6 +3247,7 @@ GameObject:
   - component: {fileID: 1378613318}
   - component: {fileID: 1378613317}
   - component: {fileID: 1378613316}
+  - component: {fileID: 1378613319}
   m_Layer: 5
   m_Name: ButtonSwap
   m_TagString: Untagged
@@ -3230,8 +3273,8 @@ RectTransform:
   - {fileID: 8968590605700758914}
   - {fileID: 8968590604793483564}
   - {fileID: 8968590604464766635}
-  - {fileID: 8968590605883024900}
   - {fileID: 8968590604890606210}
+  - {fileID: 8968590605883024900}
   m_Father: {fileID: 8968590605043395824}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3322,6 +3365,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1378613314}
   m_CullTransparentMesh: 1
+--- !u!114 &1378613319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1378613314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a22dfb224e14b74485f5e7f7c3128e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topBase: {fileID: 8968590605227673811}
+  topBaseLight: {fileID: 8968590604685337710}
+  topMy: {fileID: 8968590605019023858}
+  topMyLight: {fileID: 8968590605700758915}
+  topC: {fileID: 8968590604793483565}
+  topCLight: {fileID: 8968590604464766636}
+  topR: {fileID: 8968590604890606211}
+  topRLight: {fileID: 8968590605883024901}
 --- !u!1 &1471510822
 GameObject:
   m_ObjectHideFlags: 0
@@ -4305,20 +4368,10 @@ MonoBehaviour:
   - {fileID: 8968590605043395825}
   - {fileID: 8968590604370123897}
   - {fileID: 8968590605292856460}
-  topIconImages:
-  - {fileID: 8968590604890606209}
-  - {fileID: 8968590604490406409}
-  - {fileID: 8968590605178340092}
   swapButtons:
   - {fileID: 1378613316}
   - {fileID: 229277393}
   - {fileID: 1335509977}
-  topIconMy: {fileID: 21300000, guid: 8d9e8a9a6b9addb45a30064cbc543974, type: 3}
-  topIconMyLight: {fileID: 21300000, guid: c297e8b5690474c44bf776a06869f8ea, type: 3}
-  topIconExChange: {fileID: 21300000, guid: 4303e50d0726d164b8bc3ac485020a94, type: 3}
-  topIconExChangeLight: {fileID: 21300000, guid: 653c41dbdda4b18458bc83aa10383277, type: 3}
-  topIconReady: {fileID: 21300000, guid: 8f711cc5ad5c38b46877fc3526e35a5d, type: 3}
-  topIconReadyLight: {fileID: 21300000, guid: 6872d9f6b95b6f7438311279c9fef563, type: 3}
   optionCanvas: {fileID: 1088697992}
   readyCanvas: {fileID: 362042206}
 --- !u!1 &1781215236
@@ -6832,7 +6885,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!222 &8968590604363102471
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7126,7 +7179,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4303e50d0726d164b8bc3ac485020a94, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8f711cc5ad5c38b46877fc3526e35a5d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7149,7 +7202,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 229277392}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7205,7 +7258,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1335509976}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7401,7 +7454,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!222 &8968590604881645089
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7506,7 +7559,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4303e50d0726d164b8bc3ac485020a94, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8f711cc5ad5c38b46877fc3526e35a5d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7529,7 +7582,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1378613315}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7763,7 +7816,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4303e50d0726d164b8bc3ac485020a94, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8f711cc5ad5c38b46877fc3526e35a5d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7812,7 +7865,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1335509976}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7870,7 +7923,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 229277392}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8253,7 +8306,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8968590605613111633
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8591,7 +8644,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1378613315}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

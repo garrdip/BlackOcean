@@ -658,8 +658,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void EnterTheRoom(HexagonMapRoom hexagonMapRoom)
     {
         int actionCost = M_MapManager.instance.FindPath(M_MapManager.instance.currentRoom, hexagonMapRoom).Count;
-        if(actionCost > M_MapManager.instance.totalActionCost){
-            Debug.Log($"[행동 비용이 모자랍니다] 총 비용 : {M_MapManager.instance.totalActionCost} / 남은 비용 : {actionCost}");
+        if(actionCost > M_MapManager.instance.currentActionCost){
+            Debug.Log($"[행동 비용이 모자랍니다] 총 비용 : {M_MapManager.instance.currentActionCost} / 남은 비용 : {actionCost}");
         }else{
             // 맵 플레이어들 위치 이동
             foreach(GameObject mapPlayerPieceObject in M_MapManager.instance.mapPlayerPieces){

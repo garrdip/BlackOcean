@@ -25,8 +25,11 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [SyncVar]
     public int mapSight; // 맵 시야 변수값
 
+    [SyncVar (hook = nameof(OnChangedMaxActionCost))]
+    public int maxActionCost; // 맵에서 소모되는 행동 비용 최대값
+    
     [SyncVar (hook = nameof(OnChangedTotalActionCost))]
-    public int totalActionCost; // 맵에서 소모되는 행동 비용 총량
+    public int currentActionCost; // 현재 남은 액션 비용
     
     [SyncVar (hook = nameof(OnChangedActionCost))]
     public int actionCost; // 행동시 소모되는 행동 비용
@@ -121,7 +124,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         mapSight = 1; // 맵시야
         actionCost = 1; // 행동 비용
-        totalActionCost = 30; // 행동 비용 총량
+        currentActionCost = 30; // 현재 남은 행동비용
+        maxActionCost = currentActionCost; // 행동비용 최대값
     }
 
      public override void OnStartClient()
@@ -166,7 +170,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     // 맵 플레이어 리스트에서 제거
     [Server]
-    public void RemoveLobbyPlayer(uint targetNetId)
+    public void RemoveMapPlayer(uint targetNetId)
     {
         int index = mapPlayers.FindIndex((netId) => netId == targetNetId);
         mapPlayers[index] = 0;
@@ -510,10 +514,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Server]
     public void DecreaseTotalActionCost(int cost = 0)
     {
-        if(totalActionCost > 0){
+        if(currentActionCost > 0){
             int reduceActionCost = (cost > 0) ? cost : actionCost; // 비용값이 설정된 경우 그 비용값 만큼 감소, 아닐 경우 기본 비용값 만큼 감소
-            if(reduceActionCost <= totalActionCost){
-                totalActionCost = Mathf.Max(0, totalActionCost - reduceActionCost);
+            if(reduceActionCost <= currentActionCost){
+                currentActionCost = Mathf.Max(0, currentActionCost - reduceActionCost);
             }
         }
     }
@@ -693,7 +697,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     public void OnChangedTotalActionCost(int oldValue, int newValue)
     {
         Debug.Log($"행동 비용이 {oldValue} -> {newValue} 감소했습니다.");
-        MapUI.instance.textTotalActionCostCount.text = $"{newValue.ToString()}턴";
+        MapUI.instance.textCurrentActionCost.text = $"{newValue.ToString()}턴";
         if(isServer){
             if(newValue == 0 && mapBoss == null){
                 GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
@@ -701,7 +705,12 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         }
     }
 
-    // 행동비용 변경 이벤트 수신
+    public void OnChangedMaxActionCost(int oldValue, int newValue)
+    {
+        MapUI.instance.textMaxActionCostCount.text = $"{newValue.ToString()}턴";
+    }
+
+    // 행동비용 변경 이벤트 수신(1회당 소모되는 행동비용 값)
     public void OnChangedActionCost(int oldValue, int newValue)
     {
         // TBD
@@ -742,6 +751,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                     mapPlayer.gamePlayer.selectOrder = index;
                     mapPlayer.ChangeMapPlayerViewByOrder(index);
                 }
+                MapUI.instance.ChangeSwapButtonsState(newVal, index);
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
                 
@@ -1024,8 +1034,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         path.Reverse();
 
         // 이동하려는 위치까지의 비용이 현재 남은 비용보다 작은 경우, 검색된 경로에서 모자라는 만큼 노드를 제거(= 검색된 경로중 현재 남은 비용으로 이동 가능한 만큼의 노드만 반환)
-        if(M_MapManager.instance.totalActionCost < path.Count){
-            int numToRemove = path.Count - M_MapManager.instance.totalActionCost;
+        if(M_MapManager.instance.currentActionCost < path.Count){
+            int numToRemove = path.Count - M_MapManager.instance.currentActionCost;
             for(int i = 0; i < numToRemove; i++){
                 int lastIndex = path.Count - 1;
                 path.RemoveAt(lastIndex);

@@ -6,6 +6,7 @@ using Mirror;
 using TMPro;
 using ProjectD;
 using Steamworks;
+using DG.Tweening;
 
 public class MapUI : InstanceD<MapUI>
 {
@@ -17,9 +18,11 @@ public class MapUI : InstanceD<MapUI>
     public Image regionPopUpHeader;
     public TextMeshProUGUI textRegionGradeInfo;
     public TextMeshProUGUI textRegionDesc;
-    public TextMeshProUGUI textTotalActionCostCount;
+    public TextMeshProUGUI textCurrentActionCost;
+    public TextMeshProUGUI textMaxActionCostCount;
 
-    public List<GameObject> topButtons = new List<GameObject>();
+    public List<GameObject> topIcons = new List<GameObject>();
+    public List<Button> swapButtons = new List<Button>();
 
     [Header("맵 화면의 카메라 줌 조절 변수값")]
     [SerializeField]
@@ -43,10 +46,11 @@ public class MapUI : InstanceD<MapUI>
 
     void Start()
     {
-        for(int i=0; i<topButtons.Count; i++){
+        for(int i=0; i<swapButtons.Count; i++){
             int buttonIndex = i;
-            Button swapButton = topButtons[i].GetComponent<Button>();
-            swapButton.onClick.AddListener(() => HandleLobbyPlayerSwap(buttonIndex));
+            swapButtons[i].transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+            swapButtons[i].transform.localRotation = Quaternion.Euler(0f, 0f, 45f);
+            swapButtons[i].onClick.AddListener(() => HandleMapPlayerSwap(buttonIndex));
         }
     }
 
@@ -110,7 +114,8 @@ public class MapUI : InstanceD<MapUI>
         }
     }
 
-    public void HandleLobbyPlayerSwap(int swapTargetIndex)
+    // 맵 플레이어 스왑 버튼 클릭
+    public void HandleMapPlayerSwap(int swapTargetIndex)
     {
         int myIndex = M_MapManager.instance.mapPlayers.FindIndex((netId) => netId == M_MapManager.instance.ownedMapPlayer);
         if(myIndex != swapTargetIndex){ // 로컬유저 본인에 대한 요청은 제외
@@ -127,6 +132,18 @@ public class MapUI : InstanceD<MapUI>
                 }
             }
         }
+    }
+
+    // 스왑버튼 상태 변경
+    public void ChangeSwapButtonsState(uint netId, int index)
+    {
+        if(netId == 0){
+            swapButtons[index].transform.DOScale(new Vector3(0.8f, 0.8f, 0.8f), 0.5f);
+            swapButtons[index].transform.DORotate(new Vector3(0f, 0f, 45f), 0.5f);
+        }else{
+            swapButtons[index].transform.DOScale(new Vector3(1f, 1f, 1f), 0.5f);
+            swapButtons[index].transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f);
+        }  
     }
 
     public void SetOrderIndicator(int order)

@@ -9,16 +9,30 @@ using Steamworks;
 
 public class MapPlayer : NetworkBehaviour
 {
-    private float upPositionY;
-    private float downPositionY;
+    [Header("맵 플레이어 뷰 컴포넌트 레이아웃")]
     public GameObject swapRequestLayout;
+    public GameObject p_INFO_Base;
+    public GameObject p_INFO_B;
+    public GameObject p_INFO_L;
+    public GameObject p_INFO_L_L;
+    public GameObject p_INFO_M_L;
+    public GameObject p_INFO_M_L_L;
+    public GameObject p_INFO_C_B;
+    public GameObject p_INFO_C_B_L;
+
+    [Header("SwapRequestLayout")]
     public Button buttonSwapAccept;
     public Button buttonSwapReject;
+
+    [Header("Player Info Layout")]
     public TextMeshProUGUI textOrder;
     public TextMeshProUGUI steamDisplayName;
 
+    // Dotween 참조값
     public Sequence sequence;
-    
+    private float upPositionY;
+    private float downPositionY;
+
     [SyncVar]
     public GamePlayer gamePlayer;
 
@@ -27,6 +41,7 @@ public class MapPlayer : NetworkBehaviour
     
     [SyncVar]
     public int newIndex;
+
 
     void Start()
     {
@@ -130,16 +145,26 @@ public class MapPlayer : NetworkBehaviour
 
     // ----------------------------------------------------------------- View Update Method --------------------------------------------------------------------------------//
 
+    // 맵플레이어 뷰 컴포넌트 초기화
     private void InitMapPlayerView()
     {
         int index = M_MapManager.instance.mapPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
         if(index != -1){    
             ChangeMapPlayerViewByOrder(index);
+            p_INFO_M_L.SetActive(isOwned);
             steamDisplayName.text = gamePlayer.objectOwner.steamPersonaName;
             SetOrderTextByPlayerOrder(gamePlayer.selectOrder);
+            MapUI.instance.ChangeSwapButtonsState(GetComponent<NetworkIdentity>().netId, index);
+            if(isOwned){
+                SwapButtonOnMap swapButtonOnMap = MapUI.instance.swapButtons[index].GetComponent<SwapButtonOnMap>();
+                swapButtonOnMap.t_M_Icon.SetActive(true);
+                swapButtonOnMap.t_Chan_Icon.SetActive(false);
+                swapButtonOnMap.t_Ready_Icon.SetActive(false);
+            }
         }
     }
 
+    // 맵플레이어 뷰 컴포넌트 변경사항 업데이트
     public void ChangeMapPlayerViewByOrder(int index)
     {
         Tween fadeInTween = GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).OnComplete(() => { SetMapPlayerParent(index); });
@@ -151,11 +176,25 @@ public class MapPlayer : NetworkBehaviour
         sequence.Join(upTween);
         sequence.Append(downTween);
         sequence.Join(fadeOutTween);
+        for(int i=0; i<MapUI.instance.swapButtons.Count; i++){
+            SwapButtonOnMap swapButtonOnMap = MapUI.instance.swapButtons[i].GetComponent<SwapButtonOnMap>();
+            swapButtonOnMap.t_Chan_Icon.SetActive(true);
+            swapButtonOnMap.t_M_Icon.SetActive(false);
+            swapButtonOnMap.t_Ready_Icon.SetActive(false);
+        }
+        int ownedMapPlayerIndex = M_MapManager.instance.mapPlayers.FindIndex((netId) => netId == M_MapManager.instance.ownedMapPlayer);
+        if(ownedMapPlayerIndex != -1){
+            SwapButtonOnMap ownedSwapButton = MapUI.instance.swapButtons[ownedMapPlayerIndex].GetComponent<SwapButtonOnMap>();
+            ownedSwapButton.t_M_Icon.SetActive(true);
+            ownedSwapButton.t_Chan_Icon.SetActive(false);
+            ownedSwapButton.t_Ready_Icon.SetActive(false);
+        }
     }
 
+    // 맵플레이어 부모오브젝트 설정
     private void SetMapPlayerParent(int index)
     {
-        transform.SetParent(MapUI.instance.topButtons[index].transform);
+        transform.SetParent(MapUI.instance.topIcons[index].transform);
         transform.localScale = new Vector3(1f, 1f, 1f);
         transform.localPosition = new Vector3(0f, upPositionY, 0f);
         transform.SetAsFirstSibling();

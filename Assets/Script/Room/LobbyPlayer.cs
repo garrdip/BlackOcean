@@ -248,7 +248,10 @@ public class LobbyPlayer : NetworkBehaviour
             ChangeClassLayoutFade();
             SetCapAndOutIconByPermission(); // 로비플레이어 상단 좌측의 방장표시 및 강퇴 아이콘을 권한에 따라 설정
             if(isOwned){
-                RoomUI.instance.topIconImages[index].sprite = RoomUI.instance.topIconMy;
+                SwapButtonOnRoom swapButtonOnRoom = RoomUI.instance.swapButtons[index].GetComponent<SwapButtonOnRoom>();
+                swapButtonOnRoom.topMy.SetActive(true);
+                swapButtonOnRoom.topC.SetActive(false);
+                swapButtonOnRoom.topR.SetActive(false);
             }
         }
     }
@@ -360,11 +363,17 @@ public class LobbyPlayer : NetworkBehaviour
         sequence.Append(downTween);
         sequence.Join(fadeOutTween);
         for(int i=0; i<RoomUI.instance.swapButtons.Count; i++){
-            RoomUI.instance.topIconImages[i].sprite =  RoomUI.instance.topIconExChange;
+            SwapButtonOnRoom swapButtonOnRoom = RoomUI.instance.swapButtons[i].GetComponent<SwapButtonOnRoom>();
+            swapButtonOnRoom.topC.SetActive(true);
+            swapButtonOnRoom.topMy.SetActive(false);
+            swapButtonOnRoom.topR.SetActive(false);
         }
         int ownedLobbyPlayerIndex = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == M_LobbyMananger.instance.ownedLobbyPlayer);
         if(ownedLobbyPlayerIndex != -1){
-            RoomUI.instance.topIconImages[ownedLobbyPlayerIndex].sprite =  RoomUI.instance.topIconMy;
+            SwapButtonOnRoom ownedSwapButton = RoomUI.instance.swapButtons[ownedLobbyPlayerIndex].GetComponent<SwapButtonOnRoom>();
+            ownedSwapButton.topMy.SetActive(true);
+            ownedSwapButton.topC.SetActive(false);
+            ownedSwapButton.topR.SetActive(false);
         }
     }
     

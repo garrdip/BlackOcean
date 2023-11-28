@@ -190,7 +190,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         if(isChatBoxVisible){
             chatMessageBoxTween = chatMessageBoxRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
             chatInputTween = chatMessageInputRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
-            buttonChatBoxTween = buttonChatBoxRect.DOAnchorPosX((chatMessageBoxRect.rect.width) - 10f, 0.5f);
+            buttonChatBoxTween = buttonChatBoxRect.DOAnchorPosX(875f, 0.5f);
             chatNotificationIcon.SetActive(false);
             chatNotificationIconLight.SetActive(false);
             fadeInTweener.Kill();
@@ -199,7 +199,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         }else{
             chatMessageBoxTween = chatMessageBoxRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
             chatInputTween =  chatMessageInputRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
-            buttonChatBoxTween = buttonChatBoxRect.DOAnchorPosX((buttonChatBoxRect.rect.width / 2) + 100f, 0.5f);
+            buttonChatBoxTween = buttonChatBoxRect.DOAnchorPosX(150f, 0.5f);
         }
     }
 
