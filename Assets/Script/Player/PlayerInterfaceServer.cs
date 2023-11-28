@@ -61,6 +61,13 @@ public class PlayerInterfaceServer : NetworkBehaviour
             gamePlayerDeck.abilityCtrlArrow = abilityArrowObject.GetComponent<AbilityCtrlArrow>();
         }
 
+        // 맵 플레이어 오브젝트 생성
+        GameObject mapPlayerObject = Instantiate(networkRoomManager.spawnPrefabs.Find(pref => pref.name == "MapPlayer"));
+        MapPlayer mapPlayer = mapPlayerObject.GetComponent<MapPlayer>();
+        mapPlayer.gamePlayer = gamePlayer;
+        NetworkServer.Spawn(mapPlayerObject, connectionToClient);
+        M_MapManager.instance.AddMapPlayer((int)gamePlayer.selectOrder, mapPlayer.netId);
+
         // MapPlayerPiece 오브젝트 생성
         GamePlayerMap gamePlayerMap = gamePlayer.GetComponent<GamePlayerMap>();
         GameObject mapPlayerPieceObject = Instantiate(

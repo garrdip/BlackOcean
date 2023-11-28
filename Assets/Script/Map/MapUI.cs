@@ -117,7 +117,14 @@ public class MapUI : InstanceD<MapUI>
             if(M_MapManager.instance.mapPlayers[swapTargetIndex] == 0){
                 M_MapManager.instance.CmdSwapMapPlayer(myIndex, swapTargetIndex); // 스왑 타겟이 빈슬롯이면 해당 슬롯으로 이동되도록 요청
             }else{
-                M_MapManager.instance.CmdRequestSwap(myIndex, swapTargetIndex);
+                if(NetworkClient.spawned.TryGetValue(M_MapManager.instance.mapPlayers[swapTargetIndex], out NetworkIdentity networkIdentity)){
+                    MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
+                    if(mapPlayer.isOwned){
+                        M_MapManager.instance.CmdSwapMapPlayer(myIndex, swapTargetIndex); // 스왑 타겟이 본인 소유면 요청없이 스왑
+                    }else{
+                        M_MapManager.instance.CmdRequestSwap(myIndex, swapTargetIndex); // 스왑 타겟이 본인 소유 아니면 요청 전송
+                    }
+                }
             }
         }
     }

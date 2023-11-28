@@ -739,7 +739,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             case SyncList<uint>.Operation.OP_SET:
                 if(NetworkClient.spawned.TryGetValue(newVal, out NetworkIdentity networkIdentity)){
                     MapPlayer mapPlayer = NetworkClient.spawned[newVal].GetComponent<MapPlayer>();
-                    mapPlayer.playerInterface.selectOrder = index;
+                    mapPlayer.gamePlayer.selectOrder = index;
                     mapPlayer.ChangeMapPlayerViewByOrder(index);
                 }
                 break;

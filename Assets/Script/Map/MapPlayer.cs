@@ -20,7 +20,7 @@ public class MapPlayer : NetworkBehaviour
     public Sequence sequence;
     
     [SyncVar]
-    public PlayerInterface playerInterface;
+    public GamePlayer gamePlayer;
 
     [SyncVar]
     public int oldIndex;
@@ -135,8 +135,8 @@ public class MapPlayer : NetworkBehaviour
         int index = M_MapManager.instance.mapPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
         if(index != -1){    
             ChangeMapPlayerViewByOrder(index);
-            steamDisplayName.text = playerInterface.steamPersonaName;
-            SetOrderTextByPlayerOrder(playerInterface.selectOrder);
+            steamDisplayName.text = gamePlayer.objectOwner.steamPersonaName;
+            SetOrderTextByPlayerOrder(gamePlayer.selectOrder);
         }
     }
 

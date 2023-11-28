@@ -26,29 +26,15 @@ public class M_NetworkRoomManager : NetworkRoomManager
         SceneManager.activeSceneChanged += OnChangedActiveScene; // 씬 전환 이벤트 연결
     }
 
-    // 커스텀 게임플레이어 생성 + 게임플레이어 참조하는 맵플레이어 생성
-    public override GameObject OnRoomServerCreateGamePlayer(NetworkConnectionToClient conn, GameObject roomPlayer)
+    // 룸씬에서 게임씬으로 넘어갈때 룸씬의 플레이어 오브젝트와 게임씬의 플레이어 오브젝트의 정보들을 동기화
+    public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject playerInteface)
     {
-        GameObject PlayerInterfaceObject = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-        PlayerInterface playerInterface = PlayerInterfaceObject.GetComponent<PlayerInterface>();
-
-        // 게임플레이어 생성할떄 룸플레이어 오브젝트와 게임플레이어 오브젝트의 정보들을 동기화
-        playerInterface.character = roomPlayer.GetComponent<RoomPlayer>().character;
-        playerInterface.selectOrder = (int)roomPlayer.GetComponent<RoomPlayer>().order; //int => PlayOder Type으로 변경 필요
-        playerInterface.steamPersonaName = roomPlayer.GetComponent<RoomPlayer>().steamPersonaName;
-        playerInterface.steamID = roomPlayer.GetComponent<RoomPlayer>().steamID;
-        playerInterface.color = roomPlayer.GetComponent<RoomPlayer>().color;
-        NetworkServer.Spawn(PlayerInterfaceObject, conn);
-
-        NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        GameObject mapPlayerObject = Instantiate(netManger.spawnPrefabs.Find(pref => pref.name == "MapPlayer"));
-        MapPlayer mapPlayer = mapPlayerObject.GetComponent<MapPlayer>();
-        mapPlayer.playerInterface = playerInterface.GetComponent<PlayerInterface>();
-        NetworkServer.Spawn(mapPlayerObject, conn);
-
-        M_MapManager.instance.AddMapPlayer((int)roomPlayer.GetComponent<RoomPlayer>().order, mapPlayer.netId);
-
-        return PlayerInterfaceObject;
+        playerInteface.GetComponent<PlayerInterface>().character = roomPlayer.GetComponent<RoomPlayer>().character;
+        playerInteface.GetComponent<PlayerInterface>().selectOrder = (int)roomPlayer.GetComponent<RoomPlayer>().order; //int => PlayOder Type으로 변경 필요
+        playerInteface.GetComponent<PlayerInterface>().steamPersonaName = roomPlayer.GetComponent<RoomPlayer>().steamPersonaName;
+        playerInteface.GetComponent<PlayerInterface>().steamID = roomPlayer.GetComponent<RoomPlayer>().steamID;
+        playerInteface.GetComponent<PlayerInterface>().color = roomPlayer.GetComponent<RoomPlayer>().color;
+        return true;
     }
 
     // 커스텀 룸 플레이어 오브젝트 생성 + 룸 플레이어 참조하는 로비플레이어 생성
