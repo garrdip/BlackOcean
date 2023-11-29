@@ -109,6 +109,8 @@ public class LobbyPlayer : NetworkBehaviour
         classDanhyang.GetComponent<RectTransform>().DOKill();
         classEris.GetComponent<RectTransform>().DOKill();
         classGeork.GetComponent<RectTransform>().DOKill();
+        characterSelectCompleteImage.GetComponent<RectTransform>().DOKill();
+        characterSelectCompleteImage.DOKill();
         sequence.Kill(); // FadeIn, FadeOut, Up, Down 트위닝 시퀀스 제거
         RoomUI.instance.KillTweenSwapButtons(); // 로비플레이어의 SetLobbyPlayerFadeEffect 함수에서 작동시킨 스왑버튼 트위닝 제거
     }
@@ -270,7 +272,9 @@ public class LobbyPlayer : NetworkBehaviour
             selectMiddleLight.SetActive(false);
             selectRightLight.SetActive(false);
             baseDark.SetActive(false);
-            characterSelectCompleteImage.gameObject.SetActive(true);
+            selectorBaseLineLight.SetActive(isServer);
+            profileCoverLight.SetActive(isServer);
+            profileLineLight.SetActive(isServer);
             switch(character){
                 case Character.HONGDANHYANG:
                     characterSelectCompleteImage.sprite = danhyangSprite;
@@ -282,9 +286,11 @@ public class LobbyPlayer : NetworkBehaviour
                     characterSelectCompleteImage.sprite = georkSprite;
                     break;
             }
-            selectorBaseLineLight.SetActive(isServer);
-            profileCoverLight.SetActive(isServer);
-            profileLineLight.SetActive(isServer);
+            characterSelectCompleteImage.GetComponent<RectTransform>().localPosition = new Vector3(0f, 500f, 0f);
+            characterSelectCompleteImage.GetComponent<RectTransform>().DOLocalMoveY(-41f, 0.7f).SetEase(Ease.InOutExpo);
+            characterSelectCompleteImage.color = new Color(255f, 255f, 255f, 0);
+            characterSelectCompleteImage.DOFade(1f, 0.7f);
+            characterSelectCompleteImage.gameObject.SetActive(true);
             classIconLayout.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -50f);
             classIconLayout.GetComponent<RectTransform>().DOAnchorPosY(0f, 0.5f);
         }
