@@ -354,6 +354,15 @@ public class LobbyPlayer : NetworkBehaviour
         selectorBaseLineLight.SetActive(isReady);
         profileCoverLight.SetActive(isReady);
         profileLineLight.SetActive(isReady);
+        int index = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
+        if(index != -1){
+            SwapButtonOnRoom swapButtonOnRoom = RoomUI.instance.swapButtons[index].GetComponent<SwapButtonOnRoom>();
+            swapButtonOnRoom.topBaseLight.SetActive(isReady);
+            swapButtonOnRoom.topR.SetActive(isReady);
+            swapButtonOnRoom.topRLight.SetActive(isReady);
+            swapButtonOnRoom.topMy.SetActive(false);
+            swapButtonOnRoom.topC.SetActive(false);
+        }
     }
 
     // 로비플레이어 뷰 컴포넌트 변경사항 업데이트
