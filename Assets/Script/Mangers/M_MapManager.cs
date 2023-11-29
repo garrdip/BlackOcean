@@ -729,6 +729,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 .TextColor(Color.white)
                 .Text("맵에 보스가 출현 했습니다.")
                 .Show();
+            MapUI.instance.SetMapInfoStateMapBossApperance();
         }
     }
 

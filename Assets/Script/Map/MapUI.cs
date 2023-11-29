@@ -10,7 +10,24 @@ using DG.Tweening;
 
 public class MapUI : InstanceD<MapUI>
 {
+    [Header("거점지역 팝업")]
     public GameObject regionPopUp;
+
+    [Header("mapBaseLayout")]
+    public GameObject mapBaseLayout;
+    public GameObject mapInfoBase;
+    public GameObject mapInfoBaseLight;
+    public GameObject mapInfoBaseLightSec;
+    public GameObject mapInfoOverBase;
+    public GameObject mapInfoOverBaseLight;
+    public GameObject mapDangerLayout;
+    public GameObject mapTurnLayout;
+
+    [Header("mapDangerLayout")]
+    public Vector3 mapDangerLayoutPosition;
+
+    [Header("mapTurnLayout")]
+    public Vector3 mapTurnLayoutPosition;
 
     [Header("UI 컴포넌트")]
     public Image regionPopUpHeader;
@@ -51,6 +68,8 @@ public class MapUI : InstanceD<MapUI>
             swapButtons[i].transform.localRotation = Quaternion.Euler(0f, 0f, 45f);
             swapButtons[i].onClick.AddListener(() => HandleMapPlayerSwap(buttonIndex));
         }
+        mapDangerLayoutPosition = mapDangerLayout.GetComponent<RectTransform>().localPosition;
+        mapTurnLayoutPosition = mapTurnLayout.GetComponent<RectTransform>().localPosition;
     }
 
     void Update()
@@ -195,5 +214,21 @@ public class MapUI : InstanceD<MapUI>
         regionPopUp.SetActive(false);
         textRegionGradeInfo.text = string.Empty;
         textRegionDesc.text = string.Empty;
+    }
+
+    // 맵 보스 출현시 맵정보 UI 상태 변경
+    public void SetMapInfoStateMapBossApperance()
+    {
+        mapInfoBase.SetActive(true);
+        mapInfoBaseLight.SetActive(true);
+        mapInfoBaseLightSec.SetActive(true);
+        mapInfoOverBase.SetActive(true);
+        mapInfoOverBaseLight.SetActive(true);
+        mapInfoOverBase.GetComponent<RectTransform>().localScale = new Vector3(1.05f, 1.05f, 1.05f);
+        mapInfoOverBaseLight.GetComponent<RectTransform>().localScale = new Vector3(1.05f, 1.05f, 1.05f);
+        mapDangerLayout.GetComponent<RectTransform>().localPosition = mapDangerLayoutPosition + new Vector3(0f, -10f, 0f);
+        MapDangerInfo.instance.originPosition = mapDangerLayoutPosition + new Vector3(0f, -10f, 0f);
+        mapTurnLayout.GetComponent<RectTransform>().localPosition = mapTurnLayoutPosition + new Vector3(-10f, 3f, 0f);
+        MapTurnInfo.instance.originPosition = mapTurnLayoutPosition + new Vector3(-10f, 3f, 0f);
     }
 }
