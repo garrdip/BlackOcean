@@ -65,3 +65,9 @@ TagManager:
   - name: CardOnHandOverPopUp
     uniqueID: 1678806035
     locked: 0
+  - name: HexagonMapRoom
+    uniqueID: 1918249161
+    locked: 0
+  - name: MapPlayerPiece
+    uniqueID: 1914233205
+    locked: 0

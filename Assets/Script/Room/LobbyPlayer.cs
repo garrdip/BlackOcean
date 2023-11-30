@@ -360,8 +360,11 @@ public class LobbyPlayer : NetworkBehaviour
             swapButtonOnRoom.topBaseLight.SetActive(isReady);
             swapButtonOnRoom.topR.SetActive(isReady);
             swapButtonOnRoom.topRLight.SetActive(isReady);
-            swapButtonOnRoom.topMy.SetActive(false);
-            swapButtonOnRoom.topC.SetActive(false);
+            if(isOwned){
+                swapButtonOnRoom.topMy.SetActive(!isReady);
+            }else{
+                swapButtonOnRoom.topC.SetActive(!isReady);
+            }
         }
     }
 

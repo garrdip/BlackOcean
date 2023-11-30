@@ -58,6 +58,7 @@ public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }else if(Utils.IsSceneActive(networkRoomManager.GameplayScene)){
             PlayerInterface playerInterface =  NetworkClient.localPlayer.GetComponent<PlayerInterface>();
             playerInterface.isReady = !playerInterface.isReady;
+            playerInterface.OnReadyStateChanged( playerInterface.isReady,  playerInterface.isReady);
             SetReadyButtonViewByReadyState(playerInterface.isServer, playerInterface.isReady);
         }
     }

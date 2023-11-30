@@ -100,7 +100,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         networkRoomManager.persistentManagers.Add(gameObject.name, game);
     }
 
-    /*
+    
     // 테스트용 : 마우스 오른쪽 버튼 누를 시 맵 생성(HexagonMap 프리팹의 충돌체를 3D용인 boxCollider로 교체해야 Raycast 가능)
     void Update()
     {
@@ -117,7 +117,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             }
         }  
     }
-    */
+    
 
     // 서버에 생성 시 SyncVar 값들 초기화
     public override void OnStartServer()
@@ -327,7 +327,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
      
             for(int r = rStart; r <= rEnd; r++)
             {
-                Vector3 position = GetPosition(q, r, currentHexagonMapRoom.transform.localPosition);
+                Vector3 position = GetPosition(q, r, currentHexagonMapRoom.position);
                 if(IsPositionDuplicated(position)){
                     HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find(room => room.position == position);
                     if(hexagonMapRoom != null && hexagonMapRoom.isRegion){

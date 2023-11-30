@@ -49,12 +49,12 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         upPositionY = -300f;
         downPositionY = -350f;
+        gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
         InitMapPlayerView();
         if(isOwned){
             buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
             buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
         }
-        
     }
 
     void OnDestroy()
@@ -231,5 +231,21 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
                 textOrder.text = "전열";
                 break;     
         }  
+    }
+ 
+    public void OnChangeReadyState(bool isReady)
+    {
+        int index = M_MapManager.instance.mapPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
+        if(index != -1){
+            SwapButtonOnMap swapButtonOnMap = MapUI.instance.swapButtons[index].GetComponent<SwapButtonOnMap>();
+            swapButtonOnMap.t_Base_Light.SetActive(isReady);
+            swapButtonOnMap.t_Ready_Icon.SetActive(isReady);
+            swapButtonOnMap.t_Ready_Icon_Light.SetActive(isReady);
+            if(isOwned){
+                swapButtonOnMap.t_M_Icon.SetActive(!isReady);
+            }else{
+                swapButtonOnMap.t_Chan_Icon.SetActive(!isReady);
+            }
+        }
     }
 }

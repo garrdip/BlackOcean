@@ -8,6 +8,9 @@ using DG.Tweening;
 
 public class PlayerInterface : NetworkBehaviour
 {
+    public delegate void OnChangeReady(bool isReady);
+    public OnChangeReady onChangeReady;
+
     public GamePlayer currentGamePlayer {
         get { return isServer ? NetworkServer.spawned[currentGamePlayerNetId].GetComponent<GamePlayer>() : NetworkClient.spawned[currentGamePlayerNetId].GetComponent<GamePlayer>(); }
     }
@@ -226,6 +229,9 @@ public class PlayerInterface : NetworkBehaviour
     
     public void OnReadyStateChanged(bool oldVal, bool newVal)
     {
+        if(onChangeReady != null){
+            onChangeReady.Invoke(newVal);
+        }
         MapUI.instance.UpdateProfile();
         if(isServer)
         {

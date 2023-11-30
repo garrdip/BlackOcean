@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using ProjectD;
 using TMPro;
+using DG.Tweening;
 
 [System.Serializable]
 public class HexagonMapRoom : NetworkBehaviour
@@ -32,30 +33,54 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar]
     public HexagonMapRoom previousNode; // 현재 위치 이전의 노드
 
+    [SyncVar (hook = nameof(OnChangedIsSelected))]
+    public bool isSelected = false;
+
     public int GCost; // 시작 노드 ~ 검사할 노드까지의 비용
     public int HCost; // 검사할 노드 ~ 목적지 노드까지의 추정 비용
     public int FCost => GCost + HCost; // 최종 비용
 
     [Header("UI 컴포넌트")]
-    public SpriteRenderer spriteRenderer;
     public TextMeshProUGUI textRoomType;
     public TextMeshProUGUI textCoordinate;
+
+    public GameObject mapTileBase;
+    public GameObject mapTileLayer;
+    public GameObject mapTileIcon;
+    public GameObject container;
 
 
     void Start()
     {
-       transform.SetParent(M_MapManager.instance.MapRooms.transform);
-       transform.localPosition = new Vector3(transform.position.x, transform.position.y, 0f);
-       transform.localRotation = Quaternion.Euler(0, 0f, 0f);
+        transform.SetParent(M_MapManager.instance.MapRooms.transform);
+        transform.localPosition = new Vector3(transform.position.x, transform.position.y, 0f);
+        transform.localRotation = Quaternion.Euler(0, 0f, 0f);
+        mapTileBase.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
+        mapTileLayer.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
+        mapTileIcon.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
+    }
+
+    [Command( requiresAuthority = false)]
+    public void CmdChangeStateIsSelected()
+    {
+        isSelected = !isSelected;
+        foreach(HexagonMapRoom hexagonMapRoom in M_MapManager.instance.hexagonMapRooms){
+            if(hexagonMapRoom.coordinate != coordinate){
+                hexagonMapRoom.isSelected = false;
+            }
+        }
     }
 
     private void OnMouseDown()
     {
+        CmdChangeStateIsSelected();
+        /*
         GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
         // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(로컬 클라이언트 전용)
         gamePlayerMap.ClientChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
         // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(서버 요청)
         gamePlayerMap.CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
+        */
     }
 
     private void OnMouseEnter()
@@ -81,52 +106,42 @@ public class HexagonMapRoom : NetworkBehaviour
         switch(newVal)
         {
             case RoomType.START_LOCATION :
-                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.gray;
                 textRoomType.text = Const.RoomType_StartLocation;
                 break;
             case RoomType.MONSTER :
-                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.red;
                 textRoomType.text = Const.RoomType_Monster;
                 break;
             case RoomType.ELITE :
-                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.red;
                 textRoomType.text = Const.RoomType_Elite;
                 break;
             case RoomType.EVENT :
-                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.yellow;
                 textRoomType.text = Const.RoomType_Event;
                 break;
             case RoomType.CAMP :
-                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.green;
                 textRoomType.text = Const.RoomType_Camp;
                 break;
             case RoomType.ITEM_NPC :
-                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.blue;
                 textRoomType.text = Const.RoomType_ItemNpc;
                 break;
             case RoomType.CARD_NPC :
-                spriteRenderer.color = Color.white;
                 textRoomType.color = Color.magenta;
                 textRoomType.text = Const.RoomType_CardNpc;
                 break;
             case RoomType.COMPLETE :
-                spriteRenderer.color = Color.gray;
                 textRoomType.color = Color.black;
                 textRoomType.text = Const.RoomType_Complete;
                 break;
             case RoomType.RUINS :
-                spriteRenderer.color = ColorUtils.HexToColor("#2F745A");
                 textRoomType.color = Color.black;
                 textRoomType.text = Const.RoomType_Ruins;
                 break;
             case RoomType.BOSS :
-                spriteRenderer.color = Color.red;
                 textRoomType.color = Color.black;
                 textRoomType.text = Const.RoomType_Boss;
                 break;
@@ -152,11 +167,29 @@ public class HexagonMapRoom : NetworkBehaviour
         ChangeHexagonRoomActive(newValue);
     }
 
-    // HexagonMapRoom의 스프라이트 알파값과 텍스트 상태값 변경
+    // HexagonMapRoom 선택 상태 변경
+    void OnChangedIsSelected(bool oldValue, bool newValue)
+    {
+        if(newValue == true){
+            container.transform.DOKill();
+            container.transform.DOLocalMoveY(0f, 0.5f);
+            GetComponent<SpriteMask>().enabled = true;
+            mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+            mapTileBase.SetActive(true);
+        }else{
+            container.transform.DOLocalMoveY(-0.5f, 0.5f).OnComplete(() => {
+                GetComponent<SpriteMask>().enabled = false;
+                mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
+                mapTileBase.SetActive(false);
+            });
+        }
+    }
+
+    // HexagonMapRoom의 컨테이너 레이아웃 오브젝트 활성화 상태 변경
     void ChangeHexagonRoomActive(bool isActive)
     {
         float alpha = isActive ? 1f : 0f;
-        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
+        container.SetActive(isActive);
         textRoomType.gameObject.SetActive(isActive);
         //textCoordinate.gameObject.SetActive(isActive);
     }
