@@ -109,6 +109,7 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
                     lobbyPlayer.ChangeLobbyPlayerViewByOrder(index);
                 }
                 RoomUI.instance.ChangeSwapButtonsState(newVal, index);
+                RoomUI.instance.ChangeSwapButtonsIconState();
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
                 

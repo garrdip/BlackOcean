@@ -247,14 +247,9 @@ public class LobbyPlayer : NetworkBehaviour
             SetLobbyPlayerFadeEffect(index);
             OnChangeSelectCharacter(roomPlayer.character); // 룸플레이어의 캐릭터 값으로 초기 설정
             SetOrderTextByPlayerOrder(roomPlayer.order); // 룸플레이어의 오더값으로 초기 설정
-            ChangeClassLayoutFade();
+            ChangeClassLayoutFade(); // 캐릭터 클래스 레이아웃 Fade 애니매이션
             SetCapAndOutIconByPermission(); // 로비플레이어 상단 좌측의 방장표시 및 강퇴 아이콘을 권한에 따라 설정
-            if(isOwned){
-                SwapButtonOnRoom swapButtonOnRoom = RoomUI.instance.swapButtons[index].GetComponent<SwapButtonOnRoom>();
-                swapButtonOnRoom.topMy.SetActive(true);
-                swapButtonOnRoom.topC.SetActive(false);
-                swapButtonOnRoom.topR.SetActive(false);
-            }
+            RoomUI.instance.ChangeSwapButtonsIconState(); // 스왑버튼 아이콘 상태 변경
         }
     }
 
@@ -354,18 +349,7 @@ public class LobbyPlayer : NetworkBehaviour
         selectorBaseLineLight.SetActive(isReady);
         profileCoverLight.SetActive(isReady);
         profileLineLight.SetActive(isReady);
-        int index = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
-        if(index != -1){
-            SwapButtonOnRoom swapButtonOnRoom = RoomUI.instance.swapButtons[index].GetComponent<SwapButtonOnRoom>();
-            swapButtonOnRoom.topBaseLight.SetActive(isReady);
-            swapButtonOnRoom.topR.SetActive(isReady);
-            swapButtonOnRoom.topRLight.SetActive(isReady);
-            if(isOwned){
-                swapButtonOnRoom.topMy.SetActive(!isReady);
-            }else{
-                swapButtonOnRoom.topC.SetActive(!isReady);
-            }
-        }
+        RoomUI.instance.ChangeSwapButtonsIconState(); // 스왑버튼 아이콘 상태 변경
     }
 
     // 로비플레이어 뷰 컴포넌트 변경사항 업데이트
@@ -380,21 +364,8 @@ public class LobbyPlayer : NetworkBehaviour
         sequence.Join(upTween);
         sequence.Append(downTween);
         sequence.Join(fadeOutTween);
-        for(int i=0; i<RoomUI.instance.swapButtons.Count; i++){
-            SwapButtonOnRoom swapButtonOnRoom = RoomUI.instance.swapButtons[i].GetComponent<SwapButtonOnRoom>();
-            swapButtonOnRoom.topC.SetActive(true);
-            swapButtonOnRoom.topMy.SetActive(false);
-            swapButtonOnRoom.topR.SetActive(false);
-        }
-        int ownedLobbyPlayerIndex = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == M_LobbyMananger.instance.ownedLobbyPlayer);
-        if(ownedLobbyPlayerIndex != -1){
-            SwapButtonOnRoom ownedSwapButton = RoomUI.instance.swapButtons[ownedLobbyPlayerIndex].GetComponent<SwapButtonOnRoom>();
-            ownedSwapButton.topMy.SetActive(true);
-            ownedSwapButton.topC.SetActive(false);
-            ownedSwapButton.topR.SetActive(false);
-        }
     }
-    
+
     // 캐릭터 선택 완료 상태에서 이미지 클릭 이벤트
     private void HandleClickSelectCompleteImage()
     {

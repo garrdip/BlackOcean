@@ -105,4 +105,43 @@ public class RoomUI : InstanceD<RoomUI>
             swapButtons[index].transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f);
         }  
     }
+
+    // 스왑버튼 아이콘 변경 : LobbyPlayer의 상태값에 따라
+    public void ChangeSwapButtonsIconState()
+    {
+        for(int i=0; i<swapButtons.Count; i++){
+            SwapButtonOnRoom swapButtonOnRoom = swapButtons[i].GetComponent<SwapButtonOnRoom>();
+            uint netId = M_LobbyMananger.instance.lobbyPlayers[i];
+            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                LobbyPlayer lobbyPlayer = networkIdentity.GetComponent<LobbyPlayer>();
+                if(lobbyPlayer.roomPlayer.isReady){
+                    swapButtonOnRoom.topR.SetActive(true);
+                    swapButtonOnRoom.topC.SetActive(false);
+                    swapButtonOnRoom.topCLight.SetActive(false);
+                    swapButtonOnRoom.topMy.SetActive(false);
+                    swapButtonOnRoom.topMyLight.SetActive(false);
+                }else{
+                    if(lobbyPlayer.roomPlayer.isOwned){
+                        swapButtonOnRoom.topMy.SetActive(true);
+                        swapButtonOnRoom.topC.SetActive(false);
+                        swapButtonOnRoom.topCLight.SetActive(false);
+                        swapButtonOnRoom.topR.SetActive(false);
+                        swapButtonOnRoom.topRLight.SetActive(false);
+                    }else{
+                        swapButtonOnRoom.topC.SetActive(true);
+                        swapButtonOnRoom.topMy.SetActive(false);
+                        swapButtonOnRoom.topMyLight.SetActive(false);
+                        swapButtonOnRoom.topR.SetActive(false);
+                        swapButtonOnRoom.topRLight.SetActive(false);
+                    }
+                }
+            }else{
+                swapButtonOnRoom.topC.SetActive(true);
+                swapButtonOnRoom.topMy.SetActive(false);
+                swapButtonOnRoom.topMyLight.SetActive(false);
+                swapButtonOnRoom.topR.SetActive(false);
+                swapButtonOnRoom.topRLight.SetActive(false);
+            }
+        }
+    }
 }
