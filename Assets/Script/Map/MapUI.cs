@@ -231,4 +231,43 @@ public class MapUI : InstanceD<MapUI>
         mapTurnLayout.GetComponent<RectTransform>().localPosition = mapTurnLayoutPosition + new Vector3(-10f, 3f, 0f);
         MapTurnInfo.instance.originPosition = mapTurnLayoutPosition + new Vector3(-10f, 3f, 0f);
     }
+
+    // 맵씬 스왑버튼 아이콘 상태 변경
+    public void ChangeSwapButtonsIconState()
+    {
+        for(int i=0; i<swapButtons.Count; i++){
+            SwapButtonOnMap swapButtonOnMap = swapButtons[i].GetComponent<SwapButtonOnMap>();
+            uint netId = M_MapManager.instance.mapPlayers[i];
+            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
+                if(mapPlayer.gamePlayer.objectOwner.isReady){
+                    swapButtonOnMap.t_Ready_Icon.SetActive(true);
+                    swapButtonOnMap.t_Chan_Icon.SetActive(false);
+                    swapButtonOnMap.t_Chan_Icon_Light.SetActive(false);
+                    swapButtonOnMap.t_M_Icon.SetActive(false);
+                    swapButtonOnMap.t_M_Icon_Light.SetActive(false);
+                }else{
+                    if(mapPlayer.gamePlayer.isOwned){
+                        swapButtonOnMap.t_M_Icon.SetActive(true);
+                        swapButtonOnMap.t_Chan_Icon.SetActive(false);
+                        swapButtonOnMap.t_Chan_Icon_Light.SetActive(false);
+                        swapButtonOnMap.t_Ready_Icon.SetActive(false);
+                        swapButtonOnMap.t_Ready_Icon_Light.SetActive(false);
+                    }else{
+                        swapButtonOnMap.t_Chan_Icon.SetActive(true);
+                        swapButtonOnMap.t_M_Icon.SetActive(false);
+                        swapButtonOnMap.t_M_Icon_Light.SetActive(false);
+                        swapButtonOnMap.t_Ready_Icon.SetActive(false);
+                        swapButtonOnMap.t_Ready_Icon_Light.SetActive(false);
+                    }
+                }
+            }else{
+                swapButtonOnMap.t_Chan_Icon.SetActive(true);
+                swapButtonOnMap.t_M_Icon.SetActive(false);
+                swapButtonOnMap.t_M_Icon_Light.SetActive(false);
+                swapButtonOnMap.t_Ready_Icon.SetActive(false);
+                swapButtonOnMap.t_Ready_Icon_Light.SetActive(false);
+            }
+        }
+    }
 }

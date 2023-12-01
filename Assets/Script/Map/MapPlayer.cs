@@ -172,6 +172,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
             steamDisplayName.text = gamePlayer.objectOwner.steamPersonaName;
             SetOrderTextByPlayerOrder(gamePlayer.selectOrder);
             MapUI.instance.ChangeSwapButtonsState(GetComponent<NetworkIdentity>().netId, index);
+            MapUI.instance.ChangeSwapButtonsIconState();
             if(isOwned){
                 SwapButtonOnMap swapButtonOnMap = MapUI.instance.swapButtons[index].GetComponent<SwapButtonOnMap>();
                 swapButtonOnMap.t_M_Icon.SetActive(true);
@@ -193,19 +194,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         sequence.Join(upTween);
         sequence.Append(downTween);
         sequence.Join(fadeOutTween);
-        for(int i=0; i<MapUI.instance.swapButtons.Count; i++){
-            SwapButtonOnMap swapButtonOnMap = MapUI.instance.swapButtons[i].GetComponent<SwapButtonOnMap>();
-            swapButtonOnMap.t_Chan_Icon.SetActive(true);
-            swapButtonOnMap.t_M_Icon.SetActive(false);
-            swapButtonOnMap.t_Ready_Icon.SetActive(false);
-        }
-        int ownedMapPlayerIndex = M_MapManager.instance.mapPlayers.FindIndex((netId) => netId == M_MapManager.instance.ownedMapPlayer);
-        if(ownedMapPlayerIndex != -1){
-            SwapButtonOnMap ownedSwapButton = MapUI.instance.swapButtons[ownedMapPlayerIndex].GetComponent<SwapButtonOnMap>();
-            ownedSwapButton.t_M_Icon.SetActive(true);
-            ownedSwapButton.t_Chan_Icon.SetActive(false);
-            ownedSwapButton.t_Ready_Icon.SetActive(false);
-        }
+        MapUI.instance.ChangeSwapButtonsIconState();
     }
 
     // 맵플레이어 부모오브젝트 설정
@@ -233,19 +222,9 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         }  
     }
  
+    // 맵플레이어 레디 변경 수신
     public void OnChangeReadyState(bool isReady)
     {
-        int index = M_MapManager.instance.mapPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
-        if(index != -1){
-            SwapButtonOnMap swapButtonOnMap = MapUI.instance.swapButtons[index].GetComponent<SwapButtonOnMap>();
-            swapButtonOnMap.t_Base_Light.SetActive(isReady);
-            swapButtonOnMap.t_Ready_Icon.SetActive(isReady);
-            swapButtonOnMap.t_Ready_Icon_Light.SetActive(isReady);
-            if(isOwned){
-                swapButtonOnMap.t_M_Icon.SetActive(!isReady);
-            }else{
-                swapButtonOnMap.t_Chan_Icon.SetActive(!isReady);
-            }
-        }
+        MapUI.instance.ChangeSwapButtonsIconState();
     }
 }
