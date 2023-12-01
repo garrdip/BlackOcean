@@ -51,13 +51,13 @@ public class MapPlayerPiece: NetworkBehaviour
         PlayerInterface playerInterface = NetworkClient.spawned[playerIntefaceNetId].GetComponent<PlayerInterface>();
         switch(playerInterface.selectOrder){
             case 0:
-                offset += new Vector3(-0.2f, 0f, 0f);
+                offset += new Vector3(-0.2f, -0.5f, 0f);
                 break;
             case 1:
-                offset += new Vector3(0f, 0f, 0f);
+                offset += new Vector3(0f, -0.5f, 0f);
                 break;
             case 2:
-                offset += new Vector3(0.2f, 0f, 0f);
+                offset += new Vector3(0.2f, -0.5f, 0f);
                 break;
         }
         transform.position = position + offset;
