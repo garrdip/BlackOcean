@@ -1058,7 +1058,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         path.netId = netId;
         path.rotationZ = GetAngleFromCoordinate(startAt.coordinate, findPath[0].coordinate); // 선의 회전값 계산
 
-        Vector3 startPosition = ((startAt.transform.position) + (findPath[0].transform.position)) / 2f; // 선의 중심 위치 계산
+        Vector3 startPosition = ((startAt.originMapTile.transform.position) + (findPath[0].originMapTile.transform.position)) / 2f; // 선의 중심 위치 계산
         startPathLineRenderer.transform.position = startPosition;
         pathLineRenderers.Add(startPathLineRenderer);
 
@@ -1072,7 +1072,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             pathLineRendererComponent.netId = netId;
             pathLineRendererComponent.rotationZ = GetAngleFromCoordinate(findPath[i].coordinate, findPath[i + 1].coordinate); // 선의 회전값 계산
 
-            Vector3 pathPosition = ((findPath[i].transform.position) + (findPath[i + 1].transform.position)) / 2f; // 선의 중심 위치 계산
+            Vector3 pathPosition = ((findPath[i].originMapTile.transform.position) + (findPath[i + 1].originMapTile.transform.position)) / 2f; // 선의 중심 위치 계산
             pathLineRenderer.transform.position = pathPosition;
             pathLineRenderers.Add(pathLineRenderer);
         }

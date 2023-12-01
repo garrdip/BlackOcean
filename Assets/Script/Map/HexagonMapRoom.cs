@@ -44,10 +44,11 @@ public class HexagonMapRoom : NetworkBehaviour
     public TextMeshProUGUI textRoomType;
     public TextMeshProUGUI textCoordinate;
 
+    public GameObject originMapTile; // 원본 위치의 맵타일 오브젝트(라인 렌더러 위치를 위한 용도)
+    public GameObject expandMapTile; // 위쪽 방향으로 확장되는 맵타일 오브젝트
     public GameObject mapTileBase;
     public GameObject mapTileLayer;
     public GameObject mapTileIcon;
-    public GameObject container;
 
 
     void Start()
@@ -74,13 +75,11 @@ public class HexagonMapRoom : NetworkBehaviour
     private void OnMouseDown()
     {
         CmdChangeStateIsSelected();
-        /*
         GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
         // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(로컬 클라이언트 전용)
         gamePlayerMap.ClientChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
         // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(서버 요청)
         gamePlayerMap.CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
-        */
     }
 
     private void OnMouseEnter()
@@ -171,16 +170,20 @@ public class HexagonMapRoom : NetworkBehaviour
     void OnChangedIsSelected(bool oldValue, bool newValue)
     {
         if(newValue == true){
-            container.transform.DOKill();
-            container.transform.DOLocalMoveY(0f, 0.5f);
+            expandMapTile.transform.DOKill();
+            expandMapTile.transform.DOLocalMoveY(0f, 0.5f);
             GetComponent<SpriteMask>().enabled = true;
             mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             mapTileBase.SetActive(true);
+            mapTileLayer.GetComponent<SpriteRenderer>().sortingOrder = mapTileBase.GetComponent<SpriteRenderer>().sortingOrder + 1;
+            mapTileIcon.GetComponent<SpriteRenderer>().sortingOrder = mapTileBase.GetComponent<SpriteRenderer>().sortingOrder + 2;
         }else{
-            container.transform.DOLocalMoveY(-0.5f, 0.5f).OnComplete(() => {
+            expandMapTile.transform.DOLocalMoveY(-0.5f, 0.5f).OnComplete(() => {
                 GetComponent<SpriteMask>().enabled = false;
                 mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
                 mapTileBase.SetActive(false);
+                mapTileLayer.GetComponent<SpriteRenderer>().sortingOrder = mapTileBase.GetComponent<SpriteRenderer>().sortingOrder - 1;
+                mapTileIcon.GetComponent<SpriteRenderer>().sortingOrder = mapTileBase.GetComponent<SpriteRenderer>().sortingOrder - 2;
             });
         }
     }
@@ -189,7 +192,7 @@ public class HexagonMapRoom : NetworkBehaviour
     void ChangeHexagonRoomActive(bool isActive)
     {
         float alpha = isActive ? 1f : 0f;
-        container.SetActive(isActive);
+        expandMapTile.SetActive(isActive);
         textRoomType.gameObject.SetActive(isActive);
         //textCoordinate.gameObject.SetActive(isActive);
     }

@@ -66,12 +66,12 @@ public class NPC_Mercurius : SpawnedMonster
     {
         foreach(Card card in shopCards){                    
             // 상점 카드 슬롯(최상단 부모 오브젝트)
-            GameObject cardShopSlot = Instantiate(PopUpUIManager.instance.CardShopSlot);
+            GameObject cardShopSlot = Instantiate(PopUpUIManager.instance.CardShopSlot,Vector3.zero, Quaternion.identity);
             cardShopSlot.transform.SetParent(mercuriusPopUp.grids[index].transform);
             cardShopSlot.transform.localScale = new Vector3(1, 1, 1);
 
             // 상점 카드
-            GameObject cardOnDeckObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
+            GameObject cardOnDeckObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, Vector3.zero, Quaternion.identity);
             cardOnDeckObject.transform.SetParent(cardShopSlot.transform);
             cardOnDeckObject.transform.localScale = new Vector3(1, 1, 1);
             CardOnDeck cardOnDeck = cardOnDeckObject.GetComponent<CardOnDeck>();
@@ -79,7 +79,7 @@ public class NPC_Mercurius : SpawnedMonster
             cardOnDeck.cardOwner = cardOwner;
 
             // 상점 카드 가격 아이콘 + 텍스트
-            GameObject cardShopPrice = Instantiate(PopUpUIManager.instance.CardShopPrice);
+            GameObject cardShopPrice = Instantiate(PopUpUIManager.instance.CardShopPrice, Vector3.zero, Quaternion.identity);
             cardShopPrice.transform.SetParent(cardShopSlot.transform);
             cardShopPrice.transform.localScale = new Vector3(1, 1, 1);
 
