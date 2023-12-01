@@ -7,6 +7,7 @@ using DG.Tweening;
 public class MapDangerInfo : SingletonD<MapDangerInfo>, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Vector3 originPosition;
+    private bool isMouseExitComplete = false;
 
 
     void Start()
@@ -33,7 +34,16 @@ public class MapDangerInfo : SingletonD<MapDangerInfo>, IPointerEnterHandler, IP
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
-        GetComponent<RectTransform>().DOLocalMove(originPosition, 0.1f);
-        GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.1f);
+        if(isMouseExitComplete){
+            GetComponent<RectTransform>().DOLocalMove(originPosition, 0.1f);
+            GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.1f);
+        }
+    }
+
+    IEnumerator MouseExitDelay()
+    {
+        isMouseExitComplete = false;
+        yield return new WaitForSeconds(0.1f);
+        isMouseExitComplete = true;
     }
 }
