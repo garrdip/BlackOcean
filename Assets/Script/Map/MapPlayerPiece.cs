@@ -12,12 +12,14 @@ public class MapPlayerPiece: NetworkBehaviour
     [SyncVar(hook = nameof(OnChangePlayerInterfaceNetId))]
     public uint playerIntefaceNetId;
 
+    public Canvas canvas;
     public SpriteRenderer spriteRenderer;
     public TextMeshProUGUI textPlayerName;
 
     void Start()
     {
         transform.SetParent(M_MapManager.instance.roommaps.transform);
+        canvas.sortingLayerName = "MapPlayerPiece";
     }
 
     public override void OnStartClient()

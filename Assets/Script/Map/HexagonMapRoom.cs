@@ -173,7 +173,7 @@ public class HexagonMapRoom : NetworkBehaviour
     {
         if(newValue == true){
             expandMapTile.transform.DOKill();
-            expandMapTile.transform.DOLocalMoveY(0f, 0.5f);
+            expandMapTile.transform.DOLocalMoveY(-0.25f, 0.5f);
             GetComponent<SpriteMask>().enabled = true;
             mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             mapTileBase.SetActive(true);
