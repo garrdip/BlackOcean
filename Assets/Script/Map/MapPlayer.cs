@@ -51,10 +51,8 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         downPositionY = -350f;
         gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
         InitMapPlayerView();
-        if(isOwned){
-            buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
-            buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
-        }
+        buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
+        buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
     }
 
     void OnDestroy()
@@ -73,15 +71,19 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     // 스왑 승인 버튼 클릭
     private void HandleClickButtonSwapAccept()
     {
-        swapRequestLayout.SetActive(false);
-        CmdSwapAccept(oldIndex, newIndex);
+        if(isOwned){
+            swapRequestLayout.SetActive(false);
+            CmdSwapAccept(oldIndex, newIndex);
+        }
     }
 
     // 스왑 거절 버튼 클릭
     private void HandleClickButtonSwapReject()
     {
-        swapRequestLayout.SetActive(false);
-        CmdSwapReject(oldIndex);
+        if(isOwned){
+            swapRequestLayout.SetActive(false);
+            CmdSwapReject(oldIndex);
+        }
     }
 
     public void OnPointerClick(PointerEventData pointerEventData)
