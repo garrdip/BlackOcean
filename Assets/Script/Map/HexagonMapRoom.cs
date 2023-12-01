@@ -49,6 +49,7 @@ public class HexagonMapRoom : NetworkBehaviour
     public GameObject mapTileBase;
     public GameObject mapTileLayer;
     public GameObject mapTileIcon;
+    public Canvas hexagonMapRoomCnavas;
 
 
     void Start()
@@ -59,6 +60,7 @@ public class HexagonMapRoom : NetworkBehaviour
         mapTileBase.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
         mapTileLayer.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
         mapTileIcon.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
+        hexagonMapRoomCnavas.sortingLayerName = "HexagonMapRoomUI";
     }
 
     [Command( requiresAuthority = false)]

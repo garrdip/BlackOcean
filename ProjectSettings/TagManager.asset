@@ -68,6 +68,9 @@ TagManager:
   - name: HexagonMapRoom
     uniqueID: 1918249161
     locked: 0
+  - name: HexagonMapRoomUI
+    uniqueID: 1112703211
+    locked: 0
   - name: MapPlayerPiece
     uniqueID: 1914233205
     locked: 0
