@@ -364,6 +364,7 @@ public class LobbyPlayer : NetworkBehaviour
         sequence.Join(upTween);
         sequence.Append(downTween);
         sequence.Join(fadeOutTween);
+        RoomUI.instance.ChangeSwapButtonsIconState();
     }
 
     // 캐릭터 선택 완료 상태에서 이미지 클릭 이벤트
