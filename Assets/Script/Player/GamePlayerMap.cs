@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using Steamworks;
+
 
 public class GamePlayerMap : NetworkBehaviour
 {
@@ -65,6 +65,18 @@ public class GamePlayerMap : NetworkBehaviour
             M_MapManager.instance.playerVoteHexagonMapRoom[networkIdentity] = hexagonMapRoom;
         }else{
             M_MapManager.instance.playerVoteHexagonMapRoom.Add(networkIdentity, hexagonMapRoom);
+        }
+
+        // 맵플레이어가 선택한 MapRoom의 isSelected 상태 변경
+        hexagonMapRoom.isSelected = !hexagonMapRoom.isSelected;
+
+        // hexagonMapRooms 리스트의 값을 초기값으로 가지는 HashSet생성(중복 방지)
+        HashSet<HexagonMapRoom> voteHexagonMapRoomExcept = new HashSet<HexagonMapRoom>(M_MapManager.instance.hexagonMapRooms);
+        foreach(HexagonMapRoom voteHexagonMapRoom in M_MapManager.instance.playerVoteHexagonMapRoom.Values){
+            voteHexagonMapRoomExcept.Remove(voteHexagonMapRoom); // 맵플레이어가 선택한 방들을 제외
+        }
+        foreach(HexagonMapRoom otherHexagonMapRoom in voteHexagonMapRoomExcept){
+            otherHexagonMapRoom.isSelected = false; // 맵플레이어가 선택하지 않은 남은 방들에 대해 isSelected를 false로 설정
         }
     }
 

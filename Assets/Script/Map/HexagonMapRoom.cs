@@ -63,20 +63,8 @@ public class HexagonMapRoom : NetworkBehaviour
         hexagonMapRoomCnavas.sortingLayerName = "HexagonMapRoomUI";
     }
 
-    [Command( requiresAuthority = false)]
-    public void CmdChangeStateIsSelected()
-    {
-        isSelected = !isSelected;
-        foreach(HexagonMapRoom hexagonMapRoom in M_MapManager.instance.hexagonMapRooms){
-            if(hexagonMapRoom.coordinate != coordinate){
-                hexagonMapRoom.isSelected = false;
-            }
-        }
-    }
-
     private void OnMouseDown()
     {
-        CmdChangeStateIsSelected();
         GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
         // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(로컬 클라이언트 전용)
         gamePlayerMap.ClientChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
