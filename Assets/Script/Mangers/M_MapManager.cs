@@ -100,14 +100,14 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         networkRoomManager.persistentManagers.Add(gameObject.name, game);
     }
 
-    
-    // 테스트용 : 마우스 오른쪽 버튼 누를 시 맵 생성(HexagonMap 프리팹의 충돌체를 3D용인 boxCollider로 교체해야 Raycast 가능)
+    #if UNITY_EDITOR
+    // 에디터 환경 전용 : 서버유저가 마우스 오른쪽 버튼 누를 시 맵 생성
     void Update()
     {
-        if(Input.GetMouseButtonDown(1)){
+        if(isServer && Input.GetMouseButtonDown(1)){
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if(Physics.Raycast(ray, out hit)){
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+            if(hit.collider != null){
                 GameObject selectedObject = hit.collider.gameObject;
                 HexagonMapRoom hexagonMapRoom = selectedObject.GetComponent<HexagonMapRoom>();
                 if(hexagonMapRoom.roomType != RoomType.START_LOCATION){
@@ -117,7 +117,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             }
         }  
     }
-    
+    #endif
 
     // 서버에 생성 시 SyncVar 값들 초기화
     public override void OnStartServer()
