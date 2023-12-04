@@ -1051,6 +1051,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
+    // 플레이어 오더 변경에 따른 뷰 업데이트
+    public void SetPlayerOrderViewSwap()
+    {
+        // TODO : 플레이어 정렬 순서 바뀔 때 뷰 변경 구현
+    }
+
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
     private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
     {
@@ -1066,7 +1072,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
                 break;
             case SyncList<GamePlayer>.Operation.OP_SET:
-                // TODO : 인덱스가 바뀔 때(플레이어 정렬 순서 바뀔 때 로직 구현부)
+                SetPlayerOrderViewSwap();
                 break;
             case SyncList<GamePlayer>.Operation.OP_CLEAR:
                 

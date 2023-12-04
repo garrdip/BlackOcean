@@ -279,6 +279,7 @@ public class PlayerInterface : NetworkBehaviour
             GamePlayerDeck currentGamePlayerDeck = NetworkServer.spawned[newVal].GetComponent<GamePlayerDeck>();
             GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textPrefareDeckCount, currentGamePlayerDeck.prefareDeck.Count);
             GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textTrashDeckCount, currentGamePlayerDeck.trashDeck.Count);
+            GameUIManager.instance.ichiText.text = $"{currentGamePlayerDeck.currentIchi.ToString()} / {currentGamePlayerDeck.maxIchi.ToString()}";
 
             // 현재 선택한 플레이어가 단향일 경우 어빌리티 버튼 활성화 상태 변경
             GamePlayer gamePlayer = currentGamePlayerDeck.GetComponent<GamePlayer>();
