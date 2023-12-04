@@ -28,7 +28,7 @@ public class CharactorSelector : MonoBehaviour
 
     void OnMouseDown()
     {
-        if(IsSelectablePlayer()){
+        if(IsSelectablePlayer() && !EventSystem.current.IsPointerOverGameObject()){
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
             GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
             playerInterface.currentGamePlayerNetId = gamePlayer.netId;
