@@ -1039,7 +1039,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     // 플레이어 정보 및 턴 정보 뷰 세팅
     public void SetPlayerOrderView(int index)
-    {
+    {/*
         GamePlayer gamePlayer = M_TurnManager.instance.playerOrder[index];
         OrderUI orderUI = GameUIManager.instance.playerOrderList[index].GetComponent<OrderUI>();
         orderUI.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.objectOwner.steamID);
@@ -1049,6 +1049,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             float height = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.height;
             orderUI.buttonPlayerOrder.GetComponent<RectTransform>().sizeDelta = new Vector2(width + 30f, height + 30f); // 버튼 크기 크게 변경(변경된 값이 native size)
         }
+        */
     }
 
     // 플레이어 오더 변경에 따른 뷰 업데이트
