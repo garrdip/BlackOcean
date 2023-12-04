@@ -38,20 +38,19 @@ public class GamePlayerMap : NetworkBehaviour
             // MapPlayerDestination 초기 위치 설정
             currentMapPlayerDestinationPosition = position;
                     
-            // 경로검색
+            // 경로검색(현재 행동비용값을 기반으로 경로 검색)
             List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt, endAt);
             if(findPath.Count > 0){
                 currentMapPlayerDestinationPosition = findPath[findPath.Count-1].transform.position; // MapPlayerDestination 위치는 findPath 마지막 노드 위치
                 RpcVisualizePath(startAt, findPath, networkIdentity.netId); // 경로표시
+                VoteHexagonMapRoom(findPath[findPath.Count-1], netIdentity); // 검색된 경로의 마지막 위치에 있는 HexagonMapRoom을 투표
             }else{
                 RpcHidePath(networkIdentity.netId); // 경로제거
+                VoteHexagonMapRoom(endAt, netIdentity); // 검색된 경로가 없는경우(보스전) 선택값으로 넘어오는 HexagonMapRoom을 투표
             }
             
             // findPath 리스트의 카운트 = 거리값
             currentMapPlayerDestination.distanceFromCurrentCoordinate = findPath.Count;
-        
-            // 선택한 MapRoom 투표
-            VoteHexagonMapRoom(endAt, netIdentity);
         }
     }
 

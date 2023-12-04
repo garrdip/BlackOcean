@@ -124,8 +124,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         mapSight = 1; // 맵시야
         actionCost = 1; // 행동 비용
-        maxActionCost = 30; // 행동비용 최대값
-        currentActionCost = 30; // 현재 남은 행동비용
+        maxActionCost = 3; // 행동비용 최대값
+        currentActionCost = 3; // 현재 남은 행동비용
     }
 
      public override void OnStartClient()

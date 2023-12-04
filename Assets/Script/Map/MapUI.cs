@@ -227,9 +227,9 @@ public class MapUI : InstanceD<MapUI>
         mapInfoOverBase.GetComponent<RectTransform>().localScale = new Vector3(1.05f, 1.05f, 1.05f);
         mapInfoOverBaseLight.GetComponent<RectTransform>().localScale = new Vector3(1.05f, 1.05f, 1.05f);
         mapDangerLayout.GetComponent<RectTransform>().localPosition = mapDangerLayoutPosition + new Vector3(0f, -10f, 0f);
-        MapDangerInfo.instance.originPosition = mapDangerLayoutPosition + new Vector3(0f, -10f, 0f);
+        mapDangerLayout.GetComponent<MapDangerInfo>().originPosition = mapDangerLayoutPosition + new Vector3(0f, -10f, 0f);
         mapTurnLayout.GetComponent<RectTransform>().localPosition = mapTurnLayoutPosition + new Vector3(-10f, 3f, 0f);
-        MapTurnInfo.instance.originPosition = mapTurnLayoutPosition + new Vector3(-10f, 3f, 0f);
+        mapTurnLayout.GetComponent<MapTurnInfo>().originPosition = mapTurnLayoutPosition + new Vector3(-10f, 3f, 0f);
     }
 
     // 맵씬 스왑버튼 아이콘 상태 변경

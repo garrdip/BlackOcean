@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 
-public class MapDangerInfo : SingletonD<MapDangerInfo>, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class MapDangerInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Vector3 originPosition;
     private bool isMouseExitComplete = false;
@@ -27,17 +27,17 @@ public class MapDangerInfo : SingletonD<MapDangerInfo>, IPointerEnterHandler, IP
 
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
-        
-        GetComponent<RectTransform>().DOLocalMove(originPosition + new Vector3(25f, -13f, 0f), 0.1f);
-        GetComponent<RectTransform>().DOScale(new Vector3(1.4f, 1.4f, 1.4f), 0.1f);
+        if(isMouseExitComplete){
+            GetComponent<RectTransform>().DOLocalMove(originPosition + new Vector3(25f, -13f, 0f), 0.1f);
+            GetComponent<RectTransform>().DOScale(new Vector3(1.4f, 1.4f, 1.4f), 0.1f);
+        }
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
-        if(isMouseExitComplete){
-            GetComponent<RectTransform>().DOLocalMove(originPosition, 0.1f);
-            GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.1f);
-        }
+        GetComponent<RectTransform>().DOLocalMove(originPosition, 0.1f);
+        GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.1f);
+        StartCoroutine(MouseExitDelay());
     }
 
     IEnumerator MouseExitDelay()

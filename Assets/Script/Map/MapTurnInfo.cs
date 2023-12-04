@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 
-public class MapTurnInfo : SingletonD<MapTurnInfo>, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class MapTurnInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Vector3 originPosition;
     private bool isMouseExitComplete = false;
