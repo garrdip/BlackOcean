@@ -68,7 +68,9 @@ public class GamePlayerMap : NetworkBehaviour
         }
 
         // 맵플레이어가 선택한 MapRoom의 isSelected 상태 변경
-        hexagonMapRoom.isSelected = !hexagonMapRoom.isSelected;
+        if(!hexagonMapRoom.isSelected){
+            hexagonMapRoom.isSelected = !hexagonMapRoom.isSelected;
+        }
 
         // hexagonMapRooms 리스트의 값을 초기값으로 가지는 HashSet생성(중복 방지)
         HashSet<HexagonMapRoom> voteHexagonMapRoomExcept = new HashSet<HexagonMapRoom>(M_MapManager.instance.hexagonMapRooms);
