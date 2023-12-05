@@ -124,7 +124,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         mapSight = 1; // 맵시야
         actionCost = 1; // 행동 비용
-        maxActionCost = 3; // 행동비용 최대값
+        maxActionCost = 30; // 행동비용 최대값
         currentActionCost = 3; // 현재 남은 행동비용
     }
 
@@ -477,7 +477,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         float angle = Random.Range(0, 2 * Mathf.PI);
         centerPos.x = (int)(distance * Mathf.Cos(angle));
         centerPos.y = (int)(distance * Mathf.Sin(angle));
-        Vector3 position = GetPosition((int)centerPos.x, (int)centerPos.y);
+        Vector3 position = GetPosition((int)centerPos.x, (int)centerPos.y) - new Vector3(0f, -0.5f, 0f);
 
         var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
             GameObject mapBossObject = Instantiate(

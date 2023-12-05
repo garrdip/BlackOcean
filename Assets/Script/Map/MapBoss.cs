@@ -17,7 +17,7 @@ public class MapBoss : NetworkBehaviour
     void Start()
     {
         transform.SetParent(M_MapManager.instance.MapRooms.transform);
-        transform.localPosition = new Vector3(transform.position.x, transform.position.y - 0.5f, 0f);
+        transform.localPosition = new Vector3(transform.position.x, transform.position.y, 0f);
         transform.localRotation = Quaternion.Euler(0, 0f, 0f);
     }
 
