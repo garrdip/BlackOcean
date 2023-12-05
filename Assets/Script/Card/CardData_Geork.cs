@@ -89,6 +89,7 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator G3(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) {
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));  
             yield return tempWait;
             GeorkAnimation(tar[0],"Attack0","HAttack0",false);
             yield return new WaitForSeconds(0.5f);
@@ -97,13 +98,16 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData) {
             yield return new WaitForSeconds(0.433f);
             GeorkAnimation(tar[0],"Idle","HIdle",true); 
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));  
         }
         if(!tar[0].isCloneData) isCardOperating = false;
     }
     public IEnumerator G4(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) {
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));  
             yield return tempWait;
+            
             GeorkAnimation(tar[0],"Attack1","HAttack1",false); 
             yield return new WaitForSeconds(0.5f);
         }
@@ -112,6 +116,7 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData) {
             yield return new WaitForSeconds(0.333f);
             GeorkAnimation(tar[0],"Idle","HIdle",true);  
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));  
         }
         if(!tar[0].isCloneData) isCardOperating = false;
     }
@@ -291,5 +296,28 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData) yield return tempWait;
         // 무작위 기사도 카드 3장 생성
         if(!tar[0].isCloneData) isCardOperating = false;
+    }
+
+    public IEnumerator GX(Card card,List<TargetObject> tar)
+    {
+        if(!tar[0].isCloneData) yield return tempWait;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1)); 
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Transform",false);
+        tar[0].isTransformed = true;
+        tar[0].GainBuff(BuffType.ICHI_ATTACK,10,false,true,false,tar[0]);
+        yield return new WaitForSeconds(2.667f);
+        M_TurnManager.instance.StartAnimation(tar[0],0,"HIdle",true);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1)); 
+        if(!tar[0].isCloneData) isCardOperating = false; 
+    }
+
+    public IEnumerator GX_E(Card card,List<TargetObject> tar)
+    {
+        if(!tar[0].isCloneData) yield return tempWait;
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Transform",false);
+        tar[0].isTransformed = true;
+        yield return new WaitForSeconds(2.667f);
+        M_TurnManager.instance.StartAnimation(tar[0],0,"HIdle",true);
+        if(!tar[0].isCloneData) isCardOperating = false; 
     }
 }

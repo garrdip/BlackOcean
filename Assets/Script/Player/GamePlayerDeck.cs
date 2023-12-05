@@ -142,9 +142,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         }else{
                             Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G4")));
                             deck.Add(defenseCard);
-                        }
-                        
+                        }   
                     }
+                    Card transformCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("GX")));
+                    deck.Add(transformCard);
                     break;
                 case Character.ERIS:
                     for(int i = 0; i < 8; i++)

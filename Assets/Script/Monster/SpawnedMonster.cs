@@ -20,7 +20,7 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedSheild))]
     public int sheild;
 
-    public int[] aggro = new int[3];
+    Dictionary<TargetObject,int> aggro = new Dictionary<TargetObject, int>();
 
     [SyncVar (hook = nameof(OnChanedNextAction))]
     public MonsterAction nextAction;
@@ -50,9 +50,11 @@ public class SpawnedMonster : NetworkBehaviour
     [Header("몬스터 외곽선 Material")]
     public Material outLineMaterial;
 
+    SkeletonAnimation anim;
+
     void Start()
     {
-        meshRenderer = GetComponent<MeshRenderer>();   
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -131,6 +133,13 @@ public class SpawnedMonster : NetworkBehaviour
     public virtual void OnAppliedCard(Card card, TargetObject[] tar)
     {
 
+    }
+
+    // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
+
+    public void AggroToMonster(int damage, TargetObject tar)
+    {
+        aggro[tar] += damage;
     }
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
@@ -224,7 +233,10 @@ public class SpawnedMonster : NetworkBehaviour
                 switch(tar.player.character)
                 {
                     case Character.GEORK :
-                        M_TurnManager.instance.StartAnimation(tar,0,"Defense0",false);
+                        if(tar.isTransformed)
+                            M_TurnManager.instance.StartAnimation(tar,0,"HDefense0",false);
+                        else
+                            M_TurnManager.instance.StartAnimation(tar,0,"Defense0",false);
                         break;
                     case Character.ERIS :
                         M_TurnManager.instance.StartAnimation(tar,0,tar.GetErisMode() + "Defense0",false);

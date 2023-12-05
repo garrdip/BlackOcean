@@ -115,20 +115,22 @@ public partial class CardData : SingletonD<CardData>
     {
         // 이곳에 최소 딜레이 넣어야함
         if(from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK) == null)
-            tar.DamageToMonster(damage);
+        {
+            tar.DamageToMonster(damage,from);
+        }
         else
         {
             if(tar.buffs.Find(buff => buff.type == BuffType.FLOWER) == null)
-                tar.DamageToMonster( damage + from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK).value);
+                tar.DamageToMonster( damage + from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK).value,from);
             else
-                tar.DamageToMonster( damage + from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK).value+ tar.buffs.Find(buff => buff.type == BuffType.FLOWER).value);
+                tar.DamageToMonster( damage + from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK).value+ tar.buffs.Find(buff => buff.type == BuffType.FLOWER).value,from);
         }
             
     }
 
     private void GeneralSingleDamage(TargetObject tar, int damage)
     {
-        tar.DamageToMonster(damage);
+        tar.DamageToMonster(damage,tar);
     }
 
     public void GeneralGetDefense(TargetObject from, TargetObject tar, int value, Card card)

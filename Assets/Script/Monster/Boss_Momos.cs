@@ -6,26 +6,14 @@ using Mirror;
 
 public class Boss_Momos : SpawnedMonster
 {
-
-
     public override IEnumerator DoAction()
     {
-        switch(nextAction.actionName){
-            case "찌르기" :
-                DoAnimation("3Attack");
-                yield return new WaitForSeconds(0.4f);
-                GeneralAttack();
-                yield return new WaitForSeconds(0.4f);
-                ReturnToIdleAnimation();
-                break;
-            case "방어" :
-                parent.GainDefense(nextAction.actionValue);
-                parent.clone.GainDefense(nextAction.actionValue);
-                DoAnimation("3Buff");
-                yield return new WaitForSeconds(1.7f);
-                ReturnToIdleAnimation();
-                break;
-        }
+        DoAnimation("Attact0");
+        yield return new WaitForSeconds(0.4f);
+        GeneralAttack();
+        yield return new WaitForSeconds(0.4f);
+        ReturnToIdleAnimation();
+
         yield return new WaitForSeconds(1f);
         isActive = false;
     }
@@ -40,20 +28,20 @@ public class Boss_Momos : SpawnedMonster
     public override IEnumerator OnHitAnimation()
     {
         OnHitAnimationRPC();
-        yield return new WaitForSeconds(0.633f);
+        yield return new WaitForSeconds(0.667f);
         ReturnToIdleAnimation();
     }
 
     [ClientRpc]
     public void OnHitAnimationRPC()
     {
-        parent.anim.state.SetAnimation(1,"3Defence",false);
+        parent.anim.state.SetAnimation(1,"Defense0",false);
     }
 
     [ClientRpc]
     public override void ReturnToIdleAnimation()
     {
-        parent.anim.state.SetAnimation(1,"3Idle",true);
+        parent.anim.state.SetAnimation(1,"Idle",true);
     }
 
     public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)

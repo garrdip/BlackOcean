@@ -239,7 +239,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     if(Random.Range(0,2) == 0)AnimIronDemon("Attack0",tar);
                     else AnimIronDemon("Attack1",tar);
                     yield return new WaitForSeconds(0.4f);
-                    tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon);
+                    tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon, tar);
                     yield return new WaitForSeconds(0.6f);
                 }
                 ironDemonPassiveOperating = false;
@@ -257,7 +257,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 }
                 else // 몬스터의 경우 데미지
                 {
-                    tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon);
+                    tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon, tar);
                 }
             }
         }
@@ -624,6 +624,30 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void GenerateBossMonster()
     {
         // TODO : 보스 몬스터 생성
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
+        var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "Boss_Momos"),targetObjectPosition[4],Quaternion.identity).GetComponent<SpawnedMonster>();
+        var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "Boss_Momos"),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
+        NetworkServer.Spawn(monster.gameObject);
+        NetworkServer.Spawn(cloneMonster.gameObject);
+        monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(x => x.name == "Boss_Momos");
+        cloneMonster.monsterData = M_MonsterManager.instance.monsterDataList.Find(x => x.name == "Boss_Momos");
+        var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
+        var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
+        NetworkServer.Spawn(avatar);
+        NetworkServer.Spawn(cloneAvatar);
+        avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+        avatar.GetComponent<TargetObject>().monster = monster;
+        cloneAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+        cloneAvatar.GetComponent<TargetObject>().monster = cloneMonster;
+        cloneAvatar.GetComponent<TargetObject>().isCloneData = true;
+        cloneAvatar.GetComponent<TargetObject>().origin = avatar.GetComponent<TargetObject>();
+        avatar.GetComponent<TargetObject>().clone = cloneAvatar.GetComponent<TargetObject>();
+        spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
+        cloneMonsterList.Add(cloneAvatar.GetComponent<TargetObject>());
+        // monster 오브젝트의 부모오브젝트 참조값 설정
+        monster.parent = avatar.GetComponent<TargetObject>();
+        cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
     }
 
     [Server]
@@ -963,7 +987,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     public void MoveToPlayer(GamePlayer player, MoveDirection direction)
     {
-        Debug.Log("ChangePlayerOrder Called");
         TargetObject forwarding = null,backwarding = null;
         Vector3 forwardingDestination = new Vector3(0,0,0),backwardingDestination = new Vector3(0,0,0);
         if(direction == MoveDirection.FORWARD)
