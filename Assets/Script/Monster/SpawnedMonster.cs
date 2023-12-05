@@ -78,7 +78,7 @@ public class SpawnedMonster : NetworkBehaviour
         nextTarget = nextAction.actionTarget;
     }
 
-    void GetNextAction()
+    public virtual void GetNextAction()
     {
         if(currentBehavior.ActionList.Count - 1 < currentBehaviorSequence && currentBehavior.ActionList.Count != 0)
         {

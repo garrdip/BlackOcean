@@ -6,18 +6,59 @@ using Mirror;
 
 public class Boss_Momos : SpawnedMonster
 {
+
+    int turn = 0;
+
     public override IEnumerator DoAction()
     {
-        DoAnimation("Attact0");
-        yield return new WaitForSeconds(0.4f);
-        GeneralAttack();
-        yield return new WaitForSeconds(0.4f);
+        
+        List<TargetObject> highlightTargetObjects = new List<TargetObject>();
+        switch(turn)
+        {
+            case 0 :
+                highlightTargetObjects.Add(transform.parent.GetComponent<TargetObject>());
+                highlightTargetObjects.AddRange(M_TurnManager.instance.GetTargetObjectFromActionTargetList(nextTarget));
+                M_DimmingManager.instance.StartDimming(highlightTargetObjects);
+                DoAnimation("Attact0");
+                yield return new WaitForSeconds(1f);
+                GeneralAttack();
+                yield return new WaitForSeconds(0.333f);
+                M_DimmingManager.instance.StopDimming(highlightTargetObjects);
+                break;
+            case 1 :
+                highlightTargetObjects.Add(transform.parent.GetComponent<TargetObject>());
+                highlightTargetObjects.AddRange(M_TurnManager.instance.GetTargetObjectFromActionTargetList(nextTarget));
+                DoAnimation("Attact1");
+                yield return new WaitForSeconds(1f);
+                GeneralAttack();
+                yield return new WaitForSeconds(0.333f);
+                M_DimmingManager.instance.StopDimming(highlightTargetObjects);
+                break;
+            case 2 :
+                highlightTargetObjects.Add(transform.parent.GetComponent<TargetObject>());
+                highlightTargetObjects.AddRange(M_TurnManager.instance.GetTargetObjectFromActionTargetList(nextTarget));
+                DoAnimation("Buff0");
+                yield return new WaitForSeconds(1f);
+                GeneralAttack();
+                yield return new WaitForSeconds(0.333f);
+                M_DimmingManager.instance.StopDimming(highlightTargetObjects);
+                break;
+        }
         ReturnToIdleAnimation();
-
         yield return new WaitForSeconds(1f);
+        turn ++;
         isActive = false;
     }
-    
+
+    public override void GetNextAction()
+    {
+        transform.parent.GetChild(3).localPosition = new Vector3(transform.parent.GetChild(3).localPosition.x, 11, transform.parent.GetChild(3).localPosition.z);
+        if(turn < 2)
+            nextAction = monsterData.behavior[0].ActionList[0];
+        else
+            nextAction = monsterData.behavior[1].ActionList[0];
+    }
+
     [ClientRpc]
     public void DoAnimation(string actionName)
     {
@@ -45,14 +86,10 @@ public class Boss_Momos : SpawnedMonster
     }
 
     public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
-    {
-        switch(nextAction.actionName){
-            case "찌르기" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,newVal.actionTarget,newVal.actionValue.ToString());
-                break;
-            case "방어" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,newVal.actionTarget,newVal.actionValue.ToString());
-                break;
-        }
+    {   
+        if(nextAction.actionName == "Enrage")
+            parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKANDDEBUFF,true,newVal.actionTarget,100.ToString());
+        else
+            parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,newVal.actionTarget,100.ToString());
     }
 }

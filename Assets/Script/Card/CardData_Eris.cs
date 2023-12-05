@@ -15,10 +15,12 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator E0(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData){
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
             yield return tempWait;
             M_TurnManager.instance.StartAnimation(tar[0],0, tar[0].GetErisMode() + "Attack0",false);
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(2f);
             StartCoroutine(tar[1].monster.OnHitAnimation());
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         } 
         GeneralSingleAttack(tar[0],tar[1],5);
         if(!tar[0].isCloneData) isCardOperating = false;
@@ -26,10 +28,12 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator E1(Card card,List<TargetObject> tar)
     {
         if(!tar[0].isCloneData) {
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
             yield return tempWait;
             M_TurnManager.instance.StartAnimation(tar[0],0, tar[0].GetErisMode() + "Attack1",false);
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(2f);
             StartCoroutine(tar[1].monster.OnHitAnimation());
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         }
         GeneralSingleAttack(tar[0],tar[1],8);
         if(!tar[0].isCloneData) isCardOperating = false;

@@ -1047,12 +1047,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         foreach(TargetObject tar in spawnedPlayerList)
         {
             if( target == ActionTarget.WHOLE || 
-                (target == ActionTarget.FRONT && tar.player.selectOrder == 0) ||
+                (target == ActionTarget.FRONT && tar.player.selectOrder == 2) ||
                 (target == ActionTarget.MIDDLE && tar.player.selectOrder == 1) ||
-                (target == ActionTarget.BACK && tar.player.selectOrder == 2) ||
-                (target == ActionTarget.FRONT_MIDDLE && tar.player.selectOrder != 2) ||
-                (target == ActionTarget.MIDDLE_BACK && tar.player.selectOrder != 0) ||
-                (target == ActionTarget.FRONT_BACK && tar.player.selectOrder != 1) )
+                (target == ActionTarget.BACK && tar.player.selectOrder == 0) ||
+                (target == ActionTarget.FRONT_MIDDLE && tar.player.selectOrder != 0) ||
+                (target == ActionTarget.MIDDLE_BACK && tar.player.selectOrder != 1) ||
+                (target == ActionTarget.FRONT_BACK && tar.player.selectOrder != 2) )
                 retVal.Add(tar);
         }
         if(retVal.Count == 0)
@@ -1061,6 +1061,29 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         return retVal.ToArray();
     }
 
+
+    public List<TargetObject> GetTargetObjectFromActionTargetList(ActionTarget target)
+    {
+        if(target == ActionTarget.FIXEDPLAYER || target == ActionTarget.RANDOM || target == ActionTarget.NONE){
+            Debug.Log("ERROR : Next Target Error");
+        }
+        List<TargetObject> retVal = new List<TargetObject>();
+        foreach(TargetObject tar in spawnedPlayerList)
+        {
+            if( target == ActionTarget.WHOLE || 
+                (target == ActionTarget.FRONT && tar.player.selectOrder == 2) ||
+                (target == ActionTarget.MIDDLE && tar.player.selectOrder == 1) ||
+                (target == ActionTarget.BACK && tar.player.selectOrder == 0) ||
+                (target == ActionTarget.FRONT_MIDDLE && tar.player.selectOrder != 0) ||
+                (target == ActionTarget.MIDDLE_BACK && tar.player.selectOrder != 1) ||
+                (target == ActionTarget.FRONT_BACK && tar.player.selectOrder != 2) )
+                retVal.Add(tar);
+        }
+        if(retVal.Count == 0)
+            retVal.AddRange(spawnedPlayerList);
+
+        return retVal;
+    }
     // 플레이어 정보 및 턴 정보 뷰 세팅
     public void SetPlayerOrderView(int index)
     {/*
