@@ -6,9 +6,6 @@ using Mirror;
 
 public class Boss_Momos : SpawnedMonster
 {
-
-    int turn = 0;
-
     public override IEnumerator DoAction()
     {
         
@@ -49,16 +46,16 @@ public class Boss_Momos : SpawnedMonster
         turn ++;
         isActive = false;
     }
-
+/*
+    [Server]
     public override void GetNextAction()
     {
-        transform.parent.GetChild(3).localPosition = new Vector3(transform.parent.GetChild(3).localPosition.x, 11, transform.parent.GetChild(3).localPosition.z);
         if(turn < 2)
             nextAction = monsterData.behavior[0].ActionList[0];
         else
             nextAction = monsterData.behavior[1].ActionList[0];
     }
-
+*/
     [ClientRpc]
     public void DoAnimation(string actionName)
     {
@@ -86,10 +83,14 @@ public class Boss_Momos : SpawnedMonster
     }
 
     public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
-    {   
+    {
+        if(newVal.actionName == "")return;
+        Debug.Log("정상 입력");
+        transform.parent.GetChild(3).localPosition = new Vector3(transform.parent.GetChild(3).localPosition.x, 11, transform.parent.GetChild(3).localPosition.z);
         if(nextAction.actionName == "Enrage")
             parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKANDDEBUFF,true,newVal.actionTarget,100.ToString());
         else
             parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,newVal.actionTarget,100.ToString());
+ 
     }
 }
