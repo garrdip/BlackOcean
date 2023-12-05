@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Mirror;
 using ProjectD;
 using TMPro;
@@ -41,15 +42,15 @@ public class HexagonMapRoom : NetworkBehaviour
     public int FCost => GCost + HCost; // 최종 비용
 
     [Header("UI 컴포넌트")]
-    public TextMeshProUGUI textRoomType;
-    public TextMeshProUGUI textCoordinate;
-
     public GameObject originMapTile; // 원본 위치의 맵타일 오브젝트(라인 렌더러 위치를 위한 용도)
     public GameObject expandMapTile; // 위쪽 방향으로 확장되는 맵타일 오브젝트
     public GameObject mapTileBase;
     public GameObject mapTileLayer;
     public GameObject mapTileIcon;
     public Canvas hexagonMapRoomCnavas;
+    public SortingGroup sortingGroup;
+    public TextMeshProUGUI textRoomType;
+    public TextMeshProUGUI textCoordinate;
 
 
     void Start()
@@ -57,10 +58,9 @@ public class HexagonMapRoom : NetworkBehaviour
         transform.SetParent(M_MapManager.instance.MapRooms.transform);
         transform.localPosition = new Vector3(transform.position.x, transform.position.y, 0f);
         transform.localRotation = Quaternion.Euler(0, 0f, 0f);
-        mapTileBase.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
-        mapTileLayer.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
-        mapTileIcon.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
-        hexagonMapRoomCnavas.sortingLayerName = "HexagonMapRoomUI";
+        sortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
+        hexagonMapRoomCnavas.sortingLayerName = "HexagonMapRoom";
+        hexagonMapRoomCnavas.sortingOrder = -(int)(transform.position.y * 10f) + 1;
     }
 
     private void OnMouseDown()
