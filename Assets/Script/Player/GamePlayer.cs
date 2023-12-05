@@ -8,7 +8,7 @@ using Steamworks;
 
 public class GamePlayer : NetworkBehaviour
 {
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChangHpValue))]
     public int HP;
     [SyncVar]
     public int MaxHP;
@@ -57,6 +57,15 @@ public class GamePlayer : NetworkBehaviour
         SetPlayerOrderRPC(num);
     }
 
+    [Server]
+    public void CheckPlayersIsDead()
+    {
+        int deadPlayerCount = M_TurnManager.instance.playerOrder.FindAll((gamePlayer) => gamePlayer.HP <= 0).Count;
+        if(deadPlayerCount == M_TurnManager.instance.playerOrder.Count){
+            RpcGameOver();
+        }
+    }
+
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
 
     [ClientRpc]
@@ -77,6 +86,12 @@ public class GamePlayer : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void RpcGameOver()
+    {
+        PopUpUIManager.instance.HandleShowGameOverPopUp();
+    }
+
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
 
     public void OnChangedSelectOrder(int oldVal,int newVal)
@@ -89,4 +104,10 @@ public class GamePlayer : NetworkBehaviour
         transform.SetParent(newVal.transform);
     }
 
+    public void OnChangHpValue(int oldVal, int newVal)
+    {
+        if(isServer){
+            CheckPlayersIsDead();
+        }
+    }
 }

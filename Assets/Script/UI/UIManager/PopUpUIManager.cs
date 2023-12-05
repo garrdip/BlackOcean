@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using ProjectD;
+using DG.Tweening;
 
 
 public class PopUpUIManager : SingletonD<PopUpUIManager>
@@ -50,6 +51,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject layoutCardOnHandForRemove; // 카드 제거 팝업의 선택된 카드가 움직일 위치의 레이아웃
     public GameObject selectableCardList; // 전투 종료 보상 카드 목록 레이아웃 
     public GameObject mercuriusPopUp;
+    public GameObject gameOverPopUp;
 
 
     [Header("댁 리스트 팝업에 사용되는 카드 프리팹")]
@@ -179,5 +181,24 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
             if(onMercuriusPopUpHide != null)
                 onMercuriusPopUpHide.Invoke();
         }
+    }
+
+    // 게임오버 팝업 활성화
+    public void HandleShowGameOverPopUp()
+    {
+        gameOverPopUp.SetActive(true);
+        gameOverPopUp.GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
+    }
+
+    // 게임오버 팝업 비활성화
+    public void HandleHideGameOverPopUp()
+    {
+        gameOverPopUp.GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).OnComplete(() => {
+            gameOverPopUp.SetActive(false);
+            UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
+            NetworkServer.Shutdown();
+            NetworkClient.Disconnect();
+            M_SteamManager.LeaveLobby();
+        });
     }
 }

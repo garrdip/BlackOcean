@@ -162,6 +162,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void OnChangedPhase()
     {
         Debug.Log("Phase is " + phase);
+        GameUIManager.instance.textCurrentPhase.text = phase.ToString(); // 페이즈 상태 텍스트 업데이트
         switch(phase)
         {
             case BattleTurn.NONE_BATTLE_SCENE :
