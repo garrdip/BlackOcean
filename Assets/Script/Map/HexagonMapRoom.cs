@@ -96,51 +96,61 @@ public class HexagonMapRoom : NetworkBehaviour
         {
             case RoomType.START_LOCATION :
                 mapTileLayer.GetComponent<SpriteRenderer>().color = Color.gray;
+                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.gray;
                 textRoomType.color = Color.gray;
                 textRoomType.text = Const.RoomType_StartLocation;
                 break;
             case RoomType.MONSTER :
                 mapTileLayer.GetComponent<SpriteRenderer>().color = Color.red;
+                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.red;
                 textRoomType.color = Color.red;
                 textRoomType.text = Const.RoomType_Monster;
                 break;
             case RoomType.ELITE :
                 mapTileLayer.GetComponent<SpriteRenderer>().color = Color.red;
+                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.red;
                 textRoomType.color = Color.red;
                 textRoomType.text = Const.RoomType_Elite;
                 break;
             case RoomType.EVENT :
                 mapTileLayer.GetComponent<SpriteRenderer>().color = Color.yellow;
+                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.yellow;
                 textRoomType.color = Color.yellow;
                 textRoomType.text = Const.RoomType_Event;
                 break;
             case RoomType.CAMP :
                 mapTileLayer.GetComponent<SpriteRenderer>().color = Color.green;
+                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.green;
                 textRoomType.color = Color.green;
                 textRoomType.text = Const.RoomType_Camp;
                 break;
             case RoomType.ITEM_NPC :
                 mapTileLayer.GetComponent<SpriteRenderer>().color = Color.blue;
+                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.blue;
                 textRoomType.color = Color.blue;
                 textRoomType.text = Const.RoomType_ItemNpc;
                 break;
             case RoomType.CARD_NPC :
                 mapTileLayer.GetComponent<SpriteRenderer>().color = Color.magenta;
+                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.magenta;
                 textRoomType.color = Color.magenta;
                 textRoomType.text = Const.RoomType_CardNpc;
                 break;
             case RoomType.COMPLETE :
                 mapTileLayer.GetComponent<SpriteRenderer>().color = Color.gray;
+                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.gray;
                 textRoomType.color = Color.gray;
                 textRoomType.text = Const.RoomType_Complete;
                 break;
             case RoomType.RUINS :
                 mapTileLayer.GetComponent<SpriteRenderer>().color = ColorUtils.HexToColor("#219A48");
+                mapTileIcon.GetComponent<SpriteRenderer>().color = ColorUtils.HexToColor("#219A48");
                 textRoomType.color = ColorUtils.HexToColor("#219A48");
                 textRoomType.text = Const.RoomType_Ruins;
                 break;
             case RoomType.BOSS :
                 mapTileLayer.GetComponent<SpriteRenderer>().color = ColorUtils.HexToColor("#E700EF");
+                mapTileIcon.GetComponent<SpriteRenderer>().color = ColorUtils.HexToColor("#E700EF");
                 textRoomType.color = ColorUtils.HexToColor("#E700EF");
                 textRoomType.text = Const.RoomType_Boss;
                 break;
@@ -175,15 +185,11 @@ public class HexagonMapRoom : NetworkBehaviour
             GetComponent<SpriteMask>().enabled = true;
             mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             mapTileBase.SetActive(true);
-            mapTileLayer.GetComponent<SpriteRenderer>().sortingOrder = mapTileBase.GetComponent<SpriteRenderer>().sortingOrder + 1;
-            mapTileIcon.GetComponent<SpriteRenderer>().sortingOrder = mapTileBase.GetComponent<SpriteRenderer>().sortingOrder + 2;
         }else{
             expandMapTile.transform.DOLocalMoveY(-0.5f, 0.5f).OnComplete(() => {
                 GetComponent<SpriteMask>().enabled = false;
                 mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
                 mapTileBase.SetActive(false);
-                mapTileLayer.GetComponent<SpriteRenderer>().sortingOrder = mapTileBase.GetComponent<SpriteRenderer>().sortingOrder - 1;
-                mapTileIcon.GetComponent<SpriteRenderer>().sortingOrder = mapTileBase.GetComponent<SpriteRenderer>().sortingOrder - 2;
             });
         }
     }

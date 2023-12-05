@@ -28,6 +28,8 @@ public class GameUIManager : SingletonD<GameUIManager>
     public Button buttonTrashDeck;
     public Text textPrefareDeckCount;
     public Text textTrashDeckCount;
+    public TextMeshProUGUI textCurrentActionCost;
+    public TextMeshProUGUI textMaxActionCost;
 
 
     [Header("화면 Dim 처리용 이미지")]

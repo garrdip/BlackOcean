@@ -7180,6 +7180,8 @@ MonoBehaviour:
   buttonTrashDeck: {fileID: 791626060}
   textPrefareDeckCount: {fileID: 2120763168}
   textTrashDeckCount: {fileID: 1794285381}
+  textCurrentActionCost: {fileID: 6984339395254736561}
+  textMaxActionCost: {fileID: 6984339394055918327}
   blackCurtain: {fileID: 492361048}
   playerOrderList:
   - {fileID: 0}

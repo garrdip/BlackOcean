@@ -110,7 +110,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             if(hit.collider != null){
                 GameObject selectedObject = hit.collider.gameObject;
                 HexagonMapRoom hexagonMapRoom = selectedObject.GetComponent<HexagonMapRoom>();
-                if(hexagonMapRoom.roomType != RoomType.START_LOCATION){
+                if(hexagonMapRoom != null && hexagonMapRoom.roomType != RoomType.START_LOCATION){
                     hexagonMapRoom.roomType = RoomType.COMPLETE;
                     GenerateHexagonRoom(hexagonMapRoom);
                 }
@@ -698,6 +698,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         Debug.Log($"행동 비용이 {oldValue} -> {newValue} 감소했습니다.");
         MapUI.instance.textCurrentActionCost.text = $"{newValue.ToString()}턴";
+        GameUIManager.instance.textCurrentActionCost.text = $"{newValue.ToString()}턴";
         MapUI.instance.turnGageBar.fillAmount = ((float)newValue / (float)maxActionCost);
         if(isServer){
             if(newValue == 0 && mapBoss == null){
@@ -709,6 +710,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     public void OnChangedMaxActionCost(int oldValue, int newValue)
     {
         MapUI.instance.textMaxActionCostCount.text = $"{newValue.ToString()}턴";
+        GameUIManager.instance.textMaxActionCost.text = $"{newValue.ToString()}턴";
     }
 
     // 행동비용 변경 이벤트 수신(1회당 소모되는 행동비용 값)
