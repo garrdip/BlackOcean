@@ -152,7 +152,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             int order = 0;
             for(int i = 0 ; i < players.Count ; i ++)
             {
-                if(player.selectOrder > players[i].selectOrder) order++;
+                if(player.selectOrder < players[i].selectOrder) order++;
             }
             playerOrder[order] = player;
         }

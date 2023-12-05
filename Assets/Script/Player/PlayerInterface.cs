@@ -110,6 +110,8 @@ public class PlayerInterface : NetworkBehaviour
         gamePlayer.objectOwner = this;
         gamePlayer.character = character;
         gamePlayer.selectOrder = selectOrder;
+        gamePlayer.HP = 50;
+        gamePlayer.MaxHP = 50;
         NetworkServer.Spawn(cloneAvatar,connectionToClient);
     }
 

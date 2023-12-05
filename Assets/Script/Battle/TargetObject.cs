@@ -274,6 +274,10 @@ public class TargetObject : NetworkBehaviour
             int remind = damage - defense;
             defense = 0;
             playerHP -= remind;
+            if(playerHP <= 0){
+                playerHP = 0;
+            }
+            player.HP = playerHP;
         }
     }
 
