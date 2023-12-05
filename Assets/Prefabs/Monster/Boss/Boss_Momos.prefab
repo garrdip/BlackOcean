@@ -14,8 +14,9 @@ GameObject:
   - component: {fileID: 2526679034711088660}
   - component: {fileID: 1148659860880846136}
   - component: {fileID: 395826262243898315}
+  - component: {fileID: -6011305782047808678}
   m_Layer: 0
-  m_Name: Soldier_Axe
+  m_Name: Boss_Momos
   m_TagString: TargetObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -193,3 +194,43 @@ PolygonCollider2D:
       - {x: 1.5952308, y: -0.13369262}
       - {x: 1.807908, y: -0.018584132}
       - {x: 1.3165717, y: 1.1794959}
+--- !u!114 &-6011305782047808678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77e26701dd959a744ae891008ec735cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  monsterName: 
+  MAXHP: 0
+  HP: 0
+  sheild: 0
+  aggro: 000000000000000000000000
+  nextAction:
+    actionName: 
+    actionNumber: 0
+    actionValue: 0
+    actionTarget: 0
+  currentBehavior:
+    ActionList: []
+    frequency: 0
+  currentBehaviorSequence: 0
+  nextTargetPlayer: {fileID: 0}
+  nextTarget: 0
+  monsterData:
+    name: 
+    MAXHP: 0
+    behavior: []
+  parent: {fileID: 0}
+  isActive: 0
+  meshRenderer: {fileID: 7778458032851223039}
+  defaultMaterial: {fileID: 2100000, guid: 5eef6d8454d91ac4d8df4224dc89b6a0, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 2999ce7bae3428045addc25812a238c7, type: 2}

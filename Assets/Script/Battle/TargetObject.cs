@@ -277,7 +277,7 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
-    public void DamageToMonster(int damage)
+    public void DamageToMonster(int damage, TargetObject from)
     {
         // 붕괴 적용
         if(GetBuffValue(BuffType.BOONGGUI) > 0)
@@ -300,7 +300,7 @@ public class TargetObject : NetworkBehaviour
                 M_TurnManager.instance.ProcessMonsterDeath(this);
             }
             monster.HP -= remind;
-            monster.OnChangedHpValue(monster.HP,monster.HP);
+            monster.OnChangedHpValue(monster.HP,monster.HP); 
         }
     }
 

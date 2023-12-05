@@ -18,7 +18,6 @@ public class TEST : MonoBehaviour
         isChatBoxActive = true;
         buttonEnhance.onClick.AddListener(() => TestEnhance());
         buttonTranfrom.onClick.AddListener(() => TestTransform());
-
     }
 
     void TestEnhance()
