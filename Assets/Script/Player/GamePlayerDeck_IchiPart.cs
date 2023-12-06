@@ -42,6 +42,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     {
         if(isOwned && ichiText != null)
             ichiText.text = currentIchi.ToString() + " / " + maxIchi.ToString();
+            GameUIManager.instance.textCost.text = currentIchi.ToString() + " / " + maxIchi.ToString();
     }
 
 }

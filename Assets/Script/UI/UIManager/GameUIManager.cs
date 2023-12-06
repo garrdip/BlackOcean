@@ -31,6 +31,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     public TextMeshProUGUI textCurrentActionCost;
     public TextMeshProUGUI textMaxActionCost;
     public TextMeshProUGUI textCurrentPhase;
+    public TextMeshProUGUI textCost;
 
 
     [Header("화면 Dim 처리용 이미지")]
