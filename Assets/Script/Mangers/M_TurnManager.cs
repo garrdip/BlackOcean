@@ -879,7 +879,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void MoveIronDemon(TargetObject target ,TargetObject tar)
     {
         int transformOffset = CalcOffset(tar); 
-        tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
+        if(target.monster.monsterName == "Boss_Momos") // 모모스 키 적용 TODO: 몬스터 키적용 코드 추가
+            tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,5,0);
+        else
+            tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
         int offset = (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer == tar.player) ? 0 : 2;
         if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0+offset];
         else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];

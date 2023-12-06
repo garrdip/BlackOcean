@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 7778458032851223039}
   - component: {fileID: 2526679034711088660}
   - component: {fileID: 1148659860880846136}
-  - component: {fileID: 395826262243898315}
   - component: {fileID: -6011305782047808678}
+  - component: {fileID: 7146516297162732159}
   m_Layer: 0
   m_Name: Boss_Momos
   m_TagString: TargetObject
@@ -144,7 +144,47 @@ MonoBehaviour:
   serverOnly: 0
   visible: 0
   hasSpawned: 0
---- !u!60 &395826262243898315
+--- !u!114 &-6011305782047808678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77e26701dd959a744ae891008ec735cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  monsterName: 
+  MAXHP: 0
+  HP: 0
+  sheild: 0
+  nextAction:
+    actionName: 
+    actionNumber: 0
+    actionValue: 0
+    actionTarget: 0
+  currentBehavior:
+    ActionList: []
+    frequency: 0
+  currentBehaviorSequence: 0
+  nextTargetPlayer: {fileID: 0}
+  nextTarget: 0
+  monsterData:
+    name: 
+    MAXHP: 0
+    behavior: []
+  parent: {fileID: 0}
+  isActive: 0
+  meshRenderer: {fileID: 7778458032851223039}
+  defaultMaterial: {fileID: 2100000, guid: 5eef6d8454d91ac4d8df4224dc89b6a0, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 2999ce7bae3428045addc25812a238c7, type: 2}
+  turn: 0
+--- !u!60 &7146516297162732159
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -169,68 +209,29 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 1.5398526, y: 1.7098984}
-      - {x: 1.2590714, y: 2.2324457}
-      - {x: 1.0959735, y: 3.3819966}
-      - {x: 0.59242487, y: 4.2464743}
-      - {x: -0.120539546, y: 4.553183}
-      - {x: -0.82767344, y: 4.1269107}
-      - {x: -0.91303873, y: 4.304126}
-      - {x: -1.29947, y: 4.2817926}
-      - {x: -1.577877, y: 4.156009}
-      - {x: -1.4162989, y: 3.3939142}
-      - {x: -1.3801689, y: 3.3177557}
-      - {x: -0.92178583, y: 3.4913425}
-      - {x: -1.4213872, y: 1.6084737}
-      - {x: -2.070404, y: 1.159774}
-      - {x: -1.9385605, y: 0.42641056}
-      - {x: -0.80638087, y: 0.9713781}
-      - {x: -0.7814307, y: 0.3711716}
-      - {x: -1.2418294, y: 0.08583033}
-      - {x: -1.1295037, y: -0.06361866}
-      - {x: -0.20481443, y: 0.04389417}
-      - {x: 0.23091698, y: 0.5006964}
-      - {x: 1.2358272, y: -0.08699918}
-      - {x: 1.5952308, y: -0.13369262}
-      - {x: 1.807908, y: -0.018584132}
-      - {x: 1.3165717, y: 1.1794959}
---- !u!114 &-6011305782047808678
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8715637313035057607}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77e26701dd959a744ae891008ec735cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  monsterName: 
-  MAXHP: 0
-  HP: 0
-  sheild: 0
-  aggro: 000000000000000000000000
-  nextAction:
-    actionName: 
-    actionNumber: 0
-    actionValue: 0
-    actionTarget: 0
-  currentBehavior:
-    ActionList: []
-    frequency: 0
-  currentBehaviorSequence: 0
-  nextTargetPlayer: {fileID: 0}
-  nextTarget: 0
-  monsterData:
-    name: 
-    MAXHP: 0
-    behavior: []
-  parent: {fileID: 0}
-  isActive: 0
-  meshRenderer: {fileID: 7778458032851223039}
-  defaultMaterial: {fileID: 2100000, guid: 5eef6d8454d91ac4d8df4224dc89b6a0, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 2999ce7bae3428045addc25812a238c7, type: 2}
+    - - {x: 0.8021393, y: 11.02635}
+      - {x: -0.6190319, y: 10.137672}
+      - {x: -1.4465518, y: 10.102816}
+      - {x: -1.9769268, y: 9.12028}
+      - {x: -3.4595494, y: 9.048447}
+      - {x: -2.8440175, y: 6.667209}
+      - {x: -3.4705696, y: 5.658594}
+      - {x: -3.261293, y: 4.096454}
+      - {x: -3.5329766, y: 2.6784701}
+      - {x: -3.1274705, y: 2.4322839}
+      - {x: -2.6255264, y: 1.2687467}
+      - {x: -3.7090402, y: 0.43061554}
+      - {x: -4.1321564, y: 0.1994853}
+      - {x: 3.5214152, y: 0.13385534}
+      - {x: 5.6573186, y: 0.169747}
+      - {x: 4.9220204, y: 1.9641396}
+      - {x: 5.597041, y: 3.4257097}
+      - {x: 5.4533854, y: 3.7697344}
+      - {x: 4.9525313, y: 3.0881293}
+      - {x: 4.2336235, y: 1.9346112}
+      - {x: 3.6925874, y: 2.7410712}
+      - {x: 3.6552856, y: 4.0820694}
+      - {x: 3.0827558, y: 4.964923}
+      - {x: 3.801092, y: 6.3935256}
+      - {x: 3.2056968, y: 8.042325}
+      - {x: 3.8278728, y: 8.8416605}

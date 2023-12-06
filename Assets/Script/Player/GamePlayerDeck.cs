@@ -160,7 +160,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     }
                     break;
                 case Character.HONGDANHYANG:
-                    for(int i = 0; i < 8; i++)
+                    for(int i = 0; i < 6; i++)
                     {
                         //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
                         //deck.Add(attackCard);
@@ -172,6 +172,14 @@ public partial class GamePlayerDeck : NetworkBehaviour
                             deck.Add(defenseCard);
                         }
                     }
+                    Card additionalCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H9")));
+                        deck.Add(additionalCard);
+                    additionalCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H9")));
+                        deck.Add(additionalCard);
+                    additionalCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H8")));
+                        deck.Add(additionalCard);
+                    additionalCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H8")));
+                        deck.Add(additionalCard);
                     break;
                 default:
                     break;
