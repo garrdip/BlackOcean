@@ -80,7 +80,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         if(Input.GetKeyDown(KeyCode.Return)){
             messageInput.ActivateInputField();
             if(isChatBoxVisible){
-                CmdSendChatMessage(messageInput.text); // 채팅창이 활성화 상태에서 엔터키를 누르면 채팅 메시지 전송
+                SendChatMessage(messageInput.text); // 채팅창이 활성화 상태에서 엔터키를 누르면 채팅 메시지 전송
             }else{
                 ChangeChatBoxVisibileState(); // 채팅창이 비활성화 상태에서 엔터키 누르면 채팅창 활성화
             }
@@ -203,26 +203,31 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         }
     }
 
-    // ------------------------------------------------------------ Command Method ---------------------------------------------------------------- //
-
-    // 채팅 메시지 전송
-    [Command(requiresAuthority = false)]
-    public void CmdSendChatMessage(string message, NetworkConnectionToClient sender = null)
+    public void SendChatMessage(string message)
     {
-        if(!string.IsNullOrWhiteSpace(message)){
+       if(!string.IsNullOrWhiteSpace(message)){
             M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
             if(Utils.IsSceneActive(networkRoomManager.RoomScene)){
                 RoomPlayer roomPlayer = NetworkClient.localPlayer.GetComponent<RoomPlayer>();
                 Color color = roomPlayer.color;
                 string playerName = SteamFriends.GetFriendPersonaName((CSteamID)roomPlayer.steamID);
-                RpcReceiveChatMessage(color, playerName, message);
+                CmdSendChatMessage(color, playerName, message);
             }else if(Utils.IsSceneActive(networkRoomManager.GameplayScene)){
                 PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
                 Color color = playerInterface.color;
                 string playerName = SteamFriends.GetFriendPersonaName((CSteamID)playerInterface.steamID);
-                RpcReceiveChatMessage(color, playerName, message);
+                CmdSendChatMessage(color, playerName, message);
             }
         }
+    }
+
+    // ------------------------------------------------------------ Command Method ---------------------------------------------------------------- //
+
+    // 채팅 메시지 전송
+    [Command(requiresAuthority = false)]
+    public void CmdSendChatMessage(Color color, string playerName, string message, NetworkConnectionToClient sender = null)
+    {
+        RpcReceiveChatMessage(color, playerName, message);
     }
 
     // ------------------------------------------------------------ ClientRpc Method -------------------------------------------------------------- //
