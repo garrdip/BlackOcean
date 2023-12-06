@@ -425,6 +425,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public string GetAdditionalValueFromDescription(string str)
     {
         TargetObject tar = null;
+        if(!NetworkClient.spawned.ContainsKey(NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject))return null;
         if(isServer)
             tar = NetworkServer.spawned[NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
         else

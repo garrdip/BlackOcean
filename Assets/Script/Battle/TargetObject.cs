@@ -378,6 +378,18 @@ public class TargetObject : NetworkBehaviour
         }
         if(playerMaxHP != 0)
             selectedNamePlate.SetHPValue(playerHP,playerMaxHP,(int)transform.position.x);
+        
+        if(isServer && playerHP == 0)
+        {
+            foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
+                NetworkServer.Destroy(cardOnHand.gameObject);
+            player.GetComponent<GamePlayerDeck>().cardOnHands.Clear();
+            M_TurnManager.instance.spawnedPlayerList.Remove(this);
+            M_TurnManager.instance.clonePlayerList.Remove(clone);
+            NetworkServer.Destroy(this.gameObject);
+            NetworkServer.Destroy(clone.gameObject);
+        }
+
     }
 
 
