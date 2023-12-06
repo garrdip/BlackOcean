@@ -233,7 +233,7 @@ public class SpawnedMonster : NetworkBehaviour
             foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
             {
                 
-                tar.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
+                
 
                 if(tar == null) return;
                 else if(tar.playerHP == 0)return;
@@ -256,7 +256,8 @@ public class SpawnedMonster : NetworkBehaviour
                 
                 if(tar.player.character == Character.HONGDANHYANG && tar.ironDemonLocation == tar)
                     tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
-                
+
+                tar.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
             }
         }
     }

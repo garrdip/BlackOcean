@@ -275,10 +275,24 @@ public class TargetObject : NetworkBehaviour
             defense = 0;
             playerHP -= remind;
             if(playerHP <= 0){
-                playerHP = 0;
+                if(player.character == Character.ERIS && erisMode != ErisMode.MAD)
+                {
+                    playerHP = 1;
+                    StartCoroutine(ErisTransform());
+                }
+                else
+                    playerHP = 0;
             }
             player.HP = playerHP;
         }
+    }
+
+    IEnumerator ErisTransform()
+    {                
+        M_TurnManager.instance.StartAnimation(this,0,"Change1",false);
+        erisMode = ErisMode.MAD;
+        yield return new WaitForSeconds(2f);
+        M_TurnManager.instance.StartAnimation(this,0,"VIdle",true);
     }
 
     public void DamageToMonster(int damage, TargetObject from)
@@ -458,7 +472,8 @@ public class TargetObject : NetworkBehaviour
                 track.MixBlend = Spine.MixBlend.Add;
                 track.Alpha = 1f;
             }
-            if(rTimer <= 0f)
+            //if(rTimer <= 0f)
+            if(false)
             {
                 rTimer = Random.Range(1f,2f);
                 if(Random.Range(0,2) == 0)
