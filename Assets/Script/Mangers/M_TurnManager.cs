@@ -240,6 +240,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     if(Random.Range(0,2) == 0)AnimIronDemon("Attack0",tar);
                     else AnimIronDemon("Attack1",tar);
                     yield return new WaitForSeconds(0.4f);
+                    StartCoroutine(tar.ironDemonLocation.monster.OnHitAnimation()); // 실제 피격 애니메이션
                     tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon, tar);
                     yield return new WaitForSeconds(0.6f);
                 }
@@ -498,7 +499,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             avatar.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
             avatar.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
-            avatar.GetComponent<TargetObject>().sizeOfIronDemon = 4;
+            if(avatar.GetComponent<TargetObject>().player.character == Character.HONGDANHYANG)avatar.GetComponent<TargetObject>().sizeOfIronDemon = 4;
             playerOrder[i].GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
             spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
             spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);
@@ -511,7 +512,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             clone.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
             clone.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
             clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
-            clone.GetComponent<TargetObject>().sizeOfIronDemon = 4;
+            if(avatar.GetComponent<TargetObject>().player.character == Character.HONGDANHYANG)clone.GetComponent<TargetObject>().sizeOfIronDemon = 4;
             clone.GetComponent<TargetObject>().isCloneData = true;
 
             avatar.GetComponent<TargetObject>().clone = clone.GetComponent<TargetObject>();
@@ -867,6 +868,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void StartAnimation(TargetObject tar, int trackIndex,string animationName, bool loop )
     {
+        if(tar != null)
         if(!tar.isCloneData) // Clone 데이터 검증은 Animation 스킵
         {
             SkeletonAnimation anim = tar.avatar.GetComponent<SkeletonAnimation>();
@@ -879,8 +881,11 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void MoveIronDemon(TargetObject target ,TargetObject tar)
     {
         int transformOffset = CalcOffset(tar); 
-        if(target.monster.monsterName == "Boss_Momos") // 모모스 키 적용 TODO: 몬스터 키적용 코드 추가
-            tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,5,0);
+        if(target.monster != null)
+            if(target.monster.monsterName == "Boss_Momos") // 모모스 키 적용 TODO: 몬스터 키적용 코드 추가
+                tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,5,0);
+            else
+                tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
         else
             tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
         int offset = (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer == tar.player) ? 0 : 2;

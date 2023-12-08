@@ -62,8 +62,8 @@ public class LobbyPlayer : NetworkBehaviour
 
     // Dotween 참조값
     private Sequence sequence;
-    private float upPositionY;
-    private float downPositionY;
+    private const float upPositionY = 60f;
+    private const float downPositionY = -30f;
 
     [SyncVar]
     public RoomPlayer roomPlayer;
@@ -82,13 +82,10 @@ public class LobbyPlayer : NetworkBehaviour
 
     void Start()
     {
-        upPositionY = 60f;
-        downPositionY = -30f;
         roomPlayer.onSelectCompleteCharacter += OnChangeSelectCharacter; // 캐릭터 선택 이벤트 등록
         roomPlayer.onChangeReadyState += OnChangeReadyState; // 레디 상태 변경 이벤트 등록
         InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
         if(isOwned){
-            CmdSetSteamId((ulong)SteamUser.GetSteamID());// 로컬유저의 스팀아이디를 조회하여 다른 클라이언트들에 공유
             buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
             buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
             characterSelectCompleteImage.GetComponent<Button>().onClick.AddListener(() => HandleClickSelectCompleteImage()); // 캐릭터 선택 완료된 상태에서 캐릭터 이미지 클릭
@@ -125,6 +122,7 @@ public class LobbyPlayer : NetworkBehaviour
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
+        CmdSetSteamId((ulong)SteamUser.GetSteamID());// 로컬유저의 스팀아이디를 조회하여 다른 클라이언트들에 공유
         M_LobbyMananger.instance.ownedLobbyPlayer = GetComponent<NetworkIdentity>().netId; // 로비매니저에 로컬플레이어 소유의 로비플레이어 오브젝트 참조값 설정
     }
 

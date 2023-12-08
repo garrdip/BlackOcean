@@ -165,13 +165,6 @@ public class SpawnedMonster : NetworkBehaviour
         if(HP <= 0)
         {
             if(isServer){
-                if(parent.isCloneData)
-                {
-                    M_TurnManager.instance.cloneMonsterList.Remove(parent);
-                    parent.origin.clone = null;
-                }
-                else
-                    M_TurnManager.instance.spawnedMonsterList.Remove(parent);
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList)
                 {
                     if(tar.ironDemonLocation == parent.GetComponent<TargetObject>())
@@ -186,6 +179,13 @@ public class SpawnedMonster : NetworkBehaviour
                         tar.SetIronDemonParent(tar.transform);
                     }
                 }
+                if(parent.isCloneData)
+                {
+                    M_TurnManager.instance.cloneMonsterList.Remove(parent);
+                    parent.origin.clone = null;
+                }
+                else
+                    M_TurnManager.instance.spawnedMonsterList.Remove(parent);
                 NetworkServer.Destroy(this.gameObject);
             }
             return;

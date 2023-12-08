@@ -264,7 +264,7 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData)
         {
             yield return tempWait; // 임시 딜레이
-
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
             M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
 
             if(tar[1] != tar[0].ironDemonLocation)
@@ -289,6 +289,7 @@ public partial class CardData : SingletonD<CardData>
                 yield return new WaitForSeconds(0.33f); // 완전히 나타날때까지 기다림
             }
             M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         }
         else
             GeneralGetDefense(tar[0],tar[1],5,card);
@@ -300,7 +301,7 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData)
         {
             yield return tempWait; // 임시 딜레이
-
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
             M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
 
             if(tar[1] != tar[0].ironDemonLocation)
@@ -325,6 +326,7 @@ public partial class CardData : SingletonD<CardData>
                 yield return new WaitForSeconds(0.33f); // 완전히 나타날때까지 기다림
             }
             M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         }
         else
             GeneralGetDefense(tar[0],tar[1],8,card);
@@ -467,7 +469,7 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData)
         {
             yield return tempWait; // 임시 딜레이
-
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
             M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
 
             if(tar[1] != tar[0].ironDemonLocation)
@@ -493,7 +495,7 @@ public partial class CardData : SingletonD<CardData>
                 M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 다시 나타남
                 yield return new WaitForSeconds(0.33f); // 완전히 나타날때까지 기다림
             }
-
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
             M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
         }
         else
@@ -506,7 +508,7 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].isCloneData)
         {
             yield return tempWait; // 임시 딜레이
-
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
             M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
 
             if(tar[1] != tar[0].ironDemonLocation)
@@ -532,7 +534,7 @@ public partial class CardData : SingletonD<CardData>
                 M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 다시 나타남
                 yield return new WaitForSeconds(0.33f); // 완전히 나타날때까지 기다림
             }
-
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
             M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
         }
         else
@@ -548,12 +550,15 @@ public partial class CardData : SingletonD<CardData>
 
         if(tar[0].ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
         {
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
              if(!tar[0].isCloneData)M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]);
             tar[0].ironDemonLocation.defense += tar[0].sizeOfIronDemon;
             yield return new WaitForSeconds(1.33f);
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         }
         else // 몬스터의 경우 데미지
         {
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
             if(!tar[0].isCloneData){
                 if(UnityEngine.Random.Range(0,2) == 0)M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]);
                 else M_TurnManager.instance.AnimIronDemon("Attack1",tar[0]);
@@ -561,6 +566,7 @@ public partial class CardData : SingletonD<CardData>
             }
             tar[0].ironDemonLocation.DamageToMonster(tar[0].sizeOfIronDemon,tar[0]);
             yield return new WaitForSeconds(0.6f);
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         }
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]);
         if(!tar[0].isCloneData) isCardOperating = false;
@@ -572,12 +578,15 @@ public partial class CardData : SingletonD<CardData>
 
         if(tar[0].ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
         {
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
              if(!tar[0].isCloneData)M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]);
             tar[0].ironDemonLocation.defense += tar[0].sizeOfIronDemon;
             yield return new WaitForSeconds(1.33f);
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         }
         else // 몬스터의 경우 데미지
         {
+            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
             if(!tar[0].isCloneData){
                 if(UnityEngine.Random.Range(0,2) == 0)M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]);
                 else M_TurnManager.instance.AnimIronDemon("Attack1",tar[0]);
@@ -585,6 +594,7 @@ public partial class CardData : SingletonD<CardData>
             }
             tar[0].ironDemonLocation.DamageToMonster(tar[0].sizeOfIronDemon,tar[0]);
             yield return new WaitForSeconds(0.6f);
+            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         }
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]);
         if(!tar[0].isCloneData) isCardOperating = false;

@@ -649,7 +649,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             }
 
             // 임시 테스트용 UI
-            GameUIManager.instance.TestUI.gameObject.SetActive(true);
+            // GameUIManager.instance.TestUI.gameObject.SetActive(true);
 
             RemoveAllExistLineRenderer(); // 라인 랜더러 비활성화
             ChangeAllMapPlayerDestinationState(false); // 맵 위치 화살표 비활성화
@@ -744,18 +744,13 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 
                 break;
             case SyncList<uint>.Operation.OP_INSERT:
-                
+                InitMapPlayer(newVal, index);
                 break;
             case SyncList<uint>.Operation.OP_REMOVEAT:
 
                 break;
             case SyncList<uint>.Operation.OP_SET:
-                if(NetworkClient.spawned.TryGetValue(newVal, out NetworkIdentity networkIdentity)){
-                    MapPlayer mapPlayer = NetworkClient.spawned[newVal].GetComponent<MapPlayer>();
-                    mapPlayer.gamePlayer.selectOrder = index;
-                    mapPlayer.gamePlayer.objectOwner.selectOrder = index;
-                    mapPlayer.ChangeMapPlayerViewByOrder(index);
-                }
+                SetMapPlayerSwap(newVal, index);
                 MapUI.instance.ChangeSwapButtonsState(newVal, index);
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
@@ -766,6 +761,41 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     // ------------------------------------------------------------ Normal Method -------------------------------------------------------------- //
     
+    private void InitMapPlayer(uint netId, int index)
+    {
+        if(isServer){
+            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                MapPlayer mapPlayer = NetworkServer.spawned[netId].GetComponent<MapPlayer>();
+                mapPlayer.InitMapPlayerView(index);
+            }
+        }else{
+            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                MapPlayer mapPlayer = NetworkClient.spawned[netId].GetComponent<MapPlayer>();
+                mapPlayer.InitMapPlayerView(index);
+            }
+        }
+    }
+
+    private void SetMapPlayerSwap(uint netId, int index)
+    {
+        if(isServer){
+            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                MapPlayer mapPlayer = NetworkServer.spawned[netId].GetComponent<MapPlayer>();
+                mapPlayer.gamePlayer.selectOrder = index;
+                mapPlayer.gamePlayer.objectOwner.selectOrder = index;
+                mapPlayer.ChangeMapPlayerViewByOrder(index);
+            }
+        }else{
+            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                MapPlayer mapPlayer = NetworkClient.spawned[netId].GetComponent<MapPlayer>();
+                mapPlayer.gamePlayer.selectOrder = index;
+                mapPlayer.gamePlayer.objectOwner.selectOrder = index;
+                mapPlayer.ChangeMapPlayerViewByOrder(index);
+            }
+        }
+    }
+
+
     // 가중치 랜덤 수행으로 방 타입 결정하여 반환
     private RoomType GetRoomType()
     {

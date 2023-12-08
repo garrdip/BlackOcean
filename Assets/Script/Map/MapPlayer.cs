@@ -32,8 +32,8 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
 
     // Dotween 참조값
     public Sequence sequence;
-    private float upPositionY;
-    private float downPositionY;
+    private const float upPositionY = -300f;
+    private const float downPositionY = -350f;
 
     [SyncVar]
     public GamePlayer gamePlayer;
@@ -47,10 +47,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
 
     void Start()
     {
-        upPositionY = -300f;
-        downPositionY = -350f;
         gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
-        InitMapPlayerView();
         buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
         buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
     }
@@ -165,22 +162,19 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     // ----------------------------------------------------------------- View Update Method --------------------------------------------------------------------------------//
 
     // 맵플레이어 뷰 컴포넌트 초기화
-    private void InitMapPlayerView()
+    public void InitMapPlayerView(int index)
     {
-        int index = M_MapManager.instance.mapPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
-        if(index != -1){    
-            ChangeMapPlayerViewByOrder(index);
-            p_INFO_M_L.SetActive(isOwned);
-            steamDisplayName.text = gamePlayer.objectOwner.steamPersonaName;
-            SetOrderTextByPlayerOrder(gamePlayer.selectOrder);
-            MapUI.instance.ChangeSwapButtonsState(GetComponent<NetworkIdentity>().netId, index);
-            MapUI.instance.ChangeSwapButtonsIconState();
-            if(isOwned){
-                SwapButtonOnMap swapButtonOnMap = MapUI.instance.swapButtons[index].GetComponent<SwapButtonOnMap>();
-                swapButtonOnMap.t_M_Icon.SetActive(true);
-                swapButtonOnMap.t_Chan_Icon.SetActive(false);
-                swapButtonOnMap.t_Ready_Icon.SetActive(false);
-            }
+        ChangeMapPlayerViewByOrder(index);
+        p_INFO_M_L.SetActive(isOwned);
+        steamDisplayName.text = gamePlayer.objectOwner.steamPersonaName;
+        SetOrderTextByPlayerOrder(gamePlayer.selectOrder);
+        MapUI.instance.ChangeSwapButtonsState(GetComponent<NetworkIdentity>().netId, index);
+        MapUI.instance.ChangeSwapButtonsIconState();
+        if(isOwned){
+            SwapButtonOnMap swapButtonOnMap = MapUI.instance.swapButtons[index].GetComponent<SwapButtonOnMap>();
+            swapButtonOnMap.t_M_Icon.SetActive(true);
+            swapButtonOnMap.t_Chan_Icon.SetActive(false);
+            swapButtonOnMap.t_Ready_Icon.SetActive(false);
         }
     }
 
