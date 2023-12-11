@@ -218,6 +218,8 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
                 string playerName = SteamFriends.GetFriendPersonaName((CSteamID)playerInterface.steamID);
                 CmdSendChatMessage(color, playerName, message);
             }
+            messageInput.text = string.Empty;
+            messageInput.ActivateInputField();
         }
     }
 
@@ -237,8 +239,6 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     void RpcReceiveChatMessage(Color color, string playerName, string message)
     {
         AppendMessage(color, playerName, message);
-        messageInput.ActivateInputField();
-        messageInput.text = string.Empty;;
         if(!isChatBoxVisible){
             chatNotificationIcon.SetActive(true);
             chatNotificationIconLight.SetActive(true);
