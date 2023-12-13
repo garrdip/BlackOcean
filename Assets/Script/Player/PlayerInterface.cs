@@ -241,6 +241,9 @@ public class PlayerInterface : NetworkBehaviour
             foreach(PlayerInterface player in users){
                 if(!player.isReady) return;
             }
+            foreach(PlayerInterface player in users){
+                player.SetIsReadyStateDefault();
+            }
             // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
             HexagonMapRoom hexagonMapRoom = M_MapManager.instance.GetVoteHexagonMapRoomResult();
             if(hexagonMapRoom != null){
