@@ -288,7 +288,7 @@ public class TargetObject : NetworkBehaviour
     }
 
     IEnumerator ErisTransform()
-    {                
+    {
         M_TurnManager.instance.StartAnimation(this,0,"Change1",false);
         erisMode = ErisMode.MAD;
         yield return new WaitForSeconds(2f);
@@ -472,8 +472,7 @@ public class TargetObject : NetworkBehaviour
                 track.MixBlend = Spine.MixBlend.Add;
                 track.Alpha = 1f;
             }
-            //if(rTimer <= 0f)
-            if(false)
+            if(rTimer <= 0f)
             {
                 rTimer = Random.Range(1f,2f);
                 if(Random.Range(0,2) == 0)
