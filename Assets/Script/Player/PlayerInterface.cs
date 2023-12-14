@@ -177,21 +177,29 @@ public class PlayerInterface : NetworkBehaviour
     [ClientRpc]
     public void SetEndTurnActiveStateDefault()
     {
-        if(netIdentity == NetworkClient.connection.identity)
+        if(isOwned){
             endTurnActive = false;
+            OnEndTurnStateChanged(false, false);
+        }
     }
 
     [ClientRpc]
     public void SetCompleteRewardStateDefault()
     {
-        if(netIdentity == NetworkClient.connection.identity)
+        if(isOwned){
             isRewardDone = false;
+            OnCompleteReward(false, false);
+        }
     }
 
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
     
     public void OnEndTurnStateChanged(bool oldVal, bool newVal)
     {
+        if(isLocalPlayer){
+            EndTurnButton endTurnButton = GameUIManager.instance.buttonEndTurn.GetComponent<EndTurnButton>();
+            endTurnButton.SetEndTurnButtonActiveState(newVal);
+        }
         if(isServer)
         {
             PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();

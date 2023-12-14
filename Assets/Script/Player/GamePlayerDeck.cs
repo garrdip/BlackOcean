@@ -67,6 +67,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Callback += OnCardOnHandsUpdated;
         prefareDeck.Callback += OnPrefareDeckUpdated;
         trashDeck.Callback += OnTrashDeckUpdated;
+        SetIchiView(currentIchi, maxIchi); // 이치 초기값 세팅
     }
 
     // choosedCardOnHands 배열에 선택한 카드를 추가
@@ -110,6 +111,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     {
         if(M_SaveManager.instance.isSaveGame)
         {
+            SetInitialIchi();
             currentDeckCount = 5;
             maxShopCardCount = 6;
             maxRewardCardCount = 3;
@@ -128,6 +130,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
         else
         {
+            SetInitialIchi();
             currentDeckCount = 5;
             maxShopCardCount = 6;
             maxRewardCardCount = 3;

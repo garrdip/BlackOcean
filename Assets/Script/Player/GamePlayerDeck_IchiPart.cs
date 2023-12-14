@@ -8,41 +8,44 @@ using TMPro;
 public partial class GamePlayerDeck : NetworkBehaviour
 {
     // 플레이어용 변수
-    [SyncVar (hook = nameof(OnChangedIchi))]
-    public int currentIchi = 3;
-    [SyncVar (hook = nameof(OnChangedIchi))]
-    public int maxIchi = 3;
-    [SyncVar]
-    public int limitiChi = 6;
+    [SyncVar (hook = nameof(OnChangedCurrentIchi))]
+    public int currentIchi;
 
-    public TextMeshProUGUI ichiText;
+    [SyncVar (hook = nameof(OnChangedMaxIchi))]
+    public int maxIchi;
+
+    [SyncVar]
+    public int limitiChi;
+
 
     [Server]
     public void SetInitialIchi()
     {
-        if(GetComponent<GamePlayer>().character == Character.ERIS)
-        {
+        if(GetComponent<GamePlayer>().character == Character.ERIS){
             currentIchi = 2;
             maxIchi = 2;
-        }
-        else
-        {
+            limitiChi = 6;
+        }else{
             currentIchi = 3;
             maxIchi = 3;
+            limitiChi = 6;
         }
     }
 
-    public void InitIchi()
+    void OnChangedCurrentIchi(int oldVal, int newVal)
     {
-        ichiText = GameUIManager.instance.ichiText;
-        OnChangedIchi(0,0);
+       SetIchiView(newVal, maxIchi);
     }
 
-    void OnChangedIchi(int oldVal, int newVal)
+    void OnChangedMaxIchi(int oldVal, int newVal)
     {
-        if(isOwned && ichiText != null)
-            ichiText.text = currentIchi.ToString() + " / " + maxIchi.ToString();
+        SetIchiView(currentIchi, newVal);
+    }
+
+    public void SetIchiView(int currentIchi, int maxIchi)
+    {
+        if(isOwned){
             GameUIManager.instance.textCost.text = currentIchi.ToString() + " / " + maxIchi.ToString();
+        }  
     }
-
 }

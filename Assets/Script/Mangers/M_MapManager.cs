@@ -560,8 +560,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             }else{
                 if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION){ // 목적지가 완료된 방 또는 시작지점인 경우
                     if(hexagonMapRoom.mapBoss == null){ 
-                        RemoveAllExistLineRenderer(); // 목적지에 보스가 없을 경우 -> 이동만 수행
-                        ChangeAllMapPlayerDestinationState(false);
+                        MoveWithoutBattle(); // 목적지에 보스가 없을 경우 -> 이동만 수행
                     }else{ 
                         ChangeBattleScene(hexagonMapRoom); // 목적지에 보스가 있을 경우 -> 보스전
                     }
@@ -574,12 +573,14 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 }
             }
         }else{ // 보스가 출현하지 않은 경우
-            if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION){ // 목적지가 완료된 방 또는 시작지점인 경우 -> 이동만 수행
-                RemoveAllExistLineRenderer();
-                ChangeAllMapPlayerDestinationState(false);
+            if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION){
+                MoveWithoutBattle(); // 목적지가 완료된 방 또는 시작지점인 경우 -> 이동만 수행
             }else{
                 ChangeBattleScene(hexagonMapRoom); // 목적지가 완료되지 않은 방의 경우 -> 전투 혹은 이벤트 시작
             }
+        }
+        foreach(PlayerInterface player in FindObjectsOfType<PlayerInterface>()){
+            player.SetIsReadyStateDefault();
         }
     }
 
@@ -675,6 +676,14 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         GameUIManager.instance.FadeOffBlackCurtain((blackCurtain)=>{
             blackCurtain.gameObject.SetActive(false);
         });
+    }
+
+    // 전투 없이 이동 수행 : MapPlayerDestination 오브젝트 삭제 + 라인렌더러 삭제
+    [ClientRpc]
+    public void MoveWithoutBattle()
+    {
+        RemoveAllExistLineRenderer();
+        ChangeAllMapPlayerDestinationState(false);
     }
     
     // 방이동후 카메라 전환 (자유 이동으로 할지)

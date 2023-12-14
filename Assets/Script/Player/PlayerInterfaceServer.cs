@@ -19,7 +19,6 @@ public class PlayerInterfaceServer : NetworkBehaviour
 
         PlayerInterface playerInterface = GetComponent<PlayerInterface>();
         GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>(); 
-        gamePlayerDeck.InitIchi();
 
         // CardPocket 오브젝트 생성
         GameObject cardPocketObject = Instantiate(

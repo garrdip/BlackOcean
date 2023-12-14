@@ -339,6 +339,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         EachPlayerNoneBattleEnd();
         foreach(PlayerInterface player in FindObjectsOfType<PlayerInterface>()){
             player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 false 되돌림 (여러군데서 사용 예정)
+            player.SetEndTurnActiveStateDefault(); // 앤드 턴 상태 모두 확인후 다시 false 되돌림
         }
         foreach(HexagonMapRoom hexagonMapRoom in M_MapManager.instance.hexagonMapRooms){
             hexagonMapRoom.isSelected = false; // 맵 선택상태 모두 false 초기화

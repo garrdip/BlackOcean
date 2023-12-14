@@ -44,13 +44,6 @@ public class GameUIManager : SingletonD<GameUIManager>
     public TextMeshProUGUI ichiText;
 
 
-    // 턴 종료
-    public void HandleEndTurn()
-    {
-        NetworkClient.localPlayer.GetComponent<PlayerInterface>().endTurnActive = !NetworkClient.localPlayer.GetComponent<PlayerInterface>().endTurnActive;
-    }
-
-
     // 댁 카운트 텍스트 컴포넌트들의 크기 변경 애니매이션(댁 카운트 변경 시 크기 커졌다 작아지는 애니매이션)
     public void DeckCountTextScaleAnimation(Text textComponent, int count)
     {
