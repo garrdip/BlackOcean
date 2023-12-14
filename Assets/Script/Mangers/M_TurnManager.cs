@@ -976,6 +976,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             M_MapManager.instance.SetRoomStateComplete(); // 방 완료상태로 변경
             M_MapManager.instance.DecreaseTotalActionCost(); // 행동비용 감소
             M_MapManager.instance.ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
+            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
+            foreach(PlayerInterface player in users){
+                player.SetIsReadyStateDefault();
+            }
         }
         GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
             // 카메라 위치 리셋

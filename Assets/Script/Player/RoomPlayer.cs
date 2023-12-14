@@ -43,6 +43,10 @@ public class RoomPlayer : NetworkRoomPlayer
     
     public void ChangeReadyState(bool oldVal, bool newVal)
     {
+        if(isLocalPlayer){
+            ReadyButtonOnRoom readyButtonOnRoom = RoomUI.instance.readyButton.GetComponent<ReadyButtonOnRoom>();
+            readyButtonOnRoom.SetReadyButtonViewByReadyState(newVal);
+        }
         if(isServer)
             RoomUI.instance.CMDReadyCheck();
         if(onChangeReadyState != null){

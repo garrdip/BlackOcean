@@ -16,21 +16,17 @@ public class RoomUI : InstanceD<RoomUI>
     public TextMeshProUGUI textReady;
     public List<GameObject> topIcons = new List<GameObject>();
     public List<Button> swapButtons = new List<Button>();
+    public Button readyButton;
 
     [Header("옵션 버튼 캔버스")]
     public GameObject optionCanvas;
-
-    [Header("레디 버튼 캔버스")]
-    public GameObject readyCanvas;
 
 
     void Start()
     {
         DontDestroyOnLoad(optionCanvas);
-        DontDestroyOnLoad(readyCanvas);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         networkRoomManager.persistentComponents.Add(optionCanvas.name, optionCanvas);
-        networkRoomManager.persistentComponents.Add(readyCanvas.name, readyCanvas);
         for(int i=0; i<swapButtons.Count; i++){
             int buttonIndex = i;
             swapButtons[i].transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
@@ -90,8 +86,15 @@ public class RoomUI : InstanceD<RoomUI>
             if(players[i].isReady) num++;
             if(players[i].character == Character.NONE) num--;
         }
-        if( num == players.Length - 1 ) RoomUI.instance.SetReadyButton("START");
-        else RoomUI.instance.SetReadyButton("");
+        if(num == players.Length - 1){
+            RoomUI.instance.SetReadyButton("START");
+            ReadyButtonOnRoom readyButtonOnRoom = readyButton.GetComponent<ReadyButtonOnRoom>();
+            readyButtonOnRoom.SetReadyButtonViewByReadyState(true);
+        }else{
+            RoomUI.instance.SetReadyButton("");
+            ReadyButtonOnRoom readyButtonOnRoom = readyButton.GetComponent<ReadyButtonOnRoom>();
+            readyButtonOnRoom.SetReadyButtonViewByReadyState(false);
+        }
     }
 
     // 스왑버튼 상태 변경

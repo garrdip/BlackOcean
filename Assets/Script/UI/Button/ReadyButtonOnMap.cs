@@ -7,7 +7,7 @@ using Mirror;
 using ProjectD;
 using DG.Tweening;
 
-public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class ReadyButtonOnMap : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public GameObject readyBaseL1;
     public GameObject readyBaseL2;
@@ -41,32 +41,14 @@ public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     // 레디 상태 제어 
     public void HandleRadeyState()
     {
-        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        // 룸씬에서 레디버튼 제어
-        if(Utils.IsSceneActive(networkRoomManager.RoomScene)){
-            RoomPlayer roomPlayer = NetworkClient.localPlayer.gameObject.GetComponent<RoomPlayer>();
-            if(roomPlayer.character != Character.NONE){
-                if(!roomPlayer.isServer){ //클라이언트만 레디
-                    roomPlayer.isReady = !roomPlayer.isReady;
-                }else{ //서버케이스
-                    if(textReady.text == "START" )HandleChangeGameScene();
-                }
-                roomPlayer.ChangeReadyState(roomPlayer.isReady, roomPlayer.isReady);
-                SetReadyButtonViewByReadyState(roomPlayer.isServer, roomPlayer.isReady);
-            }
-        // 게임씬에서 레디버튼 제어    
-        }else if(Utils.IsSceneActive(networkRoomManager.GameplayScene)){
-            PlayerInterface playerInterface =  NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-            playerInterface.isReady = !playerInterface.isReady;
-            playerInterface.OnReadyStateChanged( playerInterface.isReady,  playerInterface.isReady);
-            SetReadyButtonViewByReadyState(playerInterface.isServer, playerInterface.isReady);
-        }
+        PlayerInterface playerInterface =  NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        playerInterface.isReady = !playerInterface.isReady;
+        playerInterface.OnReadyStateChanged( playerInterface.isReady,  playerInterface.isReady);
     }
 
     // 레디버튼 상태 변경
-    private void SetReadyButtonViewByReadyState(bool isServer, bool isReady)
+    public void SetReadyButtonViewByReadyState(bool isReady)
     {
-        
         readyBaseL1.SetActive(isReady);
         readyBaseL2.SetActive(isReady);
         readyBaseL3.SetActive(isReady);
@@ -74,7 +56,7 @@ public class ReadyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         readyS1.SetActive(isReady);
         readyS2.SetActive(isReady);
         if(isReady){
-            //SetReadyCircleRotateInfinite();
+            SetReadyCircleRotateInfinite();
         }
     }
 

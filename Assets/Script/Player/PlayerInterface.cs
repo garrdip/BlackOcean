@@ -52,7 +52,7 @@ public class PlayerInterface : NetworkBehaviour
     [SyncVar]
     public int avatarWidth,avatarHeight;
 
-    [SyncVar (hook = nameof(OnChangedAvatar))]
+    [SyncVar]
     public bool isAvatarUploadDone = false;
 
     public readonly SyncList<CardOnHand> destroyCards = new SyncList<CardOnHand>();
@@ -168,8 +168,10 @@ public class PlayerInterface : NetworkBehaviour
     [ClientRpc]
     public void SetIsReadyStateDefault()
     {
-        if(netIdentity == NetworkClient.connection.identity)
+        if(isOwned){
             isReady = false;
+            OnReadyStateChanged(false, false);
+        }
     }
 
     [ClientRpc]
@@ -184,12 +186,6 @@ public class PlayerInterface : NetworkBehaviour
     {
         if(netIdentity == NetworkClient.connection.identity)
             isRewardDone = false;
-    }
-
-    [ClientRpc]
-    public void UpdateProfile()
-    {
-        MapUI.instance.UpdateProfile();
     }
 
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
@@ -231,18 +227,18 @@ public class PlayerInterface : NetworkBehaviour
     
     public void OnReadyStateChanged(bool oldVal, bool newVal)
     {
+        if(isLocalPlayer){
+            ReadyButtonOnMap readyButtonOnMap = MapUI.instance.readyButton.GetComponent<ReadyButtonOnMap>();
+            readyButtonOnMap.SetReadyButtonViewByReadyState(newVal);
+        }
         if(onChangeReady != null){
             onChangeReady.Invoke(newVal);
         }
-        MapUI.instance.UpdateProfile();
         if(isServer)
         {
             PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
             foreach(PlayerInterface player in users){
                 if(!player.isReady) return;
-            }
-            foreach(PlayerInterface player in users){
-                player.SetIsReadyStateDefault();
             }
             // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
             HexagonMapRoom hexagonMapRoom = M_MapManager.instance.GetVoteHexagonMapRoomResult();
@@ -253,18 +249,6 @@ public class PlayerInterface : NetworkBehaviour
         }    
     }
 
-    public void OnChangedSelectOrder(int oldVal,int newVal)
-    {
-        MapUI.instance.UpdateProfile();
-    }
-
-    void OnChangedAvatar(bool oldVal, bool newVal)
-    {
-        if(newVal == true)
-        {
-            MapUI.instance.UpdateProfile();
-        }
-    }
 
     void OnChangeCurrentGamePlayerNetId(uint oldVal, uint newVal)
     {

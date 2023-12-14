@@ -36,6 +36,7 @@ public class MapUI : InstanceD<MapUI>
     public TextMeshProUGUI textCurrentActionCost;
     public TextMeshProUGUI textMaxActionCostCount;
     public Image turnGageBar;
+    public Button readyButton;
 
     public List<GameObject> topIcons = new List<GameObject>();
     public List<Button> swapButtons = new List<Button>();
@@ -164,19 +165,9 @@ public class MapUI : InstanceD<MapUI>
         }  
     }
 
-    public void UpdateProfile()
-    {
-        PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
-        foreach(PlayerInterface user in users)
-        {
-            if(M_LoadingManager.instance.state != LOADING_STATE.MAP_SCENE)return;
-        }
-    }
-
     public void OnChangeReadyState()
     {
         NetworkClient.localPlayer.GetComponent<PlayerInterface>().isReady = !NetworkClient.localPlayer.GetComponent<PlayerInterface>().isReady;
-        UpdateProfile();
     }
 
 

@@ -96,7 +96,7 @@ public class GamePlayer : NetworkBehaviour
 
     public void OnChangedSelectOrder(int oldVal,int newVal)
     {
-        MapUI.instance.UpdateProfile();
+        
     }
 
     public void OnChangedObjectOwner(PlayerInterface oldVal, PlayerInterface newVal)
