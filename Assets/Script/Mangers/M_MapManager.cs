@@ -765,12 +765,12 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         if(isServer){
             if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                MapPlayer mapPlayer = NetworkServer.spawned[netId].GetComponent<MapPlayer>();
+                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
                 mapPlayer.InitMapPlayerView(index);
             }
         }else{
             if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                MapPlayer mapPlayer = NetworkClient.spawned[netId].GetComponent<MapPlayer>();
+                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
                 mapPlayer.InitMapPlayerView(index);
             }
         }
@@ -780,14 +780,14 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         if(isServer){
             if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                MapPlayer mapPlayer = NetworkServer.spawned[netId].GetComponent<MapPlayer>();
+                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
                 mapPlayer.gamePlayer.selectOrder = index;
                 mapPlayer.gamePlayer.objectOwner.selectOrder = index;
                 mapPlayer.ChangeMapPlayerViewByOrder(index);
             }
         }else{
             if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                MapPlayer mapPlayer = NetworkClient.spawned[netId].GetComponent<MapPlayer>();
+                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
                 mapPlayer.gamePlayer.selectOrder = index;
                 mapPlayer.gamePlayer.objectOwner.selectOrder = index;
                 mapPlayer.ChangeMapPlayerViewByOrder(index);

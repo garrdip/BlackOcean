@@ -103,16 +103,31 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
 
                 break;
             case SyncList<uint>.Operation.OP_SET: // SyncList 스왑 이벤트 수신
-                if(NetworkClient.spawned.TryGetValue(newVal, out NetworkIdentity networkIdentity)){
-                    LobbyPlayer lobbyPlayer = NetworkClient.spawned[newVal].GetComponent<LobbyPlayer>();
-                    lobbyPlayer.roomPlayer.order = (PlayOrder)index;
-                    lobbyPlayer.ChangeLobbyPlayerViewByOrder(index);
-                }
+                SetLobbyPlayerSwap(newVal, index);
                 RoomUI.instance.ChangeSwapButtonsState(newVal, index);
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
                 
                 break;
+        }
+    }
+
+    // ----------------------------------------------------------------- Normal Method --------------------------------------------------------------------------------//
+
+    private void SetLobbyPlayerSwap(uint netId, int index)
+    {
+        if(isServer){
+            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                LobbyPlayer lobbyPlayer = networkIdentity.GetComponent<LobbyPlayer>();
+                lobbyPlayer.roomPlayer.order = (PlayOrder)index;
+                lobbyPlayer.ChangeLobbyPlayerViewByOrder(index);
+            }
+        }else{
+            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                LobbyPlayer lobbyPlayer = networkIdentity.GetComponent<LobbyPlayer>();
+                lobbyPlayer.roomPlayer.order = (PlayOrder)index;
+                lobbyPlayer.ChangeLobbyPlayerViewByOrder(index);
+            }   
         }
     }
 }
