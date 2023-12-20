@@ -16,6 +16,8 @@ public class M_SteamManager : InstanceD<M_SteamManager>
     private const string LobbyNameKey = "LobbyName";
     public M_NetworkRoomManager networkManager;
 
+    public GameObject steamFailUI;
+
     public static CSteamID enteredLobby;
 
     string blobbyName;
@@ -25,12 +27,18 @@ public class M_SteamManager : InstanceD<M_SteamManager>
 
     private void Start()
     {
-        if(!SteamManager.Initialized){return;}
+        if(!SteamManager.Initialized){SteamAccessFail(); return;}
         lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequeseted);
         lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEnter);
         lobbyList = Callback<LobbyMatchList_t>.Create(OnLobbyMatchList);
     }
+
+    public void SteamAccessFail()
+    {
+        steamFailUI.SetActive(true);
+    }
+
     public void HostLobby(string lobbyName, string password)
     {
         SteamMatchmaking.CreateLobby(Steamworks.ELobbyType.k_ELobbyTypePublic,3);
