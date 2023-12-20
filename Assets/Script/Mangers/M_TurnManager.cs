@@ -10,12 +10,6 @@ using DG.Tweening;
 
 public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 {
-    [SyncVar]
-    public NPC_Mercurius npc_Mercurius;
-
-    // 서버에서 관리할 player 리스트
-    public List<GamePlayer> players;
-
     // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
     public readonly SyncList<uint> playerOrder = new SyncList<uint>(){ 0, 0, 0 };
 
@@ -30,10 +24,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         new Vector3(11,-3,0),
         new Vector3(15,-3,0)
     };
-
-    public GameObject orderUI;
-
-    public bool isOrderSelect = false;
 
     public bool isCardQueueOperating = false;
 
@@ -604,8 +594,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         NetworkServer.Spawn(monster.gameObject);
         NetworkServer.Spawn(cloneMonster.gameObject);
 
-        npc_Mercurius = mercurius;
-
         monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
         cloneMonster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
 
@@ -956,18 +944,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         // 각 플레이어들의 모든 카드와 화살표 제거
         M_CardManager.instance.RemoveAllCurrentPlayerArrow();
         M_CardManager.instance.RemoveAllCurrentPlayerCardOnHands();
-    }
-
-    public void SelectOrder(int num)
-    {
-        NetworkClient.localPlayer.GetComponent<GamePlayer>().SetOrderByUI(num);
-    }
-
-    [ClientRpc]
-    public void PopUpOrderUI()
-    {
-        orderUI.SetActive(true);
-        isOrderSelect = true;
     }
 
     [ClientRpc]

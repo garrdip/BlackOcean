@@ -33,9 +33,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     
     [SyncVar (hook = nameof(OnChangedActionCost))]
     public int actionCost; // 행동시 소모되는 행동 비용
-    
-    [Header("메인 카메라")]
-    public Camera mainCam;
 
     [Header("게임 화면의 요소들의 최상위 오브젝트")]
     public GameObject game;
@@ -192,12 +189,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         GenerateHexagonRoom(currentRoom); // 주변 방 생성
         ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
         StartBattle(currentRoom);
-    }
-
-    [Server]
-    public void PopUpOrderUI()
-    {
-        M_TurnManager.instance.PopUpOrderUI();
     }
 
     // 맵 플레이어들이 선택한 방 선택지 확인
@@ -684,13 +675,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         RemoveAllExistLineRenderer();
         ChangeAllMapPlayerDestinationState(false);
-    }
-    
-    // 방이동후 카메라 전환 (자유 이동으로 할지)
-    [ClientRpc]
-    public void MoveCameraPositionToRoom(Vector3 pos)
-    {
-        mainCam.transform.position = pos + new Vector3(0,0,-10);
     }
 
     [ClientRpc]

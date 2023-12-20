@@ -28,13 +28,6 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public uint playerOrderNetId;
 
-    public readonly SyncList<CardOnHand> destroyCards = new SyncList<CardOnHand>();
-
-    public void SetOrderByUI(int num)
-    {
-        if(isLocalPlayer)
-            selectOrder = num;
-    }
 
     public override void OnStartServer()
     {
@@ -99,15 +92,6 @@ public class GamePlayer : NetworkBehaviour
     }
 
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
-
-    [ClientRpc]
-    public void RemoveDestroyCardList(CardOnHand cardOnHand)
-    {
-        if(isOwned)
-        {
-            destroyCards.Remove(cardOnHand);
-        }
-    }
 
     [ClientRpc]
     void SetPlayerOrderRPC(int num)
