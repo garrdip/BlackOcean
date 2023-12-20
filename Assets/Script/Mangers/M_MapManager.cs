@@ -791,6 +791,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
                 MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
                 mapPlayer.gamePlayer.selectOrder = index;
+                mapPlayer.gamePlayer.OnChangedSelectOrder(index, index);
                 mapPlayer.gamePlayer.objectOwner.selectOrder = index;
                 mapPlayer.ChangeMapPlayerViewByOrder(index);
             }
@@ -798,6 +799,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
                 MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
                 mapPlayer.gamePlayer.selectOrder = index;
+                mapPlayer.gamePlayer.OnChangedSelectOrder(index, index);
                 mapPlayer.gamePlayer.objectOwner.selectOrder = index;
                 mapPlayer.ChangeMapPlayerViewByOrder(index);
             }
@@ -1162,11 +1164,12 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     // MapPlayerDestination 모두 상태 변경
     public void ChangeAllMapPlayerDestinationState(bool isActive)
     {
-        foreach(GamePlayer gamePlayer in M_TurnManager.instance.playerOrder)
-        {
-            GamePlayerMap gamePlayerMap = gamePlayer.GetComponent<GamePlayerMap>();
-            MapPlayerDestination mapPlayerDestination = gamePlayerMap.currentMapPlayerDestination;
-            mapPlayerDestination.gameObject.SetActive(isActive);
+        foreach(uint netId in M_TurnManager.instance.playerOrder){
+            if(netId != 0 && NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayerMap gamePlayerMap = networkIdentity.GetComponent<GamePlayerMap>();
+                MapPlayerDestination mapPlayerDestination = gamePlayerMap.currentMapPlayerDestination;
+                mapPlayerDestination.gameObject.SetActive(isActive); 
+            }
         }
     }
 }

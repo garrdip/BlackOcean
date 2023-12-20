@@ -16,13 +16,20 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     // 서버에서 관리할 player 리스트
     public List<GamePlayer> players;
 
-    // 서버에서 관리하지만 유저도 쓸지 몰라서 일단 SyncList
-    public readonly SyncList<GamePlayer> playerOrder = new SyncList<GamePlayer>();
+    // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
+    public readonly SyncList<uint> playerOrder = new SyncList<uint>(){ 0, 0, 0 };
 
     // 각 클라이언트에서 참조할 현재 참가한 플레이어들의 타겟오브젝트 목록
     public readonly SyncList<uint> spawnedPlayerSyncList = new SyncList<uint>();
     
-    Vector3[] targetObjectPosition = {new Vector3(-7,-3,0),new Vector3(-11,-3,0),new Vector3(-15,-3,0),new Vector3(7,-3,0),new Vector3(11,-3,0),new Vector3(15,-3,0)};
+    public Vector3[] targetObjectPosition = {
+        new Vector3(-15,-3,0),
+        new Vector3(-11,-3,0),
+        new Vector3(-7,-3,0),
+        new Vector3(7,-3,0),
+        new Vector3(11,-3,0),
+        new Vector3(15,-3,0)
+    };
 
     public GameObject orderUI;
 
@@ -145,20 +152,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     }
 
     [Server]
-    public void PlayerOrderSelectPhase()
-    {
-        foreach(GamePlayer player in players)
-        {
-            int order = 0;
-            for(int i = 0 ; i < players.Count ; i ++)
-            {
-                if(player.selectOrder < players[i].selectOrder) order++;
-            }
-            playerOrder[order] = player;
-        }
-    }
-
-    [Server]
     public void OnChangedPhase()
     {
         Debug.Log("Phase is " + phase);
@@ -269,9 +262,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public void PlayerCardDraw()
     {
-        foreach(GamePlayer player in playerOrder)
-            player.GetComponent<GamePlayerDeck>().currentIchi = player.GetComponent<GamePlayerDeck>().maxIchi; 
-            
+        foreach(uint netId in playerOrder){
+            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayer player = networkIdentity.GetComponent<GamePlayer>();
+                player.GetComponent<GamePlayerDeck>().currentIchi = player.GetComponent<GamePlayerDeck>().maxIchi; 
+            }
+        }     
         EachPlayerCardDraw();
         phase = BattleTurn.PLAYER_ACTIVE;
     }
@@ -489,35 +485,41 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public void GeneratePlayerUnit()
     {
-        PlayerOrderSelectPhase();
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        for(int i = 0 ;i < playerOrder.Count ; i ++)
-        {
-            GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[i],Quaternion.identity);
-            NetworkServer.Spawn(avatar);
-            avatar.GetComponent<TargetObject>().player = playerOrder[i];
-            avatar.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
-            avatar.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
-            avatar.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
-            avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
-            if(avatar.GetComponent<TargetObject>().player.character == Character.HONGDANHYANG)avatar.GetComponent<TargetObject>().sizeOfIronDemon = 4;
-            playerOrder[i].GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
-            spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
-            spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);
-            
-            // 타겟 유효 판단을 위한 클론 데이터 //
-            GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
-            NetworkServer.Spawn(clone);
-            clone.GetComponent<TargetObject>().conn = playerOrder[i].netIdentity;
-            clone.GetComponent<TargetObject>().player = playerOrder[i];
-            clone.GetComponent<TargetObject>().playerMaxHP = playerOrder[i].MaxHP;
-            clone.GetComponent<TargetObject>().playerHP = playerOrder[i].HP;
-            clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
-            if(avatar.GetComponent<TargetObject>().player.character == Character.HONGDANHYANG)clone.GetComponent<TargetObject>().sizeOfIronDemon = 4;
-            clone.GetComponent<TargetObject>().isCloneData = true;
+        for(int i = 0 ;i < playerOrder.Count ; i ++){
+            if(playerOrder[i] != 0 && NetworkServer.spawned.TryGetValue(playerOrder[i], out NetworkIdentity networkIdentity)){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
 
-            avatar.GetComponent<TargetObject>().clone = clone.GetComponent<TargetObject>();
-            clonePlayerList.Add(clone.GetComponent<TargetObject>());
+                Vector3 avatarOrderPosition = targetObjectPosition[gamePlayer.selectOrder]; // 게임플레이어의 오더값에 맞춰 생성될 아바타 위치 설정
+                GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), avatarOrderPosition, Quaternion.identity);
+                NetworkServer.Spawn(avatar);
+                avatar.GetComponent<TargetObject>().player = gamePlayer;
+                avatar.GetComponent<TargetObject>().playerMaxHP = gamePlayer.MaxHP;
+                avatar.GetComponent<TargetObject>().playerHP = gamePlayer.HP;
+                avatar.GetComponent<TargetObject>().conn = gamePlayer.netIdentity;
+                avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+                if(avatar.GetComponent<TargetObject>().player.character == Character.HONGDANHYANG){
+                    avatar.GetComponent<TargetObject>().sizeOfIronDemon = 4;
+                }
+                gamePlayer.GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
+                spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
+                spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);
+                
+                // 타겟 유효 판단을 위한 클론 데이터
+                GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(-300,-300,0), Quaternion.identity);
+                NetworkServer.Spawn(clone);
+                clone.GetComponent<TargetObject>().conn = gamePlayer.netIdentity;
+                clone.GetComponent<TargetObject>().player = gamePlayer;
+                clone.GetComponent<TargetObject>().playerMaxHP = gamePlayer.MaxHP;
+                clone.GetComponent<TargetObject>().playerHP = gamePlayer.HP;
+                clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+                if(avatar.GetComponent<TargetObject>().player.character == Character.HONGDANHYANG){
+                    clone.GetComponent<TargetObject>().sizeOfIronDemon = 4;
+                }
+                clone.GetComponent<TargetObject>().isCloneData = true;
+                avatar.GetComponent<TargetObject>().clone = clone.GetComponent<TargetObject>();
+                clonePlayerList.Add(clone.GetComponent<TargetObject>());
+            }
         }
     }
 
@@ -581,19 +583,22 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         mercurius.isOrigin = true;
 
         // 상점판매용 캐릭터별 카드 추출해서 NPC_Mercurius SyncDictionary에 추가
-        foreach(GamePlayer gamePlayer in playerOrder){
-            GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
-            int shopCardCount = gamePlayerDeck.maxShopCardCount; // 플레이어별로 설정된 구매가능한 상점카드 최대 갯수
-            List<Card> shopCards = new List<Card>();
-            List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
-            if(cardsByCharacter.Count > 0){
-                for(int i = 0; i < shopCardCount; i++){
-                    int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                    shopCards.Add(cardsByCharacter[randomIndex]);
-                    cardsByCharacter.RemoveAt(randomIndex);
+        foreach(uint netId in playerOrder){
+            if(netId != 0 && NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                int shopCardCount = gamePlayerDeck.maxShopCardCount; // 플레이어별로 설정된 구매가능한 상점카드 최대 갯수
+                List<Card> shopCards = new List<Card>();
+                List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
+                if(cardsByCharacter.Count > 0){
+                    for(int i = 0; i < shopCardCount; i++){
+                        int randomIndex = Random.Range(0, cardsByCharacter.Count);
+                        shopCards.Add(cardsByCharacter[randomIndex]);
+                        cardsByCharacter.RemoveAt(randomIndex);
+                    }
                 }
+                mercurius.shopCardDictionary.Add(gamePlayer, shopCards); // NPC_Mercurius의 SyncDictionary에 각 플레이어와 추출한 랜덤카드를 한쌍의 데이터로 저장
             }
-            mercurius.shopCardDictionary.Add(gamePlayer, shopCards); // NPC_Mercurius의 SyncDictionary에 각 플레이어와 추출한 랜덤카드를 한쌍의 데이터로 저장
         }
 
         NetworkServer.Spawn(monster.gameObject);
@@ -656,10 +661,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public void InitiateGamePlayerList()
     {
-        players = new List<GamePlayer>(FindObjectsOfType<GamePlayer>());
-        foreach(GamePlayer player in players)
-        {
-            playerOrder.Add(player);
+        // 맵씬에서 할당된 맵플레이어의 오더값을 참조하여 playerOrder Synclist에 맵플레이어와 매칭되는 게임플레이어의 netId 추가
+        foreach(uint netId in M_MapManager.instance.mapPlayers){
+            if(netId != 0 && NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
+                GamePlayer gamePlayer = mapPlayer.gamePlayer;
+                playerOrder.RemoveAt(gamePlayer.selectOrder);
+                playerOrder.Insert(gamePlayer.selectOrder, gamePlayer.netId);
+            }
         }
     }
 
@@ -903,14 +912,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         else
         {
             int addval = 0;
-            foreach(GamePlayer user in playerOrder)
-            {
-                if(tar.player == user)
-                    break;
-                if(tar.player == (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer))
-                    continue;
-                else
-                    addval++;
+            foreach(uint netId in playerOrder){
+                if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                    if(tar.player == networkIdentity.GetComponent<GamePlayer>())
+                        break;
+                    if(tar.player == (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer))
+                        continue;
+                    else
+                        addval++;
+                }
             }
             if(addval == 0) retVal = -1;
             else retVal = 1;
@@ -1013,44 +1023,51 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         if(direction == MoveDirection.FORWARD)
         {
             if(player.selectOrder == 0) return;
-            GamePlayer swap = playerOrder[player.selectOrder-1];
-            playerOrder[player.selectOrder-1] = player;
-            playerOrder[player.selectOrder] = swap;
-            player.SetPlayerOrder(player.selectOrder - 1);
-            swap.SetPlayerOrder(swap.selectOrder + 1);
-            foreach(TargetObject tar in spawnedPlayerList)
-            {
-                if(tar.player == player)
-                {   
-                    forwarding = tar;
-                    backwardingDestination = tar.transform.position;
-                }
-                if(tar.player == swap)
+            uint netId = playerOrder[player.selectOrder - 1];
+            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayer swap = networkIdentity.GetComponent<GamePlayer>();
+                playerOrder[player.selectOrder-1] = player.netId;
+                playerOrder[player.selectOrder] = swap.netId;
+                player.SetPlayerOrder(player.selectOrder - 1);
+                swap.SetPlayerOrder(swap.selectOrder + 1);
+                foreach(TargetObject tar in spawnedPlayerList)
                 {
-                    backwarding = tar;
-                    forwardingDestination = tar.transform.position;
+                    if(tar.player == player)
+                    {   
+                        forwarding = tar;
+                        backwardingDestination = tar.transform.position;
+                    }
+                    if(tar.player == swap)
+                    {
+                        backwarding = tar;
+                        forwardingDestination = tar.transform.position;
+                    }
                 }
             }
+            
         }
         if(direction == MoveDirection.BACKWARD)
         {
             if(player.selectOrder == NetworkServer.connections.Count - 1) return;
-            GamePlayer swap = playerOrder[player.selectOrder+1];
-            playerOrder[player.selectOrder+1] = player;
-            playerOrder[player.selectOrder] = swap;
-            player.SetPlayerOrder(player.selectOrder + 1);
-            swap.SetPlayerOrder(swap.selectOrder - 1);
-            foreach(TargetObject tar in spawnedPlayerList)
-            {
-                if(tar.player == player)
-                {   
-                    backwarding = tar;
-                    forwardingDestination = tar.transform.position;
-                }
-                if(tar.player == swap)
+            uint netId = playerOrder[player.selectOrder + 1];
+            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayer swap = networkIdentity.GetComponent<GamePlayer>();
+                playerOrder[player.selectOrder+1] = player.netId;
+                playerOrder[player.selectOrder] = swap.netId;
+                player.SetPlayerOrder(player.selectOrder + 1);
+                swap.SetPlayerOrder(swap.selectOrder - 1);
+                foreach(TargetObject tar in spawnedPlayerList)
                 {
-                    forwarding = tar;
-                    backwardingDestination = tar.transform.position;
+                    if(tar.player == player)
+                    {   
+                        backwarding = tar;
+                        forwardingDestination = tar.transform.position;
+                    }
+                    if(tar.player == swap)
+                    {
+                        forwarding = tar;
+                        backwardingDestination = tar.transform.position;
+                    }
                 }
             }
         }
@@ -1104,45 +1121,41 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
         return retVal;
     }
-    // 플레이어 정보 및 턴 정보 뷰 세팅
-    public void SetPlayerOrderView(int index)
-    {/*
-        GamePlayer gamePlayer = M_TurnManager.instance.playerOrder[index];
-        OrderUI orderUI = GameUIManager.instance.playerOrderList[index].GetComponent<OrderUI>();
-        orderUI.textPlayerName.text = SteamFriends.GetFriendPersonaName((CSteamID)gamePlayer.objectOwner.steamID);
-        if(gamePlayer.isLocalPlayer){
-            orderUI.playerOwnMenu.gameObject.SetActive(true); // 전용 메뉴 활성화
-            float width = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.width;
-            float height = orderUI.buttonPlayerOrder.GetComponent<RectTransform>().rect.height;
-            orderUI.buttonPlayerOrder.GetComponent<RectTransform>().sizeDelta = new Vector2(width + 30f, height + 30f); // 버튼 크기 크게 변경(변경된 값이 native size)
-        }
-        */
-    }
 
     // 플레이어 오더 변경에 따른 뷰 업데이트
-    public void SetPlayerOrderViewSwap()
+    public void SetPlayerOrderViewSwap(uint netId, int index)
     {
-        // TODO : 플레이어 정렬 순서 바뀔 때 뷰 변경 구현
+        if(isServer){
+            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                gamePlayer.selectOrder = index;
+            }
+        }else{
+            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                gamePlayer.selectOrder = index;
+            }
+        }
     }
 
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
-    private void OnPlayerOrderUpdated(SyncList<GamePlayer>.Operation op, int index, GamePlayer oldGamePlayer, GamePlayer newGamePlayer)
+    private void OnPlayerOrderUpdated(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
     {
         switch (op)
         {
-            case SyncList<GamePlayer>.Operation.OP_ADD:
-                SetPlayerOrderView(index);
+            case SyncList<uint>.Operation.OP_ADD:
+            
                 break;
-            case SyncList<GamePlayer>.Operation.OP_INSERT:
+            case SyncList<uint>.Operation.OP_INSERT:
                 
                 break;
-            case SyncList<GamePlayer>.Operation.OP_REMOVEAT:
+            case SyncList<uint>.Operation.OP_REMOVEAT:
 
                 break;
-            case SyncList<GamePlayer>.Operation.OP_SET:
-                SetPlayerOrderViewSwap();
+            case SyncList<uint>.Operation.OP_SET:
+                SetPlayerOrderViewSwap(newVal, index);
                 break;
-            case SyncList<GamePlayer>.Operation.OP_CLEAR:
+            case SyncList<uint>.Operation.OP_CLEAR:
                 
                 break;
         }

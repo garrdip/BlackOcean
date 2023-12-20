@@ -31,17 +31,12 @@ public class GameUIManager : SingletonD<GameUIManager>
     public TextMeshProUGUI textCurrentActionCost;
     public TextMeshProUGUI textMaxActionCost;
     public TextMeshProUGUI textCurrentPhase;
-    public TextMeshProUGUI textCost;
+    public TextMeshProUGUI currentIchiText;
+    public TextMeshProUGUI maxIchiText;
 
 
     [Header("화면 Dim 처리용 이미지")]
     public Image blackCurtain;
-
-    [Header("플레이어 리스트(플레이어 정보 및 턴 정보)")]
-    public List<GameObject> playerOrderList;
-
-    [Header("플레이어 코스트 (현재이치/최대이치) 디스플레이")]
-    public TextMeshProUGUI ichiText;
 
 
     // 댁 카운트 텍스트 컴포넌트들의 크기 변경 애니매이션(댁 카운트 변경 시 크기 커졌다 작아지는 애니매이션)

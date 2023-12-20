@@ -8,6 +8,9 @@ using Steamworks;
 
 public class GamePlayer : NetworkBehaviour
 {
+    public delegate void OnChangePlayerOrder(int order);
+    public OnChangePlayerOrder onChangePlayerOrder;
+
     [SyncVar (hook = nameof(OnChangHpValue))]
     public int HP;
     [SyncVar]
@@ -22,6 +25,9 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public Character character;
 
+    [SyncVar]
+    public uint playerOrderNetId;
+
     public readonly SyncList<CardOnHand> destroyCards = new SyncList<CardOnHand>();
 
     public void SetOrderByUI(int num)
@@ -33,6 +39,8 @@ public class GamePlayer : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
+
+        GeneratePlayerOrder();
         if(M_SaveManager.instance.isSaveGame)
         {
             foreach(SaveDataPlayer saveDataPlayer in M_SaveManager.instance.loadData.players)
@@ -51,6 +59,19 @@ public class GamePlayer : NetworkBehaviour
 
     // ------------------------------------------------------------- Server Method --------------------------------------------------------------------//
 
+    // 게임씬에서 플레이어 오더 및 정보들을 보여주는 오브젝트 생성
+    [Server]
+    private void GeneratePlayerOrder()
+    {
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        GameObject playerOrderObject = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "PlayerOrder"), Vector3.zero, Quaternion.identity);
+        PlayerOrder playerOrder = playerOrderObject.GetComponent<PlayerOrder>();
+        playerOrder.gamePlayer = this;
+        NetworkServer.Spawn(playerOrderObject, connectionToClient);
+        playerOrderNetId = playerOrder.netId;
+    }
+
+
     [Server]
     public void SetPlayerOrder(int num)
     {
@@ -58,12 +79,23 @@ public class GamePlayer : NetworkBehaviour
     }
 
     [Server]
-    public void CheckPlayersIsDead()
+    public void CheckAllPlayersIsDead()
     {
-        int deadPlayerCount = M_TurnManager.instance.playerOrder.FindAll((gamePlayer) => gamePlayer.HP <= 0).Count;
-        if(deadPlayerCount == M_TurnManager.instance.playerOrder.Count){
+        int gamePlayerCount = M_TurnManager.instance.playerOrder.FindAll((netId) => netId != 0).Count; // 현재 게임에 참가한 플레이어 수
+        int deadPlayerCount = M_TurnManager.instance.playerOrder.FindAll((netId) => netId != 0 && IsPlayerHpZero(netId)).Count; // HP가 0인 플레이어 수
+        if(deadPlayerCount == gamePlayerCount){
             RpcGameOver();
         }
+    }
+
+    // netId로 GamePlayer 조회하여 HP가 0 이하면 trun, 아니면 false 반환
+    [Server]
+    private bool IsPlayerHpZero(uint netId)
+    {
+        if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+           return networkIdentity.GetComponent<GamePlayer>().HP <= 0;
+        }
+        return false;
     }
 
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
@@ -96,7 +128,9 @@ public class GamePlayer : NetworkBehaviour
 
     public void OnChangedSelectOrder(int oldVal,int newVal)
     {
-        
+        if(onChangePlayerOrder != null){
+            onChangePlayerOrder.Invoke(newVal);
+        }
     }
 
     public void OnChangedObjectOwner(PlayerInterface oldVal, PlayerInterface newVal)
@@ -107,7 +141,7 @@ public class GamePlayer : NetworkBehaviour
     public void OnChangHpValue(int oldVal, int newVal)
     {
         if(isServer){
-            CheckPlayersIsDead();
+            CheckAllPlayersIsDead();
         }
     }
 }

@@ -34,18 +34,15 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     void OnChangedCurrentIchi(int oldVal, int newVal)
     {
-       SetIchiView(newVal, maxIchi);
+        if(isOwned){
+            GameUIManager.instance.currentIchiText.text = newVal.ToString();
+        }
     }
 
     void OnChangedMaxIchi(int oldVal, int newVal)
     {
-        SetIchiView(currentIchi, newVal);
-    }
-
-    public void SetIchiView(int currentIchi, int maxIchi)
-    {
         if(isOwned){
-            GameUIManager.instance.textCost.text = currentIchi.ToString() + " / " + maxIchi.ToString();
+            GameUIManager.instance.maxIchiText.text = newVal.ToString();
         }  
     }
 }
