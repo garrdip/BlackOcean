@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
@@ -11,14 +8,12 @@ public class NamePlate : MonoBehaviour
     public TextMeshProUGUI hpText;
     public GameObject shield;
     public TextMeshProUGUI shieldValue;
+    public Canvas canvas;
 
     public void SetHPValue(int value,int max,int order)
     {
-        hpBarFiller.transform.localPosition = new Vector3((3.2f*value/max)-3.2f,0,0);
-        hpBarFiller.GetComponent<SpriteRenderer>().sortingOrder = -order+21;
-        transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = -order + 20;
-
-        hpText.text = value + "/" + max;
+        hpBarFiller.transform.localPosition = new Vector3((3.2f*value/max)-3.2f, 0, 0);
+        hpText.text = value + " / " + max;
     }
 
     public void SetShieldValue(int value,bool isGain, bool isEnemy)

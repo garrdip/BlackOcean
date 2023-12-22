@@ -48,7 +48,8 @@ public class ReadyButtonOnRoom : MonoBehaviour, IPointerEnterHandler, IPointerEx
             }else{ //서버케이스
                 if(textReady.text == "START" )HandleChangeGameScene();
             }
-            roomPlayer.ChangeReadyState(roomPlayer.isReady, roomPlayer.isReady);
+            SetReadyButtonViewByReadyState(roomPlayer.isReady);
+            RoomUI.instance.ChangeSwapButtonsIconState();
         }
     }
 

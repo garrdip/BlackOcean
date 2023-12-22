@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 using Mirror;
 using ProjectD;
 using DG.Tweening;
@@ -15,6 +16,7 @@ public class TargetObject : NetworkBehaviour
     public NamePlate selectedNamePlate;
     public TextMeshProUGUI targetObjectName;
     public Canvas playerMessageCavnas;
+    public SortingGroup sortingGroup;
     public TextMeshProUGUI playerMessageBubble;
     public BuffIndicatorController buffIndicator;
     public NextActionIndicator nextActionIndicator;
@@ -221,6 +223,10 @@ public class TargetObject : NetworkBehaviour
             selectedNamePlate = playerNamePlate.GetComponent<NamePlate>();
             targetObjectName.text = player.objectOwner.steamPersonaName;
             monsterNamePlate.SetActive(false);
+            if(newVal.objectOwner.isLocalPlayer){
+                sortingGroup.sortingOrder = 2;
+                selectedNamePlate.canvas.sortingOrder = 2;
+            }
         }
     }
 

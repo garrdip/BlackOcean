@@ -43,7 +43,8 @@ public class ReadyButtonOnMap : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         PlayerInterface playerInterface =  NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         playerInterface.isReady = !playerInterface.isReady;
-        playerInterface.OnReadyStateChanged( playerInterface.isReady,  playerInterface.isReady);
+        SetReadyButtonViewByReadyState(playerInterface.isReady);
+        MapUI.instance.ChangeSwapButtonsIconState();
     }
 
     // 레디버튼 상태 변경
