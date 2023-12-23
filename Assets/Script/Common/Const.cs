@@ -13,9 +13,9 @@ public static class Const
     public const string RoomType_Boss = "보스전";
 
     // Player Message Bubble
-    public const string COST_NOT_REMAIN_TEXT_GEORK = "게오르크 : COST NOT REMAIN..";
-    public const string COST_NOT_REMAIN_TEXT_ERIS = "에리스 : COST NOT REMAIN..";
-    public const string COST_NOT_REMAIN_TEXT_HONGDANHYANG = "단향 : COST NOT REMAIN..";
+    public const string COST_NOT_REMAIN_TEXT_GEORK = "게오르크 : 이치가 부족하다.";
+    public const string COST_NOT_REMAIN_TEXT_ERIS = "에리스 : 이치가 부족하네요.";
+    public const string COST_NOT_REMAIN_TEXT_HONGDANHYANG = "단향 : 이치가 부족하구나.";
 
     // CardData Sprite Dictionary Key
     public const string ATTACK_CARD_BG = "AttackCardBG";

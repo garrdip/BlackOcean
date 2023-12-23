@@ -85,7 +85,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -822484745
   m_SortingLayer: 1
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2526679034711088660
 MonoBehaviour:
@@ -213,7 +213,6 @@ MonoBehaviour:
   MAXHP: 0
   HP: 0
   sheild: 0
-  aggro: 000000000000000000000000
   nextAction:
     actionName: 
     actionNumber: 0
@@ -234,3 +233,4 @@ MonoBehaviour:
   meshRenderer: {fileID: 7778458032851223039}
   defaultMaterial: {fileID: 2100000, guid: d1f545676a0c57e4baa1d11dc1e58267, type: 2}
   outLineMaterial: {fileID: 2100000, guid: d9298ee1fa5b0764691e15d39a4a701f, type: 2}
+  turn: 0

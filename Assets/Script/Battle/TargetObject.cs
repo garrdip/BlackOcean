@@ -14,7 +14,8 @@ public class TargetObject : NetworkBehaviour
     public GameObject playerNamePlate;
     public GameObject monsterNamePlate;
     public NamePlate selectedNamePlate;
-    public TextMeshProUGUI targetObjectName;
+    public TextMeshProUGUI playerName;
+    public TextMeshProUGUI monsterName;
     public Canvas playerMessageCavnas;
     public SortingGroup sortingGroup;
     public TextMeshProUGUI playerMessageBubble;
@@ -221,11 +222,14 @@ public class TargetObject : NetworkBehaviour
                 break;
             }
             selectedNamePlate = playerNamePlate.GetComponent<NamePlate>();
-            targetObjectName.text = player.objectOwner.steamPersonaName;
+            playerName.text = player.objectOwner.steamPersonaName;
             monsterNamePlate.SetActive(false);
             if(newVal.objectOwner.isLocalPlayer){
                 sortingGroup.sortingOrder = 2;
-                selectedNamePlate.canvas.sortingOrder = 2;
+                // 캔버스는 스프라이트 정렬그룹에 영향을 받지 않아 직접 설정
+                selectedNamePlate.nameCanvas.sortingOrder = sortingGroup.sortingOrder + 1;
+                selectedNamePlate.hpCanvas.sortingOrder = sortingGroup.sortingOrder + 1;
+                selectedNamePlate.shieldCanvas.sortingOrder = sortingGroup.sortingOrder + 1;
             }
         }
     }

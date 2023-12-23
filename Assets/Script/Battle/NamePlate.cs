@@ -8,35 +8,57 @@ public class NamePlate : MonoBehaviour
     public TextMeshProUGUI hpText;
     public GameObject shield;
     public TextMeshProUGUI shieldValue;
-    public Canvas canvas;
+    public GameObject shieldBase;
+    public GameObject shieldIcon;
+    public Canvas nameCanvas;
+    public Canvas hpCanvas;
+    public Canvas shieldCanvas;
+
+    private Vector3 shieldOriginPosition;
+    private Vector3 shieldGainPosition;
+
+    void Start()
+    {
+        // 실드 오브젝트의 초기 위치 및 알파값 설정
+        shieldOriginPosition = shield.transform.localPosition;
+        shieldCanvas.GetComponent<CanvasGroup>().alpha = 0.5f;
+        shieldIcon.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+        shieldBase.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+    }
+
+    void OnDestroy()
+    {
+        // 오브젝트 파괴 시 트위닝 킬
+        shieldCanvas.GetComponent<CanvasGroup>().DOKill();
+        shieldIcon.GetComponent<SpriteRenderer>().DOKill();
+        shieldBase.GetComponent<SpriteRenderer>().DOKill();
+    }
 
     public void SetHPValue(int value,int max,int order)
     {
-        hpBarFiller.transform.localPosition = new Vector3((3.2f*value/max)-3.2f, 0, 0);
+        hpBarFiller.transform.localPosition = new Vector3((3.2f * value / max) - 3.2f, 0, 0);
         hpText.text = value + " / " + max;
     }
 
     public void SetShieldValue(int value,bool isGain, bool isEnemy)
     {
-        if(value == 0)
-        {
-            shield.transform.localPosition = isEnemy? new Vector3(-1.9f,0.075f) : new Vector3(2,0.075f);
-            shield.GetComponent<SpriteRenderer>().color = new Color(1,1,1,0);
-            shield.SetActive(false);
-        }
-        else
-        {
-            if(isGain)
-            {
+        if(value == 0){
+            Sequence sequence = DOTween.Sequence()
+                .Join(shieldCanvas.GetComponent<CanvasGroup>().DOFade(0f, 0.5f))
+                .Join(shieldIcon.GetComponent<SpriteRenderer>().DOFade(0f, 0.5f))
+                .Join(shieldBase.GetComponent<SpriteRenderer>().DOFade(0f, 0.5f))
+                .OnComplete(() => {
+                    shield.SetActive(false);
+                });
+        }else{
+            if(isGain){
+                shield.transform.localPosition = isEnemy ? shieldOriginPosition + new Vector3(-1f, 0f, 0f) : shieldOriginPosition + new Vector3(1f, 0f, 0f);
                 shield.SetActive(true);
-                Sequence sequence;
-                sequence = DOTween.Sequence()
-                    .Join(shield.GetComponent<SpriteRenderer>().DOColor(new Color(1,1,1,1),0.5f))
-                    .Join(shield.transform.DOLocalMove((isEnemy)?new Vector3(-0.9f,0.075f) : new Vector3(1,0.075f),0.5f));
-            }
-            else
-            {
-
+                Sequence sequence = DOTween.Sequence()
+                    .Join(shieldCanvas.GetComponent<CanvasGroup>().DOFade(1f, 0.5f))
+                    .Join(shieldIcon.GetComponent<SpriteRenderer>().DOFade(1f, 0.5f))
+                    .Join(shieldBase.GetComponent<SpriteRenderer>().DOFade(1f, 0.5f))
+                    .Join(shield.transform.DOLocalMove(Vector3.zero, 0.5f));
             }
             shieldValue.text = value.ToString();
         }

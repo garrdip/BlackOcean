@@ -198,7 +198,7 @@ public class SpawnedMonster : NetworkBehaviour
     public void OnChangeParent(TargetObject oldPrent, TargetObject newParent)
     {
         transform.SetParent(newParent.transform);
-        newParent.targetObjectName.text = monsterName;
+        newParent.monsterName.text = monsterName;
         StartCoroutine(InitMonsterNamePlate());
     }
 
