@@ -94,7 +94,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         DontDestroyOnLoad(gameObject);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.persistentManagers.Add(gameObject.name, game);
+        networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
     }
 
     #if UNITY_EDITOR

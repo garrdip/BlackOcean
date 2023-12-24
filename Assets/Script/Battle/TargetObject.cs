@@ -163,6 +163,7 @@ public class TargetObject : NetworkBehaviour
 
     void OnDestroy()
     {
+        playerMessageCavnas.GetComponent<CanvasGroup>().DOKill();
         // 오브젝트 제거 시 델리게이트 이벤트 리스너 해제
         if(anim != null){
             anim.state.Event -= OnAnimationEvent;

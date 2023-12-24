@@ -16,6 +16,7 @@ public class NamePlate : MonoBehaviour
 
     private Vector3 shieldOriginPosition;
     private Vector3 shieldGainPosition;
+    private Sequence sequence;
 
     void Start()
     {
@@ -29,9 +30,11 @@ public class NamePlate : MonoBehaviour
     void OnDestroy()
     {
         // 오브젝트 파괴 시 트위닝 킬
+        sequence.Kill();
         shieldCanvas.GetComponent<CanvasGroup>().DOKill();
         shieldIcon.GetComponent<SpriteRenderer>().DOKill();
         shieldBase.GetComponent<SpriteRenderer>().DOKill();
+        shield.transform.DOKill();
     }
 
     public void SetHPValue(int value,int max,int order)
@@ -43,7 +46,7 @@ public class NamePlate : MonoBehaviour
     public void SetShieldValue(int value,bool isGain, bool isEnemy)
     {
         if(value == 0){
-            Sequence sequence = DOTween.Sequence()
+            sequence = DOTween.Sequence()
                 .Join(shieldCanvas.GetComponent<CanvasGroup>().DOFade(0f, 0.5f))
                 .Join(shieldIcon.GetComponent<SpriteRenderer>().DOFade(0f, 0.5f))
                 .Join(shieldBase.GetComponent<SpriteRenderer>().DOFade(0f, 0.5f))
@@ -54,7 +57,7 @@ public class NamePlate : MonoBehaviour
             if(isGain){
                 shield.transform.localPosition = isEnemy ? shieldOriginPosition + new Vector3(-1f, 0f, 0f) : shieldOriginPosition + new Vector3(1f, 0f, 0f);
                 shield.SetActive(true);
-                Sequence sequence = DOTween.Sequence()
+                sequence = DOTween.Sequence()
                     .Join(shieldCanvas.GetComponent<CanvasGroup>().DOFade(1f, 0.5f))
                     .Join(shieldIcon.GetComponent<SpriteRenderer>().DOFade(1f, 0.5f))
                     .Join(shieldBase.GetComponent<SpriteRenderer>().DOFade(1f, 0.5f))
