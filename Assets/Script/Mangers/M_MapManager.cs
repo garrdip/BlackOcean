@@ -35,10 +35,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     public int actionCost; // 행동시 소모되는 행동 비용
 
     [Header("게임 화면의 요소들의 최상위 오브젝트")]
-    public GameObject game;
+    public GameObject BattleScene;
 
     [Header("맵 화면의 요소들의 최상위 오브젝트")]
-    public GameObject roommaps;
+    public GameObject MapScene;
 
     [Header("맵화면의 방 요소들의 부모 오브젝트")]
     public GameObject MapRooms;
@@ -631,14 +631,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             Camera.main.transform.position = new Vector3(0f, 0f, -10f);
 
             // UI 활성화 상태 변경
-            roommaps.SetActive(false);
-            game.SetActive(true);
-            GameUIManager.instance.GameUI.gameObject.SetActive(true);
-            GameUIManager.instance.GameBackGround.gameObject.SetActive(true);
-            M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-            if(networkRoomManager.persistentComponents.TryGetValue("ReadyCanvas", out GameObject readyCanvas)){
-                readyCanvas.SetActive(false); // 레디버튼 비활성화
-            }
+            MapScene.SetActive(false);
+            BattleScene.SetActive(true);
+            GameUIManager.instance.GameUI.SetActive(true);
+            GameUIManager.instance.GameBackGround.SetActive(true);
 
             // 임시 테스트용 UI
             // GameUIManager.instance.TestUI.gameObject.SetActive(true);

@@ -17894,9 +17894,8 @@ MonoBehaviour:
   maxActionCost: 0
   currentActionCost: 0
   actionCost: 0
-  mainCam: {fileID: 842314909}
-  game: {fileID: 1408884458}
-  roommaps: {fileID: 4770237053567765932}
+  BattleScene: {fileID: 1408884458}
+  MapScene: {fileID: 4770237053567765932}
   MapRooms: {fileID: 4770237053509413331}
   MapPathLines: {fileID: 1495258191}
   hexagonGrid: {fileID: 590561824302976873, guid: f2e6a979254885748ae72276906d5ac5, type: 3}
@@ -19810,8 +19809,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  npc_Mercurius: {fileID: 0}
-  players: []
   targetObjectPosition:
   - {x: -15, y: -3, z: 0}
   - {x: -11, y: -3, z: 0}
@@ -19819,8 +19816,6 @@ MonoBehaviour:
   - {x: 15, y: -3, z: 0}
   - {x: 11, y: -3, z: 0}
   - {x: 7, y: -3, z: 0}
-  orderUI: {fileID: 0}
-  isOrderSelect: 0
   isCardQueueOperating: 0
   spawnedPlayerList: []
   clonePlayerList: []

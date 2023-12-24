@@ -18,7 +18,7 @@ public class MapPlayerPiece: NetworkBehaviour
 
     void Start()
     {
-        transform.SetParent(M_MapManager.instance.roommaps.transform);
+        transform.SetParent(M_MapManager.instance.MapScene.transform);
         canvas.sortingLayerName = "MapPlayerPiece";
     }
 

@@ -22,7 +22,7 @@ public class MapPlayerDestination : NetworkBehaviour
     void Start()
     {
         transform.position = new Vector3(-100f, 0f, 0f);
-        transform.SetParent(M_MapManager.instance.roommaps.transform);
+        transform.SetParent(M_MapManager.instance.MapScene.transform);
     }
 
     // 오브젝트 활성화 시 시퀀스 재시작

@@ -973,15 +973,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             Vector3 currLoc = M_MapManager.instance.currentRoom.transform.position;
             Camera.main.transform.position = currLoc + new Vector3(0,0,-8);
             //Camera.main.orthographic = false; 
+
             // UI 활성화 상태 변경
-            M_MapManager.instance.roommaps.SetActive(true);
-            M_MapManager.instance.game.SetActive(false);
-            GameUIManager.instance.GameUI.gameObject.SetActive(false);
-            GameUIManager.instance.GameBackGround.gameObject.SetActive(false);
-            M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-            if(networkRoomManager.persistentComponents.TryGetValue("ReadyCanvas", out GameObject readyCanvas)){
-                readyCanvas.SetActive(true); // 레디버튼 활성화
-            }
+            M_MapManager.instance.MapScene.SetActive(true);
+            M_MapManager.instance.BattleScene.SetActive(false);
+            GameUIManager.instance.GameUI.SetActive(false);
+            GameUIManager.instance.GameBackGround.SetActive(false);
 
             // 임시 테스트용 UI
             GameUIManager.instance.TestUI.gameObject.SetActive(false);
