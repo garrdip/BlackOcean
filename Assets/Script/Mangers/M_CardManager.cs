@@ -81,7 +81,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         InitCardConfigValue();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         SetCardOnHandPositionSymmetry();
     }
