@@ -719,7 +719,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             // 전투 시작 이치 초기화 및 어빌리티 카드 생성
             foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
             {
-                gamePlayerDeck.SetInitialIchi();
                 if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.SpawnAbilityCardRPC();
             }
             StartCoroutine(WaitingForPlayer(hexagonMapRoom));

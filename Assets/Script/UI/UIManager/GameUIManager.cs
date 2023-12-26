@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Mirror;
 using DG.Tweening;
 using TMPro;
-using ProjectD;
-using Steamworks;
+
 
 public class GameUIManager : SingletonD<GameUIManager>
 {
@@ -19,6 +17,9 @@ public class GameUIManager : SingletonD<GameUIManager>
     public GameObject PrefareDeck;
     public GameObject TrashDeck;
     public GameObject TestUI;
+    public GameObject CostIconLayout; // 코스트 아이콘 리스트 레이아웃
+    public GameObject CostIocnPrefab; // 코스트 아이콘 프리팹
+    public List<GameObject> costIconList = new List<GameObject>(); // 코스트 아이콘 리스트
 
     [Header("UI 컴포넌트")]
 

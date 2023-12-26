@@ -73,6 +73,7 @@ MonoBehaviour:
   objectOwner: {fileID: 0}
   selectOrder: 0
   character: 0
+  playerOrderNetId: 0
 --- !u!114 &-5967311515642577051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,17 +94,17 @@ MonoBehaviour:
   maxRewardCardCount: 0
   cardPocket: {fileID: 0}
   cardCtrlArrow: {fileID: 0}
+  abilityButton: {fileID: 0}
   abilityCtrlArrow: {fileID: 0}
+  abilityCard: {fileID: 0}
   choosedCardOnHands:
   - {fileID: 0}
   - {fileID: 0}
   previousCardType: 0
   destroyCardList: []
-  abilityCard: {fileID: 0}
-  currentIchi: 3
-  maxIchi: 3
-  limitiChi: 6
-  ichiText: {fileID: 0}
+  currentIchi: 0
+  maxIchi: 0
+  limitiChi: 0
 --- !u!114 &102687483241659189
 MonoBehaviour:
   m_ObjectHideFlags: 0
