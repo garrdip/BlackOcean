@@ -11,15 +11,12 @@ public class Soldier_Shield : SpawnedMonster
         switch(nextAction.actionName){
             case "혼자방어" :
                 parent.GainDefense(nextAction.actionValue);
-                parent.clone.GainDefense(nextAction.actionValue);
                 DoAnimation("2Buff");
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;
             case "팀방어" :
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList)
-                    tar.GainDefense(nextAction.actionValue);
-                foreach(TargetObject tar in M_TurnManager.instance.cloneMonsterList)
                     tar.GainDefense(nextAction.actionValue);
                 DoAnimation("2Buff");
                 yield return new WaitForSeconds(1.7f);

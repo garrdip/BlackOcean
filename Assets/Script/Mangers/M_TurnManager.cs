@@ -29,16 +29,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
 
     public List<TargetObject> spawnedPlayerList = new List<TargetObject>();
-    public List<TargetObject> clonePlayerList = new List<TargetObject>();
     public List<TargetObject> spawnedMonsterList = new List<TargetObject>();
-    public List<TargetObject> cloneMonsterList = new List<TargetObject>();
     List<TargetObject> monsterOrderList = new List<TargetObject>();
     
     public bool monsterDeathOperating = false;
     public bool ironDemonPassiveOperating = false;
 
     // 카드와 타겟을 한쌍으로 저장하는 큐
-    public Queue<(Card, List<TargetObject>)> cardTargetPairQueue = new Queue<(Card, List<TargetObject>)>();
+    public Queue<(GamePlayerDeck, int , CardOnHand, List<TargetObject>)> cardTargetPairQueue = new Queue<(GamePlayerDeck, int, CardOnHand, List<TargetObject>)>();
     // TargetObject List 구조 : 
     /*
     Index : 내용
@@ -76,33 +74,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         return null;
     }
 
-    public TargetObject GetClonePlayer(GamePlayerDeck conn)
-    {
-        foreach(TargetObject tar in spawnedPlayerList)
-        {
-            if(tar.player.GetComponent<GamePlayerDeck>() == conn)
-            return tar.clone;
-        }
-        return null;
-    }
-
     public List<TargetObject> GetPlayerObjects()
     {
         return spawnedPlayerList;
     }
 
-    public List<TargetObject> GetClonePlayerObjects()
-    {
-        return clonePlayerList;
-    }
     public List<TargetObject> GetMonsterObjects()
     {
         return spawnedMonsterList;
-    }
-
-    public List<TargetObject> GetCloneMonsterObjects()
-    {
-        return cloneMonsterList;
     }
 
     // 현재 플레이어의 TargetObject를 반환
@@ -192,7 +171,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         // 몬스터 방어도 초기화
         foreach(TargetObject tar in spawnedMonsterList)
         {
-            tar.clone.defense = 0;
             tar.defense = 0;
         }
         foreach(TargetObject tar in spawnedPlayerList)
@@ -232,20 +210,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 yield return new WaitForSeconds(0.1f);
             }
         }
-        foreach(TargetObject tar in clonePlayerList) // 클론도 적용
-        {
-            if(tar.player.character == Character.HONGDANHYANG)
-            {
-                if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
-                {
-                    tar.ironDemonLocation.defense += tar.sizeOfIronDemon;
-                }
-                else // 몬스터의 경우 데미지
-                {
-                    tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon, tar);
-                }
-            }
-        }
         phase = BattleTurn.MONSTER_ACTIVE;
     }
 
@@ -267,7 +231,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         foreach(TargetObject tar in spawnedPlayerList)
         {
-            tar.clone.defense = 0;
             tar.defense = 0;
         }
         phase = BattleTurn.PLAYER_DRAW;
@@ -342,9 +305,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public void ClearTargetObject()
     {
-        ClearTargetObjectList(cloneMonsterList);
         ClearTargetObjectList(spawnedMonsterList);
-        ClearTargetObjectList(clonePlayerList);
         ClearTargetObjectList(spawnedPlayerList);
         spawnedPlayerSyncList.Clear();
     }
@@ -375,9 +336,20 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     CardData.instance.isCardOperating = true;
                     isCardQueueOperating = true;
                     // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
-                    (Card card,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
-
-                    CardData.instance.RunCard(card,tar);
+                    (GamePlayerDeck gpd, int totalCost, CardOnHand cardOnHand,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
+                    Debug.Log(cardOnHand.card.baseCard.name + " : 카드 디큐!");
+                    if(cardOnHand.card.baseCard.isTargetable && tar[1] == null)
+                    {
+                        Debug.Log("타겟 실 종 !");
+                        gpd.ReturnToCardOnHand(cardOnHand);
+                        gpd.currentIchi += totalCost;
+                        CardData.instance.isCardOperating = false;
+                    }
+                    else
+                    {
+                        CardData.instance.RunCard(cardOnHand.card,tar);
+                        gpd.destroyCardList.Add(cardOnHand);
+                    }
                 }
                 else
                 {
@@ -410,14 +382,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         M_TurnManager.instance.AnimIronDemon("TeleportBack",target); // 철귀 나타나기 시작
                         yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
                         M_TurnManager.instance.AnimIronDemon("Idle",target); // 철귀 나타나기 시작
-                        target.ironDemonLocation = target;
-                    }
-            }
-            foreach(TargetObject target in clonePlayerList)
-            {
-                if(target.player.character == Character.HONGDANHYANG)
-                    if(target.ironDemonLocation == tar || target.ironDemonLocation == null)
-                    {
                         target.ironDemonLocation = target;
                     }
             }
@@ -494,21 +458,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 gamePlayer.GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
                 spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
                 spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);
-                
-                // 타겟 유효 판단을 위한 클론 데이터
-                GameObject clone = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(-300,-300,0), Quaternion.identity);
-                NetworkServer.Spawn(clone);
-                clone.GetComponent<TargetObject>().conn = gamePlayer.netIdentity;
-                clone.GetComponent<TargetObject>().player = gamePlayer;
-                clone.GetComponent<TargetObject>().playerMaxHP = gamePlayer.MaxHP;
-                clone.GetComponent<TargetObject>().playerHP = gamePlayer.HP;
-                clone.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
-                if(avatar.GetComponent<TargetObject>().player.character == Character.HONGDANHYANG){
-                    clone.GetComponent<TargetObject>().sizeOfIronDemon = 4;
-                }
-                clone.GetComponent<TargetObject>().isCloneData = true;
-                avatar.GetComponent<TargetObject>().clone = clone.GetComponent<TargetObject>();
-                clonePlayerList.Add(clone.GetComponent<TargetObject>());
             }
         }
     }
@@ -528,36 +477,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             Debug.Log(M_MonsterManager.instance.monsterGroups[num].monsters[i].name);
             var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == M_MonsterManager.instance.monsterGroups[num].monsters[i].name),targetObjectPosition[i+3],Quaternion.identity).GetComponent<SpawnedMonster>();
-            var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == M_MonsterManager.instance.monsterGroups[num].monsters[i].name),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
-
             NetworkServer.Spawn(monster.gameObject);
-            NetworkServer.Spawn(cloneMonster.gameObject);
-
             monster.monsterData = M_MonsterManager.instance.monsterGroups[num].monsters[i];
-            cloneMonster.monsterData = M_MonsterManager.instance.monsterGroups[num].monsters[i];
-
-
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[i+3],Quaternion.identity);
-            var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
-
             NetworkServer.Spawn(avatar);
-            NetworkServer.Spawn(cloneAvatar);
-
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
             avatar.GetComponent<TargetObject>().monster = monster;
-
-            cloneAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
-            cloneAvatar.GetComponent<TargetObject>().monster = cloneMonster;
-            cloneAvatar.GetComponent<TargetObject>().isCloneData = true;
-            cloneAvatar.GetComponent<TargetObject>().origin = avatar.GetComponent<TargetObject>();
-            avatar.GetComponent<TargetObject>().clone = cloneAvatar.GetComponent<TargetObject>();
-
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
-            cloneMonsterList.Add(cloneAvatar.GetComponent<TargetObject>());
-
             // monster 오브젝트의 부모오브젝트 참조값 설정
             monster.parent = avatar.GetComponent<TargetObject>();
-            cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
         }
     }
 
@@ -567,8 +495,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
         var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(11,3,0),Quaternion.identity).GetComponent<SpawnedMonster>();
-        var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
-        
         NPC_Mercurius mercurius = monster.GetComponent<NPC_Mercurius>();
         mercurius.isOrigin = true;
 
@@ -592,28 +518,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
 
         NetworkServer.Spawn(monster.gameObject);
-        NetworkServer.Spawn(cloneMonster.gameObject);
-
         monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
-        cloneMonster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
-
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(11,-3,0),Quaternion.identity);
-        var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
-
         NetworkServer.Spawn(avatar);
-        NetworkServer.Spawn(cloneAvatar);
         avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
         avatar.GetComponent<TargetObject>().monster = monster;
-        cloneAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
-        cloneAvatar.GetComponent<TargetObject>().monster = cloneMonster;
-        cloneAvatar.GetComponent<TargetObject>().isCloneData = true;
-        cloneAvatar.GetComponent<TargetObject>().origin = avatar.GetComponent<TargetObject>();
-        avatar.GetComponent<TargetObject>().clone = cloneAvatar.GetComponent<TargetObject>();
         spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
-        cloneMonsterList.Add(cloneAvatar.GetComponent<TargetObject>());
         // monster 오브젝트의 부모오브젝트 참조값 설정
         monster.parent = avatar.GetComponent<TargetObject>();
-        cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
     }
 
     [Server]
@@ -623,27 +535,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
         var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "Boss_Momos"),targetObjectPosition[4],Quaternion.identity).GetComponent<SpawnedMonster>();
-        var cloneMonster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "Boss_Momos"),new Vector3(-300,-300,0),Quaternion.identity).GetComponent<SpawnedMonster>();
         NetworkServer.Spawn(monster.gameObject);
-        NetworkServer.Spawn(cloneMonster.gameObject);
         monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(x => x.name == "Boss_Momos");
-        cloneMonster.monsterData = M_MonsterManager.instance.monsterDataList.Find(x => x.name == "Boss_Momos");
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
-        var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(-300,-300,0),Quaternion.identity);
         NetworkServer.Spawn(avatar);
-        NetworkServer.Spawn(cloneAvatar);
         avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
         avatar.GetComponent<TargetObject>().monster = monster;
-        cloneAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
-        cloneAvatar.GetComponent<TargetObject>().monster = cloneMonster;
-        cloneAvatar.GetComponent<TargetObject>().isCloneData = true;
-        cloneAvatar.GetComponent<TargetObject>().origin = avatar.GetComponent<TargetObject>();
-        avatar.GetComponent<TargetObject>().clone = cloneAvatar.GetComponent<TargetObject>();
         spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
-        cloneMonsterList.Add(cloneAvatar.GetComponent<TargetObject>());
         // monster 오브젝트의 부모오브젝트 참조값 설정
         monster.parent = avatar.GetComponent<TargetObject>();
-        cloneMonster.parent = cloneAvatar.GetComponent<TargetObject>();
     }
 
     [Server]
@@ -866,7 +766,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void StartAnimation(TargetObject tar, int trackIndex,string animationName, bool loop )
     {
         if(tar != null)
-        if(!tar.isCloneData) // Clone 데이터 검증은 Animation 스킵
         {
             SkeletonAnimation anim = tar.avatar.GetComponent<SkeletonAnimation>();
             Spine.TrackEntry track = anim.state.SetAnimation(trackIndex,animationName,loop);

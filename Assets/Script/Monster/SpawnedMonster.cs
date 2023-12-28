@@ -172,20 +172,7 @@ public class SpawnedMonster : NetworkBehaviour
                         tar.SetIronDemonParent(tar.transform);
                     }
                 }
-                foreach(TargetObject tar in M_TurnManager.instance.clonePlayerList)
-                {
-                    if(tar.ironDemonLocation == parent.GetComponent<TargetObject>())
-                    {
-                        tar.SetIronDemonParent(tar.transform);
-                    }
-                }
-                if(parent.isCloneData)
-                {
-                    M_TurnManager.instance.cloneMonsterList.Remove(parent);
-                    parent.origin.clone = null;
-                }
-                else
-                    M_TurnManager.instance.spawnedMonsterList.Remove(parent);
+                M_TurnManager.instance.spawnedMonsterList.Remove(parent);
                 NetworkServer.Destroy(this.gameObject);
             }
             return;

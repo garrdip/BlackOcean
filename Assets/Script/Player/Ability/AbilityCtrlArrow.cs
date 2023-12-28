@@ -82,16 +82,16 @@ public class AbilityCtrlArrow : NetworkBehaviour
         if(Input.GetMouseButtonUp(0) && currentTarget != null){
             if(NetworkClient.connection != null && NetworkClient.active){
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-                CmdEnQueueCardData(gamePlayerDeck, currentTarget, gamePlayerDeck);
+                CmdEnQueueCardData(gamePlayerDeck, currentTarget);
                 RemoveAbilityCtrlArrow();
             }
         }
     }
 
     [Command]
-    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, TargetObject tar, GamePlayerDeck conn)
+    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, TargetObject tar)
     {
-        gamePlayerDeck.serverCardPredictQueue.Enqueue((gamePlayerDeck.abilityCard, tar, conn));
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((gamePlayerDeck.abilityCard, tar));
     }
 
     // 화살표 초기화(위치설정, visible상태 활성화, 베지어 곡선 조작점 설정, 화살표 활성화 상태 변수 변경)

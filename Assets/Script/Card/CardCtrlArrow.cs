@@ -133,7 +133,7 @@ public class CardCtrlArrow : NetworkBehaviour
     [Command]
     void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, CardOnHand cardOnHand, TargetObject tar)
     {
-        gamePlayerDeck.serverCardPredictQueue.Enqueue((cardOnHand, tar, gamePlayerDeck));
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((cardOnHand, tar));
     }
 
     // 화살표 초기화(위치설정, visible상태 활성화, 베지어 곡선 조작점 설정, 화살표 활성화 상태 변수 변경)

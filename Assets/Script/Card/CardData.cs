@@ -89,12 +89,12 @@ public partial class CardData : SingletonD<CardData>
         if(card.experience >= card.baseCard.maxExperience)
         {
             StartCoroutine(CardMethods[card.baseCard.cardNumber+"_E"](card,targets));
-            if(!targets[0].isCloneData)card.experience = 0;
+            card.experience = 0;
         }
         else
         {
             StartCoroutine(CardMethods[card.baseCard.cardNumber](card,targets));
-            if(!targets[0].isCloneData)card.experience++;
+            card.experience++;
         }
     }
 

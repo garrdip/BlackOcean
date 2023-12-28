@@ -46,7 +46,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public CardOnHand[] choosedCardOnHands = new CardOnHand[2];  // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
 
-    public Queue<(CardOnHand,TargetObject,GamePlayerDeck)> serverCardPredictQueue = new Queue<(CardOnHand, TargetObject, GamePlayerDeck)>();// Server에서 Card Queue 관리를 위한 Queue
+    public Queue<(CardOnHand,TargetObject)> serverCardPredictQueue = new Queue<(CardOnHand, TargetObject)>();// Server에서 Card Queue 관리를 위한 Queue
 
     [SyncVar(hook = nameof(PreviousCardTypeChanged))]
     public CardType previousCardType;
@@ -67,6 +67,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Callback += OnCardOnHandsUpdated;
         prefareDeck.Callback += OnPrefareDeckUpdated;
         trashDeck.Callback += OnTrashDeckUpdated;
+        if(isOwned){
+            GameUIManager.instance.currentIchiText.text = currentIchi.ToString(); // 현재 이치값 초기 뷰 세팅
+            GameUIManager.instance.maxIchiText.text = maxIchi.ToString(); // 최대 이치값 초기 뷰 세팅
+        }  
     }
 
     // choosedCardOnHands 배열에 선택한 카드를 추가
@@ -220,7 +224,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         WaitForSeconds loopTime = new WaitForSeconds(0.01f);
         CardOnHand cardOnHand;
         TargetObject targetObject;
-        GamePlayerDeck conn;
 
         while(true)
         {
@@ -228,47 +231,32 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
             if(serverCardPredictQueue.Count == 0) continue; //카드큐가 비어있을경우 스킵 
             
-            ( cardOnHand,targetObject,conn) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
+            (cardOnHand,targetObject) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
 
             int totalCost = GetTotalCostOfCardOnHand(cardOnHand);
             
             if(totalCost > currentIchi) // 카드 코스트 계산 하는곳
             {
-                ReturnToCardOnHand(conn,cardOnHand);
+                ReturnToCardOnHand(cardOnHand);
                 continue;
             }
             if(cardOnHand.card.baseCard.isTargetable && targetObject == null)
             {
-                ReturnToCardOnHand(conn,cardOnHand);
-                continue;
-            }
-            if(cardOnHand.card.baseCard.isTargetable && targetObject.objectType != ObjectType.PLAYER && targetObject.clone == null)// Clone이 없을경우 Target 오브젝트는 존재하지 않는것으로 판단 Return 함
-            {
-                //카드와 이치 다시 돌려보내는곳
-                ReturnToCardOnHand(conn,cardOnHand);
+                ReturnToCardOnHand(cardOnHand);
                 continue;
             }
             currentIchi -= totalCost ;
-            
-            destroyCardList.Add(cardOnHand);
 
             // 여기부터 카드사용이 확정 되는곳
             previousCardType = cardOnHand.card.baseCard.cardType;
-
-            List<TargetObject> tar = new List<TargetObject>();
-            tar.Add(M_TurnManager.instance.GetClonePlayer(conn)); // Index 0 
-            if(cardOnHand.card.baseCard.isTargetable)tar.Add(targetObject.clone);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
-            tar.AddRange(M_TurnManager.instance.GetClonePlayerObjects());
-            tar.AddRange(M_TurnManager.instance.GetCloneMonsterObjects());
-            M_TurnManager.instance.ProcessCardPredict(cardOnHand.card,tar);
-            
+           
             List<TargetObject> targetObjects = new List<TargetObject>();
-            targetObjects.Add(M_TurnManager.instance.GetPlayer(conn)); // Index 0 
+            targetObjects.Add(M_TurnManager.instance.GetPlayer(this)); // Index 0 
             if(cardOnHand.card.baseCard.isTargetable)targetObjects.Add(targetObject);// Index 1 // TargetAble이 아닐경우 Index1은 비워짐
             targetObjects.AddRange(M_TurnManager.instance.GetPlayerObjects());
             targetObjects.AddRange(M_TurnManager.instance.GetMonsterObjects());
 
-            M_TurnManager.instance.cardTargetPairQueue.Enqueue((cardOnHand.card, targetObjects));
+            M_TurnManager.instance.cardTargetPairQueue.Enqueue((this, totalCost, cardOnHand, targetObjects));
         }
     }
 
@@ -496,9 +484,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void ReturnToCardOnHand(GamePlayerDeck target,CardOnHand cardOnHand)
+    public void ReturnToCardOnHand(CardOnHand cardOnHand)
     {
-        if(target == this && isOwned)
+        if(isOwned)
             StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
     }
     

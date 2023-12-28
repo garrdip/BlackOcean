@@ -45,12 +45,7 @@ public class TargetObject : NetworkBehaviour
 
     public List<GameObject> characters;
     public List<GameObject> monsters;
-
-    public TargetObject clone;
-    public TargetObject origin;
     
-    [SyncVar]
-    public bool isCloneData = false;
     public GameObject avatar;
 
     // 철귀
@@ -137,7 +132,7 @@ public class TargetObject : NetworkBehaviour
                 if(objectType == ObjectType.PLAYER)
                     if(player.character == Character.HONGDANHYANG){
                         StartCoroutine(HongDanHyangEyeFlicker());
-                        if(!isCloneData)ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
+                        ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
                     }
                 break;
             }
@@ -189,7 +184,7 @@ public class TargetObject : NetworkBehaviour
                 if(monster == null)
                 {
                     NetworkServer.Destroy(this.gameObject);
-                    if(!isCloneData)M_TurnManager.instance.OnChangedMonsterList(); 
+                    M_TurnManager.instance.OnChangedMonsterList(); 
                 }
             }
         }
@@ -410,9 +405,7 @@ public class TargetObject : NetworkBehaviour
                 NetworkServer.Destroy(cardOnHand.gameObject);
             player.GetComponent<GamePlayerDeck>().cardOnHands.Clear();
             M_TurnManager.instance.spawnedPlayerList.Remove(this);
-            M_TurnManager.instance.clonePlayerList.Remove(clone);
             NetworkServer.Destroy(this.gameObject);
-            NetworkServer.Destroy(clone.gameObject);
         }
 
     }

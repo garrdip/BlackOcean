@@ -300,7 +300,7 @@ public class CardOnHand : NetworkBehaviour
     [Command]
     void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck)
     {
-        gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null, gamePlayerDeck));
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null));
     }
 
     // 마우스 좌표에 따라 카드 오브젝트 드래그
