@@ -81,7 +81,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         InitCardConfigValue();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         SetCardOnHandPositionSymmetry();
     }
@@ -93,11 +93,11 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         cardOverSize = cardOriginSize + new Vector3(0.45f, 0.45f, 0.45f);
         symmetryRange = 1.6f;
         symmetryPositionX_Range = 2.3f;
-        symmetryPositionY_Range = 0.1f;
+        symmetryPositionY_Range = 0.12f;
         symmetryRotationRange = 5.0f;
         symmetryCurveRange = 0.03f;
         cardOnHandShiftedRange = 4.5f;
-        hoveredPositionY = 2.2f;
+        hoveredPositionY = 2.1f;
     }
 
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
@@ -126,14 +126,14 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                 float symmetryValue = (i - ((count - 1) / 2.0f));
                                 
                                 // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
-                                float xPosition = symmetryValue * symmetryPositionX_Range;
+                                float xPosition = symmetryValue * (symmetryPositionX_Range + ((maxCardOnHandCount - count) * 0.1f));
                                 float yPosition = -0.5f - (Mathf.Pow(Mathf.Abs(symmetryValue), 2f) * (symmetryPositionY_Range + ((maxCardOnHandCount - count) * symmetryCurveRange)));
                                 Vector3 symmetryPosition = new Vector3(xPosition , yPosition, 0f);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
                                 cardOnHand.originPosition = symmetryPosition;
 
                                 // 회전값
-                                Quaternion symmetryRotation = Quaternion.Euler(0f, 0f, -symmetryValue * symmetryRotationRange);
+                                Quaternion symmetryRotation = Quaternion.Euler(0f, 0f, -symmetryValue * (symmetryRotationRange + ((maxCardOnHandCount - count))));
                                 cardOnHand.transform.localRotation = Quaternion.Lerp(cardOnHand.transform.rotation,  symmetryRotation, Time.deltaTime * 10f);
 
                                 // 크기값
