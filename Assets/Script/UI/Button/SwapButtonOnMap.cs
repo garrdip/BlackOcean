@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class SwapButtonOnMap : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -17,7 +18,7 @@ public class SwapButtonOnMap : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     void Start()
     {
-        
+        GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
