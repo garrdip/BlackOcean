@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
 using DG.Tweening;
@@ -15,6 +16,10 @@ public class EndTurnButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public GameObject endTurnS1;
     public GameObject endTurnS2;
 
+    void Start()
+    {
+        GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+    }
 
     void OnDestroy()
     {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using Mirror;
@@ -16,6 +17,11 @@ public class ReadyButtonOnMap : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public GameObject readyS1;
     public GameObject readyS2;
     public TextMeshProUGUI textReady;
+
+    void Start()
+    {
+        GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+    }
 
     void OnDestroy()
     {
