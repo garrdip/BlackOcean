@@ -48,6 +48,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     void Start()
     {
         gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
+        gamePlayer.onChangePlayerOrder += OnChangeGamePlayerOrder;
         buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
         buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
     }
@@ -222,5 +223,13 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnChangeReadyState(bool isReady)
     {
         MapUI.instance.ChangeSwapButtonsIconState();
+    }
+
+    // 게임플레이어의 오더가 변경되면 이벤트를 수신하여 맵플레이어의 오더를 동일하게 변경
+    public void OnChangeGamePlayerOrder(int index)
+    {
+        if(isServer){
+            M_MapManager.instance.mapPlayers[index] = GetComponent<NetworkIdentity>().netId;
+        }
     }
 }
