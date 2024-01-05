@@ -91,7 +91,7 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // CardData의 스프라이트 데이터로부터 선택한 캐릭터의 카드 이미지 세팅
-    private void InitCardTemplateByCharacter(Card car)
+    private void InitCardTemplateByCharacter(Card card)
     {
         switch(card.baseCard.character){
             case Character.GEORK:

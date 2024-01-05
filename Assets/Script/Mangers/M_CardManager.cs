@@ -94,8 +94,8 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         symmetryRange = 1.6f;
         symmetryPositionX_Range = 2.3f;
         symmetryPositionY_Range = 0.12f;
-        symmetryRotationRange = 5.0f;
         symmetryCurveRange = 0.03f;
+        symmetryRotationRange = 3.5f;
         cardOnHandShiftedRange = 4.5f;
         hoveredPositionY = 2.1f;
     }

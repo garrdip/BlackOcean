@@ -59,8 +59,8 @@ public class NextActionIndicator : MonoBehaviour
 
     void OnMouseEnter()
     {
-        pointLeft.transform.DOLocalMoveX(leftPointOriginPosition.x - 0.3f, 0.5f);
-        pointRight.transform.DOLocalMoveX(rightPointOriginPosition.x + 0.3f, 0.5f);
+        pointLeft.transform.DOLocalMoveX(leftPointOriginPosition.x - 0.15f, 0.3f);
+        pointRight.transform.DOLocalMoveX(rightPointOriginPosition.x + 0.15f, 0.3f);
         pointLeftLight.SetActive(true);
         pointRightLight.SetActive(true);
         eInfo2.SetActive(true);
@@ -75,8 +75,8 @@ public class NextActionIndicator : MonoBehaviour
     {
         pointLeftLight.SetActive(false);
         pointRightLight.SetActive(false);
-        pointLeft.transform.DOLocalMoveX(leftPointOriginPosition.x, 0.5f);
-        pointRight.transform.DOLocalMoveX(rightPointOriginPosition.x, 0.5f);
+        pointLeft.transform.DOLocalMoveX(leftPointOriginPosition.x, 0.3f);
+        pointRight.transform.DOLocalMoveX(rightPointOriginPosition.x, 0.3f);
         eInfo2.SetActive(false);
         eInfo2.transform.localScale = Vector3.one;
         sequence.Kill();
