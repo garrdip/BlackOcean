@@ -65,7 +65,7 @@ public class PlayerInterfaceServer : NetworkBehaviour
         MapPlayer mapPlayer = mapPlayerObject.GetComponent<MapPlayer>();
         mapPlayer.gamePlayer = gamePlayer;
         NetworkServer.Spawn(mapPlayerObject, connectionToClient);
-        M_MapManager.instance.AddMapPlayer((int)gamePlayer.selectOrder, mapPlayer.netId);
+        gamePlayer.mapPlayerNetId = mapPlayer.netId;
 
         // MapPlayerPiece 오브젝트 생성
         GamePlayerMap gamePlayerMap = gamePlayer.GetComponent<GamePlayerMap>();

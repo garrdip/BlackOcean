@@ -28,6 +28,9 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public uint playerOrderNetId;
 
+    [SyncVar(hook = nameof(OnChangeMapPlayerNetId))]
+    public uint mapPlayerNetId;
+
 
     public override void OnStartServer()
     {
@@ -126,6 +129,14 @@ public class GamePlayer : NetworkBehaviour
     {
         if(isServer){
             CheckAllPlayersIsDead();
+        }
+    }
+
+    public void OnChangeMapPlayerNetId(uint oldVal, uint newVal)
+    {
+        int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId); // PlayerOrder SyncList에서 각 플레이어들의 인덱스값 조회
+        if(index != -1){
+            M_MapManager.instance.InitMapPlayer(GetComponent<NetworkIdentity>().netId, index); // 조회한 인덱스 값으로 맵플레이어 오더 초기 설정
         }
     }
 }

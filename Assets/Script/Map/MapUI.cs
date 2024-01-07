@@ -136,13 +136,14 @@ public class MapUI : InstanceD<MapUI>
     // 맵 플레이어 스왑 버튼 클릭
     public void HandleMapPlayerSwap(int swapTargetIndex)
     {
-        int myIndex = M_MapManager.instance.mapPlayers.FindIndex((netId) => netId == M_MapManager.instance.ownedMapPlayer);
+        int myIndex = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == M_MapManager.instance.ownedGamePlayer);
         if(myIndex != swapTargetIndex){ // 로컬유저 본인에 대한 요청은 제외
-            if(M_MapManager.instance.mapPlayers[swapTargetIndex] == 0){
+            if(M_TurnManager.instance.playerOrder[swapTargetIndex] == 0){
                 M_MapManager.instance.CmdSwapMapPlayer(myIndex, swapTargetIndex); // 스왑 타겟이 빈슬롯이면 해당 슬롯으로 이동되도록 요청
             }else{
-                if(NetworkClient.spawned.TryGetValue(M_MapManager.instance.mapPlayers[swapTargetIndex], out NetworkIdentity networkIdentity)){
-                    MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
+                if(NetworkClient.spawned.TryGetValue(M_TurnManager.instance.playerOrder[swapTargetIndex], out NetworkIdentity networkIdentity)){
+                    GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                    MapPlayer mapPlayer = NetworkClient.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
                     if(mapPlayer.isOwned){
                         M_MapManager.instance.CmdSwapMapPlayer(myIndex, swapTargetIndex); // 스왑 타겟이 본인 소유면 요청없이 스왑
                     }else{
@@ -228,17 +229,17 @@ public class MapUI : InstanceD<MapUI>
     {
         for(int i=0; i<swapButtons.Count; i++){
             SwapButtonOnMap swapButtonOnMap = swapButtons[i].GetComponent<SwapButtonOnMap>();
-            uint netId = M_MapManager.instance.mapPlayers[i];
+            uint netId = M_TurnManager.instance.playerOrder[i];
             if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
-                if(mapPlayer.gamePlayer.objectOwner.isReady){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                if(gamePlayer.objectOwner.isReady){
                     swapButtonOnMap.t_Ready_Icon.SetActive(true);
                     swapButtonOnMap.t_Chan_Icon.SetActive(false);
                     swapButtonOnMap.t_Chan_Icon_Light.SetActive(false);
                     swapButtonOnMap.t_M_Icon.SetActive(false);
                     swapButtonOnMap.t_M_Icon_Light.SetActive(false);
                 }else{
-                    if(mapPlayer.gamePlayer.isOwned){
+                    if(gamePlayer.isOwned){
                         swapButtonOnMap.t_M_Icon.SetActive(true);
                         swapButtonOnMap.t_Chan_Icon.SetActive(false);
                         swapButtonOnMap.t_Chan_Icon_Light.SetActive(false);

@@ -72,7 +72,6 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
                 
                 case LOADING_STATE.MAP_SCENE :
                     M_MapManager.instance.SetRegionWithColorRPC();
-                    M_TurnManager.instance.InitiateGamePlayerList();
                     M_LoadingManager.instance.SetLoadingScreen(false);
                     break;
                 

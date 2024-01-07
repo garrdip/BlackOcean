@@ -8,7 +8,7 @@ using Mirror;
 using DG.Tweening;
 using Steamworks;
 
-public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("맵 플레이어 뷰 컴포넌트 레이아웃")]
     public GameObject swapRequestLayout;
@@ -48,7 +48,6 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     void Start()
     {
         gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
-        gamePlayer.onChangePlayerOrder += OnChangeGamePlayerOrder;
         buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
         buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
     }
@@ -60,10 +59,17 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         sequence.Kill();
     }
 
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        // 서버에서 맵플레이어 생성되면 참조된 게임플레이어의 오더값과 netId값을 전달하여 오더값에 해당하는 인덱스에 netId 추가(룸에서 설정된 오더값은 게임플레이어가 갖고 있음)
+        M_MapManager.instance.AddMapPlayer((int)gamePlayer.selectOrder, gamePlayer.netId);
+    }
+
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
-        M_MapManager.instance.ownedMapPlayer = GetComponent<NetworkIdentity>().netId;
+        M_MapManager.instance.ownedGamePlayer = gamePlayer.netId;
     }
 
     // 스왑 승인 버튼 클릭
@@ -82,11 +88,6 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
             swapRequestLayout.SetActive(false);
             CmdSwapReject(oldIndex);
         }
-    }
-
-    public void OnPointerClick(PointerEventData pointerEventData)
-    {
-        M_MapManager.instance.ownedMapPlayer = GetComponent<NetworkIdentity>().netId;
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
@@ -109,10 +110,12 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         M_MapManager.instance.CmdSwapMapPlayer(oldIndex, newIndex);
 
         // 교환요청자와 상대방 모두에게 요청이 수락되었음을 알리는 TargetRpc 이벤트 전달
-        uint ownedNetId = M_MapManager.instance.mapPlayers[oldIndex];
-        uint targetNetID = M_MapManager.instance.mapPlayers[newIndex];
-        MapPlayer ownedMapPlayer = NetworkServer.spawned[ownedNetId].GetComponent<MapPlayer>();
-        MapPlayer targetMapPlayer = NetworkServer.spawned[targetNetID].GetComponent<MapPlayer>();
+        uint ownedNetId = M_TurnManager.instance.playerOrder[oldIndex];
+        uint targetNetID = M_TurnManager.instance.playerOrder[newIndex];
+        GamePlayer ownedGamePlayer = NetworkServer.spawned[ownedNetId].GetComponent<GamePlayer>();
+        MapPlayer ownedMapPlayer = NetworkServer.spawned[ownedGamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
+        GamePlayer targetGamePlayer = NetworkServer.spawned[targetNetID].GetComponent<GamePlayer>();
+        MapPlayer targetMapPlayer = NetworkServer.spawned[targetGamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
         TargetResponseSwapAccept(ownedMapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
         TargetResponseSwapAccept(targetMapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
     }
@@ -122,8 +125,9 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     public void CmdSwapReject(int targetIndex)
     {
         // 교환요청자에게 요청이 거절되었음을 알리는 TargetRpc 이벤트 전달
-        uint targetNetID = M_MapManager.instance.mapPlayers[targetIndex];
-        MapPlayer mapPlayer = NetworkServer.spawned[targetNetID].GetComponent<MapPlayer>();
+        uint targetNetID = M_TurnManager.instance.playerOrder[targetIndex];
+        GamePlayer gamePlayer = NetworkServer.spawned[targetNetID].GetComponent<GamePlayer>();
+        MapPlayer mapPlayer = NetworkServer.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
         TargetResponseSwapReject(mapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
     }
 
@@ -223,13 +227,5 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnChangeReadyState(bool isReady)
     {
         MapUI.instance.ChangeSwapButtonsIconState();
-    }
-
-    // 게임플레이어의 오더가 변경되면 이벤트를 수신하여 맵플레이어의 오더를 동일하게 변경
-    public void OnChangeGamePlayerOrder(int index)
-    {
-        if(isServer){
-            M_MapManager.instance.mapPlayers[index] = GetComponent<NetworkIdentity>().netId;
-        }
     }
 }

@@ -547,20 +547,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     }
 
     [Server]
-    public void InitiateGamePlayerList()
-    {
-        // 맵씬에서 할당된 맵플레이어의 오더값을 참조하여 playerOrder Synclist에 맵플레이어와 매칭되는 게임플레이어의 netId 추가
-        foreach(uint netId in M_MapManager.instance.mapPlayers){
-            if(netId != 0 && NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
-                GamePlayer gamePlayer = mapPlayer.gamePlayer;
-                playerOrder.RemoveAt(gamePlayer.selectOrder);
-                playerOrder.Insert(gamePlayer.selectOrder, gamePlayer.netId);
-            }
-        }
-    }
-
-    [Server]
     public void StartWaitCardQueue()
     {
         StartCoroutine(WaitCardQueue());
@@ -1024,7 +1010,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
                 break;
             case SyncList<uint>.Operation.OP_SET:
-                SetPlayerOrderViewSwap(newVal, index);
+                M_MapManager.instance.SetMapPlayerSwap(newVal, index);
+                MapUI.instance.ChangeSwapButtonsState(newVal, index);
+                //SetPlayerOrderViewSwap(newVal, index);
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
                 

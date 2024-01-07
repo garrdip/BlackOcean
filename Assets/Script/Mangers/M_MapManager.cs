@@ -9,9 +9,7 @@ using AYellowpaper.SerializedCollections;
 
 public class M_MapManager : NetworkSingletonD<M_MapManager>
 {  
-    public readonly SyncList<uint> mapPlayers = new SyncList<uint>(){ 0, 0, 0 };
-    public int mapPlayerCount = 0;
-    public uint ownedMapPlayer;
+    public uint ownedGamePlayer;
 
     [SyncVar]
     public HexagonMapRoom currentRoom;
@@ -125,28 +123,24 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         currentActionCost = 3; // 현재 남은 행동비용
     }
 
-     public override void OnStartClient()
-    {
-        mapPlayers.Callback += OnChangeMapPlayerOrderChanged;
-    }
-
     // ------------------------------------------------------------ Command Method -------------------------------------------------------------- //
 
-    // 맵플레이어들 오더 관리용 Synclist의 요소를 인덱스에 맞게 스왑 수행
+    // 맵플레이어 스왑 수행
     [Command (requiresAuthority = false)]
     public void CmdSwapMapPlayer(int oldIndex, int newIndex)
     {
-        uint temp = mapPlayers[oldIndex];
-        mapPlayers[oldIndex] = mapPlayers[newIndex];
-        mapPlayers[newIndex] = temp;
+        uint temp = M_TurnManager.instance.playerOrder[oldIndex];
+        M_TurnManager.instance.playerOrder[oldIndex] = M_TurnManager.instance.playerOrder[newIndex];
+        M_TurnManager.instance.playerOrder[newIndex] = temp;
     }
 
     // 스왑 요청을 받은 맵플레이어의 SyncVar 변수에 인덱스 저장 + 요청받은 맵플레이어만 수락,거절 UI 활성화되도록 TargetRpc 전송
     [Command (requiresAuthority = false)]
     public void CmdRequestSwap(int oldIndex, int newIndex)
     {
-        uint targetNetId = mapPlayers[newIndex];
-        MapPlayer targetMapPlayer = NetworkServer.spawned[targetNetId].GetComponent<MapPlayer>();
+        uint targetNetId = M_TurnManager.instance.playerOrder[newIndex];
+        GamePlayer gamePlayer = NetworkServer.spawned[targetNetId].GetComponent<GamePlayer>();
+        MapPlayer targetMapPlayer = NetworkServer.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
         targetMapPlayer.TargetResponseSwap(targetMapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
         targetMapPlayer.oldIndex = oldIndex; // 요청한 맵플레이어의 인덱스
         targetMapPlayer.newIndex = newIndex; // 요청한 맵플레이어의 교환상대 인덱스
@@ -155,23 +149,20 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     // ------------------------------------------------------------ Server Method -------------------------------------------------------------- //
 
-    // 맵 플레이어 리스트에 추가
+    // 오더 관리용 Synclist에 맵 플레이어에 참조되는 게임플레이어의 netId 추가
     [Server]
     public void AddMapPlayer(int index, uint targetNetId)
     {
-        // 맵플레이어 오더는 룸플레이어에서 가져오므로 룸플레이어의 오더에 해당하는 인덱스에 세팅
-        mapPlayers.RemoveAt(index);
-        mapPlayers.Insert(index, targetNetId);
-        mapPlayerCount++;
+        M_TurnManager.instance.playerOrder.RemoveAt(index);
+        M_TurnManager.instance.playerOrder.Insert(index, targetNetId);
     }
 
-    // 맵 플레이어 리스트에서 제거
+    // 오더 관리용 Synclist에서 맵 플레이어에 참조되는 게임플레이어의 netId 제거
     [Server]
     public void RemoveMapPlayer(uint targetNetId)
     {
-        int index = mapPlayers.FindIndex((netId) => netId == targetNetId);
-        mapPlayers[index] = 0;
-        mapPlayerCount--;
+        int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == targetNetId);
+        M_TurnManager.instance.playerOrder[index] = 0;
     }
 
     [Server]
@@ -724,63 +715,43 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         }
     }
 
-    // 맵 플레이어 오더 변경 이벤트 수신
-    void OnChangeMapPlayerOrderChanged(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
-    {
-        switch (op)
-        {
-            case SyncList<uint>.Operation.OP_ADD:
-                
-                break;
-            case SyncList<uint>.Operation.OP_INSERT:
-                InitMapPlayer(newVal, index);
-                break;
-            case SyncList<uint>.Operation.OP_REMOVEAT:
-
-                break;
-            case SyncList<uint>.Operation.OP_SET:
-                SetMapPlayerSwap(newVal, index);
-                MapUI.instance.ChangeSwapButtonsState(newVal, index);
-                break;
-            case SyncList<uint>.Operation.OP_CLEAR:
-                
-                break;
-        }
-    }
-
     // ------------------------------------------------------------ Normal Method -------------------------------------------------------------- //
     
-    private void InitMapPlayer(uint netId, int index)
+    public void InitMapPlayer(uint gamePlayerNetId, int index)
     {
         if(isServer){
-            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
+            if(NetworkServer.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                MapPlayer mapPlayer = NetworkServer.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
                 mapPlayer.InitMapPlayerView(index);
             }
         }else{
-            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
+            if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                MapPlayer mapPlayer = NetworkClient.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
                 mapPlayer.InitMapPlayerView(index);
             }
         }
     }
 
-    private void SetMapPlayerSwap(uint netId, int index)
+    public void SetMapPlayerSwap(uint gamePlayerNetId, int index)
     {
         if(isServer){
-            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
-                mapPlayer.gamePlayer.selectOrder = index;
-                mapPlayer.gamePlayer.OnChangedSelectOrder(index, index);
-                mapPlayer.gamePlayer.objectOwner.selectOrder = index;
+            if(NetworkServer.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                MapPlayer mapPlayer = NetworkServer.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
+                gamePlayer.selectOrder = index;
+                gamePlayer.OnChangedSelectOrder(index, index);
+                gamePlayer.objectOwner.selectOrder = index;
                 mapPlayer.ChangeMapPlayerViewByOrder(index);
             }
         }else{
-            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                MapPlayer mapPlayer = networkIdentity.GetComponent<MapPlayer>();
-                mapPlayer.gamePlayer.selectOrder = index;
-                mapPlayer.gamePlayer.OnChangedSelectOrder(index, index);
-                mapPlayer.gamePlayer.objectOwner.selectOrder = index;
+            if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                MapPlayer mapPlayer = NetworkClient.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
+                gamePlayer.selectOrder = index;
+                gamePlayer.OnChangedSelectOrder(index, index);
+                gamePlayer.objectOwner.selectOrder = index;
                 mapPlayer.ChangeMapPlayerViewByOrder(index);
             }
         }
