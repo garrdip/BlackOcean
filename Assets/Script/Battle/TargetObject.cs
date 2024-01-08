@@ -91,8 +91,16 @@ public class TargetObject : NetworkBehaviour
     void Start()
     {
         buffs.Callback += OnChangedBuff;
+        if(objectType == ObjectType.PLAYER){
+            player.onChangePlayerOrder += OnChangePlayerOrder; // 플레이어 타겟오브젝트인 경우 오더 변경 델리게이트 이벤트 리스너 추가
+        }
         StartCoroutine(FindChildObjects());
         StartCoroutine(InitNamePlate());
+    }
+
+    public void OnChangePlayerOrder(int order)
+    {
+        transform.DOMove(M_TurnManager.instance.targetObjectPosition[order], 0.5f); // 플레이어 오더 변경 이벤트 수신하여 타겟오브젝트 위치 이동
     }
 
     IEnumerator InitNamePlate()
@@ -158,6 +166,7 @@ public class TargetObject : NetworkBehaviour
 
     void OnDestroy()
     {
+        transform.DOKill();
         playerMessageCavnas.GetComponent<CanvasGroup>().DOKill();
         // 오브젝트 제거 시 델리게이트 이벤트 리스너 해제
         if(anim != null){

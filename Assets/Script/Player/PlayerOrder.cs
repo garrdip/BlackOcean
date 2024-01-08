@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using DG.Tweening;
 
 public class PlayerOrder : NetworkBehaviour
 {
@@ -49,6 +50,10 @@ public class PlayerOrder : NetworkBehaviour
         SetOwnedViewComponent();
     }
 
+    void OnDestroy()
+    {
+        transform.DOKill();
+    }
 
     void OnMouseEnter()
     {
@@ -78,7 +83,7 @@ public class PlayerOrder : NetworkBehaviour
     // 참조된 게임플레이어 클래스로부터 오더값 조회하여 값에 맞춰 뷰 컴포넌트 세팅
     private void SetParentAndPostion(int order)
     {
-        transform.position = new Vector3(M_TurnManager.instance.targetObjectPosition[gamePlayer.selectOrder].x, 8f, 0f);
+        transform.DOMove(new Vector3(M_TurnManager.instance.targetObjectPosition[gamePlayer.selectOrder].x, 8f, 0f), 0.5f);
         transform.localScale = new Vector3(1f, 1f, 1f);
     }
 

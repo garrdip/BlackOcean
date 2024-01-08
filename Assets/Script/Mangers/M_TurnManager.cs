@@ -10,7 +10,7 @@ using DG.Tweening;
 
 public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 {
-    // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
+    // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈 슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
     public readonly SyncList<uint> playerOrder = new SyncList<uint>(){ 0, 0, 0 };
 
     // 각 클라이언트에서 참조할 현재 참가한 플레이어들의 타겟오브젝트 목록
@@ -113,6 +113,16 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     }
 
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
+
+    // 플레이어 오더 스왑 : 카드 수행용
+    // TODO : 오더 변경 카드에 해당 함수 호출
+    [Server]
+    public void SwapPlayerOrderByCardOperation(int oldIndex, int newIndex)
+    {
+        uint temp = playerOrder[oldIndex];
+        playerOrder[oldIndex] = playerOrder[newIndex];
+        playerOrder[newIndex] = temp;
+    }
 
     [Server]
     public void ProcessCardPredict(Card card,List<TargetObject> tar)
