@@ -16,86 +16,50 @@ public partial class CardData : SingletonD<CardData>
         owner.SetIronDemonParent(target.transform);
     }
 
+    private IEnumerator MoveIronDemonCoroutine(TargetObject owner, TargetObject tar)
+    {
+        if(tar != owner.ironDemonLocation)
+        {
+            M_TurnManager.instance.AnimIronDemon("TeleportGo",owner); // 철귀 사라짐
+            yield return new WaitForSeconds(0.34f); // 철귀 완전히 사라지는 시간
+            M_TurnManager.instance.MoveIronDemon(owner, tar); // 철귀 적으로 이동
+            M_TurnManager.instance.AnimIronDemon("TeleportBack",owner); // 철귀 나타나기 시작
+            yield return new WaitForSeconds(0.333f); // 적당히 나타날때까지 기다림
+        }
+        MoveIronDemonLocation(owner,tar); // 철귀 적으로 이동
+    } 
 
     public IEnumerator HA(Card card,List<TargetObject> tar)
     {
-
-            yield return tempWait; // 임시 딜레이
-
-            M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
-
-            if(tar[1] != tar[0].ironDemonLocation)
-            {
-                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar[0]); // 철귀 사라짐
-                yield return new WaitForSeconds(0.34f); // 철귀 완전히 사라지는 시간
-                M_TurnManager.instance.MoveIronDemon(tar[1],tar[0]); // 철귀 적으로 이동
-                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 철귀 나타나기 시작
-                yield return new WaitForSeconds(0.333f); // 적당히 나타날때까지 기다림
-            }
-            MoveIronDemonLocation(tar[0],tar[1]); // 철귀 적으로 이동
-            M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
-
-
+        yield return tempWait; // 임시 딜레이
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        yield return MoveIronDemonCoroutine(tar[0],tar[1]);
+        M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
         isCardOperating = false;
     }
     public IEnumerator HA_E(Card card,List<TargetObject> tar)
     {
-
-            yield return tempWait; // 임시 딜레이
-
-            M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
-
-            if(tar[1] != tar[0].ironDemonLocation)
-            {
-                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar[0]); // 철귀 사라짐
-                yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
-                M_TurnManager.instance.MoveIronDemon(tar[1],tar[0]); // 철귀 적으로 이동
-                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 철귀 나타나기 시작
-                yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
-            }
-            MoveIronDemonLocation(tar[0],tar[1]);
-            M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
-
-        isCardOperating = false;
+        yield return HA(card,tar);
     }
 
     // Card Method List 
     // HONG DAN HYANG
     public IEnumerator H0(Card card,List<TargetObject> tar)
     {
-
-            M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
-            yield return tempWait; // 임시 딜레이
-
-            M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
-
-            if(tar[1] != tar[0].ironDemonLocation)
-            {
-                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar[0]); // 철귀 사라짐
-                yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
-                M_TurnManager.instance.MoveIronDemon(tar[1],tar[0]); // 철귀 적으로 이동
-                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 철귀 나타나기 시작
-                yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
-            }
-
-            M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]); // 철귀 공격 모션 시작
-            yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
-            StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
-            GeneralSingleAttack(tar[0],tar[1],6); // 실제 데미지 적용시점
-            yield return new WaitForSeconds(0.6f); // 공격모션 끝남
-
-            if(tar[1] != tar[0].ironDemonLocation)
-            {
-                M_TurnManager.instance.AnimIronDemon("TeleportGo",tar[0]); // 다시 사라짐
-                yield return new WaitForSeconds(0.33f);// 완전히 사라지는 시간
-                M_TurnManager.instance.MoveIronDemon(tar[0].ironDemonLocation,tar[0]); // 플레이어에게 다시 이동
-                M_TurnManager.instance.AnimIronDemon("TeleportBack",tar[0]); // 다시 나타남
-                yield return new WaitForSeconds(0.33f); // 완전히 나타날때까지 기다림
-            }
-
-            M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
-            M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
-
+        TargetObject preLocation;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+        yield return tempWait; // 임시 딜레이
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        preLocation = tar[0].ironDemonLocation;
+        yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
+        M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]); // 철귀 공격 모션 시작
+        yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
+        StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
+        GeneralSingleAttack(tar[0],tar[1],6); // 실제 데미지 적용시점
+        yield return new WaitForSeconds(0.6f); // 공격모션 끝남
+        yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
+        M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         isCardOperating = false;
     }
     public IEnumerator H0_E(Card card,List<TargetObject> tar)
@@ -591,6 +555,107 @@ public partial class CardData : SingletonD<CardData>
         // 개화
         isCardOperating = false;
     }
+
+    public IEnumerator H12(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H12_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H13(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H13_E(Card card, List<TargetObject> tar){yield return null;}
+	public IEnumerator H14(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H14_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H15(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H15_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H16(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H16_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H17(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H17_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H18(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H18_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H19(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H19_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H20(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H20_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H21(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H21_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H22(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H22_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H23(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H23_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H24(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H24_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H25(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H25_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H26(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H26_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H27(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H27_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H28(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H28_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H29(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H29_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H30(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H30_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H31(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H31_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H32(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H32_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H33(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H33_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H34(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H34_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H35(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H35_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H36(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H36_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H37(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H37_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H38(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H38_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H39(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H39_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H40(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H40_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H41(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H41_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H42(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H42_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H43(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H43_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H44(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H44_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H45(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H45_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H46(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H46_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H47(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H47_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H48(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H48_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H49(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H49_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H50(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H50_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H51(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H51_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H52(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H52_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H53(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H53_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H54(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H54_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H55(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H55_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H56(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H56_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H57(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H57_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H58(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H58_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H59(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H59_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H60(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H60_E(Card card, List<TargetObject> tar){yield return null;}
+    
+    
 
     // 임시 강화 카드
 }

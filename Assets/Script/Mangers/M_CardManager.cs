@@ -442,6 +442,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             }
             if(splitString[i].ToCharArray()[0] == '#')
             {
+                Debug.Log(splitString[i]);
                 splitString[i] = splitString[i].Remove(0,1);
                 int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_DEFENSE);
                 splitString[i] = "<color=green>" + result.ToString() + "</color>";

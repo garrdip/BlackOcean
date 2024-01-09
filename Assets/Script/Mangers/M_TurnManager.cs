@@ -346,10 +346,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     isCardQueueOperating = true;
                     // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
                     (GamePlayerDeck gpd, int totalCost, CardOnHand cardOnHand,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
-                    Debug.Log(cardOnHand.card.baseCard.name + " : 카드 디큐!");
                     if(cardOnHand.card.baseCard.isTargetable && tar[1] == null)
                     {
-                        Debug.Log("타겟 실 종 !");
                         gpd.ReturnToCardOnHand(cardOnHand);
                         gpd.currentIchi += totalCost;
                         CardData.instance.isCardOperating = false;
@@ -769,7 +767,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     }
 
     [ClientRpc]
-    public void MoveIronDemon(TargetObject target ,TargetObject tar)
+    public void MoveIronDemon(TargetObject tar, TargetObject target)
     {
         int transformOffset = CalcOffset(tar); 
         if(target.monster != null)
