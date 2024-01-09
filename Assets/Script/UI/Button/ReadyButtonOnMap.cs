@@ -79,13 +79,4 @@ public class ReadyButtonOnMap : MonoBehaviour, IPointerEnterHandler, IPointerExi
                 .SetLoops(-1, LoopType.Incremental);
         }
     }
-
-    // 게임씬 이동
-    public void HandleChangeGameScene()
-    {
-        M_LoadingManager.instance.SetLoadingScreen(true);
-        M_LoadingManager.instance.state = LOADING_STATE.SCENE_LOADING;
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        M_NetworkRoomManager.ServerChangeScene(M_NetworkRoomManager.GameplayScene);
-    }
 }
