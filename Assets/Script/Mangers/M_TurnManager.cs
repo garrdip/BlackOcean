@@ -114,10 +114,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
 
-    // 플레이어 오더 스왑 : 카드 수행용
-    // TODO : 오더 변경 카드에 해당 함수 호출
+    // 플레이어 오더 스왑
     [Server]
-    public void SwapPlayerOrderByCardOperation(int oldIndex, int newIndex)
+    public void SwapPlayerOrder(int oldIndex, int newIndex)
     {
         uint temp = playerOrder[oldIndex];
         playerOrder[oldIndex] = playerOrder[newIndex];

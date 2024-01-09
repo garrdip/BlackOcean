@@ -129,9 +129,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Command (requiresAuthority = false)]
     public void CmdSwapMapPlayer(int oldIndex, int newIndex)
     {
-        uint temp = M_TurnManager.instance.playerOrder[oldIndex];
-        M_TurnManager.instance.playerOrder[oldIndex] = M_TurnManager.instance.playerOrder[newIndex];
-        M_TurnManager.instance.playerOrder[newIndex] = temp;
+        M_TurnManager.instance.SwapPlayerOrder(oldIndex, newIndex);
     }
 
     // 스왑 요청을 받은 맵플레이어의 SyncVar 변수에 인덱스 저장 + 요청받은 맵플레이어만 수락,거절 UI 활성화되도록 TargetRpc 전송
