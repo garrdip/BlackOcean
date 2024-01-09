@@ -154,18 +154,6 @@ public class MapUI : InstanceD<MapUI>
         }
     }
 
-    // 스왑버튼 상태 변경
-    public void ChangeSwapButtonsState(uint netId, int index)
-    {
-        if(netId == 0){
-            swapButtons[index].transform.DOScale(new Vector3(0.8f, 0.8f, 0.8f), 0.5f);
-            swapButtons[index].transform.DORotate(new Vector3(0f, 0f, 45f), 0.5f);
-        }else{
-            swapButtons[index].transform.DOScale(new Vector3(1f, 1f, 1f), 0.5f);
-            swapButtons[index].transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f);
-        }  
-    }
-
     public void OnChangeReadyState()
     {
         NetworkClient.localPlayer.GetComponent<PlayerInterface>().isReady = !NetworkClient.localPlayer.GetComponent<PlayerInterface>().isReady;
@@ -222,6 +210,22 @@ public class MapUI : InstanceD<MapUI>
         mapDangerLayout.GetComponent<MapDangerInfo>().originPosition = mapDangerLayoutPosition + new Vector3(0f, -10f, 0f);
         mapTurnLayout.GetComponent<RectTransform>().localPosition = mapTurnLayoutPosition + new Vector3(-10f, 3f, 0f);
         mapTurnLayout.GetComponent<MapTurnInfo>().originPosition = mapTurnLayoutPosition + new Vector3(-10f, 3f, 0f);
+    }
+
+    // 맵씬 스왑버튼 상태 변경
+    public void ChangeSwapButtonsState(int index)
+    { 
+        for(int i=0; i<swapButtons.Count; i++){
+            SwapButtonOnMap swapButtonOnMap = swapButtons[i].GetComponent<SwapButtonOnMap>();
+            uint netId = M_TurnManager.instance.playerOrder[i];
+            if(netId == 0){
+                swapButtonOnMap.transform.DOScale(new Vector3(0.8f, 0.8f, 0.8f), 0.5f);
+                swapButtonOnMap.transform.DORotate(new Vector3(0f, 0f, 45f), 0.5f);
+            }else{
+                swapButtonOnMap.transform.DOScale(new Vector3(1f, 1f, 1f), 0.5f);
+                swapButtonOnMap.transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f);
+            }  
+        }
     }
 
     // 맵씬 스왑버튼 아이콘 상태 변경

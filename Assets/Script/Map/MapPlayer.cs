@@ -48,6 +48,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     void Start()
     {
         gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
+        gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
         buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
         buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
     }
@@ -172,8 +173,8 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         ChangeMapPlayerViewByOrder(index);
         p_INFO_M_L.SetActive(isOwned);
         steamDisplayName.text = gamePlayer.objectOwner.steamPersonaName;
-        SetOrderTextByPlayerOrder(gamePlayer.selectOrder);
-        MapUI.instance.ChangeSwapButtonsState(GetComponent<NetworkIdentity>().netId, index);
+        SetOrderTextByPlayerOrder(index);
+        MapUI.instance.ChangeSwapButtonsState(index);
         MapUI.instance.ChangeSwapButtonsIconState();
         if(isOwned){
             SwapButtonOnMap swapButtonOnMap = MapUI.instance.swapButtons[index].GetComponent<SwapButtonOnMap>();
@@ -195,7 +196,6 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         sequence.Join(upTween);
         sequence.Append(downTween);
         sequence.Join(fadeOutTween);
-        MapUI.instance.ChangeSwapButtonsIconState();
     }
 
     // 맵플레이어 부모오브젝트 설정
@@ -227,5 +227,13 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnChangeReadyState(bool isReady)
     {
         MapUI.instance.ChangeSwapButtonsIconState();
+    }
+
+    // 맵플레이어 오더 변경 수신
+    public void OnChangePlayerOrder(int order)
+    {
+        ChangeMapPlayerViewByOrder(order);
+        MapUI.instance.ChangeSwapButtonsIconState();
+        MapUI.instance.ChangeSwapButtonsState(order);
     }
 }

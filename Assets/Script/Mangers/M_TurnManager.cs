@@ -989,18 +989,22 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         return retVal;
     }
 
-    // 플레이어 오더 변경에 따른 뷰 업데이트
-    public void SetPlayerOrderViewSwap(uint netId, int index)
+    // Synclist에서 오더 인덱스 변경 이벤트 수신하여 GamePlayer의 selectOrder Syncvar값을 변경
+    public void SetGamePlayerOrder(uint gamePlayerNetId, int index)
     {
         if(isServer){
-            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+            if(NetworkServer.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
                 GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
                 gamePlayer.selectOrder = index;
+                gamePlayer.OnChangedSelectOrder(index, index);
+                gamePlayer.objectOwner.selectOrder = index;
             }
         }else{
-            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+            if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
                 GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
                 gamePlayer.selectOrder = index;
+                gamePlayer.OnChangedSelectOrder(index, index);
+                gamePlayer.objectOwner.selectOrder = index;
             }
         }
     }
@@ -1020,9 +1024,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
                 break;
             case SyncList<uint>.Operation.OP_SET:
-                M_MapManager.instance.SetMapPlayerSwap(newVal, index);
-                MapUI.instance.ChangeSwapButtonsState(newVal, index);
-                //SetPlayerOrderViewSwap(newVal, index);
+                SetGamePlayerOrder(newVal, index);
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
                 
