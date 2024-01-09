@@ -91,7 +91,7 @@ public class TargetObject : NetworkBehaviour
     void Start()
     {
         buffs.Callback += OnChangedBuff;
-        if(objectType == ObjectType.PLAYER){
+        if(player != null){
             player.onChangePlayerOrder += OnChangePlayerOrder; // 플레이어 타겟오브젝트인 경우 오더 변경 델리게이트 이벤트 리스너 추가
         }
         StartCoroutine(FindChildObjects());
