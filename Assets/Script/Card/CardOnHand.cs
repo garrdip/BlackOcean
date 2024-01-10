@@ -143,6 +143,11 @@ public class CardOnHand : NetworkBehaviour
                     cardImageFrame.sprite = sprites[Const.HERO_IMAGE_FRAME];
                     cardEmblem.sprite = sprites[Const.HERO_EMBLEM];
                     break;
+                case CardType.CURSE:
+                    cardBackground.sprite = sprites[Const.CURSE_CARD_BG];
+                    cardImageFrame.sprite = sprites[Const.CURSE_IMAGE_FRAME];
+                    cardEmblem.sprite = sprites[Const.CURSE_EMBLEM];
+                    break;
             }
         }
     }
