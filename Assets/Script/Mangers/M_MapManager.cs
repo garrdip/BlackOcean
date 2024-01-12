@@ -634,6 +634,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
             }
             StartCoroutine(CheckTargetObject());
+            StartCoroutine(M_TurnManager.instance.ProcessMonsterDeathCoroutine()); // 몬스터 사망처리 코루틴 시작
         });
     }
     
