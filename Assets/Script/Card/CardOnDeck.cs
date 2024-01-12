@@ -82,21 +82,31 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     cardBackground.sprite = sprites[Const.ATTACK_CARD_BG];
                     cardImageFrame.sprite = sprites[Const.ATTACK_IMAGE_FRAME];
                     cardEmblem.sprite = sprites[Const.ATTACK_EMBLEM];
+                    cardGradeFrame.sprite = sprites[Const.NORMAL_GRADE_FRAME];
                     break;
                 case CardType.BLESS:
                     cardBackground.sprite = sprites[Const.BLESS_CARD_BG];
                     cardImageFrame.sprite = sprites[Const.BLESS_IMAGE_FRAME];
                     cardEmblem.sprite = sprites[Const.BLESS_EMBLEM];
+                    cardGradeFrame.sprite = sprites[Const.NORMAL_GRADE_FRAME];
                     break;
                 case CardType.STRATEGY:
                     cardBackground.sprite = sprites[Const.STRATEGY_CARD_BG];
                     cardImageFrame.sprite = sprites[Const.STRATEGY_IMAGE_FRAME];
                     cardEmblem.sprite = sprites[Const.STRATEGY_EMBLEM];
+                    cardGradeFrame.sprite = sprites[Const.NORMAL_GRADE_FRAME];
                     break;
                 case CardType.HERO:
                     cardBackground.sprite = sprites[Const.HERO_CARD_BG];
                     cardImageFrame.sprite = sprites[Const.HERO_IMAGE_FRAME];
                     cardEmblem.sprite = sprites[Const.HERO_EMBLEM];
+                    cardGradeFrame.sprite = sprites[Const.NORMAL_GRADE_FRAME];
+                    break;
+                case CardType.CURSE:
+                    cardBackground.sprite = sprites[Const.CURSE_CARD_BG];
+                    cardImageFrame.sprite = sprites[Const.CURSE_IMAGE_FRAME];
+                    cardEmblem.sprite = sprites[Const.CURSE_EMBLEM];
+                    cardGradeFrame.sprite = sprites[Const.NORMAL_GRADE_FRAME];
                     break;
             }
         }

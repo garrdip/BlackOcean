@@ -7,12 +7,12 @@ using DG.Tweening;
 
 public class MenuUI : MonoBehaviour
 {
-    public DeckBookController deckBookController;
-
     public GameObject panelSettings;
     public GameObject multiplayCanvas;
     public GameObject menuCanvas;
     public GameObject deckBookCanvas;
+    public GameObject debris;
+    public GameObject logoGroup;
 
     public Button buttonSinglePlay;
     public Button buttonMultiPlay;
@@ -29,7 +29,6 @@ public class MenuUI : MonoBehaviour
         buttonDeckBook.onClick.AddListener(() => HandleDeckBook());
         buttonSettings.onClick.AddListener(() => HandleSettings());
         buttonQuit.onClick.AddListener(() => HandleQuit());
-        buttonCloseDeckBook.onClick.AddListener(() => HandleCloseDeckBook());
         panelSettings.SetActive(false);
     }
 
@@ -50,7 +49,8 @@ public class MenuUI : MonoBehaviour
         deckBookCanvas.SetActive(true);
         menuCanvas.SetActive(false);
         multiplayCanvas.SetActive(false);
-        deckBookController.GetCardDataFromDatabase();
+        debris.SetActive(false);
+        logoGroup.SetActive(false);
     }
 
     public void HandleCloseDeckBook()
@@ -58,6 +58,8 @@ public class MenuUI : MonoBehaviour
         menuCanvas.SetActive(true);
         multiplayCanvas.SetActive(false);
         deckBookCanvas.SetActive(false);
+        debris.SetActive(true);
+        logoGroup.SetActive(true);
     }
 
     public void HandleSettings()

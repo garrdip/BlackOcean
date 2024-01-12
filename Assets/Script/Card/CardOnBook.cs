@@ -10,6 +10,8 @@ using AYellowpaper.SerializedCollections;
 public class CardOnBook : MonoBehaviour
 {
     private int index;
+
+    public CardBase cardBase;
     public TextMeshProUGUI textCardName;
     public TextMeshProUGUI textCardDescription;
     public TextMeshProUGUI textCardCost;
@@ -24,40 +26,39 @@ public class CardOnBook : MonoBehaviour
     public void initCardOnBook(int newIndex)
     {
         index = newIndex;
-        Card card = new Card(CardData.instance.cards[index]);
-        textCardName.text = card.baseCard.name;
-        textCardDescription.text = card.baseCard.description;
-        textCardCost.text = card.baseCard.cost.ToString();
-        InitCardTemplateByCharacter(card);
+        textCardName.text = cardBase.name;
+        textCardDescription.text = cardBase.description;
+        textCardCost.text = cardBase.cost.ToString();
+        InitCardTemplateByCharacter(cardBase);
     }
 
-    private void InitCardTemplateByCharacter(Card card)
+    private void InitCardTemplateByCharacter(CardBase cardBase)
     {
-        switch(card.baseCard.character){
+        switch(cardBase.character){
             case Character.GEORK:
                 SerializedDictionary<string, Sprite> georkCardSprites = CardData.instance.characterCardTemplate[Character.GEORK];
-                InitCardTemplateByCardType(card, georkCardSprites);
-                InitCardIllust(card, georkCardSprites);
+                InitCardTemplateByCardType(cardBase, georkCardSprites);
+                InitCardIllust(cardBase, georkCardSprites);
 
                 break;
             case Character.ERIS:
                 SerializedDictionary<string, Sprite> erisCardSprites = CardData.instance.characterCardTemplate[Character.ERIS];
-                InitCardTemplateByCardType(card, erisCardSprites);
-                InitCardIllust(card, erisCardSprites);
+                InitCardTemplateByCardType(cardBase, erisCardSprites);
+                InitCardIllust(cardBase, erisCardSprites);
 
                 break;
             case Character.HONGDANHYANG:
                 SerializedDictionary<string, Sprite> danhyangCardSprites = CardData.instance.characterCardTemplate[Character.HONGDANHYANG];
-                InitCardTemplateByCardType(card, danhyangCardSprites);
-                InitCardIllust(card, danhyangCardSprites);
+                InitCardTemplateByCardType(cardBase, danhyangCardSprites);
+                InitCardIllust(cardBase, danhyangCardSprites);
                 break;
         }
     }
 
-    private void InitCardTemplateByCardType(Card card, SerializedDictionary<string, Sprite> sprites)
+    private void InitCardTemplateByCardType(CardBase cardBase, SerializedDictionary<string, Sprite> sprites)
     {
-        if(!card.baseCard.cardNumber.Equals("HA") || !card.baseCard.cardNumber.Equals("HA_E")){
-            switch(card.baseCard.cardType){
+        if(!cardBase.cardNumber.Equals("HA") || !cardBase.cardNumber.Equals("HA_E")){
+            switch(cardBase.cardType){
                 case CardType.ATTACK:
                     cardBackground.sprite = sprites[Const.ATTACK_CARD_BG];
                     cardImageFrame.sprite = sprites[Const.ATTACK_IMAGE_FRAME];
@@ -82,14 +83,20 @@ public class CardOnBook : MonoBehaviour
                     cardEmblem.sprite = sprites[Const.HERO_EMBLEM];
                     cardGradeFrame.sprite = sprites[Const.NORMAL_GRADE_FRAME];
                     break;
+                case CardType.CURSE:
+                    cardBackground.sprite = sprites[Const.CURSE_CARD_BG];
+                    cardImageFrame.sprite = sprites[Const.CURSE_IMAGE_FRAME];
+                    cardEmblem.sprite = sprites[Const.CURSE_EMBLEM];
+                    cardGradeFrame.sprite = sprites[Const.NORMAL_GRADE_FRAME];
+                    break;
             }
         }
     }
 
-    private void InitCardIllust(Card card, SerializedDictionary<string, Sprite> sprites)
+    private void InitCardIllust(CardBase cardBase, SerializedDictionary<string, Sprite> sprites)
     {
-        if(!string.IsNullOrEmpty(card.baseCard.cardImage)){
-            cardIllust.sprite = Resources.Load<Sprite>(card.baseCard.cardImage);
+        if(!string.IsNullOrEmpty(cardBase.cardImage)){
+            cardIllust.sprite = Resources.Load<Sprite>(cardBase.cardImage);
         }
     }
 }
