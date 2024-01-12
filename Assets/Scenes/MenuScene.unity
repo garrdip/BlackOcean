@@ -13881,7 +13881,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5593eb7c39fbce44b8474fa844d5b573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cell: {fileID: 6285776433173605381, guid: afcdc1678ba0ae347bd1cdd0cd2baa81, type: 3}
+  cellPrefab: {fileID: 6285776433173605381, guid: afcdc1678ba0ae347bd1cdd0cd2baa81, type: 3}
   menuUI: {fileID: 1716722580}
   buttonCloseDeckBook: {fileID: 1795099829}
   tabButtons:
