@@ -376,26 +376,30 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         while(true)
         {
             // 철구 돌려 보내기
+            tar.gameObject.SetActive(false); // 사망 후 바로 화면에서 사라짐 ( 사망 이펙트로 대체 필요 )
             yield return new WaitForSeconds(0.01f);
             if(CardData.instance.isCardOperating || ironDemonPassiveOperating) continue;
+
             foreach(TargetObject target in spawnedPlayerList)
             {
                 if(target.player.character == Character.HONGDANHYANG)
-                    if(target.ironDemonLocation == tar || target.ironDemonLocation == null)
+                    if(target.ironDemonLocation == tar )
                     {
+                        target.ironDemonLocation = target;
+                        M_TurnManager.instance.spawnedMonsterList.Remove(tar);
+                        NetworkServer.Destroy(tar.gameObject);
+                        OnChangedMonsterList();
                         M_TurnManager.instance.AnimIronDemon("TeleportGo",target); // 철귀 사라짐
                         yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
                         M_TurnManager.instance.MoveIronDemon(target,target); // 철귀 적으로 이동
                         M_TurnManager.instance.AnimIronDemon("TeleportBack",target); // 철귀 나타나기 시작
                         yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
                         M_TurnManager.instance.AnimIronDemon("Idle",target); // 철귀 나타나기 시작
-                        target.ironDemonLocation = target;
                     }
             }
             monsterDeathOperating = false;
             break;
         }
-      
     }
 
     [Server]

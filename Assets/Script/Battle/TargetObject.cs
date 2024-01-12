@@ -180,26 +180,6 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-        if(isServer)
-        {
-            if(objectType == ObjectType.PLAYER) 
-            {
-                // 플레이어 사망시 처리
-            }
-            else
-            {
-                if(monster == null)
-                {
-                    NetworkServer.Destroy(this.gameObject);
-                    M_TurnManager.instance.OnChangedMonsterList(); 
-                }
-            }
-        }
-    }
-
-
     public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
     {
         if(objectType == ObjectType.PLAYER)
@@ -328,7 +308,7 @@ public class TargetObject : NetworkBehaviour
         {
             int remind = damage - defense;
             defense = 0;
-            if(isServer && monster.HP <= remind){
+            if(isServer && monster.HP <= remind && !M_TurnManager.instance.monsterDeathOperating ){
                 M_TurnManager.instance.monsterDeathOperating = true;
                 M_TurnManager.instance.ProcessMonsterDeath(this);
             }

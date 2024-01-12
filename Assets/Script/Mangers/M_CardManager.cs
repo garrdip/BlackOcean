@@ -442,10 +442,16 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             }
             if(splitString[i].ToCharArray()[0] == '#')
             {
-                Debug.Log(splitString[i]);
                 splitString[i] = splitString[i].Remove(0,1);
                 int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_DEFENSE);
                 splitString[i] = "<color=green>" + result.ToString() + "</color>";
+            }
+            if(splitString[i].ToCharArray()[0] == '$')
+            {
+                splitString[i] = splitString[i].Remove(0,1);
+                string[] data = splitString[i].Trim().Split("$");
+                int result = int.Parse(data[0]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + tar.GetBuffValue(BuffType.FLOWER);
+                splitString[i] = "<color=green>" + result.ToString() + "</color>" + " 를 " + "<color=blue>" + data[1] + "</color>" + "번";
             }
         }
         

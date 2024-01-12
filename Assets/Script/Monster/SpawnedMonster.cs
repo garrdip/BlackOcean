@@ -162,21 +162,6 @@ public class SpawnedMonster : NetworkBehaviour
 
     public void OnChangedHpValue(int oldHpValue, int newHpValue)
     {
-        if(HP <= 0)
-        {
-            if(isServer){
-                foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList)
-                {
-                    if(tar.ironDemonLocation == parent.GetComponent<TargetObject>())
-                    {
-                        tar.SetIronDemonParent(tar.transform);
-                    }
-                }
-                M_TurnManager.instance.spawnedMonsterList.Remove(parent);
-                NetworkServer.Destroy(this.gameObject);
-            }
-            return;
-        }
         if(transform.parent != null){
             transform.parent.GetComponent<TargetObject>().selectedNamePlate.SetHPValue(newHpValue,MAXHP,(int)transform.parent.position.x);
         }
