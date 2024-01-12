@@ -263,7 +263,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -9}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 650, y: 900}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3770423251274030679
@@ -315,8 +315,6 @@ GameObject:
   - component: {fileID: 6285776431920331036}
   - component: {fileID: 6285776431920331038}
   - component: {fileID: 6285776431920331037}
-  - component: {fileID: 4609421481281773625}
-  - component: {fileID: 3816743744134339757}
   m_Layer: 0
   m_Name: TextCardDescription
   m_TagString: Untagged
@@ -441,46 +439,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &4609421481281773625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6285776431920331035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1312ae25639a4bae8e25ae223209cc50, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_OnCharacterSelection:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnSpriteSelection:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnWordSelection:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnLineSelection:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnLinkSelection:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &3816743744134339757
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6285776431920331035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d736ce056cf444ca96e424f4d9c42b76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TextEventHandler: {fileID: 4609421481281773625}
 --- !u!1 &6285776433173605381
 GameObject:
   m_ObjectHideFlags: 0
