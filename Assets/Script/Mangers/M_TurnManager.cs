@@ -34,6 +34,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     
     public bool monsterDeathOperating = false;
     public bool ironDemonPassiveOperating = false;
+    public List<TargetObject> dyingMonsers = new List<TargetObject>();
 
     // 카드와 타겟을 한쌍으로 저장하는 큐
     public Queue<(GamePlayerDeck, int , CardOnHand, List<TargetObject>)> cardTargetPairQueue = new Queue<(GamePlayerDeck, int, CardOnHand, List<TargetObject>)>();
@@ -295,6 +296,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void NoneBattleEnd()
     {
         EachPlayerNoneBattleEnd();
+        StopCoroutine(ProcessMonsterDeathCoroutine());
         foreach(PlayerInterface player in FindObjectsOfType<PlayerInterface>()){
             player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 false 되돌림 (여러군데서 사용 예정)
             player.SetEndTurnActiveStateDefault(); // 앤드 턴 상태 모두 확인후 다시 false 되돌림
@@ -368,38 +370,49 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     public void ProcessMonsterDeath(TargetObject tar)
     {
-        StartCoroutine(ProcessMonsterDeathCoroutine(tar));
+        if(!dyingMonsers.Exists(x => x == tar))dyingMonsers.Add(tar);
     }
 
-    public IEnumerator ProcessMonsterDeathCoroutine(TargetObject tar)
+    public IEnumerator ProcessMonsterDeathCoroutine()
     {
         while(true)
         {
-            // 철구 돌려 보내기
-            tar.gameObject.SetActive(false); // 사망 후 바로 화면에서 사라짐 ( 사망 이펙트로 대체 필요 )
             yield return new WaitForSeconds(0.01f);
-            if(CardData.instance.isCardOperating || ironDemonPassiveOperating) continue;
+            if(!monsterDeathOperating)continue;
+            foreach(TargetObject monster in dyingMonsers)
+                if(monster.gameObject.activeSelf)monster.gameObject.SetActive(false);//우선 사망한 적 비활성화
 
-            foreach(TargetObject target in spawnedPlayerList)
+            if(CardData.instance.isCardOperating || ironDemonPassiveOperating) continue; // 카드 사용이 끝날때까지 기다림
+
+            foreach(TargetObject monster in dyingMonsers) // 사망 몬스터 순차 처리
             {
-                if(target.player.character == Character.HONGDANHYANG)
-                    if(target.ironDemonLocation == tar )
-                    {
-                        target.ironDemonLocation = target;
-                        M_TurnManager.instance.spawnedMonsterList.Remove(tar);
-                        NetworkServer.Destroy(tar.gameObject);
-                        OnChangedMonsterList();
-                        M_TurnManager.instance.AnimIronDemon("TeleportGo",target); // 철귀 사라짐
-                        yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
-                        M_TurnManager.instance.MoveIronDemon(target,target); // 철귀 적으로 이동
-                        M_TurnManager.instance.AnimIronDemon("TeleportBack",target); // 철귀 나타나기 시작
-                        yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
-                        M_TurnManager.instance.AnimIronDemon("Idle",target); // 철귀 나타나기 시작
-                    }
+                foreach(TargetObject target in spawnedPlayerList) // 철귀가 붙은 몬스터일경우 철귀 복귀
+                {
+                    if(target.player.character == Character.HONGDANHYANG)
+                        if(target.ironDemonLocation == monster )
+                        {
+                            target.ironDemonLocation = target;
+                            StartCoroutine(IronDemonReturnProcess(target));
+                        }
+                }
+                // 실제 오브젝트 삭제 과정
+                M_TurnManager.instance.spawnedMonsterList.Remove(monster);
+                NetworkServer.Destroy(monster.gameObject);
+                OnChangedMonsterList();
             }
+            dyingMonsers.Clear();
             monsterDeathOperating = false;
-            break;
         }
+    }
+
+    public IEnumerator IronDemonReturnProcess(TargetObject target)
+    {
+        M_TurnManager.instance.AnimIronDemon("TeleportGo",target); // 철귀 사라짐
+        yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
+        M_TurnManager.instance.MoveIronDemon(target,target); // 철귀 적으로 이동
+        M_TurnManager.instance.AnimIronDemon("TeleportBack",target); // 철귀 나타나기 시작
+        yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
+        M_TurnManager.instance.AnimIronDemon("Idle",target); // 철귀 나타나기 시작
     }
 
     [Server]
