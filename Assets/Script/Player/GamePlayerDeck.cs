@@ -166,7 +166,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     }
                     break;
                 case Character.HONGDANHYANG:
-                    for(int i = 0; i < 6; i++)
+                    for(int i = 0; i < 20; i++)
                     {
                         //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
                         //deck.Add(attackCard);
@@ -174,18 +174,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
                             Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
                             deck.Add(attackCard);
                         }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H3")));
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H8")));
                             deck.Add(defenseCard);
                         }
                     }
-                    Card additionalCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H9")));
-                        deck.Add(additionalCard);
-                    additionalCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H9")));
-                        deck.Add(additionalCard);
-                    additionalCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H8")));
-                        deck.Add(additionalCard);
-                    additionalCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H8")));
-                        deck.Add(additionalCard);
                     break;
                 default:
                     break;
@@ -342,6 +334,45 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    [Server]
+    public void CmdSpawnCardOnHand(int cardCount)
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        if(prefareDeck.Count == 0 && trashDeck.Count == 0)
+        {
+            CmdAddPrefareDeckWithShuffle();
+        }
+        // 카드 생성 초기 위치는 화면 밖
+        Vector3 cardSpawnPosition = new Vector3(-100f, 0f, 0f);
+
+        for(int i=0; i<cardCount; i++){
+            // TODO : 버린댁과 뽑을댁 모두 비엇을떄 예외처리 필요
+            if(prefareDeck.Count == 0){
+                while(trashDeck.Count != 0){
+                    Card card = trashDeck[0];
+                    trashDeck.RemoveAt(0);
+                    prefareDeck.Add(card);
+                }
+            }
+            GameObject cardOnHandObject = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+                cardSpawnPosition,
+                Quaternion.identity
+            );
+
+            int randomIndex = Random.Range(0, prefareDeck.Count);
+            CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
+            cardOnHand.index = i; // 카드 인덱스
+            cardOnHand.card = prefareDeck[randomIndex]; // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
+            prefareDeck.RemoveAt(randomIndex);
+            if(cardPocket != null){
+                cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
+            }
+            NetworkServer.Spawn(cardOnHandObject, connectionToClient);
+
+            cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
+        }
+    }
 
     [Command]
     public void CmdSpawnAbilityCard()
