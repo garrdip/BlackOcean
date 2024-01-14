@@ -95,8 +95,17 @@ public class CardOnBook : MonoBehaviour
 
     private void InitCardIllust(CardBase cardBase, SerializedDictionary<string, Sprite> sprites)
     {
-        if(!string.IsNullOrEmpty(cardBase.cardImage)){
-            cardIllust.sprite = Resources.Load<Sprite>(cardBase.cardImage);
+        if(!cardBase.cardNumber.Contains("HA")){
+            if(cardBase.cardNumber.Contains("_E")){
+                // 강화카드의 경우 _E 문자열을 제거하여 아틀라스에서 스프라이트 조회
+                int idx = cardBase.cardNumber.IndexOf("_E");
+                if(idx != -1){
+                    string cardNumber = cardBase.cardNumber.Substring(0, idx);
+                    cardIllust.sprite = CardData.instance.cardIllustAtlas.GetSprite(cardNumber);
+                }
+            }else{
+                cardIllust.sprite = CardData.instance.cardIllustAtlas.GetSprite(cardBase.cardNumber);
+            }
         }
     }
 }

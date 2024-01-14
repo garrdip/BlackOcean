@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.U2D;
 using System.IO;
 using System;
 using AYellowpaper.SerializedCollections;
@@ -11,7 +12,7 @@ public partial class CardData : SingletonD<CardData>
     [Header("캐릭터별 카드 탬플릿")]
     [SerializedDictionary("Character", "Sprite")]
     public SerializedDictionary<Character, SerializedDictionary<string, Sprite>> characterCardTemplate = new SerializedDictionary<Character, SerializedDictionary<string, Sprite>>();
-
+    public SpriteAtlas cardIllustAtlas; // 카드 일러스트 아틀라스
     public List<CardBase> cards = new List<CardBase>();
     public Dictionary<string,ExecuteCard> CardMethods = new Dictionary<string, ExecuteCard>();
 

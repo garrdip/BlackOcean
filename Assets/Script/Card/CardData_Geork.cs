@@ -270,7 +270,7 @@ public IEnumerator E42_E(Card card,List<TargetObject> tar){yield return null;}
 public IEnumerator E43(Card card,List<TargetObject> tar){yield return null;}
 public IEnumerator E43_E(Card card,List<TargetObject> tar){yield return null;}
 public IEnumerator E44(Card card,List<TargetObject> tar){yield return null;}
-public IEnumerator E44_e(Card card,List<TargetObject> tar){yield return null;}
+public IEnumerator E44_E(Card card,List<TargetObject> tar){yield return null;}
 public IEnumerator E45(Card card,List<TargetObject> tar){yield return null;}
 public IEnumerator E45_E(Card card,List<TargetObject> tar){yield return null;}
 public IEnumerator E46(Card card,List<TargetObject> tar){yield return null;}

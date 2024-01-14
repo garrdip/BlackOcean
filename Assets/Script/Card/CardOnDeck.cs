@@ -115,8 +115,17 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // 카드 일러스트 세팅
     private void InitCardIllust(Card card, SerializedDictionary<string, Sprite> sprites)
     {
-        if(!string.IsNullOrEmpty(card.baseCard.cardImage)){
-            cardIllust.sprite = Resources.Load<Sprite>(card.baseCard.cardImage);
+        if(!card.baseCard.cardNumber.Contains("HA")){
+            if(card.baseCard.cardNumber.Contains("_E")){
+                // 강화카드의 경우 _E 문자열을 제거하여 아틀라스에서 스프라이트 조회
+                int idx = card.baseCard.cardNumber.IndexOf("_E");
+                if(idx != -1){
+                    string cardNumber = card.baseCard.cardNumber.Substring(0, idx);
+                    cardIllust.sprite = CardData.instance.cardIllustAtlas.GetSprite(cardNumber);
+                }
+            }else{
+                cardIllust.sprite = CardData.instance.cardIllustAtlas.GetSprite(card.baseCard.cardNumber);
+            }
         }
     }
 
