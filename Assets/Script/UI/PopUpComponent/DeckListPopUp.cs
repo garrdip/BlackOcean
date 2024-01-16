@@ -60,10 +60,7 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
         canvasGroup.DOFade(1.0f, 0.5f);
         switch(type){
             case DeckListType.PREFARE_DECK:
-                GameUIManager.instance.buttonPrefareDeck.transform.SetParent(transform);
-                GameUIManager.instance.buttonPrefareDeck.transform.SetAsLastSibling();
                 M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
-                originSiblingIndex = GameUIManager.instance.buttonPrefareDeck.transform.GetSiblingIndex();
                 // 로컬 플레이어의 PrefareDeck 조회
                 if(NetworkClient.connection != null && NetworkClient.active){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
@@ -72,10 +69,7 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
                 break;
 
             case DeckListType.TRASH_DECK:
-                GameUIManager.instance.buttonTrashDeck.transform.SetParent(transform);
-                GameUIManager.instance.buttonTrashDeck.transform.SetAsLastSibling();
                 M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
-                originSiblingIndex = GameUIManager.instance.buttonTrashDeck.transform.GetSiblingIndex();
                 // 로컬 플레이어의 TrashDeck 조회
                 if(NetworkClient.connection != null && NetworkClient.active){
                     GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
@@ -90,16 +84,8 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
     {
         // 버튼들의 랜더 순서 인덱스값 초기상태로 변경
         if(PopUpUIManager.instance.cardOnHandRemovePopUp.activeSelf){
-            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(PopUpUIManager.instance.cardOnHandRemovePopUp.transform);
-            GameUIManager.instance.buttonTrashDeck.transform.SetParent(PopUpUIManager.instance.cardOnHandRemovePopUp.transform);
-            GameUIManager.instance.buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);
-            GameUIManager.instance.buttonTrashDeck.transform.SetSiblingIndex(originSiblingIndex);
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHandOverPopUp");
         }else{
-            GameUIManager.instance.buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
-            GameUIManager.instance.buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
-            GameUIManager.instance.buttonPrefareDeck.transform.SetSiblingIndex(originSiblingIndex);
-            GameUIManager.instance.buttonTrashDeck.transform.SetSiblingIndex(originSiblingIndex);
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }
         PopUpUIManager.instance.isOpenPrefareDeckPopUp = false;

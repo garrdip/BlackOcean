@@ -178,6 +178,9 @@ public class TargetObject : NetworkBehaviour
         {
             ironDemon.GetComponent<SkeletonAnimation>().state.Complete -= OnIronDemonAnimationComplete;
         }
+        if(player != null){
+            player.onChangePlayerOrder -= OnChangePlayerOrder;
+        }
     }
 
     public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)

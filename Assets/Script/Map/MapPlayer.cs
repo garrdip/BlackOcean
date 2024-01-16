@@ -58,6 +58,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         GetComponent<CanvasGroup>().DOKill();
         GetComponent<RectTransform>().DOKill();
         sequence.Kill();
+        gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
     }
 
     public override void OnStartServer()

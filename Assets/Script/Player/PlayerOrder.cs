@@ -53,6 +53,7 @@ public class PlayerOrder : NetworkBehaviour
     void OnDestroy()
     {
         transform.DOKill();
+        gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
     }
 
     void OnMouseEnter()
