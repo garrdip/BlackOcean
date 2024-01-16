@@ -45,7 +45,9 @@ public class PlayerOrder : NetworkBehaviour
 
     void Start()
     {
-        gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
+        if(gamePlayer != null){
+            gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
+        }
         SetParentAndPostion(gamePlayer.selectOrder);
         SetOwnedViewComponent();
     }
@@ -53,7 +55,9 @@ public class PlayerOrder : NetworkBehaviour
     void OnDestroy()
     {
         transform.DOKill();
-        gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
+        if(gamePlayer != null){
+            gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
+        }
     }
 
     void OnMouseEnter()

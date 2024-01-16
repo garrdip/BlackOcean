@@ -47,8 +47,10 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
 
     void Start()
     {
-        gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
-        gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
+        if(gamePlayer != null){
+            gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
+            gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
+        }
         buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
         buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
     }
@@ -58,7 +60,9 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         GetComponent<CanvasGroup>().DOKill();
         GetComponent<RectTransform>().DOKill();
         sequence.Kill();
-        gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
+        if(gamePlayer != null){
+            gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
+        }
     }
 
     public override void OnStartServer()
