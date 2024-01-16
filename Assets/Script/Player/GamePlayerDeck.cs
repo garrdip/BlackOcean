@@ -53,7 +53,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public List<CardOnHand> destroyCardList = new List<CardOnHand>();
 
+    public int numOfUsedIronTeeth = 0;
 
+    [SyncVar]
+    public int AdditionalSizeOfIromDemon;
 
     public override void OnStartServer()
     {
@@ -166,7 +169,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     }
                     break;
                 case Character.HONGDANHYANG:
-                    for(int i = 0; i < 20; i++)
+                    for(int i = 0; i < 8; i++)
                     {
                         //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
                         //deck.Add(attackCard);
@@ -174,7 +177,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                             Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
                             deck.Add(attackCard);
                         }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H13")));
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H40")));
                             deck.Add(defenseCard);
                         }
                     }
@@ -226,7 +229,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             (cardOnHand,targetObject) = serverCardPredictQueue.Dequeue(); // Command가 왔기때문에 Dequeue하여 판단
 
             int totalCost = GetTotalCostOfCardOnHand(cardOnHand);
-            
+
             if(totalCost > currentIchi) // 카드 코스트 계산 하는곳
             {
                 ReturnToCardOnHand(cardOnHand);
@@ -370,6 +373,28 @@ public partial class GamePlayerDeck : NetworkBehaviour
             }
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
 
+            cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
+        }
+    }
+
+    [Server]
+    public void GenerateCardOnHand(Card card,int count)
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        Vector3 cardSpawnPosition = new Vector3(0f, -100f, 0f);
+        for(int i = 0 ; i < count ; i ++)
+        {
+            GameObject cardOnHandObject = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+                cardSpawnPosition,
+                Quaternion.identity
+            );
+            CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
+            cardOnHand.card = card;
+            if(cardPocket != null){
+                cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
+            }
+            NetworkServer.Spawn(cardOnHandObject, connectionToClient);
             cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
         }
     }

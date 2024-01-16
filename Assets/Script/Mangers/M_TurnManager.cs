@@ -242,6 +242,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         foreach(TargetObject tar in spawnedPlayerList)
         {
             tar.defense = 0;
+            tar.player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth = 0;
         }
         phase = BattleTurn.PLAYER_DRAW;
     }

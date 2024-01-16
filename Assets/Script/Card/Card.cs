@@ -12,6 +12,8 @@ public class Card
     public List<CardCharacteristic> cardCharacteristics = new List<CardCharacteristic>();
     public int experience;
 
+    public bool tempEnhanced;
+
     public Card(CardBase basecard)
     {
         baseCard = basecard;
@@ -28,6 +30,7 @@ public class Card
         card.isEnhanced = isEnhanced;
         card.costAddition = costAddition;
         card.experience = experience;
+        tempEnhanced = false;
         if(!isEndBattle) // 전투 종료 후 남길 특성 여기서 넣어줘야함
         {
             foreach(CardCharacteristic cardChar in cardCharacteristics)

@@ -44,11 +44,35 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return MoveIronDemonCoroutine(tar[0],tar[1]);
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
-        isCardOperating = false;
+        
     }
     public IEnumerator HA_E(Card card,List<TargetObject> tar)
     {
         yield return HA(card,tar);
+    }
+
+    public IEnumerator HWAHAP(TargetObject tar)
+    {
+        if(tar.player.character == Character.HONGDANHYANG)
+        {
+            if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
+            {
+                M_TurnManager.instance.AnimIronDemon("Buff0",tar);
+                tar.ironDemonLocation.defense += tar.sizeOfIronDemon;
+                yield return new WaitForSeconds(1.33f);
+            }
+            else // 몬스터의 경우 데미지
+            {
+                if(UnityEngine.Random.Range(0,2) == 0)M_TurnManager.instance.AnimIronDemon("Attack0",tar);
+                else M_TurnManager.instance.AnimIronDemon("Attack1",tar);
+                yield return new WaitForSeconds(0.4f);
+                StartCoroutine(tar.ironDemonLocation.monster.OnHitAnimation()); // 실제 피격 애니메이션
+                tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon, tar);
+                yield return new WaitForSeconds(0.6f);
+            }
+            M_TurnManager.instance.AnimIronDemon("Idle",tar);
+            yield return new WaitForSeconds(0.1f);
+        }
     }
 
     // Card Method List 
@@ -63,7 +87,7 @@ public partial class CardData : SingletonD<CardData>
         yield return tempWait; // 임시 딜레이
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         preLocation = tar[0].ironDemonLocation;
-
+        tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
         yield return GeneralIronDemonAttack(tar[0], tar[1], 6); // 철귀 공격
@@ -72,7 +96,7 @@ public partial class CardData : SingletonD<CardData>
 
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
-        isCardOperating = false;
+        
     }
     public IEnumerator H0_E(Card card,List<TargetObject> tar)
     { 
@@ -89,7 +113,7 @@ public partial class CardData : SingletonD<CardData>
         yield return tempWait; // 임시 딜레이
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         preLocation = tar[0].ironDemonLocation;
-
+        tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
         yield return GeneralIronDemonAttack(tar[0], tar[1], 6); // 철귀 공격
@@ -100,7 +124,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 
         tar[0].GainBuff(BuffType.BOONGGUI,1,true,false,true,null);
-        isCardOperating = false;
+        
     }
 
     public IEnumerator H1_E(Card card,List<TargetObject> tar)
@@ -129,7 +153,7 @@ public partial class CardData : SingletonD<CardData>
 
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); 
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-        isCardOperating = false;
+        
         
     }
     public IEnumerator H2_E(Card card,List<TargetObject> tar)
@@ -157,7 +181,7 @@ public partial class CardData : SingletonD<CardData>
 
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); 
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-        isCardOperating = false;
+        
     }
 
     public IEnumerator H3_E(Card card,List<TargetObject> tar)
@@ -187,7 +211,7 @@ public partial class CardData : SingletonD<CardData>
 
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); 
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
-        isCardOperating = false;
+        
     }
     public IEnumerator H4_E(Card card,List<TargetObject> tar)
     {
@@ -201,7 +225,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
         tar[1].maxIchi ++;
-        isCardOperating = false;
+        
     }
     public IEnumerator H5_E(Card card,List<TargetObject> tar)
     {
@@ -218,7 +242,7 @@ public partial class CardData : SingletonD<CardData>
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
             target.maxIchi ++;
         
-        isCardOperating = false;
+        
     }
     public IEnumerator H6_E(Card card,List<TargetObject> tar)
     {
@@ -235,7 +259,7 @@ public partial class CardData : SingletonD<CardData>
         yield return tempWait;
         tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(2);
         tar[0].player.GetComponent<GamePlayerDeck>().currentIchi ++;
-        isCardOperating = false;
+        
     }
     public IEnumerator H7_E(Card card,List<TargetObject> tar)
     {
@@ -267,7 +291,7 @@ public partial class CardData : SingletonD<CardData>
 
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
-        isCardOperating = false;
+        
     }
     public IEnumerator H8_E(Card card,List<TargetObject> tar)
     {
@@ -285,7 +309,7 @@ public partial class CardData : SingletonD<CardData>
         tar[0].GainBuff(BuffType.BOONGGUI,3,true,false,true,null);
         yield return new WaitForSeconds(1.33f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
-        isCardOperating = false;
+        
     }
     public IEnumerator H9_E(Card card,List<TargetObject> tar)
     {
@@ -301,7 +325,7 @@ public partial class CardData : SingletonD<CardData>
             target.player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(2);
             target.player.GetComponent<GamePlayerDeck>().currentIchi ++;
         }
-        isCardOperating = false;
+        
     }
     public IEnumerator H10_E(Card card,List<TargetObject> tar)
     {
@@ -314,7 +338,7 @@ public partial class CardData : SingletonD<CardData>
         yield return tempWait;
         GamePlayerDeck gamePlayerDeck = tar[0].player.GetComponent<GamePlayerDeck>();
         gamePlayerDeck.CmdSpawnCardOnHand((int)(gamePlayerDeck.trashDeck.Count/7));
-        isCardOperating = false;
+        
     }
     public IEnumerator H11_E(Card card,List<TargetObject> tar)
     {
@@ -339,7 +363,7 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.1f); // 공격모션 끝남
 
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
-        isCardOperating = false;
+        
     }
     public IEnumerator H12_E(Card card, List<TargetObject> tar)
     {
@@ -364,7 +388,7 @@ public partial class CardData : SingletonD<CardData>
         tar[0].GainBuff(BuffType.BOONGGUI,3,true,false,true,tar[0]);
         yield return new WaitForSeconds(0.2f); // 공격모션 끝남
         M_DimmingManager.instance.StopDimming(targets);
-        isCardOperating = false;
+        
 
     }
     public IEnumerator H13_E(Card card, List<TargetObject> tar)
@@ -372,74 +396,551 @@ public partial class CardData : SingletonD<CardData>
         yield return H13(card,tar);
     }
 
-    // 피해라
+    // 피해라 
 	public IEnumerator H14(Card card, List<TargetObject> tar)
     {
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         GeneralGetDefense(tar[0],tar[0],7,card);
         yield return new WaitForSeconds(1.33f);
+        MovePosition(true,tar[0]);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-        isCardOperating = false;
+        
     }
     public IEnumerator H14_E(Card card, List<TargetObject> tar)
     {
         yield return H14(card,tar);
     }
 
-    
-    public IEnumerator H15(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H15_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H16(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H16_E(Card card, List<TargetObject> tar){yield return null;}
+    // 부탁하마
+    public IEnumerator H15(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        GeneralSingleAttack(tar[0],tar[1],8);
+        yield return new WaitForSeconds(1.33f);
+        MovePosition(false,tar[0]);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+        
+    }
+    public IEnumerator H15_E(Card card, List<TargetObject> tar)
+    {
+        yield return H15(card,tar);
+    }
+
+    // 그을린 꽃의 기적
+    public IEnumerator H16(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(M_TurnManager.instance.spawnedPlayerList);
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        foreach(TargetObject player in M_TurnManager.instance.spawnedPlayerList)
+        {
+            bool hasDebuff = false;
+            if(player.buffs.FindIndex(x => x.type == BuffType.BOONGGUI) != -1)
+            {
+                hasDebuff = true;
+                player.buffs.Remove(player.buffs.Find(buff => buff.type == BuffType.BOONGGUI));
+            }
+            if(player.buffs.FindIndex(x => x.type == BuffType.SOIRAK) != -1)
+            {
+                hasDebuff = true;
+                player.buffs.Remove(player.buffs.Find(buff => buff.type == BuffType.SOIRAK));
+            }
+            if(hasDebuff)
+            {
+                player.GainBuff(BuffType.ICHI_DEFENSE,2,false,true,false,tar[0]);
+            }
+        } 
+        yield return new WaitForSeconds(1.33f);
+        M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
+        
+    }
+    public IEnumerator H16_E(Card card, List<TargetObject> tar)
+    {
+        yield return H16(card,tar);
+    }
+
+    // 기적의 무게
     public IEnumerator H17(Card card, List<TargetObject> tar){yield return null;}
     public IEnumerator H17_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H18(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H18_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H19(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H19_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H20(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H20_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H21(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H21_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H22(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H22_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H23(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H23_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H24(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H24_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H25(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H25_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H26(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H26_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H27(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H27_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H28(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H28_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H29(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H29_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H30(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H30_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H31(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H31_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H32(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H32_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H33(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H33_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H34(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H34_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H35(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H35_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H36(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H36_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H37(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H37_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H38(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H38_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H39(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H39_E(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H40(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H40_E(Card card, List<TargetObject> tar){yield return null;}
+
+    // 주조 (강화 이펙트 추가)
+    public IEnumerator H18(Card card, List<TargetObject> tar)
+    {
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션
+        foreach(TargetObject player in M_TurnManager.instance.spawnedPlayerList)
+        {
+            int count = 0;
+            foreach(CardOnHand cardOnHand in player.player.GetComponent<GamePlayerDeck>().cardOnHands)
+            {
+                if(cardOnHand.card == card)continue;
+                cardOnHand.card.cardCharacteristics.Add(CardCharacteristic.SOOKREON);
+                cardOnHand.OnChangeCardData(cardOnHand.card,cardOnHand.card);
+                count ++;
+                if(count == 3)break;
+            }
+        }
+        yield return new WaitForSeconds(1.33f);
+        
+    }
+    public IEnumerator H18_E(Card card, List<TargetObject> tar)
+    {
+        yield return H18(card,tar);
+    }
+
+    // 맡기거라
+    public IEnumerator H19(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        GeneralGetDefense(tar[0],tar[0],10,card);
+        yield return new WaitForSeconds(1.33f);
+        MovePosition(tar[0],tar[1]);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+        
+    }
+    public IEnumerator H19_E(Card card, List<TargetObject> tar)
+    {
+        yield return H19(card,tar);
+    }
+
+    // 철로 만든 괴물
+    public IEnumerator H20(Card card, List<TargetObject> tar)
+    {
+        int totalCount = 0;
+
+        foreach(Card pCard in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
+        {
+            if(pCard.baseCard.cardNumber == "H0" || pCard.baseCard.cardNumber == "H1")
+                totalCount++;
+        }
+        foreach(Card pCard in tar[0].player.GetComponent<GamePlayerDeck>().trashDeck)
+        {
+            if(pCard.baseCard.cardNumber == "H0" || pCard.baseCard.cardNumber == "H1")
+                totalCount++;
+        }
+        TargetObject preLocation;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+        yield return tempWait; // 임시 딜레이
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        preLocation = tar[0].ironDemonLocation;
+
+        yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
+
+        M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]); // 철귀 공격 모션 시작
+        yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
+        StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
+        for(int i = 0 ; i < totalCount+1 ; i ++)
+        {
+            GeneralSingleDamage(tar[1],5); // 실제 데미지 적용시점
+            yield return new WaitForSeconds(0.2f);
+        }
+        
+        yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
+
+        M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+        
+        
+    }
+    public IEnumerator H20_E(Card card, List<TargetObject> tar)
+    {
+        yield return H20(card,tar);
+    }
+
+    // 철의 분노
+    public IEnumerator H21(Card card, List<TargetObject> tar)
+    {
+        foreach(Card pCard in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
+        {
+            if(pCard.baseCard.cardNumber == "H0" || pCard.baseCard.cardNumber == "H1")
+                pCard.tempEnhanced = true;
+        }
+        foreach(Card pCard in tar[0].player.GetComponent<GamePlayerDeck>().trashDeck)
+        {
+            if(pCard.baseCard.cardNumber == "H0" || pCard.baseCard.cardNumber == "H1")
+                pCard.tempEnhanced = true;
+        }
+        foreach(CardOnHand pCard in tar[0].player.GetComponent<GamePlayerDeck>().cardOnHands)
+        {
+            if(pCard.card.baseCard.cardNumber == "H0" || pCard.card.baseCard.cardNumber == "H1")
+            {
+                pCard.card.tempEnhanced = true;
+                pCard.OnChangeCardData(pCard.card,pCard.card);
+            }
+        }
+        yield return new WaitForSeconds(0.2f);
+        
+    }
+    public IEnumerator H21_E(Card card, List<TargetObject> tar)
+    {
+        yield return H21(card,tar);
+    }
+
+    //손톱 다듬기 // ToDo : 생성카드는 생성 느낌 줘야함
+    public IEnumerator H22(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        GeneralGetDefense(tar[0],tar[0],7,card);
+        yield return new WaitForSeconds(1f);
+        tar[0].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H0")),3);
+        yield return new WaitForSeconds(0.3f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+        
+    }
+    public IEnumerator H22_E(Card card, List<TargetObject> tar)
+    {
+        yield return H22(card,tar);
+    }
+
+    //아버지의 화신
+    public IEnumerator H23(Card card, List<TargetObject> tar)
+    {
+        List<TargetObject> allEnemy = new List<TargetObject>();
+        allEnemy.Add(tar[0]);
+        allEnemy.AddRange(M_TurnManager.instance.spawnedMonsterList);
+        M_DimmingManager.instance.StartDimming(allEnemy);
+        yield return tempWait; // 임시 딜레이
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(0.5f);
+        for(int i = 0 ;i < tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth + 1 ; i ++)
+        {
+            int randomIndex = UnityEngine.Random.Range(0,M_TurnManager.instance.spawnedMonsterList.Count);
+            GeneralSingleAttack(tar[0],M_TurnManager.instance.spawnedMonsterList[randomIndex],4);
+            StartCoroutine(M_TurnManager.instance.spawnedMonsterList[randomIndex].monster.OnHitAnimation());
+            yield return new WaitForSeconds(0.2f);
+        }
+        M_DimmingManager.instance.StopDimming(allEnemy);
+        
+    }
+    public IEnumerator H23_E(Card card, List<TargetObject> tar)
+    {
+        yield return H23(card,tar);
+    }
+
+    // 칼날 손질
+    public IEnumerator H24(Card card, List<TargetObject> tar)
+    {
+        yield return tempWait; // 임시 딜레이
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션
+        tar[0].GainBuff(BuffType.BLADETRIMMING,1, false, true, false, tar[0]);
+        
+    }
+    public IEnumerator H24_E(Card card, List<TargetObject> tar)
+    {
+        yield return H24(card,tar);
+    }
+
+    // 입맛 다시기
+    public IEnumerator H25(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(1f);
+        tar[0].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H1")),M_TurnManager.instance.spawnedMonsterList.Count);
+        yield return new WaitForSeconds(0.3f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+        
+    }
+    public IEnumerator H25_E(Card card, List<TargetObject> tar)
+    {
+        yield return H25(card,tar);
+    }
+
+    //재조물 (카드 버리기)
+    public IEnumerator H26(Card card, List<TargetObject> tar)
+    {
+        yield return null;
+    }
+    public IEnumerator H26_E(Card card, List<TargetObject> tar)
+    {
+        yield return H26(card,tar);
+    }
+
+    // 화가 나는구나
+    public IEnumerator H27(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(1f);
+        tar[0].GainBuff(BuffType.IMANGRY,1,false,true,true,tar[0]);
+        yield return new WaitForSeconds(0.3f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+        
+    }
+    public IEnumerator H27_E(Card card, List<TargetObject> tar)
+    {
+        yield return H27(card,tar);
+    }
+
+    // 성장기
+    public IEnumerator H28(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(1f);
+        tar[0].GainBuff(BuffType.GROWTHSPURT, 1, false, true, false, tar[0]);
+        yield return new WaitForSeconds(0.3f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+        
+    }
+    public IEnumerator H28_E(Card card, List<TargetObject> tar)
+    {
+        yield return H28(card,tar);
+    }
+
+    // 용철 폭발
+    public IEnumerator H29(Card card, List<TargetObject> tar)
+    {
+        int totalDamage = tar[0].sizeOfIronDemon - 1;
+        tar[0].sizeOfIronDemon = 1;
+        M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]); // 철귀 공격 모션 시작
+        yield return new WaitForSeconds(0.5f);
+        foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
+        {
+            GeneralSingleDamage(enemy,totalDamage*8);
+            StartCoroutine(enemy.monster.OnHitAnimation());
+        }
+        yield return new WaitForSeconds(0.5f);
+        
+    }
+    public IEnumerator H29_E(Card card, List<TargetObject> tar)
+    {
+        yield return H29(card,tar);
+    }
+
+    // 아버지의 자비
+    public IEnumerator H30(Card card, List<TargetObject> tar)
+    {
+        tar[0].sizeOfIronDemon = (tar[0].sizeOfIronDemon - 5) <= 0 ? 1 : tar[0].sizeOfIronDemon - 5;
+        
+        M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]); // 철귀 공격 모션 시작
+        yield return new WaitForSeconds(0.5f);
+        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+        {
+            GeneralGetDefense(tar[0],target,30,card);
+        }
+        yield return new WaitForSeconds(0.5f);
+        
+    }
+    public IEnumerator H30_E(Card card, List<TargetObject> tar)
+    {
+        yield return H30(card,tar);
+    }
+
+    // 무게감 (H0랑 같음)
+    public IEnumerator H31(Card card, List<TargetObject> tar)
+    {
+        TargetObject preLocation;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+        yield return tempWait; // 임시 딜레이
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        preLocation = tar[0].ironDemonLocation;
+        tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
+        yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
+
+        M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]); // 철귀 공격 모션 시작
+        yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
+        StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
+        GeneralSingleDamage(tar[1],tar[0].sizeOfIronDemon); // 실제 데미지 적용시점
+        yield return new WaitForSeconds(0.6f); // 공격모션 끝남
+        
+        yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
+
+        M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+        
+    }
+    public IEnumerator H31_E(Card card, List<TargetObject> tar)
+    {
+        yield return H31(card,tar);
+    }
+
+    // 포식자
+    public IEnumerator H32(Card card, List<TargetObject> tar)
+    {
+        TargetObject preLocation;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+        yield return tempWait; // 임시 딜레이
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        preLocation = tar[0].ironDemonLocation;
+        tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
+        yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
+
+        M_TurnManager.instance.AnimIronDemon("Attack1",tar[0]); // 철귀 공격 모션 시작
+        yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
+        StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
+        GeneralSingleAttack(tar[0],tar[1],80); // 실제 데미지 적용시점
+        if(tar[1].monster.HP <= 0)tar[0].player.GetComponent<GamePlayerDeck>().AdditionalSizeOfIromDemon ++;
+        tar[0].sizeOfIronDemon ++;
+        yield return new WaitForSeconds(0.6f); // 공격모션 끝남
+        
+        yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
+
+        M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+        
+    }
+    public IEnumerator H32_E(Card card, List<TargetObject> tar)
+    {
+        yield return null;
+    }
+
+    // 갑옷 약탈
+    public IEnumerator H33(Card card, List<TargetObject> tar)
+    {
+        TargetObject preLocation;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+        yield return tempWait; // 임시 딜레이
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        preLocation = tar[0].ironDemonLocation;
+        tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
+        yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
+
+        yield return GeneralIronDemonAttack(tar[0], tar[1], 10); // 철귀 공격
+        tar[0].sizeOfIronDemon += 2;
+        
+        yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
+
+        M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+        
+    }
+    public IEnumerator H33_E(Card card, List<TargetObject> tar)
+    {
+        yield return H33(card,tar);
+    }
+
+    // 꽃과 철의 분노
+    public IEnumerator H34(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(1f);
+        tar[0].GainBuff(BuffType.FURYOFFLOWER, 1, false, true, false, tar[0]);
+        yield return new WaitForSeconds(0.3f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+        
+    }
+    public IEnumerator H34_E(Card card, List<TargetObject> tar)
+    {
+        yield return H34(card,tar);
+    }
+
+    // 휩쓸기
+    public IEnumerator H35(Card card, List<TargetObject> tar)
+    {
+        List<TargetObject> allEnemy = new List<TargetObject>();
+        allEnemy.Add(tar[0]);
+        allEnemy.AddRange(M_TurnManager.instance.spawnedMonsterList);
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        M_DimmingManager.instance.StartDimming(allEnemy);
+        yield return new WaitForSeconds(0.5f);
+        foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
+        {
+            GeneralSingleAttack(tar[0],enemy,7);
+            StartCoroutine(enemy.monster.OnHitAnimation());
+        }
+        yield return new WaitForSeconds(0.5f);
+        if(tar[0].ironDemonLocation.objectType == ObjectType.ENEMY)
+            yield return HWAHAP(tar[0]);
+        M_DimmingManager.instance.StopDimming(allEnemy);
+        
+    }
+    public IEnumerator H35_E(Card card, List<TargetObject> tar)
+    {
+        yield return H35(card,tar);
+    }
+
+    // 어머니를 지켜라
+    public IEnumerator H36(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        yield return MoveIronDemonCoroutine(tar[0],tar[0]); // 철귀 자신의 위치로
+        yield return HWAHAP(tar[0]);
+        yield return HWAHAP(tar[0]);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+        
+    }
+    public IEnumerator H36_E(Card card, List<TargetObject> tar)
+    {
+        yield return H36(card,tar);
+    }
+
+    // 식후 명령
+    public IEnumerator H37(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        tar[0].sizeOfIronDemon ++;
+        yield return HWAHAP(tar[0]);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+        
+    }
+    public IEnumerator H37_E(Card card, List<TargetObject> tar)
+    {
+        yield return H37(card,tar);
+    }
+
+    //철의 장막
+    public IEnumerator H38(Card card, List<TargetObject> tar)
+    {
+        M_DimmingManager.instance.StartDimming(M_TurnManager.instance.spawnedPlayerList);
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(0.5f);
+        foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
+        {
+            if(target != tar[0])
+                GeneralGetDefense(tar[0],target,8,card);
+        }
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
+    }
+    public IEnumerator H38_E(Card card, List<TargetObject> tar)
+    {
+        yield return H38(card,tar);
+    }
+
+    // 추적자
+    public IEnumerator H39(Card card, List<TargetObject> tar)
+    {
+        TargetObject preLocation;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+        yield return tempWait; // 임시 딜레이
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        preLocation = tar[0].ironDemonLocation;
+        tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
+        yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
+
+        for(int i = 0 ;i < 2 ; i ++)
+        {
+            yield return GeneralIronDemonAttack(tar[0], tar[1], 2); // 철귀 공격
+            GeneralGetDefense(tar[0],tar[0],2,card);
+        }
+        yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
+
+        M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+        
+    }
+    public IEnumerator H39_E(Card card, List<TargetObject> tar)
+    {
+        yield return H39(card,tar);
+    }
+
+    // 신중한 명령
+    public IEnumerator H40(Card card, List<TargetObject> tar)
+    {
+        for(int i = 0 ; i < 3 ; i ++)
+            yield return HWAHAP(tar[0]);
+        
+    }
+    public IEnumerator H40_E(Card card, List<TargetObject> tar)
+    {
+        yield return H40(card,tar);
+    }
     public IEnumerator H41(Card card, List<TargetObject> tar){yield return null;}
     public IEnumerator H41_E(Card card, List<TargetObject> tar){yield return null;}
     public IEnumerator H42(Card card, List<TargetObject> tar){yield return null;}

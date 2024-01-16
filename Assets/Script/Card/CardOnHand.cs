@@ -404,7 +404,7 @@ public class CardOnHand : NetworkBehaviour
         if(newCard.baseCard.name == null)return;
         if(newCard.baseCard.name == "")return;
 
-        if(newCard.experience >= newCard.baseCard.maxExperience)
+        if(newCard.experience >= newCard.baseCard.maxExperience || newCard.isEnhanced || newCard.tempEnhanced)
         {
             textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == newCard.baseCard.cardNumber + "_E").name;
             textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(CardData.instance.cards.Find(x => x.cardNumber == newCard.baseCard.cardNumber + "_E").description);
@@ -418,7 +418,9 @@ public class CardOnHand : NetworkBehaviour
         textCardDescription.text += '\n';
         textCardDescription.text += '\n';
         foreach(CardCharacteristic character in newCard.baseCard.cardCharacteristics)
-            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>";
+            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>" + '\n';
+        foreach(CardCharacteristic character in newCard.cardCharacteristics)
+            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>" + '\n';
         
         if(newCard.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
         {

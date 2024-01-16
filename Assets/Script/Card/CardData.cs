@@ -85,16 +85,22 @@ public partial class CardData : SingletonD<CardData>
 
     public void RunCard(Card card,List<TargetObject> targets)
     {
+        StartCoroutine(RunCardCoroutine(card,targets));
+    }
+
+    private IEnumerator RunCardCoroutine(Card card,List<TargetObject> targets)
+    {
         if(card.experience >= card.baseCard.maxExperience)
         {
-            StartCoroutine(CardMethods[card.baseCard.cardNumber+"_E"](card,targets));
+            yield return CardMethods[card.baseCard.cardNumber+"_E"](card,targets);
             card.experience = 0;
         }
         else
         {
-            StartCoroutine(CardMethods[card.baseCard.cardNumber](card,targets));
+            yield return CardMethods[card.baseCard.cardNumber](card,targets);
             card.experience++;
         }
+        isCardOperating = false;
     }
 
     public bool CheckCardCharacteristic(Card card, CardCharacteristic character)
@@ -160,5 +166,32 @@ public partial class CardData : SingletonD<CardData>
     public bool IsGISADO(List<TargetObject> tar)
     {
         return ((int)tar[1].monster.nextTarget == tar[0].player.selectOrder)? true : false;
+    }
+
+    private void MovePosition(bool isForward,TargetObject tar)
+    {
+        if(isForward)
+        {
+            if(tar.player.netId != M_TurnManager.instance.playerOrder[2])
+            {
+                int currentIndex = M_TurnManager.instance.playerOrder.FindIndex(x => x == tar.player.netId);
+                M_TurnManager.instance.SwapPlayerOrder(currentIndex,++currentIndex);
+            }
+        }
+        else
+        {
+            if(tar.player.netId != M_TurnManager.instance.playerOrder[0])
+            {
+                int currentIndex = M_TurnManager.instance.playerOrder.FindIndex(x => x == tar.player.netId);
+                M_TurnManager.instance.SwapPlayerOrder(currentIndex,currentIndex--);
+            }
+        }
+    }
+
+    private void MovePosition(TargetObject from, TargetObject to)
+    {
+        int currentIndex = M_TurnManager.instance.playerOrder.FindIndex(x => x == from.player.netId);
+        int targetIndex = M_TurnManager.instance.playerOrder.FindIndex(x => x == to.player.netId);
+        M_TurnManager.instance.SwapPlayerOrder(currentIndex,targetIndex);
     }
 }
