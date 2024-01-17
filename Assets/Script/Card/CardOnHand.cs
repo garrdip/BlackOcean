@@ -21,6 +21,10 @@ public class CardOnHand : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeParent))]
     public CardPocket parent;
 
+    // 추가 드로우된 카드인지 여부
+    [SyncVar]
+    public bool isAddtionDrawCard = false;
+
     public SortingGroup sortingGroup;
 
     [Header("CardOnHand Transform 및 컴포넌트 관련 값들")]
@@ -40,18 +44,19 @@ public class CardOnHand : NetworkBehaviour
     // 마우스가 오브젝트에서 벗어난 상태 확인 여부(딜레이를 이용해 이벤트 연속 호출 방지용)
     public bool isExitComplete = true;
 
-    // 카드 오브젝트가 드래그 상태인지 여부
+    // 드래그 상태인지 여부
     public bool isDrag = false;
 
-    // 카드 오브젝트가 움직이는 상태인지 여부
+    // 움직이는 상태인지 여부
     public bool isMoving = false;
 
-    // 카드 오브젝트가 밀려난 상태인지 여부
+    // 밀려난 상태인지 여부
     public bool isShifted = false;
 
     // 카드 제거 팝업창에서 선택한 상태인지 여부
     public bool isChoosed = false;
 
+    // 사용된 상태인지 여부
     public bool isUsed = false;
 
     [Header("CardOnHand UI Canvas 컴포넌트")]

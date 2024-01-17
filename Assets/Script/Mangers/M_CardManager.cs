@@ -110,7 +110,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 for(int i=0; i<count; i++){      
                     CardOnHand cardOnHand = cardOnHandsIsNotChoosed[i];
                     if(cardOnHand != null){
-                        if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed){
+                        if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed && !cardOnHand.isAddtionDrawCard){
                             if(cardOnHand.isMouseOver){
                                 Vector3 cardOverPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, cardOverPosition, Time.deltaTime * 10f);
@@ -168,20 +168,18 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     {
         if(!cardOnHand.isChoosed){
             cardOnHand.isMoving = true;
-            cardOnHand.transform.position = GameUIManager.instance.buttonPrefareDeck.transform.position;
+            cardOnHand.transform.position = cardOnHand.isAddtionDrawCard ? Vector3.zero : GameUIManager.instance.buttonPrefareDeck.transform.position;
             cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-            cardOnHand.transform.localScale = new Vector3(0.02f, 0.02f, 0f);
-
-            // Dotween 애니매이션 시퀀스 생성
-            Sequence sequence = DOTween.Sequence();
-            sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
-            sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
-                .SetDelay(index * 0.1f)
-                .SetEase(Ease.OutSine)
-                .OnComplete(() => {
-                    cardOnHand.isMoving = false;
-                    sequence.Kill();
-                }));      
+                cardOnHand.transform.localScale = new Vector3(0.02f, 0.02f, 0f);
+                Sequence sequence = DOTween.Sequence();
+                sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
+                    .SetDelay(index * 0.1f)
+                    .SetEase(Ease.OutSine)
+                    .OnComplete(() => {
+                        cardOnHand.isMoving = false;
+                        currentGamePlayerDeck.CmdChangeCardOnHandIsAddtionDraw(cardOnHand, false);
+                        sequence.Kill();
+                    }));      
         }
     }
 

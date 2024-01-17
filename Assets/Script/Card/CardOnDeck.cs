@@ -40,7 +40,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     void Start()
     {
-        originScale = transform.localScale;
+        originScale = Vector3.one;
         initCardData();
         InitCardTemplateByCharacter(card);
     }
@@ -198,6 +198,13 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             HandleClickCardOnDeckOnPopUp(() => {
                 //M_TurnManager.instance.npc_Mercurius.shopCards.Remove(this.card);
             });
+        }
+        //DeckDrawPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
+        if(PopUpUIManager.instance.deckDrawPopUp.activeSelf){
+            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
+            PopUpUIManager.instance.HandleHideDeckDrawPopUp();
+            gamePlayerDeck.CmdSpawnAddtionDrawCard(card);
         }
     }
 

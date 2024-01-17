@@ -29,6 +29,12 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public delegate void OnChangeBattleResultPopUpHide();
     public OnChangeBattleResultPopUpHide onChangeBattleResultPopUpHide;
 
+    // DeckDrawPopUp Delegate
+    public delegate void OnChangeDeckDrawPopUpShow();
+    public OnChangeDeckDrawPopUpShow onChangeDeckDrawPopUpShow;
+    public delegate void OnChangeDeckDrawPopUpHide();
+    public OnChangeDeckDrawPopUpHide onChangeDeckDrawPopUpHide;
+
     
     // DeckRemovePopUp Delegate
     public delegate void OnChangeDeckRemovePopUpShow();
@@ -45,6 +51,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
 
     [Header("팝업 UI 오브젝트")]
     public GameObject deckListPopUp; // 덱 목록 팝업
+    public GameObject deckDrawPopUp; // 덱 드로우 팝업
     public GameObject deckRemovePopUp; // 덱 제거 팝업
     public GameObject cardOnHandRemovePopUp; // 패 제거 팝업
     public GameObject battleResultPopUp; // 전투 종료 후 카드 선택 팝업
@@ -148,6 +155,23 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         if(onChangeBattleResultPopUpHide != null){
             onChangeBattleResultPopUpHide.Invoke();
         } 
+    }
+
+    // 덱 드로우 팝업창 활성화
+    public void HandleShowDeckDrawPopUp()
+    {
+        deckDrawPopUp.SetActive(true);
+        if(onChangeDeckDrawPopUpShow != null){
+            onChangeDeckDrawPopUpShow.Invoke();
+        }
+    }
+
+    // 덱 드로우 팝업창 비활성화
+    public void HandleHideDeckDrawPopUp()
+    {
+        if(onChangeDeckDrawPopUpHide != null){
+            onChangeDeckDrawPopUpHide.Invoke();
+        }
     }
 
     // 덱 제거 팝업창 활성화

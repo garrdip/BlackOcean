@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using ProjectD;
+using DG.Tweening;
 
 
 public partial class GamePlayerDeck : NetworkBehaviour
@@ -44,6 +45,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<Card> rewardCards = new SyncList<Card>(); // 전투 보상 카드
 
+    public readonly SyncList<Card> addtionDrawCards = new SyncList<Card>(); // 추가 드로우 카드
+
     private int currentIndex = 1; // removeCardOnHands SyncList에서 0번, 1번 인덱스 삽입을 반복하기 위해 사용되는 인덱스 변수
 
     public CardOnHand[] choosedCardOnHands = new CardOnHand[2];  // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
@@ -72,6 +75,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Callback += OnCardOnHandsUpdated;
         prefareDeck.Callback += OnPrefareDeckUpdated;
         trashDeck.Callback += OnTrashDeckUpdated;
+        addtionDrawCards.Callback += OnAddtionCardUpdate;
         if(isOwned){
             GameUIManager.instance.currentIchiText.text = currentIchi.ToString(); // 현재 이치값 초기 뷰 세팅
             GameUIManager.instance.maxIchiText.text = maxIchi.ToString(); // 최대 이치값 초기 뷰 세팅
@@ -257,6 +261,78 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    [Server]
+    public void CmdSpawnCardOnHand(int cardCount)
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        if(prefareDeck.Count == 0 && trashDeck.Count == 0)
+        {
+            CmdAddPrefareDeckWithShuffle();
+        }
+        // 카드 생성 초기 위치는 화면 밖
+        Vector3 cardSpawnPosition = new Vector3(-100f, 0f, 0f);
+
+        for(int i=0; i<cardCount; i++){
+            // TODO : 버린댁과 뽑을댁 모두 비엇을떄 예외처리 필요
+            if(prefareDeck.Count == 0){
+                while(trashDeck.Count != 0){
+                    Card card = trashDeck[0];
+                    trashDeck.RemoveAt(0);
+                    prefareDeck.Add(card);
+                }
+            }
+            GameObject cardOnHandObject = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+                cardSpawnPosition,
+                Quaternion.identity
+            );
+
+            int randomIndex = Random.Range(0, prefareDeck.Count);
+            CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
+            cardOnHand.index = i; // 카드 인덱스
+            cardOnHand.card = prefareDeck[randomIndex]; // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
+            prefareDeck.RemoveAt(randomIndex);
+            if(cardPocket != null){
+                cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
+            }
+            NetworkServer.Spawn(cardOnHandObject, connectionToClient);
+
+            cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
+        }
+    }
+
+    [Server]
+    public void GenerateCardOnHand(Card card,int count)
+    {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        Vector3 cardSpawnPosition = new Vector3(0f, -100f, 0f);
+        for(int i = 0 ; i < count ; i ++)
+        {
+            GameObject cardOnHandObject = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+                cardSpawnPosition,
+                Quaternion.identity
+            );
+            CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
+            cardOnHand.card = card;
+            if(cardPocket != null){
+                cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
+            }
+            NetworkServer.Spawn(cardOnHandObject, connectionToClient);
+            cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
+        }
+    }
+
+    // 뽑을 덱에서 랜덤으로 카드 뽑아 addtionDrawCards에 추가
+    [Server]
+    public void AddDrawCard(int cardCount)
+    {
+        for(int i=0; i<cardCount; i++){
+            int randomIndex = Random.Range(0, prefareDeck.Count);
+            addtionDrawCards.Add(prefareDeck[randomIndex]);
+        }
+    }
+
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
 
     // deck에 추가
@@ -339,66 +415,53 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    [Server]
-    public void CmdSpawnCardOnHand(int cardCount)
+    // 추가 드로우 카드들을 생성하여 패로 이동. 인자값인 card는 팝업창에서 선택한 카드(중력 부여할 카드)
+    [Command]
+    public void CmdSpawnAddtionDrawCard(Card card)
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        if(prefareDeck.Count == 0 && trashDeck.Count == 0)
-        {
-            CmdAddPrefareDeckWithShuffle();
-        }
-        // 카드 생성 초기 위치는 화면 밖
-        Vector3 cardSpawnPosition = new Vector3(-100f, 0f, 0f);
-
-        for(int i=0; i<cardCount; i++){
-            // TODO : 버린댁과 뽑을댁 모두 비엇을떄 예외처리 필요
-            if(prefareDeck.Count == 0){
-                while(trashDeck.Count != 0){
-                    Card card = trashDeck[0];
-                    trashDeck.RemoveAt(0);
-                    prefareDeck.Add(card);
-                }
-            }
+        
+        int gravityCardIndex = addtionDrawCards.FindIndex((drawCard) => drawCard == card);
+        if(gravityCardIndex != -1){
+            // TODO : 선택된 카드에 중력 부여
             GameObject cardOnHandObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
-                cardSpawnPosition,
+                Vector3.zero,
                 Quaternion.identity
             );
-
-            int randomIndex = Random.Range(0, prefareDeck.Count);
             CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
-            cardOnHand.index = i; // 카드 인덱스
-            cardOnHand.card = prefareDeck[randomIndex]; // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
-            prefareDeck.RemoveAt(randomIndex);
+            cardOnHand.card = addtionDrawCards[gravityCardIndex];
+            cardOnHand.isAddtionDrawCard = true;
             if(cardPocket != null){
-                cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
+                cardOnHand.parent = cardPocket.GetComponent<CardPocket>();
             }
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
-
-            cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
+            cardOnHands.Add(cardOnHand);
+            addtionDrawCards.RemoveAt(gravityCardIndex);
         }
+        foreach(Card drawCard in addtionDrawCards){
+            GameObject cardOnHandObject = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+                Vector3.zero,
+                Quaternion.identity
+            );
+            CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
+            cardOnHand.card = drawCard;
+            cardOnHand.isAddtionDrawCard = true;
+            if(cardPocket != null){
+                cardOnHand.parent = cardPocket.GetComponent<CardPocket>();
+            }
+            NetworkServer.Spawn(cardOnHandObject, connectionToClient);
+            cardOnHands.Add(cardOnHand);
+        }
+        addtionDrawCards.Clear();
     }
 
-    [Server]
-    public void GenerateCardOnHand(Card card,int count)
+    // 추가 드로우된 카드의 isAddtionDrawCard 상태값을 변경(패에 있는 CardOnHand와 추가 드로우된 CardOnHand를 구분하기 위한 상태값)
+    [Command]
+    public void CmdChangeCardOnHandIsAddtionDraw(CardOnHand cardOnHand, bool isAddtion)
     {
-        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        Vector3 cardSpawnPosition = new Vector3(0f, -100f, 0f);
-        for(int i = 0 ; i < count ; i ++)
-        {
-            GameObject cardOnHandObject = Instantiate(
-                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
-                cardSpawnPosition,
-                Quaternion.identity
-            );
-            CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
-            cardOnHand.card = card;
-            if(cardPocket != null){
-                cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
-            }
-            NetworkServer.Spawn(cardOnHandObject, connectionToClient);
-            cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
-        }
+        cardOnHand.isAddtionDrawCard = isAddtion;
     }
 
     [Command]
@@ -559,6 +622,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    [TargetRpc]
+    public void TargetDrawPopUpShow()
+    {
+        PopUpUIManager.instance.HandleShowDeckDrawPopUp(); // 드로우 카드 팝업 활성화
+    }
+
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
     
     public void OnChangeCurrentDeckCount(int oldCount, int newCount)
@@ -664,6 +733,48 @@ public partial class GamePlayerDeck : NetworkBehaviour
         uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
         if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
             GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textTrashDeckCount, trashDeck.Count); // 현재 플레이어의 TrashDeck Count 표시
+        }
+    }
+
+    // 추가 드로우 카드 리스트 콜백
+    void OnAddtionCardUpdate(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
+    {
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+                if(isOwned){
+                    DeckDrawPopUp deckDrawPopUp = PopUpUIManager.instance.deckDrawPopUp.GetComponent<DeckDrawPopUp>();
+                    GameObject cardOnDeckObject = Instantiate(
+                        PopUpUIManager.instance.CardOnDeckPrefab,
+                        GameUIManager.instance.buttonPrefareDeck.transform.position,
+                        Quaternion.identity,
+                        PopUpUIManager.instance.deckDrawPopUp.transform
+                    );
+                    CardOnDeck cardOnDeck =  cardOnDeckObject.GetComponent<CardOnDeck>();
+                    cardOnDeck.card = newVal;
+                    deckDrawPopUp.addtionDrawCards.Add(cardOnDeckObject);
+                    cardOnDeck.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                    
+                    Sequence sequence = DOTween.Sequence();
+                    sequence.Join(cardOnDeck.transform.DOMove(deckDrawPopUp.addtionDrawCardPositions[index].transform.position, 0.5f).SetEase(Ease.InOutCirc).SetDelay(index * 0.1f));
+                    sequence.Join(cardOnDeck.transform.DOScale(Vector3.one, 0.5f));
+                    sequence.OnComplete(() => {
+                        sequence.Kill();
+                    });
+                }
+                break;
+            case SyncList<Card>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<Card>.Operation.OP_SET:
+                
+                break;
+            case SyncList<Card>.Operation.OP_CLEAR:
+                
+                break;
         }
     }
 }

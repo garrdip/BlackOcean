@@ -258,7 +258,8 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator H7(Card card,List<TargetObject> tar)
     {
         yield return tempWait;
-        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(2);
+        tar[0].player.GetComponent<GamePlayerDeck>().AddDrawCard(2); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
+        tar[0].player.GetComponent<GamePlayerDeck>().TargetDrawPopUpShow(); // 카드 사용한 유저에게 추가 드로우 팝업 호출 이벤트 전송
         tar[0].player.GetComponent<GamePlayerDeck>().currentIchi ++;
         
     }
