@@ -24,8 +24,8 @@ public class TEST : MonoBehaviour
     {
         foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList)
         {
-            tar.GainBuff(ProjectD.BuffType.ICHI_ATTACK,3,false,false,false,tar);
-            tar.GainBuff(ProjectD.BuffType.ICHI_DEFENSE,3,false,false,false,tar);
+            tar.GainBuff(ProjectD.BuffType.ICHI_ATTACK,3,false,false,false,tar,null);
+            tar.GainBuff(ProjectD.BuffType.ICHI_DEFENSE,3,false,false,false,tar,null);
         }
     }
 

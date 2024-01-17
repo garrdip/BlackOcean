@@ -105,6 +105,7 @@ public partial class CardData : SingletonD<CardData>
 
     public bool CheckCardCharacteristic(Card card, CardCharacteristic character)
     {
+        if(card == null)return false;
         return (card.cardCharacteristics.Exists(cha => cha == character) || card.baseCard.cardCharacteristics.Exists(cha => cha == character));
     }
 

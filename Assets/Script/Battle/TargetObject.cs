@@ -321,10 +321,14 @@ public class TargetObject : NetworkBehaviour
     }
 
     // ----------------------------------------------           Buff 관련 함수          ---------------------------------------------------//
-    public void GainBuff(BuffType buffType, int value, bool isDebuff, bool isInfinity, bool isDecrease, TargetObject tar)
+    public void GainBuff(BuffType buffType, int value, bool isDebuff, bool isInfinity, bool isDecrease, TargetObject tar, Card card)
     {
+        if(objectType == ObjectType.PLAYER && tar != this && CardData.instance.CheckCardCharacteristic(card,CardCharacteristic.GOOWON)) value *= 2; // 이곳에 구원 등록
+
         if(buffs.Find(buff => buff.type == buffType) == null) // 버프 신규 등록
         {
+            if(value == 0)return;
+            
             Buff newBuff = new Buff(buffType,value,isDebuff,isInfinity,isDecrease,tar);
             buffs.Add(newBuff);
         }

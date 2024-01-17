@@ -38,6 +38,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
     
     public readonly SyncList<Card> trashDeck = new SyncList<Card>(); // 버릴 카드(사용된 카드 + 턴 종료될때 내 손에 있는 카드)
 
+    public readonly SyncList<Card> forgottenDeck = new SyncList<Card>(); // 잊혀진 덱 찰나로 보내진 덱
+
     public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 실제 컨트롤 하는 플레이어 소유의 카드 네트워크 오브젝트 리스트
 
     public readonly SyncList<Card> rewardCards = new SyncList<Card>(); // 전투 보상 카드
@@ -174,10 +176,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
                         //deck.Add(attackCard);
                         if(i % 2 == 0){
-                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
+                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H43")));
                             deck.Add(attackCard);
                         }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H40")));
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H47")));
                             deck.Add(defenseCard);
                         }
                     }
