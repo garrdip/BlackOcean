@@ -854,11 +854,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 67203789}
-  addtionDrawCards: []
+  addtionDrawCardObjects: []
   addtionDrawCardPositions:
   - {fileID: 1795629144}
   - {fileID: 475403996}
-  - {fileID: 0}
 --- !u!1 &71096695
 GameObject:
   m_ObjectHideFlags: 0

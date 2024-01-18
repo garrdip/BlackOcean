@@ -180,10 +180,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
                         //deck.Add(attackCard);
                         if(i % 2 == 0){
-                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H43")));
+                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H7")));
                             deck.Add(attackCard);
                         }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H47")));
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H7")));
                             deck.Add(defenseCard);
                         }
                     }
@@ -331,6 +331,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             int randomIndex = Random.Range(0, prefareDeck.Count);
             addtionDrawCards.Add(prefareDeck[randomIndex]);
         }
+        TargetDrawPopUpShow(); // 카드 사용한 유저에게 추가 드로우 팝업 호출 이벤트 전송
     }
 
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
@@ -415,38 +416,23 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 추가 드로우 카드들을 생성하여 패로 이동. 인자값인 card는 팝업창에서 선택한 카드(중력 부여할 카드)
+    // 추가 드로우 카드들을 생성하여 패로 이동. 인자값인 card는 팝업창에서 선택한 카드(중력 부여할 카드), index는 선택한 카드의 인덱스값
     [Command]
-    public void CmdSpawnAddtionDrawCard(Card card)
+    public void CmdSpawnAddtionDrawCard(Card card, int index)
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         
-        int gravityCardIndex = addtionDrawCards.FindIndex((drawCard) => drawCard == card);
-        if(gravityCardIndex != -1){
-            // TODO : 선택된 카드에 중력 부여
+        for(int i=0; i<addtionDrawCards.Count; i++){
             GameObject cardOnHandObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
                 Vector3.zero,
                 Quaternion.identity
             );
             CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
-            cardOnHand.card = addtionDrawCards[gravityCardIndex];
-            cardOnHand.isAddtionDrawCard = true;
-            if(cardPocket != null){
-                cardOnHand.parent = cardPocket.GetComponent<CardPocket>();
+            if(index == i){
+                // TODO : 선택된 카드에 중력 부여
             }
-            NetworkServer.Spawn(cardOnHandObject, connectionToClient);
-            cardOnHands.Add(cardOnHand);
-            addtionDrawCards.RemoveAt(gravityCardIndex);
-        }
-        foreach(Card drawCard in addtionDrawCards){
-            GameObject cardOnHandObject = Instantiate(
-                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
-                Vector3.zero,
-                Quaternion.identity
-            );
-            CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
-            cardOnHand.card = drawCard;
+            cardOnHand.card = addtionDrawCards[i];
             cardOnHand.isAddtionDrawCard = true;
             if(cardPocket != null){
                 cardOnHand.parent = cardPocket.GetComponent<CardPocket>();
@@ -752,7 +738,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     );
                     CardOnDeck cardOnDeck =  cardOnDeckObject.GetComponent<CardOnDeck>();
                     cardOnDeck.card = newVal;
-                    deckDrawPopUp.addtionDrawCards.Add(cardOnDeckObject);
+                    deckDrawPopUp.addtionDrawCardObjects.Add(cardOnDeckObject);
                     cardOnDeck.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                     
                     Sequence sequence = DOTween.Sequence();

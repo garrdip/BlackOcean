@@ -8,7 +8,7 @@ using DG.Tweening;
 public class DeckDrawPopUp : MonoBehaviour
 {
     public CanvasGroup canvasGroup;
-    public List<GameObject> addtionDrawCards = new List<GameObject>();
+    public List<GameObject> addtionDrawCardObjects = new List<GameObject>();
     public List<GameObject> addtionDrawCardPositions = new List<GameObject>();
 
 
@@ -30,10 +30,10 @@ public class DeckDrawPopUp : MonoBehaviour
     public void OnChangeDeckDrawPopUpHide()
     {
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
-            foreach(GameObject card in addtionDrawCards){
+            foreach(GameObject card in addtionDrawCardObjects){
                 Destroy(card);
             }
-            addtionDrawCards.Clear();
+            addtionDrawCardObjects.Clear();
             gameObject.SetActive(false);
         });
     } 

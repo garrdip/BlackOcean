@@ -204,7 +204,9 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
             GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
             PopUpUIManager.instance.HandleHideDeckDrawPopUp();
-            gamePlayerDeck.CmdSpawnAddtionDrawCard(card);
+            DeckDrawPopUp deckDrawPopUp = PopUpUIManager.instance.deckDrawPopUp.GetComponent<DeckDrawPopUp>();
+            int index = deckDrawPopUp.addtionDrawCardObjects.FindIndex((cardObject) =>  cardObject.GetComponent<CardOnDeck>() == this); // 팝업에서 선택한 카드의 인덱스 조회
+            gamePlayerDeck.CmdSpawnAddtionDrawCard(card, index);
         }
     }
 
