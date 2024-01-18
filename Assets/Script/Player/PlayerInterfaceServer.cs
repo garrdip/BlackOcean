@@ -98,11 +98,4 @@ public class PlayerInterfaceServer : NetworkBehaviour
 
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
     
-    // 전투 결과 보상 팝업 활성화 이벤트 수신
-    [TargetRpc]
-    public void TargetBattleRewardPopUp(NetworkConnectionToClient target)
-    {
-        PopUpUIManager.instance.HandleShowBattleResultPopUp();
-    }
-
 }

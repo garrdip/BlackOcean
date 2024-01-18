@@ -184,11 +184,10 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
             if(cardOwner != null){
-                BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
-                ChangeCardOnDeckRewardedState(battleResultPopUp.extractCardObjects);
+                ChangeCardOnDeckRewardedState(M_TurnManager.instance.rewardCardObjects);
                 HandleClickCardOnDeckOnPopUp(() => {
-                    battleResultPopUp.playerRewardedDic[cardOwner] = true;
-                    battleResultPopUp.CheckAllPlayerRewarded(cardOwner);
+                    M_TurnManager.instance.playerRewardedDic[cardOwner] = true;
+                    M_TurnManager.instance.CheckAllPlayerRewarded(cardOwner);
                 });
             }
         }

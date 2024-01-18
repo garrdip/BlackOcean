@@ -1,15 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Mirror;
 using ProjectD;
-using Steamworks;
 using Spine.Unity;
 using DG.Tweening;
+using AYellowpaper.SerializedCollections;
+
 
 public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 {
+    [SerializedDictionary("게임플레이어", "보상카드선택유무")]
+    public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
+
+    public List<GameObject> rewardCardObjects = new List<GameObject>(); // 
+
     // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈 슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
     public readonly SyncList<uint> playerOrder = new SyncList<uint>(){ 0, 0, 0 };
 
@@ -45,14 +50,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     1 : Target Monster
     이후 : 모든 플레이어 및 몬스터
     */
-    
-    protected override void Start()
-    {
-        DontDestroyOnLoad(gameObject);
-        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
-    }
-    
+
     // Turn 관리는 서버
     [SyncVar]
     public BattleTurn Phase;
@@ -63,6 +61,26 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         Phase = value;
         OnChangedPhase();
     }}
+
+    protected override void Start()
+    {
+        DontDestroyOnLoad(gameObject);
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        StartCoroutine(ProcessCardQueue());
+    }
+
+    public override void OnStartClient()
+    {
+        playerOrder.Callback += OnPlayerOrderUpdated;
+    }
+
+    // -------------------------------------------------------------------- Normal Method ---------------------------------------------------------------------//
 
     public TargetObject GetPlayer(GamePlayerDeck conn)
     {     
@@ -101,16 +119,26 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         return phase == BattleTurn.PLAYER_ACTIVE ? true : false;
     }
 
-
-    public override void OnStartServer()
+    // 소유한 모든 플레이어가 보상 카드 받았는지 체크
+    public void CheckAllPlayerRewarded(GamePlayer gamePlayer)
     {
-        base.OnStartServer();
-        StartCoroutine(ProcessCardQueue());
+        if(!M_TurnManager.instance.playerRewardedDic.ContainsValue(false)){ // 소유한 모든 플레이어 보상받았으면 종료
+            PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
+            GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+                NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true; 
+                gamePlayer.GetComponent<GamePlayerDeck>().CmdClearRewardCards();
+            });
+        }
     }
 
-    public override void OnStartClient()
+    // 보상 카드 오브젝트 제거 및 플레이어 보상 상태 데이터 정리
+    public void ClearRewardCardAndPlayer()
     {
-        playerOrder.Callback += OnPlayerOrderUpdated;
+        foreach(GameObject gameObject in rewardCardObjects){
+            Destroy(gameObject);
+        }
+        rewardCardObjects.Clear();
+        playerRewardedDic.Clear();
     }
 
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
@@ -274,22 +302,20 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             PlayerInterface playerInterface = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>();
             PlayerInterfaceServer playerInterfaceServer = playerInterface.GetComponent<PlayerInterfaceServer>();
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
-                List<Card> rewardCards = new List<Card>();
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
                 List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
                 if(cardsByCharacter.Count > 0){
                     for(int i = 0; i < rewardCardCount; i++){
                         int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                        rewardCards.Add(cardsByCharacter[randomIndex]);
                         gamePlayerDeck.rewardCards.Add(cardsByCharacter[randomIndex]);
                         cardsByCharacter.RemoveAt(randomIndex);
                     }
                 }
-                gamePlayerDeck.TargetSetBattleRewardCard(gamePlayerDeck.GetComponent<NetworkIdentity>().connectionToClient, rewardCards); // 보상 카드 세팅 RPC 이벤트
+                gamePlayerDeck.TargetPlayerRewarded(gamePlayerDeck.GetComponent<NetworkIdentity>().connectionToClient);
             }
-            playerInterfaceServer.TargetBattleRewardPopUp(playerInterface.GetComponent<NetworkIdentity>().connectionToClient); // 보상 팝업 RPC 이벤트
         }
+        RpcShowBattleResultPopUp(); // 전투 종료 팝업 호출
         ResetEndTurnState(); // 턴종료 상태 리셋
     }
 
@@ -660,11 +686,19 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
 
     // -------------------------------------------------------------------- ClientRpc Method -----------------------------------------------------------------//
+    
+    // 전투 종료 보상 카드 팝업 호출
+    [ClientRpc]
+    public void RpcShowBattleResultPopUp()
+    {
+        PopUpUIManager.instance.HandleShowBattleResultPopUp();
+    }
 
+    // 페이즈 상태 텍스트 업데이트
     [ClientRpc]
     void RpcChangePhase(BattleTurn phase)
     {
-        GameUIManager.instance.textCurrentPhase.text = phase.ToString(); // 페이즈 상태 텍스트 업데이트
+        GameUIManager.instance.textCurrentPhase.text = phase.ToString();
     }
 
     // 전투에 필요한 카드 준비 요청

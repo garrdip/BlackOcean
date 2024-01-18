@@ -9,21 +9,13 @@ using AYellowpaper.SerializedCollections;
 
 public class BattleResultPopUp : SingletonD<BattleResultPopUp>
 {
-    [Header("랜덤으로 추출한 카드 오브젝트 리스트")]
-    public List<GameObject> extractCardObjects = new List<GameObject>();
-
     public CanvasGroup canvasGroup;
     public List<GameObject> tabs = new List<GameObject>();
     public List<HorizontalLayoutGroup> grids = new List<HorizontalLayoutGroup>();
     public List<Button> tabButtons = new List<Button>();
     public List<Button> skipButtons = new List<Button>();
 
-    [SerializedDictionary("게임플레이어", "보상카드목록")]
-    public SerializedDictionary<GamePlayer, List<Card>> playerRewardCardsDic = new SerializedDictionary<GamePlayer, List<Card>>();
 
-    [SerializedDictionary("게임플레이어", "보상카드선택유무")]
-    public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
- 
     protected override void Awake()
     {
         PopUpUIManager.instance.onChangeBattleResultPopUpShow += OnChangeBattleResultPopUpShow;
@@ -47,37 +39,23 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     // 보상카드 스킵
     private void SkipRewardCard(int index)
     {
+        skipButtons[index].interactable = false;
+        skipButtons[index].image.color = new Color32(255, 255, 255, 255);
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         List<GamePlayer> players = new List<GamePlayer>(playerInterface.ownedPlayers);
         if(players[index] != null){
             GamePlayer gamePlayer = players[index];
-            playerRewardedDic[gamePlayer] = true;
-            CheckAllPlayerRewarded(gamePlayer);
-        }
-    }
-
-    // 소유한 모든 플레이어가 보상 카드 받았으면 팝업 닫고, 보상카드 데이터 비움
-    public void CheckAllPlayerRewarded(GamePlayer gamePlayer)
-    {
-        if(!playerRewardedDic.ContainsValue(false)){ // 소유한 모든 플레이어 보상받았으면 종료
-            PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
-            GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
-                NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true; 
-                gamePlayer.GetComponent<GamePlayerDeck>().CmdClearRewardCards();
-            });
+            M_TurnManager.instance.playerRewardedDic[gamePlayer] = true;
+            M_TurnManager.instance.CheckAllPlayerRewarded(gamePlayer);
         }
     }
 
     // 클라이언트 연결 해제 이벤트 수신
     private void OnClientDisconnected(GamePlayer gamePlayer)
     {
-        // 방 나간 플레이어의 보상카드 Synclist값을 가져와서 팝업에 세팅
-        GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
-        List<Card> rewardCards = new List<Card>(gamePlayerDeck.rewardCards);
-        playerRewardCardsDic.Add(gamePlayer, rewardCards);
-        playerRewardedDic.Add(gamePlayer, false);    
-        RemoveResultCard();
-        InitResultCard();
+        M_TurnManager.instance.playerRewardedDic.Add(gamePlayer, false);
+        int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);
+        tabButtons[index].gameObject.SetActive(true);
     }
 
     void OnDestroy()
@@ -85,44 +63,11 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         DOTween.Kill(canvasGroup);
     }
 
-    public void InitResultCard()
-    {
-        int index = 0;
-        HideAllTabButtons();
-        foreach(KeyValuePair<GamePlayer, List<Card>> pair in playerRewardCardsDic){
-            GamePlayer gamePlayer = pair.Key;
-            List<Card> rewardCards = pair.Value;
-            CreateResultCard(rewardCards, index, gamePlayer);
-            tabButtons[index].gameObject.SetActive(true);
-            tabButtons[index].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = gamePlayer.character.ToString();
-            index++;
-        }
-    }
-
-    // 보상 카드 오브젝트 생성
-    public void CreateResultCard(List<Card> rewardCards, int index, GamePlayer cardOwner)
-    {
-        foreach(Card card in rewardCards){
-            GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
-            cardOnDeck.transform.SetParent(grids[index].transform);
-            cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
-            cardOnDeck.GetComponent<CardOnDeck>().card = card;
-            cardOnDeck.GetComponent<CardOnDeck>().cardOwner = cardOwner;
-            extractCardObjects.Add(cardOnDeck);
-        }
-    }
-
     // 탭 변경
-    private void ChangeTab(int index)
+    public void ChangeTab(int index)
     {
         tabs[index].SetActive(true);
         tabButtons[index].image.color = new Color32(255, 255, 255, 255);
-        HideOtherTabs(index);
-    }
-
-    // 선택한 탭을 제외한 다른 탭 비활성화
-    public void HideOtherTabs(int index)
-    {
         for(int i=0; i<tabButtons.Count; i++){
             if(i != index){
                 tabButtons[i].image.color = new Color32(255, 255, 255, 70);
@@ -131,21 +76,29 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         }
     }
 
-    // 모든 탭버튼 비활성화
-    public void HideAllTabButtons()
+    // 탭 레이아웃 상태 변경
+    public void HideAllTabs(bool isActive)
     {
-        foreach(Button tabButton in tabButtons){
-            tabButton.gameObject.SetActive(false);
+        foreach(GameObject tab in tabs){
+            tab.SetActive(isActive);
         }
     }
 
-    // 생성되었던 보상 카드들 제거
-    private void RemoveResultCard()
+    // 탭 버튼 상태 변경
+    public void HideAllTabButtons(bool isActive)
     {
-        foreach(GameObject gameObject in extractCardObjects){
-            Destroy(gameObject);
+        foreach(Button tabButton in tabButtons){
+            tabButton.gameObject.SetActive(isActive);
         }
-        extractCardObjects.Clear();
+    }
+
+    // 스킵 버튼 상태 변경
+    public void ChangeAllSkipButtonState(bool isActive)
+    {
+        foreach(Button skipButton in skipButtons){
+            skipButton.interactable = isActive;
+            skipButton.image.color = isActive ? new Color32(255, 255, 255, 255) : new Color32(255, 255, 255, 70);
+        }
     }
 
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //
@@ -154,7 +107,6 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     public void OnChangeBattleResultPopUpShow()
     {
         canvasGroup.DOFade(1.0f, 0.5f);
-        InitResultCard();
         M_CardManager.instance.RemoveAllCurrentPlayerArrow(); // 화살표 제거
         M_CardManager.instance.ChangeCurrentPlayerCardOnHandState(false); // 남아있는 CardOnHand 오브젝트들의 상태값 초기화
     }
@@ -162,11 +114,12 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     // BattleResultPopUp 비활성화 콜백
     public void OnChangeBattleResultPopUpHide()
     {
-        RemoveResultCard();
-        playerRewardCardsDic.Clear();
-        playerRewardedDic.Clear();
+        M_TurnManager.instance.ClearRewardCardAndPlayer();
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
             gameObject.SetActive(false);
         });
+        HideAllTabs(false);
+        HideAllTabButtons(false);
+        ChangeAllSkipButtonState(true);
     } 
 }

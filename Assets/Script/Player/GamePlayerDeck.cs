@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using ProjectD;
 using DG.Tweening;
+using TMPro;
 
 
 public partial class GamePlayerDeck : NetworkBehaviour
@@ -75,6 +76,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Callback += OnCardOnHandsUpdated;
         prefareDeck.Callback += OnPrefareDeckUpdated;
         trashDeck.Callback += OnTrashDeckUpdated;
+        rewardCards.Callback += OnRewardCardUpdated;
         addtionDrawCards.Callback += OnAddtionCardUpdate;
         if(isOwned){
             GameUIManager.instance.currentIchiText.text = currentIchi.ToString(); // 현재 이치값 초기 뷰 세팅
@@ -598,13 +600,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
     
     [TargetRpc]
-    public void TargetSetBattleRewardCard(NetworkConnectionToClient target, List<Card> rewardCards)
+    public void TargetPlayerRewarded(NetworkConnectionToClient target)
     {
-        BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
         GamePlayer gamePlayer = GetComponent<GamePlayer>();
-        if(!battleResultPopUp.playerRewardCardsDic.ContainsKey(gamePlayer) && !battleResultPopUp.playerRewardedDic.ContainsKey(gamePlayer)){ // 키 중복 방지
-            battleResultPopUp.playerRewardCardsDic.Add(GetComponent<GamePlayer>(), rewardCards);
-            battleResultPopUp.playerRewardedDic.Add(gamePlayer, false);
+        if(!M_TurnManager.instance.playerRewardedDic.ContainsKey(gamePlayer)){ // 키 중복 방지
+            M_TurnManager.instance.playerRewardedDic.Add(gamePlayer, false);
         }
     }
 
@@ -719,6 +719,44 @@ public partial class GamePlayerDeck : NetworkBehaviour
         uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
         if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
             GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textTrashDeckCount, trashDeck.Count); // 현재 플레이어의 TrashDeck Count 표시
+        }
+    }
+
+    // 보상 카드 리스트 콜백
+    void OnRewardCardUpdated(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
+    {
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+                BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
+                GamePlayer gamePlayer = GetComponent<GamePlayer>();
+                GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
+                cardOnDeck.GetComponent<CardOnDeck>().card = newVal;
+                cardOnDeck.GetComponent<CardOnDeck>().cardOwner = gamePlayer;
+                int orderIndex = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);
+                if(orderIndex != -1){
+                    cardOnDeck.transform.SetParent(battleResultPopUp.grids[orderIndex].transform);
+                    cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
+                    battleResultPopUp.tabButtons[orderIndex].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = gamePlayer.character.ToString();
+                    if(isOwned){
+                        battleResultPopUp.ChangeTab(orderIndex);
+                        battleResultPopUp.tabButtons[orderIndex].gameObject.SetActive(isOwned);
+                    }
+                }
+                M_TurnManager.instance.rewardCardObjects.Add(cardOnDeck);
+                break;
+            case SyncList<Card>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<Card>.Operation.OP_SET:
+                
+                break;
+            case SyncList<Card>.Operation.OP_CLEAR:
+                
+                break;
         }
     }
 

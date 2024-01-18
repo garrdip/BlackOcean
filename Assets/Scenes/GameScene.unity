@@ -971,10 +971,6 @@ MonoBehaviour:
   - {fileID: 1732760768}
   - {fileID: 759029108}
   - {fileID: 954550890}
-  playerRewardCardsDic:
-    _serializedList: []
-  playerRewardedDic:
-    _serializedList: []
 --- !u!225 &71096700
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -8649,7 +8645,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &935332584
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8893,7 +8889,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &949203983
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9355,7 +9351,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1003433538
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11393,7 +11389,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1246167235
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20060,6 +20056,8 @@ MonoBehaviour:
   - {x: 15, y: -3, z: 0}
   - {x: 11, y: -3, z: 0}
   - {x: 7, y: -3, z: 0}
+  playerRewardedDic:
+    _serializedList: []
   isCardQueueOperating: 0
   spawnedPlayerList: []
   spawnedMonsterList: []
