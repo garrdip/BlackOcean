@@ -780,8 +780,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     cardOnDeck.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                     
                     Sequence sequence = DOTween.Sequence();
-                    sequence.Join(cardOnDeck.transform.DOMove(deckDrawPopUp.addtionDrawCardPositions[index].transform.position, 0.5f).SetEase(Ease.InOutCirc).SetDelay(index * 0.1f));
-                    sequence.Join(cardOnDeck.transform.DOScale(Vector3.one, 0.5f));
+                    sequence.PrependCallback(() => { deckDrawPopUp.addtionDrawCardPositions[index].gameObject.SetActive(true); });
+                    sequence.InsertCallback(0.1f, () => {
+                        Sequence cardSequence = DOTween.Sequence();
+                        cardSequence.Append(cardOnDeck.transform.DOMove(deckDrawPopUp.addtionDrawCardPositions[index].transform.position, 0.5f).SetEase(Ease.InOutCirc).SetDelay(index * 0.1f));
+                        cardSequence.Join(cardOnDeck.transform.DOScale(Vector3.one, 0.5f)).OnComplete(() => { cardSequence.Kill(); });
+                    });
                     sequence.OnComplete(() => {
                         sequence.Kill();
                     });
