@@ -76,8 +76,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Callback += OnCardOnHandsUpdated;
         prefareDeck.Callback += OnPrefareDeckUpdated;
         trashDeck.Callback += OnTrashDeckUpdated;
+        forgottenDeck.Callback += OnForgottenDeckUpdated;
         rewardCards.Callback += OnRewardCardUpdated;
-        addtionDrawCards.Callback += OnAddtionCardUpdate;
+        addtionDrawCards.Callback += OnAddtionCardUpdated;
         if(isOwned){
             GameUIManager.instance.currentIchiText.text = currentIchi.ToString(); // 현재 이치값 초기 뷰 세팅
             GameUIManager.instance.maxIchiText.text = maxIchi.ToString(); // 최대 이치값 초기 뷰 세팅
@@ -325,17 +326,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 뽑을 덱에서 랜덤으로 카드 뽑아 addtionDrawCards에 추가
-    [Server]
-    public void AddDrawCard(int cardCount)
-    {
-        for(int i=0; i<cardCount; i++){
-            int randomIndex = Random.Range(0, prefareDeck.Count);
-            addtionDrawCards.Add(prefareDeck[randomIndex]);
-        }
-        TargetDrawPopUpShow(); // 카드 사용한 유저에게 추가 드로우 팝업 호출 이벤트 전송
-    }
-
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
 
     // deck에 추가
@@ -503,7 +493,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [Command]
     public void CmdDestroyCardOnHand(CardOnHand cardOnHand)
     {
-        trashDeck.Add(cardOnHand.card);
+        if(CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA)){
+            forgottenDeck.Add(cardOnHand.card);
+        }else{
+            trashDeck.Add(cardOnHand.card);
+        }
         cardOnHands.Remove(cardOnHand);
         NetworkServer.Destroy(cardOnHand.gameObject);
     }
@@ -520,7 +514,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) != -1)
                 { 
                     playerInterface.RemoveDestroyCardList(cardOnHand);
-                    trashDeck.Add(cardOnHand.card);
+                    bool isChalna = CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA);
+                    if(isChalna){
+                        forgottenDeck.Add(cardOnHand.card);
+                    }else{
+                        trashDeck.Add(cardOnHand.card);
+                    }
                     cardOnHands.Remove(cardOnHand);
                     destroyCardList.Remove(cardOnHand);
                     while(true)
@@ -542,17 +541,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         rewardCards.Clear();
     }
 
-    // 플레이어의  손에 든 모든 카드 제거 및 댁카운트 0으로 초기화, 리스트 초기화, 사용된 댁에 추가
-    [Command]
-    public void CmdDestroyAllCardOnHand()
-    {
-        foreach(CardOnHand cardOnHand in cardOnHands){
-            trashDeck.Add(cardOnHand.card);
-            NetworkServer.Destroy(cardOnHand.gameObject);
-        }
-        cardOnHands.Clear();
-    }
-
     // 플레이어의 손에 든 모든 카드 제거(사용된 댁으로 보내지 않고 제거만 수행)
     [Command]
     public void CmdDestroyAllCardOnHandWithOutTrashDeck()
@@ -568,20 +556,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void CmdSetArrowOwnCardOnHand(CardOnHand cardOnHand)
     {
         cardCtrlArrow.arrowOwnedCardOnHand = cardOnHand;
-    }
-
-    // 플레이어에 소유의 CardPocket 참조값 설정
-    [Command]
-    public void CmdSetPlayerOwnCardPocket(CardPocket cardPocket)
-    {
-        this.cardPocket = cardPocket;
-    }
-
-    // 플레이어에 소유의 CardCtrlArrow 참조값 설정
-    [Command]
-    public void CmdSetPlayerOwnCardCtrlArrow(CardCtrlArrow cardCtrlArrow)
-    {
-        this.cardCtrlArrow = cardCtrlArrow;
     }
 
     // ------------------------------------------------- Rpc Method ---------------------------------------------------//
@@ -668,7 +642,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // PrefareDeck Callback
+    // 뽑을 덱 리스트 콜백
     void OnPrefareDeckUpdated(SyncList<Card>.Operation op, int index, Card oldPrefareDeck, Card newPrefareDeck)
     {
         switch (op)
@@ -695,7 +669,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // TrashDeck Callback
+    // 버린 덱 리스트 콜백
     void OnTrashDeckUpdated(SyncList<Card>.Operation op, int index, Card oldTrashDeck, Card newTrashDeck)
     {
         switch (op)
@@ -719,6 +693,33 @@ public partial class GamePlayerDeck : NetworkBehaviour
         uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
         if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
             GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textTrashDeckCount, trashDeck.Count); // 현재 플레이어의 TrashDeck Count 표시
+        }
+    }
+
+    // 잊혀진 덱 리스트 콜백
+    void OnForgottenDeckUpdated(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
+    {
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+
+                break;
+            case SyncList<Card>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<Card>.Operation.OP_SET:
+                
+                break;
+            case SyncList<Card>.Operation.OP_CLEAR:
+                
+                break;
+        }
+        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
+        if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
+            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textForgottenDeckCount, forgottenDeck.Count); // 현재 플레이어의 ForgottenDeck Count 표시
         }
     }
 
@@ -761,7 +762,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     // 추가 드로우 카드 리스트 콜백
-    void OnAddtionCardUpdate(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
+    void OnAddtionCardUpdated(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
     {
         switch (op)
         {

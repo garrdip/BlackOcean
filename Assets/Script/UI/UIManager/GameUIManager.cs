@@ -16,6 +16,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     public GameObject CardOnHandsPanel;
     public GameObject PrefareDeck;
     public GameObject TrashDeck;
+    public GameObject ForgottenDeck;
     public GameObject TestUI;
     public GameObject CostIconLayout; // 코스트 아이콘 리스트 레이아웃
     public GameObject CostIocnPrefab; // 코스트 아이콘 프리팹
@@ -29,6 +30,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     public Button buttonTrashDeck;
     public Text textPrefareDeckCount;
     public Text textTrashDeckCount;
+    public Text textForgottenDeckCount;
     public TextMeshProUGUI textCurrentActionCost;
     public TextMeshProUGUI textMaxActionCost;
     public TextMeshProUGUI textCurrentPhase;

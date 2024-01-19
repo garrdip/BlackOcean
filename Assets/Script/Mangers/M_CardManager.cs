@@ -210,8 +210,9 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         if(NetworkClient.connection != null && NetworkClient.active){
             GameUIManager.instance.buttonEndTurn.interactable = false;        
             cardOnHand.isMoving = true;
-            float duration = 0.3f;
-            Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
+            float duration = 0.5f;
+            bool isChalna = CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA);
+            Vector3 position = isChalna ? GameUIManager.instance.ForgottenDeck.GetComponent<RectTransform>().position : GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
             GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
 
             // Dotween 애니매이션 시퀀스 생성
@@ -226,9 +227,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             // 시퀀스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 화면의 우측하단 방향으로 포물선 이동 애니매이션 추가
             sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration));
             sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
-            sequence.Join(cardOnHand.transform
-                                .DOMove(trashDeckPosition, duration)
-                                .SetEase(Ease.InOutCirc));
+            sequence.Join(cardOnHand.transform.DOMove(position, duration).SetEase(Ease.InOutCirc));
             sequence.OnComplete(() =>
             {
                 // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행
@@ -247,15 +246,16 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void CardOnHandAllThrowAwaySequence(CardOnHand cardOnHand, GamePlayerDeck gamePlayerDeck)
     {
         GameUIManager.instance.buttonEndTurn.interactable = false;
+        float duration = 0.5f;
         float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
-        Vector3 trashDeckPosition = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
+        bool isChalna = CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA);
+        Vector3 position = isChalna ? GameUIManager.instance.ForgottenDeck.GetComponent<RectTransform>().position : GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
         cardOnHand.isMoving = true;
         cardOnHand.isUsed = true;
-
-        cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.3f);
-        cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), 0.3f);
+        cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration);
+        cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration);
         cardOnHand.transform
-                .DOMove(trashDeckPosition, 0.3f)
+                .DOMove(position, duration)
                 .SetEase(Ease.OutCirc)
                 .SetDelay(delay)
                 .OnComplete(() => {
