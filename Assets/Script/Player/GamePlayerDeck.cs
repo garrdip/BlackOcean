@@ -326,6 +326,17 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    // 뽑을 덱에서 랜덤으로 카드 뽑아 addtionDrawCards에 추가
+    [Server]
+    public void AddDrawCard(int cardCount)
+    {
+        for(int i=0; i<cardCount; i++){
+            int randomIndex = Random.Range(0, prefareDeck.Count);
+            addtionDrawCards.Add(prefareDeck[randomIndex]);
+        }
+        TargetDrawPopUpShow(); // 카드 사용한 유저에게 추가 드로우 팝업 호출 이벤트 전송
+    }
+
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
 
     // deck에 추가

@@ -467,16 +467,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1.33f);
-        GamePlayerDeck gamePlayerDeck = tar[0].player.GetComponent<GamePlayerDeck>(); 
-        int drawCardCount = 2;
-        if(gamePlayerDeck.prefareDeck.Count >= drawCardCount){
-            for(int i=0; i<drawCardCount; i++){
-                int randomIndex = Random.Range(0, gamePlayerDeck.prefareDeck.Count);
-                gamePlayerDeck.addtionDrawCards.Add(gamePlayerDeck.prefareDeck[randomIndex]);  // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
-                gamePlayerDeck.prefareDeck.RemoveAt(i);
-            }
-            gamePlayerDeck.TargetDrawPopUpShow();
-        }
+        tar[0].player.GetComponent<GamePlayerDeck>().AddDrawCard(2); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator H17_E(Card card, List<TargetObject> tar)
