@@ -11,7 +11,6 @@ public class Card
     public int costAddition;
     public List<CardCharacteristic> cardCharacteristics = new List<CardCharacteristic>();
     public int experience;
-
     public bool tempEnhanced;
 
     public Card(CardBase basecard)
@@ -21,7 +20,14 @@ public class Card
 
     public Card(){} // For Mirror Library default constructor
 
-    
+    public void EndBattleCardInitialize()
+    {
+        cardCharacteristics.Clear();
+        tempEnhanced = false;
+        costAddition = 0;
+    }
+
+
     // 카드 클래스 깊은복사
     public Card CardDeepCopy(bool isEndBattle)
     {

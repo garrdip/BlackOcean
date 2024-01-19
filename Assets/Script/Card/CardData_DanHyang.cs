@@ -258,9 +258,13 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator H7(Card card,List<TargetObject> tar)
     {
         yield return tempWait;
-        tar[0].player.GetComponent<GamePlayerDeck>().AddDrawCard(2); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(0.5f);
+        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(2); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
         tar[0].player.GetComponent<GamePlayerDeck>().currentIchi ++;
-        
+        yield return new WaitForSeconds(1f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator H7_E(Card card,List<TargetObject> tar)
     {
@@ -462,8 +466,24 @@ public partial class CardData : SingletonD<CardData>
     }
 
     // 기적의 무게
-    public IEnumerator H17(Card card, List<TargetObject> tar){yield return null;}
-    public IEnumerator H17_E(Card card, List<TargetObject> tar){yield return null;}
+    public IEnumerator H17(Card card, List<TargetObject> tar)
+    {
+        cardSelectCallBack = H17_CallBack;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(1.33f);
+        tar[0].player.GetComponent<GamePlayerDeck>().AddDrawCard(2); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+    }
+    public IEnumerator H17_E(Card card, List<TargetObject> tar)
+    {
+        yield return H17(card,tar);
+    }
+
+    public void H17_CallBack(List<Card> cards)
+    {
+        cards[0].cardCharacteristics.Add(CardCharacteristic.JOONGREUK);
+    }
 
     // 주조 (강화 이펙트 추가)
     public IEnumerator H18(Card card, List<TargetObject> tar)

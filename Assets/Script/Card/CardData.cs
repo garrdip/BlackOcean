@@ -26,6 +26,8 @@ public partial class CardData : SingletonD<CardData>
 
     string[] colorList = {"<#ff0000>","<#00ff00>","<#0000ff>","<#ffff00>","<#00ffff>","<#ff00ff>"};
 
+    public CardSelectCallBack cardSelectCallBack;
+
     WaitForSeconds tempWait = new WaitForSeconds(0.3f);
 
     //Version 3
@@ -103,6 +105,8 @@ public partial class CardData : SingletonD<CardData>
         isCardOperating = false;
     }
 
+
+    // 카드 특성 확인
     public bool CheckCardCharacteristic(Card card, CardCharacteristic character)
     {
         if(card == null)return false;

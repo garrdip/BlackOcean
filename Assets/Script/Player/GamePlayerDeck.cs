@@ -182,10 +182,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
                         //deck.Add(attackCard);
                         if(i % 2 == 0){
-                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H43")));
+                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H7")));
                             deck.Add(attackCard);
                         }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H47")));
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H17")));
                             deck.Add(defenseCard);
                         }
                     }
@@ -423,7 +423,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void CmdSpawnAddtionDrawCard(Card card, int index)
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        
+        List<Card> cards = new List<Card>();
         for(int i=0; i<addtionDrawCards.Count; i++){
             GameObject cardOnHandObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
@@ -431,9 +431,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 Quaternion.identity
             );
             CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
-            if(index == i){
-                // TODO : 선택된 카드에 중력 부여
-            }
             cardOnHand.card = addtionDrawCards[i];
             cardOnHand.isAddtionDrawCard = true;
             if(cardPocket != null){
@@ -441,7 +438,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
             }
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
             cardOnHands.Add(cardOnHand);
+            if(i != index) cards.Add(addtionDrawCards[i]);
+            else cards.Insert(0,addtionDrawCards[i]);
         }
+        CardData.instance.cardSelectCallBack(cards);
         addtionDrawCards.Clear();
     }
 
