@@ -74,6 +74,7 @@ MonoBehaviour:
   selectOrder: 0
   character: 0
   playerOrderNetId: 0
+  mapPlayerNetId: 0
 --- !u!114 &-5967311515642577051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,16 +93,18 @@ MonoBehaviour:
   currentDeckCount: 0
   maxShopCardCount: 0
   maxRewardCardCount: 0
+  maxRemoveCardCount: 0
   cardPocket: {fileID: 0}
   cardCtrlArrow: {fileID: 0}
   abilityButton: {fileID: 0}
   abilityCtrlArrow: {fileID: 0}
   abilityCard: {fileID: 0}
-  choosedCardOnHands:
-  - {fileID: 0}
-  - {fileID: 0}
+  currentIndex: 0
+  choosedCardOnHands: []
   previousCardType: 0
   destroyCardList: []
+  numOfUsedIronTeeth: 0
+  AdditionalSizeOfIromDemon: 0
   currentIchi: 0
   maxIchi: 0
   limitiChi: 0

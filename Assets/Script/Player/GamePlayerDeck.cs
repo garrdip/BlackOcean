@@ -19,6 +19,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public int maxRewardCardCount = 0; // 전투 보상 팝업에서 선택 가능한 카드 최대 갯수
 
+    [SyncVar (hook = nameof(OnChangeMaxRemoveCardCount))]
+    public int maxRemoveCardCount = 0; // 패 제거 팝업에서 선택 가능한 카드 최대 갯수
+
     [SyncVar]
     public CardPocket cardPocket; // 현재 플레이어 소유의 카드 포켓 오브젝트
 
@@ -48,9 +51,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<Card> addtionDrawCards = new SyncList<Card>(); // 추가 드로우 카드
 
-    private int currentIndex = 1; // removeCardOnHands SyncList에서 0번, 1번 인덱스 삽입을 반복하기 위해 사용되는 인덱스 변수
+    public int currentIndex = 0; // 패 제거 팝업에서 삭제하기 위해 선택된 카드들의 인덱스(순환용)
 
-    public CardOnHand[] choosedCardOnHands = new CardOnHand[2];  // CardOnHands 리스트에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
+    public CardOnHand[] choosedCardOnHands;  // 패 제거 팝업에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
 
     public Queue<(CardOnHand,TargetObject)> serverCardPredictQueue = new Queue<(CardOnHand, TargetObject)>();// Server에서 Card Queue 관리를 위한 Queue
 
@@ -89,14 +92,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void AddChoosedCardOnHands(CardOnHand cardOnHand)
     {
         cardOnHand.isChoosed = true;
-        // 인덱스 0, 1 반복
-        if(choosedCardOnHands[0] == null){
-            currentIndex = 0;
-        }else{
-            if(choosedCardOnHands[1] == null){
-                currentIndex = 1;
-            }else{
-                currentIndex = (1 - currentIndex);
+        // 인덱스 순환 반복
+        currentIndex = (currentIndex + 1) % choosedCardOnHands.Length;
+        for(int i=0; i<choosedCardOnHands.Length; i++){
+            if(choosedCardOnHands[i] == null){
+                currentIndex = i;
+                break;
             }
         }
         if(choosedCardOnHands[currentIndex] != null){
@@ -109,10 +110,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
     // choosedCardOnHands 배열에 선택한 카드를 제거
     public void RemoveChoosedCardOnHands(CardOnHand cardOnHand)
     {
-        if(choosedCardOnHands[0] == cardOnHand){
-            choosedCardOnHands[0] = null;
-        }else{
-            choosedCardOnHands[1] = null;
+        for(int i = 0; i < choosedCardOnHands.Length; i++){
+            if(choosedCardOnHands[i] == cardOnHand){
+                choosedCardOnHands[i] = null;
+            }
         }
         cardOnHand.isChoosed = false;
         M_CardManager.instance.ResetCardAllState(cardOnHand, false);
@@ -130,6 +131,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             currentDeckCount = 5;
             maxShopCardCount = 6;
             maxRewardCardCount = 3;
+            maxRemoveCardCount= 3;
             foreach(SaveDataPlayer saveDataPlayer in M_SaveManager.instance.loadData.players)
             {
                 if(saveDataPlayer == null)break;
@@ -149,6 +151,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             currentDeckCount = 5;
             maxShopCardCount = 6;
             maxRewardCardCount = 3;
+            maxRemoveCardCount = 3;
             Character character = GetComponent<GamePlayer>().character;
             switch(character){
                 case Character.GEORK:
@@ -333,6 +336,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         for(int i=0; i<cardCount; i++){
             int randomIndex = Random.Range(0, prefareDeck.Count);
             addtionDrawCards.Add(prefareDeck[randomIndex]);
+            prefareDeck.RemoveAt(randomIndex);
         }
         TargetDrawPopUpShow(); // 카드 사용한 유저에게 추가 드로우 팝업 호출 이벤트 전송
     }
@@ -500,14 +504,18 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 카드 리스트에서 삭제, 댁카운트 감소, 카드 오브젝트 삭제, 사용된 댁에 추가
+    // 카드 리스트에서 삭제, 댁카운트 감소, 카드 오브젝트 삭제
     [Command]
-    public void CmdDestroyCardOnHand(CardOnHand cardOnHand)
+    public void CmdDestroyCardOnHand(CardOnHand cardOnHand, bool isForceForgotten)
     {
-        if(CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA)){
-            forgottenDeck.Add(cardOnHand.card);
+        if(isForceForgotten){
+            forgottenDeck.Add(cardOnHand.card); // 특성과 관계없이 잊혀진 덱으로 보내는 경우
         }else{
-            trashDeck.Add(cardOnHand.card);
+            if(CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA)){
+                forgottenDeck.Add(cardOnHand.card); // 찰나 특성은 잊혀진덱
+            }else{
+                trashDeck.Add(cardOnHand.card); // 일반적인 경우 버린 덱
+            }
         }
         cardOnHands.Remove(cardOnHand);
         NetworkServer.Destroy(cardOnHand.gameObject);
@@ -599,11 +607,35 @@ public partial class GamePlayerDeck : NetworkBehaviour
         PopUpUIManager.instance.HandleShowDeckDrawPopUp(); // 드로우 카드 팝업 활성화
     }
 
+    [TargetRpc]
+    public void TargetCardOnHandRemovePopUPUpShow()
+    {
+        PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp(); // 패 카드 제거 팝업 활성화
+    }
+
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
     
     public void OnChangeCurrentDeckCount(int oldCount, int newCount)
     {
         Debug.Log("현재 댁 갯수 변경 :" + newCount);
+    }
+
+    public void OnChangeMaxRemoveCardCount(int oldCount, int newCount)
+    {
+        choosedCardOnHands = new CardOnHand[newCount]; // 패 제거 팝업에서 사용할 배열의 크기 초기화
+        if(isOwned){
+            // 패 제거 팝업에서 카드들의 위치값을 잡아주는 슬롯오브젝트 생성. 갯수 변경되면 모두 지우고 변경된 갯수만큼 생성
+            CardOnHandRemovePopUp cardOnHandRemovePopUp = PopUpUIManager.instance.cardOnHandRemovePopUp.GetComponent<CardOnHandRemovePopUp>();
+            foreach(GameObject removeCardSlot in cardOnHandRemovePopUp.removeCardSlots){
+                Destroy(removeCardSlot);
+            }
+            cardOnHandRemovePopUp.removeCardSlots.Clear();
+            for(int i=0; i<newCount; i++){
+                GameObject removeCardSlot = Instantiate(PopUpUIManager.instance.RemoveCardSlotPrefab);
+                removeCardSlot.transform.SetParent(cardOnHandRemovePopUp.gridLayoutGroup.transform);
+                cardOnHandRemovePopUp.removeCardSlots.Add(removeCardSlot);
+            }
+        }
     }
 
     public void PreviousCardTypeChanged(CardType oldVal, CardType newVal)

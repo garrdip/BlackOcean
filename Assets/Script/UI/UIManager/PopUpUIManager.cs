@@ -12,7 +12,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // DeckListPopUp Delegate
     public delegate void OnChangeDeckListPopUpShow(DeckListType type);
     public OnChangeDeckListPopUpShow onChangeDeckListPopUpShow;
-    public delegate void OnChangeDeckListPopUpHide(DeckListType type);
+    public delegate void OnChangeDeckListPopUpHide();
     public OnChangeDeckListPopUpHide onChangeDeckListPopUpHide;
 
     
@@ -60,6 +60,8 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject mercuriusPopUp;
     public GameObject gameOverPopUp;
 
+    [Header("패 제거 팝업에 사용되는 카드 위치 프리팹")]
+    public GameObject RemoveCardSlotPrefab;
 
     [Header("댁 리스트 팝업에 사용되는 카드 프리팹")]
     public GameObject CardOnDeckPrefab;
@@ -71,55 +73,37 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject CardShopPrice;
 
 
-    [Header("팝업 제어 변수")]
-    public bool isOpenPrefareDeckPopUp = false;
-    public bool isOpenTrashDeckPopUp = false;
-
-
-
     // PrefareDeck 정보 팝업 활성화, 비활성화
     public void HandleShowPrefareDeckListPopUp()
     {
-        isOpenPrefareDeckPopUp = !isOpenPrefareDeckPopUp;
-        if(isOpenPrefareDeckPopUp){
-            deckListPopUp.gameObject.SetActive(true);
-            if(onChangeDeckListPopUpShow != null){
-                onChangeDeckListPopUpShow.Invoke(DeckListType.PREFARE_DECK);
-            }
-        }else{
-            if(onChangeDeckListPopUpHide != null){
-                onChangeDeckListPopUpHide.Invoke(DeckListType.PREFARE_DECK);
-            }
+        deckListPopUp.gameObject.SetActive(true);
+        if(onChangeDeckListPopUpShow != null){
+            onChangeDeckListPopUpShow.Invoke(DeckListType.PREFARE_DECK);
         }
     }
 
     // TrashDeck 정보 팝업 활성화, 비활성화
     public void HandleShowTrashDeckListPopUp()
     {
-        isOpenTrashDeckPopUp = !isOpenTrashDeckPopUp;
-        if(isOpenTrashDeckPopUp){
-            deckListPopUp.gameObject.SetActive(true);
-            if(onChangeDeckListPopUpShow != null){
-                onChangeDeckListPopUpShow.Invoke(DeckListType.TRASH_DECK);
-            }
-        }else{
-            if(onChangeDeckListPopUpHide != null){
-                onChangeDeckListPopUpHide.Invoke(DeckListType.TRASH_DECK);
-            }
+        deckListPopUp.gameObject.SetActive(true);
+        if(onChangeDeckListPopUpShow != null){
+            onChangeDeckListPopUpShow.Invoke(DeckListType.TRASH_DECK);
         }
     }
 
-    // PrefareDeck + TrashDeck 정보 팝업 비활성화
+    public void HandShowForgottenDeckListPopUp()
+    {
+        deckListPopUp.gameObject.SetActive(true);
+        if(onChangeDeckListPopUpShow != null){
+            onChangeDeckListPopUpShow.Invoke(DeckListType.FORGOTTEN_DECK);
+        }
+    }
+
+    // 덱 정보 팝업 비활성화
     public void HandleHideDeckListPopUp()
     {
-        if(isOpenPrefareDeckPopUp){
-            if(onChangeDeckListPopUpHide != null){
-                onChangeDeckListPopUpHide.Invoke(DeckListType.PREFARE_DECK);
-            }
-        }else{
-            if(onChangeDeckListPopUpHide != null){
-                onChangeDeckListPopUpHide.Invoke(DeckListType.TRASH_DECK);
-            }
+        if(onChangeDeckListPopUpHide != null){
+            onChangeDeckListPopUpHide.Invoke();
         }
     }
 

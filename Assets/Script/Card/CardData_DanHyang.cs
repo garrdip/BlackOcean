@@ -667,7 +667,12 @@ public partial class CardData : SingletonD<CardData>
     //재조물 (카드 버리기)
     public IEnumerator H26(Card card, List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(1f);
+        tar[0].player.GetComponent<GamePlayerDeck>().TargetCardOnHandRemovePopUPUpShow();  // 패 카드 제거 팝업 호출
+        yield return new WaitForSeconds(0.3f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator H26_E(Card card, List<TargetObject> tar)
     {

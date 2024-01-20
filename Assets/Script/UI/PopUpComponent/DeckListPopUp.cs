@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using ProjectD;
 using DG.Tweening;
 using Mirror;
+using TMPro;
 
 public class DeckListPopUp : SingletonD<DeckListPopUp>
 {
@@ -14,9 +15,7 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
     [Header("UI 컴포넌트")]
     public CanvasGroup canvasGroup;
     public GridLayoutGroup deckListPopUpGrid;
-
-    [Header("UI 컴포넌트 요소의 정렬 순서값")]
-    private int originSiblingIndex = 0;
+    public TextMeshProUGUI textTitle;
 
 
     protected override void Awake()
@@ -60,6 +59,7 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
         canvasGroup.DOFade(1.0f, 0.5f);
         switch(type){
             case DeckListType.PREFARE_DECK:
+                textTitle.text = Const.PREFARE_DECK;
                 M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
                 // 로컬 플레이어의 PrefareDeck 조회
                 if(NetworkClient.connection != null && NetworkClient.active){
@@ -69,6 +69,7 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
                 break;
 
             case DeckListType.TRASH_DECK:
+                textTitle.text = Const.TRASH_DECK;
                 M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
                 // 로컬 플레이어의 TrashDeck 조회
                 if(NetworkClient.connection != null && NetworkClient.active){
@@ -76,11 +77,20 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
                     AddDeckList(gamePlayerDeck.trashDeck, deckListPopUpGrid);
                 }
                 break;
+            case DeckListType.FORGOTTEN_DECK:
+                textTitle.text = Const.FORGOTTEN_DECK;
+                M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
+                // 로컬 플레이어의 ForgottenDeck 조회
+                if(NetworkClient.connection != null && NetworkClient.active){
+                    GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+                    AddDeckList(gamePlayerDeck.forgottenDeck, deckListPopUpGrid);
+                }
+                break;
         }
     }
 
     // 댁 리스트 팝업 비활성화 콜백
-    public void OnChangeDeckListPopUpHide(DeckListType type)
+    public void OnChangeDeckListPopUpHide()
     {
         // 버튼들의 랜더 순서 인덱스값 초기상태로 변경
         if(PopUpUIManager.instance.cardOnHandRemovePopUp.activeSelf){
@@ -88,8 +98,6 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>
         }else{
             M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         }
-        PopUpUIManager.instance.isOpenPrefareDeckPopUp = false;
-        PopUpUIManager.instance.isOpenTrashDeckPopUp = false;
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
             ClearDeckList();
             gameObject.SetActive(false);

@@ -282,6 +282,9 @@ public class PlayerInterface : NetworkBehaviour
             // 현재 선택한 플레이어가 단향일 경우 어빌리티 버튼 활성화 상태 변경
             GamePlayer gamePlayer = currentGamePlayerDeck.GetComponent<GamePlayer>();
             M_CardManager.instance.ChangeAbilityButtonActiveState(gamePlayer.character == Character.HONGDANHYANG);
+
+            // 현재 선택한 플레이어의 패 제거 카드 배열값 설정
+            currentGamePlayerDeck.choosedCardOnHands = new CardOnHand[currentGamePlayerDeck.maxRemoveCardCount];
         }
     }
 

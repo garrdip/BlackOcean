@@ -42,4 +42,8 @@ public static class Const
     public const string CURSE_IMAGE_FRAME = "CurseImageFrame";
     public const string CURSE_GRADE_FRAME = "CurseGradeFrame";
     public const string CURSE_EMBLEM = "CurseEmblem";
+
+    public const string PREFARE_DECK = "뽑을 덱";
+    public const string TRASH_DECK = "버린 덱";
+    public const string FORGOTTEN_DECK = "잊혀진 덱";
 }

@@ -246,7 +246,7 @@ public class CardOnHand : NetworkBehaviour
     {
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
             if(!isUsed && !isMoving && !IsArrowActive()){
-                // 덱 [목록] 팝업창이 뜬 경우에 마우스 왼쪽 버튼 클릭 시
+                // 일반적인 경우에 마우스 왼쪽 버튼 클릭 시
                 if(!IsCardControllablePopUpActive()){
                     isDrag = true;
                     arrowSpawnedCardPosition = transform.position; // 드래그 시작전 마우스 클릭 시점에 카드의 절대 위치값 저장(이 시점의 카드 위치는 중앙 하단). 화살표 소환 시 카드를 다시 중앙 하단으로 이동시키기 위함.

@@ -260,22 +260,18 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 .SetDelay(delay)
                 .OnComplete(() => {
                     GameUIManager.instance.buttonEndTurn.interactable = true;
-                    gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand);
+                    gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand, false);
                     ChangeCurrentPlayerCardOnHandState(false);
                 });
     }
 
-    // 덱 제거를 위해 선택된 카드들의 위치 및 크기 변경
+    // 패 제거를 위해 선택된 카드들의 위치 변경
     public void CardOnHandChooseForRemoveSequence(CardOnHand removeCardOnHand, int index)
     {
-        // 카드 제거 팝업 위치로 카드 위치, 크기, 회전 변경
         removeCardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         removeCardOnHand.transform.localScale = new Vector3(1f, 1f, 1f);
-
-        Vector3 centerPosition = PopUpUIManager.instance.layoutCardOnHandForRemove.GetComponent<RectTransform>().position;
-        Vector3 left = centerPosition - new Vector3(3.5f, 0f, 0f);
-        Vector3 right = centerPosition + new Vector3(3.5f, 0f, 0f);
-        Vector3 targetPosition = (index == 0) ? left : right;
+        CardOnHandRemovePopUp cardOnHandRemovePopUp = PopUpUIManager.instance.cardOnHandRemovePopUp.GetComponent<CardOnHandRemovePopUp>();
+        Vector3 targetPosition = cardOnHandRemovePopUp.removeCardSlots[index].gameObject.transform.position;
         removeCardOnHand.transform.DOMove(targetPosition, 0.2f).SetEase(Ease.OutSine);
     }
 
