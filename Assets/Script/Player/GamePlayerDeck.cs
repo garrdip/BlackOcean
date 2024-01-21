@@ -608,7 +608,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetCardOnHandRemovePopUPUpShow()
+    public void TargetCardOnHandRemovePopUpShow()
     {
         PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp(); // 패 카드 제거 팝업 활성화
     }

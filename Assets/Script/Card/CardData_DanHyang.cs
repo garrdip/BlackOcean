@@ -670,7 +670,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
-        tar[0].player.GetComponent<GamePlayerDeck>().TargetCardOnHandRemovePopUPUpShow();  // 패 카드 제거 팝업 호출
+        tar[0].player.GetComponent<GamePlayerDeck>().TargetCardOnHandRemovePopUpShow();  // 패 카드 제거 팝업 호출
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
