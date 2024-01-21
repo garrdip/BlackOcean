@@ -49,7 +49,7 @@ public partial class CardData : SingletonD<CardData>
                 card.cardNumber = values[0]; //카드 번호 사실상 메소드이름
                 card.character = (Character)Enum.Parse<Character>(values[1]);//케릭터
                 card.name = values[2];//카드이름
-                Debug.Log(values[2]);
+                //Debug.Log(values[2]);
                 card.isTargetable = (values[6] == "Y") ? true : false;
                 card.cardType = (CardType)Enum.Parse<CardType>(values[4]);
                 card.description = GetCardDescription(values[3],card);

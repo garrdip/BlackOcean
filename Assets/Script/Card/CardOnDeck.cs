@@ -170,6 +170,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(!isTweening){
             transform.DOScale(originScale * 1.3f, 0.3f);
         }
+        GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
+        TextDetector.instance.StartTextDetect(graphicRaycaster);
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
@@ -177,6 +179,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(!isTweening){
             transform.DOScale(originScale, 0.3f);
         }
+        TextDetector.instance.StopTextDetect();
     }
 
     public void OnPointerClick(PointerEventData eventData)

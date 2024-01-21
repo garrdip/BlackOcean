@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using ProjectD;
 using AYellowpaper.SerializedCollections;
 
 
-public class CardOnBook : MonoBehaviour
+public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private int index;
 
@@ -21,6 +22,17 @@ public class CardOnBook : MonoBehaviour
     public Image cardGradeFrame;
     public Image cardEmblem;
 
+
+    public void OnPointerEnter(PointerEventData pointerEventData)
+    {
+        GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
+        TextDetector.instance.StartTextDetect(graphicRaycaster);
+    }
+
+    public void OnPointerExit(PointerEventData pointerEventData)
+    {
+        TextDetector.instance.StopTextDetect();
+    }
 
     // 덱북 카드 초기화 : CardOnBook프리팹의 Regular Cell클래스에 있는 OnGenerate 이벤트에 연결되어있음.
     public void initCardOnBook(int newIndex)

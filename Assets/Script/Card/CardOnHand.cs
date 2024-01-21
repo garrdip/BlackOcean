@@ -216,6 +216,7 @@ public class CardOnHand : NetworkBehaviour
                 cardOnHandCanvas.sortingOrder =  M_CardManager.instance.maxSortOrder;
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
             }
+            TextDetector.instance.StartTextDetect();
         }
     }
 
@@ -230,6 +231,7 @@ public class CardOnHand : NetworkBehaviour
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
                 StartCoroutine(MouseExitDelay());
             }
+            TextDetector.instance.StopTextDetect();
         }
     }
 
