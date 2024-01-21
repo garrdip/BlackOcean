@@ -93,7 +93,7 @@ public class TextDetector : SingletonD<TextDetector>
                         if(wordIndex != -1){
                             TMP_WordInfo tMP_WordInfo = tmpText.textInfo.wordInfo[wordIndex];
                             // TODO : tMP_WordInfo 값이 특수용어와 같을 경우 팝업 표시
-                             Debug.Log("UI 텍스트 감지");
+                            // Debug.Log("UI 텍스트 감지");
                         }else{
                             // TODO : 팝업 숨기기
                         }
