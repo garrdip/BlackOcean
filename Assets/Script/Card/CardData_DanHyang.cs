@@ -664,11 +664,14 @@ public partial class CardData : SingletonD<CardData>
         yield return H25(card,tar);
     }
 
+    TargetObject cardGenUser;
+
     //재조물 (카드 버리기)
     public IEnumerator H26(Card card, List<TargetObject> tar)
     {
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        cardGenUser = tar[0];
         yield return new WaitForSeconds(1f);
         tar[0].player.GetComponent<GamePlayerDeck>().TargetCardOnHandRemovePopUpShow();  // 패 카드 제거 팝업 호출
         yield return new WaitForSeconds(0.3f);
@@ -677,7 +680,11 @@ public partial class CardData : SingletonD<CardData>
 
     public void H26_CallBack(int count)
     {
-        // 선택한 카드갯수만큼 철의이빨, 철의손톡 카드 생성
+        for( int i = 0 ;i  < count ; i++)   
+            if(UnityEngine.Random.Range(0,2) == 0)
+                cardGenUser.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H0")),1);
+            else
+                cardGenUser.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H1")),1);
     }
 
     public IEnumerator H26_E(Card card, List<TargetObject> tar)
@@ -1317,10 +1324,53 @@ public partial class CardData : SingletonD<CardData>
         yield return H57(card,tar);
     }
 
-    //어버이의 후예들 (잊혀진 덱 구현)
+    //어버이의 후예들 
     public IEnumerator H58(Card card, List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        List<TargetObject> targetObjects = new List<TargetObject>();
+        targetObjects.Add(tar[0]);
+        int number = 0;
+        yield return new WaitForSeconds(0.5f);
+
+        List<Card> removableDeck = new List<Card>();
+
+        foreach(Card targetCard in tar[0].player.GetComponent<GamePlayerDeck>().trashDeck)
+        {
+            if(targetCard.baseCard.cardNumber.Contains("H0") || targetCard.baseCard.cardNumber.Contains("H1") )
+            {
+                removableDeck.Add(targetCard);
+                targetObjects.Add(M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0,M_TurnManager.instance.spawnedMonsterList.Count)]);
+                yield return ExecuteCardCoroutine(targetCard,targetObjects);
+                targetObjects.RemoveAt(1);
+            }
+        }
+        foreach(Card removalbleCard in removableDeck)
+        {
+            tar[0].player.GetComponent<GamePlayerDeck>().trashDeck.Remove(removalbleCard);
+            tar[0].player.GetComponent<GamePlayerDeck>().forgottenDeck.Add(removalbleCard);
+        }
+        Debug.Log(tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck.Count);
+        foreach(Card targetCard in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
+        {
+            Debug.Log(number++);
+            if(targetCard.baseCard.cardNumber.Contains("H0") || targetCard.baseCard.cardNumber.Contains("H1") )
+            {
+                Debug.Log("Find!");
+                removableDeck.Add(targetCard);
+                targetObjects.Add(M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0,M_TurnManager.instance.spawnedMonsterList.Count)]);
+                yield return ExecuteCardCoroutine(targetCard,targetObjects);
+                targetObjects.RemoveAt(1);
+            }
+        }
+        foreach(Card removalbleCard in removableDeck)
+        {
+            tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck.Remove(removalbleCard);
+            tar[0].player.GetComponent<GamePlayerDeck>().forgottenDeck.Add(removalbleCard);
+        }
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator H58_E(Card card, List<TargetObject> tar)
     {
@@ -1330,7 +1380,25 @@ public partial class CardData : SingletonD<CardData>
     // 제국의 최전선
     public IEnumerator H59(Card card, List<TargetObject> tar)
     {
-        yield return null;
+        List<TargetObject> targets = new List<TargetObject>();
+        targets.Add(tar[0]);
+        targets.AddRange(M_TurnManager.instance.spawnedMonsterList);
+        M_DimmingManager.instance.StartDimming(targets);
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(0.3f);
+        // 철귀가 자신에게 없을 경우 자신으로 이동
+        if(tar[0].ironDemonLocation != tar[0])
+        {
+            yield return MoveIronDemonCoroutine(tar[0],tar[0]); // 철귀 적으로 이동
+        }
+        ChangePosition(tar[0],2); // 전방으로 이동
+
+        foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
+        {
+            GeneralSingleDamage(target,tar[0].sizeOfIronDemon);
+            StartCoroutine(target.monster.OnHitAnimation());
+        }
+        M_DimmingManager.instance.StopDimming(targets);
     }
     public IEnumerator H59_E(Card card, List<TargetObject> tar)
     {

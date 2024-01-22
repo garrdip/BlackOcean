@@ -104,6 +104,19 @@ public partial class CardData : SingletonD<CardData>
         }
         isCardOperating = false;
     }
+    private IEnumerator ExecuteCardCoroutine(Card card,List<TargetObject> targets)
+    {
+        if(card.experience >= card.baseCard.maxExperience)
+        {
+            yield return CardMethods[card.baseCard.cardNumber+"_E"](card,targets);
+            card.experience = 0;
+        }
+        else
+        {
+            yield return CardMethods[card.baseCard.cardNumber](card,targets);
+            card.experience++;
+        }
+    }
 
 
     // 카드 특성 확인
@@ -199,4 +212,11 @@ public partial class CardData : SingletonD<CardData>
         int targetIndex = M_TurnManager.instance.playerOrder.FindIndex(x => x == to.player.netId);
         M_TurnManager.instance.SwapPlayerOrder(currentIndex,targetIndex);
     }
+
+    private void ChangePosition(TargetObject from, int index)
+    {
+        int currentIndex = M_TurnManager.instance.playerOrder.FindIndex(x => x == from.player.netId);
+        M_TurnManager.instance.SwapPlayerOrder(currentIndex,index);
+    }
+
 }
