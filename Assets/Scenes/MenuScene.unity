@@ -10046,7 +10046,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 749634d4512732543a236f783b44815d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  graphicRaycaster: {fileID: 0}
   isWorldObject: 0
   isUIObject: 0
 --- !u!1 &1131061045
@@ -14264,6 +14263,34 @@ MonoBehaviour:
           Value: {fileID: 21300000, guid: f1730d894780a5d4c902dc3546bd2580, type: 3}
   cardIllustAtlas: {fileID: 4343727234628468602, guid: 2e2c666a9ec1e054fa9c1765f6fd634a, type: 2}
   cards: []
+  buffIcons:
+    _serializedList:
+    - Key: 12
+      Value: {fileID: 21300000, guid: e9a213559f278d44eaf667a9ba18da01, type: 3}
+    - Key: 9
+      Value: {fileID: 21300000, guid: 270dcb1cbaae427488c2172e727792dd, type: 3}
+    - Key: 3
+      Value: {fileID: 21300000, guid: ecd125432031ad946bca405a04693a1c, type: 3}
+    - Key: 4
+      Value: {fileID: 21300000, guid: 0784089335a528543b8f9a0b5f68b68b, type: 3}
+    - Key: 1
+      Value: {fileID: 21300000, guid: 8a6555bb4c5aac04e8478c73f7e20a33, type: 3}
+    - Key: 6
+      Value: {fileID: 21300000, guid: ac2e1b9197ea8db4eabf531c34f64539, type: 3}
+    - Key: 7
+      Value: {fileID: 21300000, guid: 2569a9a0e34915f48a8179b6a59bf7eb, type: 3}
+    - Key: 20
+      Value: {fileID: 21300000, guid: 22178bc29e6b9b74aa057b3ef23133f1, type: 3}
+    - Key: 15
+      Value: {fileID: 21300000, guid: af10bc0c4a7d12041b658a8ec0b431f0, type: 3}
+    - Key: 16
+      Value: {fileID: 21300000, guid: bc1c5ece572745744992627661872496, type: 3}
+    - Key: 18
+      Value: {fileID: 21300000, guid: 46ec52451789b4946a226f6e0a88daf2, type: 3}
+    - Key: 19
+      Value: {fileID: 21300000, guid: acc3b9aefcd74954283b54b39b38367e, type: 3}
+    - Key: 21
+      Value: {fileID: 21300000, guid: 6dbd3ce3112ff27419eef723cf0ab43c, type: 3}
   isCardOperatingTEST: 0
 --- !u!1 &1732529131
 GameObject:

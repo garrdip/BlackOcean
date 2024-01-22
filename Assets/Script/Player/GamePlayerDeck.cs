@@ -158,15 +158,13 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     for(int i = 0; i < 8; i++)
                     {
                         if(i % 2 == 0){
-                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G3")));
+                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G1_H")));
                             deck.Add(attackCard);
                         }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G4")));
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G0")));
                             deck.Add(defenseCard);
                         }   
                     }
-                    Card transformCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("GX")));
-                    deck.Add(transformCard);
                     break;
                 case Character.ERIS:
                     for(int i = 0; i < 8; i++)
@@ -186,10 +184,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
                         //deck.Add(attackCard);
                         if(i % 2 == 0){
-                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H0")));
+                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H24")));
                             deck.Add(attackCard);
                         }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H26")));
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H28")));
                             deck.Add(defenseCard);
                         }
                     }

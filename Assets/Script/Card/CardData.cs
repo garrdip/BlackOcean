@@ -15,7 +15,7 @@ public partial class CardData : SingletonD<CardData>
     public SpriteAtlas cardIllustAtlas; // 카드 일러스트 아틀라스
     public List<CardBase> cards = new List<CardBase>();
     public Dictionary<string,ExecuteCard> CardMethods = new Dictionary<string, ExecuteCard>();
-
+    public SerializedDictionary<BuffType,Sprite> buffIcons = new SerializedDictionary<BuffType,Sprite>();
     public bool isCardOperatingTEST;
     public bool isCardOperating{get{
         return isCardOperatingTEST;
@@ -179,11 +179,6 @@ public partial class CardData : SingletonD<CardData>
             else
                 tar.defense += ( defenseValue + from.buffs.Find(buff => buff.type == BuffType.ICHI_DEFENSE).value );
         }
-    }
-
-    public bool IsGISADO(List<TargetObject> tar)
-    {
-        return ((int)tar[1].monster.nextTarget == tar[0].player.selectOrder)? true : false;
     }
 
     private void MovePosition(bool isForward,TargetObject tar)

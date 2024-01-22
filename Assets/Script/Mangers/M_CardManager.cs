@@ -61,7 +61,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     [Header("어빌리티 화살표 활성화 상태 여부")]
     public bool isAbilityArrowActive = false;
 
-
+    public List<(Sprite,BuffType)> buffIcons;
     public override void OnStartServer()
     {
         // 카드 DB 데이터에서 강화, 철귀이동, 고행카드를 제외한 카드 데이터를 추출하여 서버가 관리할 Synclist에 추가

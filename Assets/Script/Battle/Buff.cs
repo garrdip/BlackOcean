@@ -1,12 +1,14 @@
 using ProjectD;
+
+[System.Serializable]
 public class Buff
 {
     public BuffType type;
     public int value;
-    public bool isDebuff;
-    public bool isInfinity;
-    public bool isDecrease;
-    public TargetObject user;
+    public bool isDebuff; // 디버프 여부
+    public bool isInfinity; // 영구 버프(디버프) 증가 감소하지 않음.
+    public bool isDecrease; // 턴이 지남에 따라 감소하는 버프(디버프)
+    public uint user; // 버프를 건 사용자
 
     public Buff()
     {
@@ -20,7 +22,8 @@ public class Buff
         isDebuff = isDebuffIn;
         isInfinity = isInfinityIn;
         isDecrease = isDecreaseIn;
-        user = tarIn;
+        if(tarIn != null)user = tarIn.player.netId;
+        else user = 0;
     }
     
 }

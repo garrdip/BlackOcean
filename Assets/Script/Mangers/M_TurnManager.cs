@@ -449,6 +449,13 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             monster.monster.SetNextAction();
         }
+        foreach(TargetObject player in spawnedPlayerList)
+        {
+            if(player.player.character == Character.HONGDANHYANG)
+            {
+                player.GainBuff(BuffType.IRONDEMON, 4, false, false, false, player, null);
+            }
+        }
         phase = BattleTurn.PLAYER_PREEFFECT;
     }
 
@@ -503,9 +510,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 avatar.GetComponent<TargetObject>().playerHP = gamePlayer.HP;
                 avatar.GetComponent<TargetObject>().conn = gamePlayer.netIdentity;
                 avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
-                if(avatar.GetComponent<TargetObject>().player.character == Character.HONGDANHYANG){
-                    avatar.GetComponent<TargetObject>().sizeOfIronDemon = 4;
-                }
+
                 gamePlayer.GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
                 spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
                 spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);

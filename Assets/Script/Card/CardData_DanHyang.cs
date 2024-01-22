@@ -1119,20 +1119,13 @@ public partial class CardData : SingletonD<CardData>
         yield return H47(card,tar);
     }
 
-    // 향기로운 꽃
+    // 향기로운 꽃 // Todo : 버프형으로 변경
     public IEnumerator H48(Card card, List<TargetObject> tar)
     {
         M_DimmingManager.instance.StartDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
-        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
-        {
-            target.GainBuff(BuffType.FLOWERPOWDER,2,false,false,true,tar[0],card);
-        }
-        foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
-        {
-            target.GainBuff(BuffType.FLOWERPOWDER,2,true,false,true,tar[0],card);
-        }
+        tar[0].GainBuff(BuffType.FRAGRANT,1,false,true,false,tar[0],card);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
     }

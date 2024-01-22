@@ -53,8 +53,17 @@ public class TargetObject : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedIronDemonLocation))]
     public TargetObject ironDemonLocation;
 
-    [SyncVar (hook = nameof(OnChangedIronDemonSize))]
-    public int sizeOfIronDemon;
+    public int sizeOfIronDemon
+    {
+        get
+        {
+            return buffs.Find(x => x.type == BuffType.IRONDEMON).value;
+        }
+        set
+        {
+            buffs.Find(x => x.type == BuffType.IRONDEMON).value = value;
+        }
+    }
 
     public SkeletonAnimation anim;
 
@@ -354,7 +363,6 @@ public class TargetObject : NetworkBehaviour
     }
 
     // ----------------------------------------------  SyncVar, SyncList 콜백 처리 구간 ---------------------------------------------------//
-
     public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
     {
         if(newBuff != null)
@@ -365,16 +373,16 @@ public class TargetObject : NetworkBehaviour
             switch (op)
             {
                 case SyncList<Buff>.Operation.OP_ADD:
-                    buffIndicator.SetBuff(newBuff);
+                    buffIndicator.SetBuff(newBuff,index);
                     break;
                 case SyncList<Buff>.Operation.OP_INSERT:
-                    buffIndicator.SetBuff(newBuff);
+                    buffIndicator.SetBuff(newBuff,index);
                     break;
                 case SyncList<Buff>.Operation.OP_REMOVEAT:
-
+                    buffIndicator.RemoveBuff(index);
                     break;
                 case SyncList<Buff>.Operation.OP_SET:
-                    buffIndicator.SetBuff(newBuff);
+                    buffIndicator.SetBuff(newBuff,index);
                     break;
                 case SyncList<Buff>.Operation.OP_CLEAR:
 
@@ -416,12 +424,6 @@ public class TargetObject : NetworkBehaviour
     public void SetIronDemonParent(Transform p)
     {
         ironDemon.transform.parent = p;
-    }
-
-    public void OnChangedIronDemonSize(int oldVal, int newVal)
-    {
-        Buff ironDemonBuff = new Buff(BuffType.IRONDEMON,newVal,false,false,false,this);
-        buffIndicator.SetBuff(ironDemonBuff);
     }
 
     void OnChangedErisMode(ErisMode oldVal, ErisMode newVal)
