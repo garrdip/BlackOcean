@@ -46,6 +46,7 @@ public class CardOnHandRemovePopUp : SingletonD<CardOnHandRemovePopUp>
                 });
             }
         }
+        CardData.instance.H26_CallBack(gamePlayerDeck.choosedCardOnHands.Length); // 패 제거 팝업에서 선택한 카드 갯수 넘겨줌
     }
 
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //

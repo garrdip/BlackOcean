@@ -472,6 +472,31 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         this.mapBoss = mapBoss; // 서버에 참조값 생성
     }
 
+    // 맵플레이어가 선택한 MapRoom값을 Dictionary<NetworkIdentity, MapRoom> 형태로 저장
+    [Server]
+    public void VoteHexagonMapRoom(HexagonMapRoom hexagonMapRoom, NetworkIdentity networkIdentity)
+    {
+        if(playerVoteHexagonMapRoom.ContainsKey(networkIdentity)){
+            playerVoteHexagonMapRoom[networkIdentity] = hexagonMapRoom;
+        }else{
+            playerVoteHexagonMapRoom.Add(networkIdentity, hexagonMapRoom);
+        }
+
+        // 맵플레이어가 선택한 MapRoom의 isSelected 상태 변경
+        if(!hexagonMapRoom.isSelected){
+            hexagonMapRoom.isSelected = !hexagonMapRoom.isSelected;
+        }
+
+        // hexagonMapRooms 리스트의 값을 초기값으로 가지는 HashSet생성(중복 방지)
+        HashSet<HexagonMapRoom> voteHexagonMapRoomExcept = new HashSet<HexagonMapRoom>(hexagonMapRooms);
+        foreach(HexagonMapRoom voteHexagonMapRoom in playerVoteHexagonMapRoom.Values){
+            voteHexagonMapRoomExcept.Remove(voteHexagonMapRoom); // 맵플레이어가 선택한 방들을 제외
+        }
+        foreach(HexagonMapRoom otherHexagonMapRoom in voteHexagonMapRoomExcept){
+            otherHexagonMapRoom.isSelected = false; // 맵플레이어가 선택하지 않은 남은 방들에 대해 isSelected를 false로 설정
+        }
+    }
+
     // 방 완료상태로 변경
     [Server]
     public void SetRoomStateComplete()
@@ -1006,8 +1031,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         path.Reverse();
 
         // 이동하려는 위치까지의 비용이 현재 남은 비용보다 작은 경우, 검색된 경로에서 모자라는 만큼 노드를 제거(= 검색된 경로중 현재 남은 비용으로 이동 가능한 만큼의 노드만 반환)
-        if(M_MapManager.instance.currentActionCost < path.Count){
-            int numToRemove = path.Count - M_MapManager.instance.currentActionCost;
+        if(currentActionCost < path.Count){
+            int numToRemove = path.Count - currentActionCost;
             for(int i = 0; i < numToRemove; i++){
                 int lastIndex = path.Count - 1;
                 path.RemoveAt(lastIndex);
@@ -1020,7 +1045,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     public void RenderVisualizePath(HexagonMapRoom startAt, List<HexagonMapRoom> findPath, uint netId, MapPlayerDestination currentMapPlayerDestination)
     {
         // 현재 플레이어 위치 시작지점으로 경로 추가
-        GameObject startPathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity, M_MapManager.instance.MapPathLines.transform);
+        GameObject startPathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity, MapPathLines.transform);
         PathLineRenderer path = startPathLineRenderer.GetComponent<PathLineRenderer>();
         SpriteRenderer sprite = startPathLineRenderer.GetComponent<SpriteRenderer>();
         sprite.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
@@ -1034,7 +1059,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         // 검색된 경로 추가
         for(int i=0; i<findPath.Count-1; i++)
         {
-            GameObject pathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity, M_MapManager.instance.MapPathLines.transform);
+            GameObject pathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity, MapPathLines.transform);
             PathLineRenderer pathLineRendererComponent = pathLineRenderer.GetComponent<PathLineRenderer>();
             SpriteRenderer spriteRenderer = pathLineRenderer.GetComponent<SpriteRenderer>();
             spriteRenderer.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
@@ -1072,7 +1097,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         for(int i=pathLineRenderers.Count-1; i>=0; i--){
             if(pathLineRenderers[i].GetComponent<PathLineRenderer>().netId == netId){
-                Destroy(M_MapManager.instance.pathLineRenderers[i]);
+                Destroy(pathLineRenderers[i]);
                 pathLineRenderers.RemoveAt(i);
             }
         }
@@ -1082,7 +1107,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     public void RemoveAllExistLineRenderer()
     {
         for(int i=pathLineRenderers.Count-1; i>=0; i--){
-            Destroy(M_MapManager.instance.pathLineRenderers[i]);
+            Destroy(pathLineRenderers[i]);
             pathLineRenderers.RemoveAt(i);
         }
     }

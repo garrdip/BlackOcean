@@ -674,6 +674,12 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
+
+    public void H26_CallBack(int count)
+    {
+        // 선택한 카드갯수만큼 철의이빨, 철의손톡 카드 생성
+    }
+
     public IEnumerator H26_E(Card card, List<TargetObject> tar)
     {
         yield return H26(card,tar);

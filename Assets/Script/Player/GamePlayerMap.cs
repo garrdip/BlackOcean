@@ -43,10 +43,10 @@ public class GamePlayerMap : NetworkBehaviour
             if(findPath.Count > 0){
                 currentMapPlayerDestinationPosition = findPath[findPath.Count-1].transform.position; // MapPlayerDestination 위치는 findPath 마지막 노드 위치
                 RpcVisualizePath(startAt, findPath, networkIdentity.netId); // 경로표시
-                VoteHexagonMapRoom(findPath[findPath.Count-1], netIdentity); // 검색된 경로의 마지막 위치에 있는 HexagonMapRoom을 투표
+                M_MapManager.instance.VoteHexagonMapRoom(findPath[findPath.Count-1], netIdentity); // 검색된 경로의 마지막 위치에 있는 HexagonMapRoom을 투표
             }else{
                 RpcHidePath(networkIdentity.netId); // 경로제거
-                VoteHexagonMapRoom(endAt, netIdentity); // 검색된 경로가 없는경우(보스전) 선택값으로 넘어오는 HexagonMapRoom을 투표
+                M_MapManager.instance.VoteHexagonMapRoom(endAt, netIdentity); // 검색된 경로가 없는경우(보스전) 선택값으로 넘어오는 HexagonMapRoom을 투표
             }
             
             // findPath 리스트의 카운트 = 거리값
@@ -54,32 +54,6 @@ public class GamePlayerMap : NetworkBehaviour
         }
     }
 
-    // ------------------------------------------------------------------------------ Server Method ----------------------------------------------------------------------------//
-
-    // 맵플레이어가 선택한 MapRoom값을 Dictionary<NetworkIdentity, MapRoom> 형태로 저장
-    [Server]
-    private void VoteHexagonMapRoom(HexagonMapRoom hexagonMapRoom, NetworkIdentity networkIdentity)
-    {
-        if(M_MapManager.instance.playerVoteHexagonMapRoom.ContainsKey(networkIdentity)){
-            M_MapManager.instance.playerVoteHexagonMapRoom[networkIdentity] = hexagonMapRoom;
-        }else{
-            M_MapManager.instance.playerVoteHexagonMapRoom.Add(networkIdentity, hexagonMapRoom);
-        }
-
-        // 맵플레이어가 선택한 MapRoom의 isSelected 상태 변경
-        if(!hexagonMapRoom.isSelected){
-            hexagonMapRoom.isSelected = !hexagonMapRoom.isSelected;
-        }
-
-        // hexagonMapRooms 리스트의 값을 초기값으로 가지는 HashSet생성(중복 방지)
-        HashSet<HexagonMapRoom> voteHexagonMapRoomExcept = new HashSet<HexagonMapRoom>(M_MapManager.instance.hexagonMapRooms);
-        foreach(HexagonMapRoom voteHexagonMapRoom in M_MapManager.instance.playerVoteHexagonMapRoom.Values){
-            voteHexagonMapRoomExcept.Remove(voteHexagonMapRoom); // 맵플레이어가 선택한 방들을 제외
-        }
-        foreach(HexagonMapRoom otherHexagonMapRoom in voteHexagonMapRoomExcept){
-            otherHexagonMapRoom.isSelected = false; // 맵플레이어가 선택하지 않은 남은 방들에 대해 isSelected를 false로 설정
-        }
-    }
 
     // ------------------------------------------------------------------------------ Client Method -------------------------------------------------------------------------------//
 
