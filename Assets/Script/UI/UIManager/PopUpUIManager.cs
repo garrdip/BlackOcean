@@ -60,8 +60,11 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject mercuriusPopUp;
     public GameObject gameOverPopUp;
 
-    [Header("패 제거 팝업에 사용되는 카드 위치 프리팹")]
+    [Header("패 제거 팝업 카드 위치설정용 슬롯 프리팹")]
     public GameObject RemoveCardSlotPrefab;
+
+    [Header("추가 드로우 팝업 카드 위치설정용 슬롯 프리팹")]
+    public GameObject AddtionDrawCardSlotPrefab;
 
     [Header("댁 리스트 팝업에 사용되는 카드 프리팹")]
     public GameObject CardOnDeckPrefab;

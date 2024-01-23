@@ -833,10 +833,18 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     cardOnDeck.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                     
                     Sequence sequence = DOTween.Sequence();
-                    sequence.PrependCallback(() => { deckDrawPopUp.addtionDrawCardPositions[index].gameObject.SetActive(true); });
+                    sequence.PrependCallback(() => { 
+                        GameObject cardPosition = Instantiate(
+                            PopUpUIManager.instance.AddtionDrawCardSlotPrefab,
+                            Vector3.zero,
+                            Quaternion.identity,
+                            deckDrawPopUp.gridLayoutGroup.transform
+                        );
+                        deckDrawPopUp.addtionDrawCardSlots.Add(cardPosition);
+                    });
                     sequence.InsertCallback(0.1f, () => {
                         Sequence cardSequence = DOTween.Sequence();
-                        cardSequence.Append(cardOnDeck.transform.DOMove(deckDrawPopUp.addtionDrawCardPositions[index].transform.position, 0.5f).SetEase(Ease.InOutCirc).SetDelay(index * 0.1f));
+                        cardSequence.Append(cardOnDeck.transform.DOMove(deckDrawPopUp.addtionDrawCardSlots[index].transform.position, 0.5f).SetEase(Ease.InOutCirc).SetDelay(index * 0.1f));
                         cardSequence.Join(cardOnDeck.transform.DOScale(Vector3.one, 0.5f)).OnComplete(() => { cardSequence.Kill(); });
                     });
                     sequence.OnComplete(() => {

@@ -187,7 +187,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         if(!cardOnHand.isChoosed){
             cardOnHand.isMoving = true;
             DeckDrawPopUp deckDrawPopUp = PopUpUIManager.instance.deckDrawPopUp.GetComponent<DeckDrawPopUp>();
-            cardOnHand.transform.position = cardOnHand.isOwned ? deckDrawPopUp.addtionDrawCardPositions[cardOnHand.index].transform.position : new Vector3(0f, -100f, 0f);
+            cardOnHand.transform.position = cardOnHand.isOwned ? deckDrawPopUp.addtionDrawCardSlots[cardOnHand.index].transform.position : new Vector3(0f, -100f, 0f);
             Sequence sequence = DOTween.Sequence();
             sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
                 .SetDelay(index * 0.1f)

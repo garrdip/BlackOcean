@@ -8,8 +8,9 @@ using DG.Tweening;
 public class DeckDrawPopUp : MonoBehaviour
 {
     public CanvasGroup canvasGroup;
+    public GridLayoutGroup gridLayoutGroup;
     public List<GameObject> addtionDrawCardObjects = new List<GameObject>();
-    public List<GameObject> addtionDrawCardPositions = new List<GameObject>();
+    public List<GameObject> addtionDrawCardSlots = new List<GameObject>();
 
 
     void Awake()
@@ -33,7 +34,11 @@ public class DeckDrawPopUp : MonoBehaviour
             foreach(GameObject card in addtionDrawCardObjects){
                 Destroy(card);
             }
+            foreach(GameObject cardSlot in addtionDrawCardSlots){
+                Destroy(cardSlot);
+            }
             addtionDrawCardObjects.Clear();
+            addtionDrawCardSlots.Clear();
             gameObject.SetActive(false);
         });
     } 
