@@ -255,7 +255,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             foreach(int buffIndex in currentKeys)
             { 
                 yield return tar.buffTrunBeginEffect[buffIndex](tar);
-                StartCoroutine(tar.monster.OnHitAnimation());
             }
             foreach(Buff buff in tar.buffs)
             {
@@ -265,6 +264,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     int indexOfOldItem = tar.buffs.FindIndex(x => x == buff);
                     oldItem.value -= 1;
                     tar.buffs.RemoveAt(indexOfOldItem);
+                    tar.OnChangedBuff(SyncList<Buff>.Operation.OP_REMOVEAT,indexOfOldItem,oldItem,oldItem);
                     if(oldItem.value != 0)tar.buffs.Insert(indexOfOldItem,oldItem);
                 }
             }
@@ -307,6 +307,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     int indexOfOldItem = tar.buffs.FindIndex(x => x == buff);
                     oldItem.value -= 1;
                     tar.buffs.RemoveAt(indexOfOldItem);
+                    tar.OnChangedBuff(SyncList<Buff>.Operation.OP_REMOVEAT,indexOfOldItem,oldItem,oldItem);
                     if(oldItem.value != 0)tar.buffs.Insert(indexOfOldItem,oldItem);
                 }
             }

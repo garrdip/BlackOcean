@@ -187,7 +187,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                             Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H1")));
                             deck.Add(attackCard);
                         }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H48")));
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H41")));
                             deck.Add(defenseCard);
                         }
                         

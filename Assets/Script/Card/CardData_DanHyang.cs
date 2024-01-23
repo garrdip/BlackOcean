@@ -1046,13 +1046,15 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         int index = 0;
         if(tar[1].objectType == ObjectType.PLAYER){
-            index = tar[1].GainBuff(BuffType.FLOWERPOWDER,5,false,false,true,tar[0],card);
+            index = tar[1].GainBuff(BuffType.FLOWERPOWDER,2,false,false,true,tar[0],card);
+            if(!tar[1].buffTurnEndEffect.Keys.Contains<int>(index))tar[1].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         }
         else 
         {
-            index = tar[1].GainBuff(BuffType.FLOWERPOWDER,5,true,false,true,tar[0],card);
+            index = tar[1].GainBuff(BuffType.FLOWERPOWDER,2,true,false,true,tar[0],card);
+            if(!tar[1].buffTrunBeginEffect.Keys.Contains<int>(index))tar[1].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         }
-        if(!tar[1].buffTurnEndEffect.Keys.Contains<int>(index))tar[1].buffTurnEndEffect.Add(index,FlowerPowderEffect);
+        
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }

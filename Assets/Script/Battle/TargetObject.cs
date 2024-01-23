@@ -390,7 +390,8 @@ public class TargetObject : NetworkBehaviour
                     break;
                 case SyncList<Buff>.Operation.OP_REMOVEAT:
                     buffIndicator.RemoveBuff(index);
-                    buffTrunBeginEffect.Remove(index);
+                    if(newBuff.value == 0)
+                        buffTrunBeginEffect.Remove(index);
                     break;
                 case SyncList<Buff>.Operation.OP_SET:
                     buffIndicator.SetBuff(newBuff,index);
