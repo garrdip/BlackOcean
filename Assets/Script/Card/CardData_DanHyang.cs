@@ -34,6 +34,18 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.6f); // 공격모션 끝남
     }
 
+    public IEnumerator FlowerPowderEffect(TargetObject tar)
+    {
+        if(tar.objectType == ObjectType.PLAYER)
+            tar.defense += tar.GetBuffValue(BuffType.FLOWERPOWDER);
+        else
+        {
+            GeneralSingleDamage(tar,tar.GetBuffValue(BuffType.FLOWERPOWDER));
+            StartCoroutine(tar.monster.OnHitAnimation());
+        }
+        yield return null;
+    }
+
     public IEnumerator HA(Card card,List<TargetObject> tar)
     {
         yield return tempWait; // 임시 딜레이
@@ -567,6 +579,10 @@ public partial class CardData : SingletonD<CardData>
     // 철의 분노
     public IEnumerator H21(Card card, List<TargetObject> tar)
     {
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(0.5f);
+        tar[0].GainBuff(BuffType.FURYOFIRON,1,false,true,false,tar[0],card);
         foreach(Card pCard in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
         {
             if(pCard.baseCard.cardNumber == "H0" || pCard.baseCard.cardNumber == "H1")
@@ -585,9 +601,22 @@ public partial class CardData : SingletonD<CardData>
                 pCard.OnChangeCardData(pCard.card,pCard.card);
             }
         }
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         yield return new WaitForSeconds(0.2f);
-        
     }
+
+    public void FuryOfIronEffect(TargetObject owner)
+    {
+        foreach(CardOnHand pCard in owner.player.GetComponent<GamePlayerDeck>().cardOnHands)
+        {
+            if(pCard.card.baseCard.cardNumber == "H0" || pCard.card.baseCard.cardNumber == "H1")
+            {
+                pCard.card.tempEnhanced = true;
+                pCard.OnChangeCardData(pCard.card,pCard.card);
+            }
+        }
+    }
+
     public IEnumerator H21_E(Card card, List<TargetObject> tar)
     {
         yield return H21(card,tar);
@@ -601,6 +630,7 @@ public partial class CardData : SingletonD<CardData>
         GeneralGetDefense(tar[0],tar[0],7,card);
         yield return new WaitForSeconds(1f);
         tar[0].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H0")),3);
+        if(tar[0].GetBuffValue(BuffType.FURYOFIRON) != 0)FuryOfIronEffect(tar[0]);
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
@@ -638,10 +668,18 @@ public partial class CardData : SingletonD<CardData>
     // 칼날 손질
     public IEnumerator H24(Card card, List<TargetObject> tar)
     {
-        yield return tempWait; // 임시 딜레이
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션
-        tar[0].GainBuff(BuffType.BLADETRIMMING,1, false, true, false, tar[0],card);
-        
+        yield return new WaitForSeconds(0.5f);
+        int index = tar[0].GainBuff(BuffType.BLADETRIMMING,1, false, true, false, tar[0],card);
+        tar[0].buffCardDrowEffect.Add(index,H24_Buff_Effect);
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    public IEnumerator H24_Buff_Effect(TargetObject tar)
+    {
+        tar.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H0")),1);
+        tar.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H1")),1);
+        yield return null;
     }
     public IEnumerator H24_E(Card card, List<TargetObject> tar)
     {
@@ -655,6 +693,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
         tar[0].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H1")),M_TurnManager.instance.spawnedMonsterList.Count);
+        if(tar[0].GetBuffValue(BuffType.FURYOFIRON) != 0)FuryOfIronEffect(tar[0]);
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
@@ -685,6 +724,7 @@ public partial class CardData : SingletonD<CardData>
                 cardGenUser.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H0")),1);
             else
                 cardGenUser.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H1")),1);
+        if(cardGenUser.GetBuffValue(BuffType.FURYOFIRON) != 0)FuryOfIronEffect(cardGenUser);
     }
 
     public IEnumerator H26_E(Card card, List<TargetObject> tar)
@@ -714,10 +754,17 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
-        tar[0].GainBuff(BuffType.GROWTHSPURT, 1, false, true, false, tar[0],card);
+        int index = tar[0].GainBuff(BuffType.GROWTHSPURT, 1, false, true, false, tar[0],card);
+        tar[0].buffTrunBeginEffect.Add(index,H28_BlessEffect);
+        Debug.Log(tar[0].buffTrunBeginEffect.Keys.Count);
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-        
+    }
+
+    public IEnumerator H28_BlessEffect(TargetObject tar)
+    {
+        tar.GainBuff(BuffType.IRONDEMON,2,false,false,false,tar,null);
+        yield return null;
     }
     public IEnumerator H28_E(Card card, List<TargetObject> tar)
     {
@@ -852,11 +899,26 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
-        tar[0].GainBuff(BuffType.FURYOFFLOWER, 1, false, true, false, tar[0],card);
+        int index = tar[0].GainBuff(BuffType.FURYOFFLOWER, 0, false, true, false, tar[0],card);
+        tar[0].buffCardUseEffect.Add(index,H34_CardUseEffect);
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
     }
+
+    public IEnumerator H34_CardUseEffect(TargetObject tar)
+    {
+        if(tar.GetBuffValue(BuffType.FURYOFFLOWER) == 2)
+        {
+            tar.GainBuff(BuffType.FURYOFFLOWER,-2,false,true,false,tar,null);
+            yield return HWAHAP(tar);
+        }
+        else
+        {
+            tar.GainBuff(BuffType.FURYOFFLOWER,1,false,true,false,tar,null);
+        }
+    }
+
     public IEnumerator H34_E(Card card, List<TargetObject> tar)
     {
         yield return H34(card,tar);
@@ -982,8 +1044,15 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
-        if(tar[1].objectType == ObjectType.PLAYER)tar[1].GainBuff(BuffType.FLOWERPOWDER,5,false,false,true,tar[0],card);
-        else tar[1].GainBuff(BuffType.FLOWERPOWDER,5,true,false,true,tar[0],card);
+        int index = 0;
+        if(tar[1].objectType == ObjectType.PLAYER){
+            index = tar[1].GainBuff(BuffType.FLOWERPOWDER,5,false,false,true,tar[0],card);
+        }
+        else 
+        {
+            index = tar[1].GainBuff(BuffType.FLOWERPOWDER,5,true,false,true,tar[0],card);
+        }
+        if(!tar[1].buffTurnEndEffect.Keys.Contains<int>(index))tar[1].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -997,7 +1066,8 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
         GeneralSingleAttack(tar[0],tar[1],3);
-        tar[1].GainBuff(BuffType.FLOWERPOWDER,2,true,false,true,tar[0],card);
+        int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,2,true,false,true,tar[0],card);
+        if(!tar[1].buffTurnEndEffect.Keys.Contains<int>(index))tar[1].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -1018,7 +1088,8 @@ public partial class CardData : SingletonD<CardData>
             yield return new WaitForSeconds(0.5f);
             foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
             {
-                target.GainBuff(BuffType.FLOWERPOWDER,3,false,false,true,tar[0],card);
+                int index = target.GainBuff(BuffType.FLOWERPOWDER,3,false,false,true,tar[0],card);
+                if(!target.buffTurnEndEffect.Keys.Contains<int>(index))target.buffTurnEndEffect.Add(index,FlowerPowderEffect);
             }
         }
         else
@@ -1030,7 +1101,8 @@ public partial class CardData : SingletonD<CardData>
             yield return new WaitForSeconds(0.5f);
             foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
             {
-                target.GainBuff(BuffType.FLOWERPOWDER,3,true,false,true,tar[0],card);
+                int index = target.GainBuff(BuffType.FLOWERPOWDER,3,true,false,true,tar[0],card);
+                if(!target.buffTurnEndEffect.Keys.Contains<int>(index))target.buffTurnEndEffect.Add(index,FlowerPowderEffect);
             }
         }
         yield return new WaitForSeconds(0.5f);
@@ -1087,8 +1159,8 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
-        tar[1].GainBuff(BuffType.FLOWERPOWDER,tar[1].GetBuffValue(BuffType.FLOWERPOWDER),false,false,true,tar[0],card);
-        
+        int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,tar[1].GetBuffValue(BuffType.FLOWERPOWDER),false,false,true,tar[0],card);
+        if(!tar[1].buffTurnEndEffect.Keys.Contains<int>(index))tar[1].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -1105,11 +1177,13 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
         {
-            target.GainBuff(BuffType.FLOWERPOWDER,target.GetBuffValue(BuffType.FLOWERPOWDER),false,false,true,tar[0],card);
+            int index = target.GainBuff(BuffType.FLOWERPOWDER,target.GetBuffValue(BuffType.FLOWERPOWDER),false,false,true,tar[0],card);
+            if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTurnEndEffect.Add(index,FlowerPowderEffect);
         }
         foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
         {
-            target.GainBuff(BuffType.FLOWERPOWDER,target.GetBuffValue(BuffType.FLOWERPOWDER),true,false,true,tar[0],card);
+            int index = target.GainBuff(BuffType.FLOWERPOWDER,target.GetBuffValue(BuffType.FLOWERPOWDER),true,false,true,tar[0],card);
+            if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTurnEndEffect.Add(index,FlowerPowderEffect);
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
@@ -1125,9 +1199,25 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
-        tar[0].GainBuff(BuffType.FRAGRANT,1,false,true,false,tar[0],card);
+        int index = tar[0].GainBuff(BuffType.FRAGRANT,0,false,true,false,tar[0],card);
+        tar[0].buffTrunBeginEffect.Add(index,H48_BlessEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
+    }
+
+    public IEnumerator H48_BlessEffect(TargetObject tar)
+    {
+        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+        {
+            int index = target.GainBuff(BuffType.FLOWERPOWDER,2,false,false,true,tar,null);
+            if(!target.buffTurnEndEffect.Keys.Contains<int>(index))target.buffTurnEndEffect.Add(index,FlowerPowderEffect);
+        }
+        foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
+        {
+            int index = target.GainBuff(BuffType.FLOWERPOWDER,2,true,false,true,tar,null);
+            if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTrunBeginEffect.Add(index,FlowerPowderEffect);
+        }
+        yield return null;
     }
     public IEnumerator H48_E(Card card, List<TargetObject> tar)
     {
@@ -1141,7 +1231,8 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
         GeneralGetDefense(tar[0],tar[0],8,card);
-        tar[0].GainBuff(BuffType.FLOWERPOWDER,2,false,false,true,tar[0],card);
+        int index = tar[0].GainBuff(BuffType.FLOWERPOWDER,2,false,false,true,tar[0],card);
+        if(!tar[0].buffTurnEndEffect.Keys.Contains<int>(index))tar[0].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -1158,13 +1249,15 @@ public partial class CardData : SingletonD<CardData>
         {
             M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
             yield return new WaitForSeconds(0.5f);
-            tar[0].GainBuff(BuffType.FLOWERPOWDER,3,false,false,true,tar[0],card);
+            int index = tar[0].GainBuff(BuffType.FLOWERPOWDER,3,false,false,true,tar[0],card);
+            if(!tar[0].buffTurnEndEffect.Keys.Contains<int>(index))tar[0].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         }
         else
         {
             M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
             yield return new WaitForSeconds(0.5f);
-            tar[0].GainBuff(BuffType.FLOWERPOWDER,3,true,false,true,tar[0],card);
+            int index = tar[0].GainBuff(BuffType.FLOWERPOWDER,3,true,false,true,tar[0],card);
+            if(!tar[0].buffTrunBeginEffect.Keys.Contains<int>(index))tar[0].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));

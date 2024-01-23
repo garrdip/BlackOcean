@@ -97,6 +97,12 @@ public class TargetObject : NetworkBehaviour
         return retVal;
     }
 
+    public Dictionary<int,CardBlessEffect> buffTrunBeginEffect = new Dictionary<int, CardBlessEffect>();
+    public Dictionary<int,CardBlessEffect> buffCardDrowEffect = new Dictionary<int, CardBlessEffect>();
+    public Dictionary<int,CardBlessEffect> buffTurnEndEffect = new Dictionary<int, CardBlessEffect>();
+    public Dictionary<int,CardBlessEffect> buffCardUseEffect = new Dictionary<int, CardBlessEffect>();
+
+
     void Start()
     {
         buffs.Callback += OnChangedBuff;
@@ -330,16 +336,18 @@ public class TargetObject : NetworkBehaviour
     }
 
     // ----------------------------------------------           Buff 관련 함수          ---------------------------------------------------//
-    public void GainBuff(BuffType buffType, int value, bool isDebuff, bool isInfinity, bool isDecrease, TargetObject tar, Card card)
+    public int GainBuff(BuffType buffType, int value, bool isDebuff, bool isInfinity, bool isDecrease, TargetObject tar, Card card)
     {
+        int retVal = 0;
         if(objectType == ObjectType.PLAYER && tar != this && CardData.instance.CheckCardCharacteristic(card,CardCharacteristic.GOOWON)) value *= 2; // 이곳에 구원 등록
 
-        if(buffs.Find(buff => buff.type == buffType) == null) // 버프 신규 등록
+        if(buffs.Find(buff => buff.type == buffType) == null || (isInfinity && value == 0)) // 버프 신규 등록
         {
-            if(value == 0)return;
+            if(value == 0 && !isInfinity)return 0;
             
             Buff newBuff = new Buff(buffType,value,isDebuff,isInfinity,isDecrease,tar);
             buffs.Add(newBuff);
+            retVal =  buffs.FindIndex(buff => buff == newBuff);
         }
         else // 버프가 있을경우 중첩 상승
         {
@@ -348,7 +356,9 @@ public class TargetObject : NetworkBehaviour
             oldItem.value += value;
             buffs.RemoveAt(indexOfOldItem);
             buffs.Insert(indexOfOldItem,oldItem);
+            retVal = buffs.FindIndex(buff => buff == oldItem);
         }
+        return retVal;
     }
 
     public int GetBuffValue(BuffType buffType)
@@ -380,6 +390,7 @@ public class TargetObject : NetworkBehaviour
                     break;
                 case SyncList<Buff>.Operation.OP_REMOVEAT:
                     buffIndicator.RemoveBuff(index);
+                    buffTrunBeginEffect.Remove(index);
                     break;
                 case SyncList<Buff>.Operation.OP_SET:
                     buffIndicator.SetBuff(newBuff,index);

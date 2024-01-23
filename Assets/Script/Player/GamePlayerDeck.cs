@@ -65,13 +65,13 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public int numOfUsedIronTeeth = 0;
 
     [SyncVar]
-    public int AdditionalSizeOfIromDemon;
+    public int AdditionalSizeOfIromDemon; //철귀 영구 크기 증가
 
     public override void OnStartServer()
     {
         SetInitialValue();
         StartCoroutine(EnQueueCardTargetPair());
-        StartCoroutine(ServerDestroyCardOnHand());
+        StartCoroutine(ServerDestroyCardOnHand()); 
     }
 
     public override void OnStartClient()
@@ -184,13 +184,18 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
                         //deck.Add(attackCard);
                         if(i % 2 == 0){
-                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H24")));
+                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H1")));
                             deck.Add(attackCard);
                         }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H28")));
+                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H48")));
                             deck.Add(defenseCard);
                         }
+                        
+                       
                     }
+                     Card additional = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H34")));
+                            deck.Add(additional);
+
                     break;
                 default:
                     break;
