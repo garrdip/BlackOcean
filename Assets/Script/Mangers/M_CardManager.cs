@@ -61,7 +61,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     [Header("어빌리티 화살표 활성화 상태 여부")]
     public bool isAbilityArrowActive = false;
 
-    public List<(Sprite,BuffType)> buffIcons;
+
     public override void OnStartServer()
     {
         // 카드 DB 데이터에서 강화, 철귀이동, 고행카드를 제외한 카드 데이터를 추출하여 서버가 관리할 Synclist에 추가
@@ -168,18 +168,35 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     {
         if(!cardOnHand.isChoosed){
             cardOnHand.isMoving = true;
-            cardOnHand.transform.position = cardOnHand.isAddtionDrawCard ? Vector3.zero : GameUIManager.instance.buttonPrefareDeck.transform.position;
             cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                cardOnHand.transform.localScale = new Vector3(0.02f, 0.02f, 0f);
-                Sequence sequence = DOTween.Sequence();
-                sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
-                    .SetDelay(index * 0.1f)
-                    .SetEase(Ease.OutSine)
-                    .OnComplete(() => {
-                        cardOnHand.isMoving = false;
-                        currentGamePlayerDeck.CmdChangeCardOnHandIsAddtionDraw(cardOnHand, false);
-                        sequence.Kill();
-                    }));      
+            cardOnHand.transform.localScale = new Vector3(0.02f, 0.02f, 0f);
+            Sequence sequence = DOTween.Sequence();
+            sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
+                .SetDelay(index * 0.1f)
+                .SetEase(Ease.OutSine)
+                .OnComplete(() => {
+                    cardOnHand.isMoving = false;
+                    sequence.Kill();
+                }));      
+        }
+    }
+
+    // 추가 드로우된 CardOnHand 이동 시퀀스
+    public void CardOnHandAdditionDrawSequence(CardOnHand cardOnHand, int index)
+    {
+        if(!cardOnHand.isChoosed){
+            cardOnHand.isMoving = true;
+            DeckDrawPopUp deckDrawPopUp = PopUpUIManager.instance.deckDrawPopUp.GetComponent<DeckDrawPopUp>();
+            cardOnHand.transform.position = cardOnHand.isOwned ? deckDrawPopUp.addtionDrawCardPositions[cardOnHand.index].transform.position : new Vector3(0f, -100f, 0f);
+            Sequence sequence = DOTween.Sequence();
+            sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
+                .SetDelay(index * 0.1f)
+                .SetEase(Ease.OutSine)
+                .OnComplete(() => {
+                    cardOnHand.isMoving = false;
+                    currentGamePlayerDeck.CmdChangeCardOnHandIsAddtionDraw(cardOnHand, false);
+                    sequence.Kill();
+                }));      
         }
     }
 

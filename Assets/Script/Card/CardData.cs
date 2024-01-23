@@ -12,11 +12,19 @@ public partial class CardData : SingletonD<CardData>
     [Header("캐릭터별 카드 탬플릿")]
     [SerializedDictionary("Character", "Sprite")]
     public SerializedDictionary<Character, SerializedDictionary<string, Sprite>> characterCardTemplate = new SerializedDictionary<Character, SerializedDictionary<string, Sprite>>();
+    
     public SpriteAtlas cardIllustAtlas; // 카드 일러스트 아틀라스
-    public List<CardBase> cards = new List<CardBase>();
+    
+    public List<CardBase> cards = new List<CardBase>(); // DB에서 조회한 전체 카드 데이터 목록
+    
     public Dictionary<string,ExecuteCard> CardMethods = new Dictionary<string, ExecuteCard>();
-    public SerializedDictionary<BuffType,Sprite> buffIcons = new SerializedDictionary<BuffType,Sprite>();
+
+    [Header("버프 타입별 아이콘")]
+    [SerializedDictionary("BuffType", "Sprite")]
+    public SerializedDictionary<BuffType, Sprite> buffIcons = new SerializedDictionary<BuffType, Sprite>();
+    
     public bool isCardOperatingTEST;
+    
     public bool isCardOperating{get{
         return isCardOperatingTEST;
     }

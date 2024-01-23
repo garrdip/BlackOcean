@@ -203,6 +203,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         }
         //DeckDrawPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.deckDrawPopUp.activeSelf){
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
             GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
             PopUpUIManager.instance.HandleHideDeckDrawPopUp();

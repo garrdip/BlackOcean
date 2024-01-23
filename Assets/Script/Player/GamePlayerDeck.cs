@@ -37,15 +37,15 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public CardOnHand abilityCard; // 현재 소환된 어빌리티 카드
 
-    public readonly SyncList<Card> deck =  new SyncList<Card>(); // 댁 총괄 데이터
+    public readonly SyncList<Card> deck =  new SyncList<Card>(); // 덱 총괄 데이터
 
-    public readonly SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 카드(카드 총량에서 내 손에 있는 카드(5개)를 제외한 그 나머지 개수)
+    public readonly SyncList<Card> prefareDeck =  new SyncList<Card>(); // 뽑을 덱
     
-    public readonly SyncList<Card> trashDeck = new SyncList<Card>(); // 버릴 카드(사용된 카드 + 턴 종료될때 내 손에 있는 카드)
+    public readonly SyncList<Card> trashDeck = new SyncList<Card>(); // 버린 덱
 
     public readonly SyncList<Card> forgottenDeck = new SyncList<Card>(); // 잊혀진 덱 찰나로 보내진 덱
 
-    public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 실제 컨트롤 하는 플레이어 소유의 카드 네트워크 오브젝트 리스트
+    public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 패 카드 오브젝트 리스트
 
     public readonly SyncList<Card> rewardCards = new SyncList<Card>(); // 전투 보상 카드
 
@@ -440,6 +440,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             );
             CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
             cardOnHand.card = addtionDrawCards[i];
+            cardOnHand.index = i;
             cardOnHand.isAddtionDrawCard = true;
             if(cardPocket != null){
                 cardOnHand.parent = cardPocket.GetComponent<CardPocket>();
@@ -668,10 +669,15 @@ public partial class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<CardOnHand>.Operation.OP_ADD:
-                if(newCardOnHand.transform.position.x < 0)
-                    M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
-                else
-                    StartCoroutine(CardOnHandDrawSequenceFromTrashDeckCoroutine(newCardOnHand, index));
+                if(newCardOnHand.isAddtionDrawCard){
+                    M_CardManager.instance.CardOnHandAdditionDrawSequence(newCardOnHand, index);
+                }else{
+                    if(newCardOnHand.transform.position.x < 0){
+                        M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
+                    }else{
+                        StartCoroutine(CardOnHandDrawSequenceFromTrashDeckCoroutine(newCardOnHand, index));
+                    }    
+                }
                 break;
             case SyncList<CardOnHand>.Operation.OP_INSERT:
                 
