@@ -6,11 +6,13 @@ using UnityEngine.EventSystems;
 using TMPro;
 using ProjectD;
 using AYellowpaper.SerializedCollections;
+using DG.Tweening;
 
 
 public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private int index;
+    private Vector3 originScale;
 
     public CardBase cardBase;
     public TextMeshProUGUI textCardName;
@@ -23,14 +25,26 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public Image cardEmblem;
 
 
+    private void Start()
+    {
+        originScale = Vector3.one;
+    }
+
+    void OnDisable()
+    {
+        DOTween.Kill(transform);
+    }
+
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
+        transform.DOScale(originScale * 1.2f, 0.3f);
         GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
         TextDetector.instance.StartTextDetect(graphicRaycaster);
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
+        transform.DOScale(originScale, 0.3f);
         TextDetector.instance.StopTextDetect();
     }
 

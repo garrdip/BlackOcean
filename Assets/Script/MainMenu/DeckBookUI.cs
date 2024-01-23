@@ -50,7 +50,7 @@ public class DeckBookUI : SingletonD<DeckBookUI>
     // 캐릭터별 카드데이터 조회
     private List<CardBase> GetCardsByCharacter(Character character)
     {
-        return CardData.instance.cards.FindAll((cardBase) => cardBase.character == character); 
+        return CardData.instance.cards.FindAll((cardBase) => cardBase.character == character && !cardBase.cardNumber.Contains("_E")); 
     }
 
     public void ShowTab(int index)

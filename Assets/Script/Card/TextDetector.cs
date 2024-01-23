@@ -69,8 +69,9 @@ public class TextDetector : SingletonD<TextDetector>
                 int wordIndex = TMP_TextUtilities.FindIntersectingWord(tmpText, Input.mousePosition, Camera.main);
                 if(wordIndex != -1){
                     TMP_WordInfo tMP_WordInfo = tmpText.textInfo.wordInfo[wordIndex];
-                    // Debug.Log("월드 텍스트 감지");
-                    // TODO : tMP_WordInfo 값이 특수용어와 같을 경우 팝업 표시
+                    string word = tMP_WordInfo.GetWord();
+                    // Debug.Log("월드 텍스트 감지" + word);
+                    // TODO : word 값이 특수용어와 같을 경우 팝업 표시
                 }else{
                     // TODO : 팝업 숨기기
                 }
@@ -92,8 +93,9 @@ public class TextDetector : SingletonD<TextDetector>
                         int wordIndex = TMP_TextUtilities.FindIntersectingWord(tmpText, pointerEventData.position, GetCameraByRenderMode(textDescription));
                         if(wordIndex != -1){
                             TMP_WordInfo tMP_WordInfo = tmpText.textInfo.wordInfo[wordIndex];
-                            // TODO : tMP_WordInfo 값이 특수용어와 같을 경우 팝업 표시
-                            // Debug.Log("UI 텍스트 감지");
+                            string word = tMP_WordInfo.GetWord();
+                            // Debug.Log("UI 텍스트 감지" + word);
+                            // TODO : word 값이 특수용어와 같을 경우 팝업 표시
                         }else{
                             // TODO : 팝업 숨기기
                         }
