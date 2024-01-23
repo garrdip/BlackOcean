@@ -131,7 +131,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 
-        tar[0].GainBuff(BuffType.BOONGGUI,1,true,false,true,null,card);
+        tar[0].GainBuff(BuffType.BOONGGUI,1,true,false,true,tar[0],card);
         
     }
 
@@ -212,7 +212,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]);
         foreach(TargetObject player in M_TurnManager.instance.spawnedPlayerList)
             GeneralGetDefense(tar[0],player,4,card);
-        tar[0].GainBuff(BuffType.SOIRAK,1,true,false,true,null,card);
+        tar[0].GainBuff(BuffType.SOIRAK,1,true,false,true,tar[0],card);
         yield return new WaitForSeconds(1.33f);
 
         yield return MoveIronDemonCoroutine(tar[0],preLocation);
@@ -318,7 +318,7 @@ public partial class CardData : SingletonD<CardData>
 
         foreach(TargetObject player in M_TurnManager.instance.spawnedPlayerList)
             if(player != tar[0])GeneralGetDefense(tar[0],player,30,card);
-        tar[0].GainBuff(BuffType.BOONGGUI,3,true,false,true,null,card);
+        tar[0].GainBuff(BuffType.BOONGGUI,3,true,false,true,tar[0],card);
         yield return new WaitForSeconds(1.33f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
         
@@ -1062,6 +1062,7 @@ public partial class CardData : SingletonD<CardData>
     {
         yield return H41(card,tar);
     }
+
     public IEnumerator H42(Card card, List<TargetObject> tar)
     {
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));

@@ -22,8 +22,8 @@ public class Buff
         isDebuff = isDebuffIn;
         isInfinity = isInfinityIn;
         isDecrease = isDecreaseIn;
-        if(tarIn != null)user = tarIn.player.netId;
-        else user = 0;
+        if( tarIn.objectType == ObjectType.PLAYER )user = tarIn.netId;
+        else user = tarIn.netId;
     }
     
 }
