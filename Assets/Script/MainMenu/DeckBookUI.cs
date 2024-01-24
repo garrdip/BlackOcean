@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ProjectD;
 
-public class DeckBookUI : SingletonD<DeckBookUI>
+public class DeckBookUI : MonoBehaviour
 {
     public GameObject cellPrefab;
     public MenuUI menuUI;
