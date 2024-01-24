@@ -85,11 +85,9 @@ public class LobbyPlayer : NetworkBehaviour
         roomPlayer.onSelectCompleteCharacter += OnChangeSelectCharacter; // 캐릭터 선택 이벤트 등록
         roomPlayer.onChangeReadyState += OnChangeReadyState; // 레디 상태 변경 이벤트 등록
         InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
-        if(isOwned){
-            buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
-            buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
-            characterSelectCompleteImage.GetComponent<Button>().onClick.AddListener(() => HandleClickSelectCompleteImage()); // 캐릭터 선택 완료된 상태에서 캐릭터 이미지 클릭
-        }
+        buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
+        buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
+        characterSelectCompleteImage.GetComponent<Button>().onClick.AddListener(() => HandleClickSelectCompleteImage()); // 캐릭터 선택 완료된 상태에서 캐릭터 이미지 클릭
         if(isServer){
             outIconLayout.GetComponent<Button>().onClick.AddListener(() => HandleClickLobbyPlayerKickOut()); // 강퇴 버튼 클릭 이벤트(서버 유저만 이벤트 등록)
         }
@@ -135,15 +133,19 @@ public class LobbyPlayer : NetworkBehaviour
     // 스왑 승인 버튼 클릭
     private void HandleClickButtonSwapAccept()
     {
-        swapRequestLayout.SetActive(false);
-        CmdSwapAccept(oldIndex, newIndex);
+        if(isOwned){
+            swapRequestLayout.SetActive(false);
+            CmdSwapAccept(oldIndex, newIndex);
+        }
     }
 
     // 스왑 거절 버튼 클릭
     private void HandleClickButtonSwapReject()
     {
-        swapRequestLayout.SetActive(false);
-        CmdSwapReject(oldIndex);
+        if(isOwned){
+            swapRequestLayout.SetActive(false);
+            CmdSwapReject(oldIndex);
+        }
     }
 
     // 강퇴 버튼 클릭
@@ -205,7 +207,7 @@ public class LobbyPlayer : NetworkBehaviour
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.green)
             .TextColor(Color.white)
-            .Text($"위치 교환 요청이 수락되었습니다.")
+            .Text("위치 교환 요청이 수락되었습니다.")
             .Show();
     }
 
@@ -217,7 +219,7 @@ public class LobbyPlayer : NetworkBehaviour
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.red)
             .TextColor(Color.white)
-            .Text($"위치 교환 요청이 거절되었습니다.")
+            .Text("위치 교환 요청이 거절되었습니다.")
             .Show();
     }
 
@@ -366,15 +368,17 @@ public class LobbyPlayer : NetworkBehaviour
     // 캐릭터 선택 완료 상태에서 이미지 클릭 이벤트
     private void HandleClickSelectCompleteImage()
     {
-        roomPlayer.character = Character.NONE; // 캐릭터 선택값 NONE으로 리셋
-        selectLeft.SetActive(true);
-        selectMiddle.SetActive(true);
-        selectRight.SetActive(true);
-        baseDark.SetActive(true);
-        classLayout.SetActive(true);
-        characterSelectCompleteImage.gameObject.SetActive(false);
-        classIconLayout.SetActive(!classLayout.activeSelf);
-        ChangeClassLayoutFade();
+        if(isOwned){
+            roomPlayer.character = Character.NONE; // 캐릭터 선택값 NONE으로 리셋
+            selectLeft.SetActive(true);
+            selectMiddle.SetActive(true);
+            selectRight.SetActive(true);
+            baseDark.SetActive(true);
+            classLayout.SetActive(true);
+            characterSelectCompleteImage.gameObject.SetActive(false);
+            classIconLayout.SetActive(!classLayout.activeSelf);
+            ChangeClassLayoutFade();
+        }
     }
 
     // 캐릭터 클래스 레이아웃 Fade 애니매이션

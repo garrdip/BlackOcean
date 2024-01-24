@@ -264,7 +264,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     {
         GameUIManager.instance.buttonEndTurn.interactable = false;
         float duration = 0.5f;
-        float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.index) * 0.1f;
+        float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.sortingGroup.sortingOrder) * 0.1f;
         bool isChalna = CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA);
         Vector3 position = isChalna ? GameUIManager.instance.ForgottenDeck.GetComponent<RectTransform>().position : GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
         cardOnHand.isMoving = true;

@@ -154,7 +154,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.green)
             .TextColor(Color.white)
-            .Text($"위치 교환 요청이 수락되었습니다.")
+            .Text("위치 교환 요청이 수락 되었습니다.")
             .Show();
     }
 
@@ -166,7 +166,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.red)
             .TextColor(Color.white)
-            .Text($"위치 교환 요청이 거절되었습니다.")
+            .Text("위치 교환 요청이 거절 되었습니다.")
             .Show();
     }
 

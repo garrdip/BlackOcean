@@ -298,7 +298,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
             int randomIndex = Random.Range(0, prefareDeck.Count);
             CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
-            cardOnHand.index = i; // 카드 인덱스
             cardOnHand.card = prefareDeck[randomIndex]; // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
             prefareDeck.RemoveAt(randomIndex);
             if(cardPocket != null){
@@ -414,7 +413,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
             int randomIndex = Random.Range(0, prefareDeck.Count);
             CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
-            cardOnHand.index = i; // 카드 인덱스
             cardOnHand.card = prefareDeck[randomIndex]; // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
             prefareDeck.RemoveAt(randomIndex);
             if(cardPocket != null){

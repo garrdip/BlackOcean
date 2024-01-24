@@ -161,7 +161,6 @@ public class CardCtrlArrow : NetworkBehaviour
             arrowOwnedCardOnHand.isDrag = false;
             arrowOwnedCardOnHand.isMoving = false;
             arrowOwnedCardOnHand.isMouseOver = false;
-            arrowOwnedCardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = arrowOwnedCardOnHand.originSortOrder;
             M_CardManager.instance.ChangeCardOnHandShiftState(arrowOwnedCardOnHand, false);
         }
     }

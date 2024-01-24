@@ -15,49 +15,36 @@ public class CardOnHand : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeCardData))]
     public Card card;
 
-    [SyncVar (hook = nameof(OnChangeIndex))]
-    public int index;
-
     [SyncVar (hook = nameof(OnChangeParent))]
     public CardPocket parent;
 
-    // 추가 드로우된 카드인지 여부
     [SyncVar]
-    public bool isAddtionDrawCard = false;
+    public int index; // 추가 드로우된 CardOnHand의 생성 순서 인덱스
 
+    [SyncVar]
+    public bool isAddtionDrawCard = false; // 추가 드로우된 카드인지 여부
+
+    [Header("CardOnHand Transform 및 정렬 관련 값들")]
     public SortingGroup sortingGroup;
 
-    [Header("CardOnHand Transform 및 컴포넌트 관련 값들")]
-    // 랜더링 순서 초기값
-    public int originSortOrder;
+    public Vector3 originPosition; // 초기 위치값
 
-    // 초기 위치값
-    public Vector3 originPosition;
-
-    // 화살표 소환된 카드의 위치값(화면 중앙 하단)
-    public Vector3 arrowSpawnedCardPosition;
+    public Vector3 arrowSpawnedCardPosition; // 화살표 소환된 카드의 위치값(화면 중앙 하단)
 
     [Header("CardOnHand 상태 변수값들")]
-    // 마우스가 오브젝트 위에 있는지 여부
-    public bool isMouseOver = false; 
+    public bool isMouseOver = false; // 마우스가 오브젝트 위에 있는지 여부
 
-    // 마우스가 오브젝트에서 벗어난 상태 확인 여부(딜레이를 이용해 이벤트 연속 호출 방지용)
-    public bool isExitComplete = true;
+    public bool isExitComplete = true; // 마우스가 오브젝트에서 벗어난 상태 확인 여부(딜레이를 이용해 이벤트 연속 호출 방지용)
 
-    // 드래그 상태인지 여부
-    public bool isDrag = false;
+    public bool isDrag = false; // 드래그 상태인지 여부
 
-    // 움직이는 상태인지 여부
-    public bool isMoving = false;
+    public bool isMoving = false; // 움직이는 상태인지 여부
 
-    // 밀려난 상태인지 여부
-    public bool isShifted = false;
+    public bool isShifted = false; // 밀려난 상태인지 여부
 
-    // 카드 제거 팝업창에서 선택한 상태인지 여부
-    public bool isChoosed = false;
+    public bool isChoosed = false; // 카드 제거 팝업창에서 선택한 상태인지 여부
 
-    // 사용된 상태인지 여부
-    public bool isUsed = false;
+    public bool isUsed = false; // 사용된 상태인지 여부
 
     [Header("CardOnHand UI Canvas 컴포넌트")]
     public Canvas cardOnHandCanvas;
@@ -211,7 +198,6 @@ public class CardOnHand : NetworkBehaviour
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
             if(!isUsed && !isMoving && !isChoosed && !IsArrowActive() && !IsCardControllablePopUpActive() && isExitComplete){
                 isMouseOver = true;
-                originSortOrder = index;
                 transform.GetComponent<SortingGroup>().sortingOrder =  M_CardManager.instance.maxSortOrder;
                 cardOnHandCanvas.sortingOrder =  M_CardManager.instance.maxSortOrder;
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
@@ -226,8 +212,6 @@ public class CardOnHand : NetworkBehaviour
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
             if(!isUsed && !isMoving && !IsArrowActive() && !IsCardControllablePopUpActive()){
                 isMouseOver = false;
-                transform.GetComponent<SortingGroup>().sortingOrder =  originSortOrder;
-                cardOnHandCanvas.sortingOrder = originSortOrder;
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
                 StartCoroutine(MouseExitDelay());
             }
@@ -453,13 +437,5 @@ public class CardOnHand : NetworkBehaviour
     {
         transform.SetParent(newCardPocket.transform);
         transform.position = GameUIManager.instance.buttonPrefareDeck.transform.position; // 부모 설정 후 위치를 뽑을 덱 버튼 위치로 재설정
-    }
-
-    // 카드 인덱스값 변경 이벤트 수신
-    public void OnChangeIndex(int oldValue, int newValue)
-    {
-        transform.GetComponent<SortingGroup>().sortingOrder = index;
-        cardOnHandCanvas.sortingOrder = index;
-        transform.SetSiblingIndex(index);
     }
 }
