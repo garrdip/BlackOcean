@@ -359,7 +359,17 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         cardsByCharacter.RemoveAt(randomIndex);
                     }
                 }
+                // 플레이어 보상 상태 데이터 세팅
                 gamePlayerDeck.TargetPlayerRewarded(gamePlayerDeck.GetComponent<NetworkIdentity>().connectionToClient);
+
+                // 플레이어의 모든 카드 데이터 제거
+                gamePlayerDeck.trashDeck.Clear();
+                gamePlayerDeck.prefareDeck.Clear();
+                gamePlayerDeck.forgottenDeck.Clear();
+                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
+                    NetworkServer.Destroy(cardOnHand.gameObject);
+                }
+                gamePlayerDeck.cardOnHands.Clear();
             }
         }
         RpcShowBattleResultPopUp(); // 전투 종료 팝업 호출

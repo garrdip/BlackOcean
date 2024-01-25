@@ -379,7 +379,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
             Card copyCard = card.CardDeepCopy(false);
             prefareDeck.Add(copyCard);
         }
-        deck.Clear();
         M_CardManager.instance.Shuffle(prefareDeck);
     }
 

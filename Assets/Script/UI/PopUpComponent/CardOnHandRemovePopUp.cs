@@ -33,8 +33,10 @@ public class CardOnHandRemovePopUp : SingletonD<CardOnHandRemovePopUp>
         
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
+        int choosedCardCount = 0;
         for(int i=0; i<gamePlayerDeck.choosedCardOnHands.Length; i++){
             if(gamePlayerDeck.choosedCardOnHands[i] != null){
+                choosedCardCount++;
                 CardOnHand cardOnHand = gamePlayerDeck.choosedCardOnHands[i];
                 float duration = 0.5f;
                 cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration);
@@ -46,7 +48,7 @@ public class CardOnHandRemovePopUp : SingletonD<CardOnHandRemovePopUp>
                 });
             }
         }
-        CardData.instance.H26_CallBack(gamePlayerDeck.choosedCardOnHands.Length); // 패 제거 팝업에서 선택한 카드 갯수 넘겨줌
+        CardData.instance.H26_CallBack(choosedCardCount); // 패 제거 팝업에서 선택한 카드 갯수 넘겨줌
     }
 
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //

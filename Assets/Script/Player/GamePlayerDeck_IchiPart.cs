@@ -34,6 +34,15 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    [Command]
+    public void CmdChangeMaxItchi()
+    {
+        // 현재 이치값이 최대 이치값보다 크면 최대 이치값 변경
+        if(currentIchi > maxIchi){
+            maxIchi = currentIchi;
+        }
+    }
+
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
 
     void OnChangedCurrentIchi(int oldVal, int newVal)
@@ -48,6 +57,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 SetFillAsMaxItch(maxIchi);
                 SetEmptyAsUsedCurrentItch(maxIchi - newVal);
             }
+            CmdChangeMaxItchi();
         }
     }
 
