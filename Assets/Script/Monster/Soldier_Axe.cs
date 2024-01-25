@@ -22,7 +22,7 @@ public class Soldier_Axe : SpawnedMonster
                 ReturnToIdleAnimation();
                 break;
             case "힘증가" :
-                parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,parent.GetComponent<TargetObject>(),null);
+                parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent.GetComponent<TargetObject>(),null);
                 DoAnimation("1Buff");
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();

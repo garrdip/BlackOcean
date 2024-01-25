@@ -441,14 +441,16 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             tar = NetworkServer.spawned[NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
         else
             tar = NetworkClient.spawned[NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
-
+        int totalFlower = 0;
         string[] splitString = str.Trim().Split(" ");
         for(int i = 0 ;i < splitString.Length ; i++)
         {
+            foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+                totalFlower += tar.GetBuffValue(BuffType.FLOWER,target);
             if(splitString[i].ToCharArray()[0] == '!')
             {
                 splitString[i] = splitString[i].Remove(0,1);
-                int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + tar.GetBuffValue(BuffType.FLOWER);
+                int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + totalFlower;
                 splitString[i] = "<color=green>" + result.ToString() + "</color>";
             }
             if(splitString[i].ToCharArray()[0] == '#')
@@ -461,7 +463,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             {
                 splitString[i] = splitString[i].Remove(0,1);
                 string[] data = splitString[i].Trim().Split("$");
-                int result = int.Parse(data[0]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + tar.GetBuffValue(BuffType.FLOWER);
+                int result = int.Parse(data[0]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + totalFlower;
                 splitString[i] = "<color=green>" + result.ToString() + "</color>" + " 를 " + "<color=blue>" + data[1] + "</color>" + "번";
             }
         }

@@ -8,6 +8,7 @@ public class Buff
     public bool isDebuff; // 디버프 여부
     public bool isInfinity; // 영구 버프(디버프) 증가 감소하지 않음.
     public bool isDecrease; // 턴이 지남에 따라 감소하는 버프(디버프)
+    public bool isSeparate; // 사람마다 버프 분리 여부
     public uint user; // 버프를 건 사용자
 
     public Buff()
@@ -15,13 +16,14 @@ public class Buff
 
     }
 
-    public Buff(BuffType typeIn, int valueIn, bool isDebuffIn, bool isInfinityIn, bool isDecreaseIn, TargetObject tarIn)
+    public Buff(BuffType typeIn, int valueIn, bool isDebuffIn, bool isInfinityIn, bool isDecreaseIn, bool isSeparateIn, TargetObject tarIn)
     {
         type = typeIn;
         value = valueIn;
         isDebuff = isDebuffIn;
         isInfinity = isInfinityIn;
         isDecrease = isDecreaseIn;
+        isSeparate = isSeparateIn;
         if( tarIn.objectType == ObjectType.PLAYER )user = tarIn.netId;
         else user = tarIn.netId;
     }

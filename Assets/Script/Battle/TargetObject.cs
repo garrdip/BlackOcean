@@ -270,12 +270,13 @@ public class TargetObject : NetworkBehaviour
     // ----------------------------------------------           Damage 관련 함수        ---------------------------------------------------//
     public void DamageToPlayer(int damage)
     {
-        if(GetBuffValue(BuffType.BOONGGUI) > 0)
+        if(GetBuffValue(BuffType.BOONGGUI, null) > 0)
         {
             damage = (int)(damage * 1.5);
         }
         // 개화꽃 적용
-        damage -= GetBuffValue(BuffType.FLOWER);
+        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+            damage -= GetBuffValue(BuffType.FLOWER,target);
         if(damage <= 0) return;
         // 방어력 적용
         if(defense >= damage)
@@ -311,12 +312,13 @@ public class TargetObject : NetworkBehaviour
     public void DamageToMonster(int damage, TargetObject from)
     {
         // 붕괴 적용
-        if(GetBuffValue(BuffType.BOONGGUI) > 0)
+        if(GetBuffValue(BuffType.BOONGGUI,null) > 0)
         {
             damage = (int)(damage * 1.5);
         }
         // 개화꽃 적용
-        damage += GetBuffValue(BuffType.FLOWER);
+        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+            damage += GetBuffValue(BuffType.FLOWER,target);
         // 방어력 적용
         if(defense >= damage)
         {
@@ -336,23 +338,36 @@ public class TargetObject : NetworkBehaviour
     }
 
     // ----------------------------------------------           Buff 관련 함수          ---------------------------------------------------//
-    public int GainBuff(BuffType buffType, int value, bool isDebuff, bool isInfinity, bool isDecrease, TargetObject tar, Card card)
+
+    // 붕괴 쇠락 등은 공유 // 꽃가루 뭐시기는 개인
+    public int GainBuff(BuffType buffType, int value, bool isDebuff, bool isInfinity, bool isDecrease, bool isSeparate, TargetObject tar, Card card)
     {
         int retVal = 0;
         if(objectType == ObjectType.PLAYER && tar != this && CardData.instance.CheckCardCharacteristic(card,CardCharacteristic.GOOWON)) value *= 2; // 이곳에 구원 등록
 
-        if(buffs.Find(buff => buff.type == buffType) == null || (isInfinity && value == 0)) // 버프 신규 등록
+        if((buffs.Find(buff => buff.type == buffType && buff.user == tar.netId) == null && isSeparate )|| (buffs.Find(buff => buff.type == buffType) == null && !isSeparate )|| (isInfinity && value == 0)) // 버프 신규 등록
         {
             if(value == 0 && !isInfinity)return 0;
             
-            Buff newBuff = new Buff(buffType,value,isDebuff,isInfinity,isDecrease,tar);
+            Buff newBuff = new Buff(buffType,value,isDebuff,isInfinity,isDecrease,isSeparate,tar);
             buffs.Add(newBuff);
             retVal =  buffs.FindIndex(buff => buff == newBuff);
         }
         else // 버프가 있을경우 중첩 상승
         {
-            Buff oldItem = buffs.Find(buff => buff.type == buffType);
-            int indexOfOldItem = buffs.FindIndex(buff => buff.type == buffType);
+            Buff oldItem;
+            int indexOfOldItem;
+            if(isSeparate) 
+            {
+                oldItem = buffs.Find(buff => buff.type == buffType && buff.user == tar.netId);
+                indexOfOldItem = buffs.FindIndex(buff => buff.type == buffType && buff.user == tar.netId);
+            }
+            else
+            {
+                oldItem = buffs.Find(buff => buff.type == buffType);
+                indexOfOldItem = buffs.FindIndex(buff => buff.type == buffType);
+            }
+            
             oldItem.value += value;
             buffs.RemoveAt(indexOfOldItem);
             buffs.Insert(indexOfOldItem,oldItem);
@@ -361,10 +376,29 @@ public class TargetObject : NetworkBehaviour
         return retVal;
     }
 
+    public int GetBuffValue(BuffType buffType, TargetObject tar)
+    {
+        if(tar == null)
+        {
+            if(buffs.Find(buff => buff.type == buffType) == null) return 0;
+            else return buffs.Find(buff => buff.type == buffType).value;
+        }
+        else
+        {
+            if(buffs.Find(buff => buff.type == buffType && buff.user == tar.netId) == null) return 0;
+            else return buffs.Find(buff => buff.type == buffType && buff.user == tar.netId).value;
+        }
+    }
+
     public int GetBuffValue(BuffType buffType)
     {
-        if(buffs.Find(buff => buff.type == buffType) == null) return 0;
-        else return buffs.Find(buff => buff.type == buffType).value;
+        int retVal = 0;
+        foreach(Buff buff in buffs)
+        {
+            if(buff.type  == buffType)
+                retVal += buff.value;
+        }
+        return retVal;
     }
 
     public void GainDefense(int value)

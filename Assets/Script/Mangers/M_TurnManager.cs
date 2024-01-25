@@ -254,18 +254,17 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             List<int> currentKeys = tar.buffTrunBeginEffect.Keys.ToList();
             foreach(int buffIndex in currentKeys)
             { 
-                yield return tar.buffTrunBeginEffect[buffIndex](tar);
+                yield return tar.buffTrunBeginEffect[buffIndex](tar,buffIndex);
             }
-            foreach(Buff buff in tar.buffs)
+            int indexOfOldItem = tar.buffs.Count; 
+            for(int i = indexOfOldItem -1 ; i >= 0 ; i --)
             {
-                if(buff.isDecrease)
+                if(tar.buffs[i].isDecrease)
                 {
-                    Buff oldItem = tar.buffs.Find(x => x == buff);
-                    int indexOfOldItem = tar.buffs.FindIndex(x => x == buff);
+                    Buff oldItem = tar.buffs[i];
                     oldItem.value -= 1;
-                    tar.buffs.RemoveAt(indexOfOldItem);
-                    tar.OnChangedBuff(SyncList<Buff>.Operation.OP_REMOVEAT,indexOfOldItem,oldItem,oldItem);
-                    if(oldItem.value != 0)tar.buffs.Insert(indexOfOldItem,oldItem);
+                    tar.buffs.RemoveAt(i);
+                    if(oldItem.value != 0)tar.buffs.Insert(i,oldItem);
                 }
             }
         }
@@ -286,7 +285,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             foreach(int buffIndex in tar.buffCardDrowEffect.Keys)
             { 
-                yield return tar.buffCardDrowEffect[buffIndex](tar);
+                yield return tar.buffCardDrowEffect[buffIndex](tar,buffIndex);
             }
         }
         phase = BattleTurn.PLAYER_ACTIVE;
@@ -299,25 +298,23 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             tar.defense = 0;
             tar.player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth = 0;
-            foreach(Buff buff in tar.buffs)
+            int indexOfOldItem = tar.buffs.Count;
+            for(int i = indexOfOldItem -1 ; i >= 0 ; i--)
             {
-                if(buff.isDecrease)
+                if(tar.buffs[i].isDecrease)
                 {
-                    Buff oldItem = tar.buffs.Find(x => x == buff);
-                    int indexOfOldItem = tar.buffs.FindIndex(x => x == buff);
+                    Buff oldItem = tar.buffs[i];
                     oldItem.value -= 1;
-                    tar.buffs.RemoveAt(indexOfOldItem);
-                    tar.OnChangedBuff(SyncList<Buff>.Operation.OP_REMOVEAT,indexOfOldItem,oldItem,oldItem);
-                    if(oldItem.value != 0)tar.buffs.Insert(indexOfOldItem,oldItem);
+                    tar.buffs.RemoveAt(i);
+                    if(oldItem.value != 0)tar.buffs.Insert(i,oldItem);
                 }
             }
             List<int> currentKeys = tar.buffTrunBeginEffect.Keys.ToList();
             foreach(int buffIndex in currentKeys)
             { 
-                yield return tar.buffTrunBeginEffect[buffIndex](tar);
+                yield return tar.buffTrunBeginEffect[buffIndex](tar,buffIndex);
             }   
         }
-        
         phase = BattleTurn.PLAYER_DRAW;
         yield return null;
     }
@@ -442,7 +439,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         // 카드 사용후 효과 여기서 발동
                         foreach(int index in tar[0].buffCardUseEffect.Keys)
                         {
-                            yield return tar[0].buffCardUseEffect[index](tar[0]);
+                            yield return tar[0].buffCardUseEffect[index](tar[0],index);
                         }
                     }
                 }
@@ -517,7 +514,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             if(player.player.character == Character.HONGDANHYANG)
             {
-                player.GainBuff(BuffType.IRONDEMON, 4, false, false, false, player, null);
+                player.GainBuff(BuffType.IRONDEMON, 4, false, false, false, false, player, null);
             }
         }
         phase = BattleTurn.BATTLE_STANDBY;
@@ -691,7 +688,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 List<int> currentKeys = tar.buffTurnEndEffect.Keys.ToList();
                 foreach(int buffIndex in currentKeys)
                 { 
-                    yield return tar.buffTurnEndEffect[buffIndex](tar);
+                    yield return tar.buffTurnEndEffect[buffIndex](tar,buffIndex);
                 }   
             }
             phase = BattleTurn.PLAYER_END;
