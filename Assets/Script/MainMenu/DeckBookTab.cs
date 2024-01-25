@@ -40,7 +40,9 @@ public class DeckBookTab : MonoBehaviour
                 break;
             case 1:
                 foreach(CardBase cardBase in GetCardsByCharacter(Character.HONGDANHYANG)){
-                    cardsByCharacter.Add(cardBase);
+                    if(!cardBase.cardNumber.Contains("HA")){ // 철귀이동 카드 제외
+                        cardsByCharacter.Add(cardBase);
+                    }
                 }
                 break;
             case 2:
