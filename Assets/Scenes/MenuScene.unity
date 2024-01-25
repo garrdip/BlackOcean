@@ -1574,7 +1574,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &264304527
 GameObject:
   m_ObjectHideFlags: 0
@@ -2609,7 +2609,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2829aabe4de4b5649a474fc228edac05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deckBookUI: {fileID: 1716722584}
+  index: 1
   cardsByCharacter: []
   gridUnlimitedScroller: {fileID: 1742058324}
 --- !u!1 &431364777
@@ -10365,7 +10365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2829aabe4de4b5649a474fc228edac05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deckBookUI: {fileID: 1716722584}
+  index: 0
   cardsByCharacter: []
   gridUnlimitedScroller: {fileID: 697801695}
 --- !u!1 &1150950376
@@ -12308,13 +12308,14 @@ GameObject:
   - component: {fileID: 1455385381}
   - component: {fileID: 1455385380}
   - component: {fileID: 1455385379}
+  - component: {fileID: 1455385383}
   m_Layer: 5
   m_Name: DeckBookCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1455385379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12397,6 +12398,30 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1455385383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455385378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5593eb7c39fbce44b8474fa844d5b573, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dekcBookMenu: {fileID: 248806725}
+  cellPrefab: {fileID: 6285776433173605381, guid: afcdc1678ba0ae347bd1cdd0cd2baa81, type: 3}
+  buttonCloseDeckBook: {fileID: 1795099829}
+  tabButtons:
+  - {fileID: 1196865655}
+  - {fileID: 1483232660}
+  - {fileID: 1870484889}
+  tabFrames:
+  - {fileID: 1143648381}
+  - {fileID: 404413571}
+  - {fileID: 1979238258}
+  currentTabIndex: 0
 --- !u!1 &1466650355
 GameObject:
   m_ObjectHideFlags: 0
@@ -13830,7 +13855,6 @@ GameObject:
   - component: {fileID: 1716722580}
   - component: {fileID: 1716722582}
   - component: {fileID: 1716722583}
-  - component: {fileID: 1716722584}
   m_Layer: 0
   m_Name: UI_Controller
   m_TagString: Untagged
@@ -13853,7 +13877,7 @@ MonoBehaviour:
   panelSettings: {fileID: 1095786893}
   multiplayCanvas: {fileID: 2079226587}
   menuCanvas: {fileID: 1577234952}
-  deckBookCanvas: {fileID: 1455385378}
+  deckBookCanvas: {fileID: 248806725}
   debris: {fileID: 1275079375}
   logoGroup: {fileID: 707846476}
   buttonSinglePlay: {fileID: 695973733}
@@ -13915,30 +13939,6 @@ MonoBehaviour:
   lobbyName: {fileID: 1650021987}
   password: {fileID: 1558771171}
   btnCreateRoom: {fileID: 1392726056}
---- !u!114 &1716722584
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1716722579}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5593eb7c39fbce44b8474fa844d5b573, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cellPrefab: {fileID: 6285776433173605381, guid: afcdc1678ba0ae347bd1cdd0cd2baa81, type: 3}
-  menuUI: {fileID: 1716722580}
-  buttonCloseDeckBook: {fileID: 1795099829}
-  tabButtons:
-  - {fileID: 1196865655}
-  - {fileID: 1483232660}
-  - {fileID: 1870484889}
-  tabFrames:
-  - {fileID: 1143648381}
-  - {fileID: 404413571}
-  - {fileID: 1979238258}
-  currentTabIndex: 0
 --- !u!1 &1724796403
 GameObject:
   m_ObjectHideFlags: 0
@@ -15834,7 +15834,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2829aabe4de4b5649a474fc228edac05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deckBookUI: {fileID: 1716722584}
+  index: 2
   cardsByCharacter: []
   gridUnlimitedScroller: {fileID: 615736128}
 --- !u!1 &1987521278

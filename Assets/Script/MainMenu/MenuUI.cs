@@ -24,9 +24,10 @@ public class MenuUI : MonoBehaviour
 
     void Start()
     {
+        DeckBookUI.instance.onChangeDeckBookOpenState += OnChangeDeckBookOpenState;
         buttonSinglePlay.onClick.AddListener(() => HandleSinglePlay());
         buttonMultiPlay.onClick.AddListener(() => HandleMultiPlay());
-        buttonDeckBook.onClick.AddListener(() => HandleDeckBook());
+        buttonDeckBook.onClick.AddListener(() => HandleOpenDeckBook());
         buttonSettings.onClick.AddListener(() => HandleSettings());
         buttonQuit.onClick.AddListener(() => HandleQuit());
         panelSettings.SetActive(false);
@@ -44,22 +45,23 @@ public class MenuUI : MonoBehaviour
         multiplayCanvas.SetActive(true);
     }
 
-    public void HandleDeckBook()
+    public void HandleOpenDeckBook()
     {
-        deckBookCanvas.SetActive(true);
-        menuCanvas.SetActive(false);
-        multiplayCanvas.SetActive(false);
-        debris.SetActive(false);
-        logoGroup.SetActive(false);
+        DeckBookUI.instance.HandleOpenDeckBook();
     }
 
     public void HandleCloseDeckBook()
     {
-        menuCanvas.SetActive(true);
-        multiplayCanvas.SetActive(false);
-        deckBookCanvas.SetActive(false);
-        debris.SetActive(true);
-        logoGroup.SetActive(true);
+        DeckBookUI.instance.HandleCloseDeckBook();
+    }
+
+    public void OnChangeDeckBookOpenState(bool isOpen)
+    {
+        if(menuCanvas != null && debris != null && logoGroup != null){
+            menuCanvas.SetActive(!isOpen);
+            debris.SetActive(!isOpen);
+            logoGroup.SetActive(!isOpen);
+        }
     }
 
     public void HandleSettings()
