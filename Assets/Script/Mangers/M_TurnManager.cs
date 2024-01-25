@@ -303,6 +303,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             {
                 if(tar.buffs[i].isDecrease)
                 {
+                    Debug.Log("버프 스택 감소 " + tar.buffs[i].type);
                     Buff oldItem = tar.buffs[i];
                     oldItem.value -= 1;
                     tar.buffs.RemoveAt(i);

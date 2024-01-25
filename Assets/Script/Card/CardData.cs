@@ -204,7 +204,7 @@ public partial class CardData : SingletonD<CardData>
             if(tar.player.netId != M_TurnManager.instance.playerOrder[0])
             {
                 int currentIndex = M_TurnManager.instance.playerOrder.FindIndex(x => x == tar.player.netId);
-                M_TurnManager.instance.SwapPlayerOrder(currentIndex,currentIndex--);
+                M_TurnManager.instance.SwapPlayerOrder(currentIndex,--currentIndex);
             }
         }
     }

@@ -179,22 +179,22 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     }
                     break;
                 case Character.HONGDANHYANG:
-                    for(int i = 0; i < 10; i++)
-                    {
+                    //for(int i = 0; i < 10; i++)
+                    //{
                         //Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H"+(i+2))));
                         //deck.Add(attackCard);
-                        if(i % 2 == 0){
-                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H1")));
-                            deck.Add(attackCard);
-                        }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H41")));
-                            deck.Add(defenseCard);
-                        }
-                        
-                       
-                    }
-                     Card additional = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H34")));
-                            deck.Add(additional);
+                    //    if(i % 2 == 0){
+                    //        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H1")));
+                    //        deck.Add(attackCard);
+                    //    }else{
+                    //        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H41")));
+                    //        deck.Add(defenseCard);
+                    //    }
+                    //    
+                    //   
+                    //}
+                    // Card additional = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("H34")));
+                    //        deck.Add(additional);
 
                     break;
                 default:

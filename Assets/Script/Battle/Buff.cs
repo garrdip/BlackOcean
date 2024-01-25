@@ -16,6 +16,17 @@ public class Buff
 
     }
 
+    public Buff(Buff copy)
+    {
+        type = copy.type;
+        value = copy.value;
+        isDebuff = copy.isDebuff;
+        isInfinity = copy.isInfinity;
+        isDecrease = copy.isDecrease;
+        isSeparate = copy.isSeparate;
+        user = copy.user;
+    }
+
     public Buff(BuffType typeIn, int valueIn, bool isDebuffIn, bool isInfinityIn, bool isDecreaseIn, bool isSeparateIn, TargetObject tarIn)
     {
         type = typeIn;

@@ -355,23 +355,24 @@ public class TargetObject : NetworkBehaviour
         }
         else // 버프가 있을경우 중첩 상승
         {
-            Buff oldItem;
+            Buff modItem;
             int indexOfOldItem;
             if(isSeparate) 
             {
-                oldItem = buffs.Find(buff => buff.type == buffType && buff.user == tar.netId);
+                modItem = new Buff(buffs.Find(buff => buff.type == buffType && buff.user == tar.netId));
                 indexOfOldItem = buffs.FindIndex(buff => buff.type == buffType && buff.user == tar.netId);
             }
             else
             {
-                oldItem = buffs.Find(buff => buff.type == buffType);
+                modItem = new Buff(buffs.Find(buff => buff.type == buffType));
                 indexOfOldItem = buffs.FindIndex(buff => buff.type == buffType);
             }
             
-            oldItem.value += value;
-            buffs.RemoveAt(indexOfOldItem);
-            buffs.Insert(indexOfOldItem,oldItem);
-            retVal = buffs.FindIndex(buff => buff == oldItem);
+            modItem.value += value;
+            buffs[indexOfOldItem] = modItem;
+            //buffs.RemoveAt(indexOfOldItem);
+            //buffs.Insert(indexOfOldItem,oldItem);
+            retVal = indexOfOldItem;
         }
         return retVal;
     }
@@ -409,32 +410,35 @@ public class TargetObject : NetworkBehaviour
     // ----------------------------------------------  SyncVar, SyncList 콜백 처리 구간 ---------------------------------------------------//
     public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
     {
+        Debug.Log(" 버프 변경 " + op);
         if(newBuff != null)
-        {
             if((newBuff.type == BuffType.ICHI_ATTACK || newBuff.type == BuffType.ICHI_DEFENSE) && objectType == ObjectType.PLAYER)
                 foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
                     cardOnHand.CardInfoChangedEvent.Invoke();
-            switch (op)
-            {
-                case SyncList<Buff>.Operation.OP_ADD:
-                    buffIndicator.SetBuff(newBuff,index);
-                    break;
-                case SyncList<Buff>.Operation.OP_INSERT:
-                    buffIndicator.SetBuff(newBuff,index);
-                    break;
-                case SyncList<Buff>.Operation.OP_REMOVEAT:
-                    buffIndicator.RemoveBuff(index);
-                    if(newBuff.value == 0)
-                        buffTrunBeginEffect.Remove(index);
-                    break;
-                case SyncList<Buff>.Operation.OP_SET:
-                    buffIndicator.SetBuff(newBuff,index);
-                    break;
-                case SyncList<Buff>.Operation.OP_CLEAR:
-
-                    break;
-            }
+        switch (op)
+        {
+            case SyncList<Buff>.Operation.OP_ADD:
+                Debug.Log("버프추가"+ newBuff.type + index);
+                buffIndicator.SetBuff(newBuff,index);
+                break;
+            case SyncList<Buff>.Operation.OP_INSERT:
+                Debug.Log("버프추가"+ newBuff.type + index);
+                buffIndicator.SetBuff(newBuff,index);
+                break;
+            case SyncList<Buff>.Operation.OP_REMOVEAT:
+                Debug.Log("버프삭제"+ oldBuff.type + index);
+                buffIndicator.RemoveBuff(index);
+                if(oldBuff.value == 0)
+                    buffTrunBeginEffect.Remove(index);
+                break;
+            case SyncList<Buff>.Operation.OP_SET:
+                Debug.Log("버프 변경"+ oldBuff.type + index);
+                buffIndicator.SetBuff(newBuff,index);
+                break;
+            case SyncList<Buff>.Operation.OP_CLEAR:
+                break;
         }
+       
     }
 
     void OnChangedPlayerHP(int oldVal, int newVal)
