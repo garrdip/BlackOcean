@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using TMPro;
 using ProjectD;
 using AYellowpaper.SerializedCollections;
@@ -52,10 +53,14 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerClick(PointerEventData eventData)
     {
         #if UNITY_EDITOR
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-            GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
-            Card card = new Card(cardBase);
-            gamePlayerDeck.CmdAddDeck(card);
+            if(!SceneManager.GetActiveScene().name.Equals("MenuScene")){
+                PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+                GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
+                Card card = new Card(cardBase);
+                if(playerInterface.currentGamePlayer.character == card.baseCard.character){
+                    gamePlayerDeck.CmdAddDeck(card);
+                }
+            }
         #endif
     }
 
