@@ -20,8 +20,6 @@ public class DeckBookUI : SingletonD<DeckBookUI>
     void Start()
     {
         DontDestroyOnLoad(gameObject);
-        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.persistentComponents.Add(gameObject.name, gameObject);
         buttonCloseDeckBook.onClick.AddListener(() => HandleCloseDeckBook());
         for(int i=0; i<tabButtons.Count; i++){
             int buttonIndex = i;
