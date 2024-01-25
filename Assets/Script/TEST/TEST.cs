@@ -10,6 +10,7 @@ public class TEST : MonoBehaviour
 {
     public Button buttonEnhance;
     public Button buttonTranfrom;
+    public Button buttonOpenDeckBook;
     public bool isChatBoxActive;
     bool isIncrease = true;
 
@@ -18,6 +19,7 @@ public class TEST : MonoBehaviour
         isChatBoxActive = true;
         buttonEnhance.onClick.AddListener(() => TestEnhance());
         buttonTranfrom.onClick.AddListener(() => TestTransform());
+        buttonOpenDeckBook.onClick.AddListener(() => TestOpenDeckBook());
     }
 
     void TestEnhance()
@@ -44,6 +46,11 @@ public class TEST : MonoBehaviour
                 StartCoroutine(ErisTransform(tar));
             }
         }
+    }
+
+    void TestOpenDeckBook()
+    {
+        DeckBookUI.instance.HandleOpenDeckBook();
     }
 
     IEnumerator GeorkTransfrom(TargetObject tar)
