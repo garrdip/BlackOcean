@@ -96,7 +96,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         symmetryPositionY_Range = 0.12f;
         symmetryCurveRange = 0.03f;
         symmetryRotationRange = 3.5f;
-        cardOnHandShiftedRange = 4.5f;
+        cardOnHandShiftedRange = 1.5f;
         hoveredPositionY = 2.1f;
     }
 
@@ -129,7 +129,6 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                 float xPosition = symmetryValue * (symmetryPositionX_Range + ((maxCardOnHandCount - count) * 0.1f));
                                 float yPosition = -0.5f - (Mathf.Pow(Mathf.Abs(symmetryValue), 2f) * (symmetryPositionY_Range + ((maxCardOnHandCount - count) * symmetryCurveRange)));
                                 Vector3 symmetryPosition = new Vector3(xPosition , yPosition, 0f);
-                                cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
                                 cardOnHand.originPosition = symmetryPosition;
 
                                 // 회전값
@@ -149,6 +148,8 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                     Vector3 shiftPosition = new Vector3(symmetryPosition.x + shiftedValue, symmetryPosition.y, symmetryPosition.z);
                                     cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, shiftPosition, Time.deltaTime * 10f);
                                 }
+                                else
+                                    cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
                             }
                         }
                     }
