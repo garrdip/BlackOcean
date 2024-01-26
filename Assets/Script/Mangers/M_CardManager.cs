@@ -147,9 +147,9 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                     }
                                     Vector3 shiftPosition = new Vector3(symmetryPosition.x + shiftedValue, symmetryPosition.y, symmetryPosition.z);
                                     cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, shiftPosition, Time.deltaTime * 10f);
-                                }
-                                else
+                                }else{
                                     cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, symmetryPosition, Time.deltaTime * 10f);
+                                } 
                             }
                         }
                     }
