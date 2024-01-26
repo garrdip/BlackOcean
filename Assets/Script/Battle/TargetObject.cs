@@ -155,11 +155,12 @@ public class TargetObject : NetworkBehaviour
                 if(objectType == ObjectType.PLAYER)
                     if(player.character == Character.HONGDANHYANG){
                         StartCoroutine(HongDanHyangEyeFlicker());
+                        while(ironDemon == null)
+                            yield return new WaitForSeconds(0.01f);
                         ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
                     }
                 break;
             }
-
         }
     }
 
@@ -212,13 +213,17 @@ public class TargetObject : NetworkBehaviour
                 break;
                 case Character.HONGDANHYANG :
                     avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
-                    if(NetworkClient.connection.identity.GetComponent<GamePlayer>() == player)
+                    avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
+                    if(NetworkClient.localPlayer.transform.GetChild(0).GetComponent<GamePlayer>() == player)
                     {
                         ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
                         ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
                     }
                     else
+                    {
+
                         ironDemon = Instantiate(characters.Find(x => x.name == "IronDemonTransparent"),transform.position,Quaternion.identity,transform);
+                    }
                     ironDemonLocation = this;
                     ironDemon.GetComponent<SkeletonAnimation>().timeScale = Random.Range(0.9f,1.1f);
                     
