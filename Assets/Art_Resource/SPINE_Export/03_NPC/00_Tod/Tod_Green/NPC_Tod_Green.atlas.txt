@@ -1,0 +1,12 @@
+NPC_Tod_Green.png
+size:709,459
+filter:Linear,Linear
+pma:true
+GArmLeft
+bounds:388,33,119,221
+GArmRight
+bounds:537,37,116,217
+GBody
+bounds:30,30,328,399
+Gring
+bounds:388,284,291,145

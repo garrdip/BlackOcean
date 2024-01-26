@@ -1,0 +1,13 @@
+NPC_Tod_Yellow.png
+size:802,514
+filter:Linear,Linear
+pma:true
+YArmLeft
+bounds:650,30,122,269
+YArmRight
+bounds:438,329,155,269
+rotate:90
+YBody
+bounds:30,32,378,452
+YRing
+bounds:438,76,182,223

@@ -381,6 +381,7 @@ public partial class CardData : SingletonD<CardData>
         GeneralSingleAttack(tar[0],tar[1],4); // 실제 데미지 적용시점
         yield return new WaitForSeconds(0.6f); // 공격모션 끝남
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
+        M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
     }

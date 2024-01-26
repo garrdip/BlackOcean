@@ -625,7 +625,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
-        var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(11,3,0),Quaternion.identity).GetComponent<SpawnedMonster>();
+        var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(11,-3,0),Quaternion.identity).GetComponent<SpawnedMonster>();
         NPC_Mercurius mercurius = monster.GetComponent<NPC_Mercurius>();
         mercurius.isOrigin = true;
 

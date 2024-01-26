@@ -4,12 +4,19 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using ProjectD;
 using Mirror;
+using Spine.Unity;
 using TMPro;
 
 public class NPC_Mercurius : SpawnedMonster
 {
     public MercuriusPopUp mercuriusPopUp;
     public List<GameObject> shopCardObjectList = new List<GameObject>();
+    private SkeletonAnimation toddAnim;
+    private SkeletonAnimation backAnim;
+    private SkeletonAnimation minion0Anim;
+    private SkeletonAnimation minion1Anim;
+    private SkeletonAnimation minion2Anim;
+    private SkeletonAnimation minion3Anim;
     
     [SyncVar]
     public bool isOrigin = false; // 원본 오브젝트인지 구분값(타겟오브젝트들은 원본과 클론이 존재해서 둘중 하나만 호출되어야 함)
@@ -21,6 +28,12 @@ public class NPC_Mercurius : SpawnedMonster
         mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         networkRoomManager.onClientDisconnected += OnClientDisconnected;
+        toddAnim = GetComponent<SkeletonAnimation>();
+        minion0Anim = transform.GetChild(1).GetComponent<SkeletonAnimation>();
+        minion1Anim = transform.GetChild(2).GetComponent<SkeletonAnimation>();
+        minion2Anim = transform.GetChild(3).GetComponent<SkeletonAnimation>();
+        minion3Anim = transform.GetChild(4).GetComponent<SkeletonAnimation>();
+        StartCoroutine(ToddAnimationBlend());
     }
 
     // NPC_Mercurius 각 클라이언트에 생성될 때 현재 플레이어의 카드 데이터에서 6개의 랜덤 카드데이터를 추출하여 팝업에 6개의 상점카드 세팅
@@ -111,5 +124,45 @@ public class NPC_Mercurius : SpawnedMonster
     public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
     {
         
+    }
+
+    private IEnumerator ToddAnimationBlend()
+    {
+        WaitForSeconds loopTime = new WaitForSeconds(0.01f);
+        int[] eachTimer = new int[5];
+        for(int i = 0 ; i < 5 ; i++)
+            eachTimer[i] = Random.Range(400,900);
+        while(true)
+        {
+            for(int i = 0 ;i < 5 ; i ++)
+            {
+                eachTimer[i]--;
+                if(eachTimer[i] <= 0)
+                {
+                    eachTimer[i] = Random.Range(600,1200);
+                    switch(i)
+                    {
+                        case 0 : StartCoroutine(ToddActAnimation(toddAnim,3.3f));
+                            break;
+                        case 1 : StartCoroutine(ToddActAnimation(minion0Anim,2.66f));
+                            break;
+                        case 2 : StartCoroutine(ToddActAnimation(minion1Anim,3.33f));
+                            break;
+                        case 3 : StartCoroutine(ToddActAnimation(minion2Anim,2.66f));
+                            break;
+                        case 4 : StartCoroutine(ToddActAnimation(minion3Anim,4f));
+                            break;
+                    }
+                }
+            }
+            yield return loopTime;
+        }
+    }
+
+    private IEnumerator ToddActAnimation(SkeletonAnimation anim, float actTime)
+    {
+        anim.state.SetAnimation(0,"Act",false);
+        yield return new WaitForSeconds(actTime);
+        anim.state.SetAnimation(0,"Idle",true);
     }
 }

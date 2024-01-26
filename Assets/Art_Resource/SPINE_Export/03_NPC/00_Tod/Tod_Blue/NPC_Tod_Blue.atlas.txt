@@ -1,0 +1,13 @@
+NPC_Tod_Blue.png
+size:1220,349
+filter:Linear,Linear
+pma:true
+BArmLeft
+bounds:1054,34,136,285
+BArmRight
+bounds:550,30,237,289
+BBody
+bounds:30,49,270,490
+rotate:90
+BRing
+bounds:817,69,207,250
