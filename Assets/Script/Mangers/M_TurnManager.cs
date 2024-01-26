@@ -261,10 +261,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             {
                 if(tar.buffs[i].isDecrease)
                 {
-                    Buff oldItem = tar.buffs[i];
-                    oldItem.value -= 1;
-                    tar.buffs.RemoveAt(i);
-                    if(oldItem.value != 0)tar.buffs.Insert(i,oldItem);
+                    Buff modItem = new Buff(tar.buffs[i]);
+                    modItem.value -= 1;
+                    if(modItem.value == 0)
+                        tar.buffs.RemoveAt(i);
+                    else
+                        tar.buffs[i] = modItem;
                 }
             }
         }
@@ -303,11 +305,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             {
                 if(tar.buffs[i].isDecrease)
                 {
-                    Debug.Log("버프 스택 감소 " + tar.buffs[i].type);
-                    Buff oldItem = tar.buffs[i];
-                    oldItem.value -= 1;
-                    tar.buffs.RemoveAt(i);
-                    if(oldItem.value != 0)tar.buffs.Insert(i,oldItem);
+                    Buff modItem = new Buff(tar.buffs[i]);
+                    modItem.value -= 1;
+                    if(modItem.value == 0)
+                        tar.buffs.RemoveAt(i);
+                    else
+                        tar.buffs[i] = modItem;
                 }
             }
             List<int> currentKeys = tar.buffTrunBeginEffect.Keys.ToList();

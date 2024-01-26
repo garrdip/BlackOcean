@@ -99,7 +99,10 @@ public partial class CardData : SingletonD<CardData>
         tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
-        yield return GeneralIronDemonAttack(tar[0], tar[1], 6); // 철귀 공격
+        if(tar[0].buffs.FindIndex(buff => buff.type == BuffType.IMANGRY) != -1) // 화가 나는구나 2배 뎀쥐
+            yield return GeneralIronDemonAttack(tar[0], tar[1], 12); // 철귀 공격
+        else
+            yield return GeneralIronDemonAttack(tar[0], tar[1], 6); // 철귀 공격
         
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
 
@@ -125,7 +128,10 @@ public partial class CardData : SingletonD<CardData>
         tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
-        yield return GeneralIronDemonAttack(tar[0], tar[1], 10); // 철귀 공격
+        if(tar[0].buffs.FindIndex(buff => buff.type == BuffType.IMANGRY) != -1) // 화가 나는구나 2배 뎀쥐
+            yield return GeneralIronDemonAttack(tar[0], tar[1], 20); // 철귀 공격
+        else
+            yield return GeneralIronDemonAttack(tar[0], tar[1], 10); // 철귀 공격
 
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
 
@@ -798,8 +804,12 @@ public partial class CardData : SingletonD<CardData>
     // 아버지의 자비
     public IEnumerator H30(Card card, List<TargetObject> tar)
     {
-        tar[0].sizeOfIronDemon = (tar[0].sizeOfIronDemon - 5) <= 0 ? 1 : tar[0].sizeOfIronDemon - 5;
-        
+        int currentSizeOfIronDemon = tar[0].GetBuffValue(BuffType.IRONDEMON);
+        currentSizeOfIronDemon -= 5;
+        if( currentSizeOfIronDemon <= 0) currentSizeOfIronDemon = 1;
+        int delta = currentSizeOfIronDemon - tar[0].GetBuffValue(BuffType.IRONDEMON);
+        tar[0].GainBuff(BuffType.IRONDEMON,delta,false,false,false,false,tar[0],card);
+
         M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]); // 철귀 공격 모션 시작
         yield return new WaitForSeconds(0.5f);
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
@@ -856,9 +866,9 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.AnimIronDemon("Attack1",tar[0]); // 철귀 공격 모션 시작
         yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
         StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
-        GeneralSingleAttack(tar[0],tar[1],80); // 실제 데미지 적용시점
+        GeneralSingleAttack(tar[0],tar[1],8); // 실제 데미지 적용시점
         if(tar[1].monster.HP <= 0)tar[0].player.GetComponent<GamePlayerDeck>().AdditionalSizeOfIromDemon ++;
-        tar[0].sizeOfIronDemon ++;
+        tar[0].GainBuff(BuffType.IRONDEMON,1,false,false,false,false,tar[0],card);
         yield return new WaitForSeconds(0.6f); // 공격모션 끝남
         
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
@@ -1185,12 +1195,12 @@ public partial class CardData : SingletonD<CardData>
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
         {
             int index = target.GainBuff(BuffType.FLOWERPOWDER,target.GetBuffValue(BuffType.FLOWERPOWDER,tar[0]),false,false,true,true,tar[0],card);
-            if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTurnEndEffect.Add(index,FlowerPowderEffect);
+            if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         }
         foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
         {
             int index = target.GainBuff(BuffType.FLOWERPOWDER,target.GetBuffValue(BuffType.FLOWERPOWDER,tar[0]),true,false,true,true,tar[0],card);
-            if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTurnEndEffect.Add(index,FlowerPowderEffect);
+            if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
@@ -1280,7 +1290,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
-        tar[1].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H53")),3);
+        tar[1].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H52")),3);
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -1407,8 +1417,8 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
         tar[0].ironDemonLocation.GainBuff(BuffType.FLOWERPOWDER,3,false,false,true,true,tar[0],card);
-        tar[0].ironDemonLocation.GainBuff(BuffType.FLOWER,tar[1].GetBuffValue(BuffType.FLOWERPOWDER),false,false,true,false,tar[0],card);
-        tar[0].ironDemonLocation.buffs.Remove(tar[1].buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
+        tar[0].ironDemonLocation.GainBuff(BuffType.FLOWER,tar[0].ironDemonLocation.GetBuffValue(BuffType.FLOWERPOWDER),false,false,true,false,tar[0],card);
+        tar[0].ironDemonLocation.buffs.Remove(tar[0].ironDemonLocation.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(allTarget);
     }

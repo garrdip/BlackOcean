@@ -370,8 +370,6 @@ public class TargetObject : NetworkBehaviour
             
             modItem.value += value;
             buffs[indexOfOldItem] = modItem;
-            //buffs.RemoveAt(indexOfOldItem);
-            //buffs.Insert(indexOfOldItem,oldItem);
             retVal = indexOfOldItem;
         }
         return retVal;
@@ -410,7 +408,6 @@ public class TargetObject : NetworkBehaviour
     // ----------------------------------------------  SyncVar, SyncList 콜백 처리 구간 ---------------------------------------------------//
     public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
     {
-        Debug.Log(" 버프 변경 " + op);
         if(newBuff != null)
             if((newBuff.type == BuffType.ICHI_ATTACK || newBuff.type == BuffType.ICHI_DEFENSE) && objectType == ObjectType.PLAYER)
                 foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
@@ -418,21 +415,16 @@ public class TargetObject : NetworkBehaviour
         switch (op)
         {
             case SyncList<Buff>.Operation.OP_ADD:
-                Debug.Log("버프추가"+ newBuff.type + index);
                 buffIndicator.SetBuff(newBuff,index);
                 break;
             case SyncList<Buff>.Operation.OP_INSERT:
-                Debug.Log("버프추가"+ newBuff.type + index);
                 buffIndicator.SetBuff(newBuff,index);
                 break;
             case SyncList<Buff>.Operation.OP_REMOVEAT:
-                Debug.Log("버프삭제"+ oldBuff.type + index);
                 buffIndicator.RemoveBuff(index);
-                if(oldBuff.value == 0)
-                    buffTrunBeginEffect.Remove(index);
+                buffTrunBeginEffect.Remove(index);
                 break;
             case SyncList<Buff>.Operation.OP_SET:
-                Debug.Log("버프 변경"+ oldBuff.type + index);
                 buffIndicator.SetBuff(newBuff,index);
                 break;
             case SyncList<Buff>.Operation.OP_CLEAR:
