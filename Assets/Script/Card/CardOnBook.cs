@@ -72,6 +72,7 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         textCardDescription.text = cardBase.description;
         textCardCost.text = cardBase.cost.ToString();
         InitCardTemplateByCharacter(cardBase);
+        initCardData(new Card(cardBase));
     }
 
     private void InitCardTemplateByCharacter(CardBase cardBase)
@@ -149,5 +150,21 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 cardIllust.sprite = CardData.instance.cardIllustAtlas.GetSprite(cardBase.cardNumber);
             }
         }
+    }
+
+    public void initCardData(Card card)
+    {
+        textCardDescription.text += '\n';
+        textCardDescription.text += '\n';
+        foreach(CardCharacteristic character in card.baseCard.cardCharacteristics)
+            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>" + '\n';
+        foreach(CardCharacteristic character in card.cardCharacteristics)
+            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>" + '\n';
+        
+        if(card.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
+        {
+            textCardCost.text = "<b><color=red>"+ (card.baseCard.cost + card.costAddition + 1).ToString() + "</color></b>";
+        }
+        else textCardCost.text = (card.baseCard.cost + card.costAddition).ToString();
     }
 }

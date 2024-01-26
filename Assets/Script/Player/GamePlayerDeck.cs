@@ -505,23 +505,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 카드 리스트에서 삭제, 댁카운트 감소, 카드 오브젝트 삭제
-    [Command]
-    public void CmdDestroyCardOnHand(CardOnHand cardOnHand, bool isForceForgotten)
-    {
-        if(isForceForgotten){
-            forgottenDeck.Add(cardOnHand.card); // 특성과 관계없이 잊혀진 덱으로 보내는 경우
-        }else{
-            if(CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA)){
-                forgottenDeck.Add(cardOnHand.card); // 찰나 특성은 잊혀진덱
-            }else{
-                trashDeck.Add(cardOnHand.card); // 일반적인 경우 버린 덱
-            }
-        }
-        cardOnHands.Remove(cardOnHand);
-        NetworkServer.Destroy(cardOnHand.gameObject);
-    }
-
     IEnumerator ServerDestroyCardOnHand()
     {
         while(true)
@@ -561,7 +544,25 @@ public partial class GamePlayerDeck : NetworkBehaviour
         rewardCards.Clear();
     }
 
-    // 플레이어의 손에 든 모든 카드 제거(사용된 댁으로 보내지 않고 제거만 수행)
+    // 카드 제거(버려진 덱으로 보내는 경우)
+    [Command]
+    public void CmdDestroyCardOnHandToTrash(CardOnHand cardOnHand)
+    {
+        trashDeck.Add(cardOnHand.card);
+        cardOnHands.Remove(cardOnHand);
+        NetworkServer.Destroy(cardOnHand.gameObject);
+    }
+
+    // 카드 제거(잊혀진 덱으로 보내는 경우)
+    [Command]
+    public void CmdDestroyCardOnHandToForgotten(CardOnHand cardOnHand)
+    {
+        forgottenDeck.Add(cardOnHand.card);
+        cardOnHands.Remove(cardOnHand);
+        NetworkServer.Destroy(cardOnHand.gameObject);
+    }
+
+    // 카드 제거(버려진 or 잊혀진 댁으로 보내지 않고 제거만 수행)
     [Command]
     public void CmdDestroyAllCardOnHandWithOutTrashDeck()
     {

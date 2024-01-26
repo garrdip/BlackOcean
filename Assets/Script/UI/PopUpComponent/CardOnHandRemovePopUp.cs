@@ -43,7 +43,7 @@ public class CardOnHandRemovePopUp : SingletonD<CardOnHandRemovePopUp>
                 cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration);
                 cardOnHand.transform.DOMove(GameUIManager.instance.ForgottenDeck.transform.position, duration).SetEase(Ease.InOutCirc)
                 .OnComplete(() => {
-                    gamePlayerDeck.CmdDestroyCardOnHand(cardOnHand, true);
+                    gamePlayerDeck.CmdDestroyCardOnHandToForgotten(cardOnHand);
                     cardOnHand.transform.DOKill();
                 });
             }

@@ -303,9 +303,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // 카드 정보 뷰 설정
     private void initCardData()
     {
-        PlayerInterface playerInterface = NetworkClient.connection.identity.GetComponent<PlayerInterface>();
-        GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayer>().GetComponent<GamePlayerDeck>();
-        if(card.experience >= card.baseCard.maxExperience)
+        if(card.experience >= card.baseCard.maxExperience || card.isEnhanced || card.tempEnhanced)
         {
             textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").name;
             textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").description);
@@ -319,12 +317,13 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         textCardDescription.text += '\n';
         textCardDescription.text += '\n';
         foreach(CardCharacteristic character in card.baseCard.cardCharacteristics)
-            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>";
+            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>" + '\n';
+        foreach(CardCharacteristic character in card.cardCharacteristics)
+            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>" + '\n';
         
         if(card.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
         {
-            if(card.baseCard.cardType == gamePlayerDeck.previousCardType)
-
+            if(card.baseCard.cardType == NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().previousCardType)
             {
                 textCardCost.text = "<b><color=green>" +((card.baseCard.cost + card.costAddition - 1) <= 0 ? "0" : (card.baseCard.cost + card.costAddition - 1).ToString()) + "</color></b>";
             }
