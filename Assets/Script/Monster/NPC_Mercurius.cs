@@ -62,6 +62,14 @@ public class NPC_Mercurius : SpawnedMonster
         }
     }
 
+    // NCP_Mercurius 클릭 이벤트 : 이벤트 트리거 컴포넌트에 할당되어있음
+    public void OnClickMercurius()
+    {
+        if(M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE){
+            PopUpUIManager.instance.HandleMercuriusPopUp(true);
+        }
+    }
+
     // 현재 로컬 플레이어의 캐릭터에 설정된 상점카드 데이터로 상점카드 오브젝트 생성
     private void InitShopCardByCharacter()
     {
@@ -109,15 +117,6 @@ public class NPC_Mercurius : SpawnedMonster
         for(int i = shopCardObjectList.Count - 1; i >= 0; i--){
             Destroy(shopCardObjectList[i]);
             shopCardObjectList.RemoveAt(i);
-        }
-    }
-
-    void OnMouseDown()
-    {
-        if(!EventSystem.current.IsPointerOverGameObject()){ // NPC_Mercurius가 UI에 가려져 있을 경우(팝업이 활성화 된 경우) 클릭 이벤트 방지
-            if(M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE){
-                PopUpUIManager.instance.HandleMercuriusPopUp(true);
-            }
         }
     }
 
