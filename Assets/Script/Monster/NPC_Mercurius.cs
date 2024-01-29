@@ -34,6 +34,7 @@ public class NPC_Mercurius : SpawnedMonster
         minion2Anim = transform.GetChild(3).GetComponent<SkeletonAnimation>();
         minion3Anim = transform.GetChild(4).GetComponent<SkeletonAnimation>();
         StartCoroutine(ToddAnimationBlend());
+        AddClickEventTrigger();
     }
 
     // NPC_Mercurius 각 클라이언트에 생성될 때 현재 플레이어의 카드 데이터에서 6개의 랜덤 카드데이터를 추출하여 팝업에 6개의 상점카드 세팅
@@ -62,8 +63,18 @@ public class NPC_Mercurius : SpawnedMonster
         }
     }
 
-    // NCP_Mercurius 클릭 이벤트 : 이벤트 트리거 컴포넌트에 할당되어있음
-    public void OnClickMercurius()
+    // EventTrigger를 이용한 동적 클릭 이벤트 할당
+    private void AddClickEventTrigger()
+    {
+        EventTrigger eventTrigger = gameObject.AddComponent<EventTrigger>();
+        EventTrigger.Entry entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerClick;
+        entry.callback.AddListener((data) => { OnClickMercurius((PointerEventData)data); });
+        eventTrigger.triggers.Add(entry);
+    }
+
+    // NPC Mercurius 클릭 이벤트
+    public void OnClickMercurius(PointerEventData pointerEventData)
     {
         if(M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE){
             PopUpUIManager.instance.HandleMercuriusPopUp(true);
