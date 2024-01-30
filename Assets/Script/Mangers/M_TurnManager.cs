@@ -210,6 +210,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     IEnumerator MonsterPreEffect()
     {
+        WaitForSeconds loopTime = new WaitForSeconds(0.01f);
         // 몬스터 방어도 초기화
         foreach(TargetObject tar in spawnedPlayerList)
         {
@@ -270,6 +271,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 }
             }
         }
+        while(monsterDeathOperating)
+            yield return loopTime;
         phase = BattleTurn.MONSTER_ACTIVE;
     }
 
