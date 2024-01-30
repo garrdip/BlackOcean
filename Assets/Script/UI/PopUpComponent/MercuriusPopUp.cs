@@ -10,6 +10,7 @@ using Mirror;
 public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
 {
     public CanvasGroup canvasGroup;
+    public GameObject frameLayout;
     public TextMeshProUGUI textCardEnhancePrice;
     public TextMeshProUGUI textCardRemovePrice;
     public bool isMouseOnFrame = false;
@@ -24,6 +25,37 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
         PopUpUIManager.instance.onMercuriusPopUpHide += OnMercuriusPopUpHide;
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         networkRoomManager.onClientDisconnected += OnClientDisconnected;
+        AddEventTriggers();   
+    }
+
+    private void AddEventTriggers()
+    {
+        // 각 프레임들의 부모오브젝트인 frameLayout에 이벤트 트리거 컴포넌트 추가
+        EventTrigger eventTrigger = frameLayout.AddComponent<EventTrigger>();
+        
+        // PointerEnter 이벤트 추가
+        EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
+        pointerEnterEntry.eventID = EventTriggerType.PointerEnter;
+        pointerEnterEntry.callback.AddListener((data) => { OnPointerEnter((PointerEventData)data); });
+        eventTrigger.triggers.Add(pointerEnterEntry);
+
+        // PointerExit 이벤트 추가
+        EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
+        pointerExitEntry.eventID = EventTriggerType.PointerExit;
+        pointerExitEntry.callback.AddListener((data) => { OnPointerExit((PointerEventData)data); });
+        eventTrigger.triggers.Add(pointerExitEntry); 
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        // mercuriusPop의 Frame오브젝트에 마우스 진입 시 isMouseOnFrame = true 로 변경하여 팝업 비활성화 방지
+        isMouseOnFrame = true;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        // mercuriusPop의 Frame오브젝트에 마우스 나갈 시 isMouseOnFrame = false 로 변경하여 팝업 비활성화 가능하도록 변경
+        isMouseOnFrame = false;
     }
 
     void Start()
@@ -109,6 +141,7 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
         GameUIManager.instance.GameUI.gameObject.SetActive(true);
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
             gameObject.SetActive(false);
+            isMouseOnFrame = false;
         });
     }
 }
