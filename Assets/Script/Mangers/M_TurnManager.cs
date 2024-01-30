@@ -456,6 +456,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         {
                             yield return waitForLoop;
                         }// 카드 사용이 종료 될때까지 기다림
+
+                        if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.SOOKREON))
+                            cardOnHand.card.costAddition --;
+                        if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.JOONGREUK))
+                            cardOnHand.card.costAddition ++;
+                        
                         gpd.numOfUsedCard++;
                         // 카드 사용후 효과 여기서 발동
                         foreach(int index in tar[0].buffCardUseEffect.Keys)
