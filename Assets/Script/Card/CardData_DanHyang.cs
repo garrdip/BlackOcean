@@ -180,22 +180,22 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator H3(Card card,List<TargetObject> tar)
     {
         TargetObject preLocation;
-        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
         preLocation = tar[0].ironDemonLocation;
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
 
         yield return tempWait;
 
-        yield return MoveIronDemonCoroutine(tar[0],tar[0]); // 철귀 단향이로 이동
+        yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 단향이로 이동
 
         M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]);
-        GeneralGetDefense(tar[0],tar[0],5,card);
+        GeneralGetDefense(tar[0],tar[1],5,card);
         yield return new WaitForSeconds(1.33f);
 
         yield return MoveIronDemonCoroutine(tar[0],preLocation);
 
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); 
-        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
     }
 

@@ -99,6 +99,7 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G2(Card card,List<TargetObject> tar)
 	{
+		// 버프 아이콘 추가 필요
 		yield return null;
 	}
 	public IEnumerator G2_E(Card card,List<TargetObject> tar)
@@ -107,7 +108,13 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G2_H(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		foreach(CardOnHand cardOnHand in tar[0].player.GetComponent<GamePlayerDeck>().cardOnHands)
+			cardOnHand.card.costAddition -= 1;
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
 	}
 	public IEnumerator G2_H_E(Card card,List<TargetObject> tar)
 	{
