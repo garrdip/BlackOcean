@@ -52,16 +52,14 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        #if UNITY_EDITOR
-            if(!SceneManager.GetActiveScene().name.Equals("MenuScene")){
-                PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-                GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
-                Card card = new Card(cardBase);
-                if(playerInterface.currentGamePlayer.character == card.baseCard.character){
-                    gamePlayerDeck.CmdAddDeck(card);
-                }
+        if(!SceneManager.GetActiveScene().name.Equals("MenuScene")){
+            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
+            Card card = new Card(cardBase);
+            if(playerInterface.currentGamePlayer.character == card.baseCard.character){
+                gamePlayerDeck.CmdAddDeck(card);
             }
-        #endif
+        }
     }
 
     // 덱북 카드 초기화 : CardOnBook프리팹의 Regular Cell클래스에 있는 OnGenerate 이벤트에 연결되어있음.
