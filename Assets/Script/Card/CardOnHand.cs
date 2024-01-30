@@ -412,19 +412,19 @@ public class CardOnHand : NetworkBehaviour
             textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>" + '\n';
         foreach(CardCharacteristic character in newCard.cardCharacteristics)
             textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>" + '\n';
-        
-        if(newCard.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
+
+        int totalCost = NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().GetTotalCostOfCardOnHand(this);
+        if( totalCost == card.baseCard.cost )
         {
-            if(newCard.baseCard.cardType == NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().previousCardType)
-            {
-                textCardCost.text = "<b><color=green>" +((newCard.baseCard.cost + newCard.costAddition - 1) <= 0 ? "0" : (newCard.baseCard.cost + newCard.costAddition - 1).ToString()) + "</color></b>";
-            }
+            textCardCost.text = totalCost.ToString();
+        } 
+        else
+        {
+            if( totalCost > card.baseCard.cost )
+                textCardCost.text = "<b><color=red>" + totalCost.ToString() + "</color></b>";
             else
-            {
-                textCardCost.text = "<b><color=red>"+ (newCard.baseCard.cost + newCard.costAddition + 1).ToString() + "</color></b>";
-            }
+                textCardCost.text = "<b><color=green>"+ totalCost.ToString() + "</color></b>";
         }
-        else textCardCost.text = (newCard.baseCard.cost + newCard.costAddition).ToString();
     }
 
     void OnChangedCardInfo()

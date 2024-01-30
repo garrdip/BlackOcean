@@ -64,6 +64,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public int numOfUsedIronTeeth = 0;
 
+    [SyncVar(hook = nameof(OnChangedNumberOfUsedCard))]
+    public int numOfUsedCard = 0;
+
     [SyncVar]
     public int AdditionalSizeOfIromDemon; //철귀 영구 크기 증가
 
@@ -206,19 +209,20 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public int GetTotalCostOfCardOnHand(CardOnHand cardOnHand)
     {
         int totalCost;
+        totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition;
+
         if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
         {
             if(cardOnHand.card.baseCard.cardType == previousCardType)
-            {
-                totalCost = ( cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition - 1 );
-                if(totalCost < 0)totalCost = 0;
-            }
+                totalCost -= 1;
             else
-                totalCost = ( cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition + 1 );
+                totalCost += 1;
         }
-        else
-            totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition;
-        return totalCost;
+        
+        if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.HEBANG))
+            totalCost -= numOfUsedCard;
+
+        return (totalCost < 0) ? 0 : totalCost;
     }
 
     [Server]
@@ -657,6 +661,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 break;
             }
         }
+    }
+
+    public void OnChangedNumberOfUsedCard(int oldVal, int newVal)
+    {
+        foreach(CardOnHand cardOnHand in cardOnHands)
+            cardOnHand.OnChangeCardData(cardOnHand.card,cardOnHand.card);
     }
 
     // -------------------------------------------------SyncList Callback ---------------------------------------------------//

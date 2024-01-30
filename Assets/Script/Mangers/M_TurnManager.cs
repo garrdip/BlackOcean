@@ -372,6 +372,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 gamePlayerDeck.trashDeck.Clear();
                 gamePlayerDeck.prefareDeck.Clear();
                 gamePlayerDeck.forgottenDeck.Clear();
+
+                //해방 카드를 위한 카드 카운팅 종료
+                gamePlayerDeck.numOfUsedCard = 0;
+                
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
                     NetworkServer.Destroy(cardOnHand.gameObject);
                 }
@@ -452,7 +456,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         {
                             yield return waitForLoop;
                         }// 카드 사용이 종료 될때까지 기다림
-
+                        gpd.numOfUsedCard++;
                         // 카드 사용후 효과 여기서 발동
                         foreach(int index in tar[0].buffCardUseEffect.Keys)
                         {

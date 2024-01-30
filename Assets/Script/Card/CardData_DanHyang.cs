@@ -1267,15 +1267,15 @@ public partial class CardData : SingletonD<CardData>
         {
             M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
             yield return new WaitForSeconds(0.5f);
-            int index = tar[0].GainBuff(BuffType.FLOWERPOWDER,3,false,false,true,true,tar[0],card);
-            if(!tar[0].buffTurnEndEffect.Keys.Contains<int>(index))tar[0].buffTurnEndEffect.Add(index,FlowerPowderEffect);
+            int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,3,false,false,true,true,tar[0],card);
+            if(!tar[1].buffTurnEndEffect.Keys.Contains<int>(index))tar[1].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         }
         else
         {
             M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
             yield return new WaitForSeconds(0.5f);
-            int index = tar[0].GainBuff(BuffType.FLOWERPOWDER,3,true,false,true,true,tar[0],card);
-            if(!tar[0].buffTrunBeginEffect.Keys.Contains<int>(index))tar[0].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
+            int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,3,true,false,true,true,tar[0],card);
+            if(!tar[1].buffTrunBeginEffect.Keys.Contains<int>(index))tar[1].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
