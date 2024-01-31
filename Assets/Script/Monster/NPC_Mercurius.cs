@@ -17,6 +17,22 @@ public class NPC_Mercurius : SpawnedMonster
     private SkeletonAnimation minion1Anim;
     private SkeletonAnimation minion2Anim;
     private SkeletonAnimation minion3Anim;
+
+    [Header("Materials")]
+    public Material todBackOriginMaterial;
+    public Material todBackOutlineMaterial;
+    public Material todblueOriginMaterial;
+    public Material todblueOutlineMaterial;
+    public Material todGreenOriginMaterial;
+    public Material todGreenOutlineMaterial;
+    public Material todRedOriginMaterial;
+    public Material todRedOutlineMaterial;
+    public Material todYellowOriginMaterial;
+    public Material todYellowOutlineMaterial;
+    public Material todOriginMaterial;
+    public Material todOutlineMaterial;
+
+
     
     [SyncVar]
     public bool isOrigin = false; // 원본 오브젝트인지 구분값(타겟오브젝트들은 원본과 클론이 존재해서 둘중 하나만 호출되어야 함)
@@ -28,13 +44,13 @@ public class NPC_Mercurius : SpawnedMonster
         mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         networkRoomManager.onClientDisconnected += OnClientDisconnected;
-        toddAnim = GetComponent<SkeletonAnimation>();
         minion0Anim = transform.GetChild(1).GetComponent<SkeletonAnimation>();
         minion1Anim = transform.GetChild(2).GetComponent<SkeletonAnimation>();
         minion2Anim = transform.GetChild(3).GetComponent<SkeletonAnimation>();
         minion3Anim = transform.GetChild(4).GetComponent<SkeletonAnimation>();
+        toddAnim = transform.GetChild(5).GetComponent<SkeletonAnimation>();
         StartCoroutine(ToddAnimationBlend());
-        AddClickEventTrigger();
+        AddEventTrigger();
     }
 
     // NPC_Mercurius 각 클라이언트에 생성될 때 현재 플레이어의 카드 데이터에서 6개의 랜덤 카드데이터를 추출하여 팝업에 6개의 상점카드 세팅
@@ -63,14 +79,24 @@ public class NPC_Mercurius : SpawnedMonster
         }
     }
 
-    // EventTrigger를 이용한 동적 클릭 이벤트 할당
-    private void AddClickEventTrigger()
+    public void OnPointerEnterMercurius(PointerEventData eventData)
     {
-        EventTrigger eventTrigger = gameObject.AddComponent<EventTrigger>();
-        EventTrigger.Entry entry = new EventTrigger.Entry();
-        entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((data) => { OnClickMercurius((PointerEventData)data); });
-        eventTrigger.triggers.Add(entry);
+        transform.GetChild(0).GetComponent<MeshRenderer>().material = todBackOutlineMaterial;
+        transform.GetChild(1).GetComponent<MeshRenderer>().material = todblueOutlineMaterial;
+        transform.GetChild(2).GetComponent<MeshRenderer>().material = todGreenOutlineMaterial;
+        transform.GetChild(3).GetComponent<MeshRenderer>().material = todRedOutlineMaterial;
+        transform.GetChild(4).GetComponent<MeshRenderer>().material = todYellowOutlineMaterial;
+        transform.GetChild(5).GetComponent<MeshRenderer>().material = todOutlineMaterial;
+    }
+
+    public void OnPointerExitMercurius(PointerEventData eventData)
+    {
+        transform.GetChild(0).GetComponent<MeshRenderer>().material = todBackOriginMaterial;
+        transform.GetChild(1).GetComponent<MeshRenderer>().material = todblueOriginMaterial;
+        transform.GetChild(2).GetComponent<MeshRenderer>().material = todGreenOriginMaterial;
+        transform.GetChild(3).GetComponent<MeshRenderer>().material = todRedOriginMaterial;
+        transform.GetChild(4).GetComponent<MeshRenderer>().material = todYellowOriginMaterial;
+        transform.GetChild(5).GetComponent<MeshRenderer>().material = todOriginMaterial;
     }
 
     // NPC Mercurius 클릭 이벤트
@@ -79,6 +105,30 @@ public class NPC_Mercurius : SpawnedMonster
         if(M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE){
             PopUpUIManager.instance.HandleMercuriusPopUp(true);
         }
+    }
+
+    // EventTrigger를 이용한 동적 클릭 이벤트 할당
+    private void AddEventTrigger()
+    {
+        EventTrigger eventTrigger = gameObject.AddComponent<EventTrigger>();
+
+        // PointerClick 이벤트 추가
+        EventTrigger.Entry pointerClickEntry = new EventTrigger.Entry();
+        pointerClickEntry.eventID = EventTriggerType.PointerClick;
+        pointerClickEntry.callback.AddListener((data) => { OnClickMercurius((PointerEventData)data); });
+        eventTrigger.triggers.Add(pointerClickEntry);
+
+        // PointerEnter 이벤트 추가
+        EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
+        pointerEnterEntry.eventID = EventTriggerType.PointerEnter;
+        pointerEnterEntry.callback.AddListener((data) => { OnPointerEnterMercurius((PointerEventData)data); });
+        eventTrigger.triggers.Add(pointerEnterEntry);
+
+        // PointerExit 이벤트 추가
+        EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
+        pointerExitEntry.eventID = EventTriggerType.PointerExit;
+        pointerExitEntry.callback.AddListener((data) => { OnPointerExitMercurius((PointerEventData)data); });
+        eventTrigger.triggers.Add(pointerExitEntry);
     }
 
     // 현재 로컬 플레이어의 캐릭터에 설정된 상점카드 데이터로 상점카드 오브젝트 생성

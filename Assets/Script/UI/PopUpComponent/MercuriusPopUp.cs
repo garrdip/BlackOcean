@@ -28,6 +28,39 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
         AddEventTriggers();   
     }
 
+    void Start()
+    {
+        for(int i=0; i<tabButtons.Count; i++){
+            int buttonIndex = i; // C# 에서 람다식 클로저
+            tabButtons[i].onClick.AddListener(() => ShowTab(buttonIndex));
+        }
+    }
+
+    void OnDestroy()
+    {
+        DOTween.Kill(canvasGroup);
+    }
+
+    // mercuriusPop의 PointerClick 이벤트
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if(!isMouseOnFrame){
+            PopUpUIManager.instance.HandleMercuriusPopUp(false);
+        }
+    }
+
+    // mercuriusPop의 FrameLayout 오브젝트 PointerEnter 이벤트
+    public void OnPointerEnterFramLayout(PointerEventData eventData)
+    {
+        isMouseOnFrame = true;
+    }
+
+    // mercuriusPop의 FrameLayout 오브젝트 PointerExit 이벤트
+    public void OnPointerExitFramLayout(PointerEventData eventData)
+    {
+        isMouseOnFrame = false;
+    }
+
     private void AddEventTriggers()
     {
         // 각 프레임들의 부모오브젝트인 frameLayout에 이벤트 트리거 컴포넌트 추가
@@ -36,34 +69,14 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
         // PointerEnter 이벤트 추가
         EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
         pointerEnterEntry.eventID = EventTriggerType.PointerEnter;
-        pointerEnterEntry.callback.AddListener((data) => { OnPointerEnter((PointerEventData)data); });
+        pointerEnterEntry.callback.AddListener((data) => { OnPointerEnterFramLayout((PointerEventData)data); });
         eventTrigger.triggers.Add(pointerEnterEntry);
 
         // PointerExit 이벤트 추가
         EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
         pointerExitEntry.eventID = EventTriggerType.PointerExit;
-        pointerExitEntry.callback.AddListener((data) => { OnPointerExit((PointerEventData)data); });
+        pointerExitEntry.callback.AddListener((data) => { OnPointerExitFramLayout((PointerEventData)data); });
         eventTrigger.triggers.Add(pointerExitEntry); 
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        // mercuriusPop의 Frame오브젝트에 마우스 진입 시 isMouseOnFrame = true 로 변경하여 팝업 비활성화 방지
-        isMouseOnFrame = true;
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        // mercuriusPop의 Frame오브젝트에 마우스 나갈 시 isMouseOnFrame = false 로 변경하여 팝업 비활성화 가능하도록 변경
-        isMouseOnFrame = false;
-    }
-
-    void Start()
-    {
-        for(int i=0; i<tabButtons.Count; i++){
-            int buttonIndex = i; // C# 에서 람다식 클로저
-            tabButtons[i].onClick.AddListener(() => ShowTab(buttonIndex));
-        }
     }
 
     // 클라이언트 연결 해제 이벤트 수신
@@ -110,18 +123,6 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     {
         foreach(Button tabButton in tabButtons){
             tabButton.gameObject.SetActive(false);
-        }
-    }
-
-    void OnDestroy()
-    {
-        DOTween.Kill(canvasGroup);
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if(!isMouseOnFrame){
-            PopUpUIManager.instance.HandleMercuriusPopUp(false);
         }
     }
 
