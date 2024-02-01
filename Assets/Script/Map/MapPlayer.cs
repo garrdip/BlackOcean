@@ -56,6 +56,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         }
         buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
         buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
+        buttonDecKInfo.gameObject.SetActive(isOwned);
         buttonDecKInfo.onClick.AddListener(() => HandleOpenDeckInfoPopUp());
      }
 

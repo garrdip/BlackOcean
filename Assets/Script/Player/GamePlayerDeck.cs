@@ -678,12 +678,14 @@ public partial class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:
-                GameObject cardObject = Instantiate(DeckBookUI.instance.cellPrefab);
-                CardOnBook cardOnBook = cardObject.GetComponent<CardOnBook>();
-                cardOnBook.cardBase = newVal.baseCard;
-                cardOnBook.initCardOnBook(index);
-                cardOnBook.transform.SetParent(MapUI.instance.gridLayoutGroup.transform);
-                cardOnBook.transform.localScale = Vector3.one;
+                if(isOwned){
+                    GameObject cardObject = Instantiate(DeckBookUI.instance.cellPrefab);
+                    CardOnBook cardOnBook = cardObject.GetComponent<CardOnBook>();
+                    cardOnBook.cardBase = newVal.baseCard;
+                    cardOnBook.initCardOnBook(index);
+                    cardOnBook.transform.SetParent(MapUI.instance.gridLayoutGroup.transform);
+                    cardOnBook.transform.localScale = Vector3.one;
+                }
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
                 
