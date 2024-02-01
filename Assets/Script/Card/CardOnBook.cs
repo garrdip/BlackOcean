@@ -58,6 +58,7 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             Card card = new Card(cardBase);
             if(playerInterface.currentGamePlayer.character == card.baseCard.character){
                 gamePlayerDeck.CmdAddDeck(card);
+                cardBackground.color = Color.green;
             }
         }
     }

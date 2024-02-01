@@ -2,32 +2,71 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using ProjectD;
 using DG.Tweening;
 using Mirror;
 using TMPro;
 
-public class DeckListPopUp : SingletonD<DeckListPopUp>
+public class DeckListPopUp : SingletonD<DeckListPopUp>, IPointerClickHandler
 {
     [Header("댁 리스트")]
     public List<GameObject> deckList;
 
     [Header("UI 컴포넌트")]
     public CanvasGroup canvasGroup;
+    public GameObject scrollViewLayout;
     public GridLayoutGroup deckListPopUpGrid;
     public TextMeshProUGUI textTitle;
+    public bool isMouseOnFrame = false;
 
 
     protected override void Awake()
     {
         PopUpUIManager.instance.onChangeDeckListPopUpShow += OnChangeDeckListPopUpShow;
         PopUpUIManager.instance.onChangeDeckListPopUpHide += OnChangeDeckListPopUpHide;
+        AddEventTriggers();
     }
 
     void OnDestroy()
     {
         DOTween.Kill(canvasGroup);
     }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if(!isMouseOnFrame){
+            PopUpUIManager.instance.HandleHideDeckListPopUp();
+        }
+    }
+
+    public void OnPointerEnterFramLayout(PointerEventData eventData)
+    {
+        isMouseOnFrame = true;
+    }
+
+    public void OnPointerExitFramLayout(PointerEventData eventData)
+    {
+        isMouseOnFrame = false;
+    }
+
+    private void AddEventTriggers()
+    {
+        EventTrigger eventTrigger = scrollViewLayout.AddComponent<EventTrigger>();
+        
+        // PointerEnter 이벤트 추가
+        EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
+        pointerEnterEntry.eventID = EventTriggerType.PointerEnter;
+        pointerEnterEntry.callback.AddListener((data) => { OnPointerEnterFramLayout((PointerEventData)data); });
+        eventTrigger.triggers.Add(pointerEnterEntry);
+
+        // PointerExit 이벤트 추가
+        EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
+        pointerExitEntry.eventID = EventTriggerType.PointerExit;
+        pointerExitEntry.callback.AddListener((data) => { OnPointerExitFramLayout((PointerEventData)data); });
+        eventTrigger.triggers.Add(pointerExitEntry); 
+    }
+
 
     // Deck정보 리스트 요소 추가
     private void AddDeckList(SyncList<Card> cards, GridLayoutGroup gridLayoutGroup)

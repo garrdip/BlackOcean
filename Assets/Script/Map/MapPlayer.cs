@@ -26,6 +26,9 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     public Button buttonSwapAccept;
     public Button buttonSwapReject;
 
+    [Header("DeckInfoLayout")]
+    public Button buttonDecKInfo;
+
     [Header("Player Info Layout")]
     public TextMeshProUGUI textOrder;
     public TextMeshProUGUI steamDisplayName;
@@ -53,7 +56,8 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         }
         buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
         buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
-    }
+        buttonDecKInfo.onClick.AddListener(() => HandleOpenDeckInfoPopUp());
+     }
 
     void OnDestroy()
     {
@@ -94,6 +98,11 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
             swapRequestLayout.SetActive(false);
             CmdSwapReject(oldIndex);
         }
+    }
+
+    private void HandleOpenDeckInfoPopUp()
+    {
+        MapUI.instance.deckInfoPopUp.SetActive(true);
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)

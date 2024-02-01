@@ -79,6 +79,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public override void OnStartClient()
     {
+        deck.Callback += OnDeckUpdated;
         cardOnHands.Callback += OnCardOnHandsUpdated;
         prefareDeck.Callback += OnPrefareDeckUpdated;
         trashDeck.Callback += OnTrashDeckUpdated;
@@ -671,6 +672,34 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     // -------------------------------------------------SyncList Callback ---------------------------------------------------//
     
+    // Deck Callback
+    void OnDeckUpdated(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
+    {
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+                GameObject cardObject = Instantiate(DeckBookUI.instance.cellPrefab);
+                CardOnBook cardOnBook = cardObject.GetComponent<CardOnBook>();
+                cardOnBook.cardBase = newVal.baseCard;
+                cardOnBook.initCardOnBook(index);
+                cardOnBook.transform.SetParent(MapUI.instance.gridLayoutGroup.transform);
+                cardOnBook.transform.localScale = Vector3.one;
+                break;
+            case SyncList<Card>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<Card>.Operation.OP_SET:
+                
+                break;
+            case SyncList<Card>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
     // CardOnHand Callback
     void OnCardOnHandsUpdated(SyncList<CardOnHand>.Operation op, int index, CardOnHand oldCardOnHand, CardOnHand newCardOnHand)
     {

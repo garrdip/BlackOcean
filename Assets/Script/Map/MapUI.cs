@@ -13,6 +13,11 @@ public class MapUI : InstanceD<MapUI>
     [Header("거점지역 팝업")]
     public GameObject regionPopUp;
 
+    [Header("보유한 덱 정보 팝업")]
+    public GameObject deckInfoPopUp;
+    public GridLayoutGroup gridLayoutGroup;
+    public Button buttonCloseDeckInfoPopUp;
+
     [Header("mapBaseLayout")]
     public GameObject mapBaseLayout;
     public GameObject mapInfoBase;
@@ -71,6 +76,9 @@ public class MapUI : InstanceD<MapUI>
         }
         mapDangerLayoutPosition = mapDangerLayout.GetComponent<RectTransform>().localPosition;
         mapTurnLayoutPosition = mapTurnLayout.GetComponent<RectTransform>().localPosition;
+        buttonCloseDeckInfoPopUp.onClick.AddListener(() => {
+            deckInfoPopUp.SetActive(false);
+        });
     }
 
     void Update()
