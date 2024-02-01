@@ -50,6 +50,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
 
 
     [Header("팝업 UI 오브젝트")]
+    public List<GameObject> popUpList = new List<GameObject>();
     public GameObject deckListPopUp; // 덱 목록 팝업
     public GameObject deckDrawPopUp; // 덱 드로우 팝업
     public GameObject deckRemovePopUp; // 덱 제거 팝업

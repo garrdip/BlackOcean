@@ -28,7 +28,7 @@ public class CharactorSelector : MonoBehaviour
 
     void OnMouseDown()
     {
-        if(IsSelectablePlayer() && !EventSystem.current.IsPointerOverGameObject()){
+        if(IsSelectablePlayer() && IsSelectableState()){
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
             GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
             playerInterface.currentGamePlayerNetId = gamePlayer.netId;
@@ -36,6 +36,16 @@ public class CharactorSelector : MonoBehaviour
                 gamePlayer.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand();
             M_CardManager.instance.SetCurrentGamePlayerDeck(gamePlayer.GetComponent<GamePlayerDeck>());
         }
+    }
+
+    // 팝업 UI에 등록된 팝업목록들중 활성화된 팝업이 있으면 캐릭터 클릭되지 않도록 조건 체크
+    private bool IsSelectableState()
+    {
+        int index = PopUpUIManager.instance.popUpList.FindIndex((popUp) => popUp.activeSelf);
+        if(index != -1){
+            return false;
+        }
+        return true;
     }
 
     // 이벤트 호출하려는 플레이어 오브젝트가 현재 유저가 선택 가능한 플레이어인지 확인하는 함수

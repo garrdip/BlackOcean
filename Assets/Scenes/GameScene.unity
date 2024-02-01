@@ -2233,6 +2233,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5595233def1e7c446a5290bd44575b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  popUpList:
+  - {fileID: 1022321676}
+  - {fileID: 305056129}
+  - {fileID: 1581196589}
+  - {fileID: 71096695}
+  - {fileID: 1869874384}
+  - {fileID: 659055048}
+  - {fileID: 67203787}
   deckListPopUp: {fileID: 1581196589}
   deckDrawPopUp: {fileID: 67203787}
   deckRemovePopUp: {fileID: 305056129}
