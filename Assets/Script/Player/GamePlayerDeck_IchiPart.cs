@@ -50,7 +50,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         if(isOwned){
             GameUIManager.instance.currentIchiText.text = newVal.ToString();
             GameUIManager.instance.maxIchiText.text = maxIchi.ToString();
-            CreateCostIcon(maxIchi);
             SetFillAsMaxItch(maxIchi);
             SetEmptyAsUsedCurrentItch(maxIchi - newVal);
         }
