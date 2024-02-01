@@ -14,10 +14,12 @@ public class BuffIndicatorController : MonoBehaviour
     {
         if(index < indicatedBuffs.Count) // 신규 버프 여부 확인
         {
+            Debug.Log("신규 버프 등록");
             indicatedBuffs[index].transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = buff.value.ToString();
         }
         else
         {
+            Debug.Log("기존 버프 변경");
             GameObject newBuff = Instantiate(buffPrefab);
             newBuff.transform.SetParent(transform);
             newBuff.GetComponent<SpriteRenderer>().sprite = CardData.instance.buffIcons[buff.type];
