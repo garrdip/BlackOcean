@@ -966,9 +966,11 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void AnimIronDemon(string anim ,TargetObject tar)
     {
-        bool isLoop = anim == "Idle" ? true : false;
-        tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
-        tar.ApllyIronDemonAnimationCallbackFunction();
+        if(tar != null){
+            bool isLoop = anim == "Idle" ? true : false;
+            tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
+            tar.ApllyIronDemonAnimationCallbackFunction();
+        }
     }
 
 

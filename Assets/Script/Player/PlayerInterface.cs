@@ -205,7 +205,7 @@ public class PlayerInterface : NetworkBehaviour
             PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
             foreach(PlayerInterface user in users)
             {
-                if(!user.endTurnActive)return;
+                if(!user.endTurnActive && user.currentGamePlayer.HP > 0)return;
             }
             switch(M_TurnManager.instance.phase)
             {
