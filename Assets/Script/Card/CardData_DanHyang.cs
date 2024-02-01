@@ -1293,7 +1293,8 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
-        tar[1].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H52")),3);
+        for(int i = 0 ;i < 3 ; i ++)
+            tar[1].player.GetComponent<GamePlayerDeck>().prefareDeck.Add(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H52")));
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
