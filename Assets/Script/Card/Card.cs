@@ -27,6 +27,15 @@ public class Card
         costAddition = 0;
     }
 
+    public Card (Card card)
+    {
+        baseCard = card.baseCard;
+        isEnhanced = card.isEnhanced;
+        costAddition = card.costAddition;
+        experience = card.experience;
+        cardCharacteristics = card.cardCharacteristics;
+        tempEnhanced = card.tempEnhanced;
+    }
 
     // 카드 클래스 깊은복사
     public Card CardDeepCopy(bool isEndBattle)

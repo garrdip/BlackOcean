@@ -514,7 +514,9 @@ public partial class CardData : SingletonD<CardData>
             foreach(CardOnHand cardOnHand in player.player.GetComponent<GamePlayerDeck>().cardOnHands)
             {
                 if(cardOnHand.card == card)continue;
-                cardOnHand.card.cardCharacteristics.Add(CardCharacteristic.SOOKREON);
+                Card newCard = new Card(cardOnHand.card);
+                newCard.cardCharacteristics.Add(CardCharacteristic.SOOKREON);
+                cardOnHand.card = newCard;
                 cardOnHand.OnChangeCardData(cardOnHand.card,cardOnHand.card);
                 count ++;
                 if(count == 3)break;
