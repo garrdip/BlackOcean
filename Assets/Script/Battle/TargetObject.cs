@@ -438,6 +438,7 @@ public class TargetObject : NetworkBehaviour
        
     }
 
+
     void OnChangedPlayerHP(int oldVal, int newVal)
     {
         if(player != null)
@@ -452,13 +453,27 @@ public class TargetObject : NetworkBehaviour
         
         if(isServer && playerHP == 0)
         {
-            foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
-                NetworkServer.Destroy(cardOnHand.gameObject);
-            player.GetComponent<GamePlayerDeck>().cardOnHands.Clear();
-            M_TurnManager.instance.spawnedPlayerList.Remove(this);
-            NetworkServer.Destroy(this.gameObject);
+            StartCoroutine(PlayerDeathProcess());
         }
+    }
 
+    IEnumerator PlayerDeathProcess()
+    {
+        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+        {
+            if(target.player.character == Character.HONGDANHYANG)
+            {
+                if(target.ironDemonLocation == this)
+                {
+                    yield return M_TurnManager.instance.IronDemonReturnProcess(target);
+                }
+            }
+        }
+        foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
+            NetworkServer.Destroy(cardOnHand.gameObject);
+        player.GetComponent<GamePlayerDeck>().cardOnHands.Clear();
+        M_TurnManager.instance.spawnedPlayerList.Remove(this);
+        NetworkServer.Destroy(this.gameObject);
     }
 
 
