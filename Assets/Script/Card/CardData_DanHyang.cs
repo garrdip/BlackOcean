@@ -987,7 +987,7 @@ public partial class CardData : SingletonD<CardData>
     {
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
-        tar[0].sizeOfIronDemon ++;
+        tar[0].GainBuff(BuffType.IRONDEMON,1,false,false,false,false,tar[0],card);
         yield return HWAHAP(tar[0]);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
@@ -1141,13 +1141,15 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
         {
-            target.defense += target.GetBuffValue(BuffType.FLOWERPOWDER,tar[0])*2;
-            target.buffs.Remove(target.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
+            target.defense += target.GetBuffValue(BuffType.FLOWERPOWDER)*2;
+            foreach(Buff buff in target.buffs.FindAll(buff => buff.type == BuffType.FLOWERPOWDER))
+                target.buffs.Remove(buff);
         }
         foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
         {
-            GeneralSingleDamage(target,target.GetBuffValue(BuffType.FLOWERPOWDER,tar[0])*2);
-            target.buffs.Remove(target.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
+            GeneralSingleDamage(target,target.GetBuffValue(BuffType.FLOWERPOWDER)*2);
+            foreach(Buff buff in target.buffs.FindAll(buff => buff.type == BuffType.FLOWERPOWDER))
+                target.buffs.Remove(buff);
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
