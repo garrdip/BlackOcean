@@ -8,6 +8,7 @@ using ProjectD;
 using DG.Tweening;
 using TMPro;
 using Spine.Unity;
+using System.Linq;
 
 public class TargetObject : NetworkBehaviour
 {
@@ -350,12 +351,14 @@ public class TargetObject : NetworkBehaviour
         int retVal = 0;
         if(objectType == ObjectType.PLAYER && tar != this && CardData.instance.CheckCardCharacteristic(card,CardCharacteristic.GOOWON)) value *= 2; // 이곳에 구원 등록
 
-        if((buffs.Find(buff => buff.type == buffType && buff.user == tar.netId) == null && isSeparate )|| (buffs.Find(buff => buff.type == buffType) == null && !isSeparate )|| (isInfinity && value == 0)) // 버프 신규 등록
+        if((buffs.Find(buff => buff.type == buffType && buff.user == tar.netId) == null && isSeparate )|| (buffs.Find(buff => buff.type == buffType) == null && !isSeparate )|| (isInfinity && value <= 0)) // 버프 신규 등록
         {
             if(value == 0 && !isInfinity)return 0;
             
             Buff newBuff = new Buff(buffType,value,isDebuff,isInfinity,isDecrease,isSeparate,tar);
             buffs.Add(newBuff);
+            for(int i = 0 ;i < buffs.Count ; i++)
+                Debug.Log(buffs[i].type);
             retVal =  buffs.FindIndex(buff => buff == newBuff);
         }
         else // 버프가 있을경우 중첩 상승
@@ -405,6 +408,18 @@ public class TargetObject : NetworkBehaviour
         return retVal;
     }
 
+    public int GetBuffValueByIndex(int index)
+    {
+        return buffs[index].value;
+    }
+
+    public void GainBuffByIndex(int index, int value)
+    {
+        Buff newBuff = new Buff(buffs[index]);
+        newBuff.value += value;
+        buffs[index] = newBuff;
+    }
+
     public void GainDefense(int value)
     {
         defense += value;
@@ -426,6 +441,7 @@ public class TargetObject : NetworkBehaviour
                 buffIndicator.SetBuff(newBuff,index);
                 break;
             case SyncList<Buff>.Operation.OP_REMOVEAT:
+                ReArrangeBuffEffectIndex(index);
                 buffIndicator.RemoveBuff(index);
                 buffTrunBeginEffect.Remove(index);
                 break;
@@ -438,6 +454,50 @@ public class TargetObject : NetworkBehaviour
        
     }
 
+    private void ReArrangeBuffEffectIndex(int index)
+    {
+        buffTrunBeginEffect.Remove(index);
+        buffCardDrowEffect.Remove(index);
+        buffCardUseEffect.Remove(index);
+        buffTurnEndEffect.Remove(index);
+        List<int> keyList = new List<int>();
+        keyList = buffTrunBeginEffect.Keys.ToList();
+        foreach(int itemKey in keyList)
+        {
+            if(itemKey > index)
+            {
+                buffTrunBeginEffect.Add(itemKey-1,buffTrunBeginEffect[itemKey]);
+                buffTrunBeginEffect.Remove(itemKey);
+            }
+        }
+        keyList = buffCardDrowEffect.Keys.ToList();
+        foreach(int itemKey in keyList)
+        {
+            if(itemKey > index)
+            {
+                buffCardDrowEffect.Add(itemKey-1,buffCardDrowEffect[itemKey]);
+                buffCardDrowEffect.Remove(itemKey);
+            }
+        }
+        keyList = buffCardUseEffect.Keys.ToList();
+        foreach(int itemKey in keyList)
+        {
+            if(itemKey > index)
+            {
+                buffCardUseEffect.Add(itemKey-1,buffCardUseEffect[itemKey]);
+                buffCardUseEffect.Remove(itemKey);
+            }
+        }
+        keyList = buffTurnEndEffect.Keys.ToList();
+        foreach(int itemKey in keyList)
+        {
+            if(itemKey > index)
+            {
+                buffTurnEndEffect.Add(itemKey-1,buffTurnEndEffect[itemKey]);
+                buffTurnEndEffect.Remove(itemKey);
+            }
+        }
+    }
 
     void OnChangedPlayerHP(int oldVal, int newVal)
     {

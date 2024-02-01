@@ -916,23 +916,22 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
-        int index = tar[0].GainBuff(BuffType.FURYOFFLOWER, 0, false, true, false, false, tar[0],card);
+        int index = tar[0].GainBuff(BuffType.FURYOFFLOWER, -1, false, true, false, false, tar[0],card);
         tar[0].buffCardUseEffect.Add(index,H34_CardUseEffect);
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-        
     }
 
     public IEnumerator H34_CardUseEffect(TargetObject tar, int index)
     {
-        if(tar.GetBuffValue(BuffType.FURYOFFLOWER) == 2)
+        if(tar.GetBuffValueByIndex(index) == 2)
         {
-            tar.GainBuff(BuffType.FURYOFFLOWER,-2,false,true,false,false,tar,null);
+            tar.GainBuffByIndex(index,-2);
             yield return HWAHAP(tar);
         }
         else
         {
-            tar.GainBuff(BuffType.FURYOFFLOWER,1,false,true,false,false,tar,null);
+            tar.GainBuffByIndex(index,1);
         }
     }
 
@@ -1182,7 +1181,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
         int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,tar[1].GetBuffValue(BuffType.FLOWERPOWDER),false,false,true,true,tar[0],card);
-        if(!tar[1].buffTurnEndEffect.Keys.Contains<int>(index))tar[1].buffTurnEndEffect.Add(index,FlowerPowderEffect);
+        if(!tar[1].buffTrunBeginEffect.Keys.Contains<int>(index))tar[1].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
