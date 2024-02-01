@@ -496,17 +496,19 @@ public partial class GamePlayerDeck : NetworkBehaviour
    
     IEnumerator ReturnToCardOnHandCoroutine(CardOnHand cardOnHand)
     {
-        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-        while(true)
-        {
-            if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) != -1)
+        if(cardOnHand != null){
+            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            while(true)
             {
-                cardOnHand.isUsed = false;
-                M_CardManager.instance.ResetCardAllState(cardOnHand,false);
-                playerInterface.destroyCards.Remove(cardOnHand);
-                break;
+                if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) != -1)
+                {
+                    cardOnHand.isUsed = false; // 요기 널오류
+                    M_CardManager.instance.ResetCardAllState(cardOnHand,false);
+                    playerInterface.destroyCards.Remove(cardOnHand);
+                    break;
+                }
+                yield return new WaitForSeconds(0.01f);
             }
-            yield return new WaitForSeconds(0.01f);
         }
     }
 

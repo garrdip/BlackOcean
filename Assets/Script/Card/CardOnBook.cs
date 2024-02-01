@@ -11,7 +11,7 @@ using DG.Tweening;
 using Mirror;
 
 
-public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,  IPointerClickHandler
+public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,  IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
 {
     private int index;
     private Vector3 originScale;
@@ -50,6 +50,16 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         TextDetector.instance.StopTextDetect();
     }
 
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        cardBackground.color = Color.green;
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        cardBackground.color = Color.white;
+    }
+    
     public void OnPointerClick(PointerEventData eventData)
     {
         if(!SceneManager.GetActiveScene().name.Equals("MenuScene")){
@@ -58,7 +68,6 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             Card card = new Card(cardBase);
             if(playerInterface.currentGamePlayer.character == card.baseCard.character){
                 gamePlayerDeck.CmdAddDeck(card);
-                cardBackground.color = Color.green;
             }
         }
     }
