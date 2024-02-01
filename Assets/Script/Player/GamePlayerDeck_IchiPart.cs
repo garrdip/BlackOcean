@@ -48,6 +48,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
     void OnChangedCurrentIchi(int oldVal, int newVal)
     {
         if(isOwned){
+            if(maxIchi < newVal){
+                maxIchi = newVal;
+            }
             GameUIManager.instance.currentIchiText.text = newVal.ToString();
             GameUIManager.instance.maxIchiText.text = maxIchi.ToString();
             SetFillAsMaxItch(maxIchi);
