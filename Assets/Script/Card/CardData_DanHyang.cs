@@ -784,8 +784,8 @@ public partial class CardData : SingletonD<CardData>
     // 용철 폭발
     public IEnumerator H29(Card card, List<TargetObject> tar)
     {
-        int totalDamage = tar[0].sizeOfIronDemon - 1;
-        tar[0].sizeOfIronDemon = 1;
+        int totalDamage = tar[0].GetBuffValue(BuffType.IRONDEMON) - 1;
+        tar[0].GainBuff(BuffType.IRONDEMON,-totalDamage,false,false,false,false,tar[0],card);
         M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]); // 철귀 공격 모션 시작
         yield return new WaitForSeconds(0.5f);
         foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
