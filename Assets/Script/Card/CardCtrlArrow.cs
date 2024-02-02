@@ -34,10 +34,18 @@ public class CardCtrlArrow : NetworkBehaviour
 
     void Update()
     {
-        if(isOwned){       
+        if(isOwned){   
+            HandleArrowPosition();     
             HandleArrowAction();
             HandleArrowRemove();
             HandleArrowNodesTrasnform();
+        }
+    }
+
+    private void HandleArrowPosition()
+    {
+        if(arrowOwnedCardOnHand != null){
+            transform.position = arrowOwnedCardOnHand.transform.position;
         }
     }
 
@@ -170,7 +178,6 @@ public class CardCtrlArrow : NetworkBehaviour
     {
         this.gameObject.SetActive(isVisible);
         M_CardManager.instance.isArrowActive = isVisible;
-        transform.SetParent(parent);
     }
 
     // 베지어 곡선 조작점 계산

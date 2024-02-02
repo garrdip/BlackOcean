@@ -76,6 +76,11 @@ public class CardOnHand : NetworkBehaviour
         CardInfoChangedEvent += OnChangedCardInfo;
     }
 
+    void OnDestroy()
+    {
+        DOTween.Kill(transform);
+    }
+
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
     public override void OnStartClient()
     {
