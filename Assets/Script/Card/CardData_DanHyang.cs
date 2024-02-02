@@ -1076,6 +1076,8 @@ public partial class CardData : SingletonD<CardData>
         yield return H41(card,tar);
     }
 
+
+    // 가루 뿌리기
     public IEnumerator H42(Card card, List<TargetObject> tar)
     {
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
@@ -1083,7 +1085,7 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         GeneralSingleAttack(tar[0],tar[1],3);
         int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,2,true,false,true,true,tar[0],card);
-        if(!tar[1].buffTurnEndEffect.Keys.Contains<int>(index))tar[1].buffTurnEndEffect.Add(index,FlowerPowderEffect);
+        if(!tar[1].buffTrunBeginEffect.Keys.Contains<int>(index))tar[1].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -1118,7 +1120,7 @@ public partial class CardData : SingletonD<CardData>
             foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
             {
                 int index = target.GainBuff(BuffType.FLOWERPOWDER,3,true,false,true,true,tar[0],card);
-                if(!target.buffTurnEndEffect.Keys.Contains<int>(index))target.buffTurnEndEffect.Add(index,FlowerPowderEffect);
+                if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTrunBeginEffect.Add(index,FlowerPowderEffect);
             }
         }
         yield return new WaitForSeconds(0.5f);
@@ -1195,13 +1197,19 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
         {
-            int index = target.GainBuff(BuffType.FLOWERPOWDER,target.GetBuffValue(BuffType.FLOWERPOWDER,tar[0]),false,false,true,true,tar[0],card);
-            if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTrunBeginEffect.Add(index,FlowerPowderEffect);
+            if(target.GetBuffValue(BuffType.FLOWERPOWDER,tar[0]) != 0)
+            {
+                int index = target.GainBuff(BuffType.FLOWERPOWDER,target.GetBuffValue(BuffType.FLOWERPOWDER,tar[0]),false,false,true,true,tar[0],card);
+                if(!target.buffTurnEndEffect.Keys.Contains<int>(index))target.buffTurnEndEffect.Add(index,FlowerPowderEffect);
+            }
         }
         foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
         {
-            int index = target.GainBuff(BuffType.FLOWERPOWDER,target.GetBuffValue(BuffType.FLOWERPOWDER,tar[0]),true,false,true,true,tar[0],card);
-            if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTrunBeginEffect.Add(index,FlowerPowderEffect);
+            if(target.GetBuffValue(BuffType.FLOWERPOWDER,tar[0]) != 0)
+            {
+                int index = target.GainBuff(BuffType.FLOWERPOWDER,target.GetBuffValue(BuffType.FLOWERPOWDER,tar[0]),true,false,true,true,tar[0],card);
+                if(!target.buffTrunBeginEffect.Keys.Contains<int>(index))target.buffTrunBeginEffect.Add(index,FlowerPowderEffect);
+            }
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
