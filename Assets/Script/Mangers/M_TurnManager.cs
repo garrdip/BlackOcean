@@ -465,7 +465,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     else
                     {
                         CardData.instance.RunCard(cardOnHand.card,tar);
-                        gpd.destroyCardList.Add(cardOnHand);
                         while(CardData.instance.isCardOperating)
                         {
                             yield return waitForLoop;
@@ -475,7 +474,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                             cardOnHand.card.costAddition --;
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.JOONGREUK))
                             cardOnHand.card.costAddition ++;
-                        
+                        gpd.destroyCardList.Add(cardOnHand);
                         gpd.numOfUsedCard++;
                         // 카드 사용후 효과 여기서 발동
                         foreach(int index in tar[0].buffCardUseEffect.Keys)
