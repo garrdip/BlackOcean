@@ -243,7 +243,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                 .SetEase(Ease.OutSine));
 
             // 시퀀스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 화면의 우측하단 방향으로 포물선 이동 애니매이션 추가
-            sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration));
+            sequence.Append(cardOnHand.transform.DOScale(new Vector3(0f, 0f, 0f), duration));
             sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
             sequence.Join(cardOnHand.transform.DOMove(position, duration).SetEase(Ease.InOutCirc));
             sequence.OnComplete(() =>
@@ -252,6 +252,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 if(gamePlayerDeck.isOwned){
                     GameUIManager.instance.buttonEndTurn.interactable = true;
                     sequence.Kill();
+                    cardOnHand.isUsed = true;
                     NetworkClient.connection.identity.GetComponent<PlayerInterface>().destroyCards.Add(cardOnHand);
                     ChangeCurrentPlayerCardOnHandState(false);
                 }
