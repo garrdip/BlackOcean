@@ -92,6 +92,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }  
     }
 
+    // 화살표 주인 카드 참조값 설정
+    public void SetArrowOwnCardOnHand(CardOnHand cardOnHand)
+    {
+        cardCtrlArrow.arrowOwnedCardOnHand = cardOnHand;
+    }
+
     // choosedCardOnHands 배열에 선택한 카드를 추가
     public void AddChoosedCardOnHands(CardOnHand cardOnHand)
     {
@@ -580,10 +586,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
         cardOnHands.Clear();
     }
 
-    // 화살표 주인 카드 참조값 설정
-    public void CmdSetArrowOwnCardOnHand(CardOnHand cardOnHand)
+    // 재조물 카드 콜백 커맨드
+    [Command]
+    public void Cmd_H26_CallBack(GamePlayer gamePlayer, int choosedCardCount)
     {
-        cardCtrlArrow.arrowOwnedCardOnHand = cardOnHand;
+        TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
+        CardData.instance.H26_CallBack(targetObject, choosedCardCount); // 패 제거 팝업에서 선택한 카드 갯수 넘겨줌
     }
 
     // ------------------------------------------------- Rpc Method ---------------------------------------------------//

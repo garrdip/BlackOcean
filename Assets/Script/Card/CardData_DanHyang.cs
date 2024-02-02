@@ -717,28 +717,25 @@ public partial class CardData : SingletonD<CardData>
         yield return H25(card,tar);
     }
 
-    TargetObject cardGenUser;
-
     //재조물 (카드 버리기)
     public IEnumerator H26(Card card, List<TargetObject> tar)
     {
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
-        cardGenUser = tar[0];
         yield return new WaitForSeconds(1f);
         tar[0].player.GetComponent<GamePlayerDeck>().TargetCardOnHandRemovePopUpShow();  // 패 카드 제거 팝업 호출
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
 
-    public void H26_CallBack(int count)
+    public void H26_CallBack(TargetObject targetObject, int count)
     {
         for( int i = 0 ;i  < count ; i++)   
             if(UnityEngine.Random.Range(0,2) == 0)
-                cardGenUser.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H0")),1);
+                targetObject.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H0")),1);
             else
-                cardGenUser.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H1")),1);
-        if(cardGenUser.GetBuffValue(BuffType.FURYOFIRON) != 0)FuryOfIronEffect(cardGenUser);
+                targetObject.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H1")),1);
+        if(targetObject.GetBuffValue(BuffType.FURYOFIRON) != 0)FuryOfIronEffect(targetObject);
     }
 
     public IEnumerator H26_E(Card card, List<TargetObject> tar)

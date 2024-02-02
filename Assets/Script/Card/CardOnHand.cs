@@ -340,7 +340,7 @@ public class CardOnHand : NetworkBehaviour
                 cardOnHand.isDrag = false;
                 cardOnHand.transform.GetComponent<SortingGroup>().sortingOrder = M_CardManager.instance.maxSortOrder;
                 NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardCtrlArrow.InitCardCtrlArrow(cardOnHand);
-                NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().CmdSetArrowOwnCardOnHand(cardOnHand);
+                NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().SetArrowOwnCardOnHand(cardOnHand);
                 cardOnHand.transform
                     .DOMove(new Vector3(0f, arrowSpawnedCardPosition.y, arrowSpawnedCardPosition.z), 0.4f)
                     .SetEase(Ease.OutSine);
