@@ -469,7 +469,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         {
                             yield return waitForLoop;
                         }// 카드 사용이 종료 될때까지 기다림
-
+                        if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.HWAHAP))
+                            yield return CardData.instance.HWAHAP(tar[0]);
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.SOOKREON))
                             cardOnHand.card.costAddition --;
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.JOONGREUK))
