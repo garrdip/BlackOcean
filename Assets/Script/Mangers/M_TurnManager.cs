@@ -39,7 +39,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     List<TargetObject> monsterOrderList = new List<TargetObject>();
     
     public bool monsterDeathOperating = false;
-    public bool ironDemonPassiveOperating = false;
+    public bool preEffcetOperating = false;
     public List<TargetObject> dyingMonsers = new List<TargetObject>();
 
     // 카드와 타겟을 한쌍으로 저장하는 큐
@@ -212,43 +212,17 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         WaitForSeconds loopTime = new WaitForSeconds(0.01f);
         // 몬스터 방어도 초기화
-        foreach(TargetObject tar in spawnedPlayerList)
-        {
-            if(tar.player.character == Character.HONGDANHYANG)
-            {
-                ironDemonPassiveOperating = true;
-                while(true)
-                {
-                    yield return new WaitForSeconds(0.01f);
-                    if(monsterDeathOperating) continue;
-                    break;
-                }
-                if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
-                {
-                    AnimIronDemon("Buff0",tar);
-                    tar.ironDemonLocation.defense += tar.sizeOfIronDemon;
-                    yield return new WaitForSeconds(1.33f);
-                }
-                else // 몬스터의 경우 데미지
-                {
-                    while(true)
-                    {
-                        yield return new WaitForSeconds(0.01f);
-                        if(monsterDeathOperating) continue;
-                        break;
-                    }
-                    if(Random.Range(0,2) == 0)AnimIronDemon("Attack0",tar);
-                    else AnimIronDemon("Attack1",tar);
-                    yield return new WaitForSeconds(0.4f);
-                    StartCoroutine(tar.ironDemonLocation.monster.OnHitAnimation()); // 실제 피격 애니메이션
-                    tar.ironDemonLocation.DamageToMonster(tar.sizeOfIronDemon, tar);
-                    yield return new WaitForSeconds(0.6f);
-                }
-                ironDemonPassiveOperating = false;
-                AnimIronDemon("Idle",tar);
-                yield return new WaitForSeconds(0.1f);
-            }
-        }
+        preEffcetOperating =true;
+        yield return IronDemonPreEffect();
+        yield return DebuffPreEffect();
+        preEffcetOperating =false;
+        while(monsterDeathOperating)
+            yield return loopTime;
+        phase = BattleTurn.MONSTER_ACTIVE;
+    }
+
+    IEnumerator DebuffPreEffect()
+    {
         foreach(TargetObject tar in spawnedMonsterList)
         {
             tar.defense = 0;
@@ -276,9 +250,45 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 }
             }
         }
-        while(monsterDeathOperating)
-            yield return loopTime;
-        phase = BattleTurn.MONSTER_ACTIVE;
+    }
+
+    IEnumerator IronDemonPreEffect()
+    {
+        foreach(TargetObject tar in spawnedPlayerList)
+        {
+            if(tar.player.character == Character.HONGDANHYANG)
+            {
+                while(true)
+                {
+                    yield return new WaitForSeconds(0.01f);
+                    if(monsterDeathOperating) continue;
+                    break;
+                }
+                if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
+                {
+                    AnimIronDemon("Buff0",tar);
+                    tar.ironDemonLocation.defense += tar.GetBuffValue(BuffType.IRONDEMON);
+                    yield return new WaitForSeconds(1.33f);
+                }
+                else // 몬스터의 경우 데미지
+                {
+                    while(true)
+                    {
+                        yield return new WaitForSeconds(0.01f);
+                        if(monsterDeathOperating) continue;
+                        break;
+                    }
+                    if(Random.Range(0,2) == 0)AnimIronDemon("Attack0",tar);
+                    else AnimIronDemon("Attack1",tar);
+                    yield return new WaitForSeconds(0.4f);
+                    StartCoroutine(tar.ironDemonLocation.monster.OnHitAnimation()); // 실제 피격 애니메이션
+                    tar.ironDemonLocation.DamageToMonster(tar.GetBuffValue(BuffType.IRONDEMON), tar);
+                    yield return new WaitForSeconds(0.6f);
+                }
+                AnimIronDemon("Idle",tar);
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
     }
 
     [Server]
@@ -506,7 +516,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             foreach(TargetObject monster in dyingMonsers)
                 if(monster.gameObject.activeSelf)monster.gameObject.SetActive(false);//우선 사망한 적 비활성화
 
-            if(CardData.instance.isCardOperating || ironDemonPassiveOperating) continue; // 카드 사용이 끝날때까지 기다림
+            if(CardData.instance.isCardOperating || preEffcetOperating)
+            {   
+                foreach(TargetObject monster in dyingMonsers)
+                    if(monster.isActiveAndEnabled)monster.gameObject.SetActive(false);
+                continue; // 카드 사용이 끝날때까지 기다림
+            }
 
             foreach(TargetObject monster in dyingMonsers) // 사망 몬스터 순차 처리
             {
