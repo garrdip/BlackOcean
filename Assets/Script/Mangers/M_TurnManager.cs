@@ -541,7 +541,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             if(player.player.character == Character.HONGDANHYANG)
             {
-                player.GainBuff(BuffType.IRONDEMON, 4, false, false, false, false, player, null);
+                player.GainBuff(BuffType.IRONDEMON, 4 + player.GetComponent<GamePlayerDeck>().AdditionalSizeOfIromDemon, false, false, false, false, player, null);
             }
         }
         phase = BattleTurn.BATTLE_STANDBY;
