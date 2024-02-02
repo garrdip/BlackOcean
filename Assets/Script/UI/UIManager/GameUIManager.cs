@@ -18,9 +18,12 @@ public class GameUIManager : SingletonD<GameUIManager>
     public GameObject TrashDeck;
     public GameObject ForgottenDeck;
     public GameObject TestUI;
-    public GameObject CostIconLayout; // 코스트 아이콘 리스트 레이아웃
-    public GameObject CostIocnPrefab; // 코스트 아이콘 프리팹
-    public List<GameObject> costIconList = new List<GameObject>(); // 코스트 아이콘 리스트
+    public HorizontalLayoutGroup CurrentItchIconLayout;
+    public HorizontalLayoutGroup MaxItchIconLayout;
+    public GameObject CurrentItchPrefab;
+    public GameObject MaxItchPrefab;
+    public List<GameObject> currentIchiIcons = new List<GameObject>();
+    public List<GameObject> maxIchiIcons = new List<GameObject>();
 
     [Header("UI 컴포넌트")]
 
