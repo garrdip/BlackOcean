@@ -1,20 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BlinkBackLight : MonoBehaviour
 {
-    private SpriteRenderer backLight;
+    private Image backLight;
     public float speed = 1f;
     int time = 0;
     public bool isDecrease = false;
-    // Start is called before the first frame update
+
     void Start()
     {
-        backLight = GetComponent<SpriteRenderer>();
+        backLight = GetComponent<Image>();
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         if(isDecrease)
