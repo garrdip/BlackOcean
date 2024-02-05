@@ -7,6 +7,8 @@ using TMPro;
 using Mirror;
 using ProjectD;
 using Spine.Unity;
+
+
 public class SpawnedMonster : NetworkBehaviour
 {
     public string monsterName;
@@ -163,7 +165,9 @@ public class SpawnedMonster : NetworkBehaviour
     public void OnChangedHpValue(int oldHpValue, int newHpValue)
     {
         if(transform.parent != null){
-            transform.parent.GetComponent<TargetObject>().selectedNamePlate.SetHPValue(newHpValue,MAXHP,(int)transform.parent.position.x);
+            TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
+            targetObject.selectedNamePlate.SetHPValue(newHpValue,MAXHP,(int)transform.parent.position.x);
+            GameUIManager.instance.DisPlayeDamage(targetObject, (oldHpValue - newHpValue));
         }
     }
 

@@ -24,6 +24,9 @@ public class GameUIManager : SingletonD<GameUIManager>
     public GameObject MaxItchPrefab;
     public List<GameObject> currentIchiIcons = new List<GameObject>();
     public List<GameObject> maxIchiIcons = new List<GameObject>();
+    public Canvas EffectCanvas;
+    public GameObject FloatingDamageText;
+    public Sequence sequence;
 
     [Header("UI 컴포넌트")]
 
@@ -76,5 +79,24 @@ public class GameUIManager : SingletonD<GameUIManager>
                 callback(blackCurtain);
             }
         }); 
+    }
+
+    // 데미지 표시 트위닝
+    public void DisPlayeDamage(TargetObject targetObject, int damage)
+    {
+        GameObject floatingDamageText = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
+        floatingDamageText.transform.SetParent(EffectCanvas.transform);
+        floatingDamageText.transform.localScale = Vector3.one;
+        floatingDamageText.transform.position = targetObject.transform.position + new Vector3(0f, 5f, 0f);
+        floatingDamageText.GetComponent<TextMeshProUGUI>().text = damage.ToString();
+        
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(floatingDamageText.transform.DOMoveY(5f, 1f).SetEase(Ease.OutSine));
+        sequence.Join(floatingDamageText.GetComponent<CanvasGroup>().DOFade(1f, 0.5f));
+        sequence.Append(floatingDamageText.GetComponent<CanvasGroup>().DOFade(0f, 0.5f))
+            .OnComplete(() => {
+                floatingDamageText.transform.DOKill();
+                Destroy(floatingDamageText);
+            });
     }
 }

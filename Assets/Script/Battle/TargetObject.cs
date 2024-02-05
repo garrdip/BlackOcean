@@ -339,7 +339,6 @@ public class TargetObject : NetworkBehaviour
                 M_TurnManager.instance.ProcessMonsterDeath(this);
             }
             monster.HP -= remind;
-            monster.OnChangedHpValue(monster.HP,monster.HP); 
         }
     }
 
@@ -501,8 +500,10 @@ public class TargetObject : NetworkBehaviour
 
     void OnChangedPlayerHP(int oldVal, int newVal)
     {
-        if(player != null)
-        {
+        if(oldVal > 0){
+            GameUIManager.instance.DisPlayeDamage(this, (oldVal - newVal));
+        }
+        if(player != null){
             if(player.netIdentity == NetworkClient.connection.identity)
             {
                 player.HP = newVal;
