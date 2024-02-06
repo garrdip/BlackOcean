@@ -130,7 +130,7 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public void G2_Effect(TargetObject tar)
 	{
-		tar.GainBuff(BuffType.GOHANG3_DEBUFF,1,true,false,false,false,tar,null);
+		//tar.GainBuff(BuffType.GOHANG3_DEBUFF,1,true,false,false,false,tar,null);
 	}
 	public IEnumerator G2_H(Card card,List<TargetObject> tar)
 	{

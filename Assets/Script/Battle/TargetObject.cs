@@ -98,7 +98,7 @@ public class TargetObject : NetworkBehaviour
         return retVal;
     }
     public bool usingGOHENG = false;
-    public int indexOfGOHENG = 0;
+    public List<int> usedGOHENG = new List<int>();
 
     public Dictionary<int,CardBlessEffect> buffTrunBeginEffect = new Dictionary<int, CardBlessEffect>();
     public Dictionary<int,CardBlessEffect> buffCardDrowEffect = new Dictionary<int, CardBlessEffect>();
@@ -283,11 +283,21 @@ public class TargetObject : NetworkBehaviour
     [Command(requiresAuthority=false)]
     private void DrawGoHengCard()
     {
-        if(usingGOHENG || indexOfGOHENG == 3)return;
-        indexOfGOHENG ++;
+        if(M_TurnManager.instance.phase != BattleTurn.PLAYER_ACTIVE)return;
+        if(usingGOHENG || usedGOHENG.Count == 3)return;
         usingGOHENG = true;
-        string nameOfGOHENGCard = "G" + (indexOfGOHENG -1).ToString();
+        int selectedGoheng = 0;
+        while(true)
+        {
+            selectedGoheng = Random.Range(0,3);
+            if(!usedGOHENG.Exists(x => x == selectedGoheng))break;
+        }
+        usedGOHENG.Add(selectedGoheng);
+        string nameOfGOHENGCard = "G" + selectedGoheng.ToString();
         player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == nameOfGOHENGCard)),1);
+        if(selectedGoheng == 2)GainBuff(BuffType.GOHANG3_DEBUFF,0,true,true,false,false,this,null);
+        foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
+            cardOnHand.OnChangeCardData(cardOnHand.card,cardOnHand.card);
     }
 
     // ----------------------------------------------           Damage 관련 함수        ---------------------------------------------------//

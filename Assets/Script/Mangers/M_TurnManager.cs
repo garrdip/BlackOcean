@@ -1034,6 +1034,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands)
+                    cardOnHand.OnChangeCardData(cardOnHand.card,cardOnHand.card);
                 if(NetworkClient.spawned.ContainsKey(gamePlayer.GetComponent<GamePlayerTarget>().targetObject))
                     gamePlayerDeck.CmdSpawnCardOnHand();
             }

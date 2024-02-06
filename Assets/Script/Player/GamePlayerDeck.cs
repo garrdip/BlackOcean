@@ -216,7 +216,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public int GetTotalCostOfCardOnHand(CardOnHand cardOnHand)
     {
         int totalCost;
-        totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition;
+        totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition + (GetComponent<GamePlayerTarget>().GetTargetObject().buffs.FindIndex(x => x.type == BuffType.GOHANG3_DEBUFF) == -1 ? 0 : 1);
 
         if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
         {
