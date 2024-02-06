@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
+using ProjectD;
 
 
 public class GameUIManager : SingletonD<GameUIManager>
@@ -116,5 +117,26 @@ public class GameUIManager : SingletonD<GameUIManager>
                     floatingDamageText.transform.DOKill();
                     Destroy(floatingDamageText);
                 });
+    }
+
+    // 방어도 표시 트위닝
+    public void DisplayDefence(TargetObject targetObject, bool isGain, int value)
+    {
+        GameObject floatingDamageText = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
+        floatingDamageText.transform.SetParent(EffectCanvas.transform);
+        floatingDamageText.transform.localScale = Vector3.one;
+        floatingDamageText.transform.position = isGain ? targetObject.transform.position + new Vector3(0f, 8f, 0f) : targetObject.transform.position + new Vector3(0f, 5f, 0f);
+        floatingDamageText.GetComponent<TextMeshProUGUI>().color = ColorUtils.HexToColor("#0082FA");
+        floatingDamageText.GetComponent<TextMeshProUGUI>().text = isGain ? "+" + value.ToString() : value.ToString();
+        
+        Tween moveTween = isGain ? floatingDamageText.transform.DOMoveY(3f, 1.5f).SetEase(Ease.OutSine) : floatingDamageText.transform.DOMoveY(5f, 1.5f).SetEase(Ease.OutSine);
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(moveTween);
+        sequence.Join(floatingDamageText.GetComponent<CanvasGroup>().DOFade(1f, 0.5f));
+        sequence.Append(floatingDamageText.GetComponent<CanvasGroup>().DOFade(0f, 0.5f))
+            .OnComplete(() => {
+                floatingDamageText.transform.DOKill();
+                Destroy(floatingDamageText);
+            });
     }
 }

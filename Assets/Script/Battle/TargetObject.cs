@@ -540,7 +540,15 @@ public class TargetObject : NetworkBehaviour
 
     void OnChangedDefense(int oldVal, int newVal)
     {
-       selectedNamePlate.SetShieldValue(newVal,oldVal == 0,objectType != ObjectType.PLAYER);
+        selectedNamePlate.SetShieldValue(newVal,oldVal == 0,objectType != ObjectType.PLAYER);
+        if(newVal > 0){
+            int value = newVal - oldVal;
+            if(oldVal > newVal){
+                GameUIManager.instance.DisplayDefence(this, false, value);
+            }else{
+                GameUIManager.instance.DisplayDefence(this, true, value);
+            }
+        }
     }
 
     [ClientRpc]
