@@ -53,13 +53,12 @@ public partial class CardData : SingletonD<CardData>
 		yield return G0(card,tar);
 	}
 
-	public IEnumerator G0_Effect(TargetObject tar)
+	public void G0_Effect(TargetObject tar)
 	{
 		if(tar.defense >= 10)
 			tar.defense -= 10;
 		else
 			tar.defense = 0;
-		yield return null;
 	}
 	public IEnumerator G0_H(Card card,List<TargetObject> tar)
 	{
@@ -90,11 +89,10 @@ public partial class CardData : SingletonD<CardData>
 		yield return G1(card,tar);
 	}
 
-	public IEnumerator G1_Effect(TargetObject tar)
+	public void G1_Effect(TargetObject tar)
 	{
 		tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,tar,null);
 		tar.GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar,null);
-		yield return null;
 	}
 	public IEnumerator G1_H(Card card,List<TargetObject> tar)
 	{
@@ -130,10 +128,9 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return null;
 	}
-	public IEnumerator G2_Effect(TargetObject tar)
+	public void G2_Effect(TargetObject tar)
 	{
 		tar.GainBuff(BuffType.GOHANG3_DEBUFF,1,true,false,false,false,tar,null);
-		yield return null;
 	}
 	public IEnumerator G2_H(Card card,List<TargetObject> tar)
 	{

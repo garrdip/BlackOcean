@@ -331,7 +331,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     }
 
     // 로컬 플레이어의 모든 카드 제거
-    public IEnumerator RemoveAllCurrentPlayerCardOnHands()
+    public void RemoveAllCurrentPlayerCardOnHands()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
@@ -342,8 +342,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                     bool isCardTypeImmortal = CardData.instance.CheckCardCharacteristic(cardOnHand.card, ProjectD.CardCharacteristic.YOUNGWON);
                     if(cardOnHand.card.baseCard.cardType == CardType.CURSE) // 게오르크 고행길 효과
                     {
-                        Debug.Log(" 고행길 발 동 !" + NetworkClient.spawned[gamePlayerDeck.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>().player.character);
-                        yield return CardData.instance.CurseCardEffect(cardOnHand.card,NetworkClient.spawned[gamePlayerDeck.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>());
+                        CMDCurseCardEffect(cardOnHand.card,NetworkClient.spawned[gamePlayerDeck.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>());
                     }
                     if(!isCardTypeImmortal){
                         CardOnHandAllThrowAwaySequence(cardOnHand, gamePlayerDeck);
@@ -352,6 +351,13 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 playerInterface.cardThrowAwayDone = true;
             }
         }
+    }
+
+    [Command(requiresAuthority = false)]
+    void CMDCurseCardEffect(Card card, TargetObject tar)
+    {
+        Debug.Log(" 저주 효과 발동 ");
+        CardData.instance.CurseCardEffect(card,tar);
     }
 
     // 로컬 플레이어의 모든 카드 제거(버린댁으로 보내지 않고 제거만 수행)

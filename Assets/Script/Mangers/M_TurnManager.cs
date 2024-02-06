@@ -1045,7 +1045,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         // 각 플레이어들의 모든 카드와 화살표 제거
         M_CardManager.instance.RemoveAllCurrentPlayerArrow();
-        StartCoroutine(M_CardManager.instance.RemoveAllCurrentPlayerCardOnHands());
+        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHands();
     }
 
     [ClientRpc]
