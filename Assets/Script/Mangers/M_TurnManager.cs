@@ -764,12 +764,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             { 
                 yield return tar.buffTurnEndEffect[buffIndex](tar,buffIndex);
             }   
-            // 게오르크 고행 이펙트
-            currentKeys = tar.gohengEffect.Keys.ToList();
-            foreach(int buffIndex in currentKeys)
-            { 
-                yield return tar.gohengEffect[buffIndex](tar);
-            }
         }
         phase = BattleTurn.PLAYER_END;
         yield return null;
@@ -1034,7 +1028,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
-                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands)
+                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands) // 영원 카드의 경우도 변경된 정보 제공
                     cardOnHand.OnChangeCardData(cardOnHand.card,cardOnHand.card);
                 if(NetworkClient.spawned.ContainsKey(gamePlayer.GetComponent<GamePlayerTarget>().targetObject))
                     gamePlayerDeck.CmdSpawnCardOnHand();

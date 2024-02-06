@@ -228,7 +228,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         
         if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.HEBANG))
             totalCost -= numOfUsedCard;
-
+        if(GetComponent<GamePlayerTarget>().GetTargetObject().buffs.FindIndex(x => x.type == BuffType.GOHANG3) != -1)totalCost = 1;
         return (totalCost < 0) ? 0 : totalCost;
     }
 

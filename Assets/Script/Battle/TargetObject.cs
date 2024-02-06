@@ -104,7 +104,6 @@ public class TargetObject : NetworkBehaviour
     public Dictionary<int,CardBlessEffect> buffCardDrowEffect = new Dictionary<int, CardBlessEffect>();
     public Dictionary<int,CardBlessEffect> buffTurnEndEffect = new Dictionary<int, CardBlessEffect>();
     public Dictionary<int,CardBlessEffect> buffCardUseEffect = new Dictionary<int, CardBlessEffect>();
-    public Dictionary<int,GOHENGEffcet> gohengEffect = new Dictionary<int, GOHENGEffcet>(); // < 고행숫자, 고행효과 >
 
     void Start()
     {
