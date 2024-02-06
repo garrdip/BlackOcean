@@ -18,6 +18,7 @@ public partial class CardData : SingletonD<CardData>
     public List<CardBase> cards = new List<CardBase>(); // DB에서 조회한 전체 카드 데이터 목록
     
     public Dictionary<string,ExecuteCard> CardMethods = new Dictionary<string, ExecuteCard>();
+    public Dictionary<string,CurssEffect> curseEffect = new Dictionary<string, CurssEffect>();
 
     [Header("버프 타입별 아이콘")]
     [SerializedDictionary("BuffType", "Sprite")]
@@ -74,6 +75,10 @@ public partial class CardData : SingletonD<CardData>
                 CardMethods.Add(card.cardNumber,temp); // cardNumber
             }
         }
+        // 게오르크 저주 메소드 추가
+        curseEffect.Add("G0",G0_Effect);
+        curseEffect.Add("G1",G1_Effect);
+        curseEffect.Add("G2",G2_Effect);
     }
     
     private string GetCardDescription(string desc, CardBase card)
@@ -126,6 +131,10 @@ public partial class CardData : SingletonD<CardData>
         }
     }
 
+    public IEnumerator CurseCardEffect(Card card, TargetObject tar)
+    {
+        yield return CardData.instance.curseEffect[card.baseCard.cardNumber](tar);
+    }
 
     // 카드 특성 확인
     public bool CheckCardCharacteristic(Card card, CardCharacteristic character)

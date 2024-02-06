@@ -185,10 +185,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             case BattleTurn.PLAYER_ACTIVE_DONE :
                 StartWaitCardQueue();
                 break;
+            case BattleTurn.PLAYER_END_TURN_EFFECT :
+                StartCoroutine(PlayerEndTurnEffect());
+                break;
             case BattleTurn.PLAYER_END :
                 PlayerEndTurn();
                 break;
             case BattleTurn.MONSTER_ORDERSELECT :
+                PlayerCardThrowAwaySetDefault();
                 MonsterSetOrder();
                 phase = BattleTurn.MONSTER_PREEFFECT;
                 break;
@@ -205,6 +209,13 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 NoneBattleEnd();
                 break;
         }
+    }
+
+    [Server]
+    void PlayerCardThrowAwaySetDefault()
+    {
+        foreach(PlayerInterface pi in FindObjectsOfType<PlayerInterface>())
+            pi.SetDefaultStateofCardThrowDone();
     }
 
     [Server]
@@ -352,7 +363,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void PlayerEndTurn()
     {
         ResetEndTurnState();
-        phase = BattleTurn.MONSTER_ORDERSELECT;
         EachPlayerEndTurn();
     }
 
@@ -362,6 +372,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         foreach(TargetObject user in spawnedPlayerList)
         {
             user.player.objectOwner.SetEndTurnActiveStateDefault();
+            user.usingGOHENG = false; // 고행 사용 초기화
         }
     }
 
@@ -739,16 +750,29 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
         if(phase == BattleTurn.PLAYER_ACTIVE_DONE) // 아무때나 동작하지 않음 (광클방지)
         {
-            foreach(TargetObject tar in spawnedPlayerList) // 턴종료시 버프 효과들
-            {
-                List<int> currentKeys = tar.buffTurnEndEffect.Keys.ToList();
-                foreach(int buffIndex in currentKeys)
-                { 
-                    yield return tar.buffTurnEndEffect[buffIndex](tar,buffIndex);
-                }   
-            }
-            phase = BattleTurn.PLAYER_END;
+            phase = BattleTurn.PLAYER_END_TURN_EFFECT;
         }
+    }
+
+    public IEnumerator PlayerEndTurnEffect()
+    {
+        foreach(TargetObject tar in spawnedPlayerList) // 턴종료시 버프 효과들
+        {
+            // End Turn Card Effect
+            List<int> currentKeys = tar.buffTurnEndEffect.Keys.ToList();
+            foreach(int buffIndex in currentKeys)
+            { 
+                yield return tar.buffTurnEndEffect[buffIndex](tar,buffIndex);
+            }   
+            // 게오르크 고행 이펙트
+            currentKeys = tar.gohengEffect.Keys.ToList();
+            foreach(int buffIndex in currentKeys)
+            { 
+                yield return tar.gohengEffect[buffIndex](tar);
+            }
+        }
+        phase = BattleTurn.PLAYER_END;
+        yield return null;
     }
 
     [Server]
@@ -1021,7 +1045,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         // 각 플레이어들의 모든 카드와 화살표 제거
         M_CardManager.instance.RemoveAllCurrentPlayerArrow();
-        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHands();
+        StartCoroutine(M_CardManager.instance.RemoveAllCurrentPlayerCardOnHands());
     }
 
     [ClientRpc]

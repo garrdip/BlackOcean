@@ -894,7 +894,7 @@ public partial class CardData : SingletonD<CardData>
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
         yield return GeneralIronDemonAttack(tar[0], tar[1], 10); // 철귀 공격
-        tar[0].sizeOfIronDemon += 2;
+        tar[0].GainBuff(BuffType.IRONDEMON,2,false,false,false,false,tar[0],card);
         
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
 

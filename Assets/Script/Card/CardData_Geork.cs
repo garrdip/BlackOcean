@@ -45,11 +45,21 @@ public partial class CardData : SingletonD<CardData>
 			yield return new WaitForSeconds(0.5f);
 			if(!IsGISADO(tar))break;
 		}
+		tar[0].gohengEffect.Remove(1);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G0_E(Card card,List<TargetObject> tar)
 	{
 		yield return G0(card,tar);
+	}
+
+	public IEnumerator G0_Effect(TargetObject tar)
+	{
+		if(tar.defense >= 10)
+			tar.defense -= 10;
+		else
+			tar.defense = 0;
+		yield return null;
 	}
 	public IEnumerator G0_H(Card card,List<TargetObject> tar)
 	{
@@ -72,11 +82,19 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 		GeneralGetDefense(tar[0],tar[0],15,card);
 		yield return new WaitForSeconds(0.5f);
+		tar[0].gohengEffect.Remove(2);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
 	}
 	public IEnumerator G1_E(Card card,List<TargetObject> tar)
 	{
 		yield return G1(card,tar);
+	}
+
+	public IEnumerator G1_Effect(TargetObject tar)
+	{
+		tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,tar,null);
+		tar.GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar,null);
+		yield return null;
 	}
 	public IEnumerator G1_H(Card card,List<TargetObject> tar)
 	{
@@ -99,11 +117,22 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G2(Card card,List<TargetObject> tar)
 	{
-		// 버프 아이콘 추가 필요
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		tar[0].GainBuff(BuffType.GOHANG3,1,false,false,true,false,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		tar[0].gohengEffect.Remove(3);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
 		yield return null;
 	}
 	public IEnumerator G2_E(Card card,List<TargetObject> tar)
 	{
+		yield return null;
+	}
+	public IEnumerator G2_Effect(TargetObject tar)
+	{
+		tar.GainBuff(BuffType.GOHANG3_DEBUFF,1,true,false,false,false,tar,null);
 		yield return null;
 	}
 	public IEnumerator G2_H(Card card,List<TargetObject> tar)

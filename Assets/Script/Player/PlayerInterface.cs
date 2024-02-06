@@ -60,6 +60,9 @@ public class PlayerInterface : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedWorkDoneState))]
     public bool workDone = false;
 
+    [SyncVar (hook = nameof(OnChangedCardThroAwayDone))]
+    public bool cardThrowAwayDone = false;
+
     [ClientRpc]
     public void ClearWorkDone()
     {
@@ -192,6 +195,13 @@ public class PlayerInterface : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void SetDefaultStateofCardThrowDone()
+    {
+        if(isOwned)
+            cardThrowAwayDone = false;
+    }
+
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
     
     public void OnEndTurnStateChanged(bool oldVal, bool newVal)
@@ -297,5 +307,18 @@ public class PlayerInterface : NetworkBehaviour
             else
                 M_LoadingManager.instance.CheckWorkDoneClear(); 
         }       
+    }
+
+    void OnChangedCardThroAwayDone(bool oldVal,bool newVal)
+    {
+        if(isServer)
+        {
+            foreach(PlayerInterface pi in FindObjectsOfType<PlayerInterface>())
+            {
+                if(!pi.cardThrowAwayDone)
+                    return;
+            }
+            M_TurnManager.instance.phase = BattleTurn.MONSTER_ORDERSELECT;
+        }
     }
 }

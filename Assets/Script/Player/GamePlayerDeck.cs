@@ -165,16 +165,16 @@ public partial class GamePlayerDeck : NetworkBehaviour
             Character character = GetComponent<GamePlayer>().character;
             switch(character){
                 case Character.GEORK:
-                    for(int i = 0; i < 8; i++)
-                    {
-                        if(i % 2 == 0){
-                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G1_H")));
-                            deck.Add(attackCard);
-                        }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G0")));
-                            deck.Add(defenseCard);
-                        }   
-                    }
+                    //for(int i = 0; i < 8; i++)
+                    //{
+                    //    if(i % 2 == 0){
+                    //        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G1_H")));
+                    //        deck.Add(attackCard);
+                    //    }else{
+                    //        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("G0")));
+                    //        deck.Add(defenseCard);
+                    //    }   
+                    //}
                     break;
                 case Character.ERIS:
                     for(int i = 0; i < 8; i++)

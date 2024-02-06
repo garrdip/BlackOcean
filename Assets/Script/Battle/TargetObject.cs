@@ -97,12 +97,14 @@ public class TargetObject : NetworkBehaviour
         }
         return retVal;
     }
+    public bool usingGOHENG = false;
+    public int indexOfGOHENG = 0;
 
     public Dictionary<int,CardBlessEffect> buffTrunBeginEffect = new Dictionary<int, CardBlessEffect>();
     public Dictionary<int,CardBlessEffect> buffCardDrowEffect = new Dictionary<int, CardBlessEffect>();
     public Dictionary<int,CardBlessEffect> buffTurnEndEffect = new Dictionary<int, CardBlessEffect>();
     public Dictionary<int,CardBlessEffect> buffCardUseEffect = new Dictionary<int, CardBlessEffect>();
-
+    public Dictionary<int,GOHENGEffcet> gohengEffect = new Dictionary<int, GOHENGEffcet>(); // < 고행숫자, 고행효과 >
 
     void Start()
     {
@@ -271,7 +273,22 @@ public class TargetObject : NetworkBehaviour
         }); 
 
     }
+    // ----------------------------------------------       게오르크 고행 관련 함수      ---------------------------------------------------//
 
+    public void UsingGoHeng()
+    {
+        DrawGoHengCard();
+    }
+
+    [Command(requiresAuthority=false)]
+    private void DrawGoHengCard()
+    {
+        if(usingGOHENG || indexOfGOHENG == 3)return;
+        indexOfGOHENG ++;
+        usingGOHENG = true;
+        string nameOfGOHENGCard = "G" + (indexOfGOHENG -1).ToString();
+        player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == nameOfGOHENGCard)),1);
+    }
 
     // ----------------------------------------------           Damage 관련 함수        ---------------------------------------------------//
     public void DamageToPlayer(int damage)
@@ -341,6 +358,7 @@ public class TargetObject : NetworkBehaviour
             monster.HP -= remind;
         }
     }
+
 
     // ----------------------------------------------           Buff 관련 함수          ---------------------------------------------------//
 

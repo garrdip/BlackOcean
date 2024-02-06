@@ -39,7 +39,7 @@ public class PlayerInterfaceServer : NetworkBehaviour
         gamePlayerDeck.cardCtrlArrow = cardCtrlArrowObject.GetComponent<CardCtrlArrow>();
 
         // 단향 캐릭터인 경우 어빌리티 버튼 + 어빌리티 화살표 생성
-        if(gamePlayer.character == Character.HONGDANHYANG){
+        if(gamePlayer.character == Character.HONGDANHYANG || gamePlayer.character == Character.GEORK){
             // 생성 초기 위치는 화면 밖
             Vector3 spawnPosition = new Vector3(-100f, 0f, 0f);   
 
