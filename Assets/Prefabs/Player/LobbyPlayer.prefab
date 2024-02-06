@@ -1750,6 +1750,7 @@ GameObject:
   - component: {fileID: 1507683923179403580}
   - component: {fileID: 1507683923179403582}
   - component: {fileID: 1507683923179403581}
+  - component: {fileID: 4898581190678705744}
   m_Layer: 5
   m_Name: 02-10.Base Dark
   m_TagString: Untagged
@@ -1815,6 +1816,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &4898581190678705744
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1507683923179403579}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!1 &1507683923260413153
 GameObject:
   m_ObjectHideFlags: 0
@@ -2826,10 +2839,6 @@ MonoBehaviour:
   outIcon: {fileID: 1507683922186974647}
   outIconLight: {fileID: 1507683923716549370}
   capIconLayout: {fileID: 1507683922564291734}
-  selectableCharacters:
-  - {fileID: 1507683922339736141}
-  - {fileID: 1507683924038357353}
-  - {fileID: 1507683922916616160}
   danhyangSprite: {fileID: 21300000, guid: ff9153e813d770248802c40513966eeb, type: 3}
   erisSprite: {fileID: 21300000, guid: 6a83a376548e5fb4bbd3cfe779b9d036, type: 3}
   georkSprite: {fileID: 21300000, guid: f33ce2a416f184f4e9754536d47bf0b4, type: 3}
