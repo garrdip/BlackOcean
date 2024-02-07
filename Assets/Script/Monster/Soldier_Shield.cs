@@ -22,6 +22,8 @@ public class Soldier_Shield : SpawnedMonster
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;
+            case "APDO" :
+                break;
         }
         isActive = false;
     }

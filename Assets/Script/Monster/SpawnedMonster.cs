@@ -56,6 +56,8 @@ public class SpawnedMonster : NetworkBehaviour
 
     [SyncVar]
     public int turn = 0;
+    
+    MonsterAction sturnedAction = new MonsterAction("APDO",0,0);
 
     void Start()
     {
@@ -140,11 +142,10 @@ public class SpawnedMonster : NetworkBehaviour
 
     }
 
-    // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
-
-    public void AggroToMonster(int damage, TargetObject tar)
+    [Server]
+    public void APDO()
     {
-        aggro[tar] += damage;
+        nextAction = sturnedAction;
     }
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//

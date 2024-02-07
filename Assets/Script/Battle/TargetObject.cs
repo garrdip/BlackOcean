@@ -428,6 +428,11 @@ public class TargetObject : NetworkBehaviour
             }
             
             modItem.value += value;
+            if(modItem.type == BuffType.APDO && modItem.value >= 10)
+            {
+                monster.APDO();
+                modItem.value -= 10;
+            }
             if(modItem.value == 0)
                 buffs.RemoveAt(indexOfOldItem);
             else

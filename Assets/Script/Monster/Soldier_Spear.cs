@@ -24,6 +24,8 @@ public class Soldier_Spear : SpawnedMonster
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;
+            case "APDO" :
+                break;
         }
         yield return new WaitForSeconds(1f);
         isActive = false;
