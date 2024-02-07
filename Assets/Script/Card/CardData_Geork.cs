@@ -124,7 +124,7 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G2_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G2(card,tar);
 	}
 	public void G2_Effect(TargetObject tar)
 	{
@@ -142,59 +142,114 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G2_H_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G2_H(card,tar);
 	}
 	public IEnumerator G3(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralSingleAttack(tar[0],tar[1],4);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G3_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G3(card,tar);
+	}
+	public void G3_Effect(TargetObject tar)
+	{
+		tar.StaticDamageToPlayer(3);
 	}
 	public IEnumerator G3_H(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		int totalDamage = 6;
+		foreach(Card deckcard in tar[0].player.GetComponent<GamePlayerDeck>().trashDeck)
+			if(deckcard.baseCard.cardType == CardType.HERO)
+				totalDamage += 2;
+		foreach(Card deckcard in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
+			if(deckcard.baseCard.cardType == CardType.HERO)
+				totalDamage += 2;
+		foreach(CardOnHand deckcard in tar[0].player.GetComponent<GamePlayerDeck>().cardOnHands)
+			if(deckcard.card.baseCard.cardType == CardType.HERO)
+				totalDamage += 2;
+				
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.5f);
+		GeneralSingleAttack(tar[0],tar[1],totalDamage);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G3_H_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G3_H(card,tar);
 	}
 	public IEnumerator G4(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralGetDefense(tar[0],tar[0],6,card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+	}
+
+	public void G4_Effect(TargetObject tar)
+	{
+		tar.GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar,null);
 	}
 	public IEnumerator G4_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G4(card,tar);
 	}
 	public IEnumerator G4_H(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff1");
+		yield return new WaitForSeconds(0.5f);
+		tar[1].GainBuff(BuffType.SOIRAK,1,true,true,true,false,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G4_H_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G4_H(card,tar);
 	}
 	public IEnumerator G5(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralGetDefense(tar[0],tar[0],6,card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G5_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G5(card,tar);
 	}
+	public void G5_Effect(TargetObject tar)
+	{
+		tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,tar,null);
+	}
+
 	public IEnumerator G5_H(Card card,List<TargetObject> tar)
 	{
 		yield return null;
 	}
 	public IEnumerator G5_H_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G5_H(card,tar);
 	}
 	public IEnumerator G6(Card card,List<TargetObject> tar)
 	{
 		yield return null;
+	}
+
+	public void G6_Effect(TargetObject tar)
+	{
+
 	}
 	public IEnumerator G6_E(Card card,List<TargetObject> tar)
 	{
@@ -214,7 +269,12 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G7_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G7(card,tar);
+	}
+
+	public void G7_Effect(TargetObject tar)
+	{
+		tar.StaticDamageToPlayer(2);
 	}
 	public IEnumerator G7_H(Card card,List<TargetObject> tar)
 	{
@@ -222,7 +282,7 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G7_H_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G7_H(card,tar);
 	}
 	public IEnumerator G8(Card card,List<TargetObject> tar)
 	{

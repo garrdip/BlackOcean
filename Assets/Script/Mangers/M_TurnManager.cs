@@ -242,24 +242,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             { 
                 yield return tar.buffTrunBeginEffect[buffIndex](tar,buffIndex);
             }
-            int indexOfOldItem = tar.buffs.Count; 
-            for(int i = indexOfOldItem -1 ; i >= 0 ; i --)
-            {
-                if(tar.buffs[i].type == BuffType.FLOWER)
-                {
-                    tar.buffs.RemoveAt(i);
-                    continue;
-                }
-                if(tar.buffs[i].isDecrease)
-                {
-                    Buff modItem = new Buff(tar.buffs[i]);
-                    modItem.value -= 1;
-                    if(modItem.value == 0)
-                        tar.buffs.RemoveAt(i);
-                    else
-                        tar.buffs[i] = modItem;
-                }
-            }
         }
     }
 

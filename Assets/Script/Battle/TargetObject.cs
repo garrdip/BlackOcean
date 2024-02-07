@@ -333,6 +333,30 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
+    public void StaticDamageToPlayer(int damage)
+    {
+        if(defense >= damage)
+        {
+            defense -= damage;
+        }
+        else
+        {
+            int remind = damage - defense;
+            defense = 0;
+            playerHP -= remind;
+            if(playerHP <= 0){
+                if(player.character == Character.ERIS && erisMode != ErisMode.MAD)
+                {
+                    playerHP = 1;
+                    StartCoroutine(ErisTransform());
+                }
+                else
+                    playerHP = 0;
+            }
+            player.HP = playerHP;
+        }
+    }
+
     IEnumerator ErisTransform()
     {
         M_TurnManager.instance.StartAnimation(this,0,"Change1",false);
@@ -403,7 +427,10 @@ public class TargetObject : NetworkBehaviour
             }
             
             modItem.value += value;
-            buffs[indexOfOldItem] = modItem;
+            if(modItem.value == 0)
+                buffs.RemoveAt(indexOfOldItem);
+            else
+                buffs[indexOfOldItem] = modItem;
             retVal = indexOfOldItem;
         }
         return retVal;
