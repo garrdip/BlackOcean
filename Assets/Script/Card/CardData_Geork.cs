@@ -80,6 +80,7 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 		GeneralGetDefense(tar[0],tar[0],15,card);
 		yield return new WaitForSeconds(0.5f);
+		tar[0].buffs.Remove(tar[0].buffs.Find(buff => buff.type == BuffType.GOHANG2_DEBUFF));
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
 	}
 	public IEnumerator G1_E(Card card,List<TargetObject> tar)
