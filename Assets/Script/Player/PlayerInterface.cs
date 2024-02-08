@@ -77,7 +77,6 @@ public class PlayerInterface : NetworkBehaviour
         if(isLocalPlayer)
         {
             GenerateGamePlayer();
-            M_MapManager.instance.GenerateHexgonGrid(40);
             StartCoroutine(WaitInitState());
         }
     }

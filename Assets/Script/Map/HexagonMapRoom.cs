@@ -47,6 +47,7 @@ public class HexagonMapRoom : NetworkBehaviour
     public GameObject mapTileBase;
     public GameObject mapTileLayer;
     public GameObject mapTileIcon;
+    public GameObject mapTileGrid;
     public Canvas hexagonMapRoomCnavas;
     public SortingGroup sortingGroup;
     public TextMeshProUGUI textRoomType;
@@ -61,6 +62,18 @@ public class HexagonMapRoom : NetworkBehaviour
         sortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
         hexagonMapRoomCnavas.sortingLayerName = "HexagonMapRoom";
         hexagonMapRoomCnavas.sortingOrder = -(int)(transform.position.y * 10f) + 1;
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        if(!isActive){
+            mapTileBase.SetActive(false);
+            mapTileLayer.SetActive(false);
+            mapTileIcon.SetActive(false);
+            mapTileGrid.SetActive(false);
+            hexagonMapRoomCnavas.gameObject.SetActive(false);
+        }
     }
 
     private void OnMouseDown()
@@ -78,6 +91,8 @@ public class HexagonMapRoom : NetworkBehaviour
         if(isRegion && region != null){
             MapUI.instance.RegionPopUpShow(region);
         }
+        GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
+        gamePlayerMap.DisplayFindPath(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
     }
 
     private void OnMouseExit()
@@ -201,6 +216,9 @@ public class HexagonMapRoom : NetworkBehaviour
         expandMapTile.SetActive(isActive);
         textRoomType.gameObject.SetActive(isActive);
         //textCoordinate.gameObject.SetActive(isActive);
+        mapTileLayer.SetActive(isActive);
+        mapTileIcon.SetActive(isActive);
+        hexagonMapRoomCnavas.gameObject.SetActive(isActive);
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)

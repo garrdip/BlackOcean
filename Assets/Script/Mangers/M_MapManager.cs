@@ -79,6 +79,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Header("검색된 경로를 표시할 스프라이트 라인랜더러 목록")]
     public List<GameObject> pathLineRenderers = new List<GameObject>();
 
+    [Header("거리 측정을 위한 경로 표시 오브젝트 목록")]
+    public List<HexagonMapRoom> findPaths = new List<HexagonMapRoom>();
+
     public readonly Vector2Int[] offSets = {
         new Vector2Int(0, -1), // 12시
         new Vector2Int(-1, 0), // 11시
@@ -259,6 +262,47 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             hexagonMapRooms.Add(aroundRoom);
             hexagonMapRoomNetIds.Add(aroundRoom.GetComponent<NetworkIdentity>().netId);
         }
+        // 주변 일정범위를 채우는 비활성화된 맵 생성
+        GenerateHexagonMapWorld(16, centerRoom);
+    }
+
+    // 초기생성된 맵 주변에 비활성화된 맵 생성
+    [Server]
+    public void GenerateHexagonMapWorld(int count, HexagonMapRoom centerRoom)
+    {
+        var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        for(int q = -count ; q <= count ; q++)
+        {
+            int rStart = Mathf.Max(-count, -q - count);
+            int rEnd = Mathf.Min(count, -q + count);
+     
+            for(int r = rStart; r <= rEnd; r++)
+            {
+                Vector3 position = GetPosition(q, r, centerRoom.position);
+                if(!IsPositionDuplicated(position)){
+                    GameObject hexagonMapRoomObject = Instantiate(
+                        networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
+                        position,
+                        Quaternion.identity
+                    );
+                    HexagonMapRoom hexagonMapRoom = hexagonMapRoomObject.GetComponent<HexagonMapRoom>();
+                    // 방 타입 설정
+                    hexagonMapRoom.roomType = GetRoomType();
+                    // 인게임 좌표계 값 설정
+                    hexagonMapRoom.position = position;
+                    // 방 활성화 상태값 설정
+                    hexagonMapRoom.isActive = false;
+                    // 고유 좌표계 값(Axial 좌표계) 설정
+                    hexagonMapRoom.coordinate = centerRoom.coordinate + new Vector2Int(q, r);
+                    
+                    NetworkServer.Spawn(hexagonMapRoomObject);
+
+                    // 육각형 위치 및 오브젝트 클래스 리스트에 추가
+                    hexagonMapRooms.Add(hexagonMapRoom);
+                    hexagonMapRoomNetIds.Add(hexagonMapRoom.GetComponent<NetworkIdentity>().netId);
+                }
+            }
+        }
     }
 
     [Server]
@@ -291,8 +335,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             hexagonMapRooms.Add(aroundRoom);
             hexagonMapRoomNetIds.Add(aroundRoom.GetComponent<NetworkIdentity>().netId);
             
-            if(saveData.map.currentRoom == saveDataMapRoom.coordinate)
+            if(saveData.map.currentRoom == saveDataMapRoom.coordinate){
                 currentRoom = aroundRoom;
+                GenerateHexagonMapWorld(16, currentRoom);
+            }
         }
     }
 
@@ -308,33 +354,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             for(int r = rStart; r <= rEnd; r++)
             {
                 Vector3 position = GetPosition(q, r, currentHexagonMapRoom.position);
-                if(IsPositionDuplicated(position)){
-                    HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find(room => room.position == position);
-                    if(hexagonMapRoom != null && hexagonMapRoom.isRegion){
-                        hexagonMapRoom.isActive = true;
-                    }
-                }else{
-                    var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-                    GameObject hexagonMapRoomObject = Instantiate(
-                        networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
-                        position,
-                        Quaternion.identity
-                    );
-                    HexagonMapRoom hexagonMapRoom = hexagonMapRoomObject.GetComponent<HexagonMapRoom>();
-                    // 방 타입 설정
-                    hexagonMapRoom.roomType = GetRoomType();
-                    // 인게임 좌표계 값 설정
-                    hexagonMapRoom.position = position;
-                    // 방 활성화 상태값 설정
+                HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find(room => room.position == position);
+                if(hexagonMapRoom != null){
                     hexagonMapRoom.isActive = true;
-                    // 고유 좌표계 값(Axial 좌표계) 설정
-                    hexagonMapRoom.coordinate = currentHexagonMapRoom.coordinate + new Vector2Int(q, r);
-                    
-                    NetworkServer.Spawn(hexagonMapRoomObject);
-
-                    // 육각형 위치 및 오브젝트 클래스 리스트에 추가
-                    hexagonMapRooms.Add(hexagonMapRoom);
-                    hexagonMapRoomNetIds.Add(hexagonMapRoom.GetComponent<NetworkIdentity>().netId);
                 }
             }
         }
@@ -1008,7 +1030,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     // [휴리스틱함수]
     // A* 알고리즘에서 목적지까지 가는데 걸리는 비용 예측 함수. 해당함수의 로직에 따라 알고리즘 효율성 결정.
     // 현재는 단순 두 지점간의 좌표계에 따른 거리값만 계산(Axial 좌표계에서의 맨해튼거리 계산식)
-    private int CalculateHeuristics(Vector2Int currentCoord, Vector2Int destinationCoord)
+    public int CalculateHeuristics(Vector2Int currentCoord, Vector2Int destinationCoord)
     {
         int dQ = currentCoord.x - destinationCoord.x;
         int dR = currentCoord.y - destinationCoord.y;
