@@ -4,20 +4,49 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
+using AYellowpaper.SerializedCollections;
 
-/// <summary>
-/// 사운드 매니저 v1.05.0 made by JJSmith (Curookie)
-/// </summary>
+
+/*  
+    [사운드 매니저 v1.05.0 made by JJSmith (Curookie)]
+
+    [사용법]
+    1) BGM, VOICE, SFX 타입에 따라 해당 Dictionary에 저장
+
+    2) 재생방법 (반복재생, OneShot 등 지원)
+        - BGM
+        AudioClip bgmClip = M_SoundManager.instance.bgmClips[BGM_TYPE.타입이름].Find((audioClip) => audioClip.name.Equals("클립이름"));
+        M_SoundManager.instance.PlayBGM(bgmClip, MusicTransition.CrossFade, 2f);
+        - VOICE
+        AudioClip voiceClip = M_SoundManager.instance.bgmClips[VOICE_TYPE.타입이름].Find((audioClip) => audioClip.name.Equals("클립이름"));
+        M_SoundManager.instance.PlayBGM(voiceClip, MusicTransition.CrossFade, 2f);
+        - SFX
+        AudioClip sfxClip = M_SoundManager.instance.bgmClips[SFX_TYPE.타입이름].Find((audioClip) => audioClip.name.Equals("클립이름"));
+        M_SoundManager.instance.PlayBGM(sfxClip, MusicTransition.CrossFade, 2f);
+
+    3) 배경음 재생모드 
+        - 페이드 없음(Swift) (playback 쓰려면 Swift로 해야함)
+        - 페이드 아웃/인(LinearFade)
+        - 크로스 페이드(CrossFade) 
+    
+    4) PlayerPrefabs으로 설정을 저장하며 토글 속성 있다. ex)IsMusicOn 배경음, IsSoundOn 효과음";
+*/
+
+
 [RequireComponent (typeof (AudioSource))]
 public class M_SoundManager : MonoBehaviour {
 
-    /*    
-    [사용법]
-    1) Playlist에 재생할 배경음/효과음들을 넣는다. (Resources, URL 지원)
-    2) 어떤 스크립트에서든 재생하려면 M_SoundManager.instance.PlayBGM(""클립이름""); M_SoundManager.instance.PlaySFX(""클립이름""); (반복재생, OneShot 등 지원)
-    3) 배경음은 페이드 없음(Swift), 페이드 아웃/인(LinearFade), 크로스 페이드(CrossFade) 3가지 페이드 설정이 있다. (playback 쓰려면 Swift로 해야함)
-    4) PlayerPrefabs으로 설정을 저장하며 토글 속성 있다. ex)IsMusicOn 배경음, IsSoundOn 효과음";
-    */
+    [Header ("BGM 목록")]
+    [SerializedDictionary("BGM_TYPE", "BGM 오디오 클립 목록")]
+    public SerializedDictionary<BGM_TYPE, List<AudioClip>> bgmClips = new SerializedDictionary<BGM_TYPE, List<AudioClip>>();
+
+    [Header ("VOICE 목록")]
+    [SerializedDictionary("VOICE_TYPE", "VOICE 오디오 클립 목록")]
+    public SerializedDictionary<VOICE_TYPE, List<AudioClip>> voiceClips = new SerializedDictionary<VOICE_TYPE, List<AudioClip>>();
+
+    [Header ("SFX 목록")]
+    [SerializedDictionary("SFX_TYPE", "SFX 오디오 클립 목록")]
+    public SerializedDictionary<string, List<AudioClip>> sfxClips = new SerializedDictionary<string, List<AudioClip>>();
 
     [Header ("배경음 설정")]
 
@@ -56,11 +85,6 @@ public class M_SoundManager : MonoBehaviour {
 
     [Tooltip ("효과음 볼륨믹서 명")]
     [SerializeField] string _volumeOfSFXMixer = string.Empty;
-
-    [Space (3)]
-
-    [Tooltip ("모든 오디오 클립은 여기에 넣으면 됨.")]
-    [SerializeField] List<AudioClip> _playlist = new List<AudioClip> ();
 
     // 효과음 풀링을 위한 리스트
     List<SoundEffect> sfxPool = new List<SoundEffect> ();
@@ -152,15 +176,20 @@ public class M_SoundManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// 씬 전환 시 해당 오디오 배경음 재생
+    /// </summary>
     private void OnChangedActiveScene(Scene current, Scene next)
     {
         switch(next.name){
             case "MenuScene":
-                PlayBGM("MainTitle", MusicTransition.Swift);
-            break;
-        case "GameScene":
-                PlayBGM("Stage_1_Map", MusicTransition.CrossFade, 2f);
-            break;
+                AudioClip mainTitleClip = bgmClips[BGM_TYPE.MainTitle].Find((audioClip) => audioClip.name.Equals("MainTitle"));
+                PlayBGM(mainTitleClip, MusicTransition.Swift);
+                break;
+            case "GameScene":
+                AudioClip mapClip = bgmClips[BGM_TYPE.Map].Find((audioClip) => audioClip.name.Equals("Stage_1_Map"));
+                PlayBGM(mapClip, MusicTransition.CrossFade, 2f);
+                break;
         }
     }
 
@@ -372,203 +401,6 @@ public class M_SoundManager : MonoBehaviour {
         }
     }
 
-    # region 스트링 처리
-    
-     /// <summary>
-    /// 배경음 재생
-    /// 배경음은 한 번에 한 개만 재생.
-    /// </summary>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="transition">전환방법 </param>
-    /// <param name="transition_duration">전환시간</param>
-    /// <param name="volume">사운드 크기</param>
-    /// <param name="pitch">클립의 피치 레벨 설정</param>
-    /// <param name="playback_position">시작시점</param>
-    public void PlayBGM (string clip, MusicTransition transition, float transition_duration, float volume, float pitch, float playback_position = 0) {
-        PlayBGM(GetClipFromPlaylist(clip), transition, transition_duration, volume, pitch, playback_position);
-    }
-
-    /// <summary>
-    /// 배경음 재생
-    /// 배경음은 한 번에 한 개만 재생.
-    /// </summary>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="transition">전환방법</param>
-    /// <param name="transition_duration">전환시간</param>
-    /// <param name="volume">사운드 크기</param>
-    public void PlayBGM (string clip, MusicTransition transition, float transition_duration, float volume) {
-        PlayBGM (GetClipFromPlaylist(clip), transition, transition_duration, volume, 1f);
-    }
-
-    /// <summary>
-    /// 배경음 재생
-    /// 배경음은 한 번에 한 개만 재생.
-    /// </summary>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="transition">전환방법</param>
-    /// <param name="transition_duration">전환시간</param>
-    public void PlayBGM (string clip, MusicTransition transition, float transition_duration) {
-        PlayBGM (GetClipFromPlaylist(clip), transition, transition_duration, _musicVolume, 1f);
-    }
-
-    /// <summary>
-    /// 배경음 재생
-    /// 배경음은 한 번에 한 개만 재생.
-    /// </summary>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="transition">전환방법</param>
-    public void PlayBGM (string clip, MusicTransition transition) {
-        PlayBGM (GetClipFromPlaylist(clip), transition, 1f, _musicVolume, 1f);
-    }
-
-    /// <summary>
-    /// 배경음 바로 재생
-    /// 배경음은 한 번에 한 개만 재생.
-    /// </summary>
-    /// <param name="clip">재생할 클립</param>
-    public void PlayBGM (string clip) {
-        PlayBGM (GetClipFromPlaylist(clip), MusicTransition.Swift, 1f, _musicVolume, 1f);
-    }
-
-    /// <summary>
-    /// 월드 스페이스(2D)에서 지정된 시간만큼 효과음을 생성해 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An audiosource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="location">클립의 생성 위치 (2D)</param>
-    /// <param name="duration">재생시간</param>
-    /// <param name="volume">사운드 크기</param>
-    /// <param name="singleton">효과음이 싱글톤인지 여부</param>
-    /// <param name="pitch">클립의 피치 레벨 설정</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlaySFX (string clip, Vector2 location, float duration, float volume, bool singleton = false, float pitch = 1f, Action callback = null) {
-        return PlaySFX(GetClipFromPlaylist(clip), location, duration, volume, singleton, pitch, callback);
-    }
-
-    /// <summary>
-    /// 월드 스페이스(2D)에서 지정된 시간만큼 효과음을 생성해 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An audiosource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="location">클립의 생성 위치 (2D)</param>
-    /// <param name="duration">재생시간</param>
-    /// <param name="singleton">효과음이 싱글톤인지 여부</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlaySFX (string clip, Vector2 location, float duration, bool singleton = false, Action callback = null) {
-        return PlaySFX(GetClipFromPlaylist(clip), location, duration, _soundFxVolume, singleton, 1.0f, callback);
-    }
-
-    /// <summary>
-    /// 월드 스페이스(2D)에서 지정된 시간만큼 효과음을 생성해 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An audiosource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="duration">재생시간</param>
-    /// <param name="singleton">효과음이 싱글톤인지 여부</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlaySFX (string clip, float duration, bool singleton = false, Action callback = null) {
-        return PlaySFX (GetClipFromPlaylist(clip), Vector2.zero, duration, _soundFxVolume, singleton, 1f, callback);
-    }
-
-    /// <summary>
-    /// 월드 스페이스(2D)에서 지정된 시간만큼 효과음을 생성해 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An audiosource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="singleton">효과음이 싱글톤인지 여부</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlaySFX (string clip, bool singleton = false, Action callback = null) {
-        var aClip = GetClipFromPlaylist(clip);
-        return PlaySFX (aClip, Vector2.zero, aClip.length, _soundFxVolume, singleton, 1f, callback);
-    }
-
-    /// <summary>
-    /// 월드 스페이스(2D)에서 지정된 횟수만큼 효과음을 생성해 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An audiosource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="location">클립의 생성 위치 (2D)</param>
-    /// <param name="repeat">클립을 얼마나 반복할지 정한다. 무한은 음수를 입력하면 됨.</param>
-    /// <param name="volume">사운드 크기</param>
-    /// <param name="singleton">효과음이 싱글톤인지 여부</param>
-    /// <param name="pitch">클립의 피치 레벨 설정</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource RepeatSFX (string clip, Vector2 location, int repeat, float volume, bool singleton = false, float pitch = 1f, Action callback = null) {
-        return RepeatSFX (GetClipFromPlaylist(clip), location, repeat, volume, singleton, pitch, callback);
-    }
-
-    /// <summary>
-    /// 월드 스페이스(2D)에서 지정된 횟수만큼 효과음을 생성해 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An audiosource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="location">클립의 생성 위치 (2D)</param>
-    /// <param name="repeat">클립을 얼마나 반복할지 정한다. 무한은 음수를 입력하면 됨.</param>
-    /// <param name="singleton">효과음이 싱글톤인지 여부</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource RepeatSFX (string clip, Vector2 location, int repeat, bool singleton = false, Action callback = null) {
-        return RepeatSFX (GetClipFromPlaylist(clip), location, repeat, _soundFxVolume, singleton, 1f, callback);
-    }
-
-    /// <summary>
-    /// 월드 스페이스(2D)에서 지정된 횟수만큼 효과음을 생성해 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An audiosource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="repeat">클립을 얼마나 반복할지 정한다. 무한은 음수를 입력하면 됨.</param>
-    /// <param name="singleton">효과음이 싱글톤인지 여부</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource RepeatSFX (string clip, int repeat, bool singleton = false, Action callback = null) {
-        return RepeatSFX (GetClipFromPlaylist(clip), Vector2.zero, repeat, _soundFxVolume, singleton, 1f, callback);
-    }
-
-    /// <summary>
-    /// 월드 스페이스(2D)에서 효과음을 생성해 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An AudioSource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="location">클립의 생성 위치 (2D)</param>
-    /// <param name="volume">사운드 크기</param>
-    /// <param name="pitch">클립의 피치 레벨 설정</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlayOneShot (string clip, Vector2 location, float volume, float pitch = 1f, Action callback = null) {
-       return PlayOneShot(GetClipFromPlaylist(clip), location, volume, pitch, callback);
-    }
-
-    /// <summary>
-    /// 월드 스페이스(2D)에서 효과음을 생성해 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An AudioSource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="location">클립의 생성 위치 (2D)</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlayOneShot (string clip, Vector2 location, Action callback = null) {
-        return PlayOneShot (GetClipFromPlaylist(clip), location, _soundFxVolume, 1f, callback);
-    }
-
-    /// <summary>
-    /// 월드 스페이스(2D)에서 효과음을 생성해 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An AudioSource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlayOneShot (string clip, Action callback = null) {
-        return PlayOneShot (GetClipFromPlaylist(clip), Vector2.zero, _soundFxVolume, 1f, callback);
-    }
-
-    /// <summary>
-    /// 특정위치 월드 스페이스(2D)에서 효과음을 재생하고 끝나면 지정된 콜백 함수를 호출하는 함수
-    /// </summary>
-    /// <returns>An AudioSource</returns>
-    /// <param name="clip">재생할 클립</param>
-    /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlayClipAtPoint (string clip, Vector3 location, Action callback = null) {
-        return PlayClipAtPoint (GetClipFromPlaylist(clip), location, _soundFxVolume, 1f, callback);
-    }
-
-    # endregion
-
-
     /// <summary>
     /// 특정한 오디오소스에서 클립을 재생하는 함수   
     /// </summary>
@@ -618,7 +450,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="volume">사운드 크기</param>
     /// <param name="pitch">클립의 피치 레벨 설정</param>
     /// <param name="playback_position">시작시점</param>
-    public void PlayBGM (AudioClip clip, MusicTransition transition, float transition_duration, float volume, float pitch, float playback_position = 0) {
+    public void PlayAudioClipBGM (AudioClip clip, MusicTransition transition, float transition_duration, float volume, float pitch, float playback_position = 0) {
         // 요구클립이 없거나 똑같은 클립이면 재생하지 않음.
         if (clip == null || backgroundMusic.CurrentClip == clip) {
             return;
@@ -674,7 +506,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="transition_duration">전환시간</param>
     /// <param name="volume">사운드 크기</param>
     public void PlayBGM (AudioClip clip, MusicTransition transition, float transition_duration, float volume) {
-        PlayBGM (clip, transition, transition_duration, volume, 1f);
+        PlayAudioClipBGM (clip, transition, transition_duration, volume, 1f);
     }
 
     /// <summary>
@@ -685,7 +517,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="transition">전환방법</param>
     /// <param name="transition_duration">전환시간</param>
     public void PlayBGM (AudioClip clip, MusicTransition transition, float transition_duration) {
-        PlayBGM (clip, transition, transition_duration, _musicVolume, 1f);
+        PlayAudioClipBGM (clip, transition, transition_duration, _musicVolume, 1f);
     }
 
     /// <summary>
@@ -695,7 +527,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="clip">재생할 클립</param>
     /// <param name="transition">전환방법</param>
     public void PlayBGM (AudioClip clip, MusicTransition transition) {
-        PlayBGM (clip, transition, 1f, _musicVolume, 1f);
+        PlayAudioClipBGM (clip, transition, 1f, _musicVolume, 1f);
     }
 
     /// <summary>
@@ -704,63 +536,7 @@ public class M_SoundManager : MonoBehaviour {
     /// </summary>
     /// <param name="clip">재생할 클립</param>
     public void PlayBGM (AudioClip clip) {
-        PlayBGM (clip, MusicTransition.Swift, 1f, _musicVolume, 1f);
-    }
-
-    /// <summary>
-    /// 배경음 재생
-    /// 배경음은 한 번에 한 개만 재생.
-    /// </summary>
-    /// <param name="clip_path">Resources 폴더에 있는 클립 경로</param>
-    /// <param name="transition">전환방법 </param>
-    /// <param name="transition_duration">전환시간</param>
-    /// <param name="volume">사운드 크기</param>
-    /// <param name="pitch">클립의 피치 레벨 설정</param>
-    /// <param name="playback_position">시작시점</param>
-    public void PlayBGMFromPath (string clip_path, MusicTransition transition, float transition_duration, float volume, float pitch, float playback_position = 0) {
-        PlayBGM (LoadClip (clip_path), transition, transition_duration, volume, pitch, playback_position);
-    }
-
-    /// <summary>
-    /// 배경음 재생
-    /// 배경음은 한 번에 한 개만 재생.
-    /// </summary>
-    /// <param name="clip_path">Resources 폴더에 있는 클립 경로</param>
-    /// <param name="transition">전환방법 </param>
-    /// <param name="transition_duration">전환시간</param>
-    /// <param name="volume">사운드 크기</param>
-    public void PlayBGMFromPath (string clip_path, MusicTransition transition, float transition_duration, float volume) {
-        PlayBGM (LoadClip (clip_path), transition, transition_duration, volume, 1f);
-    }
-
-    /// <summary>
-    /// 배경음 재생
-    /// 배경음은 한 번에 한 개만 재생.
-    /// </summary>
-    /// <param name="clip_path">Resources 폴더에 있는 클립 경로</param>
-    /// <param name="transition">전환방법 </param>
-    /// <param name="transition_duration">전환시간</param>
-    public void PlayBGMFromPath (string clip_path, MusicTransition transition, float transition_duration) {
-        PlayBGM (LoadClip (clip_path), transition, transition_duration, _musicVolume, 1f);
-    }
-
-    /// <summary>
-    /// 배경음 재생
-    /// 배경음은 한 번에 한 개만 재생.
-    /// </summary>
-    /// <param name="clip_path">Resources 폴더에 있는 클립 경로</param>
-    /// <param name="transition">전환방법 </param>
-    public void PlayBGMFromPath (string clip_path, MusicTransition transition) {
-        PlayBGM (LoadClip (clip_path), transition, 1f, _musicVolume, 1f);
-    }
-
-    /// <summary>
-    /// 배경음 바로 재생
-    /// 배경음은 한 번에 한 개만 재생.
-    /// </summary>
-    /// <param name="clip_path">Resources 폴더에 있는 클립 경로</param>
-    public void PlayBGMFromPath (string clip_path) {
-        PlayBGM (LoadClip (clip_path), MusicTransition.Swift, 1f, _musicVolume, 1f);
+        PlayAudioClipBGM (clip, MusicTransition.Swift, 1f, _musicVolume, 1f);
     }
 
     /// <summary>
@@ -878,7 +654,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="singleton">효과음이 싱글톤인지 여부</param>
     /// <param name="pitch">클립의 피치 레벨 설정</param>
     /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlaySFX (AudioClip clip, Vector2 location, float duration, float volume, bool singleton = false, float pitch = 1f, Action callback = null) {
+    public AudioSource PlayAudioClipSFX (AudioClip clip, Vector2 location, float duration, float volume, bool singleton = false, float pitch = 1f, Action callback = null) {
         if (duration <= 0 || clip == null) {
             return null;
         }
@@ -929,7 +705,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="singleton">효과음이 싱글톤인지 여부</param>
     /// <param name="callback">재생이 끝나면 콜백할 액션</param>
     public AudioSource PlaySFX (AudioClip clip, Vector2 location, float duration, bool singleton = false, Action callback = null) {
-        return PlaySFX (clip, location, duration, _soundFxVolume, singleton, 1f, callback);
+        return PlayAudioClipSFX (clip, location, duration, _soundFxVolume, singleton, 1f, callback);
     }
 
     /// <summary>
@@ -941,7 +717,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="singleton">효과음이 싱글톤인지 여부</param>
     /// <param name="callback">재생이 끝나면 콜백할 액션</param>
     public AudioSource PlaySFX (AudioClip clip, float duration, bool singleton = false, Action callback = null) {
-        return PlaySFX (clip, Vector2.zero, duration, _soundFxVolume, singleton, 1f, callback);
+        return PlayAudioClipSFX (clip, Vector2.zero, duration, _soundFxVolume, singleton, 1f, callback);
     }
 
     /// <summary>
@@ -955,7 +731,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="singleton">효과음이 싱글톤인지 여부</param>
     /// <param name="pitch">클립의 피치 레벨 설정</param>
     /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource RepeatSFX (AudioClip clip, Vector2 location, int repeat, float volume, bool singleton = false, float pitch = 1f, Action callback = null) {
+    public AudioSource RepeatAudioClipSFX (AudioClip clip, Vector2 location, int repeat, float volume, bool singleton = false, float pitch = 1f, Action callback = null) {
         if (clip == null) {
             return null;
         }
@@ -1008,7 +784,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="singleton">효과음이 싱글톤인지 여부</param>
     /// <param name="callback">재생이 끝나면 콜백할 액션</param>
     public AudioSource RepeatSFX (AudioClip clip, Vector2 location, int repeat, bool singleton = false, Action callback = null) {
-        return RepeatSFX (clip, location, repeat, _soundFxVolume, singleton, 1f, callback);
+        return RepeatAudioClipSFX (clip, location, repeat, _soundFxVolume, singleton, 1f, callback);
     }
 
     /// <summary>
@@ -1020,7 +796,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="singleton">효과음이 싱글톤인지 여부</param>
     /// <param name="callback">재생이 끝나면 콜백할 액션</param>
     public AudioSource RepeatSFX (AudioClip clip, int repeat, bool singleton = false, Action callback = null) {
-        return RepeatSFX (clip, Vector2.zero, repeat, _soundFxVolume, singleton, 1f, callback);
+        return RepeatAudioClipSFX (clip, Vector2.zero, repeat, _soundFxVolume, singleton, 1f, callback);
     }
 
     /// <summary>
@@ -1149,62 +925,6 @@ public class M_SoundManager : MonoBehaviour {
         }
 
         sfxPool.Clear ();
-    }
-
-    /// <summary>
-    /// Resources 폴더에서 오디오 클립을 가져오는 함수
-    /// </summary>
-    /// <param name="path">Resources 폴더의 클립 경로</param>
-    /// <param name="add_to_playlist">로드한 클립을 나중에 참조를 위해서 플레이 리스트에 추가하는 옵션</param>
-    /// <returns>The Audioclip from the resource folder</returns>
-    public AudioClip LoadClip (string path, bool add_to_playlist = false) {
-        AudioClip clip = Resources.Load (path) as AudioClip;
-        if (clip == null) {
-            Debug.LogError (string.Format ("AudioClip '{0}' not found at location {1}", path, System.IO.Path.Combine (Application.dataPath, "/Resources/" + path)));
-            return null;
-        }
-
-        if (add_to_playlist) {
-            AddToPlaylist (clip);
-        }
-
-        return clip;
-    }
-
-    /// <summary>
-    /// URL 경로로 오디오 클립을 가져오는 함수
-    /// </summary>
-    /// <param name="path">오디오 클립 다운로드 URL. 예: 'http://www.my-server.com/audio.ogg'</param>
-    /// <param name="audio_type">다운로드를 위한 오디오 인코딩 타입. AudioType 참고</param>
-    /// <param name="add_to_playlist">로드한 클립을 나중에 참조를 위해서 플레이 리스트에 추가하는 옵션</param>
-    /// <param name="callback">로드가 완료되면 콜백할 액션.</param>
-    public void LoadClip (string path, AudioType audio_type, bool add_to_playlist, Action<AudioClip> callback) {
-        StartCoroutine (LoadAudioClipFromUrl (path, audio_type, (downloadedContent) => {
-            if (downloadedContent != null && add_to_playlist) {
-                AddToPlaylist (downloadedContent);
-            }
-
-            callback.Invoke (downloadedContent);
-        }));
-    }
-
-    /// <summary>
-    /// URL 경로로 오디오 클립 가져오는 내장 함수
-    /// </summary>
-    /// <returns>The audio clip from URL.</returns>
-    /// <param name="audio_url">오디오 URL</param>
-    /// <param name="audio_type">오디오 타입</param>
-    /// <param name="callback">콜백 액션</param>
-    IEnumerator LoadAudioClipFromUrl (string audio_url, AudioType audio_type, Action<AudioClip> callback) {
-        using (UnityEngine.Networking.UnityWebRequest www = UnityEngine.Networking.UnityWebRequestMultimedia.GetAudioClip (audio_url, audio_type)) {
-            yield return www.SendWebRequest ();
-
-            if (www.isNetworkError) {
-                Debug.Log (string.Format ("Error downloading audio clip at {0} : {1}", audio_url, www.error));
-            }
-
-            callback.Invoke (UnityEngine.Networking.DownloadHandlerAudioClip.GetContent (www));
-        }
     }
 
     /// <summary>
@@ -1374,68 +1094,6 @@ public class M_SoundManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// 오디오 클립 리스트를 초기화하는 함수
-    /// </summary>
-    public void EmptyPlaylist () {
-        _playlist.Clear ();
-    }
-
-    /// <summary>
-    /// 오디오 클립 리스트에 오디오 클립을 추가하는 함수
-    /// </summary>
-    /// <param name="clip">오디오 클립</param>
-    public void AddToPlaylist (AudioClip clip) {
-        if (clip != null) {
-            _playlist.Add (clip);
-        }
-    }
-
-    /// <summary>
-    /// 오디오 클립 리스트에 오디오 클립을 제거하는 함수
-    /// </summary>
-    /// <param name="clip">오디오 클립</param>
-    public void RemoveFromPlaylist (AudioClip clip) {
-        if (clip != null && GetClipFromPlaylist (clip.name)) {
-            _playlist.Remove (clip);
-            _playlist.Sort ((x, y) => x.name.CompareTo (y.name));
-        }
-    }
-
-    /// <summary>
-    /// 오디오 이름으로 오디오 클립 리스트에서 오디오 클립 가져오는 함수
-    /// </summary>
-    /// <param name="clip_name">클립 이름</param>
-    /// <returns>The AudioClip from the pool or null if no matching name can be found</returns>
-    public AudioClip GetClipFromPlaylist (string clip_name) {
-        for (int i = 0; i < _playlist.Count; i++) {
-            if (clip_name == _playlist[i].name) {
-                return _playlist[i];
-            }
-        }
-
-        Debug.LogWarning (clip_name + " does not exist in the playlist.");
-        return null;
-    }
-
-    /// <summary>
-    /// Resources 폴더 경로에 있는 모든 오디오 클립을 오디오 클립 리스트에 가져오는 함수
-    /// </summary>
-    /// <param name="path">Resoures 폴더 내 폴더경로 예) "" 입력 시 Resources 내 모든 클립을 가져옴.</param>
-    /// <param name="overwrite">덮어씌울지 여부, true - 리스트 덮어씌움, false - 리스트에 연달아서 추가</param>
-    public void LoadPlaylist (string path, bool overwrite) {
-        AudioClip[] clips = Resources.LoadAll<AudioClip> (path);
-
-        // 새로운 리스트로 덮어씌울지 체크
-        if (clips != null && clips.Length > 0 && overwrite) {
-            _playlist.Clear ();
-        }
-
-        for (int i = 0; i < clips.Length; i++) {
-            _playlist.Add (clips[i]);
-        }
-    }
-
-    /// <summary>
     /// 현재 배경음 클립을 가져오는 속성
     /// </summary>
     /// <value>The current music clip.</value>
@@ -1448,13 +1106,6 @@ public class M_SoundManager : MonoBehaviour {
     /// </summary>
     public List<SoundEffect> SoundFxPool {
         get { return sfxPool; }
-    }
-
-    /// <summary>
-    /// 오디오 매니저의 클립 리스트를 가져오는 속성
-    /// </summary>
-    public List<AudioClip> Playlist {
-        get { return _playlist; }
     }
 
     /// <summary>
@@ -1650,4 +1301,33 @@ public class SoundEffect : MonoBehaviour {
         get { return singleton; }
         set { singleton = value; }
     }
+}
+
+public enum BGM_TYPE {
+    Battle,
+    Boss,
+    Event,
+    MainTitle,
+    Map
+}
+
+public enum VOICE_TYPE {
+    Geork,
+    Eris,
+    HongDanHyang,
+    MoonGirl,
+    Apates,
+    Geras,
+    Hifnos,
+    Kearce,
+    Momos,
+    Moros,
+    Nemesis,
+    Oijis,
+    Oneyrus,
+    Pilotes,
+    RyuJinSol,
+    ShadowMan,
+    Sofia,
+    Todd
 }

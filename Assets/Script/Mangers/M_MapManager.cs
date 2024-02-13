@@ -757,6 +757,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 .TextColor(Color.white)
                 .Text("맵에 보스가 출현 했습니다.")
                 .Show();
+            AudioClip audioClip_map = M_SoundManager.instance.bgmClips[BGM_TYPE.Map].Find((audioClip) => audioClip.name.Equals("Stage_1_Map_Boss_Spawn"));
+            M_SoundManager.instance.PlayBGM(audioClip_map, MusicTransition.CrossFade, 2f);
             MapUI.instance.SetMapInfoStateMapBossApperance();
         }
     }

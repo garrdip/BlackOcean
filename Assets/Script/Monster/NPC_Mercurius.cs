@@ -58,7 +58,19 @@ public class NPC_Mercurius : SpawnedMonster
     {
         if(isOrigin && mercuriusPopUp != null){
             InitShopCardByCharacter();
+            PlayToddVoice();
         }
+    }
+
+    // Todd 초기 음성 재생
+    private void PlayToddVoice()
+    {
+        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("thoth")); // Todd 음성 리스트 추출
+        AudioClip firstVoice = clips[0];
+        AudioClip secondVoice = clips[1];
+        M_SoundManager.instance.PlaySFX(firstVoice, firstVoice.length, false, () => {
+            M_SoundManager.instance.PlaySFX(secondVoice, secondVoice.length);
+        });
     }
 
     // 클라이언트 연결 해제 이벤트 수신시 상점 카드 정보 갱신
