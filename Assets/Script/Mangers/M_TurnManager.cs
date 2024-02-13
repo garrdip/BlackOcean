@@ -877,6 +877,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             .TextColor(Color.white)
             .Text("전투 : 보스")
             .Show();
+        M_SoundManager.instance
+            .PlayBGM("Boss_Momos", MusicTransition.Swift, 1.5f);
     }
 
     // 일반 몬스터 혹은 엘리트전 시작 수신 이벤트
@@ -894,6 +896,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .TextColor(Color.white)
                     .Text("전투 : 일반 몬스터")
                     .Show();
+                string audioName = Random.Range(0, 2) == 0 ? "Monster_Battle_N_1" : "Monster_Battle_N_2"; 
+                M_SoundManager.instance
+                    .PlayBGM(audioName, MusicTransition.Swift, 1.5f);
                 break;
             case RoomType.ELITE:
                 M_MessageManager.instance
@@ -904,6 +909,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .TextColor(Color.white)
                     .Text("전투 : 엘리트 몬스터")
                     .Show();
+                M_SoundManager.instance
+                    .PlayBGM("Monster_Battle_E", MusicTransition.Swift, 1.5f);
                 break;
         }
     }
@@ -923,6 +930,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .TextColor(Color.white)
                     .Text("이벤트")
                     .Show();
+                string audioName = Random.Range(0, 2) == 0 ? "Positive_Event" : "Negative_Event"; 
+                M_SoundManager.instance
+                    .PlayBGM(audioName, MusicTransition.Swift, 1.5f);
                 break;
             case RoomType.CAMP:
                 M_MessageManager.instance
@@ -933,6 +943,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .TextColor(Color.white)
                     .Text("전초기지")
                     .Show();
+                M_SoundManager.instance
+                    .PlayBGM("Base_Camp", MusicTransition.Swift, 1.5f);
                 break;
             case RoomType.CARD_NPC:
                 M_MessageManager.instance
@@ -943,6 +955,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .TextColor(Color.white)
                     .Text("상점 : 카드 상인 NPC")
                     .Show();
+                M_SoundManager.instance
+                    .PlayBGM("Card_Shop", MusicTransition.Swift, 1.5f);
                 break;
             case RoomType.ITEM_NPC:
                 M_MessageManager.instance
@@ -953,6 +967,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .TextColor(Color.white)
                     .Text("상점 : 아이템 상인 NPC")
                     .Show();
+                M_SoundManager.instance
+                    .PlayBGM("Item_Shop", MusicTransition.Swift, 1.5f);
                 break;
         }
     }
@@ -1060,6 +1076,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     public void ReturnToMap()
     {
+        string audioName = M_MapManager.instance.mapBoss == null ? "Stage_1_Map" : "Stage_1_Map_Boss_Spawn";
+        M_SoundManager.instance.PlayBGM(audioName, MusicTransition.CrossFade, 2f);
         if(isServer){
             ClearTargetObject(); // 타겟오브젝트 정리
             M_MapManager.instance.ClearPlayerVoteHexagonMapRooms(); // 방 투표 목록 비움
