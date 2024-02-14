@@ -2167,7 +2167,7 @@ MonoBehaviour:
   gameOverPopUp: {fileID: 659055048}
   RemoveCardSlotPrefab: {fileID: 7099986675535193864, guid: f077a6a14c6271645a8ca8d94d8accca, type: 3}
   AddtionDrawCardSlotPrefab: {fileID: 2045829331027341376, guid: 05127a78da9b6c94486fc86668f77f94, type: 3}
-  CardOnDeckPrefab: {fileID: 6285776433173605381, guid: 5f8c496d1b06c2549a3d0dc4c225442b, type: 3}
+  CardOnDeckPrefab: {fileID: 6285776433173605381, guid: 6ec9efa3c58a7bc4094bcbeb709f0d4e, type: 3}
   CardOnHandChoosedPrefab: {fileID: 2153712344633156845, guid: e21527256343cf342863946fca6650f2, type: 3}
   CardShopSlot: {fileID: 5235822292280976930, guid: db47a490d44ab9c438edc2cc870bccc4, type: 3}
   CardShopPrice: {fileID: 699038395719878503, guid: 7b8a022e6ba32394595f341de0613fa3, type: 3}
