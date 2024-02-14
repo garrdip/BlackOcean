@@ -261,6 +261,13 @@ public class CardOnHand : NetworkBehaviour
                         NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().AddChoosedCardOnHands(this); // 클릭한 카드를 제거용 카드 배열에 추가
                     }  
                 }
+
+                // 카드 설명 팝업창 삭제
+                for(int i = createdPopUpWindow.Count -1 ; i >= 0 ; i --)
+                {
+                    Destroy(createdPopUpWindow[i]);
+                }
+                createdPopUpWindow.Clear();
             }
         }
     }
@@ -440,9 +447,9 @@ public class CardOnHand : NetworkBehaviour
         textCardDescription.text += '\n';
         textCardDescription.text += '\n';
         foreach(CardCharacteristic character in newCard.baseCard.cardCharacteristics)
-            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>" + '\n';
+            textCardDescription.text += "<b><color=yellow>" + CardData.instance.cardCharacteristicToString[character] + "</color></b>  ";
         foreach(CardCharacteristic character in newCard.cardCharacteristics)
-            textCardDescription.text += "<b><color=yellow>" + character.ToString() + "</color></b>" + '\n';
+            textCardDescription.text += "<b><color=yellow>" + CardData.instance.cardCharacteristicToString[character] + "</color></b>  ";
 
         int totalCost = NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().GetTotalCostOfCardOnHand(this);
         if( totalCost == card.baseCard.cost )
