@@ -56,6 +56,7 @@ public partial class CardData : SingletonD<CardData>
     {
         yield return tempWait; // 임시 딜레이
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        M_TurnManager.instance.MoveIronDemonByAbility(tar[0], tar[1]);
         yield return MoveIronDemonCoroutine(tar[0],tar[1]);
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
         

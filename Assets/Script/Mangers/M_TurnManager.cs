@@ -1022,8 +1022,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
         tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
         tar.ironDemon.GetComponent<MeshRenderer>().material = null;
+    }
 
-        // 철귀 이동 시 음성 재생
+    // 영웅능력으로 철귀 이동 시 음성 재생
+    [ClientRpc]
+    public void MoveIronDemonByAbility(TargetObject tar, TargetObject target)
+    {
         if(target.player != null){
             if(target.player.objectOwner.isLocalPlayer){
                 AudioClip abilitySound = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][55]; // 이리 오거라
