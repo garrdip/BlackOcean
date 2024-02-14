@@ -24,6 +24,8 @@ public partial class CardData : SingletonD<CardData>
     [SerializedDictionary("BuffType", "Sprite")]
     public SerializedDictionary<BuffType, Sprite> buffIcons = new SerializedDictionary<BuffType, Sprite>();
     
+    public Dictionary<string,InfomationDB> infomationDB = new Dictionary<string, InfomationDB>();
+
     public bool isCardOperatingTEST;
     
     public bool isCardOperating{get{
@@ -34,6 +36,8 @@ public partial class CardData : SingletonD<CardData>
     }}
 
     string[] colorList = {"<#ff0000>","<#00ff00>","<#0000ff>","<#ffff00>","<#00ffff>","<#ff00ff>"};
+
+
 
     public CardSelectCallBack cardSelectCallBack;
 
@@ -79,6 +83,20 @@ public partial class CardData : SingletonD<CardData>
         curseEffect.Add("G0",G0_Effect);
         curseEffect.Add("G1",G1_Effect);
         curseEffect.Add("G2",G2_Effect);
+        DBtext = Resources.Load<TextAsset>("DBs/Description");
+        using (StringReader DB = new StringReader(DBtext.text))
+        {          
+            while(true)
+            {
+                string value = DB.ReadLine();
+                if( value == null ) break; // 마지막 데이터의 경우 null을 반환
+                
+                string[] values = value.Trim().Split(",");
+                if(values[0] == "info") continue; // 첫줄 데이터 스킵   
+
+                infomationDB.Add(values[0],new InfomationDB(values[1],values[2]));
+            }
+        }
     }
     
     private string GetCardDescription(string desc, CardBase card)
@@ -231,4 +249,17 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.SwapPlayerOrder(currentIndex,index);
     }
 
+}
+
+public class InfomationDB
+{
+    public string name;
+    public string description;
+
+    public InfomationDB(string nameIn, string descriptionIn)
+    {
+        name = nameIn;
+        description = descriptionIn;
+    }
+    
 }

@@ -85,6 +85,8 @@ public class TargetObject : NetworkBehaviour
     public bool isTransformed = false;
     [SyncVar (hook = nameof(OnChangedErisMode))]
     public ErisMode erisMode = ErisMode.NORMAL;
+    [SyncVar]
+    public int currentApDoRequirement = 8;
 
     public string GetErisMode()
     {
@@ -428,10 +430,11 @@ public class TargetObject : NetworkBehaviour
             }
             
             modItem.value += value;
-            if(modItem.type == BuffType.APDO && modItem.value >= 10)
+            if(modItem.type == BuffType.APDO && modItem.value >= currentApDoRequirement) // 압도 처리
             {
                 monster.APDO();
-                modItem.value -= 10;
+                modItem.value -= currentApDoRequirement;
+                currentApDoRequirement += 4;
             }
             if(modItem.value == 0)
                 buffs.RemoveAt(indexOfOldItem);

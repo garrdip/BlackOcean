@@ -32,7 +32,14 @@ public class CardOnHand : NetworkBehaviour
     public Vector3 arrowSpawnedCardPosition; // 화살표 소환된 카드의 위치값(화면 중앙 하단)
 
     [Header("CardOnHand 상태 변수값들")]
-    public bool isMouseOver = false; // 마우스가 오브젝트 위에 있는지 여부
+    public bool isMouseOverBuffer = false; // 마우스가 오브젝트 위에 있는지 여부
+
+    public bool isMouseOver{
+        get {return isMouseOverBuffer;}
+        set { isMouseOverBuffer = value;
+            OnChangedIsChoosedState();
+        }
+    } 
 
     public bool isExitComplete = true; // 마우스가 오브젝트에서 벗어난 상태 확인 여부(딜레이를 이용해 이벤트 연속 호출 방지용)
 
@@ -69,6 +76,10 @@ public class CardOnHand : NetworkBehaviour
 
     public delegate void CardInfoChanged();
     public CardInfoChanged CardInfoChangedEvent;
+    public Transform popUpWIndowParent;
+    public GameObject popUpWindow;
+
+    public List<GameObject> createdPopUpWindow = new List<GameObject>();
 
     void Start()
     {
@@ -388,6 +399,21 @@ public class CardOnHand : NetworkBehaviour
         transform.SetParent(cardPocket.transform);
     }
 
+    void OnChangedIsChoosedState()
+    {
+        if(isMouseOverBuffer == true)
+        {
+            return;
+        }
+        else
+        {
+            for(int i = createdPopUpWindow.Count -1 ; i >= 0 ; i --)
+            {
+                Destroy(createdPopUpWindow[i]);
+            }
+            createdPopUpWindow.Clear();
+        }
+    }
 
     // --------------------------------------------------------------- SyncVar Hook -----------------------------------------------------------------//
 

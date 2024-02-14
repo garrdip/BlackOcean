@@ -27,8 +27,8 @@ public class CardBase
 [System.Serializable]
 public class Infomation
 {
-    string info = "";
-    int colorCode = 0;
+    public string info = "";
+    public int colorCode = 0;
 
     public Infomation(){}
 

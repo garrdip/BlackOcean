@@ -116,6 +116,17 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, cardOverPosition, Time.deltaTime * 10f);
                                 Quaternion cardOverRotation = Quaternion.Euler(0f, 0f, 0f);
                                 cardOnHand.transform.localRotation = Quaternion.Lerp(cardOnHand.transform.rotation, cardOverRotation, Time.deltaTime * 10f);
+                                if(Vector3.Distance(cardOnHand.transform.localPosition,cardOverPosition) < 0.01f && cardOnHand.transform.localRotation.x < 0.01f && cardOnHand.transform.localRotation.y < 0.01f && cardOnHand.createdPopUpWindow.Count == 0)
+                                {
+                                    foreach(Infomation info in cardOnHand.card.baseCard.info)
+                                    {
+                                        GameObject newPopUpWindow = Instantiate(cardOnHand.popUpWindow,new Vector3(0,0,0),Quaternion.identity);
+                                        newPopUpWindow.GetComponent<PopUpWindow>().SetPopUpWinwdowText(info);
+                                        newPopUpWindow.transform.SetParent(cardOnHand.popUpWIndowParent);
+                                        newPopUpWindow.transform.localScale = new Vector3(1f,1f,0);
+                                        cardOnHand.createdPopUpWindow.Add(newPopUpWindow);
+                                    }
+                                }
                                 cardOnHand.transform.localScale = cardOverSize;
                             }else{
                                 cardOnHand.sortingGroup.sortingOrder = i; // 스프라이트 정렬 인덱스
