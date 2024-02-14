@@ -17,6 +17,7 @@ public class CardBase
     public ValidTarget validTarget;
     public List<Infomation> info = new List<Infomation>();
     public List<CardCharacteristic> cardCharacteristics;
+    public List<string> cardInfo = new List<string>();
 
     public CardBase()
     {

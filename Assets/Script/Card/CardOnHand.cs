@@ -77,7 +77,9 @@ public class CardOnHand : NetworkBehaviour
     public delegate void CardInfoChanged();
     public CardInfoChanged CardInfoChangedEvent;
     public Transform popUpWIndowParent;
+    public Transform popUpCardParent;
     public GameObject popUpWindow;
+    public GameObject popUpCard;
 
     public List<GameObject> createdPopUpWindow = new List<GameObject>();
 
