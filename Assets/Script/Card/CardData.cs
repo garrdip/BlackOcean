@@ -26,6 +26,8 @@ public partial class CardData : SingletonD<CardData>
     
     public Dictionary<string,InfomationDB> infomationDB = new Dictionary<string, InfomationDB>();
 
+    public Dictionary<CardCharacteristic,string> cardCharacteristicToString = new Dictionary<CardCharacteristic, string>();
+
     public bool isCardOperatingTEST;
     
     public bool isCardOperating{get{
@@ -35,7 +37,7 @@ public partial class CardData : SingletonD<CardData>
         isCardOperatingTEST = value;
     }}
 
-    string[] colorList = {"<#ff0000>","<#00ff00>","<#0000ff>","<#ffff00>","<#00ffff>","<#ff00ff>"};
+    public string[] colorList = {"<#ff0000>","<#00ff00>","<#0000ff>","<#ffff00>","<#00ffff>","<#ff00ff>"};
 
 
 
@@ -95,6 +97,20 @@ public partial class CardData : SingletonD<CardData>
                 if(values[0] == "info") continue; // 첫줄 데이터 스킵   
 
                 infomationDB.Add(values[0],new InfomationDB(values[1],values[2]));
+            }
+        }
+        DBtext = Resources.Load<TextAsset>("DBs/CardCharacteristic");
+        using (StringReader DB = new StringReader(DBtext.text))
+        {          
+            while(true)
+            {
+                string value = DB.ReadLine();
+                if( value == null ) break; // 마지막 데이터의 경우 null을 반환
+                
+                string[] values = value.Trim().Split(",");
+                if(values[0] == "enum") continue; // 첫줄 데이터 스킵   
+
+                cardCharacteristicToString.Add((CardCharacteristic)Enum.Parse<CardCharacteristic>(values[0]),values[1]);
             }
         }
     }

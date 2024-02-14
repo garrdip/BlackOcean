@@ -126,6 +126,22 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                         newPopUpWindow.transform.localScale = new Vector3(1f,1f,0);
                                         cardOnHand.createdPopUpWindow.Add(newPopUpWindow);
                                     }
+                                    foreach(CardCharacteristic cardCharacteristic in cardOnHand.card.cardCharacteristics)
+                                    {
+                                        GameObject newPopUpWindow = Instantiate(cardOnHand.popUpWindow,new Vector3(0,0,0),Quaternion.identity);
+                                        newPopUpWindow.GetComponent<PopUpWindow>().SetPopUpWinwdowText(CardData.instance.cardCharacteristicToString[cardCharacteristic]);
+                                        newPopUpWindow.transform.SetParent(cardOnHand.popUpWIndowParent);
+                                        newPopUpWindow.transform.localScale = new Vector3(1f,1f,0);
+                                        cardOnHand.createdPopUpWindow.Add(newPopUpWindow);
+                                    }
+                                    foreach(CardCharacteristic cardCharacteristic in cardOnHand.card.baseCard.cardCharacteristics)
+                                    {
+                                        GameObject newPopUpWindow = Instantiate(cardOnHand.popUpWindow,new Vector3(0,0,0),Quaternion.identity);
+                                        newPopUpWindow.GetComponent<PopUpWindow>().SetPopUpWinwdowText(CardData.instance.cardCharacteristicToString[cardCharacteristic]);
+                                        newPopUpWindow.transform.SetParent(cardOnHand.popUpWIndowParent);
+                                        newPopUpWindow.transform.localScale = new Vector3(1f,1f,0);
+                                        cardOnHand.createdPopUpWindow.Add(newPopUpWindow);
+                                    }
                                 }
                                 cardOnHand.transform.localScale = cardOverSize;
                             }else{
