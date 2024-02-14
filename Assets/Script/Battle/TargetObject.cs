@@ -249,16 +249,28 @@ public class TargetObject : NetworkBehaviour
     // 남은 코스트 없음 표시하는 말풍선 페이드인 후 페이드아웃
     public void ShowCostNotReaminBubble(GamePlayer gamePlayer)
     {
-        // 캐릭터 별로 메시지 버블 텍스트 분기처리
-        switch(gamePlayer.character){
+        Dictionary<string, string> constDict = new Dictionary<string, string>();
+        constDict.Add("georg_78", Const.Georg_78);
+        constDict.Add("georg_79", Const.Georg_79);
+        constDict.Add("georg_80", Const.Georg_80);
+        constDict.Add("Eris_116", Const.Eris_116);
+        constDict.Add("Eris_117", Const.Eris_117);
+        constDict.Add("Eris_118", Const.Eris_118);
+        constDict.Add("Eris_119", Const.Eris_119);
+        constDict.Add("Hong_66", Const.Hong_66);
+        constDict.Add("Hong_67", Const.Hong_67);
+        constDict.Add("Hong_68", Const.Hong_68);
+
+        // 캐릭터 별 음성 클립 재생
+        switch (gamePlayer.character){
             case Character.GEORK:
-                playerMessageBubble.text = Const.COST_NOT_REMAIN_TEXT_GEORK;
+                PlayCharacterRequireCostVoice(Character.GEORK, 77, 3, constDict);
                 break;
             case Character.ERIS:
-                playerMessageBubble.text = Const.COST_NOT_REMAIN_TEXT_ERIS;
+                PlayCharacterRequireCostVoice(Character.ERIS, 115, 4, constDict);
                 break;
             case Character.HONGDANHYANG:
-                playerMessageBubble.text = Const.COST_NOT_REMAIN_TEXT_HONGDANHYANG;
+                PlayCharacterRequireCostVoice(Character.HONGDANHYANG, 65, 3, constDict);
                 break;
         }
         // 페이드인 1초 후 페이드아웃 1초 
@@ -272,8 +284,24 @@ public class TargetObject : NetworkBehaviour
                 canvasGroup.gameObject.SetActive(false);
             }); 
         }); 
-
     }
+
+    // 캐릭터별 음성 생성 및 팝업창 텍스트 세팅
+    private void PlayCharacterRequireCostVoice(Character character, int startClipIndex, int numberOfClips, Dictionary<string, string> constDict)
+    {
+        List<AudioClip> clips = M_SoundManager.instance.GetCharacterVoiceClips(character, startClipIndex, numberOfClips);
+        if(clips.Count > 0){
+            int randomIndex = Random.Range(0, clips.Count);
+            AudioClip clipToPlay = clips[randomIndex];
+
+            if(constDict.TryGetValue(clipToPlay.name, out string message)){
+                playerMessageBubble.text = message;
+            }
+            M_SoundManager.instance.StopAllSFX();
+            M_SoundManager.instance.PlaySFX(clipToPlay, clipToPlay.length);
+        }
+    }
+
     // ----------------------------------------------       게오르크 고행 관련 함수      ---------------------------------------------------//
 
     public void UsingGoHeng()
@@ -567,9 +595,14 @@ public class TargetObject : NetworkBehaviour
             GameUIManager.instance.DisPlayeDamage(this, (oldVal - newVal));
         }
         if(player != null){
-            if(player.netIdentity == NetworkClient.connection.identity)
-            {
+            if(player.netIdentity == NetworkClient.connection.identity){
                 player.HP = newVal;
+            }
+            if(oldVal > 0){
+                // 캐릭터 피격음 재생
+                List<AudioClip> clips = M_SoundManager.instance.GetCharacterVoiceClips(player.character, 58, 3);
+                AudioClip hitSound = clips[Random.Range(0, clips.Count)];
+                M_SoundManager.instance.PlaySFX(hitSound, hitSound.length);
             }
         }
         if(playerMaxHP != 0)

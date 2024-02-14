@@ -885,9 +885,11 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcStartBattleEvent(RoomType roomType)
     {
+        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().character; // 로컬 플레이어가 선택한 캐릭터 조회
         switch(roomType)
         {
             case RoomType.MONSTER:
+                // 토스트 메시지 표시
                 M_MessageManager.instance
                     .Position(ToastPosition.Top)
                     .FadeInTime(1.5f)
@@ -895,12 +897,19 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .MessageBoxColor(Color.red)
                     .TextColor(Color.white)
                     .Text("전투 : 일반 몬스터")
-                    .Show();       
+                    .Show();  
+                // BGM 재생     
                 string audioName = Random.Range(0, 2) == 0 ? "Monster_Battle_N_1" : "Monster_Battle_N_2";
                 AudioClip audioClip_monster_n = M_SoundManager.instance.bgmClips[BGM_TYPE.Battle].Find((audioClip) => audioClip.name.Equals(audioName));
                 M_SoundManager.instance.PlayBGM(audioClip_monster_n, MusicTransition.Swift, 1.5f);
+
+                // 캐릭터 성우 음성 재생
+                List<AudioClip> normalBattleClips = M_SoundManager.instance.GetCharacterVoiceClips(character, 3, 3);
+                AudioClip normalBattleVoice = normalBattleClips[Random.Range(0, normalBattleClips.Count)];
+                M_SoundManager.instance.PlaySFX(normalBattleVoice, normalBattleVoice.length);
                 break;
             case RoomType.ELITE:
+                // 토스트 메시지 표시
                 M_MessageManager.instance
                     .Position(ToastPosition.Top)
                     .FadeInTime(1.5f)
@@ -908,9 +917,16 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .MessageBoxColor(Color.red)
                     .TextColor(Color.white)
                     .Text("전투 : 엘리트 몬스터")
-                    .Show();            
+                    .Show();
+
+                // BGM 재생            
                 AudioClip audioClip_monster_e = M_SoundManager.instance.bgmClips[BGM_TYPE.Battle].Find((audioClip) => audioClip.name.Equals("Monster_Battle_E"));
                 M_SoundManager.instance.PlayBGM(audioClip_monster_e, MusicTransition.Swift, 1.5f);
+
+                // 캐릭터 성우 음성 재생
+                List<AudioClip> eliteBattleClips = M_SoundManager.instance.GetCharacterVoiceClips(character, 12, 3);
+                AudioClip eliteBattleVoice = eliteBattleClips[Random.Range(0, eliteBattleClips.Count)];
+                M_SoundManager.instance.PlaySFX(eliteBattleVoice, eliteBattleVoice.length);
                 break;
         }
     }
@@ -1006,6 +1022,32 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
         tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
         tar.ironDemon.GetComponent<MeshRenderer>().material = null;
+
+        // 철귀 이동 시 음성 재생
+        if(target.player != null){
+            if(target.player.objectOwner.isLocalPlayer){
+                AudioClip abilitySound = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][55]; // 이리 오거라
+                M_SoundManager.instance.PlaySFX(abilitySound, abilitySound.length);
+            }else{
+                List<AudioClip> clips = new List<AudioClip>();
+                AudioClip abilitySound1 = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][53]; // 도와 주거라
+                AudioClip abilitySound2 = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][56]; // 저리 가주거라
+                clips.Add(abilitySound1);
+                clips.Add(abilitySound2);
+                AudioClip abilitySound = clips[Random.Range(0, clips.Count)];
+                M_SoundManager.instance.PlaySFX(abilitySound, abilitySound.length);
+            }
+        }else{
+            List<AudioClip> clips = new List<AudioClip>();
+            AudioClip abilitySound1 = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][52]; // 부탁하마
+            AudioClip abilitySound2 = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][54]; // 융융아 가거라
+            AudioClip abilitySound3 = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][57]; // 물어 뜯어 주거라
+            clips.Add(abilitySound1);
+            clips.Add(abilitySound2);
+            clips.Add(abilitySound3);
+            AudioClip abilitySound = clips[Random.Range(0, clips.Count)];
+            M_SoundManager.instance.PlaySFX(abilitySound, abilitySound.length);
+        }
     }
 
     int CalcOffset(TargetObject tar)
@@ -1078,6 +1120,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         string audioName = M_MapManager.instance.mapBoss == null ? "Stage_1_Map" : "Stage_1_Map_Boss_Spawn";
         AudioClip audioClip_map = M_SoundManager.instance.bgmClips[BGM_TYPE.Map].Find((audioClip) => audioClip.name.Equals(audioName));
+        M_SoundManager.instance.StopAllSFX();
         M_SoundManager.instance.PlayBGM(audioClip_map, MusicTransition.CrossFade, 2f);
         if(isServer){
             ClearTargetObject(); // 타겟오브젝트 정리

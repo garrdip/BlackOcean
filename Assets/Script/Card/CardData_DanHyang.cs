@@ -51,6 +51,7 @@ public partial class CardData : SingletonD<CardData>
         yield return null;
     }
 
+    // 영웅능력 철귀 이동
     public IEnumerator HA(Card card,List<TargetObject> tar)
     {
         yield return tempWait; // 임시 딜레이

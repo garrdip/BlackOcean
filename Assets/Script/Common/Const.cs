@@ -12,10 +12,17 @@ public static class Const
     public const string RoomType_Ruins = "폐허";
     public const string RoomType_Boss = "보스전";
 
-    // Player Message Bubble
-    public const string COST_NOT_REMAIN_TEXT_GEORK = "게오르크 : 이치가 부족하다.";
-    public const string COST_NOT_REMAIN_TEXT_ERIS = "에리스 : 이치가 부족하네요.";
-    public const string COST_NOT_REMAIN_TEXT_HONGDANHYANG = "단향 : 이치가 부족하구나.";
+    // 코스트 모자랄 때 텍스트
+    public const string Georg_78 = "다시...";
+    public const string Georg_79 = "불가능 하다..";
+    public const string Georg_80 = "행할 수 없다...";
+    public const string Eris_116 = "할 수 없어요.";
+    public const string Eris_117 = "그건 좀 힘들어요.";
+    public const string Eris_118 = "못한답니다.";
+    public const string Eris_119 = "싫어요!";
+    public const string Hong_66 = "불가하다.";
+    public const string Hong_67 = "그럴 수 없구나.";
+    public const string Hong_68 = "못 하겠다.";
 
     // CardData Sprite Dictionary Key
     public const string ATTACK_CARD_BG = "AttackCardBG";

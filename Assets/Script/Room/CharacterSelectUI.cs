@@ -30,6 +30,16 @@ public class CharacterSelectUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
             RoomPlayer roomPlayer = NetworkClient.localPlayer.GetComponent<RoomPlayer>();
             roomPlayer.character = character;
             roomPlayer.OnChangedCharacter(character, character);
+            PlaySelectdCharacterVoice();
         }
+    }
+
+    // 캐릭터 선택 음성 랜덤 재생
+    private void PlaySelectdCharacterVoice()
+    {
+        List<AudioClip> clips = M_SoundManager.instance.GetCharacterVoiceClips(character, 0, 3);
+        AudioClip characterSelecteVoice = clips[Random.Range(0, clips.Count)];
+        M_SoundManager.instance.StopAllSFX();
+        M_SoundManager.instance.PlaySFX(characterSelecteVoice, characterSelecteVoice.length);
     }
 }

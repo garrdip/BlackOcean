@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using AYellowpaper.SerializedCollections;
+using ProjectD;
 
 
 /*  
@@ -191,6 +192,33 @@ public class M_SoundManager : MonoBehaviour {
                 PlayBGM(mapClip, MusicTransition.CrossFade, 2f);
                 break;
         }
+    }
+
+    // 선택한 캐릭터의 선택 음성 count 만큼 조회
+    public List<AudioClip> GetCharacterVoiceClips(Character character, int startIndex, int count)
+    {
+        List<AudioClip> clips = new List<AudioClip>();
+        switch(character){
+            case Character.GEORK:
+                for(int i=startIndex; i<(startIndex + count); i++){
+                    AudioClip audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.Geork][i];
+                    clips.Add(audioClip);
+                }
+                break;
+            case Character.ERIS:
+                for(int i=startIndex; i<(startIndex + count); i++){
+                    AudioClip audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.Eris][i];
+                    clips.Add(audioClip);
+                }
+                break;
+            case Character.HONGDANHYANG:
+                for(int i=startIndex; i<(startIndex + count); i++){
+                    AudioClip audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][i];
+                    clips.Add(audioClip);
+                }
+                break;
+        }
+        return clips;
     }
 
     /// <summary>
@@ -452,7 +480,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="playback_position">시작시점</param>
     public void PlayAudioClipBGM (AudioClip clip, MusicTransition transition, float transition_duration, float volume, float pitch, float playback_position = 0) {
         // 요구클립이 없거나 똑같은 클립이면 재생하지 않음.
-        if (clip == null || backgroundMusic.CurrentClip == clip) {
+        if (clip == null || ( backgroundMusic.CurrentClip != null && backgroundMusic.CurrentClip.name.Equals(clip))) {
             return;
         }
 
