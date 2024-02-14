@@ -39,6 +39,8 @@ public partial class CardData : SingletonD<CardData>
 
     public string[] colorList = {"<#ff0000>","<#00ff00>","<#0000ff>","<#ffff00>","<#00ffff>","<#ff00ff>"};
 
+    string cardColor = "<#ffb0bb>";
+
 
 
     public CardSelectCallBack cardSelectCallBack;
@@ -128,6 +130,14 @@ public partial class CardData : SingletonD<CardData>
                 values[i] = colorList[colorCnt] + values[i] + "</color>";
                 colorCnt++;
             }
+            if(values[i].ToCharArray()[0] == '*') 
+            {
+                values[i] = values[i].Remove(0,1);
+                card.cardInfo.Add(values[i]);
+                string temp = cardColor + cards.Find(card => card.cardNumber == values[i]).name + "</color>";
+                values[i] = temp;
+            }
+
         }
         return string.Join(" ",values); // Concat 메서드를 사용하여 배열의 요소들을 하나로 합침
     }

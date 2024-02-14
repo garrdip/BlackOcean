@@ -142,6 +142,16 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                         newPopUpWindow.transform.localScale = new Vector3(1f,1f,0);
                                         cardOnHand.createdPopUpWindow.Add(newPopUpWindow);
                                     }
+                                    foreach(string cardNumber in cardOnHand.card.baseCard.cardInfo)
+                                    {
+                                        Debug.Log("Card  생 성 !");
+                                        GameObject popUpCard = Instantiate(cardOnHand.popUpCard);
+                                        popUpCard.transform.SetParent(cardOnHand.popUpCardParent);
+                                        popUpCard.transform.localScale = new Vector3(0.005f, 0.005f,0.005f);
+                                        popUpCard.transform.localPosition = new Vector3(0,0,0);
+                                        popUpCard.GetComponent<CardOnDeck>().card = new Card(CardData.instance.cards.Find(card => card.cardNumber == cardNumber));
+                                        cardOnHand.createdPopUpWindow.Add(popUpCard);
+                                    }
                                 }
                                 cardOnHand.transform.localScale = cardOverSize;
                             }else{
