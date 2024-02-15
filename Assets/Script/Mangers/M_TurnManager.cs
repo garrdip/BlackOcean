@@ -1026,7 +1026,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     // 영웅능력으로 철귀 이동 시 음성 재생
     [ClientRpc]
-    public void MoveIronDemonByAbility(TargetObject tar, TargetObject target)
+    public void PlayIronDemonCommandVoice(TargetObject tar, TargetObject target)
     {
         if(target.player != null){
             if(target.player.objectOwner.isLocalPlayer){
