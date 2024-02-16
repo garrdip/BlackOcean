@@ -724,6 +724,7 @@ public class M_SoundManager : MonoBehaviour {
             return null;
         }
 
+        /*
         int index = IndexOfSoundFxPool (clip.name, true);
 
         if (index >= 0) {
@@ -734,6 +735,7 @@ public class M_SoundManager : MonoBehaviour {
 
             return sfxPool[index].Source;
         }
+        */
 
         GameObject host = null;
         AudioSource source = null;
@@ -1093,7 +1095,7 @@ public class M_SoundManager : MonoBehaviour {
         if (duration <= 0 || clip == null) {
             return null;
         }
-
+        /*
         int index = IndexOfVoicePool (clip.name, true);
 
         if (index >= 0) {
@@ -1104,6 +1106,7 @@ public class M_SoundManager : MonoBehaviour {
 
             return voicePool[index].Source;
         }
+        */
 
         GameObject host = null;
         AudioSource source = null;
