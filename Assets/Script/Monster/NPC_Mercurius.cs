@@ -69,8 +69,8 @@ public class NPC_Mercurius : SpawnedMonster
         List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("thoth")); // Todd 음성 리스트 추출
         AudioClip firstVoice = clips[0];
         AudioClip secondVoice = clips[1];
-        M_SoundManager.instance.PlaySFX(firstVoice, firstVoice.length, false, () => {
-            M_SoundManager.instance.PlaySFX(secondVoice, secondVoice.length);
+        M_SoundManager.instance.PlayVoice(firstVoice, firstVoice.length, false, () => {
+            M_SoundManager.instance.PlayVoice(secondVoice, secondVoice.length);
         });
     }
 
@@ -81,7 +81,7 @@ public class NPC_Mercurius : SpawnedMonster
         while(gameObject.activeSelf){
             int randomIndex = Random.Range(0, clips.Count);
             AudioClip clipToPlay = clips[randomIndex];
-            M_SoundManager.instance.PlaySFX(clipToPlay, clipToPlay.length);
+            M_SoundManager.instance.PlayVoice(clipToPlay, clipToPlay.length);
             yield return new WaitForSeconds(5f);
         }
     }

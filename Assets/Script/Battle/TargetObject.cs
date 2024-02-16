@@ -297,8 +297,8 @@ public class TargetObject : NetworkBehaviour
             if(constDict.TryGetValue(clipToPlay.name, out string message)){
                 playerMessageBubble.text = message;
             }
-            M_SoundManager.instance.StopAllSFX();
-            M_SoundManager.instance.PlaySFX(clipToPlay, clipToPlay.length);
+            M_SoundManager.instance.StopAllVoice();
+            M_SoundManager.instance.PlayVoice(clipToPlay, clipToPlay.length);
         }
     }
 
@@ -602,7 +602,7 @@ public class TargetObject : NetworkBehaviour
                 // 캐릭터 피격음 재생
                 List<AudioClip> clips = M_SoundManager.instance.GetCharacterVoiceClips(player.character, 58, 3);
                 AudioClip hitSound = clips[Random.Range(0, clips.Count)];
-                M_SoundManager.instance.PlaySFX(hitSound, hitSound.length);
+                M_SoundManager.instance.PlayVoice(hitSound, hitSound.length);
             }
         }
         if(playerMaxHP != 0)
