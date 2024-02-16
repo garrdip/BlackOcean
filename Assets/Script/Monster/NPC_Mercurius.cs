@@ -59,6 +59,7 @@ public class NPC_Mercurius : SpawnedMonster
         if(isOrigin && mercuriusPopUp != null){
             InitShopCardByCharacter();
             PlayToddVoice();
+            StartCoroutine(PlayMinionsVoice());
         }
     }
 
@@ -71,6 +72,18 @@ public class NPC_Mercurius : SpawnedMonster
         M_SoundManager.instance.PlaySFX(firstVoice, firstVoice.length, false, () => {
             M_SoundManager.instance.PlaySFX(secondVoice, secondVoice.length);
         });
+    }
+
+    // 5초마다 미니언 랜덤 음성 재생
+    IEnumerator PlayMinionsVoice()
+    {
+        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("minons"));
+        while(gameObject.activeSelf){
+            int randomIndex = Random.Range(0, clips.Count);
+            AudioClip clipToPlay = clips[randomIndex];
+            M_SoundManager.instance.PlaySFX(clipToPlay, clipToPlay.length);
+            yield return new WaitForSeconds(5f);
+        }
     }
 
     // 클라이언트 연결 해제 이벤트 수신시 상점 카드 정보 갱신
@@ -89,6 +102,7 @@ public class NPC_Mercurius : SpawnedMonster
                 shopCardObjectList.RemoveAt(i);
             }
         }
+        StopCoroutine(PlayMinionsVoice());
     }
 
     public void OnPointerEnterMercurius(PointerEventData eventData)

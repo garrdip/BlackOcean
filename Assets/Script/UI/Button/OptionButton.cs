@@ -27,6 +27,7 @@ public class OptionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             optionIconRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 0f), 0.3f);
             optionIconLightRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 0f), 0.3f);
         }
+        OptionUIManager.instance.optionPopUp.gameObject.SetActive(isButtonClick);
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)

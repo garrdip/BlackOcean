@@ -126,17 +126,6 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
         }
     }
 
-    // 5초마다 미니언 랜덤 음성 재생
-    IEnumerator PlayMinionsVoice()
-    {
-        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("minons"));
-        while(gameObject.activeSelf){
-            int randomIndex = Random.Range(0, clips.Count);
-            AudioClip clipToPlay = clips[randomIndex];
-            M_SoundManager.instance.PlaySFX(clipToPlay, clipToPlay.length);
-            yield return new WaitForSeconds(5f);
-        }
-    }
 
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //
 
@@ -146,7 +135,6 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
         canvasGroup.DOFade(1.0f, 0.5f);
         GameUIManager.instance.GameUI.gameObject.SetActive(false);
         SetTabButtonByOwnedPlayersCount();
-        StartCoroutine(PlayMinionsVoice());
     }
 
     // MercuriusPopUp 비활성화 콜백
@@ -157,6 +145,5 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
             gameObject.SetActive(false);
             isMouseOnFrame = false;
         });
-        StopCoroutine(PlayMinionsVoice());
     }
 }

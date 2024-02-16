@@ -10117,6 +10117,8 @@ MonoBehaviour:
       Value:
       - {fileID: 8300000, guid: a137667e9f05c524ea8559d50008ed69, type: 3}
       - {fileID: 8300000, guid: 239ec89e6c1b3a144a265bf4e693c449, type: 3}
+  sfxClips:
+    _serializedList: []
   voiceClips:
     _serializedList:
     - Key: 0
@@ -11032,8 +11034,6 @@ MonoBehaviour:
       - {fileID: 8300000, guid: b5b6ac897980feb4f9337df0cc5fa824, type: 3}
       - {fileID: 8300000, guid: 8413724043805e04b9b2e40cb24cf676, type: 3}
       - {fileID: 8300000, guid: 2d5aea75e5007034fa86a892cf478f98, type: 3}
-  sfxClips:
-    _serializedList: []
   _musicOn: 1
   _musicVolume: 1
   _useMusicVolOnStart: 0
@@ -11044,6 +11044,11 @@ MonoBehaviour:
   _useSfxVolOnStart: 0
   _soundFxMixerGroup: {fileID: 0}
   _volumeOfSFXMixer: 
+  _voiceOn: 1
+  _voiceVolume: 1
+  _useVoiceVolOnStart: 0
+  _voiceMixerGroup: {fileID: 0}
+  _volumeOfVoiceMixer: 
 --- !u!82 &1137147373
 AudioSource:
   m_ObjectHideFlags: 0
@@ -15220,6 +15225,13 @@ MonoBehaviour:
     - Key: 21
       Value: {fileID: 21300000, guid: 6dbd3ce3112ff27419eef723cf0ab43c, type: 3}
   isCardOperatingTEST: 0
+  colorList:
+  - <#ff0000>
+  - <#00ff00>
+  - <#0000ff>
+  - <#ffff00>
+  - <#00ffff>
+  - <#ff00ff>
 --- !u!1 &1732529131
 GameObject:
   m_ObjectHideFlags: 0
