@@ -28,6 +28,10 @@ public class LobbyPlayer : NetworkBehaviour
     public GameObject classDanhyang;
     public GameObject classEris;
     public GameObject classGeork;
+    public Image classIcon;
+    public Sprite georkIcon;
+    public Sprite erisIcon;
+    public Sprite dnahyangIcon;
 
     [Header("ClassIconLayout")]
     public GameObject classIconLayout;
@@ -271,12 +275,15 @@ public class LobbyPlayer : NetworkBehaviour
             switch(character){
                 case Character.HONGDANHYANG:
                     characterSelectCompleteImage.sprite = danhyangSprite;
+                    classIcon.sprite = dnahyangIcon;
                     break;
                 case Character.ERIS:
                     characterSelectCompleteImage.sprite = erisSprite;
+                    classIcon.sprite = erisIcon;
                     break;
                 case Character.GEORK:
                     characterSelectCompleteImage.sprite = georkSprite;
+                    classIcon.sprite = georkIcon;
                     break;
             }
             characterSelectCompleteImage.GetComponent<RectTransform>().localPosition = new Vector3(0f, 500f, 0f);
