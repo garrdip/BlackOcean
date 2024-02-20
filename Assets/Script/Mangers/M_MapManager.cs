@@ -82,6 +82,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Header("거리 측정을 위한 경로 표시 오브젝트 목록")]
     public List<HexagonMapRoom> findPaths = new List<HexagonMapRoom>();
 
+    [SerializedDictionary("string", "Sprite")]
+    public SerializedDictionary<MapTypeIcon, Sprite> mapTypeIcons = new SerializedDictionary<MapTypeIcon, Sprite>();
+
     public readonly Vector2Int[] offSets = {
         new Vector2Int(0, -1), // 12시
         new Vector2Int(-1, 0), // 11시
@@ -96,10 +99,11 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         DontDestroyOnLoad(gameObject);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
+        Camera.main.orthographicSize = 6.0f;
     }
 
     #if UNITY_EDITOR
-    // 에디터 환경 전용 : 서버유저가 마우스 오른쪽 버튼 누를 시 맵 생성
+    // 에디터 환경 전용 : 서버유저가 마우스 오른쪽 버튼 누를 시 클릭한 맵과 주위의 맵시야 범위에 활성화 + 완료된 맵 생성
     void Update()
     {
         if(isServer && Input.GetMouseButtonDown(1)){
@@ -110,7 +114,16 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 HexagonMapRoom hexagonMapRoom = selectedObject.GetComponent<HexagonMapRoom>();
                 if(hexagonMapRoom != null && hexagonMapRoom.roomType != RoomType.START_LOCATION){
                     hexagonMapRoom.roomType = RoomType.COMPLETE;
-                    GenerateHexagonRoom(hexagonMapRoom);
+                    for(int q = -mapSight ; q <= mapSight ; q++){
+                        int rStart = Mathf.Max(-mapSight, -q - mapSight);
+                        int rEnd = Mathf.Min(mapSight, -q + mapSight);
+                        for(int r = rStart; r <= rEnd; r++){
+                            Vector3 position = GetPosition(q, r, hexagonMapRoom.position);
+                            HexagonMapRoom mapRoom = hexagonMapRooms.Find(room => room.position == position);
+                            mapRoom.isActive = true;
+                            mapRoom.roomType = RoomType.COMPLETE;
+                        }
+                    }
                 }
             }
         }  
@@ -1147,4 +1160,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             }
         }
     }
+}
+
+public enum MapTypeIcon {
+    Normal_Monster,
+    Elite_Monster,
+    Card_Shop
 }

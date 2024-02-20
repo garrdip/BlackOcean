@@ -46,62 +46,13 @@ public class GamePlayerMap : NetworkBehaviour
                 M_MapManager.instance.VoteHexagonMapRoom(findPath[findPath.Count-1], netIdentity); // 검색된 경로의 마지막 위치에 있는 HexagonMapRoom을 투표
             }else{
                 RpcHidePath(networkIdentity.netId); // 경로제거
-                M_MapManager.instance.VoteHexagonMapRoom(endAt, netIdentity); // 검색된 경로가 없는경우(보스전) 선택값으로 넘어오는 HexagonMapRoom을 투표
+                if(M_MapManager.instance.mapBoss != null){
+                    M_MapManager.instance.VoteHexagonMapRoom(endAt, netIdentity);
+                }
             }
             
             // findPath 리스트의 카운트 = 거리값
             currentMapPlayerDestination.distanceFromCurrentCoordinate = findPath.Count;
-        }
-    }
-
-
-    // ------------------------------------------------------------------------------ Client Method -------------------------------------------------------------------------------//
-
-    // 맵 플레이어가 이동하려는 방 표시 오브젝트의 위치 변경 및 거리값 계산 (로컬 클라이언트 전용)
-    // : 네트워크 딜레이를 감안하여 로컬플레이어의 MapPlayerDestination의 위치이동 및 애니매이션은 서버요청과 별도로 로컬에서 수행.
-    // : 각 플레이어는 [로컬 로직] + [커맨드를 통한 서버요청 로직]을 둘다 수행하지만 수신되는 이벤트에서 로컬유저 소유가 아닌 경우로 분기처리하여, 다른유저의 변경 이벤트만 뷰 업데이트 수행.
-    [Client]
-    public void ClientChangeMapPlayerDestinationPosition(HexagonMapRoom endAt, Vector3 position, NetworkIdentity networkIdentity)
-    {
-        if(currentMapPlayerDestination != null){
-            // 맵에 보스 출현 시 1칸 이상 이동 불가
-            if(M_MapManager.instance.mapBoss != null && M_MapManager.instance.GetDistanceFromCurrentCoordinate(endAt.coordinate) > 1){
-                return;
-            }
-
-            // 비활성화 상태면 이동 불가
-            if(!endAt.isActive){
-                return;
-            } 
-
-            // 시작지점은 CurretnRoom 또는 StartPosition
-            HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : NetworkClient.spawned[M_MapManager.instance.hexagonMapRoomNetIds[0]].GetComponent<HexagonMapRoom>();
-
-            // MapPlayerDestination 활성화 및 초기 위치 설정
-            currentMapPlayerDestination.gameObject.SetActive(true); 
-            currentMapPlayerDestination.transform.localPosition = position;
-            currentMapPlayerDestination.MoveBounce(true);
-
-            // 경로검색
-            List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt, endAt);
-            if(findPath.Count > 0){
-                // MapPlayerDestination 오브젝트의 위치 변경
-                currentMapPlayerDestination.gameObject.SetActive(true);
-                currentMapPlayerDestination.transform.localPosition = findPath[findPath.Count-1].transform.position; // MapPlayerDestination 위치는 findPath 마지막 노드 위치
-                currentMapPlayerDestination.MoveBounce(true);
-
-                // 경로표시
-                M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
-                M_MapManager.instance.RenderVisualizePath(startAt, findPath, networkIdentity.netId, currentMapPlayerDestination);
-                currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true); 
-            }else{
-                // 경로제거
-                M_MapManager.instance.RemoveExistLineRenderer(networkIdentity.netId);
-                currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(false);
-            }
-            
-            // findPath 리스트의 카운트 = 거리값
-            currentMapPlayerDestination.textDistanceCount.text = findPath.Count.ToString();
         }
     }
 
@@ -227,23 +178,37 @@ public class GamePlayerMap : NetworkBehaviour
     // ------------------------------------------------------------------------------ ClientRpc Method ----------------------------------------------------------------------------//
 
     // 검색된 경로를 표시하는 라인랜더러 랜더링
-    [ClientRpc (includeOwner = false)]
+    [ClientRpc]
     public void RpcVisualizePath(HexagonMapRoom startAt, List<HexagonMapRoom> findPath, uint netId)
     {   
         if(currentMapPlayerDestination != null){
             M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
             M_MapManager.instance.RenderVisualizePath(startAt, findPath, netId, currentMapPlayerDestination); // 새 경로 랜더링
-            currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(true);
+            HexagonMapRoom endAt = findPath[findPath.Count - 1];
+            if(isOwned){
+                endAt.PlayerChoiceLayout.SetActive(true);
+                endAt.AnotherPlayerChoiceLayout.SetActive(false);
+                endAt.TurnLayout.SetActive(true);
+                endAt.DangerLayout.SetActive(true);
+                endAt.MapInfoPopLayout.SetActive(true);
+                endAt.textMyRequireCost.text = findPath.Count.ToString();
+            }else{
+                endAt.PlayerChoiceLayout.SetActive(false);
+                endAt.AnotherPlayerChoiceLayout.SetActive(true);
+                endAt.TurnLayout.SetActive(false);
+                endAt.DangerLayout.SetActive(false);
+                endAt.MapInfoPopLayout.SetActive(false);
+                endAt.textAnotherRequireCost.text = findPath.Count.ToString();
+            }
         }
     }
 
     // 검색된 경로를 표시하는 라인랜더러 및 카운트 마크 제거
-    [ClientRpc (includeOwner = false)]
+    [ClientRpc]
     public void RpcHidePath(uint netId)
     {   
         if(currentMapPlayerDestination != null){
             M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
-            currentMapPlayerDestination.imageDistanceCount.gameObject.SetActive(false);
         }
     }
 
@@ -253,7 +218,7 @@ public class GamePlayerMap : NetworkBehaviour
     // 맵 플레이어가 이동하려는 방의 위치를 알려주는 표시 변경 수신
     public void OnChangeCurrentMapPlayerDestination(Vector3 oldPosition, Vector3 newPosition)
     {
-        if(currentMapPlayerDestination != null && !currentMapPlayerDestination.isOwned){
+        if(currentMapPlayerDestination != null){
             currentMapPlayerDestination.gameObject.SetActive(true);
             currentMapPlayerDestination.transform.localPosition = newPosition;
             currentMapPlayerDestination.MoveBounce(oldPosition != newPosition);

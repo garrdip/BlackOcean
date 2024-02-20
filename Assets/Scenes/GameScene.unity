@@ -19444,6 +19444,14 @@ MonoBehaviour:
   pathLineRendererPrefab: {fileID: 2595531754514205303, guid: 486f7d039ff94024db23ca542324cd1e, type: 3}
   pathLineRenderers: []
   findPaths: []
+  mapTypeIcons:
+    _serializedList:
+    - Key: 0
+      Value: {fileID: 21300000, guid: bc53479938cd8b94f82ac6049362ec8e, type: 3}
+    - Key: 1
+      Value: {fileID: 21300000, guid: 91c3652daddcb644188d22a4d14b7b61, type: 3}
+    - Key: 2
+      Value: {fileID: 21300000, guid: 50208db05ac9a5543ab47ffd9a0b40e0, type: 3}
 --- !u!4 &1913121864
 Transform:
   m_ObjectHideFlags: 0

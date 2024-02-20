@@ -41,17 +41,45 @@ public class HexagonMapRoom : NetworkBehaviour
     public int HCost; // 검사할 노드 ~ 목적지 노드까지의 추정 비용
     public int FCost => GCost + HCost; // 최종 비용
 
-    [Header("UI 컴포넌트")]
+    [Header("맵 타일")]
     public GameObject originMapTile; // 원본 위치의 맵타일 오브젝트(라인 렌더러 위치를 위한 용도)
     public GameObject expandMapTile; // 위쪽 방향으로 확장되는 맵타일 오브젝트
     public GameObject mapTileBase;
     public GameObject mapTileLayer;
     public GameObject mapTileIcon;
+    public GameObject mapIcon;
     public GameObject mapTileGrid;
-    public Canvas hexagonMapRoomCnavas;
     public SortingGroup sortingGroup;
+
+    [Header("맵 UI")]
+    public GameObject hexagonMapRoomUI;
+
+    [Header("맵 아이콘 이미지")]
+    public SpriteRenderer mapIconSmall;
+
+    [Header("턴 정보 레이아웃")]
+    public GameObject TurnLayout;
+    public Canvas TurnLayoutCanvas;
+    public TextMeshProUGUI textMyRequireCost;
+
+    [Header("위험도 정보 레이아웃")]
+    public GameObject DangerLayout;
+    public Canvas DangerLayoutCanvas;
+
+    [Header("로컬 플레이어가 선택한 맵 인디케이터 레이아웃")]
+    public GameObject PlayerChoiceLayout;
+
+    [Header("맵 정보 레이아웃")]
+    public GameObject MapInfoPopLayout;
+    public Canvas MapInfoPopCanvas;
     public TextMeshProUGUI textRoomType;
-    public TextMeshProUGUI textCoordinate;
+    public TextMeshProUGUI textRewardDetail;
+
+    [Header("다른 플레이어가 선택한 맵 인디케이터 레이아웃")]
+    public GameObject AnotherPlayerChoiceLayout;
+    public Canvas AnotherPlayerChoiceLayoutCanvas;
+    public TextMeshProUGUI textAnotherRequireCost;
+
 
 
     void Start()
@@ -60,8 +88,7 @@ public class HexagonMapRoom : NetworkBehaviour
         transform.localPosition = new Vector3(transform.position.x, transform.position.y, 0f);
         transform.localRotation = Quaternion.Euler(0, 0f, 0f);
         sortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
-        hexagonMapRoomCnavas.sortingLayerName = "HexagonMapRoom";
-        hexagonMapRoomCnavas.sortingOrder = -(int)(transform.position.y * 10f) + 1;
+        SetCanvasSortOrder();
     }
 
     public override void OnStartClient()
@@ -71,18 +98,18 @@ public class HexagonMapRoom : NetworkBehaviour
             mapTileBase.SetActive(false);
             mapTileLayer.SetActive(false);
             mapTileIcon.SetActive(false);
+            mapIcon.SetActive(false);
             mapTileGrid.SetActive(false);
-            hexagonMapRoomCnavas.gameObject.SetActive(false);
         }
     }
 
     private void OnMouseDown()
     {
-        GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
-        // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(로컬 클라이언트 전용)
-        gamePlayerMap.ClientChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
-        // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(서버 요청)
-        gamePlayerMap.CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
+        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId != 0){
+            GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
+            // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(서버 요청)
+            gamePlayerMap.CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
+        }
     }
 
     private void OnMouseEnter()
@@ -91,8 +118,10 @@ public class HexagonMapRoom : NetworkBehaviour
         if(isRegion && region != null){
             MapUI.instance.RegionPopUpShow(region);
         }
-        GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
-        gamePlayerMap.DisplayFindPath(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
+        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId != 0){
+            GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
+            gamePlayerMap.DisplayFindPath(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
+        }
     }
 
     private void OnMouseExit()
@@ -107,74 +136,57 @@ public class HexagonMapRoom : NetworkBehaviour
 
     void OnChangedRoomType(RoomType oldVal, RoomType newVal)
     {
+        mapIcon.SetActive(true);
         switch(newVal)
         {
             case RoomType.START_LOCATION :
-                mapTileLayer.GetComponent<SpriteRenderer>().color = Color.gray;
-                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.gray;
-                textRoomType.color = Color.gray;
-                textRoomType.text = Const.RoomType_StartLocation;
+                mapIcon.SetActive(false);
                 break;
             case RoomType.MONSTER :
-                mapTileLayer.GetComponent<SpriteRenderer>().color = Color.red;
-                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.red;
-                textRoomType.color = Color.red;
-                textRoomType.text = Const.RoomType_Monster;
+                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
+                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
+                textRoomType.text = "일반 전투";
                 break;
             case RoomType.ELITE :
-                mapTileLayer.GetComponent<SpriteRenderer>().color = Color.red;
-                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.red;
-                textRoomType.color = Color.red;
-                textRoomType.text = Const.RoomType_Elite;
+                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
+                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
+                textRoomType.text = "엘리트 전투";
                 break;
             case RoomType.EVENT :
-                mapTileLayer.GetComponent<SpriteRenderer>().color = Color.yellow;
-                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.yellow;
-                textRoomType.color = Color.yellow;
-                textRoomType.text = Const.RoomType_Event;
+                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                textRoomType.text = "이벤트";
                 break;
             case RoomType.CAMP :
-                mapTileLayer.GetComponent<SpriteRenderer>().color = Color.green;
-                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.green;
-                textRoomType.color = Color.green;
-                textRoomType.text = Const.RoomType_Camp;
+                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                textRoomType.text = "캠프";
                 break;
             case RoomType.ITEM_NPC :
-                mapTileLayer.GetComponent<SpriteRenderer>().color = Color.blue;
-                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.blue;
-                textRoomType.color = Color.blue;
-                textRoomType.text = Const.RoomType_ItemNpc;
+                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                textRoomType.text = "아이템 상점";
                 break;
             case RoomType.CARD_NPC :
-                mapTileLayer.GetComponent<SpriteRenderer>().color = Color.magenta;
-                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.magenta;
-                textRoomType.color = Color.magenta;
-                textRoomType.text = Const.RoomType_CardNpc;
+                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                textRoomType.text = "카드 상점";
                 break;
             case RoomType.COMPLETE :
-                mapTileLayer.GetComponent<SpriteRenderer>().color = Color.gray;
-                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.gray;
-                textRoomType.color = Color.gray;
-                textRoomType.text = Const.RoomType_Complete;
+                // textRoomType.color = Color.gray;
                 break;
             case RoomType.RUINS :
-                mapTileLayer.GetComponent<SpriteRenderer>().color = ColorUtils.HexToColor("#219A48");
-                mapTileIcon.GetComponent<SpriteRenderer>().color = ColorUtils.HexToColor("#219A48");
-                textRoomType.color = ColorUtils.HexToColor("#219A48");
-                textRoomType.text = Const.RoomType_Ruins;
+
                 break;
             case RoomType.BOSS :
-                mapTileLayer.GetComponent<SpriteRenderer>().color = ColorUtils.HexToColor("#E700EF");
-                mapTileIcon.GetComponent<SpriteRenderer>().color = ColorUtils.HexToColor("#E700EF");
-                textRoomType.color = ColorUtils.HexToColor("#E700EF");
-                textRoomType.text = Const.RoomType_Boss;
+
                 break;
         }
     }
 
     void OnChangedCoordinate(Vector2Int oldValue, Vector2Int newValue)
     {
-        textCoordinate.text = newValue.ToString();
+        //textCoordinate.text = newValue.ToString();
     }
 
     // HexagonMapRoom이 isRegion인 경우 비활성화 상태
@@ -200,25 +212,18 @@ public class HexagonMapRoom : NetworkBehaviour
             GetComponent<SpriteMask>().enabled = true;
             mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             mapTileBase.SetActive(true);
+            hexagonMapRoomUI.transform.DOLocalMoveY(0f, 0.5f);
+            hexagonMapRoomUI.SetActive(true);
         }else{
             expandMapTile.transform.DOLocalMoveY(-0.5f, 0.5f).OnComplete(() => {
                 GetComponent<SpriteMask>().enabled = false;
                 mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
                 mapTileBase.SetActive(false);
             });
+            hexagonMapRoomUI.transform.DOLocalMoveY(-0.25f, 0.5f);
+            hexagonMapRoomUI.SetActive(false);
         }
-    }
-
-    // HexagonMapRoom의 컨테이너 레이아웃 오브젝트 활성화 상태 변경
-    void ChangeHexagonRoomActive(bool isActive)
-    {
-        float alpha = isActive ? 1f : 0f;
-        expandMapTile.SetActive(isActive);
-        textRoomType.gameObject.SetActive(isActive);
-        //textCoordinate.gameObject.SetActive(isActive);
-        mapTileLayer.SetActive(isActive);
-        mapTileIcon.SetActive(isActive);
-        hexagonMapRoomCnavas.gameObject.SetActive(isActive);
+        mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue ? 0.25f : 1.0f, 0.25f);
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)
@@ -231,5 +236,40 @@ public class HexagonMapRoom : NetworkBehaviour
                 M_MapManager.instance.SetRoomTypeBossRoom(this);
             }
         }
+    }
+
+    // ------------------------------------------------------------ Normal Method --------------------------------------------------------------- //
+
+
+    // HexagonMapRoom의 컨테이너 레이아웃 오브젝트 활성화 상태 변경
+    void ChangeHexagonRoomActive(bool isActive)
+    {
+        float alpha = isActive ? 1f : 0f;
+        expandMapTile.SetActive(isActive);
+        mapTileLayer.SetActive(isActive);
+        mapTileIcon.SetActive(isActive);
+        mapIcon.SetActive(isActive);
+    }
+
+    // 선택한 HexaonMapRoom의 UI 컴포넌트들의 활성화 상태 변경(본인이 선택한 경우와 다른 플레이어가 선택한 경우 구분)
+    public void ChangeHexagonRoomUIByOwner(bool isActive)
+    {
+        AnotherPlayerChoiceLayout.SetActive(!isActive);
+        TurnLayout.SetActive(isActive);
+        DangerLayout.SetActive(isActive);
+        PlayerChoiceLayout.SetActive(isActive);
+        MapInfoPopLayout.SetActive(isActive);
+    }
+
+    private void SetCanvasSortOrder()
+    {
+        TurnLayoutCanvas.sortingLayerName = "MapPlayerPiece";
+        TurnLayoutCanvas.sortingOrder = 1000;
+        DangerLayoutCanvas.sortingLayerName = "MapPlayerPiece";
+        DangerLayoutCanvas.sortingOrder = 1000;
+        MapInfoPopCanvas.sortingLayerName = "MapPlayerPiece";
+        MapInfoPopCanvas.sortingOrder = 1000;
+        AnotherPlayerChoiceLayoutCanvas.sortingLayerName = "MapPlayerPiece";
+        AnotherPlayerChoiceLayoutCanvas.sortingOrder = 1000;
     }
 }

@@ -869,6 +869,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcStartBossBattleEvent()
     {
+        Camera.main.orthographicSize = 10.8f;
         M_MessageManager.instance
             .Position(ToastPosition.Top)
             .FadeInTime(1.5f)
@@ -885,6 +886,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcStartBattleEvent(RoomType roomType)
     {
+        Camera.main.orthographicSize = 10.8f;
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().character; // 로컬 플레이어가 선택한 캐릭터 조회
         switch(roomType)
         {
@@ -935,6 +937,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcStartNoneBattleEvent(RoomType roomType)
     {
+        Camera.main.orthographicSize = 10.8f;
         switch(roomType)
         {
             case RoomType.EVENT:
@@ -1142,6 +1145,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             Vector3 currLoc = M_MapManager.instance.currentRoom.transform.position;
             Camera.main.transform.position = currLoc + new Vector3(0,0,-8);
             //Camera.main.orthographic = false; 
+            Camera.main.orthographicSize = 6.0f;
 
             // UI 활성화 상태 변경
             M_MapManager.instance.MapScene.SetActive(true);

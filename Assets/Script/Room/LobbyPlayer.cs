@@ -286,6 +286,7 @@ public class LobbyPlayer : NetworkBehaviour
                     classIcon.sprite = georkIcon;
                     break;
             }
+            classIcon.gameObject.SetActive(true);
             characterSelectCompleteImage.GetComponent<RectTransform>().localPosition = new Vector3(0f, 500f, 0f);
             characterSelectCompleteImage.GetComponent<RectTransform>().DOLocalMoveY(-41f, 0.7f).SetEase(Ease.InOutExpo);
             characterSelectCompleteImage.color = new Color(255f, 255f, 255f, 0);
@@ -293,6 +294,9 @@ public class LobbyPlayer : NetworkBehaviour
             characterSelectCompleteImage.gameObject.SetActive(true);
             classIconLayout.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -50f);
             classIconLayout.GetComponent<RectTransform>().DOAnchorPosY(0f, 0.5f);
+        }else{
+            classIcon.gameObject.SetActive(false);
+            characterSelectCompleteImage.gameObject.SetActive(false);
         }
     }
 
