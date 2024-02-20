@@ -27,6 +27,7 @@ public class MapUI : InstanceD<MapUI>
     public GameObject mapInfoOverBaseLight;
     public GameObject mapDangerLayout;
     public GameObject mapTurnLayout;
+    public Image mapStageIcon;
 
     [Header("mapDangerLayout")]
     public Vector3 mapDangerLayoutPosition;
@@ -273,5 +274,10 @@ public class MapUI : InstanceD<MapUI>
                 swapButtonOnMap.t_Ready_Icon_Light.SetActive(false);
             }
         }
+    }
+
+    public void ChangeMapStageIcon(MapStage mapStage)
+    {
+        mapStageIcon.sprite = M_MapManager.instance.stageIcons[mapStage];
     }
 }

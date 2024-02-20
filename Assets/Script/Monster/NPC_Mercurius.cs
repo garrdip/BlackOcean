@@ -176,12 +176,14 @@ public class NPC_Mercurius : SpawnedMonster
             // 상점 카드 슬롯(최상단 부모 오브젝트)
             GameObject cardShopSlot = Instantiate(PopUpUIManager.instance.CardShopSlot,Vector3.zero, Quaternion.identity);
             cardShopSlot.transform.SetParent(mercuriusPopUp.grids[index].transform);
-            cardShopSlot.transform.localScale = new Vector3(1, 1, 1);
+            cardShopSlot.transform.localScale = Vector3.one;
+            cardShopSlot.transform.localPosition = Vector3.zero;
 
             // 상점 카드
             GameObject cardOnDeckObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, Vector3.zero, Quaternion.identity);
             cardOnDeckObject.transform.SetParent(cardShopSlot.transform);
-            cardOnDeckObject.transform.localScale = new Vector3(1, 1, 1);
+            cardOnDeckObject.transform.localScale = Vector3.one;
+            cardOnDeckObject.transform.localPosition = Vector3.zero;
             CardOnDeck cardOnDeck = cardOnDeckObject.GetComponent<CardOnDeck>();
             cardOnDeck.card = card;
             cardOnDeck.cardOwner = cardOwner;
@@ -189,7 +191,8 @@ public class NPC_Mercurius : SpawnedMonster
             // 상점 카드 가격 아이콘 + 텍스트
             GameObject cardShopPrice = Instantiate(PopUpUIManager.instance.CardShopPrice, Vector3.zero, Quaternion.identity);
             cardShopPrice.transform.SetParent(cardShopSlot.transform);
-            cardShopPrice.transform.localScale = new Vector3(1, 1, 1);
+            cardShopPrice.transform.localScale = Vector3.one;
+            cardShopPrice.transform.localPosition = Vector3.zero;
 
             TextMeshProUGUI textPrice = cardShopPrice.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
             textPrice.text = "100";

@@ -82,8 +82,13 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Header("거리 측정을 위한 경로 표시 오브젝트 목록")]
     public List<HexagonMapRoom> findPaths = new List<HexagonMapRoom>();
 
-    [SerializedDictionary("string", "Sprite")]
+    [Header("맵 타입 아이콘 목록")]
+    [SerializedDictionary("MapTypeIcon", "Sprite")]
     public SerializedDictionary<MapTypeIcon, Sprite> mapTypeIcons = new SerializedDictionary<MapTypeIcon, Sprite>();
+
+    [Header("맵 스테이지 아이콘 목록")]
+    [SerializedDictionary("MapStage", "Sprite")]
+    public SerializedDictionary<MapStage, Sprite> stageIcons = new SerializedDictionary<MapStage, Sprite>();
 
     public readonly Vector2Int[] offSets = {
         new Vector2Int(0, -1), // 12시
@@ -1166,4 +1171,10 @@ public enum MapTypeIcon {
     Normal_Monster,
     Elite_Monster,
     Card_Shop
+}
+
+public enum MapStage {
+    Stage1,
+    Stage2,
+    Stage3
 }

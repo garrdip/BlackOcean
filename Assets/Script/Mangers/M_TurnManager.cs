@@ -14,7 +14,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [SerializedDictionary("게임플레이어", "보상카드선택유무")]
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
 
-    public List<GameObject> rewardCardObjects = new List<GameObject>(); // 
+    private static float battelSceneCameraSize = 10.8f; // 전투씬에서 카메라 크기값
+    private float mapSceneCameraSize = 4.0f; // 맵씬에서 카메라 크기값
+    public List<GameObject> rewardCardObjects = new List<GameObject>(); // 보상카드 오브젝트 리스트
 
     // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈 슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
     public readonly SyncList<uint> playerOrder = new SyncList<uint>(){ 0, 0, 0 };
@@ -869,7 +871,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcStartBossBattleEvent()
     {
-        Camera.main.orthographicSize = 10.8f;
+        Camera.main.orthographicSize = battelSceneCameraSize;
         M_MessageManager.instance
             .Position(ToastPosition.Top)
             .FadeInTime(1.5f)
@@ -886,7 +888,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcStartBattleEvent(RoomType roomType)
     {
-        Camera.main.orthographicSize = 10.8f;
+        Camera.main.orthographicSize = battelSceneCameraSize;
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().character; // 로컬 플레이어가 선택한 캐릭터 조회
         switch(roomType)
         {
@@ -937,7 +939,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcStartNoneBattleEvent(RoomType roomType)
     {
-        Camera.main.orthographicSize = 10.8f;
+        Camera.main.orthographicSize = battelSceneCameraSize;
         switch(roomType)
         {
             case RoomType.EVENT:
@@ -1145,7 +1147,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             Vector3 currLoc = M_MapManager.instance.currentRoom.transform.position;
             Camera.main.transform.position = currLoc + new Vector3(0,0,-8);
             //Camera.main.orthographic = false; 
-            Camera.main.orthographicSize = 6.0f;
+            Camera.main.orthographicSize = mapSceneCameraSize;
 
             // UI 활성화 상태 변경
             M_MapManager.instance.MapScene.SetActive(true);
