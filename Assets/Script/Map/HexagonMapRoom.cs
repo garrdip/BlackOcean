@@ -60,6 +60,7 @@ public class HexagonMapRoom : NetworkBehaviour
     public SpriteRenderer mapIconSmall;
 
     [Header("턴 정보 레이아웃")]
+    public List<GameObject> mapVoteIcons = new List<GameObject>();
     public GameObject TurnLayout;
     public Canvas TurnLayoutCanvas;
     public TextMeshProUGUI textMyRequireCost;
@@ -78,6 +79,7 @@ public class HexagonMapRoom : NetworkBehaviour
     public TextMeshProUGUI textRewardDetail;
 
     [Header("다른 플레이어가 선택한 맵 인디케이터 레이아웃")]
+    public List<GameObject> mapVoteIconsAnother = new List<GameObject>();
     public GameObject AnotherPlayerChoiceLayout;
     public Canvas AnotherPlayerChoiceLayoutCanvas;
     public GameObject AnotherMapInfoPopLayout;
@@ -143,42 +145,25 @@ public class HexagonMapRoom : NetworkBehaviour
 
     void OnUpdateVotePlayers(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
     {
-        if(votePlyers.Count > 1){
-            PlayerChoiceLayout.SetActive(true);
-            AnotherPlayerChoiceLayout.SetActive(false);
-            TurnLayout.SetActive(true);
-            DangerLayout.SetActive(true);
-            MapInfoPopLayout.SetActive(true);
-            AnotherMapInfoPopLayout.SetActive(false);
-        }else{
-            int idx = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
-            if(idx != -1){
-                PlayerChoiceLayout.SetActive(true);
-                AnotherPlayerChoiceLayout.SetActive(false);
-                TurnLayout.SetActive(true);
-                DangerLayout.SetActive(true);
-                MapInfoPopLayout.SetActive(true);
-                AnotherMapInfoPopLayout.SetActive(false);
-            }else{
-                PlayerChoiceLayout.SetActive(false);
-                AnotherPlayerChoiceLayout.SetActive(true);
-                TurnLayout.SetActive(false);
-                DangerLayout.SetActive(false);
-                MapInfoPopLayout.SetActive(false);
-                AnotherMapInfoPopLayout.SetActive(true);
-            }
-        }
+        ChangeHexagonMapRoomLayoutState();
         switch (op)
         {
             case SyncList<uint>.Operation.OP_ADD:
-                
+                int order = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == newVal);
+                if(order != -1){
+                    mapVoteIcons[order].SetActive(true);
+                    mapVoteIconsAnother[order].SetActive(true);
+                }
                 break;
             case SyncList<uint>.Operation.OP_INSERT:
                 
                 break;
             case SyncList<uint>.Operation.OP_REMOVEAT:
-                //Debug.Log("카운트: " + votePlyers.Count);
-                
+                int order2 = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == oldVal);
+                if(order2 != -1){
+                    mapVoteIcons[order2].SetActive(false);
+                    mapVoteIconsAnother[order2].SetActive(false);
+                }
                 break;
             case SyncList<uint>.Operation.OP_SET:
                 
@@ -285,19 +270,7 @@ public class HexagonMapRoom : NetworkBehaviour
             hexagonMapRoomUI.SetActive(false);
         }
         mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue ? 0.25f : 1.0f, 0.25f);
-
-        int index = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
-        if(index != -1){
-            PlayerChoiceLayout.SetActive(true);
-            AnotherPlayerChoiceLayout.SetActive(false);
-            TurnLayout.SetActive(true);
-            DangerLayout.SetActive(true);
-        }else{
-            PlayerChoiceLayout.SetActive(false);
-            AnotherPlayerChoiceLayout.SetActive(true);
-            TurnLayout.SetActive(false);
-            DangerLayout.SetActive(false);
-        }
+        ChangeMapVoteIconState();
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)
@@ -347,5 +320,61 @@ public class HexagonMapRoom : NetworkBehaviour
         AnotherPlayerChoiceLayoutCanvas.sortingOrder = 1000;
         AnohterMapInfoPopLayoutCnavas.sortingLayerName = "MapPlayerPiece";
         AnohterMapInfoPopLayoutCnavas.sortingOrder = 1000;
+    }
+
+    // 방 레이아웃 상태 변경
+    private void ChangeHexagonMapRoomLayoutState()
+    {
+        if(votePlyers.Count > 1){
+            int idx = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+            if(idx != -1){
+                PlayerChoiceLayout.SetActive(true);
+                AnotherPlayerChoiceLayout.SetActive(false);
+                TurnLayout.SetActive(true);
+                DangerLayout.SetActive(true);
+                MapInfoPopLayout.SetActive(true);
+                AnotherMapInfoPopLayout.SetActive(false);
+            }else{
+                PlayerChoiceLayout.SetActive(false);
+                AnotherPlayerChoiceLayout.SetActive(true);
+                TurnLayout.SetActive(false);
+                DangerLayout.SetActive(false);
+                MapInfoPopLayout.SetActive(false);
+                AnotherMapInfoPopLayout.SetActive(false);
+            }
+        }else{
+            int idx = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+            if(idx != -1){
+                PlayerChoiceLayout.SetActive(true);
+                AnotherPlayerChoiceLayout.SetActive(false);
+                TurnLayout.SetActive(true);
+                DangerLayout.SetActive(true);
+                MapInfoPopLayout.SetActive(true);
+                AnotherMapInfoPopLayout.SetActive(false);
+            }else{
+                PlayerChoiceLayout.SetActive(false);
+                AnotherPlayerChoiceLayout.SetActive(true);
+                TurnLayout.SetActive(false);
+                DangerLayout.SetActive(false);
+                MapInfoPopLayout.SetActive(false);
+                AnotherMapInfoPopLayout.SetActive(true);
+            }
+        }
+    }
+
+    // 방 투표 상태 아이콘 변경
+    private void ChangeMapVoteIconState()
+    {
+        int index = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId); // 해당방에 로컬플레이어가 투표했는지 확인
+        int order = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.selectOrder;
+        if(index != -1){
+            mapVoteIcons[order].transform.GetChild(0).gameObject.SetActive(true);
+            mapVoteIcons[order].transform.GetChild(1).gameObject.SetActive(true);
+        }else{
+            mapVoteIcons[order].transform.GetChild(0).gameObject.SetActive(true);
+            mapVoteIcons[order].transform.GetChild(1).gameObject.SetActive(true);
+            mapVoteIconsAnother[order].transform.GetChild(0).gameObject.SetActive(true);
+            mapVoteIconsAnother[order].transform.GetChild(1).gameObject.SetActive(true);
+        }
     }
 }

@@ -99,12 +99,26 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         new Vector2Int(1, -1) // 1시
     };
 
+    private void Awake()
+    {
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        networkRoomManager.onClientDisconnected += OnClientDisconnected;
+    }
+
     protected override void Start()
     {
         DontDestroyOnLoad(gameObject);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
         Camera.main.orthographicSize = 6.0f;
+    }
+
+    private void OnClientDisconnected(GamePlayer gamePlayer)
+    {
+        RemoveAllExistLineRenderer();
+        foreach(HexagonMapRoom hexagonMapRoom in hexagonMapRooms){
+            hexagonMapRoom.isSelected = false;
+        }
     }
 
     #if UNITY_EDITOR
@@ -281,7 +295,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             hexagonMapRoomNetIds.Add(aroundRoom.GetComponent<NetworkIdentity>().netId);
         }
         // 주변 일정범위를 채우는 비활성화된 맵 생성
-        GenerateHexagonMapWorld(16, centerRoom);
+        GenerateHexagonMapWorld(12, centerRoom);
     }
 
     // 초기생성된 맵 주변에 비활성화된 맵 생성

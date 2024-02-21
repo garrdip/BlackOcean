@@ -185,6 +185,8 @@ public class GamePlayerMap : NetworkBehaviour
             M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
             M_MapManager.instance.RenderVisualizePath(startAt, findPath, netId, currentMapPlayerDestination); // 새 경로 랜더링
             HexagonMapRoom endAt = findPath[findPath.Count - 1];
+            endAt.textMyRequireCost.text = findPath.Count.ToString();
+            endAt.textAnotherRequireCost.text = findPath.Count.ToString();
         }
     }
 

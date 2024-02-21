@@ -77,6 +77,14 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         M_MapManager.instance.AddMapPlayer((int)gamePlayer.selectOrder, gamePlayer.netId);
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        if(gamePlayer != null){
+            InitMapPlayerView(gamePlayer.selectOrder);
+        }
+    }
+
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
