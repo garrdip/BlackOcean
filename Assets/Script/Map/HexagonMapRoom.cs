@@ -10,6 +10,8 @@ using DG.Tweening;
 [System.Serializable]
 public class HexagonMapRoom : NetworkBehaviour
 {
+    public readonly SyncList<uint> votePlyers = new SyncList<uint>(); // 방에 투표한 GamePlayer의 netId 목록
+
     [SyncVar (hook = nameof(OnChangedRoomType))]
     public RoomType roomType = RoomType.UNDEFINED; // 방 타입
 
@@ -78,7 +80,11 @@ public class HexagonMapRoom : NetworkBehaviour
     [Header("다른 플레이어가 선택한 맵 인디케이터 레이아웃")]
     public GameObject AnotherPlayerChoiceLayout;
     public Canvas AnotherPlayerChoiceLayoutCanvas;
+    public GameObject AnotherMapInfoPopLayout;
+    public Canvas AnohterMapInfoPopLayoutCnavas;
     public TextMeshProUGUI textAnotherRequireCost;
+    public TextMeshProUGUI textAnotherRoomType;
+    public TextMeshProUGUI textAnotherRewardDetail;
 
 
 
@@ -101,6 +107,7 @@ public class HexagonMapRoom : NetworkBehaviour
             mapIcon.SetActive(false);
             mapTileGrid.SetActive(false);
         }
+        votePlyers.Callback += OnUpdateVotePlayers;
     }
 
     private void OnMouseDown()
@@ -134,6 +141,54 @@ public class HexagonMapRoom : NetworkBehaviour
  
     // ------------------------------------------------------------ Syncvar Hook --------------------------------------------------------------- //
 
+    void OnUpdateVotePlayers(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
+    {
+        if(votePlyers.Count > 1){
+            PlayerChoiceLayout.SetActive(true);
+            AnotherPlayerChoiceLayout.SetActive(false);
+            TurnLayout.SetActive(true);
+            DangerLayout.SetActive(true);
+            MapInfoPopLayout.SetActive(true);
+            AnotherMapInfoPopLayout.SetActive(false);
+        }else{
+            int idx = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+            if(idx != -1){
+                PlayerChoiceLayout.SetActive(true);
+                AnotherPlayerChoiceLayout.SetActive(false);
+                TurnLayout.SetActive(true);
+                DangerLayout.SetActive(true);
+                MapInfoPopLayout.SetActive(true);
+                AnotherMapInfoPopLayout.SetActive(false);
+            }else{
+                PlayerChoiceLayout.SetActive(false);
+                AnotherPlayerChoiceLayout.SetActive(true);
+                TurnLayout.SetActive(false);
+                DangerLayout.SetActive(false);
+                MapInfoPopLayout.SetActive(false);
+                AnotherMapInfoPopLayout.SetActive(true);
+            }
+        }
+        switch (op)
+        {
+            case SyncList<uint>.Operation.OP_ADD:
+                
+                break;
+            case SyncList<uint>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<uint>.Operation.OP_REMOVEAT:
+                //Debug.Log("카운트: " + votePlyers.Count);
+                
+                break;
+            case SyncList<uint>.Operation.OP_SET:
+                
+                break;
+            case SyncList<uint>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
     void OnChangedRoomType(RoomType oldVal, RoomType newVal)
     {
         mapIcon.SetActive(true);
@@ -146,31 +201,37 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
                 textRoomType.text = "일반 전투";
+                textAnotherRoomType.text = "일반 전투";
                 break;
             case RoomType.ELITE :
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
                 textRoomType.text = "엘리트 전투";
+                textAnotherRoomType.text = "엘리트 전투";
                 break;
             case RoomType.EVENT :
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "이벤트";
+                textAnotherRoomType.text = "이벤트";
                 break;
             case RoomType.CAMP :
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "캠프";
+                textAnotherRoomType.text = "캠프";
                 break;
             case RoomType.ITEM_NPC :
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "아이템 상점";
+                textAnotherRoomType.text = "아이템 상점";
                 break;
             case RoomType.CARD_NPC :
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "카드 상점";
+                textAnotherRoomType.text = "카드 상점";
                 break;
             case RoomType.COMPLETE :
                 // textRoomType.color = Color.gray;
@@ -224,6 +285,19 @@ public class HexagonMapRoom : NetworkBehaviour
             hexagonMapRoomUI.SetActive(false);
         }
         mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue ? 0.25f : 1.0f, 0.25f);
+
+        int index = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+        if(index != -1){
+            PlayerChoiceLayout.SetActive(true);
+            AnotherPlayerChoiceLayout.SetActive(false);
+            TurnLayout.SetActive(true);
+            DangerLayout.SetActive(true);
+        }else{
+            PlayerChoiceLayout.SetActive(false);
+            AnotherPlayerChoiceLayout.SetActive(true);
+            TurnLayout.SetActive(false);
+            DangerLayout.SetActive(false);
+        }
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)
@@ -271,5 +345,7 @@ public class HexagonMapRoom : NetworkBehaviour
         MapInfoPopCanvas.sortingOrder = 1000;
         AnotherPlayerChoiceLayoutCanvas.sortingLayerName = "MapPlayerPiece";
         AnotherPlayerChoiceLayoutCanvas.sortingOrder = 1000;
+        AnohterMapInfoPopLayoutCnavas.sortingLayerName = "MapPlayerPiece";
+        AnohterMapInfoPopLayoutCnavas.sortingOrder = 1000;
     }
 }

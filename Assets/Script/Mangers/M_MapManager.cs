@@ -516,6 +516,13 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Server]
     public void VoteHexagonMapRoom(HexagonMapRoom hexagonMapRoom, NetworkIdentity networkIdentity)
     {
+        // 이전에 선택한 방의 votePlayers에서 현재 플레이어 제거 후 새로 선택한 방의 votePlayers에 추가
+        if(playerVoteHexagonMapRoom.TryGetValue(networkIdentity, out HexagonMapRoom prevMapRoom)){
+            prevMapRoom.votePlyers.Remove(networkIdentity.netId);
+        }
+        hexagonMapRoom.votePlyers.Add(networkIdentity.netId);
+
+        // playerVoteHexagonMapRoom에  networkIdentity + hexagonMapRoom을 쌍으로 데이터 저장
         if(playerVoteHexagonMapRoom.ContainsKey(networkIdentity)){
             playerVoteHexagonMapRoom[networkIdentity] = hexagonMapRoom;
         }else{

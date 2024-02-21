@@ -185,21 +185,6 @@ public class GamePlayerMap : NetworkBehaviour
             M_MapManager.instance.RemoveExistLineRenderer(netId); // 기존 경로 삭제
             M_MapManager.instance.RenderVisualizePath(startAt, findPath, netId, currentMapPlayerDestination); // 새 경로 랜더링
             HexagonMapRoom endAt = findPath[findPath.Count - 1];
-            if(isOwned){
-                endAt.PlayerChoiceLayout.SetActive(true);
-                endAt.AnotherPlayerChoiceLayout.SetActive(false);
-                endAt.TurnLayout.SetActive(true);
-                endAt.DangerLayout.SetActive(true);
-                endAt.MapInfoPopLayout.SetActive(true);
-                endAt.textMyRequireCost.text = findPath.Count.ToString();
-            }else{
-                endAt.PlayerChoiceLayout.SetActive(false);
-                endAt.AnotherPlayerChoiceLayout.SetActive(true);
-                endAt.TurnLayout.SetActive(false);
-                endAt.DangerLayout.SetActive(false);
-                endAt.MapInfoPopLayout.SetActive(false);
-                endAt.textAnotherRequireCost.text = findPath.Count.ToString();
-            }
         }
     }
 
@@ -218,11 +203,13 @@ public class GamePlayerMap : NetworkBehaviour
     // 맵 플레이어가 이동하려는 방의 위치를 알려주는 표시 변경 수신
     public void OnChangeCurrentMapPlayerDestination(Vector3 oldPosition, Vector3 newPosition)
     {
+        /*
         if(currentMapPlayerDestination != null){
             currentMapPlayerDestination.gameObject.SetActive(true);
             currentMapPlayerDestination.transform.localPosition = newPosition;
             currentMapPlayerDestination.MoveBounce(oldPosition != newPosition);
         }
+        */
     }
 
 }

@@ -19601,11 +19601,11 @@ MonoBehaviour:
   mapTypeIcons:
     _serializedList:
     - Key: 0
-      Value: {fileID: 21300000, guid: bc53479938cd8b94f82ac6049362ec8e, type: 3}
+      Value: {fileID: 21300000, guid: c7aed42b05aae184ab19c52d80475fe0, type: 3}
     - Key: 1
       Value: {fileID: 21300000, guid: 91c3652daddcb644188d22a4d14b7b61, type: 3}
     - Key: 2
-      Value: {fileID: 21300000, guid: 50208db05ac9a5543ab47ffd9a0b40e0, type: 3}
+      Value: {fileID: 21300000, guid: ce6ec6f8bc210f0428def11abf9a32fd, type: 3}
   stageIcons:
     _serializedList:
     - Key: 0
