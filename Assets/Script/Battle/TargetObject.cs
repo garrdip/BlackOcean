@@ -54,6 +54,8 @@ public class TargetObject : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedIronDemonLocation))]
     public TargetObject ironDemonLocation;
 
+    public bool isIronDemonMoving = false;
+
     public int sizeOfIronDemon
     {
         get
@@ -737,11 +739,12 @@ public class TargetObject : NetworkBehaviour
     public void OnAnimationComplete(Spine.TrackEntry trackEntry)
     {
         // 플레이어 아바타의 경우 이곳에서 아이들 애니메이션 처리
-        if(objectType == ObjectType.PLAYER)
+        if(objectType == ObjectType.PLAYER && !isIronDemonMoving)
         {
             if( trackEntry.Animation.Name != "Eye" && !trackEntry.Animation.Name.Contains("Idle") && trackEntry.TrackIndex == 0)
             {
                 anim.state.ClearTrack(0);
+                Debug.Log("Go To IDle");
                 if(player.character == Character.ERIS)
                     anim.state.SetAnimation(0,GetErisMode() + "Idle",true);
                 else

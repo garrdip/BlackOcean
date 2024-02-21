@@ -1014,6 +1014,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void MoveIronDemon(TargetObject tar, TargetObject target)
     {
+        tar.ironDemon.GetComponent<SkeletonAnimation>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
         int transformOffset = CalcOffset(tar); 
         if(target.monster != null)
             if(target.monster.monsterName == "Boss_Momos") // 모모스 키 적용 TODO: 몬스터 키적용 코드 추가
@@ -1026,7 +1027,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0+offset];
         else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
         tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
-        tar.ironDemon.GetComponent<MeshRenderer>().material = null;
     }
 
     // 영웅능력으로 철귀 이동 시 음성 재생
@@ -1087,6 +1087,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         if(tar != null){
             bool isLoop = anim == "Idle" ? true : false;
+            if(anim == "TeleportBack")tar.ironDemon.GetComponent<SkeletonAnimation>().maskInteraction = SpriteMaskInteraction.None;
             tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,anim,isLoop);
             tar.ApllyIronDemonAnimationCallbackFunction();
         }
