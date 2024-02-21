@@ -744,7 +744,6 @@ public class TargetObject : NetworkBehaviour
             if( trackEntry.Animation.Name != "Eye" && !trackEntry.Animation.Name.Contains("Idle") && trackEntry.TrackIndex == 0)
             {
                 anim.state.ClearTrack(0);
-                Debug.Log("Go To IDle");
                 if(player.character == Character.ERIS)
                     anim.state.SetAnimation(0,GetErisMode() + "Idle",true);
                 else

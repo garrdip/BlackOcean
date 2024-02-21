@@ -57,14 +57,14 @@ public class Soldier_Spear : SpawnedMonster
         parent.anim.state.SetAnimation(1,"3Idle",true);
     }
 
-    public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
+    public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
     {
         switch(nextAction.actionName){
             case "찌르기" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,newVal.actionTarget,newVal.actionValue.ToString());
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,nextAction.actionValue.ToString());
                 break;
             case "방어" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,newVal.actionTarget,newVal.actionValue.ToString());
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,nextAction.actionValue.ToString());
                 break;
         }
     }

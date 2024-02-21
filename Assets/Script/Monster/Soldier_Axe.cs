@@ -59,14 +59,14 @@ public class Soldier_Axe : SpawnedMonster
         parent.anim.state.SetAnimation(1,"1Idle",true);
     }
 
-    public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
+    public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
     {
         switch(nextAction.actionName){
             case "두번찍기" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKX2,true,newVal.actionTarget,(newVal.actionValue + parent.GetComponent<TargetObject>().GetBuffValue(BuffType.ICHI_ATTACK)).ToString()  + " X 2");
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKX2,true,nextTarget,(nextAction.actionValue + parent.GetComponent<TargetObject>().GetBuffValue(BuffType.ICHI_ATTACK)).ToString()  + " X 2");
                 break;
             case "힘증가" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,newVal.actionTarget,newVal.actionValue.ToString());
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,nextAction.actionValue.ToString());
                 break;
         }
     }

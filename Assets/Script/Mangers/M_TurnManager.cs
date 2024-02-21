@@ -666,7 +666,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
         for(int i = 0 ; i < M_MonsterManager.instance.monsterGroups[num].monsters.Count ; i ++)
         {
-            Debug.Log(M_MonsterManager.instance.monsterGroups[num].monsters[i].name);
             var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == M_MonsterManager.instance.monsterGroups[num].monsters[i].name),targetObjectPosition[i+3],Quaternion.identity).GetComponent<SpawnedMonster>();
             NetworkServer.Spawn(monster.gameObject);
             monster.monsterData = M_MonsterManager.instance.monsterGroups[num].monsters[i];
@@ -1230,16 +1229,34 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             Debug.Log("ERROR : Next Target Error");
         }
         List<TargetObject> retVal = new List<TargetObject>();
-        foreach(TargetObject tar in spawnedPlayerList)
+        switch(target)
         {
-            if( target == ActionTarget.WHOLE || 
-                (target == ActionTarget.FRONT && tar.player.selectOrder == 2) ||
-                (target == ActionTarget.MIDDLE && tar.player.selectOrder == 1) ||
-                (target == ActionTarget.BACK && tar.player.selectOrder == 0) ||
-                (target == ActionTarget.FRONT_MIDDLE && tar.player.selectOrder != 0) ||
-                (target == ActionTarget.MIDDLE_BACK && tar.player.selectOrder != 1) ||
-                (target == ActionTarget.FRONT_BACK && tar.player.selectOrder != 2) )
-                retVal.Add(tar);
+            case ActionTarget.FRONT :
+                if(M_TurnManager.instance.playerOrder[2] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[2]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                break;
+            case ActionTarget.MIDDLE :
+                if(M_TurnManager.instance.playerOrder[1] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[1]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                break;
+            case ActionTarget.BACK :
+                if(M_TurnManager.instance.playerOrder[0] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[0]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                break;
+            case ActionTarget.FRONT_BACK :
+                if(M_TurnManager.instance.playerOrder[2] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[2]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[0] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[0]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                break;
+            case ActionTarget.FRONT_MIDDLE :
+                if(M_TurnManager.instance.playerOrder[2] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[2]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[1] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[1]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                break;
+            case ActionTarget.MIDDLE_BACK :
+                if(M_TurnManager.instance.playerOrder[1] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[1]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[0] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[0]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                break;
+            case ActionTarget.WHOLE :
+                if(M_TurnManager.instance.playerOrder[0] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[0]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[2] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[2]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[1] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[1]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                break;
         }
         if(retVal.Count == 0)
             retVal.AddRange(spawnedPlayerList);

@@ -32,7 +32,7 @@ public class SpawnedMonster : NetworkBehaviour
 
     [SyncVar]
     public TargetObject nextTargetPlayer;
-    [SyncVar]
+    [SyncVar (hook = nameof(OnChangedNextTarget))]
     public ActionTarget nextTarget;
     
     [SyncVar (hook = nameof(OnChangedMonsterData))]
@@ -82,7 +82,19 @@ public class SpawnedMonster : NetworkBehaviour
     public void SetNextAction()
     {
         GetNextAction();
-        nextTarget = nextAction.actionTarget;
+        nextTarget = GetActionTarget(nextAction.actionTarget);
+    }
+
+    ActionTarget GetActionTarget(ActionTarget act)
+    {
+        ActionTarget retVal = act;
+        if(act == ActionTarget.RANDOM_MIDDLE_BACK)
+        {
+            Debug.Log("랜덤 미들 백!");
+            if(UnityEngine.Random.Range(0,2) == 0)retVal = ActionTarget.MIDDLE;
+            else retVal = ActionTarget.BACK;
+        }
+        return retVal;
     }
 
     public virtual void GetNextAction()
@@ -110,6 +122,11 @@ public class SpawnedMonster : NetworkBehaviour
     public virtual void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
     {
 
+    }
+
+    public virtual void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
+    {
+        
     }
 
     [Server]
@@ -209,9 +226,6 @@ public class SpawnedMonster : NetworkBehaviour
         {
             foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
             {
-                
-                
-
                 if(tar == null) return;
                 else if(tar.playerHP == 0)return;
 
