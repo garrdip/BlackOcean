@@ -62,6 +62,7 @@ public class MapUI : InstanceD<MapUI>
 
     [Header("맵 배경 오브젝트")]
     public GameObject mapBackground;
+    public GameObject mapDimBackground;
 
     [Header("카메라 이동 속도")]
     float cameraMoveSpeed = 20;
@@ -279,5 +280,10 @@ public class MapUI : InstanceD<MapUI>
     public void ChangeMapStageIcon(MapStage mapStage)
     {
         mapStageIcon.sprite = M_MapManager.instance.stageIcons[mapStage];
+    }
+
+    public void ChangeMapDimBacground(bool isActive)
+    {
+        mapDimBackground.SetActive(isActive);
     }
 }

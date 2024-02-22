@@ -422,7 +422,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                     GenerateHexagonRoomOnRegion();
                     return;
                 }
-                int distance = Random.Range(5,7);
+                int distance = Random.Range(7,9);
                 float angle = Random.Range(0,2*Mathf.PI);
                 centerPos.x = (int)(distance * Mathf.Cos(angle));
                 centerPos.y = (int)(distance * Mathf.Sin(angle));
@@ -467,40 +467,25 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         GenerateHexagonRoomOnRegion(); // 거점지역 생성시 그 위치에 HexagonMapRoom오브젝트도 생성
     }
 
-    // 생성된 거점 지역에 HexagonRoom 오브젝트 생성
+    // 생성된 거점 지역에 생성된 HexagonMapRoom에 region 설정값 부여
     [Server]
     public void GenerateHexagonRoomOnRegion()
     {
         foreach(Region region in regions){
-            foreach(Tile loc in region.tiles)
-            {
+            foreach(Tile loc in region.tiles){
                 Vector3 position = GetPosition((int)loc.coordinate.x, (int)loc.coordinate.y);
-                if(!IsPositionDuplicated(position)){
-                    var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-                    GameObject hexagonMapRoomObject = Instantiate(
-                        networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
-                        position,
-                        Quaternion.identity
-                    );
-                    HexagonMapRoom hexagonMapRoom = hexagonMapRoomObject.GetComponent<HexagonMapRoom>();
-                    // 방 타입 설정
-                    hexagonMapRoom.roomType = GetRoomType();
-                    // 거점지역 데이터 설정
-                    hexagonMapRoom.region = region;
-                    // 거점지역 구분 변수값 설정
-                    hexagonMapRoom.isRegion = true;
-                    // 방 활성화 상태 변수값 false 설정(거점지역의 오브젝트는 그 지역에 도달하기 전까지는 비활성화 상태여야 하므로)
-                    hexagonMapRoom.isActive = false;
-                    // 인게임 좌표계 값 설정
-                    hexagonMapRoom.position = position;
-                    // 고유 좌표계값
-                    hexagonMapRoom.coordinate = new Vector2Int((int)loc.coordinate.x, (int)loc.coordinate.y);
-
-                    NetworkServer.Spawn(hexagonMapRoomObject);
-
-                    // 육각형 위치 및 오브젝트 클래스 리스트에 추가
-                    hexagonMapRooms.Add(hexagonMapRoom);
-                    hexagonMapRoomNetIds.Add(hexagonMapRoom.GetComponent<NetworkIdentity>().netId);
+                Vector2Int coordinate = new Vector2Int((int)loc.coordinate.x, (int)loc.coordinate.y);
+                foreach(HexagonMapRoom hexagonMapRoom in hexagonMapRooms){
+                    if(hexagonMapRoom.coordinate == coordinate){
+                        // 방 타입 설정
+                        hexagonMapRoom.roomType = GetRoomType();
+                        // 거점지역 데이터 설정
+                        hexagonMapRoom.region = region;
+                        // 거점지역 구분 변수값 설정
+                        hexagonMapRoom.isRegion = true;
+                        // 방 활성화 상태 변수값 false 설정(거점지역의 오브젝트는 그 지역에 도달하기 전까지는 비활성화 상태여야 하므로)
+                        hexagonMapRoom.isActive = false;
+                    }
                 }
             }
         }
@@ -548,7 +533,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         }
 
         // 맵플레이어가 선택한 MapRoom의 isSelected 상태 변경
-        if(!hexagonMapRoom.isSelected){
+        if(hexagonMapRoom.votePlyers.Count > 1 && hexagonMapRoom.isSelected){
+            hexagonMapRoom.isSelected = true;
+        }else{
             hexagonMapRoom.isSelected = !hexagonMapRoom.isSelected;
         }
 

@@ -26,6 +26,7 @@ public class MapPlayerPiece: NetworkBehaviour
     {
         base.OnStartClient();
         SetPositionOffsetByOrder(transform.position);
+        gameObject.SetActive(false); // 리뉴얼 변경을 위해 임시 비활성화
     }
 
     public void OnChangeSteamId(string oldSteamId, string newSteamId)

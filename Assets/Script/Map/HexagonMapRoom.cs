@@ -275,9 +275,11 @@ public class HexagonMapRoom : NetworkBehaviour
             hexagonMapRoomUI.transform.DOLocalMoveY(-0.25f, 0.5f);
             hexagonMapRoomUI.SetActive(false);
         }
-        mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue ? 1.0f : 0.5f, 0.25f);
+        mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue == true ? 0.25f : 1f, 0.5f);
         ChangeMapVoteIconState();
         sortingGroup.sortingLayerName =  newValue == true ?  "HexagonMapRoomSelected" : "HexagonMapRoom";
+        int index = M_MapManager.instance.hexagonMapRoomNetIds.FindIndex((netId) => NetworkClient.spawned[netId].GetComponent<HexagonMapRoom>().isSelected);
+        MapUI.instance.mapDimBackground.SetActive(index != -1);
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)
@@ -302,7 +304,11 @@ public class HexagonMapRoom : NetworkBehaviour
         expandMapTile.SetActive(isActive);
         mapTileLayer.SetActive(isActive);
         mapTileIcon.SetActive(isActive);
-        mapIcon.SetActive(isActive);
+        if(roomType == RoomType.COMPLETE){
+            mapIcon.SetActive(false);
+        }else{
+            mapIcon.SetActive(isActive);
+        }
     }
 
     // 선택한 HexaonMapRoom의 UI 컴포넌트들의 활성화 상태 변경(본인이 선택한 경우와 다른 플레이어가 선택한 경우 구분)

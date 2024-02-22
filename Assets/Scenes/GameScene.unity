@@ -7800,7 +7800,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &714940653
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22442,6 +22442,10 @@ PrefabInstance:
       propertyPath: mapInfoOverBase
       value: 
       objectReference: {fileID: 535731887}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: mapDimBackground
+      value: 
+      objectReference: {fileID: 714940652}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: mapInfoBaseLight
       value: 
