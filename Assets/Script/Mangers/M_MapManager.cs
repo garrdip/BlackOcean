@@ -538,9 +538,11 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         }else{
             hexagonMapRoom.isSelected = !hexagonMapRoom.isSelected; // 맵 선택상태 토글
             if(hexagonMapRoom.isSelected == false){
-                // MapRoom이 비활성화면 투표데이터 제거
+                // MapRoom이 비활성화면 투표데이터 제거 및 라인렌더러 제거
                 hexagonMapRoom.votePlyers.Remove(networkIdentity.netId);
                 playerVoteHexagonMapRoom.Remove(networkIdentity);
+                GamePlayerMap gamePlayerMap = NetworkServer.spawned[networkIdentity.netId].GetComponent<GamePlayerMap>();
+                gamePlayerMap.RpcHidePath(gamePlayerMap.GetComponent<GamePlayer>().objectOwner.netId);
             }
         }
 
