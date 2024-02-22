@@ -176,56 +176,62 @@ public class HexagonMapRoom : NetworkBehaviour
 
     void OnChangedRoomType(RoomType oldVal, RoomType newVal)
     {
-        mapIcon.SetActive(true);
         switch(newVal)
         {
             case RoomType.START_LOCATION :
                 mapIcon.SetActive(false);
                 break;
             case RoomType.MONSTER :
+                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
                 textRoomType.text = "일반 전투";
                 textAnotherRoomType.text = "일반 전투";
                 break;
             case RoomType.ELITE :
+                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
                 textRoomType.text = "엘리트 전투";
                 textAnotherRoomType.text = "엘리트 전투";
                 break;
             case RoomType.EVENT :
+                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "이벤트";
                 textAnotherRoomType.text = "이벤트";
                 break;
             case RoomType.CAMP :
+                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "캠프";
                 textAnotherRoomType.text = "캠프";
                 break;
             case RoomType.ITEM_NPC :
+                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "아이템 상점";
                 textAnotherRoomType.text = "아이템 상점";
                 break;
             case RoomType.CARD_NPC :
+                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "카드 상점";
                 textAnotherRoomType.text = "카드 상점";
                 break;
             case RoomType.COMPLETE :
-                // textRoomType.color = Color.gray;
+                mapIcon.SetActive(false);
+                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.black;
                 break;
             case RoomType.RUINS :
-
+                mapIcon.SetActive(false);
                 break;
             case RoomType.BOSS :
-
+                mapIcon.SetActive(false);
                 break;
         }
     }
@@ -269,8 +275,9 @@ public class HexagonMapRoom : NetworkBehaviour
             hexagonMapRoomUI.transform.DOLocalMoveY(-0.25f, 0.5f);
             hexagonMapRoomUI.SetActive(false);
         }
-        mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue ? 0.25f : 1.0f, 0.25f);
+        mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue ? 1.0f : 0.5f, 0.25f);
         ChangeMapVoteIconState();
+        sortingGroup.sortingLayerName =  newValue == true ?  "HexagonMapRoomSelected" : "HexagonMapRoom";
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)

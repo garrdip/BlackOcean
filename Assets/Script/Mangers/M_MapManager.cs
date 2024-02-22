@@ -115,9 +115,12 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     private void OnClientDisconnected(GamePlayer gamePlayer)
     {
-        RemoveAllExistLineRenderer();
-        foreach(HexagonMapRoom hexagonMapRoom in hexagonMapRooms){
-            hexagonMapRoom.isSelected = false;
+        NetworkIdentity networkIdentity = gamePlayer.netIdentity;
+        RemoveAllExistLineRenderer(); // 경로 제거
+        if(playerVoteHexagonMapRoom.TryGetValue(networkIdentity, out HexagonMapRoom hexagonMapRoom)){
+            hexagonMapRoom.isSelected = false; // 나간 플레이어가 선택했던 방 선택상태 해제
+            hexagonMapRoom.votePlyers.Remove(networkIdentity.netId); // 나간 플레이어가 선택했던 방의 투표자 Synclist에서 해당 플레이어 데이터 제거
+            playerVoteHexagonMapRoom.Remove(networkIdentity); // 투표자 + 방 Dictionary에서 해당 플레이어 데이터 제거
         }
     }
 
@@ -133,6 +136,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 HexagonMapRoom hexagonMapRoom = selectedObject.GetComponent<HexagonMapRoom>();
                 if(hexagonMapRoom != null && hexagonMapRoom.roomType != RoomType.START_LOCATION){
                     hexagonMapRoom.roomType = RoomType.COMPLETE;
+                    hexagonMapRoom.isActive = true;
                     for(int q = -mapSight ; q <= mapSight ; q++){
                         int rStart = Mathf.Max(-mapSight, -q - mapSight);
                         int rEnd = Mathf.Min(mapSight, -q + mapSight);
@@ -418,7 +422,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                     GenerateHexagonRoomOnRegion();
                     return;
                 }
-                int distance = Random.Range(7,11);
+                int distance = Random.Range(5,7);
                 float angle = Random.Range(0,2*Mathf.PI);
                 centerPos.x = (int)(distance * Mathf.Cos(angle));
                 centerPos.y = (int)(distance * Mathf.Sin(angle));

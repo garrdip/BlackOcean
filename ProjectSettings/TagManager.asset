@@ -68,6 +68,12 @@ TagManager:
   - name: HexagonMapRoom
     uniqueID: 1918249161
     locked: 0
+  - name: MapDimBackground
+    uniqueID: 927044029
+    locked: 0
+  - name: HexagonMapRoomSelected
+    uniqueID: 3341493313
+    locked: 0
   - name: HexagonGrid
     uniqueID: 1381287363
     locked: 0

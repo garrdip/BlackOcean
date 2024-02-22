@@ -15,7 +15,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
 
     private static float battelSceneCameraSize = 10.8f; // 전투씬에서 카메라 크기값
-    private float mapSceneCameraSize = 4.0f; // 맵씬에서 카메라 크기값
+    private float mapSceneCameraSize = 5.0f; // 맵씬에서 카메라 크기값
     public List<GameObject> rewardCardObjects = new List<GameObject>(); // 보상카드 오브젝트 리스트
 
     // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈 슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
