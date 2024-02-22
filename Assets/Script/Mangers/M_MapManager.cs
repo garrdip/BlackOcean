@@ -419,7 +419,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             do{
                 if(totalTry >= 100){ // 새로운 지역 생성 불가시 생성 종료
                     regions.Remove(newRegion);
-                    GenerateHexagonRoomOnRegion();
                     return;
                 }
                 int distance = Random.Range(7,9);
@@ -445,7 +444,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 centerPos = newPos;
             }
         }
-        GenerateHexagonRoomOnRegion(); // 거점지역 생성시 그 위치에 HexagonMapRoom오브젝트도 생성
+        GenerateHexagonRoomOnRegion();
     }
 
     [Server]
@@ -464,10 +463,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 newRegion.tiles.Add(newTile);
             }
         }
-        GenerateHexagonRoomOnRegion(); // 거점지역 생성시 그 위치에 HexagonMapRoom오브젝트도 생성
+        GenerateHexagonRoomOnRegion();
     }
 
-    // 생성된 거점 지역에 생성된 HexagonMapRoom에 region 설정값 부여
+    // 거점지역으로 결정된 위치에 생성된 HexagonMapRoom에 region 설정값 부여
     [Server]
     public void GenerateHexagonRoomOnRegion()
     {
@@ -543,6 +542,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 playerVoteHexagonMapRoom.Remove(networkIdentity);
                 GamePlayerMap gamePlayerMap = NetworkServer.spawned[networkIdentity.netId].GetComponent<GamePlayerMap>();
                 gamePlayerMap.RpcHidePath(gamePlayerMap.GetComponent<GamePlayer>().objectOwner.netId);
+                gamePlayerMap.TargetChangeMapDimBackground(false);
             }
         }
 
@@ -1183,6 +1183,16 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 mapPlayerDestination.gameObject.SetActive(isActive); 
             }
         }
+    }
+
+    public bool CheckStartCoordinate(Vector2Int target)
+    {
+        for (int i = 0; i < offSets.Length; i++){
+            if (offSets[i] == target){
+                return true;
+            }
+        }
+        return false;
     }
 }
 

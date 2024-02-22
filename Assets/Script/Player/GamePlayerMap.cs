@@ -43,6 +43,7 @@ public class GamePlayerMap : NetworkBehaviour
             if(findPath.Count > 0){
                 currentMapPlayerDestinationPosition = findPath[findPath.Count-1].transform.position; // MapPlayerDestination 위치는 findPath 마지막 노드 위치
                 RpcVisualizePath(startAt, findPath, networkIdentity.netId); // 경로표시
+                TargetChangeMapDimBackground(true);
                 M_MapManager.instance.VoteHexagonMapRoom(findPath[findPath.Count-1], netIdentity); // 검색된 경로의 마지막 위치에 있는 HexagonMapRoom을 투표
             }else{
                 RpcHidePath(networkIdentity.netId); // 경로제거
@@ -199,6 +200,12 @@ public class GamePlayerMap : NetworkBehaviour
         }
     }
 
+    // 선택된 맵을 제외한 나머지 맵들을 가리는 DimBackground 활성화 상태 변경(맵을 선택한 유저에게만 이벤트 전달)
+    [TargetRpc]
+    public void TargetChangeMapDimBackground(bool isActive)
+    {
+        MapUI.instance.ChangeMapDimBackground(isActive);
+    }
 
     // ------------------------------------------------------------------------------ SyncVar hook ----------------------------------------------------------------------------//
 

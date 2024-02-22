@@ -282,7 +282,7 @@ public class MapUI : InstanceD<MapUI>
         mapStageIcon.sprite = M_MapManager.instance.stageIcons[mapStage];
     }
 
-    public void ChangeMapDimBacground(bool isActive)
+    public void ChangeMapDimBackground(bool isActive)
     {
         mapDimBackground.SetActive(isActive);
     }

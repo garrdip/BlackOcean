@@ -155,10 +155,6 @@ public class HexagonMapRoom : NetworkBehaviour
                     mapVoteIcons[addOrder].SetActive(true);
                     mapVoteIconsAnother[addOrder].SetActive(true);
                 }
-                // votePlayer에 추가될 때 로컬에서 화면 딤처리 활성화
-                if(newVal == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId){
-                    MapUI.instance.ChangeMapDimBacground(true);
-                }
                 break;
             case SyncList<uint>.Operation.OP_INSERT:
                 
@@ -169,10 +165,6 @@ public class HexagonMapRoom : NetworkBehaviour
                 if(removeOrder != -1){
                     mapVoteIcons[removeOrder].SetActive(false);
                     mapVoteIconsAnother[removeOrder].SetActive(false);
-                }
-                // votePlayer에 제거될 때 로컬에서 화면 딤처리 활성화
-                if(oldVal ==  NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId){
-                    MapUI.instance.ChangeMapDimBacground(false);
                 }
                 break;
             case SyncList<uint>.Operation.OP_SET:
