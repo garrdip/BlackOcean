@@ -536,7 +536,12 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         if(hexagonMapRoom.votePlyers.Count > 1 && hexagonMapRoom.isSelected){
             hexagonMapRoom.isSelected = true;
         }else{
-            hexagonMapRoom.isSelected = !hexagonMapRoom.isSelected;
+            hexagonMapRoom.isSelected = !hexagonMapRoom.isSelected; // 맵 선택상태 토글
+            if(hexagonMapRoom.isSelected == false){
+                // MapRoom이 비활성화면 투표데이터 제거
+                hexagonMapRoom.votePlyers.Remove(networkIdentity.netId);
+                playerVoteHexagonMapRoom.Remove(networkIdentity);
+            }
         }
 
         // hexagonMapRooms 리스트의 값을 초기값으로 가지는 HashSet생성(중복 방지)

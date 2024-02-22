@@ -149,20 +149,30 @@ public class HexagonMapRoom : NetworkBehaviour
         switch (op)
         {
             case SyncList<uint>.Operation.OP_ADD:
-                int order = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == newVal);
-                if(order != -1){
-                    mapVoteIcons[order].SetActive(true);
-                    mapVoteIconsAnother[order].SetActive(true);
+                // votePlayer에 추가될 때 추가된 플레이어의 order값에 맞는 위치의 아이콘 활성화
+                int addOrder = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == newVal);
+                if(addOrder != -1){
+                    mapVoteIcons[addOrder].SetActive(true);
+                    mapVoteIconsAnother[addOrder].SetActive(true);
+                }
+                // votePlayer에 추가될 때 로컬에서 화면 딤처리 활성화
+                if(newVal == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId){
+                    MapUI.instance.ChangeMapDimBacground(true);
                 }
                 break;
             case SyncList<uint>.Operation.OP_INSERT:
                 
                 break;
             case SyncList<uint>.Operation.OP_REMOVEAT:
-                int order2 = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == oldVal);
-                if(order2 != -1){
-                    mapVoteIcons[order2].SetActive(false);
-                    mapVoteIconsAnother[order2].SetActive(false);
+                // votePlayer에 제거될 때 추가된 플레이어의 order값에 맞는 위치의 아이콘 비활성화
+                int removeOrder = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == oldVal);
+                if(removeOrder != -1){
+                    mapVoteIcons[removeOrder].SetActive(false);
+                    mapVoteIconsAnother[removeOrder].SetActive(false);
+                }
+                // votePlayer에 제거될 때 로컬에서 화면 딤처리 활성화
+                if(oldVal ==  NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId){
+                    MapUI.instance.ChangeMapDimBacground(false);
                 }
                 break;
             case SyncList<uint>.Operation.OP_SET:
@@ -278,8 +288,6 @@ public class HexagonMapRoom : NetworkBehaviour
         mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue == true ? 0.25f : 1f, 0.5f);
         ChangeMapVoteIconState();
         sortingGroup.sortingLayerName =  newValue == true ?  "HexagonMapRoomSelected" : "HexagonMapRoom";
-        int index = M_MapManager.instance.hexagonMapRoomNetIds.FindIndex((netId) => NetworkClient.spawned[netId].GetComponent<HexagonMapRoom>().isSelected);
-        MapUI.instance.mapDimBackground.SetActive(index != -1);
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)
