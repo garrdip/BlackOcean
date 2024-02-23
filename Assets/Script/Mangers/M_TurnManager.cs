@@ -76,6 +76,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         base.OnStartServer();
         StartCoroutine(ProcessCardQueue());
+        targetObjectPosition[0] = new Vector3(-15,-3,0);
+        targetObjectPosition[1] = new Vector3(-11,-3,0);
+        targetObjectPosition[2] = new Vector3(-7,-3,0);
+        targetObjectPosition[3] = new Vector3(7,-3,0);
+        targetObjectPosition[4] = new Vector3(11,-3,0);
+        targetObjectPosition[5] = new Vector3(15,-3,0);
     }
 
     public override void OnStartClient()
@@ -656,19 +662,13 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public void GenerateMonster()
     {
-        int num;
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        while(true)
+        MonsterGroup selectedMonsterGroup = M_MonsterManager.instance.GetMonsterGroup(M_MapManager.instance.hazard);
+        for(int i = 0 ; i < selectedMonsterGroup.monsters.Count ; i ++)
         {
-            //위험도 일치하는 선에서 랜덤한 몹 찾아야함
-            num = Random.Range(0,M_MonsterManager.instance.monsterGroups.Count - 1);
-            break;
-        }
-        for(int i = 0 ; i < M_MonsterManager.instance.monsterGroups[num].monsters.Count ; i ++)
-        {
-            var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == M_MonsterManager.instance.monsterGroups[num].monsters[i].name),targetObjectPosition[i+3],Quaternion.identity).GetComponent<SpawnedMonster>();
+            var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == selectedMonsterGroup.monsters[i].name),targetObjectPosition[i+3],Quaternion.identity).GetComponent<SpawnedMonster>();
             NetworkServer.Spawn(monster.gameObject);
-            monster.monsterData = M_MonsterManager.instance.monsterGroups[num].monsters[i];
+            monster.monsterData = selectedMonsterGroup.monsters[i];
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[i+3],Quaternion.identity);
             NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;

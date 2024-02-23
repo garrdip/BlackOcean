@@ -22,8 +22,6 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedSheild))]
     public int sheild;
 
-    Dictionary<TargetObject,int> aggro = new Dictionary<TargetObject, int>();
-
     [SyncVar (hook = nameof(OnChanedNextAction))]
     public MonsterAction nextAction;
 
@@ -31,7 +29,7 @@ public class SpawnedMonster : NetworkBehaviour
     public int currentBehaviorSequence = 0;
 
     [SyncVar]
-    public TargetObject nextTargetPlayer;
+    public TargetObject nextTargetObject;
     [SyncVar (hook = nameof(OnChangedNextTarget))]
     public ActionTarget nextTarget;
     
@@ -87,12 +85,38 @@ public class SpawnedMonster : NetworkBehaviour
 
     ActionTarget GetActionTarget(ActionTarget act)
     {
+        Debug.Log("겟 넥스트 액션!" + act);
         ActionTarget retVal = act;
         if(act == ActionTarget.RANDOM_MIDDLE_BACK)
         {
-            Debug.Log("랜덤 미들 백!");
             if(UnityEngine.Random.Range(0,2) == 0)retVal = ActionTarget.MIDDLE;
             else retVal = ActionTarget.BACK;
+        }
+        if(act == ActionTarget.ENEMY_SINGLE)
+        {
+            foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList)
+            {
+                if( tar != parent )
+                    nextTargetObject = tar;
+            }
+            if(nextTargetObject == null)
+                nextTargetObject = parent;
+        }
+        if(act == ActionTarget.RANDOM_SINGLE)
+        {
+            int num = UnityEngine.Random.Range(0,3);
+            switch(num)
+            {
+                case 0 :
+                    retVal = ActionTarget.FRONT;
+                    break;
+                case 1 :
+                    retVal = ActionTarget.MIDDLE;
+                    break;
+                case 2 :
+                    retVal = ActionTarget.BACK;
+                    break;
+            }
         }
         return retVal;
     }
@@ -217,10 +241,10 @@ public class SpawnedMonster : NetworkBehaviour
         if(nextTarget == ActionTarget.FIXEDPLAYER)
         {
             // 고정 상대일경우 수정 필요!!//
-            nextTargetPlayer.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
-            M_TurnManager.instance.StartAnimation(nextTargetPlayer,0,"Defense",false);
-            if(nextTargetPlayer.player.character == Character.HONGDANHYANG && nextTargetPlayer.ironDemonLocation == nextTargetPlayer)
-                nextTargetPlayer.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
+            nextTargetObject.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
+            M_TurnManager.instance.StartAnimation(nextTargetObject,0,"Defense",false);
+            if(nextTargetObject.player.character == Character.HONGDANHYANG && nextTargetObject.ironDemonLocation == nextTargetObject)
+                nextTargetObject.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
         }
         else
         {

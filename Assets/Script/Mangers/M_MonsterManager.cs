@@ -97,4 +97,19 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
     {
         return (T)Enum.Parse(typeof(T),data);
     }
+
+    public MonsterGroup GetMonsterGroup(int hazard)
+    {
+        List<MonsterGroup> listOfMonsterGroup = new List<MonsterGroup>();
+        foreach(MonsterGroup monsterGroup in monsterGroups)
+        {
+            if(monsterGroup.minHazard <= hazard && hazard <= monsterGroup.maxHazard)
+                listOfMonsterGroup.Add(monsterGroup);
+        }
+        if(listOfMonsterGroup.Count == 0)return monsterGroups[0];
+
+        int index = UnityEngine.Random.Range(0, listOfMonsterGroup.Count);
+        return listOfMonsterGroup[index];
+    }
+
 }

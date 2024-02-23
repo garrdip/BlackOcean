@@ -67,6 +67,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Header("Boss Zone 영역 범위값")]
     public int bossZoneRange = 2;
 
+    [SyncVar]
+    public int hazard = 0;
+
     public readonly SyncList<uint> hexagonMapRoomNetIds = new SyncList<uint>(); // hexagonMapRoom 오브젝트 NetId 리스트
 
     public readonly SyncList<Region> regions = new SyncList<Region>(); // 거점지역 리스트
