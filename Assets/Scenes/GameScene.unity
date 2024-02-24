@@ -19772,6 +19772,7 @@ MonoBehaviour:
   hexagonMapRooms: []
   bossZoneMapRooms: []
   bossZoneRange: 2
+  hazard: 0
   pathLineRendererPrefab: {fileID: 2595531754514205303, guid: 486f7d039ff94024db23ca542324cd1e, type: 3}
   pathLineRenderers: []
   findPaths: []
@@ -45127,7 +45128,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6530405383496439408}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
