@@ -44,9 +44,6 @@ public class HexagonMapRoom : NetworkBehaviour
     public int FCost => GCost + HCost; // 최종 비용
 
     [Header("맵 타일")]
-    public GameObject selectedMapTile; // 선택된 맵을 표시하기 위한 타일(Dim 배경보다 윗단계 정렬)
-    public GameObject selectedMapIcon; // 선택 상태에서 보여지는 맵 아이콘 이미지
-    public GameObject selectedMapTileIcon; // 선택 상태에서 보여지는 맵 타일 면 오브젝트
     public GameObject mapTileMask; // 맵 타일 마스크
     public GameObject originMapTile; // 원본 위치의 맵타일 오브젝트(라인 렌더러 위치를 위한 용도)
     public GameObject expandMapTile; // 위쪽 방향으로 확장되는 맵타일 오브젝트
@@ -100,7 +97,6 @@ public class HexagonMapRoom : NetworkBehaviour
         transform.localPosition = new Vector3(transform.position.x, transform.position.y, 0f);
         transform.localRotation = Quaternion.Euler(0, 0f, 0f);
         sortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
-        selectedMapTile.transform.GetChild(0).GetComponent<SortingGroup>().sortingOrder = -(int)(transform.position.y * 10f);
         SetCanvasSortOrder();
     }
 
@@ -191,7 +187,6 @@ public class HexagonMapRoom : NetworkBehaviour
             case RoomType.MONSTER :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
-                selectedMapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
                 textRoomType.text = "일반 전투";
                 textAnotherRoomType.text = "일반 전투";
@@ -199,7 +194,6 @@ public class HexagonMapRoom : NetworkBehaviour
             case RoomType.ELITE :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
-                selectedMapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
                 textRoomType.text = "엘리트 전투";
                 textAnotherRoomType.text = "엘리트 전투";
@@ -207,7 +201,6 @@ public class HexagonMapRoom : NetworkBehaviour
             case RoomType.EVENT :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                selectedMapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "이벤트";
                 textAnotherRoomType.text = "이벤트";
@@ -215,7 +208,6 @@ public class HexagonMapRoom : NetworkBehaviour
             case RoomType.CAMP :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                selectedMapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "캠프";
                 textAnotherRoomType.text = "캠프";
@@ -223,7 +215,6 @@ public class HexagonMapRoom : NetworkBehaviour
             case RoomType.ITEM_NPC :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                selectedMapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "아이템 상점";
                 textAnotherRoomType.text = "아이템 상점";
@@ -231,15 +222,12 @@ public class HexagonMapRoom : NetworkBehaviour
             case RoomType.CARD_NPC :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                selectedMapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 textRoomType.text = "카드 상점";
                 textAnotherRoomType.text = "카드 상점";
                 break;
             case RoomType.COMPLETE :
                 mapIcon.SetActive(false);
-                selectedMapIcon.SetActive(false);
-                selectedMapTileIcon.GetComponent<SpriteRenderer>().color = Color.black;
                 mapTileIcon.GetComponent<SpriteRenderer>().color = Color.black;
                 break;
             case RoomType.RUINS :
@@ -281,10 +269,6 @@ public class HexagonMapRoom : NetworkBehaviour
             mapTileBase.SetActive(true);
             hexagonMapRoomUI.transform.DOLocalMoveY(0.25f, 0.5f);
             hexagonMapRoomUI.SetActive(true);
-            selectedMapTile.transform.DOLocalMoveY(0.25f, 0.5f).OnComplete(() => {
-                selectedMapTile.transform.GetChild(0).gameObject.SetActive(true);
-            });
-            selectedMapTile.SetActive(true);
         }else{
             expandMapTile.transform.DOLocalMoveY(0f, 0.5f).OnComplete(() => {
                 mapTileMask.GetComponent<SpriteMask>().enabled = false;
@@ -293,12 +277,9 @@ public class HexagonMapRoom : NetworkBehaviour
             });
             hexagonMapRoomUI.transform.DOLocalMoveY(0f, 0.5f);
             hexagonMapRoomUI.SetActive(false);
-            selectedMapTile.SetActive(false);
-            selectedMapTile.transform.GetChild(0).gameObject.SetActive(false);
-            selectedMapTile.transform.DOLocalMoveY(0f, 0.5f);
         }
-        selectedMapIcon.GetComponent<SpriteRenderer>().DOFade(newValue == true ? 0.25f : 1f, 0.5f);
         ChangeMapVoteIconState();
+        sortingGroup.sortingLayerName = newValue ? "HexagonMapRoomSelected" : "HexagonMapRoom";
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)
