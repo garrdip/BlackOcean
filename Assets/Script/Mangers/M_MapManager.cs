@@ -495,6 +495,13 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                         hexagonMapRoom.isRegion = true;
                         // 방 활성화 상태 변수값 false 설정(거점지역의 오브젝트는 그 지역에 도달하기 전까지는 비활성화 상태여야 하므로)
                         hexagonMapRoom.isActive = false;
+
+                        // 거점지역이 시작지점에 생긴경우는 활성화상태 true로 설정
+                        foreach(Vector2Int startRoomCoordinate in M_MapManager.instance.offSets){
+                            if(startRoomCoordinate == hexagonMapRoom.coordinate){
+                               hexagonMapRoom.isActive = true;
+                            }
+                        }
                     }
                 }
             }
@@ -1244,16 +1251,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 mapPlayerDestination.gameObject.SetActive(isActive); 
             }
         }
-    }
-
-    public bool CheckStartCoordinate(Vector2Int target)
-    {
-        for (int i = 0; i < offSets.Length; i++){
-            if (offSets[i] == target){
-                return true;
-            }
-        }
-        return false;
     }
 }
 
