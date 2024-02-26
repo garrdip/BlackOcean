@@ -9,6 +9,8 @@ using AYellowpaper.SerializedCollections;
 
 public class M_MapManager : NetworkSingletonD<M_MapManager>
 {  
+    public SyncDictionary<NetworkIdentity, HexagonMapRoom> playerVoteHexagonMapRoom = new SyncDictionary<NetworkIdentity, HexagonMapRoom>(); // 플레이어의 NetworkIdentity + 플레이어가 선택한 맵  Dictionary 데이터
+
     public uint ownedGamePlayer;
 
     [SyncVar]
@@ -53,10 +55,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     [Header("맵에서 플레이어가 컨트롤하는 오브젝트 리스트")]
     public List<GameObject> mapPlayerPieces;
-
-    [Header("맵에서 선택된 방 정보(HEXAGON)")]
-    [SerializedDictionary("NetworkIdentity", "MapRoom")]
-    public SerializedDictionary<NetworkIdentity, HexagonMapRoom> playerVoteHexagonMapRoom = new SerializedDictionary<NetworkIdentity, HexagonMapRoom>();
 
     [Header("HexagonMapRoom 리스트")]
     public List<HexagonMapRoom> hexagonMapRooms = new List<HexagonMapRoom>();
@@ -116,6 +114,16 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         Camera.main.orthographicSize = 6.0f;
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+
+        playerVoteHexagonMapRoom.Callback += OnChangePlayerVoteHexagonMapRoom;
+        // Process initial SyncDictionary payload
+        foreach (KeyValuePair<NetworkIdentity, HexagonMapRoom> kvp in playerVoteHexagonMapRoom)
+            OnChangePlayerVoteHexagonMapRoom(SyncDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_ADD, kvp.Key, kvp.Value);
+    }
+    
     private void OnClientDisconnected(GamePlayer gamePlayer)
     {
         NetworkIdentity networkIdentity = gamePlayer.netIdentity;
@@ -803,6 +811,29 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         }
     }
 
+    // 맵 투표 정보 SyncDictionary Callback
+    void OnChangePlayerVoteHexagonMapRoom(SyncDictionary<NetworkIdentity, HexagonMapRoom>.Operation op, NetworkIdentity key, HexagonMapRoom item)
+    {
+        GamePlayer gamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
+        switch (op)
+        {
+            case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_ADD:
+                RemoveMapInfoPopUpItem(gamePlayer);
+                CreateMapInfoPopUpItem(gamePlayer, item);
+                break;
+            case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_SET:
+                RemoveMapInfoPopUpItem(gamePlayer);
+                CreateMapInfoPopUpItem(gamePlayer, item);
+                break;
+            case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_REMOVE:
+                RemoveMapInfoPopUpItem(gamePlayer);
+                break;
+            case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
     // ------------------------------------------------------------ Normal Method -------------------------------------------------------------- //
     
     public void InitMapPlayer(uint gamePlayerNetId, int index)
@@ -993,6 +1024,33 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             }
         }
         return false;
+    }
+
+    public void CreateMapInfoPopUpItem(GamePlayer gamePlayer, HexagonMapRoom hexagonMapRoom)
+    {
+        GameObject mapInfoPopUpItemObject = Instantiate(MapUI.instance.mapInfoPopUpItemPrefab, Vector3.zero, Quaternion.identity);
+        MapInfoPopUpItem mapInfoPopUpItem = mapInfoPopUpItemObject.GetComponent<MapInfoPopUpItem>();
+        mapInfoPopUpItem.netId = gamePlayer.netId;
+        mapInfoPopUpItem.textRoomType.text = hexagonMapRoom.roomType.ToString();
+        MapUI.instance.mapInfoPopUps.Add(mapInfoPopUpItem);
+        if(gamePlayer.isOwned){
+            mapInfoPopUpItemObject.transform.SetParent(MapUI.instance.ownerPosition.transform);
+            mapInfoPopUpItemObject.transform.localScale = Vector3.one;
+            mapInfoPopUpItemObject.transform.localPosition = Vector3.zero;
+        }else{
+            mapInfoPopUpItemObject.transform.SetParent(MapUI.instance.verticalLayoutGroup.transform);
+            mapInfoPopUpItemObject.transform.localScale = Vector3.one;
+            mapInfoPopUpItemObject.transform.localPosition = Vector3.zero;
+        }
+    }
+
+    public void RemoveMapInfoPopUpItem(GamePlayer gamePlayer)
+    {
+       int index = MapUI.instance.mapInfoPopUps.FindIndex((item) => item.netId == gamePlayer.netId);
+        if(index != -1){
+            Destroy(MapUI.instance.mapInfoPopUps[index].gameObject);
+            MapUI.instance.mapInfoPopUps.RemoveAt(index);
+        }
     }
 
     // ------------------------------------------------------------ A* Algorithm Method -------------------------------------------------------------- //

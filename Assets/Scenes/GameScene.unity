@@ -6469,6 +6469,42 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &597204847
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 597204848}
+  m_Layer: 5
+  m_Name: OwnerPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &597204848
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 597204847}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1230941561}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &604659345
 GameObject:
   m_ObjectHideFlags: 0
@@ -9104,6 +9140,69 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxRayIntersections: 0
+--- !u!1 &849429440
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 849429441}
+  - component: {fileID: 849429442}
+  m_Layer: 5
+  m_Name: MapInfoPopUpItems
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &849429441
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849429440}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1230941561}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -150}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &849429442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849429440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 50
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &850104327
 GameObject:
   m_ObjectHideFlags: 0
@@ -9193,7 +9292,7 @@ GameObject:
   - component: {fileID: 860366265}
   - component: {fileID: 860366264}
   m_Layer: 5
-  m_Name: RegionCanvas
+  m_Name: MapPopUpCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9212,6 +9311,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 735082381}
+  - {fileID: 1230941561}
   m_Father: {fileID: 4770237053567765933}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -12710,6 +12810,44 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 1600, y: -500}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1230941560
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1230941561}
+  m_Layer: 5
+  m_Name: MapInfoPopUpList
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1230941561
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230941560}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 597204848}
+  - {fileID: 849429441}
+  m_Father: {fileID: 860366215}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -531, y: -156}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1246167234
@@ -19767,8 +19905,6 @@ MonoBehaviour:
   gridParent: {fileID: 8899030787224276078}
   regionIndicator: {fileID: 590561824302976873, guid: e263356188cccbb4aa7f221fdcf2899f, type: 3}
   mapPlayerPieces: []
-  playerVoteHexagonMapRoom:
-    _serializedList: []
   hexagonMapRooms: []
   bossZoneMapRooms: []
   bossZoneRange: 2
@@ -22140,9 +22276,9 @@ MonoBehaviour:
   - {x: -15, y: -3, z: 0}
   - {x: -11, y: -3, z: 0}
   - {x: -7, y: -3, z: 0}
-  - {x: 15, y: -3, z: 0}
-  - {x: 11, y: -3, z: 0}
   - {x: 7, y: -3, z: 0}
+  - {x: 11, y: -3, z: 0}
+  - {x: 15, y: -3, z: 0}
   isCardQueueOperating: 0
   spawnedPlayerList: []
   spawnedMonsterList: []
@@ -22428,6 +22564,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1623769722}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: ownerPosition
+      value: 
+      objectReference: {fileID: 597204847}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: textRegionDesc
       value: 
       objectReference: {fileID: 626090673}
@@ -22456,9 +22596,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 604659345}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: ownedMapInfoPopUp
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: regionPopUpHeader
       value: 
       objectReference: {fileID: 1749212426}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: mapInfoPopUpPrefab
+      value: 
+      objectReference: {fileID: 2553241758047087033, guid: 9d663db7cf4df084b90ce07ac8e87491, type: 3}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: mapInfoBaseLightSec
       value: 
@@ -22472,6 +22620,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: verticalLayoutGroup
+      value: 
+      objectReference: {fileID: 849429442}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: mapInfoOverBaseLight
       value: 
       objectReference: {fileID: 1586872386}
@@ -22482,6 +22634,18 @@ PrefabInstance:
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: topButtons.Array.size
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: mapInfoPopUpItemPrefab
+      value: 
+      objectReference: {fileID: 2553241758047087033, guid: 9d663db7cf4df084b90ce07ac8e87491, type: 3}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: otherMapInfoPopUpItems
+      value: 
+      objectReference: {fileID: 849429440}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: ownerMapInfoPopUpItems
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: swapButtons.Array.size
@@ -22508,6 +22672,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2124449165}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: mapInfoPopUps.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: textTotalActionCostCount
       value: 
       objectReference: {fileID: 569987363}
@@ -22532,6 +22700,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: popUpPositions.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: swapButtons.Array.data[0]
       value: 
       objectReference: {fileID: 633642825}
@@ -22543,6 +22715,18 @@ PrefabInstance:
       propertyPath: swapButtons.Array.data[2]
       value: 
       objectReference: {fileID: 927553985}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: mapInfoPopUps.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: mapInfoPopUps.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: mapInfoPopUps.Array.data[2]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: orderSelected.Array.data[0]
       value: 
@@ -22566,6 +22750,18 @@ PrefabInstance:
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: playerProfiles.Array.data[2]
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: popUpPositions.Array.data[1].y
+      value: -150
+      objectReference: {fileID: 0}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: popUpPositions.Array.data[2].y
+      value: -300
+      objectReference: {fileID: 0}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: mapInfoPopUps._serializedList.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4270963465017090200, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: m_RootOrder

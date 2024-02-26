@@ -43,9 +43,14 @@ public class MapUI : InstanceD<MapUI>
     public TextMeshProUGUI textMaxActionCostCount;
     public Image turnGageBar;
     public Button readyButton;
-
     public List<GameObject> topIcons = new List<GameObject>();
     public List<Button> swapButtons = new List<Button>();
+
+    [Header("선택한 맵 정보 팝업")]
+    public GameObject mapInfoPopUpItemPrefab;
+    public GameObject ownerPosition;
+    public VerticalLayoutGroup verticalLayoutGroup;
+    public List<MapInfoPopUpItem> mapInfoPopUps = new List<MapInfoPopUpItem>();
 
     [Header("맵 화면의 카메라 줌 조절 변수값")]
     [SerializeField]

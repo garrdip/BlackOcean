@@ -73,22 +73,12 @@ public class HexagonMapRoom : NetworkBehaviour
     [Header("로컬 플레이어가 선택한 맵 인디케이터 레이아웃")]
     public GameObject PlayerChoiceLayout;
 
-    [Header("맵 정보 레이아웃")]
-    public GameObject MapInfoPopLayout;
-    public Canvas MapInfoPopCanvas;
-    public TextMeshProUGUI textRoomType;
-    public TextMeshProUGUI textRewardDetail;
 
     [Header("다른 플레이어가 선택한 맵 인디케이터 레이아웃")]
     public List<GameObject> mapVoteIconsAnother = new List<GameObject>();
     public GameObject AnotherPlayerChoiceLayout;
     public Canvas AnotherPlayerChoiceLayoutCanvas;
-    public GameObject AnotherMapInfoPopLayout;
-    public Canvas AnohterMapInfoPopLayoutCnavas;
     public TextMeshProUGUI textAnotherRequireCost;
-    public TextMeshProUGUI textAnotherRoomType;
-    public TextMeshProUGUI textAnotherRewardDetail;
-
 
 
     void Start()
@@ -188,43 +178,31 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
-                textRoomType.text = "일반 전투";
-                textAnotherRoomType.text = "일반 전투";
                 break;
             case RoomType.ELITE :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
-                textRoomType.text = "엘리트 전투";
-                textAnotherRoomType.text = "엘리트 전투";
                 break;
             case RoomType.EVENT :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                textRoomType.text = "이벤트";
-                textAnotherRoomType.text = "이벤트";
                 break;
             case RoomType.CAMP :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                textRoomType.text = "캠프";
-                textAnotherRoomType.text = "캠프";
                 break;
             case RoomType.ITEM_NPC :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                textRoomType.text = "아이템 상점";
-                textAnotherRoomType.text = "아이템 상점";
                 break;
             case RoomType.CARD_NPC :
                 mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                textRoomType.text = "카드 상점";
-                textAnotherRoomType.text = "카드 상점";
                 break;
             case RoomType.COMPLETE :
                 mapIcon.SetActive(false);
@@ -318,7 +296,6 @@ public class HexagonMapRoom : NetworkBehaviour
         TurnLayout.SetActive(isActive);
         DangerLayout.SetActive(isActive);
         PlayerChoiceLayout.SetActive(isActive);
-        MapInfoPopLayout.SetActive(isActive);
     }
 
     private void SetCanvasSortOrder()
@@ -327,12 +304,8 @@ public class HexagonMapRoom : NetworkBehaviour
         TurnLayoutCanvas.sortingOrder = 1000;
         DangerLayoutCanvas.sortingLayerName = "MapPlayerPiece";
         DangerLayoutCanvas.sortingOrder = 1000;
-        MapInfoPopCanvas.sortingLayerName = "MapPlayerPiece";
-        MapInfoPopCanvas.sortingOrder = 1000;
         AnotherPlayerChoiceLayoutCanvas.sortingLayerName = "MapPlayerPiece";
         AnotherPlayerChoiceLayoutCanvas.sortingOrder = 1000;
-        AnohterMapInfoPopLayoutCnavas.sortingLayerName = "MapPlayerPiece";
-        AnohterMapInfoPopLayoutCnavas.sortingOrder = 1000;
     }
 
     // 방 레이아웃 상태 변경
@@ -345,15 +318,11 @@ public class HexagonMapRoom : NetworkBehaviour
                 AnotherPlayerChoiceLayout.SetActive(false);
                 TurnLayout.SetActive(true);
                 DangerLayout.SetActive(true);
-                MapInfoPopLayout.SetActive(true);
-                AnotherMapInfoPopLayout.SetActive(false);
             }else{
                 PlayerChoiceLayout.SetActive(false);
                 AnotherPlayerChoiceLayout.SetActive(true);
                 TurnLayout.SetActive(false);
                 DangerLayout.SetActive(false);
-                MapInfoPopLayout.SetActive(false);
-                AnotherMapInfoPopLayout.SetActive(false);
             }
         }else{
             int idx = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
@@ -362,15 +331,11 @@ public class HexagonMapRoom : NetworkBehaviour
                 AnotherPlayerChoiceLayout.SetActive(false);
                 TurnLayout.SetActive(true);
                 DangerLayout.SetActive(true);
-                MapInfoPopLayout.SetActive(true);
-                AnotherMapInfoPopLayout.SetActive(false);
             }else{
                 PlayerChoiceLayout.SetActive(false);
                 AnotherPlayerChoiceLayout.SetActive(true);
                 TurnLayout.SetActive(false);
                 DangerLayout.SetActive(false);
-                MapInfoPopLayout.SetActive(false);
-                AnotherMapInfoPopLayout.SetActive(true);
             }
         }
     }

@@ -76,12 +76,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         base.OnStartServer();
         StartCoroutine(ProcessCardQueue());
-        targetObjectPosition[0] = new Vector3(-15,-3,0);
-        targetObjectPosition[1] = new Vector3(-11,-3,0);
-        targetObjectPosition[2] = new Vector3(-7,-3,0);
-        targetObjectPosition[3] = new Vector3(7,-3,0);
-        targetObjectPosition[4] = new Vector3(11,-3,0);
-        targetObjectPosition[5] = new Vector3(15,-3,0);
     }
 
     public override void OnStartClient()
