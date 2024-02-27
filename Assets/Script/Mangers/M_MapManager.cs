@@ -13,7 +13,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     public uint ownedGamePlayer;
 
-    [SyncVar]
+    [SyncVar(hook = nameof(OnChangeCurrentRoom))]
     public HexagonMapRoom currentRoom;
 
     [SyncVar]
@@ -64,9 +64,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     [Header("Boss Zone 영역 범위값")]
     public int bossZoneRange = 2;
-
-    [SyncVar]
-    public int hazard = 0;
 
     public readonly SyncList<uint> hexagonMapRoomNetIds = new SyncList<uint>(); // hexagonMapRoom 오브젝트 NetId 리스트
 
@@ -302,7 +299,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             aroundRoom.isActive = true;
             // 고유 좌표계 값 설정
             aroundRoom.coordinate = centerRoom.coordinate + offSets[i];
-            
+            // 위험도값 설정
+            aroundRoom.hazard = GetDistanceFromCurrentCoordinate(centerRoom.coordinate, aroundRoom.coordinate);
+    
             NetworkServer.Spawn(aroundRoomObject);
 
             // 육각형 위치 및 오브젝트 클래스 리스트에 추가
@@ -341,6 +340,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                     hexagonMapRoom.isActive = false;
                     // 고유 좌표계 값(Axial 좌표계) 설정
                     hexagonMapRoom.coordinate = centerRoom.coordinate + new Vector2Int(q, r);
+                    // 위험도값 설정
+                    hexagonMapRoom.hazard = GetDistanceFromCurrentCoordinate(centerRoom.coordinate, hexagonMapRoom.coordinate);
                     
                     NetworkServer.Spawn(hexagonMapRoomObject);
 
@@ -818,22 +819,30 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         }
     }
 
+    // 현재 플레이어들이 위치하는 방 변경 이벤트 수신
+    public void OnChangeCurrentRoom(HexagonMapRoom oldValue, HexagonMapRoom newValue)
+    {
+        MapUI.instance.textHazardValue.text = newValue.hazard.ToString();
+    }
+
     // 맵 투표 정보 SyncDictionary Callback
     void OnChangePlayerVoteHexagonMapRoom(SyncDictionary<NetworkIdentity, HexagonMapRoom>.Operation op, NetworkIdentity key, HexagonMapRoom item)
     {
-        GamePlayer gamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
         switch (op)
         {
             case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_ADD:
-                RemoveMapInfoPopUpItem(gamePlayer);
-                CreateMapInfoPopUpItem(gamePlayer, item);
+                GamePlayer addGamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
+                RemoveMapInfoPopUpItem(addGamePlayer);
+                CreateMapInfoPopUpItem(addGamePlayer, item);
                 break;
             case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_SET:
-                RemoveMapInfoPopUpItem(gamePlayer);
-                CreateMapInfoPopUpItem(gamePlayer, item);
+                GamePlayer setGamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
+                RemoveMapInfoPopUpItem(setGamePlayer);
+                CreateMapInfoPopUpItem(setGamePlayer, item);
                 break;
             case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_REMOVE:
-                RemoveMapInfoPopUpItem(gamePlayer);
+                GamePlayer removeGamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
+                RemoveMapInfoPopUpItem(removeGamePlayer);
                 break;
             case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_CLEAR:
                 
@@ -1011,15 +1020,12 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     }
 
     // Axial 좌표계를 이용한 시스템에서 현재 좌표에서 목표 좌표까지의 거리를 반환
-    public int GetDistanceFromCurrentCoordinate(Vector2Int destinationCoord)
+    public int GetDistanceFromCurrentCoordinate(Vector2Int startAt, Vector2Int endAt)
     {
-        if(currentRoom != null){
-            int dQ = destinationCoord.x - currentRoom.coordinate.x;
-            int dR = destinationCoord.y - currentRoom.coordinate.y;
-            int distance = (Mathf.Abs(dQ) + Mathf.Abs(dR) + Mathf.Abs(dQ + dR)) / 2;
-            return distance;
-        }
-        return 0;
+        int dQ = endAt.x - startAt.x;
+        int dR = endAt.y - startAt.y;
+        int distance = (Mathf.Abs(dQ) + Mathf.Abs(dR) + Mathf.Abs(dQ + dR)) / 2;
+        return distance;
     }
 
     // 육각형 방 생성하려는 위치에 이미 방이 존재하는지 체크

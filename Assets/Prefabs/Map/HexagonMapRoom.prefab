@@ -357,6 +357,7 @@ MonoBehaviour:
   isActive: 0
   previousNode: {fileID: 0}
   isSelected: 0
+  hazard: 0
   GCost: 0
   HCost: 0
   mapTileMask: {fileID: 9217582594897000704}
@@ -379,22 +380,17 @@ MonoBehaviour:
   textMyRequireCost: {fileID: 1339635026535832946}
   DangerLayout: {fileID: 1805646999712301029}
   DangerLayoutCanvas: {fileID: 4531402441800019788}
+  textHazardTitle: {fileID: 4058779414061078218}
+  textHazardCount: {fileID: 343750568610385815}
+  hazardArrow: {fileID: 7264776995909978714}
   PlayerChoiceLayout: {fileID: 3927479170253614844}
-  MapInfoPopLayout: {fileID: 0}
-  MapInfoPopCanvas: {fileID: 0}
-  textRoomType: {fileID: 0}
-  textRewardDetail: {fileID: 0}
   mapVoteIconsAnother:
   - {fileID: 7702219437767932175}
   - {fileID: 9006886976396112264}
   - {fileID: 7573343242730956701}
   AnotherPlayerChoiceLayout: {fileID: 2036484511109280389}
   AnotherPlayerChoiceLayoutCanvas: {fileID: 1608515263567389379}
-  AnotherMapInfoPopLayout: {fileID: 0}
-  AnohterMapInfoPopLayoutCnavas: {fileID: 0}
   textAnotherRequireCost: {fileID: 4773636148853146469}
-  textAnotherRoomType: {fileID: 0}
-  textAnotherRewardDetail: {fileID: 0}
 --- !u!60 &6063401236321385986
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -2696,7 +2692,7 @@ GameObject:
   - component: {fileID: 7904635763489821988}
   - component: {fileID: 4058779414061078218}
   m_Layer: 5
-  m_Name: TextDangerTitle
+  m_Name: TextHazardTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3791,7 +3787,7 @@ GameObject:
   - component: {fileID: 6727641221334635514}
   - component: {fileID: 7264776995909978714}
   m_Layer: 0
-  m_Name: DangerUp
+  m_Name: HazardArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3805,7 +3801,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7803516324316157681}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.479, y: 0.392, z: 0}
+  m_LocalPosition: {x: 0.479, y: 0.328, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3876,7 +3872,7 @@ GameObject:
   - component: {fileID: 8353444303769198988}
   - component: {fileID: 343750568610385815}
   m_Layer: 5
-  m_Name: TextDangerCount
+  m_Name: TextHazardCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3899,7 +3895,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0.6, y: -0.463}
+  m_AnchoredPosition: {x: 0.6, y: -0.52696484}
   m_SizeDelta: {x: 0.5, y: 0.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8353444303769198988
@@ -3930,7 +3926,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '99
+  m_text: '0
 
 '
   m_isRightToLeft: 0

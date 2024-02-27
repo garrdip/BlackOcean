@@ -654,10 +654,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     }
 
     [Server]
-    public void GenerateMonster()
+    public void GenerateMonster(HexagonMapRoom currentRoom)
     {
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        MonsterGroup selectedMonsterGroup = M_MonsterManager.instance.GetMonsterGroup(M_MapManager.instance.hazard);
+        MonsterGroup selectedMonsterGroup = M_MonsterManager.instance.GetMonsterGroup(currentRoom.hazard);
         for(int i = 0 ; i < selectedMonsterGroup.monsters.Count ; i ++)
         {
             var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == selectedMonsterGroup.monsters[i].name),targetObjectPosition[i+3],Quaternion.identity).GetComponent<SpawnedMonster>();
@@ -797,7 +797,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 RpcCardPrefareForBattle();
                 RpcStartBossBattleEvent();
             }else if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE){
-                GenerateMonster();
+                GenerateMonster(hexagonMapRoom);
                 RpcCardPrefareForBattle();
                 RpcStartBattleEvent(hexagonMapRoom.roomType);
             }else{
@@ -1155,6 +1155,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             // Dim배경 상태 변경
             blackCurtain.gameObject.SetActive(false);
             blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
+            MapUI.instance.ChangeMapDimBackground(false);
         });
     }
 

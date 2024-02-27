@@ -31,6 +31,7 @@ public class MapUI : InstanceD<MapUI>
 
     [Header("mapDangerLayout")]
     public Vector3 mapDangerLayoutPosition;
+    public TextMeshProUGUI textHazardValue;
 
     [Header("mapTurnLayout")]
     public Vector3 mapTurnLayoutPosition;

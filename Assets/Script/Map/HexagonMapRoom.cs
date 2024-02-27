@@ -39,6 +39,9 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedIsSelected))]
     public bool isSelected = false;
 
+    [SyncVar]
+    public int hazard; // 위험도
+
     public int GCost; // 시작 노드 ~ 검사할 노드까지의 비용
     public int HCost; // 검사할 노드 ~ 목적지 노드까지의 추정 비용
     public int FCost => GCost + HCost; // 최종 비용
@@ -69,6 +72,10 @@ public class HexagonMapRoom : NetworkBehaviour
     [Header("위험도 정보 레이아웃")]
     public GameObject DangerLayout;
     public Canvas DangerLayoutCanvas;
+    public TextMeshProUGUI textHazardTitle;
+    public TextMeshProUGUI textHazardCount;
+    public SpriteRenderer hazardArrow;
+
 
     [Header("로컬 플레이어가 선택한 맵 인디케이터 레이아웃")]
     public GameObject PlayerChoiceLayout;
@@ -258,6 +265,19 @@ public class HexagonMapRoom : NetworkBehaviour
         }
         ChangeMapVoteIconState();
         sortingGroup.sortingLayerName = newValue ? "HexagonMapRoomSelected" : "HexagonMapRoom";
+
+        int hazardValue = hazard - M_MapManager.instance.currentRoom.hazard;
+        textHazardCount.text = Mathf.Abs(hazardValue).ToString();
+        if(hazardValue == 0){
+            hazardArrow.gameObject.SetActive(false);
+            textHazardTitle.text = "위험도 동일";
+            hazardArrow.color = Color.white;
+        }else{
+            hazardArrow.gameObject.SetActive(true);
+            textHazardTitle.text = hazardValue > 0 ? "위험도 증가" : "위험도 감소" ;
+            hazardArrow.flipY = hazardValue > 0 ? false : true;
+            hazardArrow.color =  hazardValue > 0 ? Color.red : ColorUtils.HexToColor("#0080ff");
+        }
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)

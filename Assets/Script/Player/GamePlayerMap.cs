@@ -21,9 +21,9 @@ public class GamePlayerMap : NetworkBehaviour
     [Command]
     public void CmdChangeMapPlayerDestinationPosition(HexagonMapRoom endAt, Vector3 position, NetworkIdentity networkIdentity)
     {
-        if(currentMapPlayerDestination != null){
+        if(currentMapPlayerDestination != null && M_MapManager.instance.currentRoom != null){
             // 맵에 보스 출현 시 1칸 이상 이동 불가
-            if(M_MapManager.instance.mapBoss != null && M_MapManager.instance.GetDistanceFromCurrentCoordinate(endAt.coordinate) > 1){
+            if(M_MapManager.instance.mapBoss != null && M_MapManager.instance.GetDistanceFromCurrentCoordinate(M_MapManager.instance.currentRoom.coordinate, endAt.coordinate) > 1){
                 return;
             }
 
