@@ -226,11 +226,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         WaitForSeconds loopTime = new WaitForSeconds(0.01f);
         // 몬스터 방어도 초기화
         preEffcetOperating =true;
-        yield return IronDemonPreEffect();
         yield return DebuffPreEffect();
         preEffcetOperating =false;
         while(monsterDeathOperating)
             yield return loopTime;
+        foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList)
+        {
+            if(tar.defense == 0) tar.monster.OnBreakedShield();
+            tar.defense = 0;
+        }
         phase = BattleTurn.MONSTER_ACTIVE;
     }
 
@@ -238,7 +242,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         foreach(TargetObject tar in spawnedMonsterList)
         {
-            tar.defense = 0;
             List<int> currentKeys = tar.buffTrunBeginEffect.Keys.ToList();
             foreach(int buffIndex in currentKeys)
             { 
@@ -766,6 +769,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             }   
         }
         phase = BattleTurn.PLAYER_END;
+        yield return IronDemonPreEffect();
         yield return null;
     }
 

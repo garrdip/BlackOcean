@@ -182,8 +182,8 @@ MonoBehaviour:
   parent: {fileID: 0}
   isActive: 0
   meshRenderer: {fileID: 0}
-  defaultMaterial: {fileID: 0}
-  outLineMaterial: {fileID: 0}
+  defaultMaterial: {fileID: 2100000, guid: 95931af38ebfdf240a6b23b98c10cd32, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 069164adc66c8e046a5633573a185fd9, type: 2}
   turn: 0
 --- !u!60 &9168446368059967622
 PolygonCollider2D:

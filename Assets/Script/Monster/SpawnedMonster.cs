@@ -81,11 +81,11 @@ public class SpawnedMonster : NetworkBehaviour
     {
         GetNextAction();
         nextTarget = GetActionTarget(nextAction.actionTarget);
+        OnChangedNextTarget(nextTarget,nextTarget);
     }
 
     ActionTarget GetActionTarget(ActionTarget act)
     {
-        Debug.Log("겟 넥스트 액션!" + act);
         ActionTarget retVal = act;
         if(act == ActionTarget.RANDOM_MIDDLE_BACK)
         {
@@ -181,6 +181,12 @@ public class SpawnedMonster : NetworkBehaviour
     public virtual void OnAppliedCard(Card card, TargetObject[] tar)
     {
 
+    }
+
+    [Server]    
+    public virtual void OnBreakedShield()
+    {
+        
     }
 
     [Server]

@@ -72,6 +72,7 @@ public class Devourer : SpawnedMonster
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
     {
+        Debug.Log("EFEFEFEFEFEFEF");
         switch(nextAction.actionName){
             case "단일딜후붕괴" or "공격후흡혈":
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,nextAction.actionValue.ToString());

@@ -6,16 +6,56 @@ using Mirror;
 
 public class GiantSoldier : SpawnedMonster
 {
+    [SyncVar]
+    int currentLevel = 0;
+
+    public override void OnBreakedShield()
+    {
+        currentLevel = 0;
+        OnBreakedShieldRPC();
+    }
+
+    [ClientRpc]
+    void OnBreakedShieldRPC()
+    {
+        OnChangedNextTarget(nextTarget,nextTarget);
+    }
+
     public override IEnumerator DoAction()
     {
         switch(nextAction.actionName){
-            case "쇠락부여" :
-                break;
-            case "붕괴부여" :
-                break;
-            case "힘감소" :
-                break;
-            case "방어감소" :
+            case "SinglePattern" :
+                switch(currentLevel)
+                {
+                    case 0 :
+                        DoAnimation("Buff0");
+                        yield return new WaitForSeconds(0.5f);
+                        parent.GainDefense(10);
+                        yield return new WaitForSeconds(0.5f);
+                        currentLevel++;
+                        break;
+                    case 1 :
+                        DoAnimation("Buff0");
+                        yield return new WaitForSeconds(0.5f);
+                        parent.GainDefense(15);
+                        yield return new WaitForSeconds(0.5f);
+                        currentLevel++;
+                        break;
+                    case 2 :
+                        DoAnimation("Buff0");
+                        yield return new WaitForSeconds(0.5f);
+                        parent.GainDefense(20);
+                        yield return new WaitForSeconds(0.5f);
+                        currentLevel++;
+                        break;
+                    case 3 :
+                        DoAnimation("Attact0");
+                        yield return new WaitForSeconds(1f);
+                        GeneralAttack();
+                        yield return new WaitForSeconds(0.667f);
+                        currentLevel = 0;
+                        break;
+                }
                 break;
             case "APDO" :
                 break;
@@ -41,23 +81,31 @@ public class GiantSoldier : SpawnedMonster
     [ClientRpc]
     public void OnHitAnimationRPC()
     {
-        parent.anim.state.SetAnimation(1,"3Defence",false);
+        parent.anim.state.SetAnimation(1,"Defense0",false);
     }
 
     [ClientRpc]
     public override void ReturnToIdleAnimation()
     {
-        parent.anim.state.SetAnimation(1,"3Idle",true);
+        parent.anim.state.SetAnimation(1,"Idle",true);
     }
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
     {
-        switch(nextAction.actionName){
-            case "찌르기" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,nextAction.actionValue.ToString());
+        Debug.Log("Changed Next Target");
+        switch(currentLevel)
+        {
+            case 0 : 
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"10");
                 break;
-            case "방어" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,nextAction.actionValue.ToString());
+            case 1 : 
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"15");
+                break;
+            case 2 : 
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"20");
+                break;
+            case 3 :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,ActionTarget.FRONT,"30");
                 break;
         }
     }

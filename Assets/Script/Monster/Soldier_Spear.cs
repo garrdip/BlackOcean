@@ -59,6 +59,7 @@ public class Soldier_Spear : SpawnedMonster
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
     {
+        Debug.Log("EFEFEFEFEFEFFE");
         switch(nextAction.actionName){
             case "찌르기" :
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,nextAction.actionValue.ToString());

@@ -647,6 +647,11 @@ public class TargetObject : NetworkBehaviour
                 GameUIManager.instance.DisplayDefence(this, true, value);
             }
         }
+        else
+        {
+            if(objectType != ObjectType.PLAYER)
+                monster.OnBreakedShield();
+        }
     }
 
     [ClientRpc]
