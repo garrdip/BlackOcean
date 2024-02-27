@@ -12,6 +12,8 @@ public class MapUI : InstanceD<MapUI>
 {
     [Header("거점지역 팝업")]
     public GameObject regionPopUp;
+    public TextMeshProUGUI textRegionGradeInfo;
+    public TextMeshProUGUI textRegionDesc;
 
     [Header("보유한 덱 정보 팝업")]
     public GameObject deckInfoPopUp;
@@ -37,9 +39,6 @@ public class MapUI : InstanceD<MapUI>
     public Vector3 mapTurnLayoutPosition;
 
     [Header("UI 컴포넌트")]
-    public Image regionPopUpHeader;
-    public TextMeshProUGUI textRegionGradeInfo;
-    public TextMeshProUGUI textRegionDesc;
     public TextMeshProUGUI textCurrentActionCost;
     public TextMeshProUGUI textMaxActionCostCount;
     public Image turnGageBar;
@@ -186,19 +185,15 @@ public class MapUI : InstanceD<MapUI>
         // 등급별 팝업 헤더이미지 및 텍스트 색상 변경
         switch(region.regionGrade){
             case RegionGrade.NORMAL :
-                regionPopUpHeader.color = new Color(1f, 0f, 0f);
                 textRegionGradeInfo.color = new Color(1f, 0f, 0f);
                 break;
             case RegionGrade.RARE :
-                regionPopUpHeader.color = new Color(0f, 1f, 0f);
                 textRegionGradeInfo.color = new Color(0f, 1f, 0f);
                 break;
             case RegionGrade.UNIQUE :
-                regionPopUpHeader.color = new Color(0f, 0f, 1f);
                 textRegionGradeInfo.color = new Color(0f, 0f, 1f);
                 break;
             case RegionGrade.LEGEND :
-                regionPopUpHeader.color = new Color(1f, 0.8f, 0f);
                 textRegionGradeInfo.color = new Color(1f, 0.8f, 0f);
                 break;      
         }
