@@ -264,6 +264,7 @@ public class HexagonMapRoom : NetworkBehaviour
             hexagonMapRoomUI.SetActive(false);
         }
         ChangeMapVoteIconState();
+        mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue == true ? 0.25f : 1f, 0.5f);
         sortingGroup.sortingLayerName = newValue ? "HexagonMapRoomSelected" : "HexagonMapRoom";
 
         int hazardValue = hazard - M_MapManager.instance.currentRoom.hazard;
