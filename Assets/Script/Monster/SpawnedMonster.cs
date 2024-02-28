@@ -8,7 +8,6 @@ using Mirror;
 using ProjectD;
 using Spine.Unity;
 
-
 public class SpawnedMonster : NetworkBehaviour
 {
     public string monsterName;
@@ -30,8 +29,9 @@ public class SpawnedMonster : NetworkBehaviour
 
     [SyncVar]
     public TargetObject nextTargetObject;
+
     [SyncVar (hook = nameof(OnChangedNextTarget))]
-    public ActionTarget nextTarget;
+    public ActionTarget nextTarget = ActionTarget.UNDEFINED;
     
     [SyncVar (hook = nameof(OnChangedMonsterData))]
     public MonsterData monsterData;
@@ -81,7 +81,6 @@ public class SpawnedMonster : NetworkBehaviour
     {
         GetNextAction();
         nextTarget = GetActionTarget(nextAction.actionTarget);
-        OnChangedNextTarget(nextTarget,nextTarget);
     }
 
     ActionTarget GetActionTarget(ActionTarget act)
