@@ -6,7 +6,6 @@ using Mirror;
 
 public class Soldier_Axe : SpawnedMonster
 {
-
     public override IEnumerator DoAction()
     {
         switch(nextAction.actionName){
