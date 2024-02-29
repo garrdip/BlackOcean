@@ -768,8 +768,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 yield return tar.buffTurnEndEffect[buffIndex](tar,buffIndex);
             }   
         }
-        phase = BattleTurn.PLAYER_END;
         yield return IronDemonPreEffect();
+        phase = BattleTurn.PLAYER_END;
         yield return null;
     }
 
