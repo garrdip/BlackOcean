@@ -64,6 +64,13 @@ public class GiantSoldier : SpawnedMonster
         isActive = false;
     }
     
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        Debug.Log("위치 조정!");
+        parent.nextActionIndicator.GetComponent<Transform>().position += new Vector3(0,1,0);
+    }
+
     [ClientRpc]
     public void DoAnimation(string actionName)
     {

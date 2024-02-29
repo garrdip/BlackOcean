@@ -50,6 +50,12 @@ public class WacherA : SpawnedMonster
         isActive = false;
     }
     
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        parent.nextActionIndicator.GetComponent<Transform>().position += new Vector3(0,3,0);
+    }
+
     [ClientRpc]
     public void DoAnimation(string actionName)
     {

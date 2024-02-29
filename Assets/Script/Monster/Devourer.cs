@@ -43,7 +43,14 @@ public class Devourer : SpawnedMonster
         yield return new WaitForSeconds(1f);
         isActive = false;
     }
-    
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        Debug.Log("위치 조정!");
+        parent.nextActionIndicator.GetComponent<Transform>().position += new Vector3(0,3,0);
+    }
+
     [ClientRpc]
     public void DoAnimation(string actionName)
     {
@@ -72,7 +79,6 @@ public class Devourer : SpawnedMonster
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
     {
-        Debug.Log("EFEFEFEFEFEFEF");
         switch(nextAction.actionName){
             case "단일딜후붕괴" or "공격후흡혈":
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,nextAction.actionValue.ToString());
