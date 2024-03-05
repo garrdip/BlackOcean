@@ -12,13 +12,13 @@ using System.Linq;
 
 public class TargetObject : NetworkBehaviour
 {
+    public GameObject targetObjectUI;
     public GameObject playerNamePlate;
     public GameObject monsterNamePlate;
     public NamePlate selectedNamePlate;
     public TextMeshProUGUI playerName;
     public TextMeshProUGUI monsterName;
     public Canvas playerMessageCavnas;
-    public SortingGroup sortingGroup;
     public TextMeshProUGUI playerMessageBubble;
     public BuffIndicatorController buffIndicator;
     public NextActionIndicator nextActionIndicator;
@@ -223,7 +223,6 @@ public class TargetObject : NetworkBehaviour
                     if(NetworkClient.localPlayer.transform.GetChild(0).GetComponent<GamePlayer>() == player)
                     {
                         ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
-                        ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
                     }
                     else
                     {
@@ -239,11 +238,12 @@ public class TargetObject : NetworkBehaviour
             playerName.text = player.objectOwner.steamPersonaName;
             monsterNamePlate.SetActive(false);
             if(newVal.objectOwner.isLocalPlayer){
-                sortingGroup.sortingOrder = 2;
-                // 캔버스는 스프라이트 정렬그룹에 영향을 받지 않아 직접 설정
-                selectedNamePlate.nameCanvas.sortingOrder = sortingGroup.sortingOrder + 1;
-                selectedNamePlate.hpCanvas.sortingOrder = sortingGroup.sortingOrder + 1;
-                selectedNamePlate.shieldCanvas.sortingOrder = sortingGroup.sortingOrder + 1;
+                targetObjectUI.GetComponent<SortingGroup>().sortingOrder = 1;
+                avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
+                ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
+                selectedNamePlate.nameCanvas.sortingOrder = 1;
+                selectedNamePlate.hpCanvas.sortingOrder = 1;
+                selectedNamePlate.shieldCanvas.sortingOrder = 1;
             }
         }
     }

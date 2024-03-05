@@ -1011,6 +1011,11 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void MoveIronDemon(TargetObject tar, TargetObject target)
     {
+        if(target.objectType == ObjectType.PLAYER){
+            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = target.avatar.GetComponent<MeshRenderer>().sortingOrder - 1;
+        }else{
+            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = -1;
+        }
         tar.ironDemon.GetComponent<SkeletonAnimation>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
         int transformOffset = CalcOffset(tar); 
         if(target.monster != null)
