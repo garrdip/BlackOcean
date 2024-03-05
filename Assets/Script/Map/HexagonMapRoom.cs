@@ -182,32 +182,26 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapIcon.SetActive(false);
                 break;
             case RoomType.MONSTER :
-                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
                 break;
             case RoomType.ELITE :
-                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
                 break;
             case RoomType.EVENT :
-                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 break;
             case RoomType.CAMP :
-                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 break;
             case RoomType.ITEM_NPC :
-                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 break;
             case RoomType.CARD_NPC :
-                mapIcon.SetActive(true);
                 mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
                 break;
@@ -232,9 +226,7 @@ public class HexagonMapRoom : NetworkBehaviour
     // HexagonMapRoom이 isRegion인 경우 비활성화 상태
     void OnChangedIsRegion(bool oldValue, bool newValue)
     {
-        if(newValue){
-            ChangeHexagonRoomActive(false);
-        }
+        
     }
 
     // 활성화 상태 변수값에 따라 방활성화 상태 변경
@@ -306,7 +298,11 @@ public class HexagonMapRoom : NetworkBehaviour
         if(roomType == RoomType.COMPLETE){
             mapIcon.SetActive(false);
         }else{
-            mapIcon.SetActive(isActive);
+            if(isRegion && !isActive){
+                mapIcon.SetActive(false);
+            }else{
+                mapIcon.SetActive(isActive);
+            }
         }
     }
 

@@ -194,7 +194,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -822484745
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!114 &5887812446922134476
 MonoBehaviour:
@@ -2697,7 +2697,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -822484745
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!114 &8061983610548299283
 MonoBehaviour:
@@ -2837,7 +2837,7 @@ SortingGroup:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3821587419960410389}
-  m_Enabled: 1
+  m_Enabled: 0
   m_SortingLayerID: -822484745
   m_SortingLayer: 1
   m_SortingOrder: 0
@@ -3591,7 +3591,7 @@ SortingGroup:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4831697387643879440}
-  m_Enabled: 1
+  m_Enabled: 0
   m_SortingLayerID: -822484745
   m_SortingLayer: 1
   m_SortingOrder: 0
@@ -3641,7 +3641,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: -822484745
   m_SortingLayer: 1
-  m_SortingOrder: 0
+  m_SortingOrder: 2
 --- !u!1 &5388989640930691988
 GameObject:
   m_ObjectHideFlags: 0
@@ -3895,7 +3895,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -822484745
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!114 &3581798121314012772
 MonoBehaviour:
@@ -3996,7 +3996,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -822484745
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!114 &8469642729236984847
 MonoBehaviour:
@@ -4102,7 +4102,7 @@ SortingGroup:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5848243873048461331}
-  m_Enabled: 1
+  m_Enabled: 0
   m_SortingLayerID: -822484745
   m_SortingLayer: 1
   m_SortingOrder: 0
@@ -4205,7 +4205,7 @@ SortingGroup:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5868235136009666276}
-  m_Enabled: 1
+  m_Enabled: 0
   m_SortingLayerID: -822484745
   m_SortingLayer: 1
   m_SortingOrder: 0

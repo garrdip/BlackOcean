@@ -238,12 +238,11 @@ public class TargetObject : NetworkBehaviour
             playerName.text = player.objectOwner.steamPersonaName;
             monsterNamePlate.SetActive(false);
             if(newVal.objectOwner.isLocalPlayer){
-                targetObjectUI.GetComponent<SortingGroup>().sortingOrder = 1;
                 avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
-                ironDemon.GetComponent<MeshRenderer>().sortingOrder = 0;
-                selectedNamePlate.nameCanvas.sortingOrder = 1;
-                selectedNamePlate.hpCanvas.sortingOrder = 1;
-                selectedNamePlate.shieldCanvas.sortingOrder = 1;
+                targetObjectUI.GetComponent<SortingGroup>().sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+                selectedNamePlate.nameCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+                selectedNamePlate.hpCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+                selectedNamePlate.shieldCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
             }
         }
     }

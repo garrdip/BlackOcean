@@ -40,7 +40,7 @@ public class NamePlate : MonoBehaviour
     public void SetHPValue(int value,int max,int order)
     {
         hpBarFiller.transform.localPosition = new Vector3((3.2f * value / max) - 3.2f, 0, 0);
-        hpText.text = value + " / " + max;
+        hpText.text = value <= 0 ? ("0 / " + max) : (value + " / " + max);
     }
 
     public void SetShieldValue(int value,bool isGain, bool isEnemy)

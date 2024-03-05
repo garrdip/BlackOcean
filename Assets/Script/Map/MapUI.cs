@@ -287,4 +287,12 @@ public class MapUI : InstanceD<MapUI>
     {
         mapDimBackground.SetActive(isActive);
     }
+
+    public void RemoveAllMapInfoPopUps()
+    {
+        foreach(MapInfoPopUpItem mapInfoPopUp in mapInfoPopUps){
+            Destroy(mapInfoPopUp.gameObject);
+        }
+        mapInfoPopUps.Clear();
+    }
 }

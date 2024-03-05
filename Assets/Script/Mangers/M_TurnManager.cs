@@ -1165,6 +1165,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             blackCurtain.gameObject.SetActive(false);
             blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
             MapUI.instance.ChangeMapDimBackground(false);
+            MapUI.instance.RemoveAllMapInfoPopUps();
         });
     }
 

@@ -53,6 +53,12 @@ TagManager:
   - name: FrontLayer
     uniqueID: 744391573
     locked: 0
+  - name: TargetObjectUI
+    uniqueID: 585850671
+    locked: 0
+  - name: FloatingDamage
+    uniqueID: 1072884021
+    locked: 0
   - name: CardOnHand
     uniqueID: 2834536435
     locked: 0
