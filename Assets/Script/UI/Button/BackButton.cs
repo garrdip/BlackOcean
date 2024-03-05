@@ -13,11 +13,24 @@ public class BackButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     private float moveTime;
     private float movePositionX;
+    public Vector3 originPosition;
 
     void Awake()
     {
         moveTime = 0.3f;
         movePositionX = -29f;
+    }
+    void Start()
+    {
+        originPosition = backButtonTail.GetComponent<RectTransform>().localPosition;
+    }
+
+    void OnDisable()
+    {
+        backButtonTail.GetComponent<RectTransform>().DOKill();
+        backButtonTailLight.GetComponent<RectTransform>().DOKill();
+        backButtonTail.GetComponent<RectTransform>().localPosition = originPosition;
+        backButtonTailLight.GetComponent<RectTransform>().localPosition = originPosition;
     }
 
     void OnDestroy()

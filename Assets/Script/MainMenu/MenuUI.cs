@@ -7,7 +7,6 @@ using DG.Tweening;
 
 public class MenuUI : MonoBehaviour
 {
-    public GameObject panelSettings;
     public GameObject multiplayCanvas;
     public GameObject menuCanvas;
     public GameObject deckBookCanvas;
@@ -30,7 +29,6 @@ public class MenuUI : MonoBehaviour
         buttonDeckBook.onClick.AddListener(() => HandleOpenDeckBook());
         buttonSettings.onClick.AddListener(() => HandleSettings());
         buttonQuit.onClick.AddListener(() => HandleQuit());
-        panelSettings.SetActive(false);
     }
 
     public void HandleSinglePlay()
@@ -66,7 +64,7 @@ public class MenuUI : MonoBehaviour
 
     public void HandleSettings()
     {
-        panelSettings.SetActive(true);
+        OptionUIManager.instance.HandShowOptionPopUp(true);
     }
 
     public void HandleQuit()

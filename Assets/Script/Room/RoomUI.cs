@@ -10,23 +10,16 @@ using DG.Tweening;
 public class RoomUI : InstanceD<RoomUI>
 {
     [Header("UI 컴포넌트")]
-    public Button buttonReady;
     public Button ExitButton;
-    public Button buttonOption;
     public TextMeshProUGUI textReady;
     public List<GameObject> topIcons = new List<GameObject>();
     public List<Button> swapButtons = new List<Button>();
     public Button readyButton;
 
-    [Header("옵션 버튼 캔버스")]
-    public GameObject optionCanvas;
 
 
     void Start()
     {
-        DontDestroyOnLoad(optionCanvas);
-        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.persistentComponents.Add(optionCanvas.name, optionCanvas);
         for(int i=0; i<swapButtons.Count; i++){
             int buttonIndex = i;
             swapButtons[i].transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);

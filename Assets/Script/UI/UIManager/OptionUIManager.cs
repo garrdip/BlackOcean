@@ -2,21 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using Mirror;
 
 public class OptionUIManager : SingletonD<OptionUIManager>
 {
+    public delegate void OnChangeOptionPopUpShow(bool isActive);
+    public OnChangeOptionPopUpShow onChangeOptionPopUpShow;
     public GameObject optionPopUp;
     public Button buttonOption;
+    //public Button backButton;
     public Slider bgmVolumeSlider;
     public Toggle bgmToggle;
     public Slider voiceVolumeSlider;
     public Toggle voiceToggle;
     public Slider sfxVolumeSlider;
     public Toggle sfxToggle;
+    public bool isOptionPopUpActive = false;
 
 
     void Start()
     {
+        DontDestroyOnLoad(gameObject);
+        onChangeOptionPopUpShow += OnChangeOptionPopUpActive; // 옵션 팝업 활성화 상태 변경 이벤트 수신
+        SceneManager.activeSceneChanged += OnChangedActiveScene; // 씬 변경 이벤트 수신
+
+        //backButton.onClick.AddListener(HandleClickBackButton);
+
         bgmVolumeSlider.value = M_SoundManager.instance.MusicVolume;
         bgmToggle.isOn = !M_SoundManager.instance.IsMusicOn;
         
@@ -35,6 +47,34 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         sfxVolumeSlider.onValueChanged.AddListener(HandleSfxVolumeChange);
         sfxToggle.onValueChanged.AddListener(HandleSfxToggleChanage);
         
+    }
+
+    private void OnChangedActiveScene(Scene current, Scene next)
+    {
+       
+        if(next.name.Equals("RoomScene") || next.name.Equals("GameScene") ){
+            buttonOption.gameObject.SetActive(true);
+        }else{
+            buttonOption.gameObject.SetActive(false);
+        }
+    }
+
+    private void OnChangeOptionPopUpActive(bool isActive)
+    {
+        optionPopUp.SetActive(isActive);
+    }
+
+    public void HandShowOptionPopUp(bool isActive)
+    {
+        if(onChangeOptionPopUpShow != null){
+            onChangeOptionPopUpShow.Invoke(isActive);
+        }
+        isOptionPopUpActive = isActive;
+    }
+
+    private void HandleClickBackButton()
+    {
+        HandShowOptionPopUp(false);
     }
 
     private void HandleBgmVolumeChange(float value)

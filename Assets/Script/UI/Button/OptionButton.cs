@@ -14,20 +14,25 @@ public class OptionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public RectTransform optionIconLightRect;
     public bool isButtonClick = false;
 
-
-    public void OnPointerClick(PointerEventData pointerEventData)
+    void Start()
     {
-        isButtonClick = !isButtonClick;
-        if(isButtonClick){
-            optionIconLight.gameObject.SetActive(true);
+        OptionUIManager.instance.onChangeOptionPopUpShow += OnChangeOptionPopUpShow; // 옵션 팝업 활성화 상태 변경 이벤트 수신
+    }
+
+    private void OnChangeOptionPopUpShow(bool isActive)
+    {
+        if(isActive){
             optionIconRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 90f), 0.3f);
             optionIconLightRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 90f), 0.3f);
         }else{
-            optionIconLight.gameObject.SetActive(false);
             optionIconRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 0f), 0.3f);
             optionIconLightRect.DOLocalRotateQuaternion(Quaternion.Euler(0f, 0f, 0f), 0.3f);
         }
-        OptionUIManager.instance.optionPopUp.gameObject.SetActive(isButtonClick);
+    }
+
+    public void OnPointerClick(PointerEventData pointerEventData)
+    {
+        OptionUIManager.instance.HandShowOptionPopUp(!OptionUIManager.instance.isOptionPopUpActive);
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
