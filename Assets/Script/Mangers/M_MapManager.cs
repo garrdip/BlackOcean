@@ -9,9 +9,11 @@ using AYellowpaper.SerializedCollections;
 
 public class M_MapManager : NetworkSingletonD<M_MapManager>
 {  
-    public SyncDictionary<NetworkIdentity, HexagonMapRoom> playerVoteHexagonMapRoom = new SyncDictionary<NetworkIdentity, HexagonMapRoom>(); // 플레이어의 NetworkIdentity + 플레이어가 선택한 맵  Dictionary 데이터
+    public readonly SyncDictionary<NetworkIdentity, HexagonMapRoom> playerVoteHexagonMapRoom = new SyncDictionary<NetworkIdentity, HexagonMapRoom>(); // 플레이어의 NetworkIdentity + 플레이어가 선택한 맵  Dictionary 데이터
 
-    public uint ownedGamePlayer;
+    public readonly SyncList<uint> hexagonMapRoomNetIds = new SyncList<uint>(); // hexagonMapRoom 오브젝트 NetId 리스트
+
+    public readonly SyncList<Region> regions = new SyncList<Region>(); // 거점지역 리스트
 
     [SyncVar(hook = nameof(OnChangeCurrentRoom))]
     public HexagonMapRoom currentRoom;
@@ -65,9 +67,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Header("Boss Zone 영역 범위값")]
     public int bossZoneRange = 2;
 
-    public readonly SyncList<uint> hexagonMapRoomNetIds = new SyncList<uint>(); // hexagonMapRoom 오브젝트 NetId 리스트
-
-    public readonly SyncList<Region> regions = new SyncList<Region>(); // 거점지역 리스트
+    [Header("현재 게임플레이어 NetId")]
+    public uint ownedGamePlayer;
 
     private const float angleIncrement = 60f;  // 육각형의 각 면에 생성될 위치를 계산하기 위한 각도
 

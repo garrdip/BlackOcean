@@ -172,16 +172,23 @@ public class LobbyPlayer : NetworkBehaviour
     [Command]
     public void CmdSwapAccept(int oldIndex, int newIndex)
     {
-        // 스왑로직 수행
-        M_LobbyMananger.instance.CmdSwapLobbyPlayer(oldIndex, newIndex);
-
         // 교환요청자와 상대방 모두에게 요청이 수락되었음을 알리는 TargetRpc 이벤트 전달
         uint ownedNetId = M_LobbyMananger.instance.lobbyPlayers[oldIndex];
         uint targetNetID = M_LobbyMananger.instance.lobbyPlayers[newIndex];
-        LobbyPlayer ownedlobbyPlayer = NetworkServer.spawned[ownedNetId].GetComponent<LobbyPlayer>();
-        LobbyPlayer targetLobbyPlayer = NetworkServer.spawned[targetNetID].GetComponent<LobbyPlayer>();
-        TargetResponseSwapAccept(ownedlobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
-        TargetResponseSwapAccept(targetLobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+        if( ownedNetId != 0 && NetworkServer.spawned.TryGetValue(ownedNetId, out NetworkIdentity ownedNetIdentity) && 
+            targetNetID != 0 && NetworkServer.spawned.TryGetValue(targetNetID, out NetworkIdentity targetNetworkIdentity)){
+            
+            // 스왑로직 수행
+            M_LobbyMananger.instance.CmdSwapLobbyPlayer(oldIndex, newIndex);
+            
+            // 스왑요청 송신지에게 메시지 전달
+            LobbyPlayer ownedlobbyPlayer = ownedNetIdentity.GetComponent<LobbyPlayer>();
+            TargetResponseSwapAccept(ownedlobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+
+            // 스왑요청 수신자에게 메시지 전달
+            LobbyPlayer targetLobbyPlayer = targetNetworkIdentity.GetComponent<LobbyPlayer>();
+            TargetResponseSwapAccept(targetLobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+        }
     }
 
     // 교환요청 거절 커맨드
@@ -190,8 +197,10 @@ public class LobbyPlayer : NetworkBehaviour
     {
         // 교환요청자에게 요청이 거절되었음을 알리는 TargetRpc 이벤트 전달
         uint targetNetID = M_LobbyMananger.instance.lobbyPlayers[targetIndex];
-        LobbyPlayer lobbyPlayer = NetworkServer.spawned[targetNetID].GetComponent<LobbyPlayer>();
-        TargetResponseSwapReject(lobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+        if(targetNetID != 0 && NetworkClient.spawned.TryGetValue(targetNetID, out NetworkIdentity networkIdentity)){
+            LobbyPlayer lobbyPlayer = networkIdentity.GetComponent<LobbyPlayer>();
+            TargetResponseSwapReject(lobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+        }
     }
 
     // ----------------------------------------------------------------- Rpc Method --------------------------------------------------------------------------------//

@@ -69,7 +69,7 @@ public class M_SoundManager : MonoBehaviour {
     [Space (3)]
 
     // 효과음 오브젝트 풀
-    List<SoundEffect> sfxPool = new List<SoundEffect> ();
+    public List<SoundEffect> sfxPool = new List<SoundEffect> ();
 
     [Header ("SFX 설정")]
     [Tooltip ("SFX On/Off")]
@@ -91,7 +91,7 @@ public class M_SoundManager : MonoBehaviour {
     [Space (3)]
 
     // 음성 오브젝트 풀
-    List<VoiceEffect> voicePool = new List<VoiceEffect> ();
+    public List<VoiceEffect> voicePool = new List<VoiceEffect> ();
 
     [Header ("VOICE 설정")]
     [Tooltip ("VOICE On/Off")]
@@ -207,7 +207,7 @@ public class M_SoundManager : MonoBehaviour {
     /// </summary>
     IEnumerator OnUpdate(){
         while (alive) {
-            ManageSoundEffects ();
+            ManageSoundEffects();
             ManageVoiceEffects();
 
             // 배경음 볼륨 바뀌었나 체크
@@ -584,9 +584,10 @@ public class M_SoundManager : MonoBehaviour {
     private void ManageSoundEffects () {
         for (int i = sfxPool.Count - 1; i >= 0; i--) {
             SoundEffect sfx = sfxPool[i];
+            sfx.Time -= Time.deltaTime;
+
             // 재생 중
             if (sfx.Source.isPlaying && !float.IsPositiveInfinity (sfx.Time)) {
-                sfx.Time -= Time.deltaTime;
                 sfxPool[i] = sfx;
             }
             
@@ -1004,9 +1005,10 @@ public class M_SoundManager : MonoBehaviour {
     private void ManageVoiceEffects () {
         for (int i = voicePool.Count - 1; i >= 0; i--) {
             VoiceEffect voiceEffect = voicePool[i];
+            voiceEffect.Time -= Time.deltaTime;
+
             // 재생 중
             if (voiceEffect.Source.isPlaying && !float.IsPositiveInfinity (voiceEffect.Time)) {
-                voiceEffect.Time -= Time.deltaTime;
                 voicePool[i] = voiceEffect;
             }
             

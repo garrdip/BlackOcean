@@ -126,22 +126,35 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
 
     // ----------------------------------------------------------------- Command Method --------------------------------------------------------------------------------//
 
-    // 교환요청 수락 커맨드
+       // 교환요청 수락 커맨드
     [Command]
     public void CmdSwapAccept(int oldIndex, int newIndex)
     {
-        // 스왑로직 수행
-        M_MapManager.instance.CmdSwapMapPlayer(oldIndex, newIndex);
-
-        // 교환요청자와 상대방 모두에게 요청이 수락되었음을 알리는 TargetRpc 이벤트 전달
         uint ownedNetId = M_TurnManager.instance.playerOrder[oldIndex];
         uint targetNetID = M_TurnManager.instance.playerOrder[newIndex];
-        GamePlayer ownedGamePlayer = NetworkServer.spawned[ownedNetId].GetComponent<GamePlayer>();
-        MapPlayer ownedMapPlayer = NetworkServer.spawned[ownedGamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
-        GamePlayer targetGamePlayer = NetworkServer.spawned[targetNetID].GetComponent<GamePlayer>();
-        MapPlayer targetMapPlayer = NetworkServer.spawned[targetGamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
-        TargetResponseSwapAccept(ownedMapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
-        TargetResponseSwapAccept(targetMapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+        if( ownedNetId != 0 && NetworkServer.spawned.TryGetValue(ownedNetId, out NetworkIdentity ownedNetIdentity) && 
+            targetNetID != 0 && NetworkServer.spawned.TryGetValue(targetNetID, out NetworkIdentity targetNetworkIdentity)){
+            
+            GamePlayer ownedGamePlayer = ownedNetIdentity.GetComponent<GamePlayer>();
+            GamePlayer targetGamePlayer = targetNetworkIdentity.GetComponent<GamePlayer>();
+            uint ownedMapPlyerNetId = ownedGamePlayer.mapPlayerNetId;
+            uint targetMapPlayerNetId = targetGamePlayer.mapPlayerNetId;
+            
+            if( ownedMapPlyerNetId != 0 && NetworkServer.spawned.TryGetValue(ownedMapPlyerNetId, out NetworkIdentity ownedMapPlayerNetIdentity) && 
+                targetMapPlayerNetId != 0 && NetworkServer.spawned.TryGetValue(targetMapPlayerNetId, out NetworkIdentity targetMapPlayerNetIdentity)){
+                
+                // 스왑로직 수행
+                M_MapManager.instance.CmdSwapMapPlayer(oldIndex, newIndex);
+
+                // 스왑요청 송신지에게 메시지 전달
+                MapPlayer ownedMapPlayer = ownedMapPlayerNetIdentity.GetComponent<MapPlayer>();
+                TargetResponseSwapAccept(ownedMapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+                
+                // 스왑요청 수신자에게 메시지 전달
+                MapPlayer targetMapPlayer = targetMapPlayerNetIdentity.GetComponent<MapPlayer>();
+                TargetResponseSwapAccept(targetMapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+            }
+        }
     }
 
     // 교환요청 거절 커맨드
@@ -150,9 +163,13 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         // 교환요청자에게 요청이 거절되었음을 알리는 TargetRpc 이벤트 전달
         uint targetNetID = M_TurnManager.instance.playerOrder[targetIndex];
-        GamePlayer gamePlayer = NetworkServer.spawned[targetNetID].GetComponent<GamePlayer>();
-        MapPlayer mapPlayer = NetworkServer.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
-        TargetResponseSwapReject(mapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+        if(targetNetID != 0 && NetworkClient.spawned.TryGetValue(targetNetID, out NetworkIdentity networkIdentity)){
+            GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+            if(gamePlayer.mapPlayerNetId != 0 && NetworkClient.spawned.TryGetValue(gamePlayer.mapPlayerNetId, out NetworkIdentity mapPlayerNetIdentity)){
+                MapPlayer mapPlayer = mapPlayerNetIdentity.GetComponent<MapPlayer>();
+                TargetResponseSwapReject(mapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+            }
+        }  
     }
 
     // ----------------------------------------------------------------- Rpc Method --------------------------------------------------------------------------------//
