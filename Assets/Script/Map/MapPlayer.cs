@@ -163,9 +163,9 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         // 교환요청자에게 요청이 거절되었음을 알리는 TargetRpc 이벤트 전달
         uint targetNetID = M_TurnManager.instance.playerOrder[targetIndex];
-        if(targetNetID != 0 && NetworkClient.spawned.TryGetValue(targetNetID, out NetworkIdentity networkIdentity)){
+        if(targetNetID != 0 && NetworkServer.spawned.TryGetValue(targetNetID, out NetworkIdentity networkIdentity)){
             GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
-            if(gamePlayer.mapPlayerNetId != 0 && NetworkClient.spawned.TryGetValue(gamePlayer.mapPlayerNetId, out NetworkIdentity mapPlayerNetIdentity)){
+            if(gamePlayer.mapPlayerNetId != 0 && NetworkServer.spawned.TryGetValue(gamePlayer.mapPlayerNetId, out NetworkIdentity mapPlayerNetIdentity)){
                 MapPlayer mapPlayer = mapPlayerNetIdentity.GetComponent<MapPlayer>();
                 TargetResponseSwapReject(mapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
             }

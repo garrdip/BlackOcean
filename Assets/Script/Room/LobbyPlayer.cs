@@ -197,7 +197,7 @@ public class LobbyPlayer : NetworkBehaviour
     {
         // 교환요청자에게 요청이 거절되었음을 알리는 TargetRpc 이벤트 전달
         uint targetNetID = M_LobbyMananger.instance.lobbyPlayers[targetIndex];
-        if(targetNetID != 0 && NetworkClient.spawned.TryGetValue(targetNetID, out NetworkIdentity networkIdentity)){
+        if(targetNetID != 0 && NetworkServer.spawned.TryGetValue(targetNetID, out NetworkIdentity networkIdentity)){
             LobbyPlayer lobbyPlayer = networkIdentity.GetComponent<LobbyPlayer>();
             TargetResponseSwapReject(lobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
         }

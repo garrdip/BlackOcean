@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using ProjectD;
 using Mirror;
+using Steamworks;
 using AYellowpaper.SerializedCollections;
 
 public class M_NetworkRoomManager : NetworkRoomManager
@@ -67,6 +68,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
         // LobbyPlayer에 RoomPlayer SyncVar 변수 설정
         LobbyPlayer lobbyPlayer = lobbyPlayerObject.GetComponent<LobbyPlayer>();
         lobbyPlayer.roomPlayer = roomPlayer.GetComponent<RoomPlayer>();
+        lobbyPlayer.steamID = (ulong)SteamMatchmaking.GetLobbyMemberByIndex(M_SteamManager.enteredLobby, NetworkServer.connections.Count - 1);
         if(M_LobbyMananger.instance.lobbyPlayersCount == 0){
             lobbyPlayer.isHostLobbyPlayer = true;
         }

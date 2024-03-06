@@ -185,11 +185,15 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     public void CmdRequestSwap(int oldIndex, int newIndex)
     {
         uint targetNetId = M_TurnManager.instance.playerOrder[newIndex];
-        GamePlayer gamePlayer = NetworkServer.spawned[targetNetId].GetComponent<GamePlayer>();
-        MapPlayer targetMapPlayer = NetworkServer.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
-        targetMapPlayer.TargetResponseSwap(targetMapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
-        targetMapPlayer.oldIndex = oldIndex; // 요청한 맵플레이어의 인덱스
-        targetMapPlayer.newIndex = newIndex; // 요청한 맵플레이어의 교환상대 인덱스
+        if(targetNetId != 0 && NetworkServer.spawned.TryGetValue(targetNetId, out NetworkIdentity networkIdentity)){
+            GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+            if(gamePlayer.mapPlayerNetId != 0 && NetworkServer.spawned.TryGetValue(gamePlayer.mapPlayerNetId, out NetworkIdentity mapPlayerNetIdentity)){
+                MapPlayer targetMapPlayer = mapPlayerNetIdentity.GetComponent<MapPlayer>();
+                targetMapPlayer.TargetResponseSwap(targetMapPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+                targetMapPlayer.oldIndex = oldIndex; // 요청한 맵플레이어의 인덱스
+                targetMapPlayer.newIndex = newIndex; // 요청한 맵플레이어의 교환상대 인덱스
+            }
+        }
     }
 
 

@@ -41,10 +41,12 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
     public void CmdRequestSwap(int oldIndex, int newIndex)
     {
         uint targetNetId = lobbyPlayers[newIndex];
-        LobbyPlayer targetLobbyPlayer = NetworkServer.spawned[targetNetId].GetComponent<LobbyPlayer>();
-        targetLobbyPlayer.TargetResponseSwap(targetLobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
-        targetLobbyPlayer.oldIndex = oldIndex; // 요청한 로비플레이어의 인덱스
-        targetLobbyPlayer.newIndex = newIndex; // 요청한 로비플레이어의 교환상대 인덱스
+        if(targetNetId != 0 && NetworkServer.spawned.TryGetValue(targetNetId, out NetworkIdentity networkIdentity)){
+            LobbyPlayer targetLobbyPlayer = networkIdentity.GetComponent<LobbyPlayer>();
+            targetLobbyPlayer.TargetResponseSwap(targetLobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+            targetLobbyPlayer.oldIndex = oldIndex; // 요청한 로비플레이어의 인덱스
+            targetLobbyPlayer.newIndex = newIndex; // 요청한 로비플레이어의 교환상대 인덱스
+        }
     }
 
     // ----------------------------------------------------------------- Server Method --------------------------------------------------------------------------------//
