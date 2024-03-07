@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Mirror;
+using TMPro;
 
 public class OptionUIManager : SingletonD<OptionUIManager>
 {
@@ -22,8 +22,9 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     public Slider sfxVolumeSlider;
     public Toggle sfxToggle;
     public bool isOptionPopUpActive = false;
-
+    public TMP_Dropdown languageDropdown;
     public GameObject dropdownLight;
+    private const string currentLanguage = "CurrentLanguage";
 
 
     void Start()
@@ -53,6 +54,10 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         sfxVolumeSlider.onValueChanged.AddListener(HandleSfxVolumeChange);
         sfxToggle.onValueChanged.AddListener(HandleSfxToggleChanage);
         
+        InitDropdownValue();
+        languageDropdown.onValueChanged.AddListener(delegate{
+            HandleChangeLanguageDropdown(languageDropdown);
+        });
     }
 
     private void OnChangedActiveScene(Scene current, Scene next)
@@ -62,6 +67,15 @@ public class OptionUIManager : SingletonD<OptionUIManager>
             buttonOption.gameObject.SetActive(true);
         }else{
             buttonOption.gameObject.SetActive(false);
+        }
+    }
+
+    private void InitDropdownValue()
+    {
+        string savedLanguage = PlayerPrefs.GetString(currentLanguage);
+        int index = languageDropdown.options.FindIndex(option => option.text == savedLanguage);
+        if(index != -1){
+            languageDropdown.value = index;
         }
     }
 
@@ -117,6 +131,13 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     private void HandleSfxToggleChanage(bool isOn)
     {
         M_SoundManager.instance.IsSoundOn = !isOn;
+    }
+
+    private void HandleChangeLanguageDropdown(TMP_Dropdown select)
+    {
+        string selectLanguage = select.options[select.value].text;
+        PlayerPrefs.SetString(currentLanguage, selectLanguage);
+        Debug.Log("언어 변경 : " + selectLanguage);
     }
 
     // -------- 이벤트 트리거에 할당되어있는 함수들 --------- //
