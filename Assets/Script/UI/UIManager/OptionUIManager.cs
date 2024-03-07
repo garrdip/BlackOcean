@@ -11,7 +11,10 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     public OnChangeOptionPopUpShow onChangeOptionPopUpShow;
     public GameObject optionPopUp;
     public Button buttonOption;
-    //public Button backButton;
+    public Button backButton;
+    public GameObject backButtonLight;
+    public Button okButton;
+    public GameObject okButtonLight;
     public Slider bgmVolumeSlider;
     public Toggle bgmToggle;
     public Slider voiceVolumeSlider;
@@ -27,7 +30,8 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         onChangeOptionPopUpShow += OnChangeOptionPopUpActive; // 옵션 팝업 활성화 상태 변경 이벤트 수신
         SceneManager.activeSceneChanged += OnChangedActiveScene; // 씬 변경 이벤트 수신
 
-        //backButton.onClick.AddListener(HandleClickBackButton);
+        backButton.onClick.AddListener(HandleClickBackButton);
+        okButton.onClick.AddListener(HandleClickOkButton);
 
         bgmVolumeSlider.value = M_SoundManager.instance.MusicVolume;
         bgmToggle.isOn = !M_SoundManager.instance.IsMusicOn;
@@ -77,6 +81,11 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         HandShowOptionPopUp(false);
     }
 
+    private void HandleClickOkButton()
+    {
+        HandShowOptionPopUp(false);
+    }
+
     private void HandleBgmVolumeChange(float value)
     {
         M_SoundManager.instance.MusicVolume = value;
@@ -108,4 +117,27 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         M_SoundManager.instance.IsSoundOn = !isOn;
     }
 
+    // -------- 이벤트 트리거에 할당되어있는 함수들 --------- //
+
+    public void OnPointerEnterBackButton()
+    {
+        backButtonLight.SetActive(true);
+    }
+
+    public void OnPointerExitBackButton()
+    {
+        backButtonLight.SetActive(false);
+    }
+
+    public void OnPointerEnterOkButton()
+    {
+        okButtonLight.SetActive(true);
+    }
+
+    public void OnPointerExitOkButton()
+    {
+        okButtonLight.SetActive(false);
+    }
+
+    // ----------------------------------------------------- //
 }
