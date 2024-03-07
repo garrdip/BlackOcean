@@ -23,6 +23,8 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     public Toggle sfxToggle;
     public bool isOptionPopUpActive = false;
 
+    public GameObject dropdownLight;
+
 
     void Start()
     {
@@ -137,6 +139,16 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     public void OnPointerExitOkButton()
     {
         okButtonLight.SetActive(false);
+    }
+
+    public void OnPointerEnterDropDown()
+    {
+        dropdownLight.SetActive(true);
+    }
+
+    public void OnPointerExitDropDown()
+    {
+        dropdownLight.SetActive(false);
     }
 
     // ----------------------------------------------------- //
