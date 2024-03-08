@@ -25,6 +25,6 @@ public class MapBoss : NetworkBehaviour
     // 보스의 위치 변경 수신
     public void OnChangedBossPosition(Vector3 oldPosition, Vector3 newPosition)
     {
-        transform.localPosition = newPosition + new Vector3(0f, -0.5f, 0f);
+        transform.localPosition = newPosition;
     }
 }
