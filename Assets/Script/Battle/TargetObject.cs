@@ -648,7 +648,7 @@ public class TargetObject : NetworkBehaviour
         }
         else
         {
-            if(objectType != ObjectType.PLAYER)
+            if(objectType != ObjectType.PLAYER && !M_TurnManager.instance.monsterShieldInitialize)
                 monster.OnBreakedShield();
         }
     }

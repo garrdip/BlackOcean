@@ -11,7 +11,8 @@ public class GiantSoldier : SpawnedMonster
 
     public override void OnBreakedShield()
     {
-        currentLevel = 0;
+        if(isServer)
+            currentLevel = 0;
         OnBreakedShieldRPC();
     }
 

@@ -42,6 +42,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     
     public bool monsterDeathOperating = false;
     public bool preEffcetOperating = false;
+    public bool monsterShieldInitialize = false;
     public List<TargetObject> dyingMonsers = new List<TargetObject>();
 
     // 카드와 타겟을 한쌍으로 저장하는 큐
@@ -230,11 +231,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         preEffcetOperating =false;
         while(monsterDeathOperating)
             yield return loopTime;
+        monsterShieldInitialize = true;
         foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList)
         {
-            if(tar.defense == 0) tar.monster.OnBreakedShield();
             tar.defense = 0;
         }
+        monsterShieldInitialize = false;
         phase = BattleTurn.MONSTER_ACTIVE;
     }
 
