@@ -84,8 +84,11 @@ public class LobbyPlayer : NetworkBehaviour
     [SyncVar]
     public bool isHostLobbyPlayer;
 
+    protected Callback<AvatarImageLoaded_t> avatarImageLoaded;
+
     void Start()
     {
+        avatarImageLoaded = Callback<AvatarImageLoaded_t>.Create(OnAvatarImageLoaded);
         roomPlayer.onSelectCompleteCharacter += OnChangeSelectCharacter; // 캐릭터 선택 이벤트 등록
         roomPlayer.onChangeReadyState += OnChangeReadyState; // 레디 상태 변경 이벤트 등록
         InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
@@ -157,6 +160,15 @@ public class LobbyPlayer : NetworkBehaviour
     {
         if(((roomPlayer.isServer && roomPlayer.index > 0) || roomPlayer.isServerOnly)){
             M_LobbyMananger.instance.LobbyPlayerKickOut(roomPlayer);
+        }
+    }
+
+    private void OnAvatarImageLoaded(AvatarImageLoaded_t callback)
+    {
+        if(callback.m_steamID.m_SteamID == steamID){
+            steamAvatar.texture = M_SteamManager.instance.GetSteamImageAsTextureByImageId(callback.m_iImage);
+        }else{
+            return;
         }
     }
 
