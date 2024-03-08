@@ -14,7 +14,13 @@ public class TargetObject : NetworkBehaviour
 {
     public GameObject targetObjectUI;
     public GameObject playerNamePlate;
+    public Canvas playerHpCanvas;
+    public Canvas playerNameCanvas;
+    public Canvas playerShieldCanvas;
     public GameObject monsterNamePlate;
+    public Canvas monsterHpCanvas;
+    public Canvas monsterNameCanvas;
+    public Canvas monsterShieldCanvas;
     public NamePlate selectedNamePlate;
     public TextMeshProUGUI playerName;
     public TextMeshProUGUI monsterName;

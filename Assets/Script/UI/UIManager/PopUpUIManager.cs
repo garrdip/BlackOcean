@@ -205,11 +205,11 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 게임오버 팝업 비활성화
     public void HandleHideGameOverPopUp()
     {
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         gameOverPopUp.GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).OnComplete(() => {
             gameOverPopUp.SetActive(false);
             UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
-            NetworkServer.Shutdown();
-            NetworkClient.Disconnect();
+            networkRoomManager.StopClient();
             M_SteamManager.LeaveLobby();
         });
     }

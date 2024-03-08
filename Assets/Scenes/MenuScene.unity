@@ -16618,7 +16618,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   multiplayCanvas: {fileID: 2079226587}
   menuCanvas: {fileID: 1577234952}
-  deckBookCanvas: {fileID: 248806725}
   debris: {fileID: 6776556312442397065}
   logoGroup: {fileID: 823669786}
   buttonSinglePlay: {fileID: 695973733}

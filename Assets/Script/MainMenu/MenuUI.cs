@@ -9,7 +9,6 @@ public class MenuUI : MonoBehaviour
 {
     public GameObject multiplayCanvas;
     public GameObject menuCanvas;
-    public GameObject deckBookCanvas;
     public GameObject debris;
     public GameObject logoGroup;
 
@@ -39,7 +38,6 @@ public class MenuUI : MonoBehaviour
     public void HandleMultiPlay()
     {
         menuCanvas.SetActive(false);
-        deckBookCanvas.SetActive(false);
         multiplayCanvas.SetActive(true);
     }
 

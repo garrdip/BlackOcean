@@ -25,11 +25,18 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
             if(tar.player != null && tar.ironDemon != null){
                 tar.avatar.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
                 tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
+                tar.playerHpCanvas.sortingLayerName = "FrontLayer";
+                tar.playerNameCanvas.sortingLayerName = "FrontLayer";
+                tar.playerShieldCanvas.sortingLayerName = "FrontLayer";
             }else{
                 tar.monster.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
+                tar.monsterHpCanvas.sortingLayerName = "FrontLayer";
+                tar.monsterNameCanvas.sortingLayerName = "FrontLayer";
+                tar.monsterShieldCanvas.sortingLayerName = "FrontLayer";
             }
-            foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>())
+            foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>()){
                 canvas.sortingLayerName = "FrontLayer";
+            }
         }
     }
     [ClientRpc]
@@ -44,11 +51,18 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
                 if(tar.player != null && tar.ironDemon != null){
                     tar.avatar.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer";
                     tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer";
+                    tar.playerHpCanvas.sortingLayerName = "BackLayer";
+                    tar.playerNameCanvas.sortingLayerName = "BackLayer";
+                    tar.playerShieldCanvas.sortingLayerName = "BackLayer";
                 }else{
                     tar.monster.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer";
+                    tar.monsterHpCanvas.sortingLayerName = "BackLayer";
+                    tar.monsterNameCanvas.sortingLayerName = "BackLayer";
+                    tar.monsterShieldCanvas.sortingLayerName = "BackLayer";
                 }
-                foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>())
+                foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>()){
                     canvas.sortingLayerName = "BackLayer";
+                }
             }
         }
     }
