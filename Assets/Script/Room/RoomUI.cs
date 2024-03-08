@@ -69,27 +69,6 @@ public class RoomUI : InstanceD<RoomUI>
         M_SteamManager.LeaveLobby();
     }
 
-    [Server]
-    public void CMDReadyCheck()
-    {
-        int num = 0;
-        RoomPlayer[] players = FindObjectsOfType<RoomPlayer>();
-        for(int i = 0 ;i < players.Length ; i++)
-        {
-            if(players[i].isReady) num++;
-            if(players[i].character == Character.NONE) num--;
-        }
-        if(num == players.Length - 1){
-            RoomUI.instance.SetReadyButton("START");
-            ReadyButtonOnRoom readyButtonOnRoom = readyButton.GetComponent<ReadyButtonOnRoom>();
-            readyButtonOnRoom.SetReadyButtonViewByReadyState(true);
-        }else{
-            RoomUI.instance.SetReadyButton("");
-            ReadyButtonOnRoom readyButtonOnRoom = readyButton.GetComponent<ReadyButtonOnRoom>();
-            readyButtonOnRoom.SetReadyButtonViewByReadyState(false);
-        }
-    }
-
     // 스왑버튼 상태 변경
     public void ChangeSwapButtonsState(uint netId, int index)
     {

@@ -10,7 +10,7 @@ using DG.Tweening;
 
 public class LobbyPlayer : NetworkBehaviour
 {
-    [Header("SelectorBaseLayout")]
+    [Header("SelectBaseLayout")]
     public GameObject selectorBaseLayout;
     public GameObject selectorBaseLineLight;
     public GameObject selectorBaseMyLine;
@@ -402,15 +402,24 @@ public class LobbyPlayer : NetworkBehaviour
     {
         if(isOwned){
             roomPlayer.character = Character.NONE; // 캐릭터 선택값 NONE으로 리셋
-            selectLeft.SetActive(true);
-            selectMiddle.SetActive(true);
-            selectRight.SetActive(true);
-            baseDark.SetActive(true);
-            classLayout.SetActive(true);
-            characterSelectCompleteImage.gameObject.SetActive(false);
-            classIconLayout.SetActive(!classLayout.activeSelf);
+            roomPlayer.OnChangedCharacter(Character.NONE, Character.NONE);
+            roomPlayer.isReady = false; // 레디상태 false로 리셋
+            roomPlayer.ChangeReadyState(false, false);
+            ChangeSelectLayoutState(true); // 캐릭터 다시 선택할수 있도록 선택창 활성화
             ChangeClassLayoutFade();
         }
+    }
+
+    // 캐릭터 선택 레이아웃 활성화 상태 변경
+    private void ChangeSelectLayoutState(bool isActive)
+    {
+        selectLeft.SetActive(isActive);
+        selectMiddle.SetActive(isActive);
+        selectRight.SetActive(isActive);
+        baseDark.SetActive(isActive);
+        classLayout.SetActive(isActive);
+        characterSelectCompleteImage.gameObject.SetActive(!isActive);
+        classIconLayout.SetActive(!classLayout.activeSelf);
     }
 
     // 캐릭터 클래스 레이아웃 Fade 애니매이션

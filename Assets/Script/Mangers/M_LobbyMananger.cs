@@ -89,6 +89,28 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
         roomPlayer.GetComponent<NetworkIdentity>().connectionToClient.Disconnect();
     }
 
+    // RoomPlayer의 레디 상태 체크
+    [Server]
+    public void RoomPlayerReadyCheck()
+    {
+        int num = 0;
+        RoomPlayer[] players = FindObjectsOfType<RoomPlayer>();
+        for(int i = 0 ;i < players.Length ; i++)
+        {
+            if(players[i].isReady) num++;
+            if(players[i].character == Character.NONE) num--;
+        }
+        if(num == players.Length - 1){
+            RoomUI.instance.SetReadyButton("START");
+            ReadyButtonOnRoom readyButtonOnRoom = RoomUI.instance.readyButton.GetComponent<ReadyButtonOnRoom>();
+            readyButtonOnRoom.SetReadyButtonViewByReadyState(true);
+        }else{
+            RoomUI.instance.SetReadyButton("");
+            ReadyButtonOnRoom readyButtonOnRoom = RoomUI.instance.readyButton.GetComponent<ReadyButtonOnRoom>();
+            readyButtonOnRoom.SetReadyButtonViewByReadyState(false);
+        }
+    }
+
     // ----------------------------------------------------------------- SyncVar Hook --------------------------------------------------------------------------------//
     
     void OnChangeLobbyPlayerOrderChanged(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)

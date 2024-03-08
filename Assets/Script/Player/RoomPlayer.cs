@@ -48,7 +48,7 @@ public class RoomPlayer : NetworkRoomPlayer
             readyButtonOnRoom.SetReadyButtonViewByReadyState(newVal);
         }
         if(isServer)
-            RoomUI.instance.CMDReadyCheck();
+            M_LobbyMananger.instance.RoomPlayerReadyCheck();
         if(onChangeReadyState != null){
             onChangeReadyState.Invoke(newVal);
         }
@@ -128,7 +128,9 @@ public class RoomPlayer : NetworkRoomPlayer
 
     public void OnChangedCharacter(Character oldVal, Character newVal)
     {
-        RoomUI.instance.CMDReadyCheck();
+        if(isServer){
+            M_LobbyMananger.instance.RoomPlayerReadyCheck();
+        }
         if(onSelectCompleteCharacter != null){
             onSelectCompleteCharacter.Invoke(newVal);
         }
