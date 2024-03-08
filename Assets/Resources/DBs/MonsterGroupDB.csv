@@ -1,5 +1,5 @@
 Group_Name,Minimum_Hazard,Maximum_Hazard,Name,,
-BasicSoldiers1,0,10,Soldier_Shield,Soldier_Axe,Soldier_Spear
+BasicSoldiers1,0,10,Soldier_Axe,Soldier_Shield,Soldier_Spear
 BasicSoldiers2,2,12,Soldier_Axe,Soldier_Axe,Soldier_Axe
 SoldierWithWacher1,5,15,Soldier_Axe,Soldier_Shield,WacherA
 SoldierWithWacher2,5,15,Soldier_Axe,Soldier_Spear,WacherA

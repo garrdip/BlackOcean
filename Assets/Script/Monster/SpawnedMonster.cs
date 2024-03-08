@@ -122,7 +122,7 @@ public class SpawnedMonster : NetworkBehaviour
 
     public virtual void GetNextAction()
     {
-        if(currentBehavior.ActionList.Count - 1 < currentBehaviorSequence && currentBehavior.ActionList.Count != 0)
+        if( currentBehaviorSequence < currentBehavior.ActionList.Count - 1 )
         {
             currentBehaviorSequence++;
             nextAction = currentBehavior.ActionList[currentBehaviorSequence];
@@ -136,6 +136,7 @@ public class SpawnedMonster : NetworkBehaviour
                 if(randomValue < 0) {
                     nextAction = actionList.ActionList[0];
                     currentBehaviorSequence = 0;
+                    currentBehavior.ActionList = actionList.ActionList;
                     break;
                 }
             }
