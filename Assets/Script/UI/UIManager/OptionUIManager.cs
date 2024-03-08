@@ -10,6 +10,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     public delegate void OnChangeOptionPopUpShow(bool isActive);
     public OnChangeOptionPopUpShow onChangeOptionPopUpShow;
     public GameObject optionPopUp;
+    public Image dimBacground;
     public Button buttonOption;
     public Button backButton;
     public GameObject backButtonLight;
@@ -170,6 +171,11 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     public void OnPointerExitDropDown()
     {
         dropdownLight.SetActive(false);
+    }
+
+    public void OnPointerClickDimBackground()
+    {
+        HandShowOptionPopUp(false);
     }
 
     // ----------------------------------------------------- //
