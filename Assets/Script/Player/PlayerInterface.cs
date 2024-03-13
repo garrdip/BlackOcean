@@ -317,7 +317,9 @@ public class PlayerInterface : NetworkBehaviour
                 if(!pi.cardThrowAwayDone)
                     return;
             }
-            M_TurnManager.instance.phase = BattleTurn.MONSTER_ORDERSELECT;
+            StartCoroutine(M_CardManager.instance.CurseCardOperation());
         }
     }
+
+    
 }

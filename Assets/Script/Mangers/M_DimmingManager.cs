@@ -22,9 +22,9 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
         foreach(TargetObject tar in targets)
         {
             tar.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "FrontLayer";
-            if(tar.player != null && tar.ironDemon != null){
+            if(tar.player != null){
                 tar.avatar.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
-                tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
+                if(tar.ironDemon != null)tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
                 tar.playerHpCanvas.sortingLayerName = "FrontLayer";
                 tar.playerNameCanvas.sortingLayerName = "FrontLayer";
                 tar.playerShieldCanvas.sortingLayerName = "FrontLayer";
@@ -48,9 +48,9 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
             if(tar != null)
             {
                 tar.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "BackLayer";
-                if(tar.player != null && tar.ironDemon != null){
+                if(tar.player != null){
                     tar.avatar.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer";
-                    tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer";
+                    if(tar.ironDemon != null)tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer";
                     tar.playerHpCanvas.sortingLayerName = "BackLayer";
                     tar.playerNameCanvas.sortingLayerName = "BackLayer";
                     tar.playerShieldCanvas.sortingLayerName = "BackLayer";

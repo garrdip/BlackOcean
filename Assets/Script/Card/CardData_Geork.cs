@@ -52,12 +52,13 @@ public partial class CardData : SingletonD<CardData>
 		yield return G0(card,tar);
 	}
 
-	public void G0_Effect(TargetObject tar)
+	public IEnumerator G0_Effect(TargetObject tar)
 	{
 		if(tar.defense >= 10)
 			tar.defense -= 10;
 		else
 			tar.defense = 0;
+		yield return null;
 	}
 	public IEnumerator G0_H(Card card,List<TargetObject> tar)
 	{
@@ -88,10 +89,10 @@ public partial class CardData : SingletonD<CardData>
 		yield return G1(card,tar);
 	}
 
-	public void G1_Effect(TargetObject tar)
+	public IEnumerator G1_Effect(TargetObject tar)
 	{
 		tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,tar,null);
-		tar.GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar,null);
+		yield return null;
 	}
 	public IEnumerator G1_H(Card card,List<TargetObject> tar)
 	{
@@ -127,8 +128,9 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G2(card,tar);
 	}
-	public void G2_Effect(TargetObject tar)
+	public IEnumerator G2_Effect(TargetObject tar)
 	{
+		yield return null;
 		//tar.GainBuff(BuffType.GOHANG3_DEBUFF,1,true,false,false,false,tar,null);
 	}
 	public IEnumerator G2_H(Card card,List<TargetObject> tar)
@@ -294,22 +296,41 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G8(Card card,List<TargetObject> tar)
 	{
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralSingleAttack(tar[0],tar[1],7);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 		yield return null;
 	}
 	public IEnumerator G8_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G8(card,tar);
 	}
 	public IEnumerator G9(Card card,List<TargetObject> tar)
 	{
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.5f);
+		GeneralSingleAttack(tar[0],tar[1],9);
+		tar[1].GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 		yield return null;
 	}
 	public IEnumerator G9_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G9(card,tar);
 	}
 	public IEnumerator G10(Card card,List<TargetObject> tar)
 	{
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralGetDefense(tar[0],tar[0],6,card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 		yield return null;
 	}
 	public IEnumerator G10_E(Card card,List<TargetObject> tar)

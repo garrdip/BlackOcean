@@ -61,6 +61,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     [Header("어빌리티 화살표 활성화 상태 여부")]
     public bool isAbilityArrowActive = false;
 
+    public List<(Card,TargetObject)> curseCardQueue = new List<(Card, TargetObject)>();
 
     public override void OnStartServer()
     {
@@ -393,8 +394,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     [Command(requiresAuthority = false)]
     void CMDCurseCardEffect(Card card, TargetObject tar)
     {
-        Debug.Log(" 저주 효과 발동 ");
-        CardData.instance.CurseCardEffect(card,tar);
+        curseCardQueue.Add((card,tar));
     }
 
     // 로컬 플레이어의 모든 카드 제거(버린댁으로 보내지 않고 제거만 수행)
@@ -518,5 +518,18 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         }
         
         return string.Join(" ",splitString);
+    }
+
+    public IEnumerator CurseCardOperation()
+    {
+        Debug.Log("Start CurseCardEffect!");
+        Debug.Log(curseCardQueue.Count);
+        foreach((Card,TargetObject) item in curseCardQueue)
+        {
+            yield return CardData.instance.CurseCardEffect(item.Item1,item.Item2);
+        }
+        curseCardQueue.Clear();
+        M_TurnManager.instance.phase = BattleTurn.MONSTER_ORDERSELECT;
+        yield return null;
     }
 }

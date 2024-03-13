@@ -299,7 +299,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 GamePlayer player = networkIdentity.GetComponent<GamePlayer>();
                 player.GetComponent<GamePlayerDeck>().currentIchi = player.GetComponent<GamePlayerDeck>().maxIchi; 
             }
-        }     
+        }
+        foreach(TargetObject tar in spawnedPlayerList) // 고행2 카드를 이미 가지고 있으면 쇠락 부여 
+        {
+            if(tar.player.GetComponent<GamePlayerDeck>().cardOnHands.FindIndex(cardOnhand => cardOnhand.card.baseCard.cardNumber ==  "G1") != -1)
+                tar.GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar,null);
+        }
         EachPlayerCardDraw();
         foreach(TargetObject tar in spawnedPlayerList)
         {
@@ -333,8 +338,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 }
                 if(tar.buffs[i].isDecrease)
                 {
-                    if(tar.buffs.FindIndex(buff => buff.type == BuffType.GOHANG2_DEBUFF) != -1 && (tar.buffs[i].type == BuffType.BOONGGUI || tar.buffs[i].type == BuffType.SOIRAK))
-                        continue;
                     Buff modItem = new Buff(tar.buffs[i]);
                     modItem.value -= 1;
                     if(modItem.value == 0)

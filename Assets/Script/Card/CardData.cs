@@ -175,9 +175,9 @@ public partial class CardData : SingletonD<CardData>
         }
     }
 
-    public void CurseCardEffect(Card card, TargetObject tar)
+    public IEnumerator CurseCardEffect(Card card, TargetObject tar)
     {
-        CardData.instance.curseEffect[card.baseCard.cardNumber](tar);
+        return CardData.instance.curseEffect[card.baseCard.cardNumber](tar);
     }
 
     // 카드 특성 확인
