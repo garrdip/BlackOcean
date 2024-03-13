@@ -74,6 +74,12 @@ public class CardOnHand : NetworkBehaviour
     public VerticalLayoutGroup verticalLayoutGroup;
     public List<GameObject> expBlocks = new List<GameObject>(); // 경험치 바 내부 블록 리스트
 
+    [Header("CardOnHand 이펙트")]
+    public ParticleSystem rippleParticle;
+    public Material rippleRed;
+    public Material rippleYellow;
+    public Material rippleBlue;
+
     public delegate void CardInfoChanged();
     public CardInfoChanged CardInfoChangedEvent;
     public Transform popUpWIndowParent;
@@ -110,6 +116,7 @@ public class CardOnHand : NetworkBehaviour
                 InitCardIllust(card, georkCardSprites);
                 InitCardTemplateByCardEnhanced(card, georkCardSprites);
                 InitCardExpBar(card, georkCardSprites);
+                rippleParticle.GetComponent<ParticleSystemRenderer>().material = rippleYellow;
                 break;
             case Character.ERIS:
                 SerializedDictionary<string, Sprite> erisCardSprites = CardData.instance.characterCardTemplate[Character.ERIS];
@@ -117,6 +124,7 @@ public class CardOnHand : NetworkBehaviour
                 InitCardIllust(card, erisCardSprites);
                 InitCardTemplateByCardEnhanced(card, erisCardSprites);
                 InitCardExpBar(card, erisCardSprites);
+                rippleParticle.GetComponent<ParticleSystemRenderer>().material = rippleBlue;
                 break;
             case Character.HONGDANHYANG:
                 SerializedDictionary<string, Sprite> danhyangCardSprites = CardData.instance.characterCardTemplate[Character.HONGDANHYANG];
@@ -124,6 +132,7 @@ public class CardOnHand : NetworkBehaviour
                 InitCardIllust(card, danhyangCardSprites);
                 InitCardTemplateByCardEnhanced(card, danhyangCardSprites);
                 InitCardExpBar(card, danhyangCardSprites);
+                rippleParticle.GetComponent<ParticleSystemRenderer>().material = rippleRed;
                 break;
         }
     }

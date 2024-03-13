@@ -113,10 +113,16 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                     if(cardOnHand != null){
                         if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed && !cardOnHand.isAddtionDrawCard){
                             if(cardOnHand.isMouseOver){
+                                // 위치값
                                 Vector3 cardOverPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, cardOverPosition, Time.deltaTime * 10f);
+                                // 회전값
                                 Quaternion cardOverRotation = Quaternion.Euler(0f, 0f, 0f);
                                 cardOnHand.transform.localRotation = Quaternion.Lerp(cardOnHand.transform.rotation, cardOverRotation, Time.deltaTime * 10f);
+                                // 크기값
+                                cardOnHand.transform.localScale = cardOverSize;
+                                cardOnHand.rippleParticle.transform.localScale = cardOverSize;
+
                                 if(Vector3.Distance(cardOnHand.transform.localPosition,cardOverPosition) < 0.01f && cardOnHand.transform.localRotation.x < 0.01f && cardOnHand.transform.localRotation.y < 0.01f && cardOnHand.createdPopUpWindow.Count == 0)
                                 {
                                     foreach(Infomation info in cardOnHand.card.baseCard.info)
@@ -154,7 +160,6 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                         cardOnHand.createdPopUpWindow.Add(popUpCard);
                                     }
                                 }
-                                cardOnHand.transform.localScale = cardOverSize;
                             }else{
                                 cardOnHand.sortingGroup.sortingOrder = i; // 스프라이트 정렬 인덱스
                                 cardOnHand.cardOnHandCanvas.sortingOrder = i; // 카드 이름 및 설명 텍스트 요소의 정렬 인덱스
@@ -175,6 +180,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
 
                                 // 크기값
                                 cardOnHand.transform.localScale = Vector3.Lerp(cardOnHand.transform.localScale, cardOriginSize, Time.deltaTime * 10f);
+                                cardOnHand.rippleParticle.transform.localScale = cardOriginSize;
 
                                 // 마우스 오버되지 않은 나머지 카드들은 shift 되어 밀려남. 마우스 오버된 카드를 기준으로 좌우 대칭으로 멀어질 수록 밀려나는 위치의 정도가 감소.
                                 if(cardOnHand.isShifted){
@@ -209,6 +215,9 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             cardOnHand.isMoving = true;
             cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
             cardOnHand.transform.localScale = new Vector3(0.02f, 0.02f, 0f);
+            cardOnHand.rippleParticle.transform.localScale = new Vector3(0.02f, 0.02f, 0f);
+            var particleModule = cardOnHand.rippleParticle.main;
+            particleModule.startSize = 0f;
             Sequence sequence = DOTween.Sequence();
             sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
                 .SetDelay(index * 0.1f)
@@ -216,6 +225,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 .OnComplete(() => {
                     cardOnHand.isMoving = false;
                     sequence.Kill();
+                    particleModule.startSize = 5f;
                 }));      
         }
     }
@@ -239,6 +249,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         }
     }
 
+    // CardOnHand가 버린덱에서 패로 되돌아올 때 애니매이션
     public void CardOnHandDrawSequenceFromTrashDeck(CardOnHand cardOnHand, int index)
     {
         if(!cardOnHand.isChoosed){
@@ -250,6 +261,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             // Dotween 애니매이션 시퀀스 생성
             Sequence sequence = DOTween.Sequence();
             sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));
+            sequence.Join(cardOnHand.rippleParticle.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.2f));    
             sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
                 .SetDelay(index * 0.1f)
                 .SetEase(Ease.OutSine)
@@ -282,6 +294,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
 
             // 시퀀스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 화면의 우측하단 방향으로 포물선 이동 애니매이션 추가
             sequence.Append(cardOnHand.transform.DOScale(new Vector3(0f, 0f, 0f), duration));
+            sequence.Join(cardOnHand.rippleParticle.transform.DOScale(new Vector3(0f, 0f, 0f), duration));
             sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
             sequence.Join(cardOnHand.transform.DOMove(position, duration).SetEase(Ease.InOutCirc));
             sequence.OnComplete(() =>
@@ -307,6 +320,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         Vector3 position = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
         cardOnHand.isMoving = true;
         cardOnHand.isUsed = true;
+        cardOnHand.rippleParticle.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration);
         cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration);
         cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration);
         cardOnHand.transform
