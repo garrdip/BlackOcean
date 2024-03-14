@@ -261,14 +261,14 @@ MonoBehaviour:
   expBlockPrefab: {fileID: 5956088442796586194, guid: 70f18470fbccaf64abab6ceed8e58d8b, type: 3}
   verticalLayoutGroup: {fileID: 2452631678018167357}
   expBlocks: []
-  popUpWIndowParent: {fileID: 3740218142697696516}
-  popUpCardParent: {fileID: 3357301459043461823}
-  popUpWindow: {fileID: 63547300263666348, guid: 92e19877e5227544c9f7c8dbb5b398fd, type: 3}
-  popUpCard: {fileID: 6285776433173605381, guid: 6ec9efa3c58a7bc4094bcbeb709f0d4e, type: 3}
   rippleParticle: {fileID: 3740959455710176529}
   rippleRed: {fileID: 2100000, guid: ef920b940b0afe94a995c53843efde67, type: 2}
   rippleYellow: {fileID: 2100000, guid: 78e39c182a951ab448c8ced713a6ada7, type: 2}
   rippleBlue: {fileID: 2100000, guid: 25bb191e7565d7e4f8bb9637ab9c41bb, type: 2}
+  popUpWIndowParent: {fileID: 3740218142697696516}
+  popUpCardParent: {fileID: 3357301459043461823}
+  popUpWindow: {fileID: 63547300263666348, guid: 92e19877e5227544c9f7c8dbb5b398fd, type: 3}
+  popUpCard: {fileID: 6285776433173605381, guid: 6ec9efa3c58a7bc4094bcbeb709f0d4e, type: 3}
   createdPopUpWindow: []
 --- !u!210 &9103925750444945429
 SortingGroup:
@@ -642,7 +642,7 @@ ParticleSystem:
       m_RotationOrder: 4
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
-  scalingMode: 1
+  scalingMode: 0
   randomSeed: 0
   InitialModule:
     serializedVersion: 3
