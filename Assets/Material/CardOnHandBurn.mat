@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: CardOnHandBurn
-  m_Shader: {fileID: 4800000, guid: d0c7f5fba7e65f543bac5cda149e4f04, type: 3}
+  m_Shader: {fileID: 4800000, guid: abfe21938e18e2e489d425f93d2abe39, type: 3}
   m_ValidKeywords:
   - ETC1_EXTERNAL_ALPHA
   m_InvalidKeywords: []
