@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Mirror;
+using TMPro;
 
 public class DeckBookUI : SingletonD<DeckBookUI>
 {
@@ -12,7 +12,9 @@ public class DeckBookUI : SingletonD<DeckBookUI>
     public GameObject dekcBookMenu;
     public GameObject cellPrefab;
     public Button buttonCloseDeckBook;
+    public GameObject buttonCloseLight;
     public List<Button> tabButtons = new List<Button>();
+    public List<TextMeshProUGUI> tabTexts = new List<TextMeshProUGUI>();
     public List<GameObject> tabFrames = new List<GameObject>();
     public int currentTabIndex;
 
@@ -47,6 +49,7 @@ public class DeckBookUI : SingletonD<DeckBookUI>
     {
         tabFrames[index].SetActive(true);
         tabButtons[index].image.color = new Color32(255, 255, 255, 255);
+        tabTexts[index].color = new Color32(255, 255, 255, 255);
         currentTabIndex = index;
         HideOtherTabs(index);
     }
@@ -56,8 +59,19 @@ public class DeckBookUI : SingletonD<DeckBookUI>
         for(int i=0; i<tabButtons.Count; i++){
             if(i != index){
                 tabButtons[i].image.color = new Color32(255, 255, 255, 70);
+                tabTexts[i].color = new Color32(255, 255, 255, 70);
                 tabFrames[i].SetActive(false);
             }
         }
+    }
+
+    public void OnPointerEnterCloseDeckBookButton()
+    {
+        buttonCloseLight.SetActive(true);
+    }
+
+    public void OnPointerExitCloseDeckBookButton()
+    {
+        buttonCloseLight.SetActive(false);
     }
 }
