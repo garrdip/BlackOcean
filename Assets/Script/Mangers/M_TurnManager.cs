@@ -516,6 +516,11 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         // 카드 사용후 효과 여기서 발동
                         foreach(int index in tar[0].buffCardUseEffect.Keys)
                         {
+                            if(tar[0].initialUseEffectIndex.FindIndex(x => x == index) != -1) //방금 버프 등록한 카드의 경우 효과 발동 안함
+                            {
+                                tar[0].initialUseEffectIndex.Remove(index);
+                                continue;
+                            }
                             yield return tar[0].buffCardUseEffect[index](tar[0],index);
                         }
                     }

@@ -114,6 +114,7 @@ public class TargetObject : NetworkBehaviour
     public Dictionary<int,CardBlessEffect> buffCardDrowEffect = new Dictionary<int, CardBlessEffect>();
     public Dictionary<int,CardBlessEffect> buffTurnEndEffect = new Dictionary<int, CardBlessEffect>();
     public Dictionary<int,CardBlessEffect> buffCardUseEffect = new Dictionary<int, CardBlessEffect>();
+    public List<int> initialUseEffectIndex = new List<int>();
 
     void Start()
     {
