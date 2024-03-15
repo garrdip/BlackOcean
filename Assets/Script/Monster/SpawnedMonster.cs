@@ -38,6 +38,9 @@ public class SpawnedMonster : NetworkBehaviour
 
     [SyncVar (hook = nameof(OnChangeParent))]
     public TargetObject parent;
+    
+    [SyncVar]
+    public int turn = 0;
 
     public bool isActive = false;
 
@@ -50,10 +53,13 @@ public class SpawnedMonster : NetworkBehaviour
     [Header("몬스터 외곽선 Material")]
     public Material outLineMaterial;
 
-    SkeletonAnimation anim;
+    [Header("몬스터 처치 효과 Material")]
+    public Material dissolveMaterial;
 
-    [SyncVar]
-    public int turn = 0;
+    [Header("Dissolve 효과 파티클 오브젝트")]
+    public ParticleSystem dissolveParticle;
+
+    SkeletonAnimation anim;
     
     MonsterAction sturnedAction = new MonsterAction("APDO",0,0);
 

@@ -177,6 +177,31 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
+    // 사라지는 이펙트
+    public void StartDissolveEffect(System.Action dissloveCallback = null)
+    {
+        SpawnedMonster spawnedMonster = monster.GetComponent<SpawnedMonster>();
+        spawnedMonster.meshRenderer.material = spawnedMonster.dissolveMaterial; // 몬스터의 메쉬랜더러의 머티리얼을 dissolveMaterial로 변경
+        spawnedMonster.dissolveParticle.gameObject.SetActive(true); // dissolveParticle 활성화
+        StartCoroutine(DissolveCoroutine(this, () => {
+            dissloveCallback();
+        }));
+    }
+    
+    public IEnumerator DissolveCoroutine(TargetObject targetObject, System.Action callbacak = null)
+    {
+        float duration = 2.5f;
+        float timer = 0f;
+        while (timer < duration)
+        {
+            float dissolveRatio = timer / duration;
+            targetObject.monster.GetComponent<SpawnedMonster>().dissolveMaterial.SetFloat("_Level", dissolveRatio);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        callbacak();
+    }
+
     public void InitMonsterNamePlate()
     {
         selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
