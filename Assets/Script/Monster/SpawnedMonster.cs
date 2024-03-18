@@ -66,6 +66,9 @@ public class SpawnedMonster : NetworkBehaviour
     void Start()
     {
         meshRenderer = GetComponent<MeshRenderer>();
+        anim = GetComponent<SkeletonAnimation>();
+        dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingLayerName = "FrontLayer";
+        dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingOrder = 999;
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
