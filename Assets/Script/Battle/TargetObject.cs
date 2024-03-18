@@ -551,6 +551,11 @@ public class TargetObject : NetworkBehaviour
         defense += value;
     }
 
+    public bool HasBuff(BuffType buffType)
+    {
+        return buffs.FindIndex(buff => buff.type == buffType) != -1;
+    }
+
     // ----------------------------------------------  SyncVar, SyncList 콜백 처리 구간 ---------------------------------------------------//
     public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
     {

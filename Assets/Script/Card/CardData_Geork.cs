@@ -11,6 +11,7 @@ using Steamworks;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEditor;
+using TMPro;
 
 public partial class CardData : SingletonD<CardData>
 {
@@ -60,6 +61,7 @@ public partial class CardData : SingletonD<CardData>
 			yield return new WaitForSeconds(0.5f);
 			if(!IsGISADO(tar))break;
 		}
+		if(IsGISADO(tar) && tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G0_E(Card card,List<TargetObject> tar)
@@ -382,6 +384,7 @@ public partial class CardData : SingletonD<CardData>
 			yield return new WaitForSeconds(0.5f);
 			if(!IsGISADO(tar)) break;
 		}
+		if(IsGISADO(tar) && tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G12_E(Card card,List<TargetObject> tar)
@@ -520,6 +523,7 @@ public partial class CardData : SingletonD<CardData>
 			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
 			foreach(TargetObject friend in M_TurnManager.instance.spawnedPlayerList)
 				GeneralGetDefense(tar[0],friend,6,card);
+			if(tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
 		}
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -552,8 +556,11 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],5);
 		if(IsGISADO(tar))
+		{
 			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
-			GeneralGetDefense(tar[0],tar[0],15,card);
+				GeneralGetDefense(tar[0],tar[0],15,card);
+			if(tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
+		}
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -586,8 +593,11 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],5);
 		if(IsGISADO(tar))
+		{
 			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
-			tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
+				tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
+			if(tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
+		}
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -701,8 +711,11 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],10);
 		if(IsGISADO(tar))
+		{
 			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
-			tar[1].GainBuff(BuffType.APDO,2,true,false,false,true,tar[0],card);
+				tar[1].GainBuff(BuffType.APDO,2,true,false,false,true,tar[0],card);
+			if(tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
+		}
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -723,111 +736,228 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G30_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G30(card,tar);
 	}
 	public IEnumerator G31(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack2");
+		yield return new WaitForSeconds(0.5f);
+		// 소유중인 저주카드 카운트
+		int addDamage = 0;
+		foreach(Card item in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
+			if(item.baseCard.cardType == CardType.CURSE)addDamage += 8;
+		foreach(Card item in tar[0].player.GetComponent<GamePlayerDeck>().trashDeck)
+			if(item.baseCard.cardType == CardType.CURSE)addDamage += 8;
+		foreach(CardOnHand item in tar[0].player.GetComponent<GamePlayerDeck>().cardOnHands)
+			if(item.card.baseCard.cardType == CardType.CURSE)addDamage += 8;
+
+		GeneralSingleAttack(tar[0],tar[1],addDamage);
+
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G31_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G31(card,tar);
 	}
 	public IEnumerator G32(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.5f);
+		GeneralSingleAttack(tar[0],tar[1],8);
+		if(IsGISADO(tar))
+		{
+			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
+				tar[1].GainBuff(BuffType.SOIRAK,2,true,false,false,true,tar[0],card);
+			if(tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
+		}
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G32_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G32(card,tar);
 	}
 	public IEnumerator G33(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		ChangePosition(tar[0],M_TurnManager.instance.playerOrder.FindIndex(x => x == tar[1].player.netId));
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralGetDefense(tar[0],tar[0],8,card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G33_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G33(card,tar);
 	}
 	public IEnumerator G34(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		MovePosition(true,tar[0]);
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralGetDefense(tar[0],tar[0],7,card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G34_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G34(card,tar);
 	}
 	public IEnumerator G35(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		MovePosition(false,tar[0]);
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralSingleAttack(tar[0],tar[1],5);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G35_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G35(card,tar);
 	}
 	public IEnumerator G36(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff1");
+		yield return new WaitForSeconds(0.5f);
+		tar[1].GainBuff(BuffType.APDO,2,true,false,false,true,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G36_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G36(card,tar);
 	}
 	public IEnumerator G37(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		ChangePosition(tar[0],M_TurnManager.instance.playerOrder.FindIndex(x => x == tar[1].player.netId));
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		tar[0].GainBuff(BuffType.ICHI_ATTACK,2,false,false,false,false,tar[0],card);		
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G37_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G37(card,tar);
 	}
 	public IEnumerator G38(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		tar[0].GainBuff(BuffType.ABSOLUTEDOMINATOR,0,false,true,false,false,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G38_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G38(card,tar);
 	}
 	public IEnumerator G39(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.5f);
+		GeneralSingleAttack(tar[0],tar[1],4);
+		if(IsGISADO(tar))
+		{
+			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
+				tar[0].player.GetComponent<GamePlayerDeck>().currentIchi++;
+			if(tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
+		}
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G39_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G39(card,tar);
 	}
+	//신들린 연격
 	public IEnumerator G40(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.5f);
+		for(int i = 0 ; i < 5 ; i ++)
+		{
+			GeneralSingleAttack(tar[0],tar[1],2);
+			yield return new WaitForSeconds(0.2f);
+		}
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G40_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G40(card,tar);
 	}
+
+	//풍차 베기
 	public IEnumerator G41(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.5f);
+		for(int i = 0 ; i < 2 ; i ++)
+		{
+			foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
+				GeneralSingleAttack(tar[0],enemy,3);
+			yield return new WaitForSeconds(0.2f);
+		}
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G41_E(Card card,List<TargetObject> tar)
 	{
 		yield return null;
 	}
+	// 눈먼 공격
 	public IEnumerator G42(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		List<TargetObject> targets = new List<TargetObject>();
+        targets.Add(tar[0]);
+        targets.AddRange(M_TurnManager.instance.spawnedMonsterList);
+		M_DimmingManager.instance.StartDimming(targets);
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.5f);
+		for(int i = 0 ; i < 3 ; i ++)
+		{
+			GeneralSingleAttack(tar[0],M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0,M_TurnManager.instance.spawnedMonsterList.Count)],4);
+			yield return new WaitForSeconds(0.2f);
+		}
+		M_DimmingManager.instance.StopDimming(targets);
 	}
 	public IEnumerator G42_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G42(card,tar);
 	}
+
+	// 난도질
 	public IEnumerator G43(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		List<TargetObject> targets = new List<TargetObject>();
+        targets.Add(tar[0]);
+        targets.AddRange(M_TurnManager.instance.spawnedMonsterList);
+		M_DimmingManager.instance.StartDimming(targets);
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.5f);
+		foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
+		{
+			GeneralSingleAttack(tar[0],enemy,4);
+			enemy.GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar[0],card);
+		}
+		yield return new WaitForSeconds(0.2f);
+		M_DimmingManager.instance.StopDimming(targets);
 	}
 	public IEnumerator G43_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G43(card,tar);
 	}
 	public IEnumerator G44(Card card,List<TargetObject> tar)
 	{
