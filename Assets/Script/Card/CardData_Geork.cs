@@ -7,9 +7,14 @@ using System;
 using ProjectD;
 using Mirror;
 using Spine.Unity;
+using Steamworks;
+using DG.Tweening;
+using Unity.VisualScripting;
+using UnityEditor;
 
 public partial class CardData : SingletonD<CardData>
 {
+	public delegate void CardCallBack();
 	// 게오르크
 	private void GeneralApDo(TargetObject user,TargetObject tar, int value)    
 	{
@@ -24,6 +29,11 @@ public partial class CardData : SingletonD<CardData>
 		}
 	}
 
+	private int GetAdditionalValueOfGisadoAction(List<TargetObject> tar)
+	{
+		return tar[0].buffs.FindIndex(buff => buff.type == BuffType.UGLYKNIGHT) == -1 ? 0 : 1;
+	}
+
 	private void GeorkAnimation(TargetObject tar, string normal)    
 	{
 		M_TurnManager.instance.StartAnimation(tar,0,tar.isTransformed? "H" + normal : normal, false);
@@ -31,13 +41,18 @@ public partial class CardData : SingletonD<CardData>
 
 	public bool IsGISADO(List<TargetObject> tar)
     {
-        return ((int)tar[1].monster.nextTarget == tar[0].player.selectOrder)? true : false;
+		int currentIndex = M_TurnManager.instance.playerOrder.FindIndex(x => x == tar[0].player.netId);
+		foreach(TargetObject target in M_TurnManager.instance.GetTargetObjectFromActionTarget(tar[1].monster.nextTarget))
+		{
+			if(target == tar[0])return true;
+		}
+        return false;
     }
 
 	public IEnumerator G0(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
-		for(int i = 0 ;i < 3 ; i++)
+		for(int i = 0 ;i < 3 + GetAdditionalValueOfGisadoAction(tar) ; i++)
 		{
 			GeorkAnimation(tar[0],"Attack0");
 			yield return new WaitForSeconds(0.5f);
@@ -94,7 +109,7 @@ public partial class CardData : SingletonD<CardData>
 		tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,tar,null);
 		yield return null;
 	}
-	public IEnumerator G1_H(Card card,List<TargetObject> tar)
+	public IEnumerator G1_H(Card card,List<TargetObject> tar) 
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		GeorkAnimation(tar[0],"Buff0");
@@ -358,7 +373,7 @@ public partial class CardData : SingletonD<CardData>
 	public IEnumerator G12(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
-		for(int i = 0 ;i < 2 ; i ++)
+		for(int i = 0 ;i < 2 + GetAdditionalValueOfGisadoAction(tar) ; i ++)
 		{
 			if(IsGISADO(tar))GeorkAnimation(tar[0],"Attack2");
 				else GeorkAnimation(tar[0],"Attack0");
@@ -502,6 +517,7 @@ public partial class CardData : SingletonD<CardData>
 		GeneralSingleAttack(tar[0],tar[1],10);
 		if(IsGISADO(tar))
 		{
+			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
 			foreach(TargetObject friend in M_TurnManager.instance.spawnedPlayerList)
 				GeneralGetDefense(tar[0],friend,6,card);
 		}
@@ -536,6 +552,7 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],5);
 		if(IsGISADO(tar))
+			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
 			GeneralGetDefense(tar[0],tar[0],15,card);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -567,8 +584,9 @@ public partial class CardData : SingletonD<CardData>
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
-		GeneralSingleAttack(tar[0],tar[1],7);
+		GeneralSingleAttack(tar[0],tar[1],5);
 		if(IsGISADO(tar))
+			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
 			tar[0].GainBuff(BuffType.ICHI_ATTACK,1,false,false,false,false,tar[0],card);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -581,47 +599,127 @@ public partial class CardData : SingletonD<CardData>
 	//저추조차 찬란하다
 	public IEnumerator G25(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        GeorkAnimation(tar[0],"Buff1");
+        yield return new WaitForSeconds(0.5f);
+        tar[0].GainBuff(BuffType.BRILLIANTCURSE,1,false,true,false,false,tar[0],card);
+        foreach(Card pCard in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
+        {
+            if(pCard.baseCard.cardType == CardType.CURSE)
+                pCard.tempEnhanced = true;
+        }
+        foreach(Card pCard in tar[0].player.GetComponent<GamePlayerDeck>().trashDeck)
+        {
+            if(pCard.baseCard.cardType == CardType.CURSE)
+                pCard.tempEnhanced = true;
+        }
+        foreach(CardOnHand pCard in tar[0].player.GetComponent<GamePlayerDeck>().cardOnHands)
+        {
+            if(pCard.card.baseCard.cardType == CardType.CURSE)
+            {
+                pCard.card.tempEnhanced = true;
+                pCard.OnChangeCardData(pCard.card,pCard.card);
+            }
+        }
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+        yield return new WaitForSeconds(0.2f);
 	}
+
 	public IEnumerator G25_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G25(card,tar);
 	}
+
+	// 쐐기박기
 	public IEnumerator G26(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.5f);
+		int addDamage = tar[1].GetBuffValue(BuffType.APDO) * 4;
+		tar[1].buffs.Remove(tar[1].buffs.Find(buff => buff.type == BuffType.APDO));
+		GeneralSingleAttack(tar[0],tar[1],4 + addDamage);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G26_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G26(card,tar);
 	}
+
+	// 한번에 처리하마
 	public IEnumerator G27(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Attack2");
+		yield return new WaitForSeconds(0.5f);
+		foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
+		{
+			GeneralSingleAttack(tar[0],target,6);
+			target.GainBuff(BuffType.APDO,1,true,false,false,true,tar[0],card);
+		}
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G27_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G27(card,tar);
 	}
+
+	//저주자의 울부짖음
 	public IEnumerator G28(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Attack2");
+		yield return new WaitForSeconds(0.5f);
+		// 소유중인 저주카드 카운트
+		int addDamage = 0;
+		foreach(Card item in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
+			if(item.baseCard.cardType == CardType.CURSE)addDamage += 3;
+		foreach(Card item in tar[0].player.GetComponent<GamePlayerDeck>().trashDeck)
+			if(item.baseCard.cardType == CardType.CURSE)addDamage += 3;
+		foreach(CardOnHand item in tar[0].player.GetComponent<GamePlayerDeck>().cardOnHands)
+			if(item.card.baseCard.cardType == CardType.CURSE)addDamage += 3;
+
+		foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
+		{
+			GeneralSingleAttack(tar[0],target,6 + addDamage);
+		}
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G28_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G28(card,tar);
 	}
+
+	//두려운가?
 	public IEnumerator G29(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralSingleAttack(tar[0],tar[1],10);
+		if(IsGISADO(tar))
+			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
+			tar[1].GainBuff(BuffType.APDO,2,true,false,false,true,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G29_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G29(card,tar);
 	}
+
+	//추하기에 기사답게
 	public IEnumerator G30(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		tar[0].GainBuff(BuffType.UGLYKNIGHT,0,false,true,false,false,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G30_E(Card card,List<TargetObject> tar)
 	{

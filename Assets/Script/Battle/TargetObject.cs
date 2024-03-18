@@ -356,7 +356,10 @@ public class TargetObject : NetworkBehaviour
         }
         usedGOHENG.Add(selectedGoheng);
         string nameOfGOHENGCard = "G" + selectedGoheng.ToString();
-        player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == nameOfGOHENGCard)),1);
+        if(buffs.FindIndex(buff => buff.type == BuffType.BRILLIANTCURSE) == -1)
+            player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == nameOfGOHENGCard)),1);
+        else
+            player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == nameOfGOHENGCard + "_E")),1);
         if(selectedGoheng == 2)GainBuff(BuffType.GOHANG3_DEBUFF,0,true,true,false,false,this,null);
         if(selectedGoheng == 1)GainBuff(BuffType.GOHANG2_DEBUFF,0,true,true,false,false,this,null);
         foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
