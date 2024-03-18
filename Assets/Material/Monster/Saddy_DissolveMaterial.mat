@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Soldier_Axe_DissolveMaterial
+  m_Name: Saddy_DissolveMaterial
   m_Shader: {fileID: 4800000, guid: 8aa2b80f5083921428f6f29068f2771f, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -41,7 +41,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: cb9f13c760f9cd44d9c08db8cf756db5, type: 3}
+        m_Texture: {fileID: 2800000, guid: 406229ae612148240ab5156063a4895a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:

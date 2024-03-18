@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7286526893056829625}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.25, y: 3.57, z: 0}
+  m_LocalPosition: {x: -1.3, y: 2.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -286,7 +286,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0.05
-      minScalar: 0.3
+      minScalar: 0.5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -601,7 +601,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 2000
+    maxNumParticles: 1000
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -670,7 +670,7 @@ ParticleSystem:
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
     m_Scale: {x: 1, y: 1, z: 1}
-    placementMode: 2
+    placementMode: 1
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
     m_MeshSpawn:
@@ -732,12 +732,12 @@ ParticleSystem:
     m_Mesh: {fileID: 0}
     m_MeshRenderer: {fileID: 0}
     m_SkinnedMeshRenderer: {fileID: 0}
-    m_Sprite: {fileID: 21300000, guid: 5ac2503e39a382c4098516db95e0f98f, type: 3}
+    m_Sprite: {fileID: 21300000, guid: cb9f13c760f9cd44d9c08db8cf756db5, type: 3}
     m_SpriteRenderer: {fileID: 0}
     m_UseMeshMaterialIndex: 0
     m_UseMeshColors: 1
     alignToDirection: 0
-    m_Texture: {fileID: 2800000, guid: 7c3d2e830ae5a4f47aba8da62a4f33ff, type: 3}
+    m_Texture: {fileID: 0}
     m_TextureClipChannel: 3
     m_TextureClipThreshold: 0
     m_TextureUVChannel: 0
@@ -4900,7 +4900,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8715637313035057607}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.77, y: 1.65, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5051,13 +5051,13 @@ MonoBehaviour:
     behavior: []
     buffList: []
   parent: {fileID: 0}
+  turn: 0
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
   defaultMaterial: {fileID: 2100000, guid: 0a9abbc72511c3745a80f4f05fa3c148, type: 2}
   outLineMaterial: {fileID: 2100000, guid: f3f0d67e442344043bb842602b02d32a, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 78f00cac7b8b33844ba7a76221fd6823, type: 2}
   dissolveParticle: {fileID: 7286526893056829630}
-  turn: 0
 --- !u!60 &395826262243898315
 PolygonCollider2D:
   m_ObjectHideFlags: 0
