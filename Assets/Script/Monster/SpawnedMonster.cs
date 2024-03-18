@@ -71,6 +71,11 @@ public class SpawnedMonster : NetworkBehaviour
         dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingOrder = 999;
     }
 
+    void OnDestroy()
+    {
+        dissolveMaterial.SetFloat("_Level", 0);
+    }
+
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead")){
