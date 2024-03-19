@@ -28,12 +28,24 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     {
         for(int i=0; i<tabButtons.Count; i++){
             int buttonIndex = i; // C# 에서 람다식 클로저
-            tabButtons[i].onClick.AddListener(() => ChangeTab(buttonIndex));
+            tabButtons[i].onClick.AddListener(() => HandleChangeTab(buttonIndex));
         }
         for(int i=0; i<skipButtons.Count; i++){
             int buttonIndex = i;
             skipButtons[i].onClick.AddListener(() => SkipRewardCard(buttonIndex));
         }
+    }
+
+    void OnDestroy()
+    {
+        DOTween.Kill(canvasGroup);
+    }
+
+    public void HandleChangeTab(int index)
+    {
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+        ChangeTab(index);
     }
 
     // 보상카드 스킵
@@ -48,6 +60,8 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
             M_TurnManager.instance.playerRewardedDic[gamePlayer] = true;
             M_TurnManager.instance.CheckAllPlayerRewarded(gamePlayer);
         }
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     // 클라이언트 연결 해제 이벤트 수신
@@ -56,11 +70,6 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         M_TurnManager.instance.playerRewardedDic.Add(gamePlayer, false);
         int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);
         tabButtons[index].gameObject.SetActive(true);
-    }
-
-    void OnDestroy()
-    {
-        DOTween.Kill(canvasGroup);
     }
 
     // 탭 변경

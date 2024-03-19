@@ -1132,8 +1132,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 if(NetworkClient.spawned.ContainsKey(gamePlayer.GetComponent<GamePlayerTarget>().targetObject))
                     gamePlayerDeck.CmdSpawnCardOnHand();
             }
-            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));
-            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
     }
 
@@ -1143,8 +1141,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         // 각 플레이어들의 모든 카드와 화살표 제거
         M_CardManager.instance.RemoveAllCurrentPlayerArrow();
         M_CardManager.instance.RemoveAllCurrentPlayerCardOnHands();
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_discard"));
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     [ClientRpc]

@@ -47728,6 +47728,7 @@ MonoBehaviour:
     cardCharacteristics: 
     experience: 0
     tempEnhanced: 0
+    isReturnable: 0
   cardOwner: {fileID: 0}
   canvasGroup: {fileID: 617208569021601904}
   cardBackground: {fileID: 6205162579322818999}

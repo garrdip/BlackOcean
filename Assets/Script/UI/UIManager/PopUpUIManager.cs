@@ -115,6 +115,8 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         if(onChangeDeckListPopUpHide != null){
             onChangeDeckListPopUpHide.Invoke();
         }
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     // CardOnHand 제거 팝업 활성화
@@ -132,6 +134,8 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         if(onChangeCardOnHandRemovePopUpHide != null){
             onChangeCardOnHandRemovePopUpHide.Invoke();
         }
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     // 전투보상 카드선택 팝업창 활성화
@@ -218,5 +222,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
             networkRoomManager.StopClient();
             M_SteamManager.LeaveLobby();
         });
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 }

@@ -214,12 +214,16 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
             cardOnHand.transform.localScale = new Vector3(0.02f, 0.02f, 0f);
             Sequence sequence = DOTween.Sequence();
-            sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
+            sequence.Append(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
                 .SetDelay(index * 0.1f)
                 .SetEase(Ease.OutSine)
                 .OnComplete(() => {
                     cardOnHand.isMoving = false;
                     sequence.Kill();
+                    if(cardOnHand.isOwned){
+                        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));
+                        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+                    }
                 }));      
         }
     }
@@ -232,14 +236,19 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             DeckDrawPopUp deckDrawPopUp = PopUpUIManager.instance.deckDrawPopUp.GetComponent<DeckDrawPopUp>();
             cardOnHand.transform.position = cardOnHand.isOwned ? deckDrawPopUp.addtionDrawCardSlots[cardOnHand.index].transform.position : new Vector3(0f, -100f, 0f);
             Sequence sequence = DOTween.Sequence();
-            sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
+            sequence.Append(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
                 .SetDelay(index * 0.1f)
                 .SetEase(Ease.OutSine)
                 .OnComplete(() => {
                     cardOnHand.isMoving = false;
                     currentGamePlayerDeck.CmdChangeCardOnHandIsAddtionDraw(cardOnHand, false);
                     sequence.Kill();
-                }));      
+                    if(cardOnHand.isOwned){
+                        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));
+                        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+                    }
+                })
+            );      
         }
     }
 
@@ -261,6 +270,10 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 .OnComplete(() => {
                     cardOnHand.isMoving = false;
                     sequence.Kill();
+                    if(cardOnHand.isOwned){
+                        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));
+                        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+                    }
                 }));      
         }
     }
@@ -310,15 +323,21 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         float duration = 0.5f;
         float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.sortingGroup.sortingOrder) * 0.1f;
         Vector3 position = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
-        cardOnHand.isMoving = true;
-        cardOnHand.isUsed = true;
-        cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration);
-        cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration);
-        cardOnHand.transform
-                .DOMove(position, duration)
-                .SetEase(Ease.OutCirc)
-                .SetDelay(delay)
-                .OnComplete(() => {
+        
+        Sequence sequence = DOTween.Sequence();
+        sequence.PrependCallback(() => {
+            cardOnHand.isMoving = true;
+            cardOnHand.isUsed = true;
+            if(cardOnHand.isOwned){
+                AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_discard"));
+                M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+            }
+        });
+        sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration));
+        sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
+        sequence.Join(cardOnHand.transform.DOMove(position, duration).SetEase(Ease.OutCirc).SetDelay(delay));
+        sequence.SetDelay(delay);
+        sequence.OnComplete(() => {
                     GameUIManager.instance.buttonEndTurn.interactable = true;
                     gamePlayerDeck.CmdDestroyCardOnHandToTrash(cardOnHand);
                     ChangeCurrentPlayerCardOnHandState(false);
