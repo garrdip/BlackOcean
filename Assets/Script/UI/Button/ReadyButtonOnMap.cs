@@ -32,6 +32,8 @@ public class ReadyButtonOnMap : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public void OnPointerClick(PointerEventData pointerEventData)
     {
         HandleRadeyState();
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("stage_ready"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)

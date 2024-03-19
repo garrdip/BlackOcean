@@ -878,6 +878,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcStartBossBattleEvent()
     {
+        AudioClip stageStartAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("stage_start"));
+        M_SoundManager.instance.PlaySFX(stageStartAudio, stageStartAudio.length);
         Camera.main.orthographicSize = battelSceneCameraSize;
         M_MessageManager.instance
             .Position(ToastPosition.Top)
@@ -895,6 +897,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcStartBattleEvent(RoomType roomType)
     {
+        AudioClip stageStartAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("stage_start"));
+        M_SoundManager.instance.PlaySFX(stageStartAudio, stageStartAudio.length);
         Camera.main.orthographicSize = battelSceneCameraSize;
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().character; // 로컬 플레이어가 선택한 캐릭터 조회
         switch(roomType)
@@ -1118,6 +1122,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 if(NetworkClient.spawned.ContainsKey(gamePlayer.GetComponent<GamePlayerTarget>().targetObject))
                     gamePlayerDeck.CmdSpawnCardOnHand();
             }
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
     }
 
@@ -1127,6 +1133,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         // 각 플레이어들의 모든 카드와 화살표 제거
         M_CardManager.instance.RemoveAllCurrentPlayerArrow();
         M_CardManager.instance.RemoveAllCurrentPlayerCardOnHands();
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_discard"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     [ClientRpc]
@@ -1165,11 +1173,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             // UI 활성화 상태 변경
             M_MapManager.instance.MapScene.SetActive(true);
             M_MapManager.instance.BattleScene.SetActive(false);
-            GameUIManager.instance.GameUI.SetActive(false);
-            GameUIManager.instance.GameBackGround.SetActive(false);
 
             // 임시 테스트용 UI
-            GameUIManager.instance.TestUI.gameObject.SetActive(false);
+            //GameUIManager.instance.TestUI.gameObject.SetActive(false);
             
             // Dim배경 상태 변경
             blackCurtain.gameObject.SetActive(false);

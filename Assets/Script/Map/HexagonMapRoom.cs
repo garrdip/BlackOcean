@@ -245,7 +245,9 @@ public class HexagonMapRoom : NetworkBehaviour
             mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             mapTileBase.SetActive(true);
             hexagonMapRoomUI.transform.DOLocalMoveY(0.25f, 0.5f);
-            hexagonMapRoomUI.SetActive(true);
+            hexagonMapRoomUI.SetActive(true);              
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("ingame_menu_stage_mouseclick"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }else{
             expandMapTile.transform.DOLocalMoveY(0f, 0.5f).OnComplete(() => {
                 mapTileMask.GetComponent<SpriteMask>().enabled = false;

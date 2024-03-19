@@ -179,6 +179,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
                 TextDetector.instance.StartTextDetect(graphicRaycaster);
             }
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_mouseover_2"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
     }
 
@@ -215,6 +217,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             HandleClickCardOnDeckOnPopUp(() => {
                 //M_TurnManager.instance.npc_Mercurius.shopCards.Remove(this.card);
             });
+            AudioClip shopCardPurchaseAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
+            M_SoundManager.instance.PlaySFX(shopCardPurchaseAudio, shopCardPurchaseAudio.length);
         }
         //DeckDrawPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.deckDrawPopUp.activeSelf){

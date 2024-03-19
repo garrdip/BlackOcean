@@ -43,7 +43,7 @@ public class M_SoundManager : MonoBehaviour {
 
     [Header ("SFX 목록")]
     [SerializedDictionary("SFX_TYPE", "SFX 오디오 클립 목록")]
-    public SerializedDictionary<string, List<AudioClip>> sfxClips = new SerializedDictionary<string, List<AudioClip>>();
+    public SerializedDictionary<SFX_TYPE, List<AudioClip>> sfxClips = new SerializedDictionary<SFX_TYPE, List<AudioClip>>();
 
     [Header ("VOICE 목록")]
     [SerializedDictionary("VOICE_TYPE", "VOICE 오디오 클립 목록")]
@@ -1771,4 +1771,18 @@ public enum VOICE_TYPE {
     ShadowMan,
     Sofia,
     Todd
+}
+
+public enum SFX_TYPE {
+    Common,
+    MainUI,
+    Card_Danhyang,
+    Boss_Momos,
+    Boss_Twins,
+    Elite_Devourer,
+    Elite_GiantSoldier,
+    Elite_Watcher,
+    Normal_Axe,
+    Normal_Shield,
+    Normal_Spear
 }

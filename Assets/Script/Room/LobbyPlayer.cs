@@ -315,9 +315,13 @@ public class LobbyPlayer : NetworkBehaviour
             characterSelectCompleteImage.gameObject.SetActive(true);
             classIconLayout.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -50f);
             classIconLayout.GetComponent<RectTransform>().DOAnchorPosY(0f, 0.5f);
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("choose_character_cancel"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }else{
             classIcon.gameObject.SetActive(false);
             characterSelectCompleteImage.gameObject.SetActive(false);
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("choose_character"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
     }
 
@@ -395,6 +399,8 @@ public class LobbyPlayer : NetworkBehaviour
         sequence.Append(downTween);
         sequence.Join(fadeOutTween);
         RoomUI.instance.ChangeSwapButtonsIconState();
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("choose_position"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     // 캐릭터 선택 완료 상태에서 이미지 클릭 이벤트

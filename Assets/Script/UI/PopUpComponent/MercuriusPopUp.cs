@@ -211,14 +211,14 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     public void OnMercuriusPopUpShow()
     {
         canvasGroup.DOFade(1.0f, 0.5f);
-        GameUIManager.instance.GameUI.gameObject.SetActive(false);
+        //GameUIManager.instance.GameUI.gameObject.SetActive(false);
         SetTabButtonByOwnedPlayersCount();
     }
 
     // MercuriusPopUp 비활성화 콜백
     public void OnMercuriusPopUpHide()
     {
-        GameUIManager.instance.GameUI.gameObject.SetActive(true);
+        //GameUIManager.instance.GameUI.gameObject.SetActive(true);
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
             gameObject.SetActive(false);
             isMouseOnFrame = false;

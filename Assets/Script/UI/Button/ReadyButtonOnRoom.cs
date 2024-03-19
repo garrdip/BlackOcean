@@ -56,6 +56,8 @@ public class ReadyButtonOnRoom : MonoBehaviour, IPointerEnterHandler, IPointerEx
             }
             SetReadyButtonViewByReadyState(roomPlayer.isReady);
             RoomUI.instance.ChangeSwapButtonsIconState();
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("game_start"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
     }
 

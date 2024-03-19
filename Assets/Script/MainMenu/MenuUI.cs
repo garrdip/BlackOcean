@@ -32,23 +32,21 @@ public class MenuUI : MonoBehaviour
 
     public void HandleSinglePlay()
     {
-
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }   
 
     public void HandleMultiPlay()
     {
         menuCanvas.SetActive(false);
         multiplayCanvas.SetActive(true);
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void HandleOpenDeckBook()
     {
         DeckBookUI.instance.HandleOpenDeckBook();
-    }
-
-    public void HandleCloseDeckBook()
-    {
-        DeckBookUI.instance.HandleCloseDeckBook();
     }
 
     public void OnChangeDeckBookOpenState(bool isOpen)
@@ -63,10 +61,13 @@ public class MenuUI : MonoBehaviour
     public void HandleSettings()
     {
         OptionUIManager.instance.HandShowOptionPopUp(true);
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void HandleQuit()
     {
-
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 }

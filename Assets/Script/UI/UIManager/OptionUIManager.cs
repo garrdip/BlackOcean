@@ -95,11 +95,15 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     private void HandleClickBackButton()
     {
         HandShowOptionPopUp(false);
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     private void HandleClickOkButton()
     {
         HandShowOptionPopUp(false);
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     private void HandleBgmVolumeChange(float value)
@@ -110,6 +114,8 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     private void HandleBgmToggleChanage(bool isOn)
     {
         M_SoundManager.instance.IsMusicOn = !isOn;
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     private void HandleVoiceVolumeChange(float value)
@@ -120,6 +126,8 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     private void HandleVoiceToggleChanage(bool isOn)
     {
         M_SoundManager.instance.IsVoiceOn = !isOn;
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
 
@@ -131,6 +139,8 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     private void HandleSfxToggleChanage(bool isOn)
     {
         M_SoundManager.instance.IsSoundOn = !isOn;
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     private void HandleChangeLanguageDropdown(TMP_Dropdown select)
@@ -138,6 +148,8 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         string selectLanguage = select.options[select.value].text;
         PlayerPrefs.SetString(currentLanguage, selectLanguage);
         Debug.Log("언어 변경 : " + selectLanguage);
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     // -------- 이벤트 트리거에 할당되어있는 함수들 --------- //

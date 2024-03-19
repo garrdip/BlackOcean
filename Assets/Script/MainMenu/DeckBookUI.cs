@@ -35,6 +35,8 @@ public class DeckBookUI : SingletonD<DeckBookUI>
         if(onChangeDeckBookOpenState != null){
             onChangeDeckBookOpenState.Invoke(false);
         }
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void HandleOpenDeckBook()
@@ -43,6 +45,8 @@ public class DeckBookUI : SingletonD<DeckBookUI>
         if(onChangeDeckBookOpenState != null){
             onChangeDeckBookOpenState.Invoke(true);
         }
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void ShowTab(int index)
@@ -52,6 +56,8 @@ public class DeckBookUI : SingletonD<DeckBookUI>
         tabTexts[index].color = new Color32(255, 255, 255, 255);
         currentTabIndex = index;
         HideOtherTabs(index);
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void HideOtherTabs(int index)

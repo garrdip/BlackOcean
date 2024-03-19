@@ -730,8 +730,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             // UI 활성화 상태 변경
             MapScene.SetActive(false);
             BattleScene.SetActive(true);
-            GameUIManager.instance.GameUI.SetActive(true);
-            GameUIManager.instance.GameBackGround.SetActive(true);
 
             // 임시 테스트용 UI
             // GameUIManager.instance.TestUI.gameObject.SetActive(true);

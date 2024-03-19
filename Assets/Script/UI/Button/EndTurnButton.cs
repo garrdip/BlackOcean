@@ -7,7 +7,7 @@ using Mirror;
 using DG.Tweening;
 
 
-public class EndTurnButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class EndTurnButton : MonoBehaviour
 {
     public GameObject endTurnBaseLight;
     public GameObject endTurnBaseLight2;
@@ -27,29 +27,22 @@ public class EndTurnButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         endTurnS2.GetComponent<RectTransform>().DOKill();
     }
 
-    public void OnPointerClick(PointerEventData pointerEventData)
+    public void OnPointerClick()
     {
-        HandleEndTurn();
+        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        playerInterface.endTurnActive = !playerInterface.endTurnActive;
+        playerInterface.OnEndTurnStateChanged(playerInterface.endTurnActive,  playerInterface.endTurnActive);
     }
 
-    public void OnPointerEnter(PointerEventData pointerEventData)
+    public void OnPointerEnter()
     {
         endTurnBaseLight.SetActive(true);
     }
 
-    public void OnPointerExit(PointerEventData pointerEventData)
+    public void OnPointerExit()
     {
         endTurnBaseLight.SetActive(false);
     }
-
-    // 턴 종료
-    public void HandleEndTurn()
-    {
-        PlayerInterface playerInterface =  NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-        playerInterface.endTurnActive = !playerInterface.endTurnActive;
-        playerInterface.OnEndTurnStateChanged( playerInterface.endTurnActive,  playerInterface.endTurnActive);
-    }
-
 
     public void SetEndTurnButtonActiveState(bool isActive)
     {

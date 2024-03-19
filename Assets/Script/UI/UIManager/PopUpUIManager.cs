@@ -77,22 +77,26 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject CardShopPrice;
 
 
-    // PrefareDeck 정보 팝업 활성화, 비활성화
+    // PrefareDeck 정보 팝업 활성화
     public void HandleShowPrefareDeckListPopUp()
     {
         deckListPopUp.gameObject.SetActive(true);
         if(onChangeDeckListPopUpShow != null){
             onChangeDeckListPopUpShow.Invoke(DeckListType.PREFARE_DECK);
         }
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_1"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
-    // TrashDeck 정보 팝업 활성화, 비활성화
+    // TrashDeck 정보 팝업 활성화
     public void HandleShowTrashDeckListPopUp()
     {
         deckListPopUp.gameObject.SetActive(true);
         if(onChangeDeckListPopUpShow != null){
             onChangeDeckListPopUpShow.Invoke(DeckListType.TRASH_DECK);
         }
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_3"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void HandShowForgottenDeckListPopUp()
@@ -101,6 +105,8 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         if(onChangeDeckListPopUpShow != null){
             onChangeDeckListPopUpShow.Invoke(DeckListType.FORGOTTEN_DECK);
         }
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_2"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     // 덱 정보 팝업 비활성화

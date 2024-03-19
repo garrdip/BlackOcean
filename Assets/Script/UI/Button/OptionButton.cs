@@ -33,6 +33,8 @@ public class OptionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnPointerClick(PointerEventData pointerEventData)
     {
         OptionUIManager.instance.HandShowOptionPopUp(!OptionUIManager.instance.isOptionPopUpActive);
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
