@@ -36,17 +36,18 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     private Vector3 originScale;
     private bool isTweening = false; // Dotween 애니매이션 함수들 실행중인지 여부
-    public bool isSoldOut; // 판매 완료된 카드인지 여부
+    public bool isSoldOut = false; // 판매 완료된 카드인지 여부
+    public bool isShopCardInfo = false; // 카드 상점에서 정보 자세히 보기용 카드인지 여부
 
     void Start()
     {
-        originScale = Vector3.one;
-        initCardData();
+        originScale = isShopCardInfo ? new Vector3(1.8f, 1.8f, 1.8f) : Vector3.one;
+        initCardData(card);
         InitCardTemplateByCharacter(card);
     }
 
     // CardData의 스프라이트 데이터로부터 선택한 캐릭터의 카드 이미지 세팅
-    private void InitCardTemplateByCharacter(Card car)
+    public void InitCardTemplateByCharacter(Card card)
     {
         switch(card.baseCard.character){
             case Character.GEORK:
@@ -167,19 +168,33 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
-        if(!isTweening){
-            transform.DOScale(originScale * 1.3f, 0.3f);
+        if(!isShopCardInfo){
+            if(PopUpUIManager.instance.mercuriusPopUp.activeSelf){
+                MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
+                mercuriusPopUp.ShowHoverdCardInfo(card);
+            }else{
+                if(!isTweening){
+                    transform.DOScale(originScale * 1.3f, 0.3f);
+                }
+                GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
+                TextDetector.instance.StartTextDetect(graphicRaycaster);
+            }
         }
-        GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
-        TextDetector.instance.StartTextDetect(graphicRaycaster);
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
-        if(!isTweening){
-            transform.DOScale(originScale, 0.3f);
+        if(!isShopCardInfo){
+            if(PopUpUIManager.instance.mercuriusPopUp.activeSelf){
+                MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
+                mercuriusPopUp.HideHoverdCardInfo();
+            }else{
+                if(!isTweening){
+                    transform.DOScale(originScale, 0.3f);
+                }
+                TextDetector.instance.StopTextDetect();
+            }
         }
-        TextDetector.instance.StopTextDetect();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -230,22 +245,24 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // CardOnDeck SoldOut 상태로 변경 및 컴포넌트들 알파값 0.5 변경
     public void ChangeCardOnDeckSoldOutState()
     {
-        isSoldOut = true;
-        cardSoldOut.SetActive(true);
-        // 캔버스 그룹 요소들 상호작용 이벤트 비활성화 
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
-        // cardSoldOut 오브젝트도 canvasGroup에 포함되기 때문에 카드요소들 하나씩 직접 알파값 변경
-        cardBackground.color = new Color(cardBackground.color.r, cardBackground.color.g, cardBackground.color.b, 0.5f);
-        cardIllust.color = new Color(cardIllust.color.r, cardIllust.color.g, cardIllust.color.b, 0.5f);
-        cardImageFrame.color = new Color(cardImageFrame.color.r, cardImageFrame.color.g, cardImageFrame.color.b, 0.5f);
-        cardGradeFrame.color = new Color(cardGradeFrame.color.r, cardGradeFrame.color.g, cardGradeFrame.color.b, 0.5f);
-        cardEmblem.color = new Color(cardEmblem.color.r, cardEmblem.color.g, cardEmblem.color.b, 0.5f);
-        textCardName.color = new Color(textCardName.color.r, textCardName.color.g, textCardName.color.b, 0.5f);
-        textCardDescription.color = new Color(textCardDescription.color.r, textCardDescription.color.g, textCardDescription.color.b, 0.5f);
-        textCardCost.color = new Color(textCardCost.color.r, textCardCost.color.g, textCardCost.color.b, 0.5f);
-        // 카드 경험치바 하위요소도 캔버스 그룹으로 묶어 한번에 알파값 변경
-        cardExpBar.GetComponent<CanvasGroup>().alpha = 0.5f;
+        if(!isShopCardInfo){
+            isSoldOut = true;
+            cardSoldOut.SetActive(true);
+            // 캔버스 그룹 요소들 상호작용 이벤트 비활성화 
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+            // cardSoldOut 오브젝트도 canvasGroup에 포함되기 때문에 카드요소들 하나씩 직접 알파값 변경
+            cardBackground.color = new Color(cardBackground.color.r, cardBackground.color.g, cardBackground.color.b, 0.5f);
+            cardIllust.color = new Color(cardIllust.color.r, cardIllust.color.g, cardIllust.color.b, 0.5f);
+            cardImageFrame.color = new Color(cardImageFrame.color.r, cardImageFrame.color.g, cardImageFrame.color.b, 0.5f);
+            cardGradeFrame.color = new Color(cardGradeFrame.color.r, cardGradeFrame.color.g, cardGradeFrame.color.b, 0.5f);
+            cardEmblem.color = new Color(cardEmblem.color.r, cardEmblem.color.g, cardEmblem.color.b, 0.5f);
+            textCardName.color = new Color(textCardName.color.r, textCardName.color.g, textCardName.color.b, 0.5f);
+            textCardDescription.color = new Color(textCardDescription.color.r, textCardDescription.color.g, textCardDescription.color.b, 0.5f);
+            textCardCost.color = new Color(textCardCost.color.r, textCardCost.color.g, textCardCost.color.b, 0.5f);
+            // 카드 경험치바 하위요소도 캔버스 그룹으로 묶어 한번에 알파값 변경
+            cardExpBar.GetComponent<CanvasGroup>().alpha = 0.5f;
+        }
     }
 
     // 팝업이 활성화된 상태에서 CardOnDeck 공통 클릭 이벤트
@@ -301,12 +318,15 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
 
     // 카드 정보 뷰 설정
-    private void initCardData()
+    public void initCardData(Card card)
     {
         if(card.experience >= card.baseCard.maxExperience || card.isEnhanced || card.tempEnhanced)
         {
-            textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").name;
-            textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E").description);
+            CardBase cardBase = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E");
+            if(cardBase != null){
+                textCardName.text = cardBase.name;
+                textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(cardBase.description);
+            }
         }
         else
         {

@@ -67,8 +67,10 @@ public class SpawnedMonster : NetworkBehaviour
     {
         meshRenderer = GetComponent<MeshRenderer>();
         anim = GetComponent<SkeletonAnimation>();
-        dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingLayerName = "FrontLayer";
-        dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingOrder = 999;
+        if(dissolveParticle != null){
+            dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingLayerName = "FrontLayer";
+            dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingOrder = 999;
+        }
     }
 
     void OnDestroy()

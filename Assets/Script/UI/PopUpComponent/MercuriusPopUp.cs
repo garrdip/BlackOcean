@@ -11,12 +11,20 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
 {
     public CanvasGroup canvasGroup;
     public GameObject frameLayout;
-    public TextMeshProUGUI textCardEnhancePrice;
-    public TextMeshProUGUI textCardRemovePrice;
     public bool isMouseOnFrame = false;
     public List<GridLayoutGroup> grids = new List<GridLayoutGroup>();
     public List<Button> tabButtons = new List<Button>();
+    public List<Button> tabCardEnhanceButtons = new List<Button>();
+    public List<Vector2> tabCardEnhanceButtonPositions = new List<Vector2>();
+    public List<Button> tabCardRemoveButtons = new List<Button>();
+    public List<Vector2> tabCardRemoveButtonPositions = new List<Vector2>();
     public List<GameObject> tabFrames = new List<GameObject>();
+    public Button buttonClose;
+    public GameObject buttonCloseLight;
+    public int currentIndex = 0;
+    public CanvasGroup cardInfoCanvasGroup;
+    public CardOnDeck hoveredCardOnDeck;
+
 
 
     protected override void Awake()
@@ -30,9 +38,16 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
 
     void Start()
     {
+        buttonClose.onClick.AddListener(() => PopUpUIManager.instance.HandleMercuriusPopUp(false));
         for(int i=0; i<tabButtons.Count; i++){
             int buttonIndex = i; // C# 에서 람다식 클로저
             tabButtons[i].onClick.AddListener(() => ShowTab(buttonIndex));
+        }
+        foreach(Button enhanceButton in tabCardEnhanceButtons){
+            tabCardEnhanceButtonPositions.Add(enhanceButton.transform.GetChild(0).transform.localPosition);
+        }
+        foreach(Button removeButton in tabCardRemoveButtons){
+            tabCardRemoveButtonPositions.Add(removeButton.transform.GetChild(0).transform.localPosition);
         }
     }
 
@@ -102,6 +117,7 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     // 선택한 탭 활성화
     public void ShowTab(int index)
     {
+        currentIndex = index;
         tabFrames[index].SetActive(true);
         tabButtons[index].image.color = new Color32(255, 255, 255, 255);
         HideOtherTabs(index);
@@ -124,6 +140,68 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
         foreach(Button tabButton in tabButtons){
             tabButton.gameObject.SetActive(false);
         }
+    }
+
+    // 마우스 오버된 상점카드 정보 활성화
+    public void ShowHoverdCardInfo(Card card)
+    {
+        Card hoverdCard = new Card(card.baseCard);
+        hoveredCardOnDeck.card = hoverdCard;
+        hoveredCardOnDeck.initCardData(hoverdCard);
+        hoveredCardOnDeck.InitCardTemplateByCharacter(hoverdCard);
+        cardInfoCanvasGroup.DOFade(1f, 0.3f);  
+    }
+
+    // 마우스 오버된 상점카드 정보 비활성화
+    public void HideHoverdCardInfo()
+    {
+        hoveredCardOnDeck.card = null;
+        cardInfoCanvasGroup.DOFade(0f, 0.3f);  
+    }
+
+
+    // -------------------------------------------------------------------  이벤트 트리거 함수 -------------------------------------------------------------------------- //
+
+    public void OnPointerEnterCardEnhanceButton()
+    {
+        tabCardEnhanceButtons[currentIndex].transform.GetChild(0).DOLocalMoveX(
+            tabCardEnhanceButtonPositions[currentIndex].x + 25f, 0.3f
+        );
+        tabCardEnhanceButtons[currentIndex].transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+    }
+
+    public void OnPointerExitCardEnhanceButton()
+    {
+        tabCardEnhanceButtons[currentIndex].transform.GetChild(0).DOLocalMoveX(
+            tabCardEnhanceButtonPositions[currentIndex].x, 0.3f
+        );
+        tabCardEnhanceButtons[currentIndex].transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+    }
+
+    public void OnPointerEnterCardRemoveButton()
+    {
+        tabCardRemoveButtons[currentIndex].transform.GetChild(0).DOLocalMoveX(
+            tabCardRemoveButtonPositions[currentIndex].x - 25f, 0.3f
+        );
+        tabCardRemoveButtons[currentIndex].transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+    }
+
+    public void OnPointerExitCardRemoveButton()
+    {
+        tabCardRemoveButtons[currentIndex].transform.GetChild(0).DOLocalMoveX(
+            tabCardRemoveButtonPositions[currentIndex].x, 0.3f
+        );
+        tabCardRemoveButtons[currentIndex].transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+    }
+
+    public void OnPointerEnterCloseButton()
+    {
+        buttonCloseLight.SetActive(true);
+    }
+
+    public void OnPointerExitCloseButton()
+    {
+        buttonCloseLight.SetActive(false);
     }
 
 

@@ -192,7 +192,7 @@ public class NPC_Mercurius : SpawnedMonster
             GameObject cardShopPrice = Instantiate(PopUpUIManager.instance.CardShopPrice, Vector3.zero, Quaternion.identity);
             cardShopPrice.transform.SetParent(cardShopSlot.transform);
             cardShopPrice.transform.localScale = Vector3.one;
-            cardShopPrice.transform.localPosition = Vector3.zero;
+            cardShopPrice.transform.localPosition = new Vector3(0f, 30f, 0f);
 
             TextMeshProUGUI textPrice = cardShopPrice.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
             textPrice.text = "100";
