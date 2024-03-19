@@ -70,6 +70,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public int AdditionalSizeOfIromDemon; //철귀 영구 크기 증가
 
+    [SyncVar]
+
+    public string usedCardName;
+
     public override void OnStartServer()
     {
         SetInitialValue();

@@ -147,9 +147,9 @@ public partial class CardData : SingletonD<CardData>
         return string.Join(" ",values); // Concat 메서드를 사용하여 배열의 요소들을 하나로 합침
     }
 
-    public void RunCard(Card card,List<TargetObject> targets)
+    public IEnumerator RunCard(Card card,List<TargetObject> targets)
     {
-        StartCoroutine(RunCardCoroutine(card,targets));
+        yield return StartCoroutine(RunCardCoroutine(card,targets));
     }
 
     private IEnumerator RunCardCoroutine(Card card,List<TargetObject> targets)
@@ -202,6 +202,8 @@ public partial class CardData : SingletonD<CardData>
 
     public void GeneralSingleAttack(TargetObject from, TargetObject tar, int damage)
     {
+        if(from.HasBuff(BuffType.CLOSEPOSE))GeneralGetDefense(from,from,3,null);
+
         // 이곳에 최소 딜레이 넣어야함
         if(from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK) == null)
         {
@@ -217,6 +219,7 @@ public partial class CardData : SingletonD<CardData>
     }
     public void GeneralSingleAttack(TargetObject from, TargetObject tar, int damage, int attackMultiply)
     {
+        if(from.HasBuff(BuffType.CLOSEPOSE))GeneralGetDefense(from,from,3,null);
         // 이곳에 최소 딜레이 넣어야함
         if(from.buffs.Find(buff => buff.type == BuffType.ICHI_ATTACK) == null)
         {
@@ -238,6 +241,8 @@ public partial class CardData : SingletonD<CardData>
 
     public void GeneralGetDefense(TargetObject from, TargetObject tar, int value, Card card)
     {
+        if(from.HasBuff(BuffType.WRAPWINGS))value *= 2;
+
         if(from.player.character == Character.ERIS && from == tar) // 에리스의 경우 피가 닳아있을경우 체력을 채움
         {
             int remind = from.playerMaxHP - from.playerHP;

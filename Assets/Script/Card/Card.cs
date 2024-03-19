@@ -12,6 +12,7 @@ public class Card
     public List<CardCharacteristic> cardCharacteristics = new List<CardCharacteristic>();
     public int experience;
     public bool tempEnhanced;
+    public bool isReturnable; // 지치지 않는자에서만 런타임으로 쓰임
 
     public Card(CardBase basecard)
     {

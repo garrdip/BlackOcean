@@ -43,12 +43,16 @@ public class CardOnHandRemovePopUp : SingletonD<CardOnHandRemovePopUp>
                 cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration);
                 cardOnHand.transform.DOMove(GameUIManager.instance.ForgottenDeck.transform.position, duration).SetEase(Ease.InOutCirc)
                 .OnComplete(() => {
-                    gamePlayerDeck.CmdDestroyCardOnHandToForgotten(cardOnHand);
+                    if(gamePlayerDeck.usedCardName == "H26")
+                        gamePlayerDeck.CmdDestroyCardOnHandToForgotten(cardOnHand);
+                    else
+                        gamePlayerDeck.CmdDestroyCardOnHandToTrash(cardOnHand);
                     cardOnHand.transform.DOKill();
                 });
             }
         }
-        gamePlayerDeck.Cmd_H26_CallBack(playerInterface.currentGamePlayer, choosedCardCount); // 제거된 패 갯수 만큼 카드 생성 콜백 호출
+        if(gamePlayerDeck.usedCardName == "H26")
+            gamePlayerDeck.Cmd_H26_CallBack(playerInterface.currentGamePlayer, choosedCardCount); // 제거된 패 갯수 만큼 카드 생성 콜백 호출
     }
 
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //

@@ -151,6 +151,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public void SwapPlayerOrder(int oldIndex, int newIndex)
     {
+        if(M_TurnManager.instance.phase == BattleTurn.PLAYER_ACTIVE) // 노병의 지혜
+        {
+            if(NetworkServer.spawned[playerOrder[oldIndex]].GetComponent<GamePlayerTarget>().GetTargetObject().HasBuff(BuffType.WISDOMOFOLDSOLDIER))
+                foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+                    CardData.instance.GeneralGetDefense(NetworkServer.spawned[playerOrder[oldIndex]].GetComponent<GamePlayerTarget>().GetTargetObject(),target,5,null);
+            if(NetworkServer.spawned[playerOrder[newIndex]].GetComponent<GamePlayerTarget>().GetTargetObject().HasBuff(BuffType.WISDOMOFOLDSOLDIER))
+                foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+                    CardData.instance.GeneralGetDefense(NetworkServer.spawned[playerOrder[newIndex]].GetComponent<GamePlayerTarget>().GetTargetObject(),target,5,null);          
+        }
         uint temp = playerOrder[oldIndex];
         playerOrder[oldIndex] = playerOrder[newIndex];
         playerOrder[newIndex] = temp;
@@ -500,18 +509,19 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     }
                     else
                     {
-                        CardData.instance.RunCard(cardOnHand.card,tar);
-                        while(CardData.instance.isCardOperating)
-                        {
-                            yield return waitForLoop;
-                        }// 카드 사용이 종료 될때까지 기다림
+                        yield return CardData.instance.RunCard(cardOnHand.card,tar);
+
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.HWAHAP))
                             yield return CardData.instance.HWAHAP(tar[0]);
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.SOOKREON))
                             cardOnHand.card.costAddition --;
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.JOONGREUK))
                             cardOnHand.card.costAddition ++;
-                        gpd.destroyCardList.Add(cardOnHand);
+
+                        if(cardOnHand.card.isReturnable)
+                            gpd.ReturnToCardOnHand(cardOnHand);
+                        else
+                            gpd.destroyCardList.Add(cardOnHand);
                         gpd.numOfUsedCard++;
                         // 카드 사용후 효과 여기서 발동
                         foreach(int index in tar[0].buffCardUseEffect.Keys)
