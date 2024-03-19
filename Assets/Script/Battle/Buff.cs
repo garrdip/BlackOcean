@@ -35,8 +35,7 @@ public class Buff
         isInfinity = isInfinityIn;
         isDecrease = isDecreaseIn;
         isSeparate = isSeparateIn;
-        if( tarIn.objectType == ObjectType.PLAYER )user = tarIn.netId;
-        else user = tarIn.netId;
+        user = tarIn.netId;
     }
     
 }

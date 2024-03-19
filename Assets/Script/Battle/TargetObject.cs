@@ -459,6 +459,24 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
+    public void StaticDamageToMonster(int damage)
+    {
+        // 방어력 적용
+        if(defense >= damage)
+        {
+            defense -= damage;
+        }
+        else
+        {
+            int remind = damage - defense;
+            defense = 0;
+            if(isServer && monster.HP <= remind ){
+                M_TurnManager.instance.monsterDeathOperating = true;
+                M_TurnManager.instance.ProcessMonsterDeath(this);
+            }
+            monster.HP -= remind;
+        }
+    }
 
     // ----------------------------------------------           Buff 관련 함수          ---------------------------------------------------//
 
@@ -467,6 +485,13 @@ public class TargetObject : NetworkBehaviour
     {
         int retVal = 0;
         if(objectType == ObjectType.PLAYER && tar != this && CardData.instance.CheckCardCharacteristic(card,CardCharacteristic.GOOWON)) value *= 2; // 이곳에 구원 등록
+        if(tar.HasBuff(BuffType.THEREISNOJABI) && buffType == BuffType.APDO)
+        {
+            int toalStack = GetBuffValue(buffType,tar) + value;
+            StaticDamageToMonster(toalStack * tar.GetBuffValue(BuffType.THEREISNOJABI));
+            if(HasBuff(buffType,tar))buffs.Remove(buffs.Find(buff => buff.type == buffType && buff.user == tar.netId));
+            return 0;
+        }
 
         if((buffs.Find(buff => buff.type == buffType && buff.user == tar.netId) == null && isSeparate )|| (buffs.Find(buff => buff.type == buffType) == null && !isSeparate )|| (isInfinity && value <= 0)) // 버프 신규 등록
         {
@@ -554,6 +579,11 @@ public class TargetObject : NetworkBehaviour
     public bool HasBuff(BuffType buffType)
     {
         return buffs.FindIndex(buff => buff.type == buffType) != -1;
+    }
+
+    public bool HasBuff(BuffType buffType, TargetObject user)
+    {
+        return buffs.FindIndex(buff => buff.type == buffType && buff.user == user.netId) != -1;
     }
 
     // ----------------------------------------------  SyncVar, SyncList 콜백 처리 구간 ---------------------------------------------------//

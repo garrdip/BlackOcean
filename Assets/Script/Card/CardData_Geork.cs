@@ -959,22 +959,40 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G43(card,tar);
 	}
+
+	//자비란 없다
 	public IEnumerator G44(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		tar[0].GainBuff(BuffType.THEREISNOJABI,3,false,false,false,true,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
 	}
+
 	public IEnumerator G44_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G44(card,tar);
 	}
+
+	// 준비 자세
 	public IEnumerator G45(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralGetDefense(tar[0],tar[0],7,card);
+		tar[0].player.GetComponent<GamePlayerDeck>().AddDrawCard(1);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
 	}
 	public IEnumerator G45_E(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+		yield return G45(card,tar);
 	}
+
+	// 날개 감싸기
 	public IEnumerator G46(Card card,List<TargetObject> tar)
 	{
 		yield return null;
