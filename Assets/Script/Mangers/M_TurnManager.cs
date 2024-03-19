@@ -1150,7 +1150,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         string audioName = M_MapManager.instance.mapBoss == null ? "Stage_1_Map" : "Stage_1_Map_Boss_Spawn";
         AudioClip audioClip_map = M_SoundManager.instance.bgmClips[BGM_TYPE.Map].Find((audioClip) => audioClip.name.Equals(audioName));
-        M_SoundManager.instance.StopAllSFX();
         M_SoundManager.instance.PlayBGM(audioClip_map, MusicTransition.CrossFade, 2f);
         if(isServer){
             ClearTargetObject(); // 타겟오브젝트 정리

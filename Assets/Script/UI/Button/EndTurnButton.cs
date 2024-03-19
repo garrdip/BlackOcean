@@ -29,6 +29,8 @@ public class EndTurnButton : MonoBehaviour
 
     public void OnPointerClick()
     {
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("stage_ready"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         playerInterface.endTurnActive = !playerInterface.endTurnActive;
         playerInterface.OnEndTurnStateChanged(playerInterface.endTurnActive,  playerInterface.endTurnActive);
