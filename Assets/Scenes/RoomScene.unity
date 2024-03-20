@@ -2092,6 +2092,7 @@ GameObject:
   - component: {fileID: 1536368529}
   - component: {fileID: 1536368528}
   - component: {fileID: 1536368531}
+  - component: {fileID: 1536368532}
   m_Layer: 5
   m_Name: ButtonExit
   m_TagString: Untagged
@@ -2221,6 +2222,68 @@ MonoBehaviour:
   backButtonArrowLight: {fileID: 580576817}
   backButtonTail: {fileID: 1163886749}
   backButtonTailLight: {fileID: 1326771022}
+  originPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &1536368532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1536368526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1536368531}
+          m_TargetAssemblyTypeName: BackButton, Assembly-CSharp
+          m_MethodName: OnPointerEnterBackButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1536368531}
+          m_TargetAssemblyTypeName: BackButton, Assembly-CSharp
+          m_MethodName: OnPointerExitBackButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1536368531}
+          m_TargetAssemblyTypeName: BackButton, Assembly-CSharp
+          m_MethodName: OnPointerClickBackButtonOnRoom
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1578157684
 GameObject:
   m_ObjectHideFlags: 0
@@ -2632,9 +2695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82529efdaf4b6734795e778ef627d4bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonReady: {fileID: 207477562}
   ExitButton: {fileID: 1536368528}
-  buttonOption: {fileID: 0}
   textReady: {fileID: 814666472}
   topIcons:
   - {fileID: 8968590605043395825}
@@ -2645,7 +2706,6 @@ MonoBehaviour:
   - {fileID: 229277393}
   - {fileID: 1335509977}
   readyButton: {fileID: 207477562}
-  optionCanvas: {fileID: 0}
 --- !u!4 &2348482216626042404
 Transform:
   m_ObjectHideFlags: 0

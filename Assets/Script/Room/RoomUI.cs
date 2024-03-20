@@ -26,7 +26,7 @@ public class RoomUI : InstanceD<RoomUI>
             swapButtons[i].transform.localRotation = Quaternion.Euler(0f, 0f, 45f);
             swapButtons[i].onClick.AddListener(() => HandleLobbyPlayerSwap(buttonIndex));
         }
-        ExitButton.onClick.AddListener(() => HandleBackToMainScene());
+        //ExitButton.onClick.AddListener(() => HandleBackToMainScene());
     }
 
     void OnDestroy()
@@ -63,8 +63,6 @@ public class RoomUI : InstanceD<RoomUI>
 
     public void HandleBackToMainScene()
     {
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
         NetworkServer.Shutdown();
         NetworkClient.Disconnect();

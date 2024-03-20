@@ -115,8 +115,6 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         if(onChangeDeckListPopUpHide != null){
             onChangeDeckListPopUpHide.Invoke();
         }
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     // CardOnHand 제거 팝업 활성화

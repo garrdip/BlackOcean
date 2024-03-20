@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 
-public class BackButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class BackButton : MonoBehaviour
 {
     public GameObject backButtonArrow;
     public GameObject backButtonArrowLight;
@@ -39,7 +39,7 @@ public class BackButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         backButtonTailLight.GetComponent<RectTransform>().DOKill();
     }
 
-    public void OnPointerEnter(PointerEventData pointerEventData)
+    public void OnPointerEnterBackButton()
     {
         backButtonArrowLight.SetActive(true);
         backButtonTailLight.SetActive(true);
@@ -47,11 +47,25 @@ public class BackButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         backButtonTailLight.GetComponent<RectTransform>().DOLocalMoveX(movePositionX, moveTime);
     }
 
-    public void OnPointerExit(PointerEventData pointerEventData)
+    public void OnPointerExitBackButton()
     {
         backButtonArrowLight.SetActive(false);
         backButtonTailLight.SetActive(false);
         backButtonTail.GetComponent<RectTransform>().DOLocalMoveX(0f, moveTime);
         backButtonTailLight.GetComponent<RectTransform>().DOLocalMoveX(0f, moveTime);
+    }
+
+    public void OnPointerClickBackButtonOnRoom()
+    {
+        RoomUI.instance.HandleBackToMainScene();
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+    }
+
+    public void OnPointerClickBackButtonOnDeckListPopUp()
+    {
+        PopUpUIManager.instance.HandleHideDeckListPopUp();
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 }
