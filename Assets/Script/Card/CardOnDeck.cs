@@ -209,6 +209,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     M_TurnManager.instance.playerRewardedDic[cardOwner] = true;
                     M_TurnManager.instance.CheckAllPlayerRewarded(cardOwner);
                 });
+                AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));
+                M_SoundManager.instance.PlaySFX(rewardCardAudio, rewardCardAudio.length);
             }
         }
         // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
