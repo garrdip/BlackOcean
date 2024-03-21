@@ -214,6 +214,7 @@ public class HexagonMapRoom : NetworkBehaviour
                 break;
             case RoomType.BOSS :
                 mapIcon.SetActive(false);
+                mapTileIcon.GetComponent<SpriteRenderer>().color = ColorUtils.HexToColor("#E700FF");
                 break;
         }
     }

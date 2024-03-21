@@ -47,6 +47,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<CardOnHand> cardOnHands = new SyncList<CardOnHand>(); // 패 카드 오브젝트 리스트
 
+    public readonly SyncList<Reward> rewards = new SyncList<Reward>(); // 전투 보상 전체 목록
+    
     public readonly SyncList<Card> rewardCards = new SyncList<Card>(); // 전투 보상 카드
 
     public readonly SyncList<Card> addtionDrawCards = new SyncList<Card>(); // 추가 드로우 카드
@@ -88,6 +90,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         prefareDeck.Callback += OnPrefareDeckUpdated;
         trashDeck.Callback += OnTrashDeckUpdated;
         forgottenDeck.Callback += OnForgottenDeckUpdated;
+        rewards.Callback += OnRewardUpdated;
         rewardCards.Callback += OnRewardCardUpdated;
         addtionDrawCards.Callback += OnAddtionCardUpdated;
         if(isOwned){
@@ -554,6 +557,14 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    // 보상목록 Synclist 데이터에서 특정 Guid를 가진 요소 제거
+    [Command]
+    public void CmdRewardRemove(System.Guid guid)
+    {
+        int index = rewards.FindIndex((reward) => reward.guid == guid);
+        rewards.RemoveAt(index);
+    }
+
     // 보상카드 Synclist 요소 모두 제거
     [Command]
     public void CmdClearRewardCards()
@@ -828,6 +839,42 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    void OnRewardUpdated(SyncList<Reward>.Operation op, int index, Reward oldVal, Reward newVal)
+    {
+        switch (op)
+        {
+            case SyncList<Reward>.Operation.OP_ADD:
+                BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
+                GamePlayer gamePlayer = GetComponent<GamePlayer>();
+                int orderIndex = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);          
+                GameObject rewardListItemObject = Instantiate(PopUpUIManager.instance.RewardListItemPrefab);
+                RewardListItem rewardListItem = rewardListItemObject.GetComponent<RewardListItem>();
+                rewardListItem.reward = newVal;
+                rewardListItem.rewardOwner = gamePlayer;
+                rewardListItem.transform.SetParent(battleResultPopUp.rewardLayoutGroups[orderIndex].transform);
+                rewardListItem.transform.localScale = new Vector3(1, 1, 1);
+                M_TurnManager.instance.rewardObjects.Add(rewardListItemObject);
+                break;
+            case SyncList<Reward>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<Reward>.Operation.OP_REMOVEAT:
+                if(rewards.Count <= 0){
+                    // 더 보상받을 데이터 없는 경우 보상완료상태 세팅
+                    M_TurnManager.instance.playerRewardedDic[GetComponent<GamePlayer>()] = true;
+                    M_TurnManager.instance.CheckAllPlayerRewarded(GetComponent<GamePlayer>());
+
+                }
+                break;
+            case SyncList<Reward>.Operation.OP_SET:
+                
+                break;
+            case SyncList<Reward>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
     // 보상 카드 리스트 콜백
     void OnRewardCardUpdated(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
     {
@@ -841,7 +888,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 cardOnDeck.GetComponent<CardOnDeck>().cardOwner = gamePlayer;
                 int orderIndex = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);
                 if(orderIndex != -1){
-                    cardOnDeck.transform.SetParent(battleResultPopUp.grids[orderIndex].transform);
+                    cardOnDeck.transform.SetParent(battleResultPopUp.rewardCardLayoutGroups[orderIndex].transform);
                     cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
                     battleResultPopUp.tabButtons[orderIndex].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = gamePlayer.character.ToString();
                     if(isOwned){

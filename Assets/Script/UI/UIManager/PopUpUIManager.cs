@@ -70,6 +70,9 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     [Header("댁 리스트 팝업에 사용되는 카드 프리팹")]
     public GameObject CardOnDeckPrefab;
 
+    [Header("보상 목록 아이템 프리팹")]
+    public GameObject RewardListItemPrefab;
+
     [Header("선택한 보상카드 애니매이션에 사용되는 카드 프리팹")]
     public GameObject CardOnHandChoosedPrefab;
 

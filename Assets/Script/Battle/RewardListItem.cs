@@ -1,0 +1,111 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
+
+
+public class RewardListItem : MonoBehaviour
+{
+    public Reward reward;
+    public GamePlayer rewardOwner;
+    private RectTransform rectTransform;
+    public CanvasGroup canvasGroup;
+    public GameObject itemBarLight;
+    public GameObject coinIcon;
+    public GameObject coinIconLight;
+    public GameObject cardIcon;
+    public GameObject cardIconLight;
+    public Image rewardItemIcon;
+
+
+
+    void Start()
+    {
+        rectTransform = GetComponent<RectTransform>();
+        ChangeRewardIconActiveByType(true);
+    }
+
+    void OnDestroy()
+    {
+        canvasGroup.DOKill();
+        rectTransform.DOKill();
+    }
+
+    public void OnPointerClickRewardListItem()
+    {
+        ChangeRewardStateByType();
+        canvasGroup.DOFade(0f, 0.5f);
+        rectTransform.DOAnchorPosX(Screen.width, 0.5f).OnComplete(() =>
+        {
+            M_TurnManager.instance.rewardObjects.Remove(gameObject);
+            Destroy(gameObject);
+        });
+    }
+
+    public void OnPointerEnterRewardListItem()
+    {
+        ChangeRewardIconLightActiveByType(true);
+    }
+
+    public void OnPointerExitRewardListItem()
+    {
+        ChangeRewardIconLightActiveByType(false);
+    }
+
+    private void ChangeRewardStateByType()
+    {
+        switch(reward.reward_Type){
+            case Reward_Type.Card: // 카드 보상 선택 팝업 호출
+                int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == rewardOwner.netId);
+                BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
+                battleResultPopUp.ChangeRewardLayoutState(index, true);
+                AudioClip cardSound = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_discard"));
+                M_SoundManager.instance.PlaySFX(cardSound, cardSound.length);
+                break;
+            case Reward_Type.Item:  // TODO : 선택한 유물 보상 데이터를 플레이어 데이터에 추가
+                rewardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(reward.guid);
+                AudioClip itemSound = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
+                M_SoundManager.instance.PlaySFX(itemSound, itemSound.length);
+                break;
+            case Reward_Type.Gold: // TODO : 선택한 골드 보상 데이터를 플레이어 데이터에 추가
+                rewardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(reward.guid);
+                AudioClip coinSound = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
+                M_SoundManager.instance.PlaySFX(coinSound, coinSound.length);
+                break;
+        }
+    }
+
+    private void ChangeRewardIconActiveByType(bool isActive)
+    {
+        switch(reward.reward_Type){
+            case Reward_Type.Item:
+                break;
+            case Reward_Type.Card:
+                cardIcon.SetActive(isActive);
+                foreach(GameObject cardObject in M_TurnManager.instance.rewardCardObjects){
+                    cardObject.GetComponent<CardOnDeck>().guid = reward.guid; // 보상 카드 오브젝트에도 RewardListItem에 부여된 guid와 동일한 값 부여
+                }
+                break;
+            case Reward_Type.Gold:
+                coinIcon.SetActive(isActive);
+                break;
+        }
+    }
+
+    private void ChangeRewardIconLightActiveByType(bool isActive)
+    {
+        switch(reward.reward_Type){
+            case Reward_Type.Item:
+                break;
+            case Reward_Type.Card:
+                cardIconLight.SetActive(isActive);
+                break;
+            case Reward_Type.Gold:
+                coinIconLight.SetActive(isActive);
+                break;
+        }
+        itemBarLight.SetActive(isActive);
+    }
+    
+}

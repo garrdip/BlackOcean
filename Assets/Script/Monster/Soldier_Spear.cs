@@ -34,6 +34,18 @@ public class Soldier_Spear : SpawnedMonster
     public void DoAnimation(string actionName)
     {
         parent.anim.state.SetAnimation(1,actionName,false);
+        switch(actionName){
+            case "3Attack":
+                // 공격 효과음
+                AudioClip attackSound= M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Spear].Find((audioClip) => audioClip.name.Equals("monster_nor_spear_1"));
+                M_SoundManager.instance.PlaySFX(attackSound, attackSound.length);
+                break;
+            case "3Buff":
+                // 버프 효과음
+                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_3"));
+                M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
+                break;
+        }
     }
 
     [Server]
@@ -68,5 +80,16 @@ public class Soldier_Spear : SpawnedMonster
         }
     }
 
+    public override void OnBreakedShield()
+    {
+        OnBreakedShieldRpc();
+    }
 
+    [ClientRpc]
+    public void OnBreakedShieldRpc()
+    {
+        // 실드 파괴음
+        AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_4_3"));
+        M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
+    }
 }

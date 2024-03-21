@@ -5,13 +5,15 @@ using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
 using TMPro;
-using AYellowpaper.SerializedCollections;
+
 
 public class BattleResultPopUp : SingletonD<BattleResultPopUp>
 {
     public CanvasGroup canvasGroup;
+    public List<GameObject> titles = new List<GameObject>();
     public List<GameObject> tabs = new List<GameObject>();
-    public List<HorizontalLayoutGroup> grids = new List<HorizontalLayoutGroup>();
+    public List<HorizontalLayoutGroup> rewardCardLayoutGroups = new List<HorizontalLayoutGroup>(); // 카드 보상 레이아웃 리스트
+    public List<VerticalLayoutGroup> rewardLayoutGroups = new List<VerticalLayoutGroup>(); // 전체 보상 목록 레이아웃 리스트
     public List<Button> tabButtons = new List<Button>();
     public List<Button> skipButtons = new List<Button>();
 
@@ -101,6 +103,14 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         }
     }
 
+    // 카드 보상 레이아웃 상태 변경
+    public void HidAllRewardCardLayouts(bool isActive)
+    {
+        foreach(HorizontalLayoutGroup horizontalLayoutGroup in rewardCardLayoutGroups){
+            horizontalLayoutGroup.gameObject.SetActive(isActive);
+        }
+    }
+
     // 스킵 버튼 상태 변경
     public void ChangeAllSkipButtonState(bool isActive)
     {
@@ -108,6 +118,13 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
             skipButton.interactable = isActive;
             skipButton.image.color = isActive ? new Color32(255, 255, 255, 255) : new Color32(255, 255, 255, 70);
         }
+    }
+
+    public void ChangeRewardLayoutState(int index, bool isActive)
+    {
+        rewardCardLayoutGroups[index].gameObject.SetActive(isActive);
+        titles[index].gameObject.SetActive(isActive);
+        rewardLayoutGroups[index].gameObject.SetActive(!isActive);
     }
 
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //
@@ -123,12 +140,15 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     // BattleResultPopUp 비활성화 콜백
     public void OnChangeBattleResultPopUpHide()
     {
+        M_TurnManager.instance.ClearRewardListItem();
         M_TurnManager.instance.ClearRewardCardAndPlayer();
+        M_TurnManager.instance.playerRewardedDic.Clear();
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
             gameObject.SetActive(false);
         });
         HideAllTabs(false);
         HideAllTabButtons(false);
+        HidAllRewardCardLayouts(false);
         ChangeAllSkipButtonState(true);
     } 
 }

@@ -16,6 +16,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     private static float battelSceneCameraSize = 10.8f; // 전투씬에서 카메라 크기값
     private float mapSceneCameraSize = 5.0f; // 맵씬에서 카메라 크기값
+    public List<GameObject> rewardObjects = new List<GameObject>(); // 보상목록 오브젝트 리스트
     public List<GameObject> rewardCardObjects = new List<GameObject>(); // 보상카드 오브젝트 리스트
 
     // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈 슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
@@ -126,13 +127,22 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     // 소유한 모든 플레이어가 보상 카드 받았는지 체크
     public void CheckAllPlayerRewarded(GamePlayer gamePlayer)
     {
-        if(!M_TurnManager.instance.playerRewardedDic.ContainsValue(false)){ // 소유한 모든 플레이어 보상받았으면 종료
+        if(!M_TurnManager.instance.playerRewardedDic.ContainsValue(false) && gamePlayer.isOwned){ // 소유한 모든 플레이어 보상받았으면 종료
             PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
             GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
                 NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true; 
                 gamePlayer.GetComponent<GamePlayerDeck>().CmdClearRewardCards();
             });
         }
+    }
+
+    // 보상 목록 오브젝트 제거
+    public void ClearRewardListItem()
+    {
+        foreach(GameObject gameObject in rewardObjects){
+            Destroy(gameObject);
+        }
+        rewardObjects.Clear();
     }
 
     // 보상 카드 오브젝트 제거 및 플레이어 보상 상태 데이터 정리
@@ -142,7 +152,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             Destroy(gameObject);
         }
         rewardCardObjects.Clear();
-        playerRewardedDic.Clear();
     }
 
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
@@ -411,6 +420,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             PlayerInterfaceServer playerInterfaceServer = playerInterface.GetComponent<PlayerInterfaceServer>();
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                
+                // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅(임시로 골드 + 카드 보상)
+                gamePlayerDeck.rewards.Add(new Reward(){ reward_Type = Reward_Type.Gold, guid = System.Guid.NewGuid() });
+                gamePlayerDeck.rewards.Add(new Reward(){ reward_Type = Reward_Type.Card, guid = System.Guid.NewGuid() });
+                
+                // 카드 보상 데이터 세팅
                 int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
                 List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
                 if(cardsByCharacter.Count > 0){
