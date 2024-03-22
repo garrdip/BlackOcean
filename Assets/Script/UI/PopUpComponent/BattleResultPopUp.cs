@@ -123,6 +123,7 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         }
     }
 
+    // 보상팝업 레이아웃 상태 변경(전체보상 목록, 카드보상 목록, 제목)
     public void ChangeRewardLayoutState(int index, bool isActive)
     {
         rewardCardLayoutGroups[index].gameObject.SetActive(isActive);
@@ -130,7 +131,8 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         rewardLayoutGroups[index].gameObject.SetActive(!isActive);
     }
 
-    public void SetButtonIconByClass(Character character, int index)
+    // 탭 버튼 아이콘 현재 캐릭터의 클래스 이미지로 세팅
+    public void SetTabButtonIconByClass(Character character, int index)
     {
         switch(character)
         {

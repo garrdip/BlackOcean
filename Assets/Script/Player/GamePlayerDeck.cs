@@ -1,11 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Mirror;
 using ProjectD;
 using DG.Tweening;
-using TMPro;
 
 
 public partial class GamePlayerDeck : NetworkBehaviour
@@ -842,6 +840,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    // 전체 보상 리스트 콜백
     void OnRewardUpdated(SyncList<Reward>.Operation op, int index, Reward oldVal, Reward newVal)
     {
         switch (op)
@@ -892,7 +891,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 if(orderIndex != -1){
                     cardOnDeck.transform.SetParent(battleResultPopUp.rewardCardLayoutGroups[orderIndex].transform);
                     cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
-                    battleResultPopUp.SetButtonIconByClass(gamePlayer.character, orderIndex);
+                    battleResultPopUp.SetTabButtonIconByClass(gamePlayer.character, orderIndex);
                     if(isOwned){
                         battleResultPopUp.ChangeTab(orderIndex);
                         battleResultPopUp.tabButtons[orderIndex].gameObject.SetActive(isOwned);
