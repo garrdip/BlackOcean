@@ -12,7 +12,6 @@ using ProjectD;
 public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Card card;
-    public Guid guid; // RewardListItem에 부여된 고유 아이디값(보상 카드인 경우 동일한 고유 아이디값 부여)
     public GamePlayer cardOwner;
     public CanvasGroup canvasGroup;
 
@@ -210,7 +209,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == cardOwner.netId);
                     BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
                     battleResultPopUp.ChangeRewardLayoutState(index, false);
-                    cardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(guid);
+                    cardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(cardOwner.netId);
                 });
                 AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));
                 M_SoundManager.instance.PlaySFX(rewardCardAudio, rewardCardAudio.length);

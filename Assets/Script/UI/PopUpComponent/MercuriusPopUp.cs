@@ -4,8 +4,8 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using TMPro;
 using Mirror;
+using ProjectD;
 
 public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
 {
@@ -24,6 +24,9 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     public int currentIndex = 0;
     public CanvasGroup cardInfoCanvasGroup;
     public CardOnDeck hoveredCardOnDeck;
+    public Sprite georkIcon;
+    public Sprite danhyangIcon;
+    public Sprite erisIcon;
 
 
 
@@ -109,7 +112,18 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
             for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
                 GamePlayer gamePlayer = playerInterface.ownedPlayers[i];
                 tabButtons[i].gameObject.SetActive(true); // 제어할 플레이어가 2명 이상이면 플레이어 수만큼 탭버튼 활성화
-                tabButtons[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = gamePlayer.character.ToString();
+                switch(gamePlayer.character)
+                {
+                    case Character.GEORK:
+                        tabButtons[i].transform.GetChild(2).GetComponent<Image>().sprite = georkIcon;
+                        break;
+                    case Character.HONGDANHYANG:
+                        tabButtons[i].transform.GetChild(2).GetComponent<Image>().sprite = danhyangIcon;
+                        break;
+                    case Character.ERIS:
+                        tabButtons[i].transform.GetChild(2).GetComponent<Image>().sprite = erisIcon;
+                        break;
+                }
             }
         }   
     }
@@ -119,7 +133,7 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     {
         currentIndex = index;
         tabFrames[index].SetActive(true);
-        tabButtons[index].image.color = new Color32(255, 255, 255, 255);
+        tabButtons[index].GetComponent<CanvasGroup>().alpha = 1f;
         HideOtherTabs(index);
     }
 
@@ -128,7 +142,7 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     {
         for(int i=0; i<tabButtons.Count; i++){
             if(i != index){
-                tabButtons[i].image.color = new Color32(255, 255, 255, 70);
+                tabButtons[i].GetComponent<CanvasGroup>().alpha = 0.5f;
                 tabFrames[i].SetActive(false);
             }
         }

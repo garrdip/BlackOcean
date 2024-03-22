@@ -422,8 +422,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 
                 // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅(임시로 골드 + 카드 보상)
-                gamePlayerDeck.rewards.Add(new Reward(){ reward_Type = Reward_Type.Gold, guid = System.Guid.NewGuid() });
-                gamePlayerDeck.rewards.Add(new Reward(){ reward_Type = Reward_Type.Card, guid = System.Guid.NewGuid() });
+                gamePlayerDeck.rewards.Add(new Reward(){ reward_Type = Reward_Type.Gold, netId = gamePlayer.netId });
+                gamePlayerDeck.rewards.Add(new Reward(){ reward_Type = Reward_Type.Card, netId = gamePlayer.netId });
                 
                 // 카드 보상 데이터 세팅
                 int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
-using TMPro;
+using ProjectD;
 
 
 public class BattleResultPopUp : SingletonD<BattleResultPopUp>
@@ -16,6 +16,9 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     public List<VerticalLayoutGroup> rewardLayoutGroups = new List<VerticalLayoutGroup>(); // 전체 보상 목록 레이아웃 리스트
     public List<Button> tabButtons = new List<Button>();
     public List<Button> skipButtons = new List<Button>();
+    public Sprite georkIcon;
+    public Sprite danhyangIcon;
+    public Sprite erisIcon;
 
 
     protected override void Awake()
@@ -78,10 +81,10 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     public void ChangeTab(int index)
     {
         tabs[index].SetActive(true);
-        tabButtons[index].image.color = new Color32(255, 255, 255, 255);
+        tabButtons[index].GetComponent<CanvasGroup>().alpha = 1f;
         for(int i=0; i<tabButtons.Count; i++){
             if(i != index){
-                tabButtons[i].image.color = new Color32(255, 255, 255, 70);
+                tabButtons[i].GetComponent<CanvasGroup>().alpha = 0.5f;
                 tabs[i].SetActive(false);
             }
         }
@@ -125,6 +128,22 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         rewardCardLayoutGroups[index].gameObject.SetActive(isActive);
         titles[index].gameObject.SetActive(isActive);
         rewardLayoutGroups[index].gameObject.SetActive(!isActive);
+    }
+
+    public void SetButtonIconByClass(Character character, int index)
+    {
+        switch(character)
+        {
+            case Character.GEORK:
+                tabButtons[index].transform.GetChild(2).GetComponent<Image>().sprite = georkIcon;
+                break;
+            case Character.HONGDANHYANG:
+                tabButtons[index].transform.GetChild(2).GetComponent<Image>().sprite = danhyangIcon;
+                break;
+            case Character.ERIS:
+                tabButtons[index].transform.GetChild(2).GetComponent<Image>().sprite = erisIcon;
+                break;
+        }
     }
 
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //

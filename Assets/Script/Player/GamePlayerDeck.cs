@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 using ProjectD;
 using DG.Tweening;
@@ -557,12 +558,14 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 보상목록 Synclist 데이터에서 특정 Guid를 가진 요소 제거
+    // 보상목록 Synclist 데이터에서 netId값이 동일한 첫번째 reward 데이터를 검색해서 제거
     [Command]
-    public void CmdRewardRemove(System.Guid guid)
+    public void CmdRewardRemove(uint netId)
     {
-        int index = rewards.FindIndex((reward) => reward.guid == guid);
-        rewards.RemoveAt(index);
+        int index = rewards.FindIndex((reward) => reward.netId == netId);
+        if(index != -1){
+            rewards.RemoveAt(index);
+        }
     }
 
     // 보상카드 Synclist 요소 모두 제거
@@ -863,7 +866,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     // 더 보상받을 데이터 없는 경우 보상완료상태 세팅
                     M_TurnManager.instance.playerRewardedDic[GetComponent<GamePlayer>()] = true;
                     M_TurnManager.instance.CheckAllPlayerRewarded(GetComponent<GamePlayer>());
-
                 }
                 break;
             case SyncList<Reward>.Operation.OP_SET:
@@ -890,7 +892,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 if(orderIndex != -1){
                     cardOnDeck.transform.SetParent(battleResultPopUp.rewardCardLayoutGroups[orderIndex].transform);
                     cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
-                    battleResultPopUp.tabButtons[orderIndex].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = gamePlayer.character.ToString();
+                    battleResultPopUp.SetButtonIconByClass(gamePlayer.character, orderIndex);
                     if(isOwned){
                         battleResultPopUp.ChangeTab(orderIndex);
                         battleResultPopUp.tabButtons[orderIndex].gameObject.SetActive(isOwned);

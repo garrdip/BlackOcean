@@ -64,12 +64,12 @@ public class RewardListItem : MonoBehaviour
                 M_SoundManager.instance.PlaySFX(cardSound, cardSound.length);
                 break;
             case Reward_Type.Item:  // TODO : 선택한 유물 보상 데이터를 플레이어 데이터에 추가
-                rewardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(reward.guid);
+                rewardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(reward.netId);
                 AudioClip itemSound = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
                 M_SoundManager.instance.PlaySFX(itemSound, itemSound.length);
                 break;
             case Reward_Type.Gold: // TODO : 선택한 골드 보상 데이터를 플레이어 데이터에 추가
-                rewardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(reward.guid);
+                rewardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(reward.netId);
                 AudioClip coinSound = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
                 M_SoundManager.instance.PlaySFX(coinSound, coinSound.length);
                 break;
@@ -83,9 +83,6 @@ public class RewardListItem : MonoBehaviour
                 break;
             case Reward_Type.Card:
                 cardIcon.SetActive(isActive);
-                foreach(GameObject cardObject in M_TurnManager.instance.rewardCardObjects){
-                    cardObject.GetComponent<CardOnDeck>().guid = reward.guid; // 보상 카드 오브젝트에도 RewardListItem에 부여된 guid와 동일한 값 부여
-                }
                 break;
             case Reward_Type.Gold:
                 coinIcon.SetActive(isActive);
