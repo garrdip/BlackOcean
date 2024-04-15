@@ -183,9 +183,11 @@ public class TargetObject : NetworkBehaviour
         SpawnedMonster spawnedMonster = monster.GetComponent<SpawnedMonster>();
         spawnedMonster.meshRenderer.material = spawnedMonster.dissolveMaterial; // 몬스터의 메쉬랜더러의 머티리얼을 dissolveMaterial로 변경
         spawnedMonster.dissolveParticle.gameObject.SetActive(true); // dissolveParticle 활성화
-        StartCoroutine(DissolveCoroutine(this, () => {
-            dissloveCallback();
-        }));
+        if(gameObject.activeSelf){
+            StartCoroutine(DissolveCoroutine(this, () => {
+                dissloveCallback();
+            }));
+        }
     }
     
     public IEnumerator DissolveCoroutine(TargetObject targetObject, System.Action callbacak = null)
@@ -451,11 +453,11 @@ public class TargetObject : NetworkBehaviour
         {
             int remind = damage - defense;
             defense = 0;
-            if(isServer && monster.HP <= remind ){
-                M_TurnManager.instance.monsterDeathOperating = true;
-                M_TurnManager.instance.ProcessMonsterDeath(this);
+            if(isServer && monster.HP <= remind){
+                RpcMonsterDissolve();
             }
             monster.HP -= remind;
+            
         }
     }
 
@@ -470,9 +472,8 @@ public class TargetObject : NetworkBehaviour
         {
             int remind = damage - defense;
             defense = 0;
-            if(isServer && monster.HP <= remind ){
-                M_TurnManager.instance.monsterDeathOperating = true;
-                M_TurnManager.instance.ProcessMonsterDeath(this);
+            if(isServer && monster.HP <= remind){
+                RpcMonsterDissolve();
             }
             monster.HP -= remind;
         }
@@ -723,11 +724,6 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void SetIronDemonParent(Transform p)
-    {
-        ironDemon.transform.parent = p;
-    }
 
     void OnChangedErisMode(ErisMode oldVal, ErisMode newVal)
     {
@@ -844,5 +840,32 @@ public class TargetObject : NetworkBehaviour
             ironDemon.GetComponent<SkeletonAnimation>().state.Complete -= OnIronDemonAnimationComplete;
             ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
         }
+    }
+
+    // --------------------------------------------------------- Server Method -----------------------------------------------------------//
+
+    [Server]
+    public void ServerProcessMonsterDeath()
+    {
+        M_TurnManager.instance.monsterDeathOperating = true;
+        M_TurnManager.instance.ProcessMonsterDeath(this);
+    }
+
+    // --------------------------------------------------------- Rpc Method -----------------------------------------------------------//
+    
+    [ClientRpc]
+    public void SetIronDemonParent(Transform p)
+    {
+        ironDemon.transform.parent = p;
+    }
+
+    [ClientRpc]
+    public void RpcMonsterDissolve()
+    {
+        StartDissolveEffect(() => {
+            if(isServer){
+                ServerProcessMonsterDeath();
+            }
+        });
     }
 }

@@ -60,8 +60,9 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         skipButtons[index].image.color = new Color32(255, 255, 255, 255);
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         List<GamePlayer> players = new List<GamePlayer>(playerInterface.ownedPlayers);
-        if(players[index] != null){
-            GamePlayer gamePlayer = players[index];
+        int idx = players.Count == 1 ? 0 : index;
+        GamePlayer gamePlayer = players[idx];
+        if(gamePlayer != null){
             M_TurnManager.instance.playerRewardedDic[gamePlayer] = true;
             M_TurnManager.instance.CheckAllPlayerRewarded(gamePlayer);
         }
