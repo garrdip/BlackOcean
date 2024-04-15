@@ -86,7 +86,7 @@ public class Boss_Momos : SpawnedMonster
     {
         if(newVal.actionName == "")return;
         Debug.Log("정상 입력");
-        transform.parent.GetChild(3).localPosition = new Vector3(transform.parent.GetChild(3).localPosition.x, 11, transform.parent.GetChild(3).localPosition.z);
+        transform.parent.GetChild(3).localPosition = new Vector3(transform.parent.GetChild(3).localPosition.x, 0, transform.parent.GetChild(3).localPosition.z);
         if(nextAction.actionName == "Enrage")
             parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKANDDEBUFF,true,newVal.actionTarget,100.ToString());
         else

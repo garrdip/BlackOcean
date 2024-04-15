@@ -80,14 +80,14 @@ public class SpawnedMonster : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if(collider != null && collider.tag.Equals("CardArrowHead")){
+        if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
             meshRenderer.material = outLineMaterial;
         }
     }
 
     private void OnTriggerExit2D(Collider2D collider)
     {
-        if(collider != null && collider.tag.Equals("CardArrowHead")){
+        if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
             meshRenderer.material = defaultMaterial;
         }
     }

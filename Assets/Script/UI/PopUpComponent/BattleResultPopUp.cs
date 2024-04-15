@@ -63,6 +63,7 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         int idx = players.Count == 1 ? 0 : index;
         GamePlayer gamePlayer = players[idx];
         if(gamePlayer != null){
+            gamePlayer.GetComponent<GamePlayerDeck>().CmdRewardClear();
             M_TurnManager.instance.playerRewardedDic[gamePlayer] = true;
             M_TurnManager.instance.CheckAllPlayerRewarded(gamePlayer);
         }

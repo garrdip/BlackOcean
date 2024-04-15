@@ -566,6 +566,13 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    // 보상목록 Synclist 요소 모두 제거
+    [Command]
+    public void CmdRewardClear()
+    {
+        rewards.Clear();
+    }
+
     // 보상카드 Synclist 요소 모두 제거
     [Command]
     public void CmdClearRewardCards()
