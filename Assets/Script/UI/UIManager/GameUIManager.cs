@@ -94,9 +94,9 @@ public class GameUIManager : SingletonD<GameUIManager>
 
         bool reversePath = Random.Range(0, 2) == 0; // 좌측커브 or 우측커브 랜덤 결정
         Vector3 endPoint = reversePath ? floatingDamageText.transform.position + new Vector3(-3f, -12f, 0f) : floatingDamageText.transform.position + new Vector3(3f, -12f, 0f);
-        Tween curveTween = floatingDamageText.transform.DOJump(endPoint, 9f, 1, 0.8f);
+        Tween curveTween = floatingDamageText.transform.DOJump(endPoint, 9f, 1, 0.5f);
         Tween fadeTween = floatingDamageText.GetComponent<CanvasGroup>().DOFade(0f, 1f);
-        Tween scaleTween = floatingDamageText.transform.DOPunchScale(new Vector3(3f, 3f, 3f), 1f, 2, 1f).SetEase(Ease.OutCubic);
+        Tween scaleTween = floatingDamageText.transform.DOPunchScale(new Vector3(3f, 3f, 3f), 0.8f, 2, 1f).SetEase(Ease.OutCubic);
         Sequence sequence = DOTween.Sequence();
         sequence.Append(scaleTween);
         sequence.Join(curveTween);
