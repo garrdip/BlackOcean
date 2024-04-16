@@ -180,10 +180,11 @@ public class TargetObject : NetworkBehaviour
     // 사라지는 이펙트
     public void StartDissolveEffect(System.Action dissloveCallback = null)
     {
-        SpawnedMonster spawnedMonster = monster.GetComponent<SpawnedMonster>();
-        spawnedMonster.meshRenderer.material = spawnedMonster.dissolveMaterial; // 몬스터의 메쉬랜더러의 머티리얼을 dissolveMaterial로 변경
-        spawnedMonster.dissolveParticle.gameObject.SetActive(true); // dissolveParticle 활성화
         if(gameObject.activeSelf){
+            anim.timeScale = 0;
+            SpawnedMonster spawnedMonster = monster.GetComponent<SpawnedMonster>();
+            spawnedMonster.meshRenderer.material = spawnedMonster.dissolveMaterial; // 몬스터의 메쉬랜더러의 머티리얼을 dissolveMaterial로 변경
+            spawnedMonster.dissolveParticle.gameObject.SetActive(true); // dissolveParticle 활성화
             StartCoroutine(DissolveCoroutine(this, () => {
                 dissloveCallback();
             }));
