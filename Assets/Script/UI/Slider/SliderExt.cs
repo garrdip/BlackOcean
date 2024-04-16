@@ -23,13 +23,12 @@ public class SliderExt : MonoBehaviour
 
     public void OnPointerEnterToggle()
     {
-
         checkmarkBGLight.SetActive(true);
     }
 
     public void OnPointerExitToggle()
     {
-       checkmarkBGLight.SetActive(false);
+        checkmarkBGLight.SetActive(false);
     }
     
     // ----------------------------------------------------- //
