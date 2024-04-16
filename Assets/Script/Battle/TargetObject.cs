@@ -198,7 +198,7 @@ public class TargetObject : NetworkBehaviour
         while (timer < duration)
         {
             float dissolveRatio = timer / duration;
-            targetObject.monster.GetComponent<SpawnedMonster>().dissolveMaterial.SetFloat("_Level", dissolveRatio);
+            targetObject.monster.GetComponent<SpawnedMonster>().SetDissolveLevel(dissolveRatio);
             timer += Time.deltaTime;
             yield return null;
         }
@@ -458,7 +458,6 @@ public class TargetObject : NetworkBehaviour
                 RpcMonsterDissolve();
             }
             monster.HP -= remind;
-            
         }
     }
 

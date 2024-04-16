@@ -44,6 +44,8 @@ public class SpawnedMonster : NetworkBehaviour
 
     public bool isActive = false;
 
+    public MaterialPropertyBlock materialPropertyBlock;
+
     [Header("몬스터 MeshRenderer")]
     public MeshRenderer meshRenderer;
 
@@ -65,17 +67,13 @@ public class SpawnedMonster : NetworkBehaviour
 
     void Start()
     {
+        materialPropertyBlock = new MaterialPropertyBlock();
         meshRenderer = GetComponent<MeshRenderer>();
         anim = GetComponent<SkeletonAnimation>();
         if(dissolveParticle != null){
             dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingLayerName = "FrontLayer";
             dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingOrder = 999;
         }
-    }
-
-    void OnDestroy()
-    {
-        dissolveMaterial.SetFloat("_Level", 0);
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -90,6 +88,12 @@ public class SpawnedMonster : NetworkBehaviour
         if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
             meshRenderer.material = defaultMaterial;
         }
+    }
+
+    public void SetDissolveLevel(float dissolveRatio)
+    {
+        materialPropertyBlock.SetFloat("_Level", dissolveRatio);
+        meshRenderer.SetPropertyBlock(materialPropertyBlock);
     }
 
     [Server]
