@@ -37,7 +37,7 @@ public class Soldier_Spear : SpawnedMonster
         switch(actionName){
             case "3Attack":
                 // 공격 효과음
-                AudioClip attackSound= M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Spear].Find((audioClip) => audioClip.name.Equals("monster_nor_spear_1"));
+                AudioClip attackSound= M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Spear].Find((audioClip) => audioClip.name.Equals("monster_nor_spear_1_1"));
                 M_SoundManager.instance.PlaySFX(attackSound, attackSound.length);
                 break;
             case "3Buff":

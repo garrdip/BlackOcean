@@ -96,10 +96,12 @@ public class GameUIManager : SingletonD<GameUIManager>
         Vector3 endPoint = reversePath ? floatingDamageText.transform.position + new Vector3(-3f, -12f, 0f) : floatingDamageText.transform.position + new Vector3(3f, -12f, 0f);
         Tween curveTween = floatingDamageText.transform.DOJump(endPoint, 9f, 1, 0.5f);
         Tween fadeTween = floatingDamageText.GetComponent<CanvasGroup>().DOFade(0f, 1f);
-        Tween scaleTween = floatingDamageText.transform.DOPunchScale(new Vector3(3f, 3f, 3f), 0.8f, 2, 1f).SetEase(Ease.OutCubic);
+        Tween scaleTween = floatingDamageText.transform.DOPunchScale(new Vector3(3f, 3f, 3f), 0.5f, 2, 1f).SetEase(Ease.OutCubic);
+        Tween scaleReturnTween = floatingDamageText.transform.DOScale(1f, 0.5f);
         Sequence sequence = DOTween.Sequence();
         sequence.Append(scaleTween);
         sequence.Join(curveTween);
+        sequence.Insert(0.2f, scaleReturnTween);
         sequence.Join(fadeTween)
                 .OnComplete(() => {
                     floatingDamageText.transform.DOKill();

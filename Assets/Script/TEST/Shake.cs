@@ -13,7 +13,7 @@ public class Shake : MonoBehaviour
     {
         mainCamera = GetComponent<Camera>();
         shakeStrength = 0.3f;
-        shakeDuration = 0.5f;
+        shakeDuration = 0.2f;
     }
 
  
