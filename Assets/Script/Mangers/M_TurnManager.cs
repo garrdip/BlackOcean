@@ -422,8 +422,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 
                 // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅(임시로 골드 + 카드 보상)
-                gamePlayerDeck.rewards.Add(new Reward(){ reward_Type = Reward_Type.Gold, netId = gamePlayer.netId });
-                gamePlayerDeck.rewards.Add(new Reward(){ reward_Type = Reward_Type.Card, netId = gamePlayer.netId });
+                string cardRewardGuid = System.Guid.NewGuid().ToString();
+                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = cardRewardGuid, reward_Type = Reward_Type.Card });
+                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold });
                 
                 // 카드 보상 데이터 세팅
                 int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
@@ -431,7 +432,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 if(cardsByCharacter.Count > 0){
                     for(int i = 0; i < rewardCardCount; i++){
                         int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                        gamePlayerDeck.rewardCards.Add(cardsByCharacter[randomIndex]);
+                        Card rewardCard = cardsByCharacter[randomIndex];
+                        rewardCard.guid = cardRewardGuid;
+                        gamePlayerDeck.rewardCards.Add(rewardCard);
                         cardsByCharacter.RemoveAt(randomIndex);
                     }
                 }

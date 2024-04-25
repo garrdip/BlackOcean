@@ -558,9 +558,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     // 보상목록 Synclist 데이터에서 netId값이 동일한 첫번째 reward 데이터를 검색해서 제거
     [Command]
-    public void CmdRewardRemove(uint netId, Reward_Type reward_Type)
+    public void CmdRewardRemove(string guid, Reward_Type reward_Type)
     {
-        int index = rewards.FindIndex((reward) => reward.netId == netId && reward.reward_Type == reward_Type);
+        int index = rewards.FindIndex((reward) => reward.guid.Equals(guid) && reward.reward_Type == reward_Type);
         if(index != -1){
             rewards.RemoveAt(index);
         }
