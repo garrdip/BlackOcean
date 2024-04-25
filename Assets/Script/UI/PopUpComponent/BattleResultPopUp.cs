@@ -77,12 +77,14 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         // 연결해제된 클라이언트의 보상이 남아있을 경우
         GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
         if(gamePlayerDeck.rewards.Count > 0){
-            // 기존의 보상 오브젝트 제거하고 해당 클라이언트의 보상데이터를 다시 조회하여 보상 오브젝트 세팅
-            List<GameObject> disconnectPlayerRewards = M_TurnManager.instance.rewardObjects.FindAll((r) => r.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
-            for(int i=0; i<disconnectPlayerRewards.Count; i++){
-                Destroy(disconnectPlayerRewards[i]);
-                M_TurnManager.instance.rewardObjects.RemoveAt(i);
+            // 기존의 보상 오브젝트 제거
+            List<GameObject> disconnectPlayerRewards = M_TurnManager.instance.rewardObjects.FindAll(rewardObject => rewardObject.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
+            foreach (GameObject rewardToRemove in disconnectPlayerRewards){
+                Destroy(rewardToRemove);
             }
+            M_TurnManager.instance.rewardObjects.RemoveAll(rewardObject => rewardObject.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
+
+            // 연결해제된 클라이언트의 보상데이터를 다시 조회하여 보상 오브젝트 세팅
             foreach(Reward reward in gamePlayerDeck.rewards){
                 int orderIndex = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);          
                 GameObject rewardListItemObject = Instantiate(PopUpUIManager.instance.RewardListItemPrefab);
