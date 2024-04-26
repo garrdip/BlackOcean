@@ -868,7 +868,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 
                 break;
             case SyncList<Reward>.Operation.OP_REMOVEAT:
-                if(rewards.Count <= 0){
+                if(isOwned && rewards.Count <= 0){
                     // 더 보상받을 데이터 없는 경우 보상완료상태 세팅
                     M_TurnManager.instance.playerRewardedDic[GetComponent<GamePlayer>()] = true;
                     M_TurnManager.instance.CheckAllPlayerRewarded(GetComponent<GamePlayer>());
