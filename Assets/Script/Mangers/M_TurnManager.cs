@@ -136,13 +136,20 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
-    // 보상 목록 오브젝트 제거
+    // 보상 목록 오브젝트 모두 제거
     public void ClearRewardListItem()
     {
         foreach(GameObject gameObject in rewardObjects){
             Destroy(gameObject);
         }
         rewardObjects.Clear();
+    }
+
+    // 보상 목록 오브젝트 단일 제거
+    public void RemoveRewardListItem(GameObject rewardObject)
+    {
+        M_TurnManager.instance.rewardObjects.Remove(rewardObject);
+        Destroy(rewardObject);
     }
 
     // 보상 카드 오브젝트 제거 및 플레이어 보상 상태 데이터 정리

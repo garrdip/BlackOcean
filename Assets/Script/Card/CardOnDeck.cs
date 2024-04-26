@@ -209,6 +209,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
                     battleResultPopUp.ChangeRewardLayoutState(index, false);
                     cardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(card.guid, Reward_Type.Card);
+                    GameObject rewardObject = M_TurnManager.instance.rewardObjects.Find((rewardObject) => rewardObject.GetComponent<RewardListItem>().reward.guid == card.guid);
+                    M_TurnManager.instance.RemoveRewardListItem(gameObject);
                 });
                 AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));
                 M_SoundManager.instance.PlaySFX(rewardCardAudio, rewardCardAudio.length);

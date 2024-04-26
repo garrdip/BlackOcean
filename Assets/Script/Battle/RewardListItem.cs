@@ -32,12 +32,10 @@ public class RewardListItem : MonoBehaviour
 
     public void OnPointerClickRewardListItem()
     {
-        ChangeRewardStateByType();
         canvasGroup.DOFade(0f, 0.5f);
         rectTransform.DOAnchorPosX(Screen.width, 0.5f).OnComplete(() =>
         {
-            M_TurnManager.instance.rewardObjects.Remove(gameObject);
-            Destroy(gameObject);
+            ChangeRewardListItemStateByType(gameObject, rewardOwner, reward);
         });
     }
 
@@ -51,7 +49,7 @@ public class RewardListItem : MonoBehaviour
         ChangeRewardIconLightActiveByType(false);
     }
 
-    private void ChangeRewardStateByType()
+    private void ChangeRewardListItemStateByType(GameObject rewardObject, GamePlayer rewardOwner, Reward reward)
     {
         switch(reward.reward_Type){
             case Reward_Type.Card: // 카드 보상 선택 팝업 호출
@@ -63,11 +61,13 @@ public class RewardListItem : MonoBehaviour
                 break;
             case Reward_Type.Item:  // TODO : 선택한 유물 보상 데이터를 플레이어 데이터에 추가
                 rewardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(reward.guid, Reward_Type.Item);
+                M_TurnManager.instance.RemoveRewardListItem(rewardObject);
                 AudioClip itemSound = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
                 M_SoundManager.instance.PlaySFX(itemSound, itemSound.length);
                 break;
             case Reward_Type.Gold: // TODO : 선택한 골드 보상 데이터를 플레이어 데이터에 추가
                 rewardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(reward.guid, Reward_Type.Gold);
+                M_TurnManager.instance.RemoveRewardListItem(rewardObject);
                 AudioClip coinSound = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
                 M_SoundManager.instance.PlaySFX(coinSound, coinSound.length);
                 break;
