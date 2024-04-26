@@ -75,29 +75,37 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     private void OnClientDisconnected(GamePlayer gamePlayer)
     {
         // 연결해제된 클라이언트의 보상이 남아있을 경우
+        // 1. 보상 팝업이 활성화 상태의 경우 : 보상을 이어받을수 있도록, 나간 클라이언트의 데이터를 조회해서 다시 세팅
+        // 2. 보상 팝업이 비활성화 상태의 경우 (이미 보상팝업 끝나고 페이드 된 상태) : 보상데이터 모두 클리어하고 맵화면으로 전환
         GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
         if(gamePlayerDeck.rewards.Count > 0){
-            // 기존의 보상 오브젝트 제거
-            List<GameObject> disconnectPlayerRewards = M_TurnManager.instance.rewardObjects.FindAll(rewardObject => rewardObject.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
-            foreach (GameObject rewardToRemove in disconnectPlayerRewards){
-                Destroy(rewardToRemove);
-            }
-            M_TurnManager.instance.rewardObjects.RemoveAll(rewardObject => rewardObject.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
+            if(gameObject.activeSelf){
+                // 기존의 보상 오브젝트 제거
+                List<GameObject> disconnectPlayerRewards = M_TurnManager.instance.rewardObjects.FindAll(rewardObject => rewardObject.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
+                foreach (GameObject rewardToRemove in disconnectPlayerRewards){
+                    Destroy(rewardToRemove);
+                }
+                M_TurnManager.instance.rewardObjects.RemoveAll(rewardObject => rewardObject.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
 
-            // 연결해제된 클라이언트의 보상데이터를 다시 조회하여 보상 오브젝트 세팅
-            foreach(Reward reward in gamePlayerDeck.rewards){
-                int orderIndex = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);          
-                GameObject rewardListItemObject = Instantiate(PopUpUIManager.instance.RewardListItemPrefab);
-                RewardListItem rewardListItem = rewardListItemObject.GetComponent<RewardListItem>();
-                rewardListItem.reward = reward;
-                rewardListItem.rewardOwner = gamePlayer;
-                rewardListItem.transform.SetParent(rewardLayoutGroups[orderIndex].transform);
-                rewardListItem.transform.localScale = new Vector3(1, 1, 1);
-                M_TurnManager.instance.rewardObjects.Add(rewardListItemObject);
-            }
-            M_TurnManager.instance.playerRewardedDic.Add(gamePlayer, false);
-            int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);
-            tabButtons[index].gameObject.SetActive(true);
+                // 연결해제된 클라이언트의 보상데이터를 다시 조회하여 보상 오브젝트 세팅
+                foreach(Reward reward in gamePlayerDeck.rewards){
+                    int orderIndex = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);          
+                    GameObject rewardListItemObject = Instantiate(PopUpUIManager.instance.RewardListItemPrefab);
+                    RewardListItem rewardListItem = rewardListItemObject.GetComponent<RewardListItem>();
+                    rewardListItem.reward = reward;
+                    rewardListItem.rewardOwner = gamePlayer;
+                    rewardListItem.transform.SetParent(rewardLayoutGroups[orderIndex].transform);
+                    rewardListItem.transform.localScale = new Vector3(1, 1, 1);
+                    M_TurnManager.instance.rewardObjects.Add(rewardListItemObject);
+                }
+                M_TurnManager.instance.playerRewardedDic.Add(gamePlayer, false);
+                int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);
+                tabButtons[index].gameObject.SetActive(true);
+            }else{
+                M_TurnManager.instance.ClearRewardCardAndPlayer();
+                M_TurnManager.instance.ClearRewardListItem();
+                M_TurnManager.instance.NoneBattleEnd();
+            } 
         }
     }
 

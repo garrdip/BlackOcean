@@ -13,7 +13,6 @@ public class Card
     public int experience;
     public bool tempEnhanced;
     public bool isReturnable; // 지치지 않는자에서만 런타임으로 쓰임
-    public string guid; // 보상카드에서만 사용되는 고유 아이디값
 
     public Card(CardBase basecard)
     {

@@ -891,9 +891,17 @@ public partial class GamePlayerDeck : NetworkBehaviour
             case SyncList<Card>.Operation.OP_ADD:
                 BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
                 GamePlayer gamePlayer = GetComponent<GamePlayer>();
+
+                // 보상 카드 생성시 카드타입의 보상 목록 아이템으로부터 guid를 조회하여 설정
+                GameObject cardRewardItemObject = M_TurnManager.instance.rewardObjects.Find(x => x.GetComponent<RewardListItem>().reward.netId == GetComponent<GamePlayer>().netId);
+                string cardRewarItemGuid = cardRewardItemObject.GetComponent<RewardListItem>().reward.guid;
+                
+                // 보상 카드 오브젝트 생성
                 GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
+                cardOnDeck.GetComponent<CardOnDeck>().guid = cardRewarItemGuid;
                 cardOnDeck.GetComponent<CardOnDeck>().card = newVal;
                 cardOnDeck.GetComponent<CardOnDeck>().cardOwner = gamePlayer;
+                
                 int orderIndex = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);
                 if(orderIndex != -1){
                     cardOnDeck.transform.SetParent(battleResultPopUp.rewardCardLayoutGroups[orderIndex].transform);

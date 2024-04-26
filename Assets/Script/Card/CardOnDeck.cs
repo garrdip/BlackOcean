@@ -11,6 +11,7 @@ using ProjectD;
 public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Card card;
+    public string guid;
     public GamePlayer cardOwner;
     public CanvasGroup canvasGroup;
 
@@ -208,8 +209,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == cardOwner.netId);
                     BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
                     battleResultPopUp.ChangeRewardLayoutState(index, false);
-                    cardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(card.guid, Reward_Type.Card);
-                    GameObject rewardObject = M_TurnManager.instance.rewardObjects.Find((rewardObject) => rewardObject.GetComponent<RewardListItem>().reward.guid == card.guid);
+                    cardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(guid, Reward_Type.Card);
+                    GameObject rewardObject = M_TurnManager.instance.rewardObjects.Find((rewardObject) => rewardObject.GetComponent<RewardListItem>().reward.guid == guid);
                     M_TurnManager.instance.RemoveRewardListItem(rewardObject);
                 });
                 AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));

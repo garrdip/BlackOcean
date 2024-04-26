@@ -429,8 +429,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 
                 // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅(임시로 골드 + 카드 보상)
-                string cardRewardGuid = System.Guid.NewGuid().ToString();
-                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = cardRewardGuid, reward_Type = Reward_Type.Card });
+                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Card });
                 gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold });
                 
                 // 카드 보상 데이터 세팅
@@ -440,7 +439,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     for(int i = 0; i < rewardCardCount; i++){
                         int randomIndex = Random.Range(0, cardsByCharacter.Count);
                         Card rewardCard = cardsByCharacter[randomIndex];
-                        rewardCard.guid = cardRewardGuid;
                         gamePlayerDeck.rewardCards.Add(rewardCard);
                         cardsByCharacter.RemoveAt(randomIndex);
                     }
@@ -478,9 +476,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         foreach(PlayerInterface player in FindObjectsOfType<PlayerInterface>()){
             player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 false 되돌림 (여러군데서 사용 예정)
             player.SetEndTurnActiveStateDefault(); // 앤드 턴 상태 모두 확인후 다시 false 되돌림
+            player.SetCompleteRewardStateDefault();
         }
         foreach(HexagonMapRoom hexagonMapRoom in M_MapManager.instance.hexagonMapRooms){
             hexagonMapRoom.isSelected = false; // 맵 선택상태 모두 false 초기화
+        }
+        foreach(GamePlayer gamePlayer in FindObjectsOfType<GamePlayer>()){
+            gamePlayer.GetComponent<GamePlayerDeck>().rewards.Clear();
+            gamePlayer.GetComponent<GamePlayerDeck>().rewardCards.Clear();
         }
     }
 
