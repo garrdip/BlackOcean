@@ -11,7 +11,6 @@ using ProjectD;
 public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Card card;
-    public string guid;
     public GamePlayer cardOwner;
     public CanvasGroup canvasGroup;
 
@@ -36,7 +35,6 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     private Vector3 originScale;
     private bool isTweening = false; // Dotween 애니매이션 함수들 실행중인지 여부
-    public bool isSoldOut = false; // 판매 완료된 카드인지 여부
     public bool isShopCardInfo = false; // 카드 상점에서 정보 자세히 보기용 카드인지 여부
 
     void Start()
@@ -44,6 +42,9 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         originScale = isShopCardInfo ? new Vector3(1.8f, 1.8f, 1.8f) : Vector3.one;
         initCardData(card);
         InitCardTemplateByCharacter(card);
+        if(card.isSoldout){
+            ChangeCardOnDeckSoldOutState();
+        }
     }
 
     // CardData의 스프라이트 데이터로부터 선택한 캐릭터의 카드 이미지 세팅
@@ -204,25 +205,18 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
             if(cardOwner != null){
+                RequsetCardReward();
                 ChangeCardOnDeckRewardedState(M_TurnManager.instance.rewardCardObjects);
-                HandleClickCardOnDeckOnPopUp(() => {
-                    int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == cardOwner.netId);
-                    BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
-                    battleResultPopUp.ChangeRewardLayoutState(index, false);
-                    cardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(guid, Reward_Type.Card);
-                    GameObject rewardObject = M_TurnManager.instance.rewardObjects.Find((rewardObject) => rewardObject.GetComponent<RewardListItem>().reward.guid == guid);
-                    M_TurnManager.instance.RemoveRewardListItem(rewardObject);
-                });
+                CardOnDeckClickAnimation();
                 AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));
                 M_SoundManager.instance.PlaySFX(rewardCardAudio, rewardCardAudio.length);
             }
         }
         // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
         if(PopUpUIManager.instance.mercuriusPopUp.activeSelf){
+            RequestCardPurchase();
             ChangeCardOnDeckSoldOutState();
-            HandleClickCardOnDeckOnPopUp(() => {
-                //M_TurnManager.instance.npc_Mercurius.shopCards.Remove(this.card);
-            });
+            CardOnDeckClickAnimation();
             AudioClip shopCardPurchaseAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
             M_SoundManager.instance.PlaySFX(shopCardPurchaseAudio, shopCardPurchaseAudio.length);
         }
@@ -239,6 +233,17 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         }
     }
 
+    // 보상카드 선택 커맨드 전송 및 오브젝트 정리
+    private void RequsetCardReward()
+    {
+        int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == cardOwner.netId);
+        BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
+        battleResultPopUp.ChangeRewardLayoutState(index, false);
+        cardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(card.guid, Reward_Type.Card);
+        GameObject rewardObject = M_TurnManager.instance.rewardObjects.Find((rewardObject) => rewardObject.GetComponent<RewardListItem>().reward.guid == card.guid);
+        M_TurnManager.instance.RemoveRewardListItem(rewardObject);
+    }
+
     // 보상카드중 선택한 카드의 탭에 있는 카드들은 모두 선택불가 및 알파값 0.5 설정
     private void ChangeCardOnDeckRewardedState(List<GameObject> rewardCards)
     {
@@ -252,11 +257,20 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         }
     }
 
+    // 선택한 카드 구매 커맨드 전송
+    private void RequestCardPurchase()
+    {
+        List<Card> cards = M_TurnManager.instance.npc_Mercurius.shopCardDictionary[cardOwner];
+        int index = cards.FindIndex((c) => c.guid.Equals(card.guid));
+        if(index != -1){
+            M_TurnManager.instance.CmdChangeShopCardSoldOut(cardOwner, index);
+        }
+    }
+
     // CardOnDeck SoldOut 상태로 변경 및 컴포넌트들 알파값 0.5 변경
     public void ChangeCardOnDeckSoldOutState()
     {
         if(!isShopCardInfo){
-            isSoldOut = true;
             cardSoldOut.SetActive(true);
             // 캔버스 그룹 요소들 상호작용 이벤트 비활성화 
             canvasGroup.interactable = false;
@@ -276,7 +290,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
 
     // 팝업이 활성화된 상태에서 CardOnDeck 공통 클릭 이벤트
-    private void HandleClickCardOnDeckOnPopUp(System.Action callback)
+    private void CardOnDeckClickAnimation()
     {
         if(cardOwner != null){
             // 애니매이션용 카드 오브젝트 복사본 생성
@@ -287,10 +301,22 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
             // 이동 위치는 현재 플레이어 타겟오브젝트 위치
             Vector3 targetPosition = currentPlayer.avatar.GetComponent<PolygonCollider2D>().bounds.center;
-            StartMoveToTarget(cardOnHandChoosed.GetComponent<CardOnHandChoosed>(), targetPosition, cardOwner, () => {
-                callback();
-                Destroy(cardOnHandChoosed.gameObject);
-            });
+            float height = 2f;
+            float duration = 1f;
+            Vector3 startPos = cardOnHandChoosed.transform.position;
+            Vector3 midPos = (startPos + targetPosition) / 2f;
+            midPos.y += height;
+            Vector3[] path = new Vector3[] { startPos, midPos, targetPosition };
+            
+            // DOTween을 사용하여 포물선 이동 애니메이션 생성
+            cardOnHandChoosed.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.5f);
+            cardOnHandChoosed.transform.DOPath(path, duration, PathType.CatmullRom)
+                .SetEase(Ease.OutQuint)
+                .OnComplete(() => {
+                    cardOnHandChoosed.GetComponent<CardOnHandChoosed>().isTweening = false;
+                    cardOwner.GetComponent<GamePlayerDeck>().CmdAddDeck(card); // 전투 보상 카드 받은 플레이어의 Deck에 카드 추가
+                    Destroy(cardOnHandChoosed);
+                });
         }
     }
 
@@ -304,27 +330,6 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         cardOnHandChoosed.transform.position = new Vector3(0f, 0f, 0f);
 
         return cardOnHandChoosed;
-    }
-
-    // 포물선을 그리며 타겟 위치로 이동
-    private void StartMoveToTarget(CardOnHandChoosed cardOnHandChoosed, Vector3 targetPosition, GamePlayer targetPlayer, System.Action callback)
-    {
-        float height = 2f;
-        float duration = 1f;
-        Vector3 startPos = cardOnHandChoosed.transform.position;
-        Vector3 midPos = (startPos + targetPosition) / 2f;
-        midPos.y += height;
-        Vector3[] path = new Vector3[] { startPos, midPos, targetPosition };
-        
-        // DOTween을 사용하여 포물선 이동 애니메이션 생성
-        cardOnHandChoosed.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.5f);
-        cardOnHandChoosed.transform.DOPath(path, duration, PathType.CatmullRom)
-            .SetEase(Ease.OutQuint)
-            .OnComplete(() => {
-                cardOnHandChoosed.isTweening = false;
-                targetPlayer.GetComponent<GamePlayerDeck>().CmdAddDeck(card); // 전투 보상 카드 받은 플레이어의 Deck에 카드 추가
-                callback();
-            });
     }
 
     // 카드 정보 뷰 설정

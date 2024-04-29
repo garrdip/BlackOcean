@@ -13,6 +13,9 @@ public class Card
     public int experience;
     public bool tempEnhanced;
     public bool isReturnable; // 지치지 않는자에서만 런타임으로 쓰임
+    public string guid; // 카드 구분 용도로 사용되는 고유아이디 변수
+    public bool isSoldout; // 상점카드에서만 사용되는 구매상태 변수
+
 
     public Card(CardBase basecard)
     {

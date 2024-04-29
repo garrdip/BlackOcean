@@ -2557,7 +2557,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &238249602
 RectTransform:
   m_ObjectHideFlags: 0
@@ -24208,6 +24208,7 @@ MonoBehaviour:
   monsterShieldInitialize: 0
   dyingMonsers: []
   Phase: 0
+  npc_Mercurius: {fileID: 0}
 --- !u!1 &3946356632764995061
 GameObject:
   m_ObjectHideFlags: 0
@@ -49540,6 +49541,8 @@ MonoBehaviour:
     experience: 0
     tempEnhanced: 0
     isReturnable: 0
+    guid: 
+    isSoldout: 0
   cardOwner: {fileID: 0}
   canvasGroup: {fileID: 617208569021601904}
   cardBackground: {fileID: 6205162579322818999}

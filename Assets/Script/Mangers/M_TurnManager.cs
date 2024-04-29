@@ -11,6 +11,27 @@ using System.Linq;
 
 public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 {
+    // Turn 관리는 서버
+    [SyncVar]
+    public BattleTurn Phase;
+    public BattleTurn phase {get{
+        return Phase;
+    }
+    set{
+        Phase = value;
+        OnChangedPhase();
+    }}
+
+    [SyncVar]
+    public NPC_Mercurius npc_Mercurius;
+
+    // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈 슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
+    public readonly SyncList<uint> playerOrder = new SyncList<uint>(){ 0, 0, 0 };
+
+    // 각 클라이언트에서 참조할 현재 참가한 플레이어들의 타겟오브젝트 목록
+    public readonly SyncList<uint> spawnedPlayerSyncList = new SyncList<uint>();
+
+
     [SerializedDictionary("게임플레이어", "보상카드선택유무")]
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
 
@@ -18,12 +39,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     private float mapSceneCameraSize = 5.0f; // 맵씬에서 카메라 크기값
     public List<GameObject> rewardObjects = new List<GameObject>(); // 보상목록 오브젝트 리스트
     public List<GameObject> rewardCardObjects = new List<GameObject>(); // 보상카드 오브젝트 리스트
-
-    // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈 슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
-    public readonly SyncList<uint> playerOrder = new SyncList<uint>(){ 0, 0, 0 };
-
-    // 각 클라이언트에서 참조할 현재 참가한 플레이어들의 타겟오브젝트 목록
-    public readonly SyncList<uint> spawnedPlayerSyncList = new SyncList<uint>();
     
     public Vector3[] targetObjectPosition = {
         new Vector3(-15,-3,0),
@@ -47,7 +62,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public List<TargetObject> dyingMonsers = new List<TargetObject>();
 
     // 카드와 타겟을 한쌍으로 저장하는 큐
-    public Queue<(GamePlayerDeck, int , CardOnHand, List<TargetObject>)> cardTargetPairQueue = new Queue<(GamePlayerDeck, int, CardOnHand, List<TargetObject>)>();
     // TargetObject List 구조 : 
     /*
     Index : 내용
@@ -55,17 +69,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     1 : Target Monster
     이후 : 모든 플레이어 및 몬스터
     */
+    public Queue<(GamePlayerDeck, int , CardOnHand, List<TargetObject>)> cardTargetPairQueue = new Queue<(GamePlayerDeck, int, CardOnHand, List<TargetObject>)>();
 
-    // Turn 관리는 서버
-    [SyncVar]
-    public BattleTurn Phase;
-    public BattleTurn phase {get{
-        return Phase;
-    }
-    set{
-        Phase = value;
-        OnChangedPhase();
-    }}
+
 
     protected override void Start()
     {
@@ -159,6 +165,18 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             Destroy(gameObject);
         }
         rewardCardObjects.Clear();
+    }
+
+
+    // -------------------------------------------------------------------- Command Method ---------------------------------------------------------------------//
+
+    // 해당 플레이어의 상점카드 데이터에서 구매한 카드의 상태값 변경
+    [Command (requiresAuthority = false)]
+    public void CmdChangeShopCardSoldOut(GamePlayer gamePlayer, int index)
+    {
+        if(npc_Mercurius.shopCardDictionary.TryGetValue(gamePlayer, out List<Card> shopCards)){
+            shopCards[index].isSoldout = true;
+        }
     }
 
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
@@ -429,7 +447,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 
                 // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅(임시로 골드 + 카드 보상)
-                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Card });
+                string cardRewardGuid = System.Guid.NewGuid().ToString();
+                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = cardRewardGuid, reward_Type = Reward_Type.Card });
                 gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold });
                 
                 // 카드 보상 데이터 세팅
@@ -438,7 +457,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 if(cardsByCharacter.Count > 0){
                     for(int i = 0; i < rewardCardCount; i++){
                         int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                        Card rewardCard = cardsByCharacter[randomIndex];
+                        Card rewardCard = cardsByCharacter[randomIndex].CardDeepCopy(false);
+                        rewardCard.guid = cardRewardGuid;
                         gamePlayerDeck.rewardCards.Add(rewardCard);
                         cardsByCharacter.RemoveAt(randomIndex);
                     }
@@ -744,23 +764,25 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 if(cardsByCharacter.Count > 0){
                     for(int i = 0; i < shopCardCount; i++){
                         int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                        shopCards.Add(cardsByCharacter[randomIndex]);
+                        Card shopCard = cardsByCharacter[randomIndex].CardDeepCopy(false);
+                        shopCard.guid = System.Guid.NewGuid().ToString();
+                        shopCards.Add(shopCard);
                         cardsByCharacter.RemoveAt(randomIndex);
                     }
                 }
                 mercurius.shopCardDictionary.Add(gamePlayer, shopCards); // NPC_Mercurius의 SyncDictionary에 각 플레이어와 추출한 랜덤카드를 한쌍의 데이터로 저장
             }
         }
-
         NetworkServer.Spawn(monster.gameObject);
+        npc_Mercurius = mercurius; // NPC_Mercurius의 참조값 설정
         monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
+
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(11,-3,0),Quaternion.identity);
         NetworkServer.Spawn(avatar);
         avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
         avatar.GetComponent<TargetObject>().monster = monster;
         spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
-        // monster 오브젝트의 부모오브젝트 참조값 설정
-        monster.parent = avatar.GetComponent<TargetObject>();
+        monster.parent = avatar.GetComponent<TargetObject>();  // monster 오브젝트의 부모오브젝트 참조값 설정
     }
 
     [Server]

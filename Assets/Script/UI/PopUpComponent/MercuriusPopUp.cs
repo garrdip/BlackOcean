@@ -112,6 +112,9 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
             for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
                 GamePlayer gamePlayer = playerInterface.ownedPlayers[i];
                 tabButtons[i].gameObject.SetActive(true); // 제어할 플레이어가 2명 이상이면 플레이어 수만큼 탭버튼 활성화
+                if(gamePlayer.netId == playerInterface.currentGamePlayerNetId){
+                    tabButtons[i].GetComponent<CanvasGroup>().alpha = 1f; // 제어할 플레이어중 현재 플레이어의 탭버튼 알파값 1 설정
+                }
                 switch(gamePlayer.character)
                 {
                     case Character.GEORK:
@@ -153,6 +156,7 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     {
         foreach(Button tabButton in tabButtons){
             tabButton.gameObject.SetActive(false);
+            tabButton.GetComponent<CanvasGroup>().alpha = 0.5f;
         }
     }
 
