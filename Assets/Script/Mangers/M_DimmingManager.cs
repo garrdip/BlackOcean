@@ -21,21 +21,23 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
         Dimming();
         foreach(TargetObject tar in targets)
         {
-            tar.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "FrontLayer";
-            if(tar.player != null){
-                tar.avatar.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
-                if(tar.ironDemon != null)tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
-                tar.playerHpCanvas.sortingLayerName = "FrontLayer";
-                tar.playerNameCanvas.sortingLayerName = "FrontLayer";
-                tar.playerShieldCanvas.sortingLayerName = "FrontLayer";
-            }else{
-                tar.monster.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
-                tar.monsterHpCanvas.sortingLayerName = "FrontLayer";
-                tar.monsterNameCanvas.sortingLayerName = "FrontLayer";
-                tar.monsterShieldCanvas.sortingLayerName = "FrontLayer";
-            }
-            foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>()){
-                canvas.sortingLayerName = "FrontLayer";
+            if(tar != null){
+                tar.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "FrontLayer";
+                if(tar.player != null){
+                    tar.avatar.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
+                    if(tar.ironDemon != null)tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
+                    tar.playerHpCanvas.sortingLayerName = "FrontLayer";
+                    tar.playerNameCanvas.sortingLayerName = "FrontLayer";
+                    tar.playerShieldCanvas.sortingLayerName = "FrontLayer";
+                }else{
+                    tar.monster.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
+                    tar.monsterHpCanvas.sortingLayerName = "FrontLayer";
+                    tar.monsterNameCanvas.sortingLayerName = "FrontLayer";
+                    tar.monsterShieldCanvas.sortingLayerName = "FrontLayer";
+                }
+                foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>()){
+                    canvas.sortingLayerName = "FrontLayer";
+                }
             }
         }
     }

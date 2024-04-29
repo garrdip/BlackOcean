@@ -1085,24 +1085,26 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void MoveIronDemon(TargetObject tar, TargetObject target)
     {
-        if(target.objectType == ObjectType.PLAYER){
-            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = target.avatar.GetComponent<MeshRenderer>().sortingOrder - 1;
-        }else{
-            tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = -1;
-        }
-        tar.ironDemon.GetComponent<SkeletonAnimation>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
-        int transformOffset = CalcOffset(tar); 
-        if(target.monster != null)
-            if(target.monster.monsterName == "Boss_Momos") // 모모스 키 적용 TODO: 몬스터 키적용 코드 추가
-                tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,5,0);
+        if(tar != null && target != null){
+            if(target.objectType == ObjectType.PLAYER){
+                tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = target.avatar.GetComponent<MeshRenderer>().sortingOrder - 1;
+            }else{
+                tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = -1;
+            }
+            tar.ironDemon.GetComponent<SkeletonAnimation>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+            int transformOffset = CalcOffset(tar); 
+            if(target.monster != null)
+                if(target.monster.monsterName == "Boss_Momos") // 모모스 키 적용 TODO: 몬스터 키적용 코드 추가
+                    tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,5,0);
+                else
+                    tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
             else
                 tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
-        else
-            tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
-        int offset = (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer == tar.player) ? 0 : 2;
-        if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0+offset];
-        else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
-        tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
+            int offset = (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer == tar.player) ? 0 : 2;
+            if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0+offset];
+            else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
+            tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
+        }
     }
 
     // 영웅능력으로 철귀 이동 시 음성 재생
