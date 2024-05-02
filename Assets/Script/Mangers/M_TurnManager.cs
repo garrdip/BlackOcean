@@ -176,6 +176,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         if(npc_Mercurius.shopCardDictionary.TryGetValue(gamePlayer, out List<Card> shopCards)){
             shopCards[index].isSoldout = true;
+            gamePlayer.GetComponent<GamePlayerDeck>().gold -= shopCards[index].cardPrice; // 구매한 플레이어가 소유한 골드에서 카드 가격만큼 감소
         }
     }
 
@@ -449,7 +450,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅(임시로 골드 + 카드 보상)
                 string cardRewardGuid = System.Guid.NewGuid().ToString();
                 gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = cardRewardGuid, reward_Type = Reward_Type.Card });
-                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold });
+                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold, rewardGold = 10 });
                 
                 // 카드 보상 데이터 세팅
                 int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
@@ -766,6 +767,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         int randomIndex = Random.Range(0, cardsByCharacter.Count);
                         Card shopCard = cardsByCharacter[randomIndex].CardDeepCopy(false);
                         shopCard.guid = System.Guid.NewGuid().ToString();
+                        shopCard.cardPrice = 1; // TODO : 카드 가격 설정. 임시로 가격 1원 설정
                         shopCards.Add(shopCard);
                         cardsByCharacter.RemoveAt(randomIndex);
                     }

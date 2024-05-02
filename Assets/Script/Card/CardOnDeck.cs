@@ -213,7 +213,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             }
         }
         // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
-        if(PopUpUIManager.instance.mercuriusPopUp.activeSelf){
+        if(PopUpUIManager.instance.mercuriusPopUp.activeSelf && !card.isSoldout){
             RequestCardPurchase();
             ChangeCardOnDeckSoldOutState();
             CardOnDeckClickAnimation();

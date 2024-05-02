@@ -9,6 +9,9 @@ using DG.Tweening;
 public partial class GamePlayerDeck : NetworkBehaviour
 {
 
+    [SyncVar (hook = nameof(OnChangePlayerGold))]
+    public int gold = 0; // 현재 플레이어의 골드
+
     [SyncVar (hook = nameof(OnChangeCurrentDeckCount))]
     public int currentDeckCount = 0; // 현재 플레이어의 카드 카운트
 
@@ -144,6 +147,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         if(M_SaveManager.instance.isSaveGame)
         {
             SetInitialIchi();
+            gold = 99;
             currentDeckCount = 5;
             maxShopCardCount = 6;
             maxRewardCardCount = 3;
@@ -164,6 +168,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         else
         {
             SetInitialIchi();
+            gold = 99;
             currentDeckCount = 5;
             maxShopCardCount = 6;
             maxRewardCardCount = 3;
@@ -562,6 +567,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
     {
         int index = rewards.FindIndex((reward) => reward.guid.Equals(guid) && reward.reward_Type == reward_Type);
         if(index != -1){
+            if(reward_Type == Reward_Type.Gold){
+                gold += rewards[index].rewardGold; // 골드 보상인 경우 플레이어 소유 골드에 추가
+            }
             rewards.RemoveAt(index);
         }
     }
@@ -655,6 +663,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
     
+    public void OnChangePlayerGold(int oldValue, int newValue)
+    {
+        Debug.Log("현재 골드 변경 :" + newValue);
+    }
+
     public void OnChangeCurrentDeckCount(int oldCount, int newCount)
     {
         Debug.Log("현재 댁 갯수 변경 :" + newCount);
