@@ -557,6 +557,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     }
                     else
                     {
+                        if(tar[1].isDying)
+                        {
+                            gpd.ReturnToCardOnHand(cardOnHand);
+                            gpd.currentIchi += totalCost;
+                            CardData.instance.isCardOperating = false;
+                            continue;
+                        }
+
                         yield return CardData.instance.RunCard(cardOnHand.card,tar);
 
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.HWAHAP))
