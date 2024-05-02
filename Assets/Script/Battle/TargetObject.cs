@@ -95,6 +95,8 @@ public class TargetObject : NetworkBehaviour
     public ErisMode erisMode = ErisMode.NORMAL;
     [SyncVar]
     public int currentApDoRequirement = 8;
+    [SyncVar]
+    public bool isDying = false;
 
     public string GetErisMode()
     {
@@ -455,6 +457,7 @@ public class TargetObject : NetworkBehaviour
             int remind = damage - defense;
             defense = 0;
             if(isServer && monster.HP <= remind){
+                isDying = true;
                 RpcMonsterDissolve();
             }
             monster.HP -= remind;
@@ -473,6 +476,7 @@ public class TargetObject : NetworkBehaviour
             int remind = damage - defense;
             defense = 0;
             if(isServer && monster.HP <= remind){
+                isDying = true;
                 RpcMonsterDissolve();
             }
             monster.HP -= remind;
