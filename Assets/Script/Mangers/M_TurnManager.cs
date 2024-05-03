@@ -438,8 +438,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public void BattleEnd()
     {   
-        // TODO : 전투 종료 혹은 이벤트방에서 개인별로 먼저 수행하고 넘어가는게 맞을지?, 팀원이 모두 수행을 끝낼때까지 기다리는게 맞을지?
-        
         // 전투 종료시 플레이어들의 캐릭터별 보상카드 랜덤추출하여 각 플레이어들에게 전달
         foreach(NetworkConnectionToClient conn in NetworkServer.connections.Values){
             PlayerInterface playerInterface = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>();
@@ -926,6 +924,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcShowBattleResultPopUp()
     {
+        // 전투 종료 음성 재생
+        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+        List<AudioClip> battleWinVoices = M_SoundManager.instance.GetCharacterVoiceClips(character, 68, 3);
+        AudioClip normalBattleVoice = battleWinVoices[Random.Range(0, battleWinVoices.Count)];
+        M_SoundManager.instance.PlayVoice(normalBattleVoice, normalBattleVoice.length);
+        // 전투 종료 팝업 호출
         PopUpUIManager.instance.HandleShowBattleResultPopUp();
     }
 

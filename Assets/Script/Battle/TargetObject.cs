@@ -684,9 +684,19 @@ public class TargetObject : NetworkBehaviour
         if(playerMaxHP != 0)
             selectedNamePlate.SetHPValue(playerHP,playerMaxHP,(int)transform.position.x);
         
-        if(isServer && playerHP == 0)
-        {
-            StartCoroutine(PlayerDeathProcess());
+        if(newVal == 0){
+            // 플레이어아바타, 철귀, UI 오브젝트 비활성화
+            ironDemon.SetActive(false);
+            avatar.SetActive(false);
+            targetObjectUI.SetActive(false);
+            // 플레이어 사망 음성 재생후 오브젝트 제거 프로세스 수행
+            List<AudioClip> playerDeathVoices = M_SoundManager.instance.GetCharacterVoiceClips(player.character, 62, 3);
+            AudioClip playerDeathVoice = playerDeathVoices[Random.Range(0, playerDeathVoices.Count)];
+            M_SoundManager.instance.PlayVoice(playerDeathVoice, playerDeathVoice.length, false, () => {
+                if(isServer){
+                    StartCoroutine(PlayerDeathProcess());
+                }
+            });
         }
     }
 
