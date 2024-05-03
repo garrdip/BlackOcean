@@ -817,7 +817,16 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 .Text("맵에 보스가 출현 했습니다.")
                 .Show();
             AudioClip audioClip_map = M_SoundManager.instance.bgmClips[BGM_TYPE.Map].Find((audioClip) => audioClip.name.Equals("Stage_1_Map_Boss_Spawn"));
-            M_SoundManager.instance.PlayBGM(audioClip_map, MusicTransition.CrossFade, 2f);
+            M_SoundManager.instance.PlayBGM(audioClip_map, MusicTransition.CrossFade, 2f); // 맵 보스 배경음 재생
+            List<AudioClip> clips = new List<AudioClip>();
+            for(int i=37; i<43; i++){
+                AudioClip audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.MoonGirl][i];
+                clips.Add(audioClip);
+            }
+            AudioClip mapBossVoice = clips[Random.Range(0, clips.Count)];
+            M_SoundManager.instance.StopAllVoice(); // 모든 음성 재생 중지
+            M_SoundManager.instance.PlayVoice(mapBossVoice, mapBossVoice.length); // 맵 보스 출현 나레이션 음성 재생(feat. MoonGirl)
+
             MapUI.instance.SetMapInfoStateMapBossApperance();
         }
     }
