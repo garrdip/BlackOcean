@@ -674,30 +674,63 @@ public class TargetObject : NetworkBehaviour
             if(player.netIdentity == NetworkClient.connection.identity){
                 player.HP = newVal;
             }
-            if(oldVal > 0){
-                // 캐릭터 피격음 재생
-                List<AudioClip> clips = M_SoundManager.instance.GetCharacterVoiceClips(player.character, 58, 3);
-                AudioClip hitSound = clips[Random.Range(0, clips.Count)];
-                M_SoundManager.instance.PlayVoice(hitSound, hitSound.length);
-            }
         }
         if(playerMaxHP != 0)
             selectedNamePlate.SetHPValue(playerHP,playerMaxHP,(int)transform.position.x);
         
-        if(newVal == 0){
-            // 플레이어아바타, 철귀, UI 오브젝트 비활성화
-            ironDemon.SetActive(false);
-            avatar.SetActive(false);
-            targetObjectUI.SetActive(false);
-            // 플레이어 사망 음성 재생후 오브젝트 제거 프로세스 수행
-            List<AudioClip> playerDeathVoices = M_SoundManager.instance.GetCharacterVoiceClips(player.character, 62, 3);
-            AudioClip playerDeathVoice = playerDeathVoices[Random.Range(0, playerDeathVoices.Count)];
-            M_SoundManager.instance.PlayVoice(playerDeathVoice, playerDeathVoice.length, false, () => {
-                if(isServer){
-                    StartCoroutine(PlayerDeathProcess());
-                }
-            });
+        if(oldVal > 0 && newVal > 0){ // 체력이 0 이상이면, 캐릭터 피격음성 재생
+           PlayCharaterHitVoice();
+        }else if(newVal == 0){ // 체력이 0이면 캐릭터 사망 음성 재생
+            if(isServer){
+                StartCoroutine(PlayerDeathProcess());
+            }
+            PlayChararcterDeathVoice();
         }
+    }
+
+    // 캐릭터별 피격 음성 재생
+    private void PlayCharaterHitVoice()
+    {
+        AudioClip hitVoice = null;
+        switch(player.character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> clips = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 58, 4);
+                hitVoice = clips[Random.Range(0, clips.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 65, 9);
+                hitVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 99, 6);
+                hitVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(hitVoice, hitVoice.length);
+    }
+
+    // 캐릭터별 사망 음성 재생
+    private void PlayChararcterDeathVoice()
+    {
+        AudioClip playerDeathVoice = null;
+        switch(player.character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 62, 3);
+                playerDeathVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 74, 3);
+                playerDeathVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 112, 3);
+                foreach(AudioClip voice in erisVoices){
+                    Debug.Log(voice.name);
+                }
+                playerDeathVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(playerDeathVoice, playerDeathVoice.length);
     }
 
     IEnumerator PlayerDeathProcess()

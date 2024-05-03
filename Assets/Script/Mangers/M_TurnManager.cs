@@ -926,9 +926,23 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         // 전투 종료 음성 재생
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
-        List<AudioClip> battleWinVoices = M_SoundManager.instance.GetCharacterVoiceClips(character, 68, 3);
-        AudioClip normalBattleVoice = battleWinVoices[Random.Range(0, battleWinVoices.Count)];
-        M_SoundManager.instance.PlayVoice(normalBattleVoice, normalBattleVoice.length);
+        switch(character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> battleWinVoicesDanhyang = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 68, 3);
+                AudioClip audioClipDanhyang = battleWinVoicesDanhyang[Random.Range(0, battleWinVoicesDanhyang.Count)];
+                M_SoundManager.instance.PlayVoice(audioClipDanhyang, audioClipDanhyang.length);
+                break;
+            case Character.GEORK:
+                List<AudioClip> battleWinVoicesGeork = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 80, 3);
+                AudioClip audioClipGeork = battleWinVoicesGeork[Random.Range(0, battleWinVoicesGeork.Count)];
+                M_SoundManager.instance.PlayVoice(audioClipGeork, audioClipGeork.length);
+                break;
+            case Character.ERIS:
+                List<AudioClip> battleWinVoicesEris = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 123, 3);
+                AudioClip audioClipEris = battleWinVoicesEris[Random.Range(0, battleWinVoicesEris.Count)];
+                M_SoundManager.instance.PlayVoice(audioClipEris, audioClipEris.length);
+                break;
+        }
         // 전투 종료 팝업 호출
         PopUpUIManager.instance.HandleShowBattleResultPopUp();
     }
@@ -1063,6 +1077,11 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .Show();
                 AudioClip audioClip_card_hop = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Card_Shop"));
                 M_SoundManager.instance.PlayBGM(audioClip_card_hop, MusicTransition.Swift, 1.5f);
+
+                Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+                List<AudioClip> meetCardNpcVoices = M_SoundManager.instance.GetCharacterVoiceClips(character, 68, 3);
+                AudioClip meetCardNpcVoice = meetCardNpcVoices[Random.Range(0, meetCardNpcVoices.Count)];
+                M_SoundManager.instance.PlayVoice(meetCardNpcVoice, meetCardNpcVoice.length);
                 break;
             case RoomType.ITEM_NPC:
                 M_MessageManager.instance
