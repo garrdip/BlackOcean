@@ -724,9 +724,6 @@ public class TargetObject : NetworkBehaviour
                 break;
             case Character.ERIS:
                 List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 112, 3);
-                foreach(AudioClip voice in erisVoices){
-                    Debug.Log(voice.name);
-                }
                 playerDeathVoice = erisVoices[Random.Range(0, erisVoices.Count)];
                 break;
         }

@@ -11,6 +11,7 @@ public class NPC_Mercurius : SpawnedMonster
 {
     public MercuriusPopUp mercuriusPopUp;
     public List<GameObject> shopCardObjectList = new List<GameObject>();
+    private IEnumerator minionVoiceCoroutine;
     private SkeletonAnimation toddAnim;
     private SkeletonAnimation backAnim;
     private SkeletonAnimation minion0Anim;
@@ -51,6 +52,7 @@ public class NPC_Mercurius : SpawnedMonster
         toddAnim = transform.GetChild(5).GetComponent<SkeletonAnimation>();
         StartCoroutine(ToddAnimationBlend());
         AddEventTrigger();
+        minionVoiceCoroutine = PlayMinionsVoice();
     }
 
     // NPC_Mercurius 각 클라이언트에 생성될 때 현재 플레이어의 카드 데이터에서 6개의 랜덤 카드데이터를 추출하여 팝업에 6개의 상점카드 세팅
@@ -58,25 +60,14 @@ public class NPC_Mercurius : SpawnedMonster
     {
         if(isOrigin && mercuriusPopUp != null){
             InitShopCardByCharacter();
-            PlayToddVoice();
-            StartCoroutine(PlayMinionsVoice());
+            StartCoroutine(minionVoiceCoroutine);
         }
     }
-
-    // Todd 초기 음성 재생
-    private void PlayToddVoice()
+    
+    // NPC_Mercurius 생성 10초후에 5초마다 미니언 랜덤 음성 재생
+    private IEnumerator PlayMinionsVoice()
     {
-        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("thoth")); // Todd 음성 리스트 추출
-        AudioClip firstVoice = clips[0];
-        AudioClip secondVoice = clips[1];
-        M_SoundManager.instance.PlayVoice(firstVoice, firstVoice.length, false, () => {
-            M_SoundManager.instance.PlayVoice(secondVoice, secondVoice.length);
-        });
-    }
-
-    // 5초마다 미니언 랜덤 음성 재생
-    IEnumerator PlayMinionsVoice()
-    {
+        yield return new WaitForSeconds(10f);
         List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("minons"));
         while(gameObject.activeSelf){
             int randomIndex = Random.Range(0, clips.Count);
@@ -102,7 +93,7 @@ public class NPC_Mercurius : SpawnedMonster
                 shopCardObjectList.RemoveAt(i);
             }
         }
-        StopCoroutine(PlayMinionsVoice());
+        StopCoroutine(minionVoiceCoroutine);
     }
 
     public void OnPointerEnterMercurius(PointerEventData eventData)

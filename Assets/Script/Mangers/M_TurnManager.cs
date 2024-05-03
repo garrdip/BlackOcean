@@ -167,6 +167,118 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         rewardCardObjects.Clear();
     }
 
+    // NPC별로 음성 리스트 추출해서 랜덤재생
+    private void PlayNPCVoice(VOICE_TYPE voice_Type, System.Action callback = null)
+    {
+        List<AudioClip> clips = M_SoundManager.instance.voiceClips[voice_Type]; // 해당 NPC 음성 리스트 추출
+        int randomIndex = Random.Range(0, clips.Count);
+        AudioClip clipToPlay = clips[randomIndex];
+        M_SoundManager.instance.PlayVoice(clipToPlay, clipToPlay.length, false, () => {
+            callback();
+        });
+    }
+
+    // Todd 초기 음성 재생
+    private void PlayToddVoice(System.Action callback = null)
+    {
+        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("thoth")); // Todd 음성 리스트 추출
+        AudioClip firstVoice = clips[0];
+        AudioClip secondVoice = clips[1];
+        M_SoundManager.instance.PlayVoice(firstVoice, firstVoice.length, false, () => {
+            M_SoundManager.instance.PlayVoice(secondVoice, secondVoice.length, false, () =>{
+                callback();
+            });
+        });
+    }
+
+    // 카드 상인에 대한 캐릭터들 상호작용 음성 재생
+    private void PlayPlayerVoiceOnCardShop()
+    {
+        AudioClip meetCardNpcVoice = null;
+        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+        switch(character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 77, 3);
+                meetCardNpcVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 89, 3);
+                meetCardNpcVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 135, 3);
+                meetCardNpcVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(meetCardNpcVoice, meetCardNpcVoice.length);
+    }
+
+    // 아이템 상인에 대한 캐릭터들 상호작용 음성 재생
+    private void PlayPlayerVoiceOnItemShop()
+    {
+        AudioClip meetItemNpcVoice = null;
+        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+        switch(character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 80, 3);
+                meetItemNpcVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 92, 3);
+                meetItemNpcVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 138, 3);
+                meetItemNpcVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(meetItemNpcVoice, meetItemNpcVoice.length);
+    }
+
+    // 전초기지 NPC에 대한 캐릭터들 상호작용 음성 재생
+    private void PlayPlayerVoiceOnBaseCamp()
+    {
+        // 전초기지 방문시 캐릭터들 음성 재생
+        AudioClip baseCampVoice = null;
+        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+        switch(character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 83, 3);
+                baseCampVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 95, 3);
+                baseCampVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 141, 3);
+                baseCampVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(baseCampVoice, baseCampVoice.length);
+    }
+
+    // 이벤트 대한 캐릭터들 상호작용 음성 재생
+    private void PlayPlayerVoiceOnEvent(bool isPositive)
+    {
+        AudioClip eventVoice = null;
+        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+        switch(character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, isPositive ? 86 : 92, 3);
+                eventVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, isPositive ? 98 : 104, 3);
+                eventVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, isPositive ? 144 : 150, 3);
+                eventVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(eventVoice, eventVoice.length);
+    }
 
     // -------------------------------------------------------------------- Command Method ---------------------------------------------------------------------//
 
@@ -1042,17 +1154,19 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         switch(roomType)
         {
             case RoomType.EVENT:
+                bool isPositive = Random.Range(0, 2) == 0 ? true : false;
                 M_MessageManager.instance
                     .Position(ToastPosition.Top)
                     .FadeInTime(2.5f)
                     .FadeOutTime(1.5f)
                     .MessageBoxColor(Color.yellow)
                     .TextColor(Color.white)
-                    .Text("이벤트")
+                    .Text(isPositive ? "긍정적 이벤트" : "부정적 이벤트")
                     .Show();
                 string audioName = Random.Range(0, 2) == 0 ? "Positive_Event" : "Negative_Event"; 
                 AudioClip audioClip_event = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals(audioName));
                 M_SoundManager.instance.PlayBGM(audioClip_event, MusicTransition.Swift, 1.5f);
+                PlayPlayerVoiceOnEvent(isPositive);
                 break;
             case RoomType.CAMP:
                 M_MessageManager.instance
@@ -1063,8 +1177,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .TextColor(Color.white)
                     .Text("전초기지")
                     .Show();
+                // 전초기지 배경음 재생
                 AudioClip audioClip_base_camp = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Base_Camp"));
                 M_SoundManager.instance.PlayBGM(audioClip_base_camp, MusicTransition.Swift, 1.5f);
+                // RyuJinSol과 Sofia 중 랜덤 -> 플레이어 순서로 음성 재생
+                VOICE_TYPE baseCampVoiceType = Random.Range(0, 2) == 0 ? VOICE_TYPE.RyuJinSol : VOICE_TYPE.Sofia;
+                PlayNPCVoice(baseCampVoiceType, () => {
+                    PlayPlayerVoiceOnBaseCamp();
+                });
                 break;
             case RoomType.CARD_NPC:
                 M_MessageManager.instance
@@ -1075,13 +1195,13 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .TextColor(Color.white)
                     .Text("상점 : 카드 상인 NPC")
                     .Show();
+                // 카드 상점 배경음 재생                    
                 AudioClip audioClip_card_hop = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Card_Shop"));
                 M_SoundManager.instance.PlayBGM(audioClip_card_hop, MusicTransition.Swift, 1.5f);
-
-                Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
-                List<AudioClip> meetCardNpcVoices = M_SoundManager.instance.GetCharacterVoiceClips(character, 68, 3);
-                AudioClip meetCardNpcVoice = meetCardNpcVoices[Random.Range(0, meetCardNpcVoices.Count)];
-                M_SoundManager.instance.PlayVoice(meetCardNpcVoice, meetCardNpcVoice.length);
+                // Todd -> 플레이어 -> 미니언즈 순서로 음성 재생
+                PlayToddVoice(() => {
+                    PlayPlayerVoiceOnCardShop();
+                });
                 break;
             case RoomType.ITEM_NPC:
                 M_MessageManager.instance
@@ -1091,9 +1211,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .MessageBoxColor(Color.blue)
                     .TextColor(Color.white)
                     .Text("상점 : 아이템 상인 NPC")
-                    .Show();
+                    .Show();                
+                // 아이템 상점 배경음 재생
                 AudioClip audioClip_item_hop = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Item_Shop"));
-                M_SoundManager.instance.PlayBGM(audioClip_item_hop, MusicTransition.Swift, 1.5f);
+                M_SoundManager.instance.PlayBGM(audioClip_item_hop, MusicTransition.Swift, 1.5f);            
+                // ShadowMan -> 플레이어 순서로 음성 재생
+                PlayNPCVoice(VOICE_TYPE.ShadowMan, () => {
+                    PlayPlayerVoiceOnItemShop();
+                });
                 break;
         }
     }
