@@ -1123,19 +1123,19 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 // 캐릭터별 일반 몬스터 전투 음성대화 재생
                 switch(character){
                     case Character.HONGDANHYANG:
-                        List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 3, 3);
-                        AudioClip danhyangEliteBattleVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
-                        M_SoundManager.instance.PlayVoice(danhyangEliteBattleVoice, danhyangEliteBattleVoice.length);
+                        List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 98, 3);
+                        AudioClip danhyangNormalBattleVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                        M_SoundManager.instance.PlayVoice(danhyangNormalBattleVoice, danhyangNormalBattleVoice.length);
                         break;
                     case Character.GEORK:
-                        List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 3, 3);
-                        AudioClip georkEliteBattleVoice = georkVoices[Random.Range(0, georkVoices.Count)];
-                        M_SoundManager.instance.PlayVoice(georkEliteBattleVoice, georkEliteBattleVoice.length);
+                        List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 110, 3);
+                        AudioClip georkNormalBattleVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                        M_SoundManager.instance.PlayVoice(georkNormalBattleVoice, georkNormalBattleVoice.length);
                         break;
                     case Character.ERIS:
-                        List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 4, 3);
-                        AudioClip erisEliteBattleVoice = erisVoices[Random.Range(0, erisVoices.Count)];
-                        M_SoundManager.instance.PlayVoice(erisEliteBattleVoice, erisEliteBattleVoice.length);
+                        List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 156, 3);
+                        AudioClip erisNormalBattleVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                        M_SoundManager.instance.PlayVoice(erisNormalBattleVoice, erisNormalBattleVoice.length);
                         break;
                 }
                 break;
