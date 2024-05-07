@@ -230,7 +230,7 @@ public class SpawnedMonster : NetworkBehaviour
         }
     }
 
-    public void OnChangedHpValue(int oldHpValue, int newHpValue)
+    public virtual void OnChangedHpValue(int oldHpValue, int newHpValue)
     {
         if(transform.parent != null){
             TargetObject targetObject = transform.parent.GetComponent<TargetObject>();

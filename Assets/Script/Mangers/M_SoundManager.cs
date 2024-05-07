@@ -288,49 +288,15 @@ public class M_SoundManager : MonoBehaviour {
         }
     }
 
-    // 선택한 캐릭터의 음성파일 목록 count 만큼 조회
-    public List<AudioClip> GetCharacterVoiceClips(Character character, int startIndex, int count)
+    // VOICE_TYPE에 따라 음성파일 목록 count 만큼 조회
+    public List<AudioClip> GetVoiceClipsByVoiceType(VOICE_TYPE voice_Type, int startIndex, int count)
     {
         List<AudioClip> clips = new List<AudioClip>();
-        switch(character){
-            case Character.GEORK:
-                for(int i=startIndex; i<(startIndex + count); i++){
-                    AudioClip audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.Geork][i];
-                    clips.Add(audioClip);
-                }
-                break;
-            case Character.ERIS:
-                for(int i=startIndex; i<(startIndex + count); i++){
-                    AudioClip audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.Eris][i];
-                    clips.Add(audioClip);
-                }
-                break;
-            case Character.HONGDANHYANG:
-                for(int i=startIndex; i<(startIndex + count); i++){
-                    AudioClip audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][i];
-                    clips.Add(audioClip);
-                }
-                break;
+        for(int i=startIndex; i<(startIndex + count); i++){
+            AudioClip audioClip = M_SoundManager.instance.voiceClips[voice_Type][i];
+            clips.Add(audioClip);
         }
         return clips;
-    }
-
-    // 선택한 캐릭터의 음성파일 단일 조회
-    public AudioClip GetCharacterVoiceClip(Character character, int index)
-    {
-        AudioClip audioClip = null;
-        switch(character){
-            case Character.GEORK:
-                audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.Geork][index];
-                break;
-            case Character.ERIS:
-                audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.Eris][index];
-                break;
-            case Character.HONGDANHYANG:
-                audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][index];
-                break;
-        }
-        return audioClip;
     }
 
     /// <summary>

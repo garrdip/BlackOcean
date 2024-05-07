@@ -174,7 +174,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         int randomIndex = Random.Range(0, clips.Count);
         AudioClip clipToPlay = clips[randomIndex];
         M_SoundManager.instance.PlayVoice(clipToPlay, clipToPlay.length, false, () => {
-            callback();
+            if(callback != null){
+                callback();
+            }
         });
     }
 
@@ -186,7 +188,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         AudioClip secondVoice = clips[1];
         M_SoundManager.instance.PlayVoice(firstVoice, firstVoice.length, false, () => {
             M_SoundManager.instance.PlayVoice(secondVoice, secondVoice.length, false, () =>{
-                callback();
+                if(callback != null){
+                    callback();
+                }
             });
         });
     }
@@ -198,15 +202,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
         switch(character){
             case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 77, 3);
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 77, 3);
                 meetCardNpcVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
                 break;
             case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 89, 3);
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 89, 3);
                 meetCardNpcVoice = georkVoices[Random.Range(0, georkVoices.Count)];
                 break;
             case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 135, 3);
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 135, 3);
                 meetCardNpcVoice = erisVoices[Random.Range(0, erisVoices.Count)];
                 break;
         }
@@ -220,15 +224,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
         switch(character){
             case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 80, 3);
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 80, 3);
                 meetItemNpcVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
                 break;
             case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 92, 3);
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 92, 3);
                 meetItemNpcVoice = georkVoices[Random.Range(0, georkVoices.Count)];
                 break;
             case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 138, 3);
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 138, 3);
                 meetItemNpcVoice = erisVoices[Random.Range(0, erisVoices.Count)];
                 break;
         }
@@ -243,15 +247,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
         switch(character){
             case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 83, 3);
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 83, 3);
                 baseCampVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
                 break;
             case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 95, 3);
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 95, 3);
                 baseCampVoice = georkVoices[Random.Range(0, georkVoices.Count)];
                 break;
             case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 141, 3);
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 141, 3);
                 baseCampVoice = erisVoices[Random.Range(0, erisVoices.Count)];
                 break;
         }
@@ -265,15 +269,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
         switch(character){
             case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, isPositive ? 86 : 92, 3);
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, isPositive ? 86 : 92, 3);
                 eventVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
                 break;
             case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, isPositive ? 98 : 104, 3);
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, isPositive ? 98 : 104, 3);
                 eventVoice = georkVoices[Random.Range(0, georkVoices.Count)];
                 break;
             case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, isPositive ? 144 : 150, 3);
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, isPositive ? 144 : 150, 3);
                 eventVoice = erisVoices[Random.Range(0, erisVoices.Count)];
                 break;
         }
@@ -1040,17 +1044,17 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
         switch(character){
             case Character.HONGDANHYANG:
-                List<AudioClip> battleWinVoicesDanhyang = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 68, 3);
+                List<AudioClip> battleWinVoicesDanhyang = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 68, 3);
                 AudioClip audioClipDanhyang = battleWinVoicesDanhyang[Random.Range(0, battleWinVoicesDanhyang.Count)];
                 M_SoundManager.instance.PlayVoice(audioClipDanhyang, audioClipDanhyang.length);
                 break;
             case Character.GEORK:
-                List<AudioClip> battleWinVoicesGeork = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 80, 3);
+                List<AudioClip> battleWinVoicesGeork = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 80, 3);
                 AudioClip audioClipGeork = battleWinVoicesGeork[Random.Range(0, battleWinVoicesGeork.Count)];
                 M_SoundManager.instance.PlayVoice(audioClipGeork, audioClipGeork.length);
                 break;
             case Character.ERIS:
-                List<AudioClip> battleWinVoicesEris = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 123, 3);
+                List<AudioClip> battleWinVoicesEris = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 123, 3);
                 AudioClip audioClipEris = battleWinVoicesEris[Random.Range(0, battleWinVoicesEris.Count)];
                 M_SoundManager.instance.PlayVoice(audioClipEris, audioClipEris.length);
                 break;
@@ -1089,8 +1093,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             .TextColor(Color.white)
             .Text("전투 : 보스")
             .Show();
-        AudioClip audioClip = M_SoundManager.instance.bgmClips[BGM_TYPE.Boss].Find((audioClip) => audioClip.name.Equals("Boss_Momos"));
-        M_SoundManager.instance.PlayBGM(audioClip, MusicTransition.Swift, 1.5f);
     }
 
     // 일반 몬스터 혹은 엘리트전 시작 수신 이벤트
@@ -1118,10 +1120,24 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 AudioClip audioClip_monster_n = M_SoundManager.instance.bgmClips[BGM_TYPE.Battle].Find((audioClip) => audioClip.name.Equals(audioName));
                 M_SoundManager.instance.PlayBGM(audioClip_monster_n, MusicTransition.Swift, 1.5f);
 
-                // 캐릭터 성우 음성 재생
-                List<AudioClip> normalBattleClips = M_SoundManager.instance.GetCharacterVoiceClips(character, 3, 3);
-                AudioClip normalBattleVoice = normalBattleClips[Random.Range(0, normalBattleClips.Count)];
-                M_SoundManager.instance.PlayVoice(normalBattleVoice, normalBattleVoice.length);
+                // 캐릭터별 일반 몬스터 전투 음성대화 재생
+                switch(character){
+                    case Character.HONGDANHYANG:
+                        List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 3, 3);
+                        AudioClip danhyangEliteBattleVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                        M_SoundManager.instance.PlayVoice(danhyangEliteBattleVoice, danhyangEliteBattleVoice.length);
+                        break;
+                    case Character.GEORK:
+                        List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 3, 3);
+                        AudioClip georkEliteBattleVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                        M_SoundManager.instance.PlayVoice(georkEliteBattleVoice, georkEliteBattleVoice.length);
+                        break;
+                    case Character.ERIS:
+                        List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 4, 3);
+                        AudioClip erisEliteBattleVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                        M_SoundManager.instance.PlayVoice(erisEliteBattleVoice, erisEliteBattleVoice.length);
+                        break;
+                }
                 break;
             case RoomType.ELITE:
                 // 토스트 메시지 표시
@@ -1138,10 +1154,24 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 AudioClip audioClip_monster_e = M_SoundManager.instance.bgmClips[BGM_TYPE.Battle].Find((audioClip) => audioClip.name.Equals("Monster_Battle_E"));
                 M_SoundManager.instance.PlayBGM(audioClip_monster_e, MusicTransition.Swift, 1.5f);
 
-                // 캐릭터 성우 음성 재생
-                List<AudioClip> eliteBattleClips = M_SoundManager.instance.GetCharacterVoiceClips(character, 12, 3);
-                AudioClip eliteBattleVoice = eliteBattleClips[Random.Range(0, eliteBattleClips.Count)];
-                M_SoundManager.instance.PlayVoice(eliteBattleVoice, eliteBattleVoice.length);
+                // 캐릭터별 엘리트 몬스터 전투 음성대화 재생
+                switch(character){
+                    case Character.HONGDANHYANG:
+                        List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 12, 3);
+                        AudioClip danhyangEliteBattleVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                        M_SoundManager.instance.PlayVoice(danhyangEliteBattleVoice, danhyangEliteBattleVoice.length);
+                        break;
+                    case Character.GEORK:
+                        List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 12, 3);
+                        AudioClip georkEliteBattleVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                        M_SoundManager.instance.PlayVoice(georkEliteBattleVoice, georkEliteBattleVoice.length);
+                        break;
+                    case Character.ERIS:
+                        List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 13, 3);
+                        AudioClip erisEliteBattleVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                        M_SoundManager.instance.PlayVoice(erisEliteBattleVoice, erisEliteBattleVoice.length);
+                        break;
+                }
                 break;
         }
     }

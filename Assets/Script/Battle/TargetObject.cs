@@ -327,7 +327,27 @@ public class TargetObject : NetworkBehaviour
     // 캐릭터별 음성 생성 및 팝업창 텍스트 세팅
     private void PlayCharacterRequireCostVoice(Character character, int startClipIndex, int numberOfClips, Dictionary<string, string> constDict)
     {
-        List<AudioClip> clips = M_SoundManager.instance.GetCharacterVoiceClips(character, startClipIndex, numberOfClips);
+        List<AudioClip> clips = new List<AudioClip>();
+        switch(character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, startClipIndex, numberOfClips);
+                foreach(AudioClip audioClip in danhyangVoices){
+                    clips.Add(audioClip);
+                }
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, startClipIndex, numberOfClips);
+                foreach(AudioClip audioClip in georkVoices){
+                    clips.Add(audioClip);
+                }
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, startClipIndex, numberOfClips);
+                foreach(AudioClip audioClip in erisVoices){
+                    clips.Add(audioClip);
+                }
+            break;
+        }
         if(clips.Count > 0){
             int randomIndex = Random.Range(0, clips.Count);
             AudioClip clipToPlay = clips[randomIndex];
@@ -694,15 +714,15 @@ public class TargetObject : NetworkBehaviour
         AudioClip hitVoice = null;
         switch(player.character){
             case Character.HONGDANHYANG:
-                List<AudioClip> clips = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 58, 4);
+                List<AudioClip> clips = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 58, 4);
                 hitVoice = clips[Random.Range(0, clips.Count)];
                 break;
             case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 65, 9);
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 65, 9);
                 hitVoice = georkVoices[Random.Range(0, georkVoices.Count)];
                 break;
             case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 99, 6);
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 99, 6);
                 hitVoice = erisVoices[Random.Range(0, erisVoices.Count)];
                 break;
         }
@@ -715,15 +735,15 @@ public class TargetObject : NetworkBehaviour
         AudioClip playerDeathVoice = null;
         switch(player.character){
             case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.HONGDANHYANG, 62, 3);
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 62, 3);
                 playerDeathVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
                 break;
             case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.GEORK, 74, 3);
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 74, 3);
                 playerDeathVoice = georkVoices[Random.Range(0, georkVoices.Count)];
                 break;
             case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetCharacterVoiceClips(Character.ERIS, 112, 3);
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 112, 3);
                 playerDeathVoice = erisVoices[Random.Range(0, erisVoices.Count)];
                 break;
         }

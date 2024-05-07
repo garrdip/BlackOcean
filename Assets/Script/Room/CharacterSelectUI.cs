@@ -39,9 +39,23 @@ public class CharacterSelectUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     // 캐릭터 선택 음성 랜덤 재생
     private void PlaySelectdCharacterVoice(Character character)
     {
-        List<AudioClip> clips = M_SoundManager.instance.GetCharacterVoiceClips(character, 0, 3);
-        AudioClip characterSelecteVoice = clips[Random.Range(0, clips.Count)];
         M_SoundManager.instance.StopAllVoice();
-        M_SoundManager.instance.PlayVoice(characterSelecteVoice, characterSelecteVoice.length);
+        switch(character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 0, 3);
+                AudioClip danhyangEliteBattleVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                M_SoundManager.instance.PlayVoice(danhyangEliteBattleVoice, danhyangEliteBattleVoice.length);
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 0, 3);
+                AudioClip georkEliteBattleVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                M_SoundManager.instance.PlayVoice(georkEliteBattleVoice, georkEliteBattleVoice.length);
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 0, 4);
+                AudioClip erisEliteBattleVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                M_SoundManager.instance.PlayVoice(erisEliteBattleVoice, erisEliteBattleVoice.length);
+                break;
+        }
     }
 }
