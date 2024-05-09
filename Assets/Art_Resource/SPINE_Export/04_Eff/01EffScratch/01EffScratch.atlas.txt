@@ -1,4 +1,4 @@
-01EffSeratch.png
+01EffScratch.png
 size:791,519
 filter:Linear,Linear
 pma:true

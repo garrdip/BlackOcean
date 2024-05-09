@@ -1,6 +1,6 @@
 {
 "skeleton": {
-	"hash": "ZHy/btDhcYc",
+	"hash": "kt1SilsvPCI",
 	"spine": "4.2.20",
 	"x": -235.85,
 	"y": 48.85,
@@ -114,7 +114,7 @@
 	"01EffSeratchEnd": {}
 },
 "animations": {
-	"01EffSeratch": {
+	"01EffScratch": {
 		"slots": {
 			"TE 5": {
 				"rgba": [

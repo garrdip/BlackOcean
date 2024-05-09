@@ -714,8 +714,8 @@ public class TargetObject : NetworkBehaviour
         AudioClip hitVoice = null;
         switch(player.character){
             case Character.HONGDANHYANG:
-                List<AudioClip> clips = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 58, 4);
-                hitVoice = clips[Random.Range(0, clips.Count)];
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 58, 4);
+                hitVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
                 break;
             case Character.GEORK:
                 List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 65, 9);

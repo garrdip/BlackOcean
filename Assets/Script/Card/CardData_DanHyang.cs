@@ -105,11 +105,13 @@ public partial class CardData : SingletonD<CardData>
         tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
-        if(tar[0].buffs.FindIndex(buff => buff.type == BuffType.IMANGRY) != -1) // 화가 나는구나 2배 뎀쥐
+        if(tar[0].buffs.FindIndex(buff => buff.type == BuffType.IMANGRY) != -1){ // 화가 나는구나 2배 뎀쥐
+            M_EffectManager.instance.RpcEffectClaw(tar[1].transform.position);
             yield return GeneralIronDemonAttack(tar[0], tar[1], 12); // 철귀 공격
-        else
+        }else{
+            M_EffectManager.instance.RpcEffectClaw(tar[1].transform.position);
             yield return GeneralIronDemonAttack(tar[0], tar[1], 6); // 철귀 공격
-        
+        }
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
 
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
@@ -134,11 +136,13 @@ public partial class CardData : SingletonD<CardData>
         tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
-        if(tar[0].buffs.FindIndex(buff => buff.type == BuffType.IMANGRY) != -1) // 화가 나는구나 2배 뎀쥐
+        if(tar[0].buffs.FindIndex(buff => buff.type == BuffType.IMANGRY) != -1){ // 화가 나는구나 2배 뎀쥐
+            M_EffectManager.instance.RpcEffectEatter(tar[1].transform.position);
             yield return GeneralIronDemonAttack(tar[0], tar[1], 20); // 철귀 공격
-        else
+        }else{
+            M_EffectManager.instance.RpcEffectEatter(tar[1].transform.position);
             yield return GeneralIronDemonAttack(tar[0], tar[1], 10); // 철귀 공격
-
+        }
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
 
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
@@ -304,11 +308,17 @@ public partial class CardData : SingletonD<CardData>
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
         M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]); // 철귀 공격 모션 시작
+
+        M_EffectManager.instance.RpcEffectEatter(tar[1].transform.position);
         yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
         StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
         GeneralSingleAttack(tar[0],tar[1],4); // 실제 데미지 적용시점
+
+        M_EffectManager.instance.RpcEffectEatter(tar[1].transform.position);
         yield return new WaitForSeconds(0.1f); // 공격모션 끝남
         GeneralSingleAttack(tar[0],tar[1],4); // 실제 데미지 적용시점
+
+        M_EffectManager.instance.RpcEffectEatter(tar[1].transform.position);
         yield return new WaitForSeconds(0.1f); // 공격모션 끝남
         GeneralSingleAttack(tar[0],tar[1],4); // 실제 데미지 적용시점
         yield return new WaitForSeconds(0.1f); // 공격모션 끝남

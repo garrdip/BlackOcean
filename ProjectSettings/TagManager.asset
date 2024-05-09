@@ -56,7 +56,7 @@ TagManager:
   - name: TargetObjectUI
     uniqueID: 585850671
     locked: 0
-  - name: FloatingDamage
+  - name: Effect
     uniqueID: 1072884021
     locked: 0
   - name: CardOnHand
