@@ -2043,8 +2043,8 @@ MonoBehaviour:
   ironDemonData:
   - {fileID: 11400000, guid: a2473eec38dcb134ca7b2bba3cb9b70d, type: 2}
   - {fileID: 11400000, guid: d89e29a69d7259e4ca9f9240acda9272, type: 2}
-  - {fileID: 11400000, guid: 697dfd2b3effdec4fbabe0ebe88e4627, type: 2}
-  - {fileID: 11400000, guid: cb68462dedc7b334eb79c97fe59502f6, type: 2}
+  - {fileID: 11400000, guid: be5743c65f97728458fd6394f311e0d5, type: 2}
+  - {fileID: 11400000, guid: 926f63ac2660e3c40bf4f42f8cba467d, type: 2}
   playerHP: 0
   playerMaxHP: 0
   conn: {fileID: 0}
@@ -2069,8 +2069,10 @@ MonoBehaviour:
   isTransformed: 0
   erisMode: 0
   currentApDoRequirement: 8
+  isDying: 0
   usingGOHENG: 0
   usedGOHENG: 
+  initialUseEffectIndex: 
 --- !u!114 &457687340931919250
 MonoBehaviour:
   m_ObjectHideFlags: 0

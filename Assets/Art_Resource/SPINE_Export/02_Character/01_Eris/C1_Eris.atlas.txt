@@ -1,0 +1,596 @@
+C1_Eris.png
+size:2995,2863
+filter:Linear,Linear
+pma:true
+ArmLeftBB
+bounds:812,1876,89,41
+offsets:44,43,174,127
+ArmLeftBT
+bounds:1156,470,76,124
+offsets:43,37,158,202
+ArmLeftTB
+bounds:2924,2130,67,116
+offsets:45,37,155,194
+ArmLeftTT
+bounds:1963,920,94,108
+offsets:38,37,171,187
+ArmRightB
+bounds:2491,1049,76,58
+offsets:44,44,163,146
+ArmRightT
+bounds:650,1869,156,79
+offsets:40,41,237,162
+Body
+bounds:408,1175,117,203
+offsets:41,40,199,284
+BodyCenterBack
+bounds:2,2317,35,58
+offsets:50,50,135,158
+BodyCenterRing
+bounds:2,2837,30,24
+offsets:43,43,114,110
+BodyLight
+bounds:550,626,645,480
+offsets:24,19,680,512
+BodyT
+bounds:1963,1010,115,106
+offsets:39,40,194,186
+ChLight
+bounds:493,676,204,207
+offsets:44,35,290,271
+ChVLight
+bounds:1958,1993,290,271
+rotate:90
+ChVLight (1)
+bounds:2,2860,1,1
+VBodyLight (1)
+bounds:2,2860,1,1
+VBodyLight (2)
+bounds:2,2860,1,1
+VBodyLight (3)
+bounds:2,2860,1,1
+VBodyLight (4)
+bounds:2,2860,1,1
+VBodyLight (5)
+bounds:2,2860,1,1
+VHeadRing (1)
+bounds:2,2860,1,1
+VWaponRing (1)
+bounds:2,2860,1,1
+ChVLight (10)
+bounds:1722,768,119,125
+offsets:86,72,290,271
+ChVLight (11)
+bounds:791,21,127,133
+offsets:82,68,290,271
+ChVLight (12)
+bounds:2845,111,137,141
+offsets:77,64,290,271
+ChVLight (13)
+bounds:1461,744,145,149
+offsets:73,60,290,271
+ChVLight (14)
+bounds:1794,572,153,155
+offsets:69,57,290,271
+ChVLight (15)
+bounds:2682,91,161,161
+offsets:65,54,290,271
+ChVLight (16)
+bounds:2271,124,169,164
+offsets:61,53,290,271
+ChVLight (17)
+bounds:1829,211,175,166
+offsets:58,52,290,271
+ChVLight (18)
+bounds:188,218,181,167
+offsets:55,52,290,271
+ChVLight (19)
+bounds:2085,220,184,168
+offsets:53,51,290,271
+ChVLight (2)
+bounds:126,2292,29,33
+offsets:131,118,290,271
+ChVLight (20)
+bounds:612,248,186,170
+offsets:52,50,290,271
+ChVLight (21)
+bounds:1641,254,186,170
+offsets:52,50,290,271
+ChVLight (22)
+bounds:2570,254,188,170
+offsets:51,50,290,271
+ChVLight (23)
+bounds:1895,379,188,172
+offsets:51,49,290,271
+ChVLight (24)
+bounds:2773,388,188,172
+offsets:51,49,290,271
+ChVLight (25)
+bounds:2135,390,190,172
+offsets:50,49,290,271
+ChVLight (26)
+bounds:194,394,190,172
+offsets:50,49,290,271
+rotate:90
+ChVLight (27)
+bounds:2,412,190,172
+offsets:50,49,290,271
+ChVLight (28)
+bounds:1233,444,190,172
+offsets:50,49,290,271
+rotate:90
+ChVLight (29)
+bounds:2337,448,190,172
+offsets:50,49,290,271
+ChVLight (3)
+bounds:231,1172,55,61
+offsets:118,104,290,271
+ChVLight (30)
+bounds:2802,1939,190,172
+offsets:50,49,290,271
+rotate:90
+ChVLight (4)
+bounds:2922,2374,65,71
+offsets:113,99,290,271
+ChVLight (5)
+bounds:2233,1148,75,81
+offsets:108,94,290,271
+rotate:90
+ChVLight (6)
+bounds:1322,1983,85,89
+offsets:103,90,290,271
+ChVLight (7)
+bounds:648,2181,93,99
+offsets:99,85,290,271
+ChVLight (8)
+bounds:1301,2173,101,107
+offsets:95,81,290,271
+ChVLight (9)
+bounds:2,1912,111,115
+offsets:90,77,290,271
+Face
+bounds:743,2201,64,79
+offsets:44,44,151,166
+Hair
+bounds:1873,2,157,203
+offsets:44,41,239,285
+HairBack0
+bounds:648,1831,449,710
+offsets:29,33,504,781
+rotate:90
+HairBack1
+bounds:78,924,610,545
+offsets:5,13,625,574
+HairBack2
+bounds:2007,631,564,537
+offsets:18,15,600,570
+rotate:180
+HairMiddle
+bounds:1467,1021,138,93
+offsets:42,43,221,176
+HandLeftB
+bounds:1217,2211,75,69
+offsets:37,43,146,146
+HandLeftT
+bounds:1891,1496,65,87
+offsets:40,39,148,166
+HandRight
+bounds:408,1059,67,46
+offsets:46,45,157,136
+HeadEye
+bounds:1439,691,114,51
+offsets:43,45,200,139
+HeadRing
+bounds:1950,551,431,158
+offsets:32,27,489,218
+LegLeftB
+bounds:2,1019,104,369
+offsets:34,30,175,434
+LegLeftT
+bounds:2142,727,94,222
+offsets:38,37,168,293
+LegRightB
+bounds:649,1113,101,356
+offsets:35,41,174,433
+LegRightT
+bounds:2889,879,83,231
+offsets:39,36,159,300
+Light
+bounds:1305,1891,103,84
+offsets:40,40,184,168
+P1
+bounds:129,2326,34,56
+offsets:43,44,122,144
+P2
+bounds:129,2379,35,65
+offsets:46,44,126,155
+P3
+bounds:137,2668,26,70
+offsets:47,45,119,160
+P4
+bounds:2,2635,23,65
+offsets:47,46,118,157
+P5
+bounds:2,2255,26,60
+offsets:47,46,120,152
+VBodyLight
+bounds:1197,634,645,480
+offsets:24,19,680,512
+VBodyLight (10)
+bounds:1648,1581,294,285
+offsets:187,139,680,512
+VBodyLight (11)
+bounds:2572,801,315,306
+offsets:176,129,680,512
+VBodyLight (12)
+bounds:2654,2523,338,324
+offsets:166,119,680,512
+rotate:90
+VBodyLight (13)
+bounds:1767,1118,360,341
+offsets:156,110,680,512
+VBodyLight (14)
+bounds:2473,1109,380,352
+offsets:145,102,680,512
+VBodyLight (15)
+bounds:1364,1116,401,364
+offsets:134,93,680,512
+VBodyLight (16)
+bounds:942,1106,420,374
+offsets:124,83,680,512
+VBodyLight (17)
+bounds:1206,1482,440,384
+offsets:114,74,680,512
+VBodyLight (18)
+bounds:481,1471,459,395
+offsets:104,65,680,512
+VBodyLight (19)
+bounds:2,1460,477,406
+offsets:95,56,680,512
+VBodyLight (20)
+bounds:2473,1463,496,409
+offsets:85,53,680,512
+VBodyLight (21)
+bounds:1958,1461,513,411
+offsets:75,51,680,512
+VBodyLight (22)
+bounds:115,1868,531,412
+offsets:66,50,680,512
+VBodyLight (23)
+bounds:1409,1868,547,413
+offsets:58,49,680,512
+VBodyLight (24)
+bounds:2239,1874,561,413
+offsets:53,49,680,512
+VBodyLight (25)
+bounds:2239,2289,572,413
+offsets:51,49,680,512
+rotate:90
+VBodyLight (26)
+bounds:1824,2285,576,413
+offsets:50,49,680,512
+rotate:90
+VBodyLight (27)
+bounds:1409,2283,578,413
+offsets:50,49,680,512
+rotate:90
+VBodyLight (28)
+bounds:994,2282,579,413
+offsets:50,49,680,512
+rotate:90
+VBodyLight (29)
+bounds:579,2282,579,413
+offsets:50,49,680,512
+rotate:90
+VBodyLight (30)
+bounds:164,2282,579,413
+offsets:50,49,680,512
+rotate:90
+VBodyLight (6)
+bounds:33,2851,11,10
+offsets:261,193,680,512
+VBodyLight (7)
+bounds:116,2694,167,23
+offsets:250,182,680,512
+rotate:90
+VBodyLight (8)
+bounds:1441,56,216,69
+offsets:208,169,680,512
+VBodyLight (9)
+bounds:1648,1490,235,89
+offsets:197,150,680,512
+VFace
+bounds:636,1062,76,83
+offsets:41,44,151,166
+VHeadRing
+bounds:2,706,489,218
+VHeadRing (10)
+bounds:1718,104,190,105
+offsets:182,58,489,218
+VHeadRing (11)
+bounds:2,108,206,108
+offsets:174,56,489,218
+VHeadRing (12)
+bounds:371,142,222,110
+offsets:165,54,489,218
+VHeadRing (13)
+bounds:2442,140,238,112
+offsets:157,53,489,218
+VHeadRing (14)
+bounds:1039,193,255,113
+offsets:148,52,489,218
+VHeadRing (15)
+bounds:1958,1878,270,113
+offsets:140,52,489,218
+VHeadRing (16)
+bounds:380,523,286,115
+offsets:132,51,489,218
+VHeadRing (17)
+bounds:777,556,302,115
+offsets:123,51,489,218
+VHeadRing (18)
+bounds:1114,596,316,117
+offsets:115,50,489,218
+rotate:90
+VHeadRing (19)
+bounds:1062,1502,329,117
+offsets:106,50,489,218
+rotate:90
+VHeadRing (2)
+bounds:2945,1887,50,40
+offsets:253,117,489,218
+rotate:90
+VHeadRing (20)
+bounds:2529,562,339,117
+offsets:98,50,489,218
+VHeadRing (21)
+bounds:2855,1112,349,118
+offsets:89,50,489,218
+rotate:90
+VHeadRing (22)
+bounds:942,1487,357,118
+offsets:81,50,489,218
+rotate:90
+VHeadRing (23)
+bounds:1425,562,367,118
+offsets:72,50,489,218
+VHeadRing (24)
+bounds:2,586,376,118
+offsets:63,50,489,218
+VHeadRing (25)
+bounds:2237,712,384,118
+offsets:55,50,489,218
+rotate:90
+VHeadRing (26)
+bounds:1843,729,387,118
+offsets:52,50,489,218
+rotate:90
+VHeadRing (27)
+bounds:288,1069,389,118
+offsets:50,50,489,218
+rotate:90
+VHeadRing (28)
+bounds:779,1080,389,118
+offsets:50,50,489,218
+rotate:90
+VHeadRing (29)
+bounds:2802,2131,390,118
+offsets:49,50,489,218
+rotate:90
+VHeadRing (3)
+bounds:319,1023,72,44
+offsets:242,115,489,218
+VHeadRing (30)
+bounds:2565,681,390,118
+offsets:49,50,489,218
+VHeadRing (4)
+bounds:2129,1177,90,46
+offsets:233,114,489,218
+VHeadRing (5)
+bounds:819,1031,107,47
+offsets:224,113,489,218
+VHeadRing (6)
+bounds:2316,1175,124,48
+offsets:216,112,489,218
+VHeadRing (7)
+bounds:2802,1886,141,51
+offsets:207,109,489,218
+VHeadRing (8)
+bounds:2442,41,157,97
+offsets:199,64,489,218
+VHeadRing (9)
+bounds:2,2029,173,102
+offsets:191,60,489,218
+rotate:90
+VLight
+bounds:2,242,184,168
+VLight (1)
+bounds:863,2260,26,20
+offsets:81,74,184,168
+VLight (10)
+bounds:172,34,81,67
+offsets:52,51,184,168
+VLight (11)
+bounds:1744,35,81,67
+offsets:52,51,184,168
+VLight (12)
+bounds:1659,35,83,67
+offsets:51,51,184,168
+VLight (13)
+bounds:87,39,83,67
+offsets:51,51,184,168
+VLight (14)
+bounds:2,39,83,67
+offsets:51,51,184,168
+VLight (15)
+bounds:2845,41,83,68
+offsets:51,50,184,168
+VLight (16)
+bounds:687,53,83,68
+offsets:51,50,184,168
+VLight (17)
+bounds:602,53,83,68
+offsets:51,50,184,168
+VLight (18)
+bounds:516,53,84,68
+offsets:50,50,184,168
+VLight (19)
+bounds:2281,54,84,68
+offsets:50,50,184,168
+VLight (2)
+bounds:719,1419,50,53
+offsets:69,58,184,168
+rotate:90
+VLight (20)
+bounds:2195,54,84,68
+offsets:50,50,184,168
+VLight (21)
+bounds:920,86,84,68
+offsets:50,50,184,168
+VLight (22)
+bounds:1039,350,84,68
+offsets:50,50,184,168
+VLight (23)
+bounds:691,557,84,68
+offsets:50,50,184,168
+VLight (24)
+bounds:1963,722,84,68
+offsets:50,50,184,168
+VLight (25)
+bounds:2889,811,84,68
+offsets:50,50,184,168
+VLight (26)
+bounds:2357,813,84,68
+offsets:50,50,184,168
+VLight (27)
+bounds:76,952,84,68
+offsets:50,50,184,168
+VLight (28)
+bounds:1030,1036,84,68
+offsets:50,50,184,168
+VLight (29)
+bounds:1677,1046,84,68
+offsets:50,50,184,168
+VLight (3)
+bounds:408,1400,58,58
+offsets:65,56,184,168
+VLight (30)
+bounds:408,1107,84,68
+offsets:50,50,184,168
+VLight (4)
+bounds:2922,2248,64,60
+offsets:62,55,184,168
+VLight (5)
+bounds:2922,2310,69,62
+offsets:59,54,184,168
+VLight (6)
+bounds:2922,2447,74,63
+offsets:56,53,184,168
+rotate:90
+VLight (7)
+bounds:1233,696,76,65
+offsets:55,52,184,168
+VLight (8)
+bounds:601,983,78,65
+offsets:54,52,184,168
+VLight (9)
+bounds:2357,746,79,65
+offsets:53,52,184,168
+VWaponRing
+bounds:2129,1225,341,234
+VWaponRing (10)
+bounds:210,103,156,113
+offsets:132,69,341,234
+VWaponRing (11)
+bounds:1011,75,165,116
+offsets:125,67,341,234
+VWaponRing (12)
+bounds:819,718,173,119
+offsets:118,65,341,234
+rotate:90
+VWaponRing (13)
+bounds:2006,97,187,121
+offsets:104,63,341,234
+VWaponRing (14)
+bounds:595,123,194,123
+offsets:97,61,341,234
+VWaponRing (15)
+bounds:1514,127,202,125
+offsets:89,59,341,234
+VWaponRing (16)
+bounds:800,156,209,127
+offsets:82,57,341,234
+VWaponRing (17)
+bounds:1296,160,216,128
+offsets:75,56,341,234
+VWaponRing (18)
+bounds:2654,2300,221,130
+offsets:70,54,341,234
+rotate:90
+VWaponRing (19)
+bounds:371,254,228,131
+offsets:63,53,341,234
+VWaponRing (2)
+bounds:806,2244,55,36
+offsets:187,94,341,234
+VWaponRing (20)
+bounds:2760,254,233,132
+offsets:58,52,341,234
+VWaponRing (21)
+bounds:800,285,237,133
+offsets:54,51,341,234
+VWaponRing (22)
+bounds:1399,290,240,134
+offsets:51,50,341,234
+VWaponRing (23)
+bounds:2327,290,241,134
+offsets:50,50,341,234
+VWaponRing (24)
+bounds:1156,308,241,134
+offsets:50,50,341,234
+VWaponRing (25)
+bounds:368,387,242,134
+offsets:49,50,341,234
+VWaponRing (26)
+bounds:912,420,242,134
+offsets:49,50,341,234
+VWaponRing (27)
+bounds:668,420,242,134
+offsets:49,50,341,234
+VWaponRing (28)
+bounds:1651,426,242,134
+offsets:49,50,341,234
+VWaponRing (29)
+bounds:1407,426,242,134
+offsets:49,50,341,234
+VWaponRing (3)
+bounds:1767,1071,71,45
+offsets:179,90,341,234
+VWaponRing (30)
+bounds:2529,426,242,134
+offsets:49,50,341,234
+VWaponRing (4)
+bounds:1318,2118,85,53
+offsets:172,87,341,234
+VWaponRing (5)
+bounds:2,1396,98,62
+offsets:165,83,341,234
+VWaponRing (6)
+bounds:2870,586,110,93
+offsets:159,80,341,234
+VWaponRing (7)
+bounds:1233,763,123,99
+offsets:152,77,341,234
+VWaponRing (8)
+bounds:1184,999,134,105
+offsets:146,74,341,234
+VWaponRing (9)
+bounds:368,31,146,109
+offsets:139,72,341,234
+Wapon
+bounds:2,2202,161,659
+offsets:31,13,217,697
+WaponRing
+bounds:1178,34,263,157
+offsets:38,36,341,234
+rotate:180

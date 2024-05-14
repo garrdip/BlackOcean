@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
   m_Name: 02_IronDemon_Ally_Atlas
   m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
   atlasFile: {fileID: 4900000, guid: 5ef35cb186a269646ac7035d44471672, type: 3}
   materials:
   - {fileID: 2100000, guid: f50c4ce9d46e113479abb2f294d1248d, type: 2}

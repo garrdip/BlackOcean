@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
   m_Name: 02_IronDemon_EnemyVer_Atlas
   m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
   atlasFile: {fileID: 4900000, guid: 89ace6e93b48ea940b079f1ec883ee4e, type: 3}
   materials:
   - {fileID: 2100000, guid: 9b916cf7f32d9344abe4fc96f56b7348, type: 2}

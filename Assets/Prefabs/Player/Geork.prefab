@@ -113,6 +113,9 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
+  physicsPositionInheritanceFactor: {x: 1, y: 1}
+  physicsRotationInheritanceFactor: 1
+  physicsMovementRelativeTo: {fileID: 0}
   updateTiming: 1
   unscaledTime: 0
   _animationName: Idle
@@ -206,4 +209,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   meshRenderer: {fileID: 1046600963234684866}
   defaultMaterial: {fileID: 2100000, guid: 3074c931016c46949b3b0255199ee353, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 8374e042a94315f49942789a9ba4ba37, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 2a3b388b2251dbc4c80449b5bb16cefe, type: 2}

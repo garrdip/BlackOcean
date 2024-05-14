@@ -14,7 +14,8 @@ ArmRightAcc
 bounds:455,3,25,123
 rotate:90
 Body
-bounds:996,121,133,400
+bounds:996,122,133,399
+offsets:0,0,133,400
 BodyAccL
 bounds:1131,67,59,152
 rotate:90
@@ -70,10 +71,10 @@ LegLeftT
 bounds:1169,18,47,122
 rotate:90
 LegRightB
-bounds:980,15,56,118
+bounds:980,16,56,118
 rotate:90
 LegRightT
-bounds:996,73,46,127
+bounds:996,74,46,127
 rotate:90
 Weapon
 bounds:2,106,495,415

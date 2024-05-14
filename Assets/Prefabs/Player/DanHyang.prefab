@@ -56,7 +56,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8f154b10ba314f44db08567b9e30a87c, type: 2}
+  - {fileID: 2100000, guid: 89f3cf536f10fe048ad16f613c30000a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 00a3de02653a44b46b316f9b3cf66b38, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: e65adaac286fa284b85201de13d6121e, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -113,6 +113,9 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
+  physicsPositionInheritanceFactor: {x: 1, y: 1}
+  physicsRotationInheritanceFactor: 1
+  physicsMovementRelativeTo: {fileID: 0}
   updateTiming: 1
   unscaledTime: 0
   _animationName: Idle
@@ -203,5 +206,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meshRenderer: {fileID: 1046600963234684866}
-  defaultMaterial: {fileID: 2100000, guid: 563b5773816b07f43b87156d10fa6ac3, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: e34d843ebf3da8f4ea8e43cd82180cd1, type: 2}
+  defaultMaterial: {fileID: 2100000, guid: 89f3cf536f10fe048ad16f613c30000a, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 0742f332ffcf59c408d093a84f426a34, type: 2}
