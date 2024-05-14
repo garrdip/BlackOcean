@@ -4936,7 +4936,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5eef6d8454d91ac4d8df4224dc89b6a0, type: 2}
+  - {fileID: 2100000, guid: 942ebf37aa5d5c14a96a48c3eb2f8624, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4970,7 +4970,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: ffa310a1a5a68ac4cbe28bd9dfca4899, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 74ae9f3065585044ba11856c295afc13, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -4993,6 +4993,9 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
+  physicsPositionInheritanceFactor: {x: 1, y: 1}
+  physicsRotationInheritanceFactor: 1
+  physicsMovementRelativeTo: {fileID: 0}
   updateTiming: 1
   unscaledTime: 0
   _animationName: Idle
@@ -5054,8 +5057,8 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
-  defaultMaterial: {fileID: 2100000, guid: 5eef6d8454d91ac4d8df4224dc89b6a0, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 2999ce7bae3428045addc25812a238c7, type: 2}
+  defaultMaterial: {fileID: 2100000, guid: 942ebf37aa5d5c14a96a48c3eb2f8624, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 9f858ab00f2fda247a74342bb5553b59, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 4e086e5cbe2f57c4e8b0250915c06696, type: 2}
   dissolveParticle: {fileID: 1337810226639892101}
 --- !u!60 &7146516297162732159

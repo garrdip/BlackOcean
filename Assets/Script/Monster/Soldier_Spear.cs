@@ -11,7 +11,7 @@ public class Soldier_Spear : SpawnedMonster
     {
         switch(nextAction.actionName){
             case "찌르기" :
-                DoAnimation("3Attack");
+                DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.4f);
                 GeneralAttack();
                 yield return new WaitForSeconds(0.4f);
@@ -19,7 +19,7 @@ public class Soldier_Spear : SpawnedMonster
                 break;
             case "방어" :
                 parent.GainDefense(nextAction.actionValue);
-                DoAnimation("3Buff");
+                DoAnimation("Buff0");
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;
@@ -35,12 +35,12 @@ public class Soldier_Spear : SpawnedMonster
     {
         parent.anim.state.SetAnimation(1,actionName,false);
         switch(actionName){
-            case "3Attack":
+            case "Attack0":
                 // 공격 효과음
                 AudioClip attackSound= M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Spear].Find((audioClip) => audioClip.name.Equals("monster_nor_spear_1_1"));
                 M_SoundManager.instance.PlaySFX(attackSound, attackSound.length);
                 break;
-            case "3Buff":
+            case "Buff0":
                 // 버프 효과음
                 AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_3"));
                 M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
@@ -59,13 +59,13 @@ public class Soldier_Spear : SpawnedMonster
     [ClientRpc]
     public void OnHitAnimationRPC()
     {
-        parent.anim.state.SetAnimation(1,"3Defence",false);
+        parent.anim.state.SetAnimation(1,"Defence0",false);
     }
 
     [ClientRpc]
     public override void ReturnToIdleAnimation()
     {
-        parent.anim.state.SetAnimation(1,"3Idle",true);
+        parent.anim.state.SetAnimation(1,"Idle",true);
     }
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)

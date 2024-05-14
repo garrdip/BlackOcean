@@ -26,9 +26,20 @@ public partial class CardData : SingletonD<CardData>
         if(tar != null)MoveIronDemonLocation(owner,tar); // 철귀 적으로 이동
     } 
 
+    // 손톱공격
     private IEnumerator GeneralIronDemonAttack(TargetObject spawner, TargetObject Target, int Damage)
     {
         M_TurnManager.instance.AnimIronDemon("Attack0",spawner); // 철귀 공격 모션 시작
+        yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
+        StartCoroutine(Target.monster.OnHitAnimation()); // 실제 피격 애니메이션
+        GeneralSingleAttack(spawner,Target,Damage); // 실제 데미지 적용시점
+        yield return new WaitForSeconds(0.6f); // 공격모션 끝남
+    }
+
+    // 이빨공격
+    private IEnumerator GeneralIronDemonToothAttack(TargetObject spawner, TargetObject Target, int Damage)
+    {
+        M_TurnManager.instance.AnimIronDemon("Attack1",spawner); // 철귀 공격 모션 시작
         yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
         StartCoroutine(Target.monster.OnHitAnimation()); // 실제 피격 애니메이션
         GeneralSingleAttack(spawner,Target,Damage); // 실제 데미지 적용시점
@@ -138,10 +149,10 @@ public partial class CardData : SingletonD<CardData>
 
         if(tar[0].buffs.FindIndex(buff => buff.type == BuffType.IMANGRY) != -1){ // 화가 나는구나 2배 뎀쥐
             M_EffectManager.instance.RpcEffectEatter(tar[1].transform.position);
-            yield return GeneralIronDemonAttack(tar[0], tar[1], 20); // 철귀 공격
+            yield return GeneralIronDemonToothAttack(tar[0], tar[1], 20); // 철귀 공격
         }else{
             M_EffectManager.instance.RpcEffectEatter(tar[1].transform.position);
-            yield return GeneralIronDemonAttack(tar[0], tar[1], 10); // 철귀 공격
+            yield return GeneralIronDemonToothAttack(tar[0], tar[1], 10); // 철귀 공격
         }
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
 
@@ -307,7 +318,7 @@ public partial class CardData : SingletonD<CardData>
 
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
-        M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]); // 철귀 공격 모션 시작
+        M_TurnManager.instance.AnimIronDemon("Attack1",tar[0]); // 철귀 공격 모션 시작
 
         M_EffectManager.instance.RpcEffectEatter(tar[1].transform.position);
         yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
