@@ -1418,6 +1418,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             // UI 활성화 상태 변경
             M_MapManager.instance.MapScene.SetActive(true);
             M_MapManager.instance.BattleScene.SetActive(false);
+            M_MapManager.instance.BackgroundLight.GetComponent<MeshRenderer>().sortingLayerName = "Default"; // 배경 플레어 정렬 오더 변경
 
             // 임시 테스트용 UI
             //GameUIManager.instance.TestUI.gameObject.SetActive(false);

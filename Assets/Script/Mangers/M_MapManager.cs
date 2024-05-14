@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
-using DG.Tweening;
+using Spine.Unity;
 using ProjectD;
 using AYellowpaper.SerializedCollections;
 
@@ -36,11 +36,14 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [SyncVar (hook = nameof(OnChangedActionCost))]
     public int actionCost; // 행동시 소모되는 행동 비용
 
-    [Header("게임 화면의 요소들의 최상위 오브젝트")]
+    [Header("전투 화면의 요소들의 최상위 오브젝트")]
     public GameObject BattleScene;
 
     [Header("맵 화면의 요소들의 최상위 오브젝트")]
     public GameObject MapScene;
+
+    [Header("전투 화면의 배경 플레어 스파인 오브젝트")]
+    public SkeletonAnimation BackgroundLight;
 
     [Header("맵화면의 방 요소들의 부모 오브젝트")]
     public GameObject MapRooms;
@@ -730,6 +733,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             // UI 활성화 상태 변경
             MapScene.SetActive(false);
             BattleScene.SetActive(true);
+            BackgroundLight.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer"; // 배경 플레어 정렬 오더 변경
 
             // 임시 테스트용 UI
             // GameUIManager.instance.TestUI.gameObject.SetActive(true);

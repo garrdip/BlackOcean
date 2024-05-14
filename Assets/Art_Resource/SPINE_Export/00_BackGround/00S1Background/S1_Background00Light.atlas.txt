@@ -1,0 +1,12 @@
+S1_Background00Light.png
+size:4978,1864
+filter:Linear,Linear
+pma:true
+LensFlameInRing
+bounds:3847,580,1254,1101
+rotate:90
+LensFlameLine
+bounds:2169,30,1804,1648
+rotate:90
+LensFlameOutRing
+bounds:30,306,2109,1528

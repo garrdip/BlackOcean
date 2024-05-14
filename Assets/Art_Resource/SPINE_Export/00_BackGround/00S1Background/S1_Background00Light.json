@@ -1,0 +1,117 @@
+{
+"skeleton": {
+	"hash": "hfyrI/3Eon8",
+	"spine": "4.2.20",
+	"x": 867.67,
+	"y": -1939,
+	"width": 2822,
+	"height": 1989,
+	"images": "",
+	"audio": "C:/Users/Nullaby/Desktop/GJ_ing/spine/00_Background/00S1Background"
+},
+"bones": [
+	{ "name": "root" },
+	{
+		"name": "LensFlameLine3",
+		"parent": "root",
+		"rotation": -39.02,
+		"x": 1921.66,
+		"y": -441.3,
+		"color": "fdff00ff",
+		"icon": "star"
+	},
+	{
+		"name": "LensFlameLine",
+		"parent": "root",
+		"length": 1499.73,
+		"rotation": -39.02,
+		"x": 1923.07,
+		"y": -438.07,
+		"color": "fdff00ff"
+	},
+	{
+		"name": "LensFlameLine2",
+		"parent": "root",
+		"rotation": -39.02,
+		"x": 1921.49,
+		"y": -438.13,
+		"color": "fdff00ff",
+		"icon": "asterisk"
+	}
+],
+"slots": [
+	{ "name": "LensFlameInRing", "bone": "LensFlameLine3", "attachment": "LensFlameInRing", "blend": "screen" },
+	{ "name": "LensFlameOutRing", "bone": "LensFlameLine2", "attachment": "LensFlameOutRing", "blend": "screen" },
+	{ "name": "LensFlameLine", "bone": "LensFlameLine", "attachment": "LensFlameLine", "blend": "screen" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"LensFlameInRing": {
+				"LensFlameInRing": { "x": 35.98, "y": -47.04, "rotation": 39.02, "width": 1254, "height": 1101 }
+			},
+			"LensFlameLine": {
+				"LensFlameLine": { "x": 1097.92, "y": 18.46, "rotation": 39.02, "width": 1804, "height": 1648 }
+			},
+			"LensFlameOutRing": {
+				"LensFlameOutRing": { "x": 174.22, "y": -213.9, "rotation": 39.02, "width": 2109, "height": 1528 }
+			}
+		}
+	}
+],
+"events": {
+	"IdleEnd": {}
+},
+"animations": {
+	"Idle": {
+		"slots": {
+			"LensFlameLine": {
+				"rgba": [
+					{ "color": "ffffffff" },
+					{ "time": 8.8, "color": "ffffff00", "curve": "stepped" },
+					{
+						"time": 11.6667,
+						"color": "ffffff00",
+						"curve": [ 13.778, 1, 15.889, 1, 13.778, 1, 15.889, 1, 13.778, 1, 15.889, 1, 16.176, 0, 18, 0.97 ]
+					},
+					{ "time": 18, "color": "ffffffff" }
+				]
+			}
+		},
+		"bones": {
+			"LensFlameLine": {
+				"rotate": [
+					{},
+					{ "time": 8.8, "value": -52.18 },
+					{
+						"time": 11.6667,
+						"value": 15.56,
+						"curve": [ 16.176, 15.56, 18, 0.45 ]
+					},
+					{ "time": 18 }
+				],
+				"scale": [
+					{},
+					{ "time": 8.8, "x": 0.764 },
+					{ "time": 18 }
+				]
+			},
+			"LensFlameLine2": {
+				"scale": [
+					{},
+					{ "time": 3, "x": 1.005, "y": 1.005 },
+					{ "time": 6 },
+					{ "time": 9, "x": 1.005, "y": 1.005 },
+					{ "time": 12 },
+					{ "time": 15, "x": 1.005, "y": 1.005 },
+					{ "time": 18 }
+				]
+			}
+		},
+		"events": [
+			{ "time": 18, "name": "IdleEnd" }
+		]
+	}
+}
+}
