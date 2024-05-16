@@ -191,6 +191,14 @@ public class SpawnedMonster : NetworkBehaviour
 
     }
 
+    [ClientRpc]
+    public void RpcBreakedShield()
+    {
+        // 실드 파괴음
+        AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_down"));
+        M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
+    }
+
     [Server]
     public virtual void OnChangedSheild(int oldValue, int newValue)
     {
@@ -206,7 +214,7 @@ public class SpawnedMonster : NetworkBehaviour
     [Server]    
     public virtual void OnBreakedShield()
     {
-        
+        RpcBreakedShield();
     }
 
     [Server]

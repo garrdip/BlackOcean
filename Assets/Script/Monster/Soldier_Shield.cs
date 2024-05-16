@@ -72,17 +72,4 @@ public class Soldier_Shield : SpawnedMonster
                 break;
         }
     }
-
-    public override void OnBreakedShield()
-    {
-        OnBreakedShieldRpc();
-    }
-
-    [ClientRpc]
-    public void OnBreakedShieldRpc()
-    {
-        // 실드 파괴음
-        AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_4_3"));
-        M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
-    }
 }

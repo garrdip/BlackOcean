@@ -777,12 +777,14 @@ public class TargetObject : NetworkBehaviour
             int value = newVal - oldVal;
             if(oldVal > newVal){
                 GameUIManager.instance.DisplayDefence(this, false, value);
+                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_down"));
+                M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
             }else{
                 GameUIManager.instance.DisplayDefence(this, true, value);
+                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_up"));
+                M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
             }
-        }
-        else
-        {
+        }else{
             if(objectType != ObjectType.PLAYER && !M_TurnManager.instance.monsterShieldInitialize)
                 monster.OnBreakedShield();
         }
