@@ -33,6 +33,11 @@ public class Soldier_Shield : SpawnedMonster
     {
         parent.anim.state.SetAnimation(1,actionName,false);
         switch(actionName){
+            case "Attack0":
+                // 공격 효과음
+                AudioClip attackSound= M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Shield].Find((audioClip) => audioClip.name.Equals("monster_nor_sw_shd_1_3"));
+                M_SoundManager.instance.PlaySFX(attackSound, attackSound.length);
+                break;
             case "Buff0":
                 // 버프 효과음
                 AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_3"));
