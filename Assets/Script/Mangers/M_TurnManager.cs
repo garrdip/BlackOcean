@@ -1340,9 +1340,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
             else
                 tar.ironDemon.transform.position = target.transform.position + new Vector3(transformOffset,0,0);
-            int offset = (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer == tar.player) ? 0 : 2;
-            if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0+offset];
-            else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1+offset];
+            if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0];
+            else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1];
             tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
         }
     }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1046600963234684866}
   - component: {fileID: 5125707426590756295}
   - component: {fileID: 7821855001177509042}
+  - component: {fileID: 1569466196110927372}
   m_Layer: 0
   m_Name: IronDemon
   m_TagString: Player
@@ -54,7 +55,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: f50c4ce9d46e113479abb2f294d1248d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -127,3 +128,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1238078986054683857}
   m_Mesh: {fileID: 0}
+--- !u!114 &1569466196110927372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238078986054683857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25e6ceb271c9af848ae53f2af1073d0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: {r: 1, g: 1, b: 1, a: 1}
+  maxRenderTextureSize: 1024
+  quad: {fileID: 0}
+  quadMaterial: {fileID: 2100000, guid: 4c507f887c6274a44a603d96e0eabf2a, type: 2}
+  renderTexture: {fileID: 0}
+  targetCamera: {fileID: 0}
+  shaderPasses: ffffffff

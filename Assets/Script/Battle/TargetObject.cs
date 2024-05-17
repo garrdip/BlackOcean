@@ -8,6 +8,7 @@ using ProjectD;
 using DG.Tweening;
 using TMPro;
 using Spine.Unity;
+using Spine.Unity.Examples;
 using System.Linq;
 
 public class TargetObject : NetworkBehaviour
@@ -257,14 +258,11 @@ public class TargetObject : NetworkBehaviour
                 case Character.HONGDANHYANG :
                     avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
                     avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
-                    if(NetworkClient.localPlayer.transform.GetChild(0).GetComponent<GamePlayer>() == player)
-                    {
-                        ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
-                    }
-                    else
-                    {
-
-                        ironDemon = Instantiate(characters.Find(x => x.name == "IronDemonTransparent"),transform.position,Quaternion.identity,transform);
+                    ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
+                    if(NetworkClient.localPlayer.transform.GetChild(0).GetComponent<GamePlayer>() == player){
+                        ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 1f;
+                    }else{
+                        ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 0.5f;
                     }
                     ironDemonLocation = this;
                     ironDemon.GetComponent<SkeletonAnimation>().timeScale = Random.Range(0.9f,1.1f);
