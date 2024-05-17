@@ -30,7 +30,7 @@ public class TargetObject : NetworkBehaviour
     public NextActionIndicator nextActionIndicator;
 
     [Header("타겟 오브젝트 타입")]
-    [SyncVar]
+     [SyncVar (hook = nameof(OnChangeObjectType))]
     public ObjectType objectType;
 
     // Player 의 경우 
@@ -854,6 +854,24 @@ public class TargetObject : NetworkBehaviour
             ltTimer -= 0.1f;
             rTimer -= 0.1f;
             yield return loopTime;
+        }
+    }
+
+    public void OnChangeObjectType(ObjectType oldValue, ObjectType newValue)
+    {
+        switch(objectType){
+            case ObjectType.PLAYER:
+                playerNamePlate.SetActive(true);
+                monsterNamePlate.SetActive(false);
+                break;
+            case ObjectType.ENEMY:
+                playerNamePlate.SetActive(false);
+                monsterNamePlate.SetActive(true);
+                break;
+            case ObjectType.BOSS:
+                playerNamePlate.SetActive(false);
+                monsterNamePlate.SetActive(true);
+                break;
         }
     }
 
