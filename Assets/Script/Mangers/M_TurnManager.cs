@@ -867,13 +867,45 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
+    // 방타입에 따라 NPC 생성
     [Server]
-    public void GenerateNPC(string npcName)
+    public void GnenrateNPCByRoomTpye(RoomType roomType)
+    {
+        switch(roomType){
+            case RoomType.CAMP:
+                GenerateCampNPC();
+                break;
+            case RoomType.CARD_NPC:
+                GenerateCardShopNPC();
+                break;
+        }
+    }
+
+    // 전초기지 NPC 생성
+    [Server]
+    public void GenerateCampNPC()
     {
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
-        var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == npcName),new Vector3(11,-3,0),Quaternion.identity).GetComponent<SpawnedMonster>();
-        NPC_Mercurius mercurius = monster.GetComponent<NPC_Mercurius>();
+        var campNPC = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "RyuJinSol"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
+        NetworkServer.Spawn(campNPC.gameObject);
+
+        var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
+        NetworkServer.Spawn(avatar);
+        avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+        avatar.GetComponent<TargetObject>().monster = campNPC;
+        spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
+        campNPC.parent = avatar.GetComponent<TargetObject>();
+    }
+
+    // 카드상점 NPC 생성
+    [Server]
+    public void GenerateCardShopNPC()
+    {
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
+        var cardNPC = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_Mercurius"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
+        NPC_Mercurius mercurius = cardNPC.GetComponent<NPC_Mercurius>();
         mercurius.isOrigin = true;
 
         // 상점판매용 캐릭터별 카드 추출해서 NPC_Mercurius SyncDictionary에 추가
@@ -897,16 +929,16 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 mercurius.shopCardDictionary.Add(gamePlayer, shopCards); // NPC_Mercurius의 SyncDictionary에 각 플레이어와 추출한 랜덤카드를 한쌍의 데이터로 저장
             }
         }
-        NetworkServer.Spawn(monster.gameObject);
+        NetworkServer.Spawn(cardNPC.gameObject);
         npc_Mercurius = mercurius; // NPC_Mercurius의 참조값 설정
-        monster.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name == npcName);
+        cardNPC.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_Mercurius"));
 
-        var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),new Vector3(11,-3,0),Quaternion.identity);
+        var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
         NetworkServer.Spawn(avatar);
         avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
-        avatar.GetComponent<TargetObject>().monster = monster;
+        avatar.GetComponent<TargetObject>().monster = cardNPC;
         spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
-        monster.parent = avatar.GetComponent<TargetObject>();  // monster 오브젝트의 부모오브젝트 참조값 설정
+        cardNPC.parent = avatar.GetComponent<TargetObject>();  // monster 오브젝트의 부모오브젝트 참조값 설정
     }
 
     [Server]
@@ -990,16 +1022,16 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         if(isServer)
         {
             GeneratePlayerUnit();
-            if(hexagonMapRoom.roomType == RoomType.BOSS){
+            if(hexagonMapRoom.roomType == RoomType.BOSS){ // 보스 몬스터 생성
                 GenerateBossMonster();
                 RpcCardPrefareForBattle();
                 RpcStartBossBattleEvent();
-            }else if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE){
+            }else if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE){ // 일반 or 엘리트 몬스터 생성
                 GenerateMonster(hexagonMapRoom);
                 RpcCardPrefareForBattle();
                 RpcStartBattleEvent(hexagonMapRoom.roomType);
-            }else{
-                GenerateNPC("NPC_Mercurius");
+            }else{ // NPC 생성
+                GnenrateNPCByRoomTpye(hexagonMapRoom.roomType);
                 RpcStartNoneBattleEvent(hexagonMapRoom.roomType);
             }
             // 전투 시작 이치 초기화 및 어빌리티 카드 생성
