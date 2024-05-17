@@ -36,7 +36,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
 
     private static float battelSceneCameraSize = 10.8f; // 전투씬에서 카메라 크기값
-    private float mapSceneCameraSize = 5.0f; // 맵씬에서 카메라 크기값
+    private static float mapSceneCameraSize = 6.0f; // 맵씬에서 카메라 크기값
     public List<GameObject> rewardObjects = new List<GameObject>(); // 보상목록 오브젝트 리스트
     public List<GameObject> rewardCardObjects = new List<GameObject>(); // 보상카드 오브젝트 리스트
     
