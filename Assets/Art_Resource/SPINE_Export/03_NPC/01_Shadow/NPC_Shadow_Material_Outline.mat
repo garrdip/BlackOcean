@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: NPC_Ryu_Material_Outline
+  m_Name: NPC_Shadow_Material_Outline
   m_Shader: {fileID: 4800000, guid: 28b5cf4804845fe4b868531fd0bb81d5, type: 3}
   m_ValidKeywords:
   - _USE8NEIGHBOURHOOD_ON
@@ -22,7 +22,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 766f5b99c526d4849a7ab0ef02443d08, type: 3}
+        m_Texture: {fileID: 2800000, guid: 3bf962cdcf2b76a408e00ab72283439b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
@@ -39,5 +39,5 @@ Material:
     - _ThresholdEnd: 0.25
     - _Use8Neighbourhood: 1
     m_Colors:
-    - _OutlineColor: {r: 1, g: 0.8392157, b: 0, a: 1}
+    - _OutlineColor: {r: 0, g: 0.70980394, b: 1, a: 1}
   m_BuildTextureStacks: []

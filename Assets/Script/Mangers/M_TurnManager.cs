@@ -878,6 +878,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             case RoomType.CARD_NPC:
                 GenerateCardShopNPC();
                 break;
+            case RoomType.ITEM_NPC:
+                GenerateItemNPC();
+                break;
         }
     }
 
@@ -887,7 +890,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
-        var campNPC = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "RyuJinSol"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
+        var campNPC = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_RyuJinSol"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
         NetworkServer.Spawn(campNPC.gameObject);
 
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
@@ -896,6 +899,23 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         avatar.GetComponent<TargetObject>().monster = campNPC;
         spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
         campNPC.parent = avatar.GetComponent<TargetObject>();
+    }
+
+    // 아이템상점 NPC 생성
+    [Server]
+    public void GenerateItemNPC()
+    {
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
+        var itemShopNPC = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_ShadowMan"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
+        NetworkServer.Spawn(itemShopNPC.gameObject);
+
+        var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
+        NetworkServer.Spawn(avatar);
+        avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+        avatar.GetComponent<TargetObject>().monster = itemShopNPC;
+        spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
+        itemShopNPC.parent = avatar.GetComponent<TargetObject>();
     }
 
     // 카드상점 NPC 생성
