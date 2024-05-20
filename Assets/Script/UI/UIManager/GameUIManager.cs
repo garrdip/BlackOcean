@@ -11,9 +11,6 @@ public class GameUIManager : SingletonD<GameUIManager>
 {
     [Header("게임 오브젝트")]
     public GameObject RootGameObject;
-    public GameObject GameUI;
-    public GameObject GameBackGround;
-    public GameObject DeckListPanel;
     public GameObject CardOnHandsPanel;
     public GameObject PrefareDeck;
     public GameObject TrashDeck;
@@ -27,7 +24,6 @@ public class GameUIManager : SingletonD<GameUIManager>
     public List<GameObject> maxIchiIcons = new List<GameObject>();
     public Canvas EffectCanvas;
     public GameObject FloatingDamageText;
-    public Sequence sequence;
 
     [Header("UI 컴포넌트")]
 
@@ -112,21 +108,43 @@ public class GameUIManager : SingletonD<GameUIManager>
     // 방어도 표시 트위닝
     public void DisplayDefence(TargetObject targetObject, bool isGain, int value)
     {
-        GameObject floatingDamageText = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
-        floatingDamageText.transform.SetParent(EffectCanvas.transform);
-        floatingDamageText.transform.localScale = Vector3.one;
-        floatingDamageText.transform.position = isGain ? targetObject.transform.position + new Vector3(0f, 8f, 0f) : targetObject.transform.position + new Vector3(0f, 5f, 0f);
-        floatingDamageText.GetComponent<TextMeshProUGUI>().color = ColorUtils.HexToColor("#0082FA");
-        floatingDamageText.GetComponent<TextMeshProUGUI>().text = isGain ? "+" + value.ToString() : value.ToString();
-        
-        Tween moveTween = isGain ? floatingDamageText.transform.DOMoveY(3f, 1.5f).SetEase(Ease.OutSine) : floatingDamageText.transform.DOMoveY(5f, 1.5f).SetEase(Ease.OutSine);
-        Sequence sequence = DOTween.Sequence();
-        sequence.Append(moveTween);
-        sequence.Join(floatingDamageText.GetComponent<CanvasGroup>().DOFade(1f, 0.5f));
-        sequence.Append(floatingDamageText.GetComponent<CanvasGroup>().DOFade(0f, 0.5f))
-            .OnComplete(() => {
-                floatingDamageText.transform.DOKill();
-                Destroy(floatingDamageText);
-            });
+        if(isGain){ // 방어력 얻을 때 효과
+            GameObject floatingDamageText = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
+            floatingDamageText.transform.SetParent(EffectCanvas.transform);
+            floatingDamageText.transform.localScale = Vector3.one;
+            floatingDamageText.transform.position = isGain ? targetObject.transform.position + new Vector3(0f, 8f, 0f) : targetObject.transform.position + new Vector3(0f, 5f, 0f);
+            floatingDamageText.GetComponent<TextMeshProUGUI>().color = ColorUtils.HexToColor("#0082FA");
+            floatingDamageText.GetComponent<TextMeshProUGUI>().text = isGain ? "+" + value.ToString() : value.ToString();
+            
+            Tween moveTween = isGain ? floatingDamageText.transform.DOMoveY(3f, 1.5f).SetEase(Ease.OutSine) : floatingDamageText.transform.DOMoveY(5f, 1.5f).SetEase(Ease.OutSine);
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(moveTween);
+            sequence.Join(floatingDamageText.GetComponent<CanvasGroup>().DOFade(1f, 0.5f));
+            sequence.Append(floatingDamageText.GetComponent<CanvasGroup>().DOFade(0f, 0.5f))
+                .OnComplete(() => {
+                    floatingDamageText.transform.DOKill();
+                    Destroy(floatingDamageText);
+                });
+        }else{ // 방어력 잃을 때 효과
+            GameObject defendText = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
+            defendText.transform.SetParent(EffectCanvas.transform);
+            defendText.transform.position = targetObject.transform.position + new Vector3(0f, 6f, 0f);
+            defendText.transform.localScale = new Vector3(2.5f, 2.5f, 2.5f);
+            defendText.GetComponent<TextMeshProUGUI>().color = ColorUtils.HexToColor("#808080");
+            defendText.GetComponent<TextMeshProUGUI>().fontSize = 60f;
+            defendText.GetComponent<TextMeshProUGUI>().text = Const.DEFEND_TEXT;
+
+            Tween defendMoveTween = defendText.transform.DOMoveY(8f, 1.5f).SetEase(Ease.OutSine);
+            Tween scaleTween = defendText.transform.DOScale(2f, 0.5f).SetEase(Ease.OutCubic);
+            Tween scaleReturnTween = defendText.transform.DOScale(1f, 0.5f);
+            Sequence defenceTextsequence = DOTween.Sequence();
+            defenceTextsequence.Append(defendMoveTween);
+            defenceTextsequence.Join(scaleTween);
+            defenceTextsequence.Append(scaleReturnTween)
+                .OnComplete(() => {
+                    defendText.transform.DOKill();
+                    Destroy(defendText);
+                });
+        }
     }
 }

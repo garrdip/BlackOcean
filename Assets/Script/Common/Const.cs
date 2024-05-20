@@ -53,4 +53,6 @@ public static class Const
     public const string PREFARE_DECK = "뽑을 덱";
     public const string TRASH_DECK = "버린 덱";
     public const string FORGOTTEN_DECK = "잊혀진 덱";
+
+    public const string DEFEND_TEXT = "Defend";
 }
