@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using ProjectD;
 using Spine.Unity;
+using Spine.Unity.Examples;
 using DG.Tweening;
 using AYellowpaper.SerializedCollections;
 using System.Linq;
@@ -1326,6 +1327,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void MoveIronDemon(TargetObject tar, TargetObject target)
     {
         if(tar != null && target != null){
+            tar.ironDemon.GetComponent<SkeletonRenderTexture>().enabled = false;
             if(target.objectType == ObjectType.PLAYER){
                 tar.ironDemon.GetComponent<MeshRenderer>().sortingOrder = target.avatar.GetComponent<MeshRenderer>().sortingOrder - 1;
             }else{
@@ -1343,6 +1345,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             if(target.objectType == ObjectType.PLAYER) tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[0];
             else tar.ironDemon.GetComponent<SkeletonAnimation>().skeletonDataAsset = tar.ironDemonData[1];
             tar.ironDemon.GetComponent<SkeletonAnimation>().Initialize(true);
+            tar.ironDemon.GetComponent<SkeletonRenderTexture>().enabled = true;
         }
     }
 
