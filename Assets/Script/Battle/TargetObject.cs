@@ -686,7 +686,7 @@ public class TargetObject : NetworkBehaviour
     void OnChangedPlayerHP(int oldVal, int newVal)
     {
         if(oldVal > 0){
-            GameUIManager.instance.DisPlayeDamage(this, (oldVal - newVal));
+            M_EffectManager.instance.DisPlayeDamage(this, (oldVal - newVal));
         }
         if(player != null){
             if(player.netIdentity == NetworkClient.connection.identity){
@@ -774,11 +774,11 @@ public class TargetObject : NetworkBehaviour
         if(newVal > 0){
             int value = newVal - oldVal;
             if(oldVal > newVal){
-                GameUIManager.instance.DisplayDefence(this, false, value);
+                M_EffectManager.instance.DisplayDefence(this, false, value);
                 AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_down"));
                 M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
             }else{
-                GameUIManager.instance.DisplayDefence(this, true, value);
+                M_EffectManager.instance.DisplayDefence(this, true, value);
                 AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_up"));
                 M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
             }
