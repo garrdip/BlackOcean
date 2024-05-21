@@ -8375,9 +8375,9 @@ MonoBehaviour:
   effects:
     _serializedList:
     - Key: 0
-      Value: {fileID: 6025598163262639468, guid: 129c63d6f5efc674182b3aa82a933ea3, type: 3}
+      Value: {fileID: 11400000, guid: fd321c5e5f7e10f44a3f66f92f06ba55, type: 2}
     - Key: 1
-      Value: {fileID: 2045038011059321651, guid: 82410643e81e5e54e90f0def3e3e746f, type: 3}
+      Value: {fileID: 11400000, guid: e3af0ba4a69b85e4a91297be5c882126, type: 2}
   EffectCanvas: {fileID: 481710162}
   FloatingDamageText: {fileID: 2572344723661254293, guid: ba3d091ba066c3141823a924988d3af3, type: 3}
 --- !u!114 &743138901

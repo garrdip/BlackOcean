@@ -6,11 +6,11 @@ using AYellowpaper.SerializedCollections;
 using DG.Tweening;
 using TMPro;
 using ProjectD;
+using Spine.Unity;
 
 public class M_EffectManager : NetworkSingletonD<M_EffectManager>
 {
-    public SerializedDictionary<Card_Effect, GameObject> effects = new SerializedDictionary<Card_Effect, GameObject>(); 
-
+    public SerializedDictionary<Card_Effect, SkeletonDataAsset> effects = new SerializedDictionary<Card_Effect, SkeletonDataAsset>();
     public Canvas EffectCanvas;
     public GameObject FloatingDamageText;
 
@@ -25,20 +25,37 @@ public class M_EffectManager : NetworkSingletonD<M_EffectManager>
     [ClientRpc]
     public void RpcEffectEatter(Vector3 position)
     {
-        GameObject Effect = Instantiate(effects[Card_Effect.Effect_Eatter], position, Quaternion.identity);
-        CardEffectBase cardEffectBase = Effect.GetComponent<CardEffectBase>();
-        cardEffectBase.animationName = "EffEatter";
-        cardEffectBase.sfx = M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][8];
+        StartCoroutine(StartEffect(
+            effects[Card_Effect.Effect_Eatter],
+            "EffEatter",
+            position,
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][8])
+        );
     }
 
     // 손톱 공격 이펙트
     [ClientRpc]
     public void RpcEffectClaw(Vector3 position)
     {
-        GameObject Effect = Instantiate(effects[Card_Effect.Effect_Scratch], position, Quaternion.identity);
-        CardEffectBase cardEffectBase = Effect.GetComponent<CardEffectBase>();
-        cardEffectBase.animationName = "01EffScratch";
-        cardEffectBase.sfx = M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][4];
+        StartCoroutine(StartEffect(
+            effects[Card_Effect.Effect_Scratch],
+            "01EffScratch",
+            position,
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][4])
+        );
+    }
+
+    // 이펙트 스파인 애니매이션 오브젝트 런타임 생성
+    private IEnumerator StartEffect(SkeletonDataAsset skeletonDataAsset, string animationName, Vector3 position, AudioClip sfx)
+    {
+        yield return new WaitForSeconds(0.01f); 
+        var spineObject = SkeletonAnimation.NewSkeletonAnimationGameObject(skeletonDataAsset); // https://ko.esotericsoftware.com/spine-unity#Advanced---Instantiation-at-Runtime
+        spineObject.gameObject.name = animationName;
+        CardEffectBase cardEffectBase = spineObject.gameObject.AddComponent<CardEffectBase>();
+        cardEffectBase.sfx = sfx;
+        spineObject.transform.position = position;
+        spineObject.GetComponent<MeshRenderer>().sortingLayerName = "Effect";
+        spineObject.AnimationState.SetAnimation(0, animationName, false);
     }
 
     // 데미지 표시 트위닝
@@ -92,14 +109,13 @@ public class M_EffectManager : NetworkSingletonD<M_EffectManager>
             GameObject defendText = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
             defendText.transform.SetParent(EffectCanvas.transform);
             defendText.transform.position = targetObject.transform.position + new Vector3(0f, 6f, 0f);
-            defendText.transform.localScale = new Vector3(2.5f, 2.5f, 2.5f);
+            defendText.transform.localScale = new Vector3(1f, 1f, 1f);
             defendText.GetComponent<TextMeshProUGUI>().color = ColorUtils.HexToColor("#808080");
-            defendText.GetComponent<TextMeshProUGUI>().fontSize = 60f;
             defendText.GetComponent<TextMeshProUGUI>().text = Const.DEFEND_TEXT;
 
             Tween moveTween = defendText.transform.DOMoveY(8f, 1.5f).SetEase(Ease.OutSine);
             Tween scaleTween = defendText.transform.DOScale(2f, 0.5f).SetEase(Ease.OutCubic);
-            Tween scaleReturnTween = defendText.transform.DOScale(1f, 0.5f);
+            Tween scaleReturnTween = defendText.transform.DOScale(0.5f, 0.5f);
             Sequence defenceTextsequence = DOTween.Sequence();
             defenceTextsequence.Append(moveTween);
             defenceTextsequence.Join(scaleTween);
