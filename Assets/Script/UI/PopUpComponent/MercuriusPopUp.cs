@@ -134,6 +134,8 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     // 선택한 탭 활성화
     public void ShowTab(int index)
     {
+        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        playerInterface.currentGamePlayerNetId = playerInterface.ownedPlayers[index].netId;
         currentIndex = index;
         tabFrames[index].SetActive(true);
         tabButtons[index].GetComponent<CanvasGroup>().alpha = 1f;
@@ -210,6 +212,16 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
             tabCardRemoveButtonPositions[currentIndex].x, 0.3f
         );
         tabCardRemoveButtons[currentIndex].transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+    }
+
+    public void OnPointerClickCardEnhanceButton()
+    {
+        PopUpUIManager.instance.HandleCardEnhancePopUp(true);
+    }
+
+    public void OnPointerClickCardRemoveButton()
+    {
+        PopUpUIManager.instance.HandleCardRemovePopUp(true);
     }
 
     public void OnPointerEnterCloseButton()

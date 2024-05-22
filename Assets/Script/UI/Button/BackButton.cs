@@ -39,6 +39,9 @@ public class BackButton : MonoBehaviour
         backButtonTailLight.GetComponent<RectTransform>().DOKill();
     }
 
+
+    // ---------------------------------------------------- 이벤트 트리거에 등록된 함수들 ----------------------------------------------------//
+    
     public void OnPointerEnterBackButton()
     {
         backButtonArrowLight.SetActive(true);
@@ -65,6 +68,20 @@ public class BackButton : MonoBehaviour
     public void OnPointerClickBackButtonOnDeckListPopUp()
     {
         PopUpUIManager.instance.HandleHideDeckListPopUp();
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+    }
+
+    public void OnPointerClickBackButtonOnCardEnhancePopUp()
+    {
+        PopUpUIManager.instance.HandleCardEnhancePopUp(false);
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+    }
+
+    public void OnPointerClickBackButtonOnCardRemovePopUp()
+    {
+        PopUpUIManager.instance.HandleCardRemovePopUp(false);
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }

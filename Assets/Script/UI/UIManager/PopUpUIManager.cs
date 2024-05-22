@@ -22,12 +22,13 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public delegate void OnChangeCardOnHandRemovePopUpHide();
     public OnChangeCardOnHandRemovePopUpHide onChangeCardOnHandRemovePopUpHide;
 
-    
+
     // BattleResultPopUp Delegate
     public delegate void OnChangeBattleResultPopUpShow();
     public OnChangeBattleResultPopUpShow onChangeBattleResultPopUpShow;
     public delegate void OnChangeBattleResultPopUpHide();
     public OnChangeBattleResultPopUpHide onChangeBattleResultPopUpHide;
+
 
     // DeckDrawPopUp Delegate
     public delegate void OnChangeDeckDrawPopUpShow();
@@ -35,12 +36,6 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public delegate void OnChangeDeckDrawPopUpHide();
     public OnChangeDeckDrawPopUpHide onChangeDeckDrawPopUpHide;
 
-    
-    // DeckRemovePopUp Delegate
-    public delegate void OnChangeDeckRemovePopUpShow();
-    public OnChangeDeckRemovePopUpShow onChangeDeckRemovePopUpShow;
-    public delegate void OnChangeDeckRemovePopUpHide();
-    public OnChangeDeckRemovePopUpHide onChangeDeckRemovePopUpHide;
 
     // Mercurius PopUp Delegate
     public delegate void OnMercuriusPopUpShow();
@@ -49,17 +44,31 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public OnMercuriusPopUpHide onMercuriusPopUpHide;
 
 
+    // CardEnhance PopUp Delegate
+    public delegate void OnCardEnhancePopUpShow();
+    public OnCardEnhancePopUpShow onCardEnhancePopUpShow;
+    public delegate void OnCardEnhancePopUpHide();
+    public OnCardEnhancePopUpHide onCardEnhancePopUpHide;
+
+    
+    // CardRemove PopUp Delegate
+    public delegate void OnCardRemovePopUpShow();
+    public OnCardEnhancePopUpShow onCardRemovePopUpShow;
+    public delegate void OnCardRemovePopUpHide();
+    public OnCardEnhancePopUpHide onCardRemovePopUpHide;
+
+
     [Header("팝업 UI 오브젝트")]
     public List<GameObject> popUpList = new List<GameObject>();
     public GameObject deckListPopUp; // 덱 목록 팝업
     public GameObject deckDrawPopUp; // 덱 드로우 팝업
-    public GameObject deckRemovePopUp; // 덱 제거 팝업
     public GameObject cardOnHandRemovePopUp; // 패 제거 팝업
-    public GameObject battleResultPopUp; // 전투 종료 후 카드 선택 팝업
-    public GameObject layoutCardOnHandForRemove; // 카드 제거 팝업의 선택된 카드가 움직일 위치의 레이아웃
-    public GameObject selectableCardList; // 전투 종료 보상 카드 목록 레이아웃 
-    public GameObject mercuriusPopUp;
-    public GameObject gameOverPopUp;
+    public GameObject battleResultPopUp; // 전투 보상 팝업
+    public GameObject mercuriusPopUp; // 상점 카드 팝업
+    public GameObject cardEnhancePopUp; // 카드 강화 팝업
+    public GameObject cardRemovePopUp; // 카드 제거 팝업
+    public GameObject gameOverPopUp; // 게임 오버 팝업
+
 
     [Header("패 제거 팝업 카드 위치설정용 슬롯 프리팹")]
     public GameObject RemoveCardSlotPrefab;
@@ -173,36 +182,48 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }
     }
 
-    // 덱 제거 팝업창 활성화
-    public void HandleShowDeckRemovePopUp(SyncList<Card> deck)
-    {
-        deckRemovePopUp.SetActive(true);
-        if(onChangeDeckRemovePopUpShow != null){
-            onChangeDeckRemovePopUpShow.Invoke();
-        }
-    }
-
-     // 덱 제거 팝업창 비활성화
-    public void HandleHideDeckRemovePopUp(SyncList<Card> deck)
-    {
-        if(onChangeDeckRemovePopUpHide != null){
-            onChangeDeckRemovePopUpHide.Invoke();
-        }
-    }
-
-    // Mercurius NPC 팝업
+    // 카드 상점 팝업
     public void HandleMercuriusPopUp(bool isPopUp)
     {
-        if(isPopUp)
-        {
+        if(isPopUp){
             mercuriusPopUp.SetActive(true);
-            if(onMercuriusPopUpShow != null)
-                onMercuriusPopUpShow.Invoke();   
-        }
-        else
-        {
-            if(onMercuriusPopUpHide != null)
+            if(onMercuriusPopUpShow != null){
+                onMercuriusPopUpShow.Invoke(); 
+            }  
+        }else{
+            if(onMercuriusPopUpHide != null){
                 onMercuriusPopUpHide.Invoke();
+            }
+        }
+    }
+
+    // 카드 상점 카드 강화 팝업
+    public void HandleCardEnhancePopUp(bool isOpen)
+    {
+        if(isOpen){
+            cardEnhancePopUp.SetActive(true);
+            if(onCardEnhancePopUpShow != null){
+                onCardEnhancePopUpShow.Invoke();  
+            }    
+        }else{
+            if(onCardEnhancePopUpHide != null){
+                onCardEnhancePopUpHide.Invoke();
+            } 
+        }
+    }
+
+    // 카드 상점 카드 제거 팝업
+    public void HandleCardRemovePopUp(bool isOpen)
+    {
+        if(isOpen){
+            cardRemovePopUp.SetActive(true);
+            if(onCardRemovePopUpShow != null){
+                onCardRemovePopUpShow.Invoke();  
+            }    
+        }else{
+            if(onCardRemovePopUpHide != null){
+                onCardRemovePopUpHide.Invoke();
+            } 
         }
     }
 
