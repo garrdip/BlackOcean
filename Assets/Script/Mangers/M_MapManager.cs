@@ -888,7 +888,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     // 가중치 랜덤 수행으로 방 타입 결정하여 반환
     private RoomType GetRoomType()
     {
-        /*
         int ramdomValue = Random.Range(0,100);
         if(ramdomValue < 10) return RoomType.CAMP;
         if(ramdomValue < 30) return RoomType.EVENT;
@@ -896,8 +895,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         if(ramdomValue < 50) return RoomType.CARD_NPC;
         if(ramdomValue < 60) return RoomType.ELITE;
         else return RoomType.MONSTER;
-        */
-        return RoomType.CARD_NPC;
     }
 
     // 육각형 그리드(배경) 생성

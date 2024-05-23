@@ -237,12 +237,14 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             CardEnhancePopUp.instance.HandleCardEnhancePreviewOpen(); // 선택한 카드 강화 프리뷰 팝업창 호출
             if(CardEnhancePopUp.instance.cardEnhancePreview.activeSelf && !isEnhancedPreviewCard){
                 CardEnhancePopUp.instance.CreateEnhancePreviewCard(card);
+                CardEnhancePopUp.instance.selectCardGuid = card.guid;
             }
         }
         if(PopUpUIManager.instance.cardRemovePopUp.activeSelf){
-            CardRemovePopUp.instance.HandleCardEnhancePreviewOpen();
+            CardRemovePopUp.instance.HandleCardRemovePreviewOpen(); // 선택한 카드 제거 프리뷰 팝업창 호출
             if(CardRemovePopUp.instance.cardRemovePreview.activeSelf && !isRemovePreviewCard){
                 CardRemovePopUp.instance.CreateRemovePreviewCard(card);
+                CardRemovePopUp.instance.selectCardGuid = card.guid;
             }
         }
     }

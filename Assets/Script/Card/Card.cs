@@ -7,13 +7,13 @@ using ProjectD;
 public class Card
 {
     public CardBase baseCard;
+    public string guid; // 카드 구분 용도로 사용되는 고유아이디 변수
     public bool isEnhanced;
     public int costAddition;
     public List<CardCharacteristic> cardCharacteristics = new List<CardCharacteristic>();
     public int experience;
     public bool tempEnhanced;
     public bool isReturnable; // 지치지 않는자에서만 런타임으로 쓰임
-    public string guid; // 카드 구분 용도로 사용되는 고유아이디 변수
     public bool isSoldout; // 상점카드에서만 사용되는 구매상태 변수
     public int cardPrice; // 상점카드에서만 사용되는 카드가격 변수
 
@@ -21,6 +21,7 @@ public class Card
     public Card(CardBase basecard)
     {
         baseCard = basecard;
+        guid = System.Guid.NewGuid().ToString();
     }
 
     public Card(){} // For Mirror Library default constructor
@@ -35,6 +36,7 @@ public class Card
     public Card (Card card)
     {
         baseCard = card.baseCard;
+        guid = card.guid;
         isEnhanced = card.isEnhanced;
         costAddition = card.costAddition;
         experience = card.experience;
@@ -47,6 +49,7 @@ public class Card
     {
         Card card = new Card();
         card.baseCard = baseCard;
+        card.guid = guid;
         card.isEnhanced = isEnhanced;
         card.costAddition = costAddition;
         card.experience = experience;

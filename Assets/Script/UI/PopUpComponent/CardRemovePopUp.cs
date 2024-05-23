@@ -9,11 +9,12 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
 {
     public List<GameObject> removableCards = new List<GameObject>();
     public List<GameObject> removePreviewCards = new List<GameObject>();
-    public GridLayoutGroup gridLayoutGroup;
-    
+    public string selectCardGuid;
+
     public GameObject cardRemovePreview;
 
     public CanvasGroup canvasGroup; 
+    public GridLayoutGroup gridLayoutGroup;
     public Button buttonCardRemoveOk;
     public Button buttonCardRemoveCancel;
 
@@ -30,13 +31,15 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
         buttonCardRemoveCancel.onClick.AddListener(() => HandleClickCardRemoveCancel());
     }
 
-    public void HandleCardEnhancePreviewOpen()
+    // 카드 제거 프리뷰창 활성화
+    public void HandleCardRemovePreviewOpen()
     {
         cardRemovePreview.SetActive(true);
         cardRemovePreview.GetComponent<CanvasGroup>().DOFade(1f, 0.5f);
         gridLayoutGroup.gameObject.SetActive(false);
     }
 
+    // 카드 제거 프리뷰창 비활성화
     public void HandleCardRemovePreviewHide()
     {
         cardRemovePreview.GetComponent<CanvasGroup>().DOFade(0f, 0.5f).OnComplete(() => {
@@ -50,20 +53,28 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
         foreach(GameObject card in removableCards){
             card.transform.localScale = Vector3.one;
         }
+        selectCardGuid = string.Empty;
     }
 
+    // 카드 제거 승인
     private void HandleClickCardRemoveOk()
     {
-        HandleCardRemovePreviewHide();
-        PopUpUIManager.instance.HandleCardRemovePopUp(false);
-        // TODO : 선택한 카드 deck SyncList에서 찾아서 해당 카드 데이터 제거
+        SyncList<Card> deck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().deck;
+        int index = deck.FindIndex(c => c.guid.Equals(selectCardGuid));
+        if(index != -1){
+            deck.RemoveAt(index);
+            PopUpUIManager.instance.HandleCardRemovePopUp(false);
+            HandleCardRemovePreviewHide();
+        }
     }
 
+    // 카드 제거 취소
     private void HandleClickCardRemoveCancel()
     {
         HandleCardRemovePreviewHide();
     }
 
+    // 카드 제거 프리뷰에 사용될 카드 오브젝트 생성
     public void CreateRemovePreviewCard(Card card)
     {
         GameObject removeCardObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, new Vector3(0f, 2f, 0f), Quaternion.identity);
