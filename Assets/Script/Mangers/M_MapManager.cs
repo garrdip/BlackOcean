@@ -890,7 +890,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         int ramdomValue = Random.Range(0,100);
         if(ramdomValue < 10) return RoomType.CAMP;
-        if(ramdomValue < 30) return RoomType.EVENT;
+        if(ramdomValue < 20) return RoomType.EVNET_POSITIIVE;
+        if(ramdomValue < 30) return RoomType.EVENT_NEGATIVE;
         if(ramdomValue < 40) return RoomType.ITEM_NPC;
         if(ramdomValue < 50) return RoomType.CARD_NPC;
         if(ramdomValue < 60) return RoomType.ELITE;
