@@ -882,7 +882,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             case RoomType.ITEM_NPC:
                 GenerateItemNPC();
                 break;
-            case RoomType.EVNET_POSITIIVE:
+            case RoomType.EVENT_POSITIIVE:
                 RpcPlayEventConversation(true);
                 break;
             case RoomType.EVENT_NEGATIVE:
@@ -1260,7 +1260,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         Camera.main.orthographicSize = battelSceneCameraSize;
         switch(roomType)
         {
-            case RoomType.EVNET_POSITIIVE:
+            case RoomType.EVENT_POSITIIVE:
                 M_MessageManager.instance
                     .Position(ToastPosition.Top)
                     .FadeInTime(2.5f)

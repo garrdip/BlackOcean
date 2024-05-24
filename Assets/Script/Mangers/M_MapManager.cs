@@ -890,7 +890,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         int ramdomValue = Random.Range(0,100);
         if(ramdomValue < 10) return RoomType.CAMP;
-        if(ramdomValue < 20) return RoomType.EVNET_POSITIIVE;
+        if(ramdomValue < 20) return RoomType.EVENT_POSITIIVE;
         if(ramdomValue < 30) return RoomType.EVENT_NEGATIVE;
         if(ramdomValue < 40) return RoomType.ITEM_NPC;
         if(ramdomValue < 50) return RoomType.CARD_NPC;
@@ -1061,7 +1061,11 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         GameObject mapInfoPopUpItemObject = Instantiate(MapUI.instance.mapInfoPopUpItemPrefab, Vector3.zero, Quaternion.identity);
         MapInfoPopUpItem mapInfoPopUpItem = mapInfoPopUpItemObject.GetComponent<MapInfoPopUpItem>();
         mapInfoPopUpItem.netId = gamePlayer.netId;
-        mapInfoPopUpItem.textRoomType.text = hexagonMapRoom.roomType.ToString();
+        if(hexagonMapRoom.roomType == RoomType.EVENT_POSITIIVE || hexagonMapRoom.roomType == RoomType.EVENT_NEGATIVE){
+            mapInfoPopUpItem.textRoomType.text = "EVENT"; // 긍정적 or 부정적 이벤트인 경우 정보창에는 EVENT로만 표시
+        }else{
+            mapInfoPopUpItem.textRoomType.text = hexagonMapRoom.roomType.ToString();
+        }
         MapUI.instance.mapInfoPopUps.Add(mapInfoPopUpItem);
         if(gamePlayer.isOwned){
             mapInfoPopUpItemObject.transform.SetParent(MapUI.instance.ownerPosition.transform);
