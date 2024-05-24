@@ -346,7 +346,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  roomType: 7
+  roomType: 8
   coordinate: {x: 0, y: 0}
   position: {x: 0, y: 0, z: 0}
   mapBoss: {fileID: 0}
