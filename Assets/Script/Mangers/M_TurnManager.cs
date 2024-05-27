@@ -899,27 +899,27 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         int randomNumber = Random.Range(0, 2);
         if(randomNumber == 0){
             // RyuJinSol 생성
-            var campNPC = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_RyuJinSol"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
-            NetworkServer.Spawn(campNPC.gameObject);
+            var campRyuJinSol = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_RyuJinSol"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
+            NetworkServer.Spawn(campRyuJinSol.gameObject);
 
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
             NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
-            avatar.GetComponent<TargetObject>().monster = campNPC;
+            avatar.GetComponent<TargetObject>().monster = campRyuJinSol;
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
-            campNPC.parent = avatar.GetComponent<TargetObject>();
+            campRyuJinSol.parent = avatar.GetComponent<TargetObject>();
             RpcPlayCampConversation(VOICE_TYPE.RyuJinSol);
         }else{
-            // Sofia 생성
-            var campNPC = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_RyuJinSol"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
-            NetworkServer.Spawn(campNPC.gameObject);
+            // Sophia 생성
+            var campSophia = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_Sophia"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
+            NetworkServer.Spawn(campSophia.gameObject);
 
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
             NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
-            avatar.GetComponent<TargetObject>().monster = campNPC;
+            avatar.GetComponent<TargetObject>().monster = campSophia;
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
-            campNPC.parent = avatar.GetComponent<TargetObject>();
+            campSophia.parent = avatar.GetComponent<TargetObject>();
             RpcPlayCampConversation(VOICE_TYPE.Sofia);
         }
     }
