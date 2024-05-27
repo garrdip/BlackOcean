@@ -8,9 +8,14 @@ using DG.Tweening;
 
 public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
 {
-    public List<GameObject> enhanceableCards = new List<GameObject>();
-    public List<GameObject> enhancePreivewCards = new List<GameObject>();
+    public List<GameObject> enhanceableCards = new List<GameObject>(); // 강화 가능 카드 오브젝트 리스트
+    public List<GameObject> enhancePreivewCards = new List<GameObject>(); // 강화 프리뷰창 카드 오브젝트 리스트
     public string selectCardGuid;
+
+    public Image[] enhanceProgressArrows; // 강화 진행 상태 표시 화살표 이미지 배열
+    private Coroutine enhanceProgressCoroutine;
+    private Coroutine enhanceOutlineCoroutine;
+    public Material cardEnhancedOutline; // 강화 카드 머티리얼
 
     public GameObject cardEnhancePreview;
     public GameObject previousCardPosition;
@@ -38,16 +43,13 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
     public void HandleCardEnhancePreviewOpen()
     {
         cardEnhancePreview.SetActive(true);
-        cardEnhancePreview.GetComponent<CanvasGroup>().DOFade(1f, 0.5f);
         gridLayoutGroup.gameObject.SetActive(false);
     }
 
     // 카드 강화 프리뷰창 비활성화
     public void HandleCardEnhancePreviewHide()
     {
-        cardEnhancePreview.GetComponent<CanvasGroup>().DOFade(0f, 0.5f).OnComplete(() => {
-            cardEnhancePreview.SetActive(false);
-        });
+        cardEnhancePreview.SetActive(false);
         gridLayoutGroup.gameObject.SetActive(true);
         foreach(GameObject card in enhancePreivewCards){
             Destroy(card);
@@ -57,24 +59,79 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
             card.transform.localScale = Vector3.one;
         }
         selectCardGuid = string.Empty;
+        ResetEnhanceProgress();
     }
 
     // 카드 강화 승인
     private void HandleClickCardEnhnaceOk()
     {
-        SyncList<Card> deck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().deck;
-        int index = deck.FindIndex(c => c.guid.Equals(selectCardGuid));
-        if(index != -1){
-            HandleCardEnhancePreviewHide();
-            PopUpUIManager.instance.HandleCardEnhancePopUp(false);
-            deck[index].isEnhanced = true;
-        }
+        buttonEnhanceOk.gameObject.SetActive(false);
+        buttonEnhanceCancel.gameObject.SetActive(false);
+        enhanceProgressCoroutine = StartCoroutine(EnhanceProgress(() => {
+            enhanceOutlineCoroutine = StartCoroutine(EnhancedOutline(() => {
+                SyncList<Card> deck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().deck;
+                int index = deck.FindIndex(c => c.guid.Equals(selectCardGuid));
+                if(index != -1){
+                    HandleCardEnhancePreviewHide();
+                    PopUpUIManager.instance.HandleCardEnhancePopUp(false);
+                    deck[index].isEnhanced = true;
+                    buttonEnhanceOk.gameObject.SetActive(true);
+                    buttonEnhanceCancel.gameObject.SetActive(true);
+                }
+            }));
+        }));
     }
 
     // 카드 강화 취소
     private void HandleClickCardEnhnaceCancel()
     {
         HandleCardEnhancePreviewHide();
+    }
+
+    // 강화된 카드 외곽선 머티리얼 변경
+    private IEnumerator EnhancedOutline(System.Action callback = null)
+    {
+        Material enhancedMaterial = new Material(cardEnhancedOutline);
+        CardOnDeck enhancedCardOnDeck = enhancePreivewCards[1].GetComponent<CardOnDeck>();
+        enhancedCardOnDeck.cardBackground.material = enhancedMaterial;
+        float duration = 1.5f;
+        float timer = 0f;
+        while (timer < duration)
+        {
+            float outlineRatio = timer / duration;
+            enhancedMaterial.SetFloat("_OutlineWidth2", outlineRatio);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        if(callback != null){
+            callback();
+        }
+    }
+
+    // 강화 진행 표시 코루틴 시작 및 화살표 색상 녹색으로 순차 변경
+    private IEnumerator EnhanceProgress(System.Action callback = null)
+    {
+        for(int i=0; i<enhanceProgressArrows.Length; i++){
+            enhanceProgressArrows[i].color = Color.green;
+            yield return new WaitForSeconds(0.15f);
+        }
+        if(callback != null){
+            callback();
+        }
+    }
+
+    // 강화 진행 표시 코루틴 중지 및 화살표 색상 초기화
+    private void ResetEnhanceProgress()
+    {
+        if(enhanceProgressCoroutine != null){
+            StopCoroutine(enhanceProgressCoroutine);
+        }
+        if(enhanceOutlineCoroutine != null){
+            StopCoroutine(enhanceOutlineCoroutine);
+        }
+        for(int i=0; i<enhanceProgressArrows.Length; i++){
+            enhanceProgressArrows[i].color = Color.white;
+        }
     }
 
     // 카드 강화 프리뷰에 사용될 카드 오브젝트 생성

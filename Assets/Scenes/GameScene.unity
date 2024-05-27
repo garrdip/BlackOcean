@@ -929,7 +929,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.13578582, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1213,7 +1213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.13578582, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2332,7 +2332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.13578582, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2637,6 +2637,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5595233def1e7c446a5290bd44575b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDeckListPopUpOpen: 0
+  isDeckDrawPopUpOpen: 0
+  isCardOnHandRemovePopUpOpen: 0
+  isBattleResultPopUpOpen: 0
+  isMercuriusPopUpOpen: 0
+  isCardEnhancePopUpOpen: 0
+  isCardRemovePopUpOpen: 0
+  isGameoverPopUpOpen: 0
   popUpList:
   - {fileID: 1022321676}
   - {fileID: 1581196589}
@@ -11314,7 +11322,6 @@ MonoBehaviour:
   gridLayoutGroup: {fileID: 789904807}
   buttonCardRemoveOk: {fileID: 720581397}
   buttonCardRemoveCancel: {fileID: 5984910}
-  isOpenPreview: 0
 --- !u!1 &870305301
 GameObject:
   m_ObjectHideFlags: 0
@@ -12054,6 +12061,13 @@ MonoBehaviour:
   enhanceableCards: []
   enhancePreivewCards: []
   selectCardGuid: 
+  enhanceProgressArrows:
+  - {fileID: 44004952}
+  - {fileID: 1376947426}
+  - {fileID: 192539008}
+  - {fileID: 67637705}
+  - {fileID: 1265857995}
+  cardEnhancedOutline: {fileID: 2100000, guid: 78b2bc3db0a4ae54c9cef1496a2f3e79, type: 2}
   cardEnhancePreview: {fileID: 1490399728}
   previousCardPosition: {fileID: 1451262272}
   afterCardPosition: {fileID: 302962662}
@@ -16958,7 +16972,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.13578582, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -18148,7 +18162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.13578582, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -19353,7 +19367,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1490399728}
   m_Enabled: 1
-  m_Alpha: 0.5
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -53750,6 +53764,7 @@ MonoBehaviour:
   cardOwner: {fileID: 0}
   canvasGroup: {fileID: 617208569021601904}
   cardImages: []
+  cardDissolveMaterials: []
   cardBackground: {fileID: 6205162579322818999}
   cardIllust: {fileID: 790338273587401642}
   cardImageFrame: {fileID: 6762161039316179461}

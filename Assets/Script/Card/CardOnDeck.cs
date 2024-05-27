@@ -390,7 +390,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
 
     // CardOnDeck Dissolve 효과
-    public IEnumerator CardOnDeckDissolve(System.Action callbacak = null)
+    public IEnumerator CardOnDeckDissolve(System.Action callback = null)
     {
         float duration = 1.5f;
         float timer = 0f;
@@ -414,6 +414,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             timer += Time.deltaTime;
             yield return null;
         }
-        callbacak();
+        if(callback != null){
+            callback();
+        }
     }
 }
