@@ -35,16 +35,13 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
     public void HandleCardRemovePreviewOpen()
     {
         cardRemovePreview.SetActive(true);
-        cardRemovePreview.GetComponent<CanvasGroup>().DOFade(1f, 0.5f);
         gridLayoutGroup.gameObject.SetActive(false);
     }
 
     // 카드 제거 프리뷰창 비활성화
     public void HandleCardRemovePreviewHide()
     {
-        cardRemovePreview.GetComponent<CanvasGroup>().DOFade(0f, 0.5f).OnComplete(() => {
-            cardRemovePreview.SetActive(false);
-        });
+        cardRemovePreview.SetActive(false);
         gridLayoutGroup.gameObject.SetActive(true);
         foreach(GameObject card in removePreviewCards){
             Destroy(card);
@@ -59,13 +56,22 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
     // 카드 제거 승인
     private void HandleClickCardRemoveOk()
     {
-        SyncList<Card> deck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().deck;
-        int index = deck.FindIndex(c => c.guid.Equals(selectCardGuid));
-        if(index != -1){
-            deck.RemoveAt(index);
-            PopUpUIManager.instance.HandleCardRemovePopUp(false);
-            HandleCardRemovePreviewHide();
-        }
+        CardOnDeck cardOnDeck = removePreviewCards[0].GetComponent<CardOnDeck>();
+        buttonCardRemoveOk.gameObject.SetActive(false);
+        buttonCardRemoveCancel.gameObject.SetActive(false);
+        StartCoroutine(
+            cardOnDeck.CardOnDeckDissolve(() => {
+                SyncList<Card> deck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().deck;
+                int index = deck.FindIndex(c => c.guid.Equals(selectCardGuid));
+                if(index != -1){
+                    deck.RemoveAt(index);
+                    PopUpUIManager.instance.HandleCardRemovePopUp(false);
+                    HandleCardRemovePreviewHide();
+                    buttonCardRemoveOk.gameObject.SetActive(true);
+                    buttonCardRemoveCancel.gameObject.SetActive(true);
+                }
+            })
+        );
     }
 
     // 카드 제거 취소

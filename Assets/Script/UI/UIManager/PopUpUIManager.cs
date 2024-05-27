@@ -57,6 +57,15 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public delegate void OnCardRemovePopUpHide();
     public OnCardEnhancePopUpHide onCardRemovePopUpHide;
 
+    [Header("팝업 활성화 상태값")]
+    public bool isDeckListPopUpOpen = false;
+    public bool isDeckDrawPopUpOpen = false;
+    public bool isCardOnHandRemovePopUpOpen = false;
+    public bool isBattleResultPopUpOpen = false;
+    public bool isMercuriusPopUpOpen = false;
+    public bool isCardEnhancePopUpOpen = false;
+    public bool isCardRemovePopUpOpen = false;
+    public bool isGameoverPopUpOpen = false;
 
     [Header("팝업 UI 오브젝트")]
     public List<GameObject> popUpList = new List<GameObject>();
@@ -92,6 +101,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // PrefareDeck 정보 팝업 활성화
     public void HandleShowPrefareDeckListPopUp()
     {
+        isDeckListPopUpOpen = true;
         deckListPopUp.gameObject.SetActive(true);
         if(onChangeDeckListPopUpShow != null){
             onChangeDeckListPopUpShow.Invoke(DeckListType.PREFARE_DECK);
@@ -103,6 +113,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // TrashDeck 정보 팝업 활성화
     public void HandleShowTrashDeckListPopUp()
     {
+        isDeckListPopUpOpen = true;
         deckListPopUp.gameObject.SetActive(true);
         if(onChangeDeckListPopUpShow != null){
             onChangeDeckListPopUpShow.Invoke(DeckListType.TRASH_DECK);
@@ -113,6 +124,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
 
     public void HandShowForgottenDeckListPopUp()
     {
+        isDeckListPopUpOpen = true;
         deckListPopUp.gameObject.SetActive(true);
         if(onChangeDeckListPopUpShow != null){
             onChangeDeckListPopUpShow.Invoke(DeckListType.FORGOTTEN_DECK);
@@ -124,6 +136,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 덱 정보 팝업 비활성화
     public void HandleHideDeckListPopUp()
     {
+        isDeckListPopUpOpen = false;
         if(onChangeDeckListPopUpHide != null){
             onChangeDeckListPopUpHide.Invoke();
         }
@@ -132,6 +145,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // CardOnHand 제거 팝업 활성화
     public void HandleShowCardOnHandRemovePopUp()
     {
+        isCardOnHandRemovePopUpOpen = true;
         cardOnHandRemovePopUp.gameObject.SetActive(true);
         if(onChangeCardOnHandRemovePopUpShow != null){
             onChangeCardOnHandRemovePopUpShow.Invoke();
@@ -141,6 +155,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // CardOnHand 제거 팝업 비활성화
     public void HandleHideCardOnHandRemovePopUp()
     {
+        isCardOnHandRemovePopUpOpen = false;
         if(onChangeCardOnHandRemovePopUpHide != null){
             onChangeCardOnHandRemovePopUpHide.Invoke();
         }
@@ -151,6 +166,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 전투보상 카드선택 팝업창 활성화
     public void HandleShowBattleResultPopUp()
     {
+        isBattleResultPopUpOpen = true;
         battleResultPopUp.SetActive(true);
         if(onChangeBattleResultPopUpShow != null){
             onChangeBattleResultPopUpShow.Invoke();
@@ -160,6 +176,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 전투보상 카드선택 팝업창 비활성화
     public void HandleHideBattleResultPopUp()
     {
+        isBattleResultPopUpOpen = false;
         if(onChangeBattleResultPopUpHide != null){
             onChangeBattleResultPopUpHide.Invoke();
         } 
@@ -168,6 +185,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 덱 드로우 팝업창 활성화
     public void HandleShowDeckDrawPopUp()
     {
+        isDeckDrawPopUpOpen = true;
         deckDrawPopUp.SetActive(true);
         if(onChangeDeckDrawPopUpShow != null){
             onChangeDeckDrawPopUpShow.Invoke();
@@ -177,6 +195,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 덱 드로우 팝업창 비활성화
     public void HandleHideDeckDrawPopUp()
     {
+        isDeckDrawPopUpOpen = false;
         if(onChangeDeckDrawPopUpHide != null){
             onChangeDeckDrawPopUpHide.Invoke();
         }
@@ -185,6 +204,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 카드 상점 팝업
     public void HandleMercuriusPopUp(bool isPopUp)
     {
+        isMercuriusPopUpOpen = isPopUp;
         if(isPopUp){
             mercuriusPopUp.SetActive(true);
             if(onMercuriusPopUpShow != null){
@@ -200,6 +220,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 카드 상점 카드 강화 팝업
     public void HandleCardEnhancePopUp(bool isOpen)
     {
+        isCardEnhancePopUpOpen = isOpen;
         if(isOpen){
             cardEnhancePopUp.SetActive(true);
             if(onCardEnhancePopUpShow != null){
@@ -215,6 +236,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 카드 상점 카드 제거 팝업
     public void HandleCardRemovePopUp(bool isOpen)
     {
+        isCardRemovePopUpOpen = isOpen;
         if(isOpen){
             cardRemovePopUp.SetActive(true);
             if(onCardRemovePopUpShow != null){
@@ -230,6 +252,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 게임오버 팝업 활성화
     public void HandleShowGameOverPopUp()
     {
+        isGameoverPopUpOpen = true;
         gameOverPopUp.SetActive(true);
         gameOverPopUp.GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
     }
@@ -237,6 +260,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     // 게임오버 팝업 비활성화
     public void HandleHideGameOverPopUp()
     {
+        isGameoverPopUpOpen = false;
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         gameOverPopUp.GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).OnComplete(() => {
             gameOverPopUp.SetActive(false);

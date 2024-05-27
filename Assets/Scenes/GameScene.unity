@@ -4818,7 +4818,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 337954005}
   m_Enabled: 1
-  m_Alpha: 0.5
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -11306,12 +11306,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1b1a7e2533ea15448ff98b82a6ce065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvasGroup: {fileID: 869835848}
   removableCards: []
-  gridLayoutGroup: {fileID: 789904807}
+  removePreviewCards: []
+  selectCardGuid: 
   cardRemovePreview: {fileID: 337954005}
+  canvasGroup: {fileID: 869835848}
+  gridLayoutGroup: {fileID: 789904807}
   buttonCardRemoveOk: {fileID: 720581397}
   buttonCardRemoveCancel: {fileID: 5984910}
+  isOpenPreview: 0
 --- !u!1 &870305301
 GameObject:
   m_ObjectHideFlags: 0
@@ -12048,15 +12051,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9c9c29d9ae9069408e316b82293c0b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enhanceableCards: []
+  enhancePreivewCards: []
+  selectCardGuid: 
   cardEnhancePreview: {fileID: 1490399728}
   previousCardPosition: {fileID: 1451262272}
   afterCardPosition: {fileID: 302962662}
+  canvasGroup: {fileID: 914976638}
+  gridLayoutGroup: {fileID: 545096788}
   buttonEnhanceOk: {fileID: 2056106406}
   buttonEnhanceCancel: {fileID: 939124851}
-  enhnacePreivewCards: []
-  canvasGroup: {fileID: 914976638}
-  enhanceableCards: []
-  gridLayoutGroup: {fileID: 545096788}
 --- !u!1 &923343003
 GameObject:
   m_ObjectHideFlags: 0
@@ -53734,17 +53738,18 @@ MonoBehaviour:
       info: []
       cardCharacteristics: 
       cardInfo: []
+    guid: 
     isEnhanced: 0
     costAddition: 0
     cardCharacteristics: 
     experience: 0
     tempEnhanced: 0
     isReturnable: 0
-    guid: 
     isSoldout: 0
     cardPrice: 0
   cardOwner: {fileID: 0}
   canvasGroup: {fileID: 617208569021601904}
+  cardImages: []
   cardBackground: {fileID: 6205162579322818999}
   cardIllust: {fileID: 790338273587401642}
   cardImageFrame: {fileID: 6762161039316179461}

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +8,7 @@ using DG.Tweening;
 using TMPro;
 using AYellowpaper.SerializedCollections;
 using ProjectD;
+using Coffee.UIEffects;
 
 public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
@@ -15,6 +17,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public CanvasGroup canvasGroup;
 
     [Header("CardOnDeck Image 컴포넌트")]
+    public List<GameObject> cardImages = new List<GameObject>();
     public Image cardBackground;
     public Image cardIllust;
     public Image cardImageFrame;
@@ -34,8 +37,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public List<GameObject> expBlocks = new List<GameObject>(); // 경험치 바 내부 블록 리스트
 
     private Vector3 originScale;
-    private bool isTweening = false; // Dotween 애니매이션 함수들 실행중인지 여부
-    public bool isShopCardInfo = false; // 카드 상점에서 정보 자세히 보기용 카드인지 여부
+    public bool isShopCardInfo = false; // 카드 상점에서 정보 자세히 보기용 카드인지 여부(카드 상점 팝업창에 미리 생성되어있는 카드 정보용 오브젝트만 true로 설정되어있음)
     public bool isEnhancedPreviewCard = false;
     public bool isRemovePreviewCard = false;
 
@@ -172,16 +174,16 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         if(!isShopCardInfo){
-            if(PopUpUIManager.instance.mercuriusPopUp.activeSelf && !PopUpUIManager.instance.cardEnhancePopUp.activeSelf){
+            if(PopUpUIManager.instance.isCardEnhancePopUpOpen || PopUpUIManager.instance.isCardRemovePopUpOpen || PopUpUIManager.instance.cardRemovePopUp.GetComponent<CardRemovePopUp>().cardRemovePreview.activeSelf){
+                return;
+            }else if(PopUpUIManager.instance.isMercuriusPopUpOpen){
                 MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
                 mercuriusPopUp.ShowHoverdCardInfo(card);
             }else{
-                if(!isTweening){
-                    transform.DOScale(originScale * 1.3f, 0.3f);
-                }
-                GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
-                TextDetector.instance.StartTextDetect(graphicRaycaster);
+                transform.DOScale(originScale * 1.3f, 0.3f);
             }
+            GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
+            TextDetector.instance.StartTextDetect(graphicRaycaster);
             AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_mouseover_2"));
             M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
@@ -190,22 +192,22 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerExit(PointerEventData pointerEventData)
     {
         if(!isShopCardInfo){
-            if(PopUpUIManager.instance.mercuriusPopUp.activeSelf && !PopUpUIManager.instance.cardEnhancePopUp.activeSelf){
+            if(PopUpUIManager.instance.isCardEnhancePopUpOpen || PopUpUIManager.instance.isCardRemovePopUpOpen || PopUpUIManager.instance.cardRemovePopUp.GetComponent<CardRemovePopUp>().cardRemovePreview.activeSelf){
+                return;
+            }else if(PopUpUIManager.instance.isMercuriusPopUpOpen){
                 MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
                 mercuriusPopUp.HideHoverdCardInfo();
             }else{
-                if(!isTweening){
-                    transform.DOScale(originScale, 0.3f);
-                }
-                TextDetector.instance.StopTextDetect();
+                transform.DOScale(originScale, 0.3f);
             }
+            TextDetector.instance.StopTextDetect();
         }
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
-        if(PopUpUIManager.instance.battleResultPopUp.activeSelf){
+        if(PopUpUIManager.instance.isBattleResultPopUpOpen){
             if(cardOwner != null){
                 RequsetCardReward();
                 ChangeCardOnDeckRewardedState(M_TurnManager.instance.rewardCardObjects);
@@ -215,7 +217,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             }
         }
         // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
-        if(PopUpUIManager.instance.mercuriusPopUp.activeSelf && !card.isSoldout){
+        if(PopUpUIManager.instance.isMercuriusPopUpOpen && !card.isSoldout){
             RequestCardPurchase();
             ChangeCardOnDeckSoldOutState();
             CardOnDeckClickAnimation();
@@ -223,7 +225,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             M_SoundManager.instance.PlaySFX(shopCardPurchaseAudio, shopCardPurchaseAudio.length);
         }
         //DeckDrawPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
-        if(PopUpUIManager.instance.deckDrawPopUp.activeSelf){
+        if(PopUpUIManager.instance.isDeckDrawPopUpOpen){
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
@@ -233,14 +235,14 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             int index = deckDrawPopUp.addtionDrawCardObjects.FindIndex((cardObject) =>  cardObject.GetComponent<CardOnDeck>() == this); // 팝업에서 선택한 카드의 인덱스 조회
             gamePlayerDeck.CmdSpawnAddtionDrawCard(card, index);
         }
-        if(PopUpUIManager.instance.cardEnhancePopUp.activeSelf){
+        if(PopUpUIManager.instance.isCardEnhancePopUpOpen){
             CardEnhancePopUp.instance.HandleCardEnhancePreviewOpen(); // 선택한 카드 강화 프리뷰 팝업창 호출
             if(CardEnhancePopUp.instance.cardEnhancePreview.activeSelf && !isEnhancedPreviewCard){
                 CardEnhancePopUp.instance.CreateEnhancePreviewCard(card);
                 CardEnhancePopUp.instance.selectCardGuid = card.guid;
             }
         }
-        if(PopUpUIManager.instance.cardRemovePopUp.activeSelf){
+        if(PopUpUIManager.instance.isCardRemovePopUpOpen){
             CardRemovePopUp.instance.HandleCardRemovePreviewOpen(); // 선택한 카드 제거 프리뷰 팝업창 호출
             if(CardRemovePopUp.instance.cardRemovePreview.activeSelf && !isRemovePreviewCard){
                 CardRemovePopUp.instance.CreateRemovePreviewCard(card);
@@ -385,5 +387,31 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             }
         }
         else textCardCost.text = (card.baseCard.cost + card.costAddition).ToString();
+    }
+
+    // CardOnDeck Dissolve 효과
+    public IEnumerator CardOnDeckDissolve(System.Action callbacak = null)
+    {
+        float duration = 1.5f;
+        float timer = 0f;
+        while (timer < duration)
+        {
+            float dissolveRatio = timer / duration;
+            float reverRatio = 1 - (dissolveRatio);
+            foreach(GameObject cardParts in cardImages){
+                UIDissolve dissolve = cardParts.GetComponent<UIDissolve>();
+                dissolve.effectFactor = dissolveRatio;
+            }
+            foreach(GameObject expBlock in expBlocks){
+                Image image = expBlock.GetComponent<Image>();
+                image.color = new Color(image.color.r, image.color.g, image.color.b, reverRatio);
+            }
+            textCardCost.alpha = reverRatio;
+            textCardDescription.alpha = reverRatio;
+            textCardName.alpha = reverRatio;
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        callbacak();
     }
 }
