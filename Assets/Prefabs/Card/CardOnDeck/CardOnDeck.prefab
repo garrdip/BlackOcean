@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1331417341799976871}
   - component: {fileID: 2523856705606030015}
   - component: {fileID: 5672053711782125212}
-  - component: {fileID: 2472751926258627704}
   m_Layer: 0
   m_Name: CardBackground
   m_TagString: Untagged
@@ -77,34 +76,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2472751926258627704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2026575689133234639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce76b7a490bd74f34a2f2752641aea24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectFactor: 0
-  m_Width: 0.35
-  m_Softness: 0.5
-  m_Color: {r: 0.8867924, g: 0.06274474, b: 0.06274474, a: 1}
-  m_ColorMode: 1
-  m_TransitionTexture: {fileID: 2800000, guid: 3e04c247fb2604af186173fce0bc62de, type: 3}
-  m_EffectArea: 0
-  m_KeepAspectRatio: 0
-  m_Player:
-    play: 0
-    initialPlayDelay: 0
-    duration: 1
-    loop: 0
-    loopDelay: 0
-    updateMode: 0
-  m_Reverse: 0
 --- !u!1 &2993757689029509762
 GameObject:
   m_ObjectHideFlags: 0
@@ -193,7 +164,6 @@ GameObject:
   - component: {fileID: 148246655583190092}
   - component: {fileID: 2277851541170849350}
   - component: {fileID: 1323456622138383489}
-  - component: {fileID: 6560791446913238424}
   m_Layer: 0
   m_Name: CardIllust
   m_TagString: Untagged
@@ -259,34 +229,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6560791446913238424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3134062999986738214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce76b7a490bd74f34a2f2752641aea24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectFactor: 0
-  m_Width: 0.35
-  m_Softness: 0.5
-  m_Color: {r: 0.8862745, g: 0.0627451, b: 0.0627451, a: 1}
-  m_ColorMode: 1
-  m_TransitionTexture: {fileID: 2800000, guid: 3e04c247fb2604af186173fce0bc62de, type: 3}
-  m_EffectArea: 0
-  m_KeepAspectRatio: 0
-  m_Player:
-    play: 0
-    initialPlayDelay: 0
-    duration: 1
-    loop: 0
-    loopDelay: 0
-    updateMode: 0
-  m_Reverse: 0
 --- !u!1 &5342704224587442553
 GameObject:
   m_ObjectHideFlags: 0
@@ -298,7 +240,6 @@ GameObject:
   - component: {fileID: 4357356101532414750}
   - component: {fileID: 943296570209693651}
   - component: {fileID: 3692264135804330070}
-  - component: {fileID: 5291363600623853497}
   m_Layer: 0
   m_Name: CardEmblem
   m_TagString: Untagged
@@ -364,34 +305,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5291363600623853497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5342704224587442553}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce76b7a490bd74f34a2f2752641aea24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectFactor: 0
-  m_Width: 0.35
-  m_Softness: 0.5
-  m_Color: {r: 0.8862745, g: 0.0627451, b: 0.0627451, a: 1}
-  m_ColorMode: 1
-  m_TransitionTexture: {fileID: 2800000, guid: 3e04c247fb2604af186173fce0bc62de, type: 3}
-  m_EffectArea: 0
-  m_KeepAspectRatio: 0
-  m_Player:
-    play: 0
-    initialPlayDelay: 0
-    duration: 1
-    loop: 0
-    loopDelay: 0
-    updateMode: 0
-  m_Reverse: 0
 --- !u!1 &6197804257486020565
 GameObject:
   m_ObjectHideFlags: 0
@@ -403,7 +316,6 @@ GameObject:
   - component: {fileID: 7390497040266911101}
   - component: {fileID: 3770423251274030679}
   - component: {fileID: 5004063315363468590}
-  - component: {fileID: 8130344549876934403}
   m_Layer: 0
   m_Name: CardImageFrame
   m_TagString: Untagged
@@ -469,34 +381,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8130344549876934403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6197804257486020565}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce76b7a490bd74f34a2f2752641aea24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectFactor: 0
-  m_Width: 0.35
-  m_Softness: 0.5
-  m_Color: {r: 0.8862745, g: 0.0627451, b: 0.0627451, a: 1}
-  m_ColorMode: 1
-  m_TransitionTexture: {fileID: 2800000, guid: 3e04c247fb2604af186173fce0bc62de, type: 3}
-  m_EffectArea: 0
-  m_KeepAspectRatio: 0
-  m_Player:
-    play: 0
-    initialPlayDelay: 0
-    duration: 1
-    loop: 0
-    loopDelay: 0
-    updateMode: 0
-  m_Reverse: 0
 --- !u!1 &6285776431920331035
 GameObject:
   m_ObjectHideFlags: 0
@@ -732,11 +616,22 @@ MonoBehaviour:
   - {fileID: 6197804257486020565}
   - {fileID: 7364290439181934712}
   - {fileID: 5342704224587442553}
+  cardDissolveMaterials:
+  - {fileID: 2100000, guid: 4f6dca918abd4694cb53060929aeb1fc, type: 2}
+  - {fileID: 2100000, guid: 338070d2d3d14f24eaaea9ad82a734f5, type: 2}
+  - {fileID: 2100000, guid: 4b979085da6c294468221d69b239a6ad, type: 2}
+  - {fileID: 2100000, guid: 352c6080a183f274cae1d5490c2e4172, type: 2}
+  - {fileID: 2100000, guid: 66f5cbe0a21882c4798d33d252a5cff7, type: 2}
   cardBackground: {fileID: 5672053711782125212}
   cardIllust: {fileID: 1323456622138383489}
   cardImageFrame: {fileID: 5004063315363468590}
   cardGradeFrame: {fileID: 4945185048719285761}
   cardEmblem: {fileID: 3692264135804330070}
+  cardBackgroundDissolveMaterial: {fileID: 2100000, guid: 4f6dca918abd4694cb53060929aeb1fc, type: 2}
+  cardIllustDissolveMaterial: {fileID: 2100000, guid: 338070d2d3d14f24eaaea9ad82a734f5, type: 2}
+  cardImageFrameDissolveMaterial: {fileID: 2100000, guid: 4b979085da6c294468221d69b239a6ad, type: 2}
+  cardGradeFrameDissolveMaterial: {fileID: 2100000, guid: 352c6080a183f274cae1d5490c2e4172, type: 2}
+  cardEmblemDissolveMaterial: {fileID: 2100000, guid: 66f5cbe0a21882c4798d33d252a5cff7, type: 2}
   textCardName: {fileID: 6285776433897151697}
   textCardDescription: {fileID: 6285776431920331037}
   textCardCost: {fileID: 2821269574311311381}
@@ -1128,7 +1023,6 @@ GameObject:
   - component: {fileID: 5477133466652966929}
   - component: {fileID: 6078265346506974837}
   - component: {fileID: 4945185048719285761}
-  - component: {fileID: 1380832087126746895}
   m_Layer: 0
   m_Name: CardGradeFrame
   m_TagString: Untagged
@@ -1194,34 +1088,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1380832087126746895
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7364290439181934712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce76b7a490bd74f34a2f2752641aea24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectFactor: 0
-  m_Width: 0.35
-  m_Softness: 0.5
-  m_Color: {r: 0.8862745, g: 0.0627451, b: 0.0627451, a: 1}
-  m_ColorMode: 1
-  m_TransitionTexture: {fileID: 2800000, guid: 3e04c247fb2604af186173fce0bc62de, type: 3}
-  m_EffectArea: 0
-  m_KeepAspectRatio: 0
-  m_Player:
-    play: 0
-    initialPlayDelay: 0
-    duration: 1
-    loop: 0
-    loopDelay: 0
-    updateMode: 0
-  m_Reverse: 0
 --- !u!1 &7616314054871832060
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,7 +8,6 @@ using DG.Tweening;
 using TMPro;
 using AYellowpaper.SerializedCollections;
 using ProjectD;
-using Coffee.UIEffects;
 
 public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
@@ -18,6 +17,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     [Header("CardOnDeck Image 컴포넌트")]
     public List<GameObject> cardImages = new List<GameObject>();
+    public List<Material> cardDissolveMaterials = new List<Material>();
     public Image cardBackground;
     public Image cardIllust;
     public Image cardImageFrame;
@@ -397,18 +397,20 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         while (timer < duration)
         {
             float dissolveRatio = timer / duration;
-            float reverRatio = 1 - (dissolveRatio);
-            foreach(GameObject cardParts in cardImages){
-                UIDissolve dissolve = cardParts.GetComponent<UIDissolve>();
-                dissolve.effectFactor = dissolveRatio;
+            float reverseRatio = 1 - (dissolveRatio);
+            for(int i=0; i<cardImages.Count; i++){
+                Image image = cardImages[i].GetComponent<Image>();
+                Material dissolveMaterial = new Material(cardDissolveMaterials[i]);
+                image.material = dissolveMaterial;
+                dissolveMaterial.SetFloat("_Level", dissolveRatio);
             }
             foreach(GameObject expBlock in expBlocks){
                 Image image = expBlock.GetComponent<Image>();
-                image.color = new Color(image.color.r, image.color.g, image.color.b, reverRatio);
+                image.color = new Color(image.color.r, image.color.g, image.color.b, reverseRatio);
             }
-            textCardCost.alpha = reverRatio;
-            textCardDescription.alpha = reverRatio;
-            textCardName.alpha = reverRatio;
+            textCardCost.alpha = reverseRatio;
+            textCardDescription.alpha = reverseRatio;
+            textCardName.alpha = reverseRatio;
             timer += Time.deltaTime;
             yield return null;
         }
