@@ -7,10 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CardOnHandBurn
-  m_Shader: {fileID: 4800000, guid: abfe21938e18e2e489d425f93d2abe39, type: 3}
-  m_ValidKeywords:
-  - ETC1_EXTERNAL_ALPHA
+  m_Name: CardEmblemDissolve
+  m_Shader: {fileID: 4800000, guid: 8aa2b80f5083921428f6f29068f2771f, type: 3}
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -21,10 +20,6 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _AlphaTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -46,31 +41,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 5690516860c6ef544aaf4911692dfce0, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MaskTexture1:
-        m_Texture: {fileID: 2800000, guid: 365634ace1cf7614d995e380fd3d667e, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MaskTexture2:
-        m_Texture: {fileID: 2800000, guid: 200b28bdd11cfa84eb29ae0968913d0d, type: 3}
+        m_Texture: {fileID: 2800000, guid: a4107838220c9664c8ef914e474e8eda, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _NoiseTexture:
-        m_Texture: {fileID: 2800000, guid: d30a0effe4564ab4fa82332923988f7c, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _NoiseTexture1:
-        m_Texture: {fileID: 2800000, guid: d30a0effe4564ab4fa82332923988f7c, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _NoiseTexture2:
-        m_Texture: {fileID: 2800000, guid: d30a0effe4564ab4fa82332923988f7c, type: 3}
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: c332a8d1957f95c47a5bed7034c39ee9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -84,28 +63,18 @@ Material:
     m_Ints: []
     m_Floats:
     - PixelSnap: 0
-    - _BloomFallOff: 0.174
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _EnableExternalAlpha: 0
+    - _Edges: 0.083
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _MaskUVScale1: 0.34
-    - _MaskUVScale2: 0.82
+    - _Level: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OutlineAccuracy: 5
-    - _OutlineFlowSpeed1: 0.278
-    - _OutlineFlowSpeed2: 0.278
-    - _OutlineMaskAlpha: 0.884
-    - _OutlineWeight1: 0.78
-    - _OutlineWeight2: 2.88
-    - _OutlineWidth1: 0.4
-    - _OutlineWidth2: 0.757
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -113,10 +82,8 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.095767975, g: 0, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EdgeColour1: {r: 0, g: 0, b: 0, a: 1}
+    - _EdgeColour2: {r: 1, g: 0.056943767, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Flip: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor1: {r: 0.12156862, g: 0.9683603, b: 1, a: 1}
-    - _OutlineColor2: {r: 0.039215684, g: 0.7047999, b: 1, a: 1}
-    - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

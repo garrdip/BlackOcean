@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CardOnHandRippleYellow
+  m_Name: CardRippleYellow
   m_Shader: {fileID: 4800000, guid: fa1562dee63e5a2499b9ba71432ac96c, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:

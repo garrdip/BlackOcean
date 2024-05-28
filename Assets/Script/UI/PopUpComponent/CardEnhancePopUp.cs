@@ -142,7 +142,7 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
         previousCardObject.transform.SetParent(cardEnhancePreview.transform);
         previousCardObject.transform.localScale = Vector3.one;
         CardOnDeck previousCard = previousCardObject.GetComponent<CardOnDeck>();
-        previousCard.card = card;
+        previousCard.card = card.CardDeepCopy(false);
         previousCard.isEnhancedPreviewCard = true;
        
         // 강화 이후 카드 프리뷰 오브젝트
@@ -150,7 +150,8 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
         afterCardObject.transform.SetParent(cardEnhancePreview.transform);
         afterCardObject.transform.localScale = Vector3.one;
         CardOnDeck afterCard = afterCardObject.GetComponent<CardOnDeck>();
-        afterCard.card = new Card(CardData.instance.cards.Find(c => c.cardNumber.Equals(card.baseCard.cardNumber + "_E"))); // 카드 DB에서 해당카드 강화버전 조회
+        afterCard.card = card.CardDeepCopy(false);
+        afterCard.card.isEnhanced = true; // 강화카드
         afterCard.isEnhancedPreviewCard = true;
         
         enhancePreivewCards.Add(previousCardObject);

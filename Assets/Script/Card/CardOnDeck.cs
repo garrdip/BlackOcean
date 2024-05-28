@@ -278,10 +278,11 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // 선택한 카드 구매 커맨드 전송
     private void RequestCardPurchase()
     {
-        List<Card> cards = M_TurnManager.instance.npc_Mercurius.shopCardDictionary[cardOwner];
-        int index = cards.FindIndex((c) => c.guid.Equals(card.guid));
-        if(index != -1){
-            M_TurnManager.instance.CmdChangeShopCardSoldOut(cardOwner, index);
+        if(M_TurnManager.instance.npc_Mercurius.shopCardDictionary.TryGetValue(cardOwner, out List<Card> cards)){
+            int index = cards.FindIndex((c) => c.guid.Equals(card.guid));
+            if(index != -1){
+                M_TurnManager.instance.CmdChangeShopCardSoldOut(cardOwner, index);
+            }
         }
     }
 
@@ -312,6 +313,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(cardOwner != null){
             // 카드 인스턴스 생성
             Card card = this.card.CardDeepCopy(false);
+
             // 애니매이션용 카드 오브젝트 복사본 생성
             GameObject cardOnHandChoosed = CreateCardOnHandChoosed(card);
                 
@@ -326,6 +328,9 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             Vector3 midPos = (startPos + targetPosition) / 2f;
             midPos.y += height;
             Vector3[] path = new Vector3[] { startPos, midPos, targetPosition };
+
+            // 플레이어 댁 데이터에 해당 카드 추가
+            cardOwner.GetComponent<GamePlayerDeck>().CmdAddDeck(card);
             
             // DOTween을 사용하여 포물선 이동 애니메이션 생성
             cardOnHandChoosed.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.5f);
@@ -333,7 +338,6 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 .SetEase(Ease.OutQuint)
                 .OnComplete(() => {
                     cardOnHandChoosed.GetComponent<CardOnHandChoosed>().isTweening = false;
-                    cardOwner.GetComponent<GamePlayerDeck>().CmdAddDeck(card);
                     Destroy(cardOnHandChoosed);
                 });
         }
@@ -356,6 +360,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         if(card.experience >= card.baseCard.maxExperience || card.isEnhanced || card.tempEnhanced)
         {
+            textCardName.color = Color.green;
             CardBase cardBase = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E");
             if(cardBase != null){
                 textCardName.text = cardBase.name;

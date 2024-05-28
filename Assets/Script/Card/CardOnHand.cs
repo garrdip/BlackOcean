@@ -448,6 +448,7 @@ public class CardOnHand : NetworkBehaviour
 
         if(newCard.experience >= newCard.baseCard.maxExperience || newCard.isEnhanced || newCard.tempEnhanced)
         {
+            textCardName.color = Color.green;
             textCardName.text = CardData.instance.cards.Find(x => x.cardNumber == newCard.baseCard.cardNumber + "_E").name;
             textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(CardData.instance.cards.Find(x => x.cardNumber == newCard.baseCard.cardNumber + "_E").description);
         }
