@@ -56,6 +56,7 @@ public class HexagonMapRoom : NetworkBehaviour
     public GameObject mapIcon; // 기본 상태에서 보여지는 맵 아이콘 이미지
     public GameObject mapTileGrid;
     public SortingGroup sortingGroup;
+    public Vector3 expandMapTilePosition;
 
     [Header("맵 UI")]
     public GameObject hexagonMapRoomUI;
@@ -95,6 +96,7 @@ public class HexagonMapRoom : NetworkBehaviour
         transform.localRotation = Quaternion.Euler(0, 0f, 0f);
         sortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
         SetCanvasSortOrder();
+        expandMapTilePosition = expandMapTile.transform.position;
     }
 
     public override void OnStartClient()
@@ -253,6 +255,9 @@ public class HexagonMapRoom : NetworkBehaviour
             hexagonMapRoomUI.SetActive(true);              
             AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("ingame_menu_stage_mouseclick"));
             M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+            if(mapBoss != null){
+                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y + 0.25f, 0.5f);
+            }
         }else{
             expandMapTile.transform.DOLocalMoveY(0f, 0.5f).OnComplete(() => {
                 mapTileMask.GetComponent<SpriteMask>().enabled = false;
@@ -261,6 +266,9 @@ public class HexagonMapRoom : NetworkBehaviour
             });
             hexagonMapRoomUI.transform.DOLocalMoveY(0f, 0.5f);
             hexagonMapRoomUI.SetActive(false);
+            if(mapBoss != null){
+                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y, 0.5f);
+            }
         }
         ChangeMapVoteIconState();
         mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue == true ? 0.25f : 1f, 0.5f);

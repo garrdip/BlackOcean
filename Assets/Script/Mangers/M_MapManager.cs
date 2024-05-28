@@ -545,6 +545,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Server]
     public void VoteHexagonMapRoom(HexagonMapRoom hexagonMapRoom, NetworkIdentity networkIdentity)
     {
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+
         // 이전에 선택한 방의 votePlayers에서 현재 플레이어 제거 후 새로 선택한 방의 votePlayers에 추가
         if(playerVoteHexagonMapRoom.TryGetValue(networkIdentity, out HexagonMapRoom prevMapRoom)){
             prevMapRoom.votePlyers.Remove(networkIdentity.netId);
@@ -559,7 +561,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         }
 
         // 맵플레이어가 선택한 MapRoom의 isSelected 상태 변경
-        if(hexagonMapRoom.votePlyers.Count > 1 && hexagonMapRoom.isSelected){
+        if(networkRoomManager.numPlayers > 1 && hexagonMapRoom.votePlyers.Count > 1 && hexagonMapRoom.isSelected){ // 1인 이상 플레이일때, 여러명이 같은 방을 선택한 경우
             hexagonMapRoom.isSelected = true;
         }else{
             hexagonMapRoom.isSelected = !hexagonMapRoom.isSelected; // 맵 선택상태 토글
