@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using DG.Tweening;
 using Mirror;
+using Spine.Unity.Examples;
+
+
 public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
 {
     SpriteRenderer dim;
@@ -25,7 +28,10 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
                 tar.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "FrontLayer";
                 if(tar.player != null){
                     tar.avatar.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
-                    if(tar.ironDemon != null)tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
+                    if(tar.ironDemon != null){
+                        tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer";
+                        tar.ironDemon.GetComponent<SkeletonRenderTexture>().quad.GetComponent<MeshRenderer>().sortingLayerName = "FrontLayer"; // SkeletonRenderTexture의 정렬값 따로 조정 
+                    }
                     tar.playerHpCanvas.sortingLayerName = "FrontLayer";
                     tar.playerNameCanvas.sortingLayerName = "FrontLayer";
                     tar.playerShieldCanvas.sortingLayerName = "FrontLayer";
@@ -52,7 +58,10 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
                 tar.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "BackLayer";
                 if(tar.player != null){
                     tar.avatar.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer";
-                    if(tar.ironDemon != null)tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer";
+                    if(tar.ironDemon != null){
+                        tar.ironDemon.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer";
+                        tar.ironDemon.GetComponent<SkeletonRenderTexture>().quad.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer"; // SkeletonRenderTexture의 정렬값 따로 조정 
+                    }
                     tar.playerHpCanvas.sortingLayerName = "BackLayer";
                     tar.playerNameCanvas.sortingLayerName = "BackLayer";
                     tar.playerShieldCanvas.sortingLayerName = "BackLayer";
