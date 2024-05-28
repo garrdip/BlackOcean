@@ -55,9 +55,6 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
             Destroy(card);
         }
         enhancePreivewCards.Clear();
-        foreach(GameObject card in enhanceableCards){
-            card.transform.localScale = Vector3.one;
-        }
         selectCardGuid = string.Empty;
         ResetEnhanceProgress();
     }
@@ -67,16 +64,17 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
     {
         buttonEnhanceOk.gameObject.SetActive(false);
         buttonEnhanceCancel.gameObject.SetActive(false);
+        ClearAllEnhanceableCards();
         enhanceProgressCoroutine = StartCoroutine(EnhanceProgress(() => {
             enhanceOutlineCoroutine = StartCoroutine(EnhancedOutline(() => {
                 SyncList<Card> deck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().deck;
                 int index = deck.FindIndex(c => c.guid.Equals(selectCardGuid));
                 if(index != -1){
-                    HandleCardEnhancePreviewHide();
-                    PopUpUIManager.instance.HandleCardEnhancePopUp(false);
                     deck[index].isEnhanced = true;
                     buttonEnhanceOk.gameObject.SetActive(true);
                     buttonEnhanceCancel.gameObject.SetActive(true);
+                    HandleCardEnhancePreviewHide();
+                    CreateEnhanceableCards();
                 }
             }));
         }));
@@ -158,12 +156,9 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
         enhancePreivewCards.Add(afterCardObject);
     }
 
-    // CardEnhancePopUp 활성화 콜백
-    public void OnCardEnhancePopUpShow()
+    // 현재 플레이어의 deck 데이터로 카드 오브젝트 생성(이미 강화된 카드는 제외)
+    private void CreateEnhanceableCards()
     {
-        canvasGroup.DOFade(1.0f, 0.5f);
-        PopUpUIManager.instance.HandleMercuriusPopUp(false); // 카드 강화 팝업 활성화 될때 상점 팝업은 비활성화
-        // 현재 플레이어의 deck 데이터로 카드 오브젝트 생성(이미 강화된 카드는 제외)
         foreach(Card card in NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().deck){
             if(!card.isEnhanced){
                 GameObject cardObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, Vector3.zero, Quaternion.identity);
@@ -176,14 +171,30 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
         }
     }
 
+    // CardEnhnacePopUp의 카드 오브젝트 제거
+    private void ClearAllEnhanceableCards()
+    {
+        foreach(GameObject cardObject in enhanceableCards){
+            Destroy(cardObject);
+        }
+        enhanceableCards.Clear();
+    }
+
+    // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //
+
+    // CardEnhancePopUp 활성화 콜백
+    public void OnCardEnhancePopUpShow()
+    {
+        canvasGroup.DOFade(1.0f, 0.5f);
+        CreateEnhanceableCards();
+        PopUpUIManager.instance.HandleMercuriusPopUp(false); // 카드 강화 팝업 활성화 될때 상점 팝업은 비활성화
+    }
+
     // CardEnhancePopUp 비활성화 콜백
     public void OnCardEnhancePopUpHide()
     {
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
-            foreach(GameObject cardObject in enhanceableCards){
-                Destroy(cardObject);
-            }
-            enhanceableCards.Clear();
+            ClearAllEnhanceableCards();
             gameObject.SetActive(false);
         });
         PopUpUIManager.instance.HandleMercuriusPopUp(true); // 카드 강화 팝업 비활성화 될때 상점 팝업은 활성화
