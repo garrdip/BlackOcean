@@ -374,6 +374,31 @@ public partial class GamePlayerDeck : NetworkBehaviour
         deck.Add(card);
     }
 
+    // deck에서 선택한 카드의 guid와 동일한 카드정보 조회하여 기존 카드 제거 + 강화된 카드 추가
+    [Command]
+    public void CmdEnhanceDeck(string guid)
+    {
+        // 제네릭 타입의 Synclist의 경우 해당 클래스의 필드값을 변경하는것은 클라이언트에 동기화 되지 않음(이슈인지 의도된건지 모름)
+        // Synclist에서 기존 요소를 지우고 해당 인덱스에 강화된 값이 부여된 요소를 Insert하는 방식으로 구현
+        int index = deck.FindIndex(card => card.guid == guid);
+        if(index != -1){
+            Card enhanceCard = deck[index].CardDeepCopy(false);
+            enhanceCard.isEnhanced = true;
+            deck.RemoveAt(index);
+            deck.Insert(index, enhanceCard);
+        }
+    }
+
+    // deck에서 선택한 카드의 guid와 동일한 카드정보 조회하여 제거
+    [Command]
+    public void CmdRemoveDeck(string guid)
+    {
+        int index = deck.FindIndex(card => card.guid == guid);
+        if(index != -1){
+            deck.RemoveAt(index);
+        }
+    }
+
     // prefareDeck에 추가
     [Command]
     public void CmdAddPrefareDeck(Card card)
@@ -724,20 +749,21 @@ public partial class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:
-                if(isOwned){
-                    GameObject cardObject = Instantiate(DeckBookUI.instance.cellPrefab);
-                    CardOnBook cardOnBook = cardObject.GetComponent<CardOnBook>();
-                    cardOnBook.cardBase = newVal.baseCard;
-                    cardOnBook.initCardOnBook(index);
-                    cardOnBook.transform.SetParent(MapUI.instance.gridLayoutGroup.transform);
-                    cardOnBook.transform.localScale = Vector3.one;
-                }
+
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
-                
+                if(isOwned && PopUpUIManager.instance.isCardEnhancePopUpOpen){
+                    CardEnhancePopUp cardEnhancePopUp = PopUpUIManager.instance.cardEnhancePopUp.GetComponent<CardEnhancePopUp>();
+                    cardEnhancePopUp.ClearAllEnhanceableCards();
+                    cardEnhancePopUp.CreateEnhanceableCards();
+                }
                 break;
             case SyncList<Card>.Operation.OP_REMOVEAT:
-
+                if(isOwned && PopUpUIManager.instance.isCardRemovePopUpOpen){
+                    CardRemovePopUp cardRemovePopUp = PopUpUIManager.instance.cardRemovePopUp.GetComponent<CardRemovePopUp>();
+                    cardRemovePopUp.ClearRemoveableCards();
+                    cardRemovePopUp.CreateRemoveableCards();
+                }
                 break;
             case SyncList<Card>.Operation.OP_SET:
                 

@@ -176,7 +176,7 @@ public class NPC_Mercurius : SpawnedMonster
             cardOnDeckObject.transform.localScale = Vector3.one;
             cardOnDeckObject.transform.localPosition = Vector3.zero;
             CardOnDeck cardOnDeck = cardOnDeckObject.GetComponent<CardOnDeck>();
-            cardOnDeck.card = card;
+            cardOnDeck.card = card.CardDeepCopy(false);
             cardOnDeck.cardOwner = cardOwner;
 
             // 상점 카드 가격 아이콘 + 텍스트

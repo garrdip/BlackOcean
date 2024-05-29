@@ -76,7 +76,7 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>, IPointerClickHandler
             GameObject cardOnDeck = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab);
             cardOnDeck.transform.SetParent(gridLayoutGroup.transform);
             cardOnDeck.transform.localScale = new Vector3(1, 1, 1);
-            cardOnDeck.GetComponent<CardOnDeck>().card = card;
+            cardOnDeck.GetComponent<CardOnDeck>().card = card.CardDeepCopy(false);
             deckList.Add(cardOnDeck);
         }
     }

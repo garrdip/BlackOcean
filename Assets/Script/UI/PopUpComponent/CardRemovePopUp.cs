@@ -31,6 +31,28 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
         buttonCardRemoveCancel.onClick.AddListener(() => HandleClickCardRemoveCancel());
     }
 
+    // 카드 제거 승인
+    private void HandleClickCardRemoveOk()
+    {
+        NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().CmdRemoveDeck(selectCardGuid);
+        CardOnDeck cardOnDeck = removePreviewCards[0].GetComponent<CardOnDeck>();
+        buttonCardRemoveOk.gameObject.SetActive(false);
+        buttonCardRemoveCancel.gameObject.SetActive(false);
+        StartCoroutine(
+            cardOnDeck.CardOnDeckDissolve(() => {
+                buttonCardRemoveOk.gameObject.SetActive(true);
+                buttonCardRemoveCancel.gameObject.SetActive(true);
+                HandleCardRemovePreviewHide();
+            })
+        );
+    }
+
+    // 카드 제거 취소
+    private void HandleClickCardRemoveCancel()
+    {
+        HandleCardRemovePreviewHide();
+    }
+
     // 카드 제거 프리뷰창 활성화
     public void HandleCardRemovePreviewOpen()
     {
@@ -50,34 +72,6 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
         selectCardGuid = string.Empty;
     }
 
-    // 카드 제거 승인
-    private void HandleClickCardRemoveOk()
-    {
-        CardOnDeck cardOnDeck = removePreviewCards[0].GetComponent<CardOnDeck>();
-        buttonCardRemoveOk.gameObject.SetActive(false);
-        buttonCardRemoveCancel.gameObject.SetActive(false);
-        ClearRemoveableCards();
-        StartCoroutine(
-            cardOnDeck.CardOnDeckDissolve(() => {
-                SyncList<Card> deck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().deck;
-                int index = deck.FindIndex(c => c.guid.Equals(selectCardGuid));
-                if(index != -1){
-                    deck.RemoveAt(index);
-                    buttonCardRemoveOk.gameObject.SetActive(true);
-                    buttonCardRemoveCancel.gameObject.SetActive(true);
-                    HandleCardRemovePreviewHide();
-                    CreateRemoveableCards();
-                }
-            })
-        );
-    }
-
-    // 카드 제거 취소
-    private void HandleClickCardRemoveCancel()
-    {
-        HandleCardRemovePreviewHide();
-    }
-
     // 카드 제거 프리뷰에 사용될 카드 오브젝트 생성
     public void CreateRemovePreviewCard(Card card)
     {
@@ -85,26 +79,26 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
         removeCardObject.transform.SetParent(cardRemovePreview.transform);
         removeCardObject.transform.localScale = Vector3.one;
         CardOnDeck removeCard = removeCardObject.GetComponent<CardOnDeck>();
-        removeCard.card = card;
+        removeCard.card = card.CardDeepCopy(false);
         removeCard.isRemovePreviewCard = true;
         removePreviewCards.Add(removeCardObject);
     }
 
     // 현재 플레이어의 deck 데이터로 카드 오브젝트 생성
-    private void CreateRemoveableCards()
+    public void CreateRemoveableCards()
     {
         foreach(Card card in NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().deck){
             GameObject cardObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, Vector3.zero, Quaternion.identity);
             CardOnDeck cardOnDeck = cardObject.GetComponent<CardOnDeck>();
             cardOnDeck.transform.SetParent(gridLayoutGroup.transform);
             cardOnDeck.transform.localScale = Vector3.one;
-            cardOnDeck.card = card;
+            cardOnDeck.card = card.CardDeepCopy(false);
             removableCards.Add(cardObject);
         }
     }
 
     // CardRemovePopUp의 카드 오브젝트 제거
-    private void ClearRemoveableCards()
+    public void ClearRemoveableCards()
     {
         foreach(GameObject cardObject in removableCards){
             Destroy(cardObject);
