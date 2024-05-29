@@ -12,6 +12,8 @@ public class NPC_Sophia : SpawnedMonster
     public SkeletonAnimation skeletonAnimation;
     public List<string> animationNames = new List<string>();
     private TrackEntry trackEntry;
+    public Coroutine eyeBlikCoroutine;
+
 
     void Awake()
     {
@@ -22,11 +24,13 @@ public class NPC_Sophia : SpawnedMonster
     {
         GetAnimationNames(skeletonAnimation);
         PlayRandomAnimation();
+        eyeBlikCoroutine = StartCoroutine(StartEyeBlinkAnimation());
     }
 
     void OnDestroy()
     {
         trackEntry.Complete -= OnAnimationComplete;
+        StopCoroutine(eyeBlikCoroutine);
     }
 
     public void OnClickRyuJinSol(PointerEventData pointerEventData)
@@ -44,12 +48,30 @@ public class NPC_Sophia : SpawnedMonster
     {
        GetComponent<MeshRenderer>().material = defaultMaterial; 
     }
+
+    // 3초 마다 눈 깜빡임 애니매이션 재생
+    private IEnumerator StartEyeBlinkAnimation()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(3f);
+            skeletonAnimation.state.SetAnimation(1, "Eye", false);
+        }
+    }
+
+    private int GetRandomIndex()
+    {
+        int randomValue = Random.Range(0, 100);
+        if (randomValue < 65) return 3; // Idle
+        if (randomValue < 85) return 2; // Eye
+        if (randomValue < 95) return 1; // Act1
+        else return 0; // Act0
+    }
   
     // 애니매이션 리스트들중 하나 랜덤으로 재생 : 재생 완료 콜백에서 재귀호출하는 방식으로 무한 재생
     private void PlayRandomAnimation()
     {
-        int randomIndex = Random.Range(0, animationNames.Count);
-        string randomAnimation = animationNames[randomIndex];
+        string randomAnimation = animationNames[GetRandomIndex()];
         trackEntry = skeletonAnimation.state.SetAnimation(0, randomAnimation, false);
         trackEntry.Complete += OnAnimationComplete;
     }
