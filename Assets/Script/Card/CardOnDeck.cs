@@ -282,6 +282,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             int index = cards.FindIndex((c) => c.guid.Equals(card.guid));
             if(index != -1){
                 M_TurnManager.instance.CmdChangeShopCardSoldOut(cardOwner, index);
+                card.isSoldout = true;
             }
         }
     }
