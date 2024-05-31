@@ -3,17 +3,18 @@ size:2995,2863
 filter:Linear,Linear
 pma:true
 ArmLeftBB
-bounds:812,1876,89,41
+bounds:787,2239,89,41
 offsets:44,43,174,127
 ArmLeftBT
-bounds:1156,470,76,124
+bounds:1963,891,76,124
 offsets:43,37,158,202
 ArmLeftTB
-bounds:2924,2130,67,116
+bounds:1885,1463,67,116
 offsets:45,37,155,194
 ArmLeftTT
-bounds:1963,920,94,108
+bounds:2601,37,94,108
 offsets:38,37,171,187
+rotate:90
 ArmRightB
 bounds:2491,1049,76,58
 offsets:44,44,163,146
@@ -33,7 +34,7 @@ BodyLight
 bounds:550,626,645,480
 offsets:24,19,680,512
 BodyT
-bounds:1963,1010,115,106
+bounds:1039,312,115,106
 offsets:39,40,194,186
 ChLight
 bounds:493,676,204,207
@@ -123,7 +124,7 @@ ChVLight (29)
 bounds:2337,448,190,172
 offsets:50,49,290,271
 ChVLight (3)
-bounds:231,1172,55,61
+bounds:1767,1055,55,61
 offsets:118,104,290,271
 ChVLight (30)
 bounds:2802,1939,190,172
@@ -140,7 +141,7 @@ ChVLight (6)
 bounds:1322,1983,85,89
 offsets:103,90,290,271
 ChVLight (7)
-bounds:648,2181,93,99
+bounds:1963,1017,93,99
 offsets:99,85,290,271
 ChVLight (8)
 bounds:1301,2173,101,107
@@ -149,7 +150,7 @@ ChVLight (9)
 bounds:2,1912,111,115
 offsets:90,77,290,271
 Face
-bounds:743,2201,64,79
+bounds:2922,2167,64,79
 offsets:44,44,151,166
 Hair
 bounds:1873,2,157,203
@@ -172,10 +173,10 @@ HandLeftB
 bounds:1217,2211,75,69
 offsets:37,43,146,146
 HandLeftT
-bounds:1891,1496,65,87
+bounds:408,1371,65,87
 offsets:40,39,148,166
 HandRight
-bounds:408,1059,67,46
+bounds:824,1875,67,46
 offsets:46,45,157,136
 HeadEye
 bounds:1439,691,114,51
@@ -213,6 +214,9 @@ offsets:47,46,118,157
 P5
 bounds:2,2255,26,60
 offsets:47,46,120,152
+Shadow
+bounds:648,2212,137,68
+offsets:45,43,226,154
 VBodyLight
 bounds:1197,634,645,480
 offsets:24,19,680,512
@@ -405,50 +409,50 @@ rotate:90
 VLight
 bounds:2,242,184,168
 VLight (1)
-bounds:863,2260,26,20
+bounds:875,2260,26,20
 offsets:81,74,184,168
 VLight (10)
-bounds:172,34,81,67
+bounds:255,34,81,67
 offsets:52,51,184,168
 VLight (11)
-bounds:1744,35,81,67
+bounds:172,34,81,67
 offsets:52,51,184,168
 VLight (12)
-bounds:1659,35,83,67
+bounds:1744,35,83,67
 offsets:51,51,184,168
 VLight (13)
-bounds:87,39,83,67
+bounds:1659,35,83,67
 offsets:51,51,184,168
 VLight (14)
-bounds:2,39,83,67
+bounds:87,39,83,67
 offsets:51,51,184,168
 VLight (15)
-bounds:2845,41,83,68
+bounds:2,38,83,68
 offsets:51,50,184,168
 VLight (16)
-bounds:687,53,83,68
+bounds:2845,41,83,68
 offsets:51,50,184,168
 VLight (17)
-bounds:602,53,83,68
+bounds:688,53,83,68
 offsets:51,50,184,168
 VLight (18)
-bounds:516,53,84,68
+bounds:602,53,84,68
 offsets:50,50,184,168
 VLight (19)
-bounds:2281,54,84,68
+bounds:516,53,84,68
 offsets:50,50,184,168
 VLight (2)
 bounds:719,1419,50,53
 offsets:69,58,184,168
 rotate:90
 VLight (20)
-bounds:2195,54,84,68
+bounds:2281,54,84,68
 offsets:50,50,184,168
 VLight (21)
-bounds:920,86,84,68
+bounds:2195,54,84,68
 offsets:50,50,184,168
 VLight (22)
-bounds:1039,350,84,68
+bounds:920,86,84,68
 offsets:50,50,184,168
 VLight (23)
 bounds:691,557,84,68
@@ -472,7 +476,7 @@ VLight (29)
 bounds:1677,1046,84,68
 offsets:50,50,184,168
 VLight (3)
-bounds:408,1400,58,58
+bounds:228,1165,58,58
 offsets:65,56,184,168
 VLight (30)
 bounds:408,1107,84,68
@@ -531,7 +535,7 @@ VWaponRing (19)
 bounds:371,254,228,131
 offsets:63,53,341,234
 VWaponRing (2)
-bounds:806,2244,55,36
+bounds:2,1874,55,36
 offsets:187,94,341,234
 VWaponRing (20)
 bounds:2760,254,233,132
@@ -564,7 +568,7 @@ VWaponRing (29)
 bounds:1407,426,242,134
 offsets:49,50,341,234
 VWaponRing (3)
-bounds:1767,1071,71,45
+bounds:648,2165,71,45
 offsets:179,90,341,234
 VWaponRing (30)
 bounds:2529,426,242,134

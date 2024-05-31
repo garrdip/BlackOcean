@@ -56,6 +56,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
+  - {fileID: 2100000, guid: d0e8d13e3ffead44884cd97451faaaba, type: 2}
   - {fileID: 2100000, guid: eb5a51cc4f2725242a6af3834309bbcc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -75,7 +76,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -822484745
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &5125707426590756295
@@ -195,4 +196,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   meshRenderer: {fileID: 1046600963234684866}
   defaultMaterial: {fileID: 2100000, guid: eb5a51cc4f2725242a6af3834309bbcc, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 889082f0237a19647a3f754651859378, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 8229b61a1e7a4e14ea82dd9aa410ccdf, type: 2}

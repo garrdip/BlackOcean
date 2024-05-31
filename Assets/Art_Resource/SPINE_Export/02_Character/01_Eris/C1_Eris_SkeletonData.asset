@@ -18,10 +18,12 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: ddca83ef65b0969499261931076244a1, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials: []
-    multiplyMaterials: []
+    multiplyMaterials:
+    - pageName: C1_Eris.png
+      material: {fileID: 2100000, guid: d0e8d13e3ffead44884cd97451faaaba, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []
