@@ -1,17 +1,17 @@
 {
 "skeleton": {
-	"hash": "aA6eQMrT/lQ",
-	"spine": "4.1.24",
-	"x": -302.13,
-	"y": -27.08,
-	"width": 642.65,
-	"height": 1045.83,
+	"hash": "TD2RVtyfIPQ",
+	"spine": "4.2.27",
+	"x": -329.48,
+	"y": -99.96,
+	"width": 682.26,
+	"height": 1118.71,
 	"images": "",
 	"audio": "C:/Users/Nullaby/Desktop/GJ_ing/spine/03_NPC/00_Tod"
 },
 "bones": [
 	{ "name": "root" },
-	{ "name": "Body", "parent": "root", "x": -0.78, "y": 555.57, "color": "ff8600ff" },
+	{ "name": "Body", "parent": "root", "x": -0.78, "y": 555.57, "color": "ff8600ff", "icon": "gear" },
 	{
 		"name": "Body2",
 		"parent": "Body",
@@ -177,7 +177,7 @@
 		"y": 17.25,
 		"color": "001fffff"
 	},
-	{ "name": "LegRight2", "parent": "Body4", "x": 35.25, "y": -37.48, "color": "000f78ff" },
+	{ "name": "LegRight2", "parent": "Body4", "x": 35.25, "y": -37.48, "color": "000f78ff", "icon": "arrowLeftRight" },
 	{
 		"name": "LegRight3",
 		"parent": "LegRight2",
@@ -205,7 +205,7 @@
 		"y": -11.39,
 		"color": "000f78ff"
 	},
-	{ "name": "LegLeft4", "parent": "Body4", "x": 48.87, "y": 78.19, "color": "000f78ff" },
+	{ "name": "LegLeft4", "parent": "Body4", "x": 48.87, "y": 78.19, "color": "000f78ff", "icon": "arrowLeftRight" },
 	{
 		"name": "LegLeft5",
 		"parent": "LegLeft4",
@@ -233,7 +233,7 @@
 		"y": 11.68,
 		"color": "000f78ff"
 	},
-	{ "name": "LegRight6", "parent": "Body4", "x": 36.54, "y": -37.4, "color": "8392ffff" },
+	{ "name": "LegRight6", "parent": "Body4", "x": 36.54, "y": -37.4, "color": "8392ffff", "icon": "arrowUpDown" },
 	{
 		"name": "LegRight7",
 		"parent": "LegRight6",
@@ -253,7 +253,7 @@
 		"y": -0.26,
 		"color": "8392ffff"
 	},
-	{ "name": "LegLeft8", "parent": "Body4", "x": 48.84, "y": 77.45, "color": "8392ffff" },
+	{ "name": "LegLeft8", "parent": "Body4", "x": 48.84, "y": 77.45, "color": "8392ffff", "icon": "arrowUpDown" },
 	{
 		"name": "LegLeft9",
 		"parent": "LegLeft8",
@@ -281,7 +281,7 @@
 		"y": -0.1,
 		"color": "8392ffff"
 	},
-	{ "name": "Tail", "parent": "Body3", "x": 31.33, "y": 79.95, "color": "9400ffff" },
+	{ "name": "Tail", "parent": "Body3", "x": 31.33, "y": 79.95, "color": "9400ffff", "icon": "gear" },
 	{
 		"name": "Tail2",
 		"parent": "Tail",
@@ -374,11 +374,11 @@
 		"rotation": 88.31,
 		"x": 27.83,
 		"y": -28.43,
-		"transform": "noRotationOrReflection",
+		"inherit": "noRotationOrReflection",
 		"color": "ffffffff"
 	},
 	{ "name": "EffRightBall", "parent": "EffRight", "x": 180.56, "y": 15.35, "color": "ffffffff" },
-	{ "name": "Ring", "parent": "Tail2}", "x": 20.65, "y": -6.21, "color": "ff6a00ff" },
+	{ "name": "Ring", "parent": "Tail2}", "x": 20.65, "y": -6.21, "color": "ff6a00ff", "icon": "star" },
 	{
 		"name": "Eye",
 		"parent": "Head",
@@ -388,22 +388,40 @@
 		"y": 3.28,
 		"color": "195c1bff"
 	},
-	{ "name": "bone9", "parent": "ArmLeftB2", "x": 28.44, "y": 99.42, "transform": "noRotationOrReflection", "color": "ffffffff" },
+	{
+		"name": "bone9",
+		"parent": "ArmLeftB2",
+		"x": 28.44,
+		"y": 99.42,
+		"inherit": "noRotationOrReflection",
+		"color": "ffffffff",
+		"icon": "star"
+	},
 	{ "name": "EffRight2", "parent": "EffRight", "x": 246.62, "y": 48.69, "color": "ffffffff" },
 	{ "name": "EffRight3", "parent": "EffRight", "x": 157.41, "y": 44.57, "color": "ffffffff" },
 	{ "name": "EffRight4", "parent": "EffRight", "x": 230.24, "y": -37.61, "color": "ffffffff" },
 	{ "name": "EffRightBall2", "parent": "EffRight", "x": 86.02, "y": -43.46, "color": "ffffffff" },
 	{ "name": "EffRight5", "parent": "EffRight", "x": 148.19, "y": -40.42, "color": "ffffffff" },
-	{ "name": "target", "parent": "root", "x": -94.57, "y": 21.28, "color": "ff3f00ff" },
-	{ "name": "target2", "parent": "root", "x": -111.51, "y": 24.12, "color": "ff3f00ff" },
-	{ "name": "target3", "parent": "root", "x": -54.06, "y": 16.37, "color": "ff3f00ff" },
-	{ "name": "target4", "parent": "root", "x": 65.85, "y": 16.83, "color": "ff3f00ff" },
-	{ "name": "target5", "parent": "root", "x": 122.39, "y": 12.27, "color": "ff3f00ff" },
-	{ "name": "target6", "parent": "root", "x": 89.55, "y": 26.72, "color": "ff3f00ff" },
-	{ "name": "Tail11", "parent": "Tail", "x": -439.93, "y": -220.78, "color": "9400ffff" },
-	{ "name": "HeadSize", "parent": "Head", "x": 64.7, "y": 10.02, "color": "ffb200ff" }
+	{ "name": "target", "parent": "root", "x": -94.57, "y": 21.28, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "target2", "parent": "root", "x": -111.51, "y": 24.12, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "target3", "parent": "root", "x": -54.06, "y": 16.37, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "target4", "parent": "root", "x": 65.85, "y": 16.83, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "target5", "parent": "root", "x": 122.39, "y": 12.27, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "target6", "parent": "root", "x": 89.55, "y": 26.72, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "Tail11", "parent": "Tail", "x": -439.93, "y": -220.78, "color": "9400ffff", "icon": "gear" },
+	{ "name": "HeadSize", "parent": "Head", "x": 64.7, "y": 10.02, "color": "ffb200ff", "icon": "arrowsB" },
+	{
+		"name": "Shadow",
+		"parent": "root",
+		"length": 53.83,
+		"rotation": 88.78,
+		"x": 4.79,
+		"y": 32.07,
+		"scaleX": 1.1665
+	}
 ],
 "slots": [
+	{ "name": "Shadow", "bone": "Shadow", "color": "ffffffb4", "attachment": "Shadow", "blend": "multiply" },
 	{ "name": "LegLeft2", "bone": "LegLeft11", "attachment": "LegLeft2" },
 	{ "name": "LegRight2", "bone": "LegRight6", "attachment": "LegRight2" },
 	{ "name": "LegRight1", "bone": "LegRight5", "attachment": "LegRight1" },
@@ -469,6 +487,20 @@
 ],
 "transform": [
 	{
+		"name": "Body2ToShadow",
+		"order": 7,
+		"bones": [ "Shadow" ],
+		"target": "Body2",
+		"rotation": 179.95,
+		"x": 516.47,
+		"y": 16.76,
+		"mixRotate": 0,
+		"mixX": 0.1,
+		"mixY": 0,
+		"mixScaleX": 0,
+		"mixShearY": 0
+	},
+	{
 		"name": "EffRightHandFix",
 		"order": 6,
 		"bones": [ "Tail11" ],
@@ -482,7 +514,7 @@
 "path": [
 	{
 		"name": "TailMove",
-		"order": 7,
+		"order": 8,
 		"bones": [ "Tail2", "Tail2b", "Tail2c", "Tail2d", "Tail2e", "Tail2f", "Tail2g", "Tail2h", "Tail2i", "Tail2j", "Tail2k", "Tail2l", "Tail2m", "Tail2n", "Tail2o", "Tail2p", "Tail2q", "Tail2r", "Tail2s", "Tail2t", "Tail2u", "Tail2v", "Tail2w", "Tail2x", "Tail2y", "Tail2z", "Tail2{", "Tail2|", "Tail2}", "Tail2~" ],
 		"target": "TailMove",
 		"spacingMode": "percent",
@@ -661,6 +693,17 @@
 			},
 			"Ring": {
 				"Ring": { "x": 0.3, "y": -0.25, "rotation": 123.04, "width": 216, "height": 150 }
+			},
+			"Shadow": {
+				"Shadow": {
+					"x": -3.29,
+					"y": -6.94,
+					"scaleX": 3.0152,
+					"scaleY": 1.4122,
+					"rotation": -88.78,
+					"width": 226,
+					"height": 154
+				}
 			},
 			"Tail": {
 				"Tail": {
@@ -1250,6 +1293,14 @@
 					{ "time": 2.3333, "x": 1.942, "y": 1.942 },
 					{ "time": 3.3333 }
 				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 1, "y": 1.14 },
+					{ "time": 2.3333, "y": 1.114 },
+					{ "time": 3.3333 }
+				]
 			}
 		},
 		"events": [
@@ -1664,6 +1715,13 @@
 						"y": 1.331,
 						"curve": [ 1.444, 1.331, 1.526, 0.865, 1.444, 1.331, 1.526, 0.865 ]
 					},
+					{ "time": 2 }
+				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 1, "y": 1.102 },
 					{ "time": 2 }
 				]
 			}

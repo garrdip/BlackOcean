@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -643387529248565343}
   - component: {fileID: -2888269152381290685}
   - component: {fileID: 8684561159555658057}
+  - component: {fileID: 4803015060913652212}
   m_Layer: 0
   m_Name: NPC_Sophia
   m_TagString: Untagged
@@ -65,7 +66,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 29210a8511879164a8c1d0471769afe2, type: 2}
+  - {fileID: 2100000, guid: 2e671423464c2ec4dbb913cf7efd6802, type: 2}
+  - {fileID: 2100000, guid: 9326d6724e8aeb143b20aa7e6a68f6b9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -99,7 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: a2474cc99db404644a84c81adf293303, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: cb6d98da0f5e37444ba7a5c9313303e9, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -186,8 +188,8 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 0}
-  defaultMaterial: {fileID: 2100000, guid: 29210a8511879164a8c1d0471769afe2, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 775e62f6c7d9f8947accfe0db21f6fc2, type: 2}
+  defaultMaterial: {fileID: 2100000, guid: 9326d6724e8aeb143b20aa7e6a68f6b9, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: 6b2a0feda6a6335418446feda14efc55, type: 2}
   dissolveMaterial: {fileID: 0}
   dissolveParticle: {fileID: 0}
   skeletonAnimation: {fileID: 6485683146298960187}
@@ -236,3 +238,24 @@ PolygonCollider2D:
       - {x: 0.90564907, y: 1.9302071}
       - {x: 1.5881666, y: 2.4055088}
       - {x: 1.0755444, y: 3.706272}
+--- !u!114 &4803015060913652212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6485683146298960186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 6485683146298960187}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 9326d6724e8aeb143b20aa7e6a68f6b9, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 6b2a0feda6a6335418446feda14efc55, type: 2}
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 2e671423464c2ec4dbb913cf7efd6802, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: f7b355ff670543b43819e90a2892073f, type: 2}

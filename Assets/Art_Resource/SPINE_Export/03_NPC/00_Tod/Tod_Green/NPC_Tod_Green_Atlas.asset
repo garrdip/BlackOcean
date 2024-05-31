@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
   m_Name: NPC_Tod_Green_Atlas
   m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
   atlasFile: {fileID: 4900000, guid: 60f2e006e44000544be12e6ac1c268e2, type: 3}
   materials:
   - {fileID: 2100000, guid: e1d580869c25ada4491136dc30c4b59b, type: 2}

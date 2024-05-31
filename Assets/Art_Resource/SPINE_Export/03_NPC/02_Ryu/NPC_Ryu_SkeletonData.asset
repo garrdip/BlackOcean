@@ -18,10 +18,12 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: 1a039e9a429524c45bc6782ede5ec189, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials: []
-    multiplyMaterials: []
+    multiplyMaterials:
+    - pageName: NPC_Ryu.png
+      material: {fileID: 2100000, guid: 6f8c10e1f4690eb488f22c3d58fd8b75, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []

@@ -1,11 +1,11 @@
 {
 "skeleton": {
-	"hash": "eO5yGmJbszE",
-	"spine": "4.2.22",
-	"x": -131.14,
-	"y": -5.35,
-	"width": 297.97,
-	"height": 588.58,
+	"hash": "F6+tZ4Xbctc",
+	"spine": "4.2.27",
+	"x": -147.02,
+	"y": -56.76,
+	"width": 334.36,
+	"height": 639.99,
 	"images": "",
 	"audio": "./audio"
 },
@@ -448,10 +448,11 @@
 		"x": -1.37,
 		"y": 9.06,
 		"color": "ff8181ff"
-	}
+	},
+	{ "name": "Shadow", "parent": "root", "length": 40.33, "rotation": 90.88, "x": 19.44, "y": 20.64 }
 ],
 "slots": [
-	{ "name": "용지", "bone": "root" },
+	{ "name": "Shadow", "bone": "Shadow", "color": "ffffffb4", "attachment": "Shadow", "blend": "multiply" },
 	{ "name": "HeadAccBackRight", "bone": "HeadAccBackRight", "attachment": "HeadAccBackRight" },
 	{ "name": "HeadAccBackLeft", "bone": "HeadAccBackLeft", "attachment": "HeadAccBackLeft" },
 	{ "name": "LegRight", "bone": "LegRight", "attachment": "LegRight" },
@@ -535,6 +536,20 @@
 		"mixShearY": 0
 	},
 	{
+		"name": "BodyToShadow",
+		"order": 61,
+		"bones": [ "Shadow" ],
+		"target": "Body",
+		"rotation": 90.88,
+		"x": 29.06,
+		"y": -339.78,
+		"mixRotate": 0,
+		"mixX": 0.3,
+		"mixY": 0,
+		"mixScaleX": 0,
+		"mixShearY": 0
+	},
+	{
 		"name": "FaceMoveToHairBack",
 		"order": 6,
 		"bones": [ "HairBack" ],
@@ -565,7 +580,7 @@
 "physics": [
 	{
 		"name": "ArmLeftT3",
-		"order": 61,
+		"order": 62,
 		"bone": "ArmLeftT3",
 		"rotate": 1,
 		"inertia": 0.4372,
@@ -574,7 +589,7 @@
 	},
 	{
 		"name": "ArmLeftT4",
-		"order": 62,
+		"order": 63,
 		"bone": "ArmLeftT4",
 		"rotate": 1,
 		"inertia": 0.4372,
@@ -583,7 +598,7 @@
 	},
 	{
 		"name": "ArmLeftT5",
-		"order": 63,
+		"order": 64,
 		"bone": "ArmLeftT5",
 		"rotate": 1,
 		"inertia": 0.4372,
@@ -592,7 +607,7 @@
 	},
 	{
 		"name": "ArmRightB3",
-		"order": 64,
+		"order": 65,
 		"bone": "ArmRightB3",
 		"rotate": 1,
 		"inertia": 0.407,
@@ -602,7 +617,7 @@
 	},
 	{
 		"name": "ArmRightB4",
-		"order": 65,
+		"order": 66,
 		"bone": "ArmRightB4",
 		"rotate": 1,
 		"inertia": 0.407,
@@ -612,7 +627,7 @@
 	},
 	{
 		"name": "ArmRightB5",
-		"order": 66,
+		"order": 67,
 		"bone": "ArmRightB5",
 		"rotate": 1,
 		"inertia": 0.407,
@@ -1116,8 +1131,8 @@
 					"height": 293
 				}
 			},
-			"용지": {
-				"용지": { "width": 440, "height": 730 }
+			"Shadow": {
+				"Shadow": { "x": 0.02, "y": -0.71, "scaleX": 1.4777, "rotation": -91.03, "width": 226, "height": 154 }
 			}
 		}
 	}

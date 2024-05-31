@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2241717763274176175}
   - component: {fileID: -2141973245474246759}
   - component: {fileID: 8802199921822984015}
+  - component: {fileID: -3125505783161061873}
   m_Layer: 0
   m_Name: NPC_RyuJinSol
   m_TagString: Untagged
@@ -65,6 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
+  - {fileID: 2100000, guid: 6f8c10e1f4690eb488f22c3d58fd8b75, type: 2}
   - {fileID: 2100000, guid: f9869f11da58aec449c4aaca6ec2f807, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -84,7 +86,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -545779115
-  m_SortingLayer: 5
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2579955257166354365
@@ -187,10 +189,11 @@ MonoBehaviour:
   isActive: 0
   meshRenderer: {fileID: 0}
   defaultMaterial: {fileID: 2100000, guid: f9869f11da58aec449c4aaca6ec2f807, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 7e03a9312fecbfc45a2063a2cee74914, type: 2}
+  outLineMaterial: {fileID: 2100000, guid: bc713e4a61636aa43a43885b73cc26d1, type: 2}
   dissolveMaterial: {fileID: 0}
   dissolveParticle: {fileID: 0}
   skeletonAnimation: {fileID: 2579955257166354365}
+  animationNames: []
 --- !u!60 &8802199921822984015
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -264,3 +267,24 @@ PolygonCollider2D:
       - {x: 1.5792154, y: 1.0923183}
       - {x: 1.3355639, y: 1.9860562}
       - {x: 1.2154164, y: 2.8329437}
+--- !u!114 &-3125505783161061873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1547748860880488589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2579955257166354365}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: f9869f11da58aec449c4aaca6ec2f807, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: bc713e4a61636aa43a43885b73cc26d1, type: 2}
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 6f8c10e1f4690eb488f22c3d58fd8b75, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: a7b555ecd3e6222439c4c26af6c90ab0, type: 2}

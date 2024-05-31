@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using ProjectD;
 using Mirror;
 using Spine.Unity;
-using TMPro;
+
 
 public class NPC_Mercurius : SpawnedMonster
 {
@@ -14,37 +14,30 @@ public class NPC_Mercurius : SpawnedMonster
     private IEnumerator minionVoiceCoroutine;
     private SkeletonAnimation toddAnim;
     private SkeletonAnimation backAnim;
-    private SkeletonAnimation minion0Anim;
-    private SkeletonAnimation minion1Anim;
-    private SkeletonAnimation minion2Anim;
-    private SkeletonAnimation minion3Anim;
-
-    [Header("Materials")]
-    public Material todBackOriginMaterial;
-    public Material todBackOutlineMaterial;
-    public Material todblueOriginMaterial;
-    public Material todblueOutlineMaterial;
-    public Material todGreenOriginMaterial;
-    public Material todGreenOutlineMaterial;
-    public Material todRedOriginMaterial;
-    public Material todRedOutlineMaterial;
-    public Material todYellowOriginMaterial;
-    public Material todYellowOutlineMaterial;
-    public Material todOriginMaterial;
-    public Material todOutlineMaterial;
+    private SkeletonAnimation todBlueAnim;
+    private SkeletonAnimation todGreenAnim;
+    private SkeletonAnimation todRedAnim;
+    private SkeletonAnimation todYellowAnim;
 
 
     void Awake()
     {
         mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
-        minion0Anim = transform.GetChild(1).GetComponent<SkeletonAnimation>();
-        minion1Anim = transform.GetChild(2).GetComponent<SkeletonAnimation>();
-        minion2Anim = transform.GetChild(3).GetComponent<SkeletonAnimation>();
-        minion3Anim = transform.GetChild(4).GetComponent<SkeletonAnimation>();
-        toddAnim = transform.GetChild(5).GetComponent<SkeletonAnimation>();
+        toddAnim = transform.GetChild(0).GetComponent<SkeletonAnimation>();
+        todBlueAnim = transform.GetChild(1).GetComponent<SkeletonAnimation>();
+        todGreenAnim = transform.GetChild(2).GetComponent<SkeletonAnimation>();
+        todRedAnim = transform.GetChild(3).GetComponent<SkeletonAnimation>();
+        todYellowAnim = transform.GetChild(4).GetComponent<SkeletonAnimation>();
         StartCoroutine(ToddAnimationBlend());
         AddEventTrigger();
         minionVoiceCoroutine = PlayMinionsVoice();
+    }
+
+    void Start()
+    {
+        for(int i=0; i<6; i++){
+            transform.GetChild(i).GetComponent<SkeletonRendererCustomMaterials>().enabled = false;
+        }
     }
 
     public override void OnStopServer()
@@ -87,22 +80,16 @@ public class NPC_Mercurius : SpawnedMonster
 
     public void OnPointerEnterMercurius(PointerEventData eventData)
     {
-        transform.GetChild(0).GetComponent<MeshRenderer>().material = todBackOutlineMaterial;
-        transform.GetChild(1).GetComponent<MeshRenderer>().material = todblueOutlineMaterial;
-        transform.GetChild(2).GetComponent<MeshRenderer>().material = todGreenOutlineMaterial;
-        transform.GetChild(3).GetComponent<MeshRenderer>().material = todRedOutlineMaterial;
-        transform.GetChild(4).GetComponent<MeshRenderer>().material = todYellowOutlineMaterial;
-        transform.GetChild(5).GetComponent<MeshRenderer>().material = todOutlineMaterial;
+        for(int i=0; i<6; i++){
+            transform.GetChild(i).GetComponent<SkeletonRendererCustomMaterials>().enabled = true;
+        }
     }
 
     public void OnPointerExitMercurius(PointerEventData eventData)
     {
-        transform.GetChild(0).GetComponent<MeshRenderer>().material = todBackOriginMaterial;
-        transform.GetChild(1).GetComponent<MeshRenderer>().material = todblueOriginMaterial;
-        transform.GetChild(2).GetComponent<MeshRenderer>().material = todGreenOriginMaterial;
-        transform.GetChild(3).GetComponent<MeshRenderer>().material = todRedOriginMaterial;
-        transform.GetChild(4).GetComponent<MeshRenderer>().material = todYellowOriginMaterial;
-        transform.GetChild(5).GetComponent<MeshRenderer>().material = todOriginMaterial;
+        for(int i=0; i<6; i++){
+            transform.GetChild(i).GetComponent<SkeletonRendererCustomMaterials>().enabled = false;
+        }
     }
 
     // NPC Mercurius 클릭 이벤트
@@ -160,13 +147,13 @@ public class NPC_Mercurius : SpawnedMonster
                     {
                         case 0 : StartCoroutine(ToddActAnimation(toddAnim,3.3f));
                             break;
-                        case 1 : StartCoroutine(ToddActAnimation(minion0Anim,2.66f));
+                        case 1 : StartCoroutine(ToddActAnimation(todBlueAnim,2.66f));
                             break;
-                        case 2 : StartCoroutine(ToddActAnimation(minion1Anim,3.33f));
+                        case 2 : StartCoroutine(ToddActAnimation(todGreenAnim,3.33f));
                             break;
-                        case 3 : StartCoroutine(ToddActAnimation(minion2Anim,2.66f));
+                        case 3 : StartCoroutine(ToddActAnimation(todRedAnim,2.66f));
                             break;
-                        case 4 : StartCoroutine(ToddActAnimation(minion3Anim,4f));
+                        case 4 : StartCoroutine(ToddActAnimation(todYellowAnim,4f));
                             break;
                     }
                 }

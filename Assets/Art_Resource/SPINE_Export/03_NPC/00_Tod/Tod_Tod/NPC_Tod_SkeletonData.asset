@@ -21,7 +21,9 @@ MonoBehaviour:
     requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials: []
-    multiplyMaterials: []
+    multiplyMaterials:
+    - pageName: NPC_Tod.png
+      material: {fileID: 2100000, guid: 12e86c14b335e2349be140d0e6c4298f, type: 2}
     screenMaterials:
     - pageName: NPC_Tod.png
       material: {fileID: 2100000, guid: 2b26cd8a063792b4f85da16969be2202, type: 2}

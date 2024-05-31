@@ -22,6 +22,7 @@ public class NPC_RyuJinSol : SpawnedMonster
 
     void Start()
     {
+        GetComponent<SkeletonRendererCustomMaterials>().enabled = true;
         GetAnimationNames(skeletonAnimation);
         PlayRandomAnimation();
         eyeBlikCoroutine = StartCoroutine(StartEyeBlinkAnimation());
@@ -40,13 +41,12 @@ public class NPC_RyuJinSol : SpawnedMonster
 
     public void OnPointerEnterRyuJinSol(PointerEventData eventData)
     {
-        GetComponent<MeshRenderer>().material = outLineMaterial;
-    
+        GetComponent<SkeletonRendererCustomMaterials>().enabled = true;
     }
 
     public void OnPointerExitRyuJinSol(PointerEventData eventData)
     {
-       GetComponent<MeshRenderer>().material = defaultMaterial; 
+       GetComponent<SkeletonRendererCustomMaterials>().enabled = false;
     }
 
     // 3초 마다 눈 깜빡임 애니매이션 재생

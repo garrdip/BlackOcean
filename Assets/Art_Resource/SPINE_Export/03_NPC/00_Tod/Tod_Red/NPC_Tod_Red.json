@@ -1,17 +1,17 @@
 {
 "skeleton": {
-	"hash": "VXTo3H8d5DM",
-	"spine": "4.1.24",
+	"hash": "kkqdWDwRXXM",
+	"spine": "4.2.27",
 	"x": 149.37,
-	"y": -8.26,
-	"width": 268.88,
-	"height": 487.19,
+	"y": -49.18,
+	"width": 273.36,
+	"height": 528.11,
 	"images": "",
 	"audio": "C:/Users/Nullaby/Desktop/GJ_ing/spine/03_NPC/00_Tod"
 },
 "bones": [
 	{ "name": "root" },
-	{ "name": "RBody", "parent": "root", "x": 300.73, "y": 183.35, "color": "ff7500ff" },
+	{ "name": "RBody", "parent": "root", "x": 300.73, "y": 183.35, "color": "ff7500ff", "icon": "gear" },
 	{
 		"name": "RBody2",
 		"parent": "RBody",
@@ -98,11 +98,13 @@
 		"color": "2eff00ff"
 	},
 	{ "name": "RArmLeft4", "parent": "RArmLeft3", "length": 25.9, "rotation": -4.13, "x": 73.92, "color": "2eff00ff" },
-	{ "name": "RRing", "parent": "RBody5", "x": 122.86, "y": -4.95, "color": "ff7800ff" },
-	{ "name": "target11", "parent": "root", "x": 282.01, "y": 21.45, "color": "ff3f00ff" },
-	{ "name": "target12", "parent": "root", "x": 338.25, "y": 21.05, "color": "ff3f00ff" }
+	{ "name": "RRing", "parent": "RBody5", "x": 122.86, "y": -4.95, "color": "ff7800ff", "icon": "star" },
+	{ "name": "target11", "parent": "root", "x": 282.01, "y": 21.45, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "target12", "parent": "root", "x": 338.25, "y": 21.05, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "Shadow", "parent": "root", "length": 37.32, "rotation": 90, "x": 305.65, "y": 29.16 }
 ],
 "slots": [
+	{ "name": "Shadow", "bone": "Shadow", "color": "ffffffb4", "attachment": "Shadow", "blend": "multiply" },
 	{ "name": "RArmRight", "bone": "RArmRight", "attachment": "RArmRight" },
 	{ "name": "RBody", "bone": "RBody2", "attachment": "RBody" },
 	{ "name": "RArmLeft", "bone": "RArmLeft2", "attachment": "RArmLeft" },
@@ -164,6 +166,9 @@
 			},
 			"RRing": {
 				"RRing": { "x": 5.41, "y": 0.29, "rotation": -92.74, "width": 242, "height": 137 }
+			},
+			"Shadow": {
+				"Shadow": { "x": -1.35, "y": -4.08, "rotation": -90, "width": 226, "height": 154 }
 			}
 		}
 	}
@@ -323,6 +328,15 @@
 					{ "time": 0.6667, "x": 17.76, "y": 0.73 },
 					{ "time": 1.3333 },
 					{ "time": 2, "x": 16.68, "y": -3.15 },
+					{ "time": 2.6667 }
+				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 0.6667, "y": 1.068 },
+					{ "time": 1.3333 },
+					{ "time": 2, "y": 1.068 },
 					{ "time": 2.6667 }
 				]
 			}
@@ -557,6 +571,13 @@
 						"value": -18.05,
 						"curve": [ 1.333, -18.05, 1.667, 0 ]
 					},
+					{ "time": 2 }
+				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 1, "y": 1.119 },
 					{ "time": 2 }
 				]
 			}

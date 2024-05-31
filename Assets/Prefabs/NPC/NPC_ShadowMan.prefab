@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5709739287596009976}
   - component: {fileID: -99993339702241966}
   - component: {fileID: -4266738049005815734}
+  - component: {fileID: 4125464392787910960}
   m_Layer: 0
   m_Name: NPC_ShadowMan
   m_TagString: Untagged
@@ -65,7 +66,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8e7456f28f27d9842907c6c6cef9a3bd, type: 2}
+  - {fileID: 2100000, guid: 85d538f861babaf47960c36c1ccdb52c, type: 2}
+  - {fileID: 2100000, guid: aa246c57173abff40a633b1d3a3f22e6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -84,7 +86,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -545779115
-  m_SortingLayer: 5
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &8549248119463547583
@@ -264,3 +266,24 @@ PolygonCollider2D:
       - {x: 3.4594345, y: 5.4789476}
       - {x: 3.6792777, y: 5.8432117}
       - {x: 3.5121675, y: 6.7607665}
+--- !u!114 &4125464392787910960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549248119463547580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 8549248119463547583}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 8e7456f28f27d9842907c6c6cef9a3bd, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: aa246c57173abff40a633b1d3a3f22e6, type: 2}
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 800a6c0594793d441934c92457f9d5a7, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 85d538f861babaf47960c36c1ccdb52c, type: 2}

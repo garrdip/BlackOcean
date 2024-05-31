@@ -1,17 +1,17 @@
 {
 "skeleton": {
-	"hash": "Pva5HmNLlQ0",
-	"spine": "4.1.24",
-	"x": 295.4,
-	"y": 2.11,
-	"width": 328.4,
-	"height": 452.82,
+	"hash": "g9fjHEfqBFY",
+	"spine": "4.2.27",
+	"x": 274.63,
+	"y": -54.17,
+	"width": 349.18,
+	"height": 509.1,
 	"images": "",
 	"audio": "C:/Users/Nullaby/Desktop/GJ_ing/spine/03_NPC/00_Tod"
 },
 "bones": [
 	{ "name": "root" },
-	{ "name": "YBody", "parent": "root", "x": 414.13, "y": 141.67, "color": "ff7b00ff" },
+	{ "name": "YBody", "parent": "root", "x": 414.13, "y": 141.67, "color": "ff7b00ff", "icon": "gear" },
 	{
 		"name": "YBody2",
 		"parent": "YBody",
@@ -60,7 +60,15 @@
 	},
 	{ "name": "YBody8", "parent": "YBody7", "length": 15.53, "rotation": 5.31, "x": 15.99, "color": "ff0000ff" },
 	{ "name": "YBody9", "parent": "YBody8", "length": 19.97, "rotation": 19.26, "x": 15.53, "color": "ff0000ff" },
-	{ "name": "YRing", "parent": "YBody4", "rotation": -54.08, "x": 127.46, "y": -67.82, "color": "ff8c00ff" },
+	{
+		"name": "YRing",
+		"parent": "YBody4",
+		"rotation": -54.08,
+		"x": 127.46,
+		"y": -67.82,
+		"color": "ff8c00ff",
+		"icon": "star"
+	},
 	{
 		"name": "YBody10",
 		"parent": "YBody",
@@ -135,10 +143,12 @@
 		"y": 55.79,
 		"color": "b600ffff"
 	},
-	{ "name": "target14", "parent": "root", "x": 453.97, "y": 21.26, "color": "ff3f00ff" },
-	{ "name": "target13", "parent": "root", "x": 384.08, "y": 21.5, "color": "ff3f00ff" }
+	{ "name": "target14", "parent": "root", "x": 453.97, "y": 21.26, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "target13", "parent": "root", "x": 384.08, "y": 21.5, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "Shadow", "parent": "root", "length": 44.38, "rotation": 90, "x": 419.65, "y": 22.83 }
 ],
 "slots": [
+	{ "name": "Shadow", "bone": "Shadow", "color": "ffffffb4", "attachment": "Shadow", "blend": "multiply" },
 	{ "name": "YBody", "bone": "YBody2", "attachment": "YBody" },
 	{ "name": "YArmRight", "bone": "YArmRight", "attachment": "YArmRight" },
 	{ "name": "YArmLeft", "bone": "YArmLeft", "attachment": "YArmLeft" },
@@ -163,6 +173,9 @@
 	{
 		"name": "default",
 		"attachments": {
+			"Shadow": {
+				"Shadow": { "y": -4.13, "scaleX": 1.3199, "rotation": -90, "width": 226, "height": 154 }
+			},
 			"YArmLeft": {
 				"YArmLeft": {
 					"type": "mesh",
@@ -348,6 +361,20 @@
 				"rotate": [
 					{},
 					{ "time": 1, "value": 3.38 },
+					{ "time": 4 }
+				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 1, "y": 1.155 },
+					{ "time": 2, "y": 1.16 },
+					{ "time": 2.1667, "y": 1.206 },
+					{ "time": 2.3333, "y": 1.156 },
+					{ "time": 2.5, "y": 1.177 },
+					{ "time": 2.6667, "y": 1.151 },
+					{ "time": 2.8333, "y": 1.185 },
+					{ "time": 3, "y": 1.147 },
 					{ "time": 4 }
 				]
 			}
@@ -650,6 +677,13 @@
 					{
 						"curve": [ 0.667, 0, 1.333, 0 ]
 					},
+					{ "time": 2 }
+				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 1, "y": 1.103 },
 					{ "time": 2 }
 				]
 			}

@@ -18,10 +18,12 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: 9a576f30084553740a85e6619226a24c, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials: []
-    multiplyMaterials: []
+    multiplyMaterials:
+    - pageName: NPC_Tod_Red.png
+      material: {fileID: 2100000, guid: b2114fa94b97e5544a6d2e3914ea4c5f, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []

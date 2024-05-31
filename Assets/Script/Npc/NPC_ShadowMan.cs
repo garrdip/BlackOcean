@@ -20,6 +20,7 @@ public class NPC_ShadowMan : SpawnedMonster
 
     void Start()
     {
+        GetComponent<SkeletonRendererCustomMaterials>().enabled = false;
         GetAnimationNames(skeletonAnimation);
         PlayRandomAnimation();
     }
@@ -36,13 +37,12 @@ public class NPC_ShadowMan : SpawnedMonster
 
     public void OnPointerEnterShadowMan(PointerEventData eventData)
     {
-        GetComponent<MeshRenderer>().material = outLineMaterial;
-    
+        GetComponent<SkeletonRendererCustomMaterials>().enabled = true;
     }
 
     public void OnPointerExitShadowMan(PointerEventData eventData)
     {
-       GetComponent<MeshRenderer>().material = defaultMaterial; 
+       GetComponent<SkeletonRendererCustomMaterials>().enabled = false;
     }
 
     // 애니매이션 리스트들중 하나 랜덤으로 재생 : 재생 완료 콜백에서 재귀호출하는 방식으로 무한 재생

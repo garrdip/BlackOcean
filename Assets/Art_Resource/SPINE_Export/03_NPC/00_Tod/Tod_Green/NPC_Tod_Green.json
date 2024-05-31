@@ -1,17 +1,17 @@
 {
 "skeleton": {
-	"hash": "ptmOOJaGKW4",
-	"spine": "4.1.24",
+	"hash": "BkK27+X3Xew",
+	"spine": "4.2.27",
 	"x": -553.45,
-	"y": 0.94,
+	"y": -51.25,
 	"width": 292.86,
-	"height": 364.98,
+	"height": 417.17,
 	"images": "",
 	"audio": "C:/Users/Nullaby/Desktop/GJ_ing/spine/03_NPC/00_Tod"
 },
 "bones": [
 	{ "name": "root" },
-	{ "name": "GBody", "parent": "root", "x": -395.66, "y": 132.53, "color": "ff6e00ff" },
+	{ "name": "GBody", "parent": "root", "x": -395.66, "y": 132.53, "color": "ff6e00ff", "icon": "gear" },
 	{ "name": "GBody2", "parent": "GBody", "length": 22.54, "rotation": 99.64, "y": 0.42, "color": "ff0000ff" },
 	{
 		"name": "GBody3",
@@ -68,8 +68,9 @@
 		"rotation": 101.97,
 		"x": 94.15,
 		"y": -24.24,
-		"transform": "noRotationOrReflection",
-		"color": "ff7100ff"
+		"inherit": "noRotationOrReflection",
+		"color": "ff7100ff",
+		"icon": "star"
 	},
 	{
 		"name": "GBody11",
@@ -130,10 +131,12 @@
 	{ "name": "GBody19", "parent": "GBody18", "length": 45.07, "rotation": 12.09, "x": 43.67, "color": "9400ffff" },
 	{ "name": "GBody20", "parent": "GBody19", "length": 40.34, "rotation": -0.38, "x": 45.07, "color": "9400ffff" },
 	{ "name": "GBody21", "parent": "GBody20", "length": 45.96, "rotation": 3.2, "x": 40.34, "color": "9400ffff" },
-	{ "name": "GR", "parent": "root", "x": -412.07, "y": 21.54, "color": "ff3f00ff" },
-	{ "name": "GL", "parent": "root", "x": -351.69, "y": 22.47, "color": "ff3f00ff" }
+	{ "name": "GR", "parent": "root", "x": -412.07, "y": 21.54, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "GL", "parent": "root", "x": -351.69, "y": 22.47, "color": "ff3f00ff", "icon": "ik" },
+	{ "name": "Shadow", "parent": "root", "length": 38.19, "rotation": 88.99, "x": -378.81, "y": 23.7 }
 ],
 "slots": [
+	{ "name": "Shadow", "bone": "Shadow", "color": "ffffffb4", "attachment": "Shadow", "blend": "multiply" },
 	{ "name": "GArmRight", "bone": "GArmRight", "attachment": "GArmRight" },
 	{ "name": "GBody", "bone": "GBody", "attachment": "GBody" },
 	{ "name": "GArmLeft", "bone": "GArmRight5", "attachment": "GArmLeft" },
@@ -194,6 +197,9 @@
 			},
 			"Gring": {
 				"Gring": { "x": -6.6, "y": 3.49, "rotation": -101.97, "width": 291, "height": 145 }
+			},
+			"Shadow": {
+				"Shadow": { "x": 2.08, "y": -1.19, "rotation": -88.99, "width": 226, "height": 154 }
 			}
 		}
 	}
@@ -491,6 +497,17 @@
 					{ "time": 2, "x": 42.12, "y": -4.24 },
 					{ "time": 3.3333 }
 				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 0.6667, "y": 1.047 },
+					{ "time": 1.6667 },
+					{ "time": 2.5, "y": 1.06 },
+					{ "time": 2.6667, "x": 0.886, "y": 0.849 },
+					{ "time": 2.8, "curve": "stepped" },
+					{ "time": 3.3333 }
+				]
 			}
 		},
 		"events": [
@@ -775,6 +792,13 @@
 						"value": -0.56,
 						"curve": [ 1.333, -0.56, 1.667, 0 ]
 					},
+					{ "time": 2 }
+				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 1, "y": 1.047 },
 					{ "time": 2 }
 				]
 			}

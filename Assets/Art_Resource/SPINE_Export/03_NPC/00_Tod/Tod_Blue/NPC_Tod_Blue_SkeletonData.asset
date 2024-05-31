@@ -18,10 +18,12 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: c4a072cb7ce88844aaee513dfcbf6e58, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials: []
-    multiplyMaterials: []
+    multiplyMaterials:
+    - pageName: NPC_Tod_Blue.png
+      material: {fileID: 2100000, guid: 6f56a5961ab044742a07dfd87a88b79a, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []

@@ -18,10 +18,12 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: 34ddcf30a47b34049b1cb08aeb18f0bc, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials: []
-    multiplyMaterials: []
+    multiplyMaterials:
+    - pageName: NPC_Shadow.png
+      material: {fileID: 2100000, guid: 800a6c0594793d441934c92457f9d5a7, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []
