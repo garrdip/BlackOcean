@@ -1,11 +1,11 @@
 {
 "skeleton": {
-	"hash": "KghHI+aDRU8",
-	"spine": "4.2.20",
+	"hash": "ydd6CBHWr8w",
+	"spine": "4.2.27",
 	"x": -434.77,
-	"y": -12.24,
-	"width": 613.87,
-	"height": 457.03,
+	"y": -74.4,
+	"width": 788.73,
+	"height": 519.2,
 	"images": "",
 	"audio": ""
 },
@@ -241,10 +241,11 @@
 	{ "name": "BodyMove", "parent": "Body3", "x": -56.12, "y": -55.84, "color": "ff7800ff", "icon": "arrowsB" },
 	{ "name": "BodyMoveBack", "parent": "Body3", "x": -58.23, "y": -82.34, "color": "753800ff", "icon": "warning" },
 	{ "name": "FaceMove", "parent": "Head", "x": 83.9, "y": -2.34, "color": "ff7800ff", "icon": "arrowsB" },
-	{ "name": "FaceMoveBack", "parent": "Head", "x": 84.63, "y": -26.58, "color": "955302ff", "icon": "warning" }
+	{ "name": "FaceMoveBack", "parent": "Head", "x": 84.63, "y": -26.58, "color": "955302ff", "icon": "warning" },
+	{ "name": "Shadow", "parent": "root", "length": 36.37, "rotation": 90.99, "x": 39.09, "y": 7.15 }
 ],
 "slots": [
-	{ "name": "레이어 1", "bone": "root" },
+	{ "name": "Shadow", "bone": "Shadow", "color": "ffffffb4", "attachment": "Shadow", "blend": "multiply" },
 	{ "name": "3RightArmT", "bone": "3RightArmT", "attachment": "3RightArmT" },
 	{ "name": "3RightArmB", "bone": "3RightArmB", "attachment": "3RightArmB" },
 	{ "name": "RightFoot", "bone": "RightFoot2", "attachment": "RightFoot" },
@@ -320,6 +321,20 @@
 		"mixX": -1,
 		"mixScaleX": -1,
 		"mixShearY": -1
+	},
+	{
+		"name": "CenterToShadow",
+		"order": 9,
+		"bones": [ "Shadow" ],
+		"target": "Center",
+		"rotation": 90.99,
+		"x": -21.28,
+		"y": -283.75,
+		"mixRotate": 0,
+		"mixX": 0.05,
+		"mixY": 0,
+		"mixScaleX": 0,
+		"mixShearY": 0
 	},
 	{
 		"name": "FaceMove",
@@ -527,6 +542,9 @@
 					"width": 126,
 					"height": 130
 				}
+			},
+			"Shadow": {
+				"Shadow": { "x": -4.37, "y": 10.38, "scaleX": 2.8776, "rotation": -90.99, "width": 226, "height": 154 }
 			}
 		}
 	}
@@ -546,9 +564,6 @@
 					{ "time": 0.4, "value": 0 },
 					{ "time": 0.4667, "value": 1 },
 					{ "time": 0.6667, "value": 0 }
-				],
-				"attachment": [
-					{}
 				]
 			},
 			"EyeLight2": {
@@ -557,9 +572,6 @@
 					{ "time": 0.4, "value": 0 },
 					{ "time": 0.4667, "value": 1 },
 					{ "time": 0.6667, "value": 0 }
-				],
-				"attachment": [
-					{}
 				]
 			}
 		},
@@ -693,6 +705,18 @@
 			"3RightArmT": {
 				"rotate": [
 					{}
+				]
+			},
+			"Shadow": {
+				"translate": [
+					{ "time": 0.4 },
+					{ "time": 0.4667, "x": -40.75 },
+					{ "time": 0.8 }
+				],
+				"scale": [
+					{ "time": 0.4 },
+					{ "time": 0.4667, "y": 1.229 },
+					{ "time": 0.8 }
 				]
 			}
 		},
@@ -849,14 +873,6 @@
 				}
 			}
 		},
-		"drawOrder": [
-			{
-				"time": 0.2,
-				"offsets": [
-					{ "slot": "3RightArmB", "offset": 3 }
-				]
-			}
-		],
 		"events": [
 			{ "time": 0.8, "name": "3AttackEnd" }
 		]
@@ -869,7 +885,6 @@
 					{ "time": 0.4, "value": 1 }
 				],
 				"attachment": [
-					{},
 					{ "time": 1.7, "name": "EyeLight" }
 				]
 			},
@@ -879,7 +894,6 @@
 					{ "time": 0.4, "value": 1 }
 				],
 				"attachment": [
-					{},
 					{ "time": 1.7, "name": "EyeLight" }
 				]
 			}
@@ -1178,18 +1192,6 @@
 		]
 	},
 	"Defence0": {
-		"slots": {
-			"EyeLight": {
-				"attachment": [
-					{}
-				]
-			},
-			"EyeLight2": {
-				"attachment": [
-					{}
-				]
-			}
-		},
 		"bones": {
 			"AllLeftArmT": {
 				"translate": [
@@ -1392,18 +1394,6 @@
 		]
 	},
 	"Idle": {
-		"slots": {
-			"EyeLight": {
-				"attachment": [
-					{}
-				]
-			},
-			"EyeLight2": {
-				"attachment": [
-					{}
-				]
-			}
-		},
 		"bones": {
 			"AllLeftArmT": {
 				"translate": [

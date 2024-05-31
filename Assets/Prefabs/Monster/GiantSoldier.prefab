@@ -4885,6 +4885,7 @@ GameObject:
   - component: {fileID: 1148659860880846136}
   - component: {fileID: 4058354174242116765}
   - component: {fileID: 9168446368059967622}
+  - component: {fileID: 485147089649538514}
   m_Layer: 0
   m_Name: GiantSoldier
   m_TagString: TargetObject
@@ -4936,7 +4937,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 95931af38ebfdf240a6b23b98c10cd32, type: 2}
+  - {fileID: 2100000, guid: 9ecaf8e553be56548b5aa26b08843631, type: 2}
+  - {fileID: 2100000, guid: 27dafcf95357eb44e863235180142244, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4955,7 +4957,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -822484745
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2526679034711088660
@@ -4970,7 +4972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 9e0ce7cd0349f744bbd07cc78fe49f9e, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: d7de035e8b5a22b459576f55d7b6daa4, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -5057,8 +5059,6 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
-  defaultMaterial: {fileID: 2100000, guid: f26cf6102677d9044a02590478a6ef31, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 4e1efb2397ffcf24bbc98dcefe5f8baa, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: e92257f0a48f78744bdd9bf91fdc9a4e, type: 2}
   dissolveParticle: {fileID: 990911096363295499}
 --- !u!60 &9168446368059967622
@@ -5111,3 +5111,21 @@ PolygonCollider2D:
       - {x: 3.8346336, y: 0.23595011}
       - {x: 3.6731572, y: 2.857998}
       - {x: 3.4863603, y: 3.391405}
+--- !u!114 &485147089649538514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2526679034711088660}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 27dafcf95357eb44e863235180142244, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 783c83cb967f67d46ba39355dba91a98, type: 2}

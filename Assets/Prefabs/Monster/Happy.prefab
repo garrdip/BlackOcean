@@ -4885,6 +4885,7 @@ GameObject:
   - component: {fileID: 1148659860880846136}
   - component: {fileID: 8685547405828264133}
   - component: {fileID: 4099635390815876084}
+  - component: {fileID: -8592386474751023559}
   m_Layer: 0
   m_Name: Happy
   m_TagString: TargetObject
@@ -4936,6 +4937,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
+  - {fileID: 2100000, guid: 4bc5aae8ebf4a2641a671d6397b71f66, type: 2}
   - {fileID: 2100000, guid: f0b2ae512f37f25468c61ec84a2262de, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -4955,7 +4957,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -822484745
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2526679034711088660
@@ -5103,7 +5105,23 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
-  defaultMaterial: {fileID: 2100000, guid: f0b2ae512f37f25468c61ec84a2262de, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 5a7473a38a5529d48b5c1a88345b6dfd, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 51507b00a7a236043947cfcfba157424, type: 2}
   dissolveParticle: {fileID: 8561463612125505005}
+--- !u!114 &-8592386474751023559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2526679034711088660}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: f0b2ae512f37f25468c61ec84a2262de, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 86888e940e122964488bf9ed99910261, type: 2}

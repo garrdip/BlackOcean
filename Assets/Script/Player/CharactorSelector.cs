@@ -11,6 +11,7 @@ public class CharactorSelector : MonoBehaviour
 
     void Start()
     {
+        skeletonRendererCustomMaterials = GetComponent<SkeletonRendererCustomMaterials>();
         skeletonRendererCustomMaterials.enabled = false;
     }
 

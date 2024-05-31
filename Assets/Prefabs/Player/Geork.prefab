@@ -58,7 +58,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: ceffbab569562874bb1c72c5b88565cc, type: 2}
-  - {fileID: 2100000, guid: dd10999db70b85b4b9032f33d75acf73, type: 2}
+  - {fileID: 2100000, guid: 7ee8a17ad4d33404386338a70b5681fb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -209,9 +209,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 385d45f9026a2274ebf5a309b789b1e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshRenderer: {fileID: 1046600963234684866}
-  defaultMaterial: {fileID: 2100000, guid: dd10999db70b85b4b9032f33d75acf73, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 7ee8a17ad4d33404386338a70b5681fb, type: 2}
 --- !u!114 &-4371420289188217748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,6 +227,3 @@ MonoBehaviour:
   - overrideDisabled: 0
     originalMaterial: {fileID: 2100000, guid: dd10999db70b85b4b9032f33d75acf73, type: 2}
     replacementMaterial: {fileID: 2100000, guid: 7ee8a17ad4d33404386338a70b5681fb, type: 2}
-  - overrideDisabled: 0
-    originalMaterial: {fileID: 2100000, guid: ceffbab569562874bb1c72c5b88565cc, type: 2}
-    replacementMaterial: {fileID: 2100000, guid: 1e9862c98c2a4534d98c9cb0aa84d870, type: 2}

@@ -1,11 +1,11 @@
 {
 "skeleton": {
-	"hash": "AqVWRhWKhdE",
-	"spine": "4.2.20",
+	"hash": "jL9iw1nEtag",
+	"spine": "4.2.27",
 	"x": -376.85,
-	"y": -12.24,
-	"width": 555.96,
-	"height": 457.03,
+	"y": -72.97,
+	"width": 730.15,
+	"height": 517.77,
 	"images": "",
 	"audio": ""
 },
@@ -207,10 +207,11 @@
 	{ "name": "BodyMove", "parent": "Body3", "x": -56.12, "y": -55.84, "color": "ff7800ff", "icon": "arrowsB" },
 	{ "name": "BodyMoveBack", "parent": "Body3", "x": -58.23, "y": -82.34, "color": "753800ff", "icon": "warning" },
 	{ "name": "FaceMove", "parent": "Head", "x": 83.9, "y": -2.34, "color": "ff7800ff", "icon": "arrowsB" },
-	{ "name": "FaceMoveBack", "parent": "Head", "x": 84.63, "y": -26.58, "color": "955302ff", "icon": "warning" }
+	{ "name": "FaceMoveBack", "parent": "Head", "x": 84.63, "y": -26.58, "color": "955302ff", "icon": "warning" },
+	{ "name": "Shadow", "parent": "root", "length": 35.15, "rotation": 88.96, "x": 40.27, "y": 5.47 }
 ],
 "slots": [
-	{ "name": "레이어 1", "bone": "root" },
+	{ "name": "Shadow", "bone": "Shadow", "color": "ffffffb4", "attachment": "Shadow", "blend": "multiply" },
 	{ "name": "2RightH", "bone": "1RightH", "attachment": "2RightH" },
 	{ "name": "1_2RightArmT", "bone": "1_2RightArmT2", "attachment": "1_2RightArmT" },
 	{ "name": "1_2RightArmB", "bone": "1_2RightArmB", "attachment": "1_2RightArmB" },
@@ -258,6 +259,20 @@
 		"mixShearY": -1
 	},
 	{
+		"name": "CenterToShadow",
+		"order": 5,
+		"bones": [ "Shadow" ],
+		"target": "Center",
+		"rotation": 88.96,
+		"x": -20.1,
+		"y": -285.42,
+		"mixRotate": 0,
+		"mixX": 0.05,
+		"mixY": 0,
+		"mixScaleX": 0,
+		"mixShearY": 0
+	},
+	{
 		"name": "FaceMove",
 		"order": 4,
 		"bones": [ "FaceMoveBack" ],
@@ -268,6 +283,19 @@
 		"mixX": -1,
 		"mixScaleX": -1,
 		"mixShearY": -1
+	},
+	{
+		"name": "RightFootToShadow",
+		"order": 6,
+		"bones": [ "Shadow" ],
+		"target": "RightFoot",
+		"rotation": -156.66,
+		"x": -5.61,
+		"y": 107.24,
+		"mixRotate": 0,
+		"mixX": 0,
+		"mixScaleX": 0,
+		"mixShearY": 0
 	}
 ],
 "path": [
@@ -463,6 +491,9 @@
 					"width": 126,
 					"height": 130
 				}
+			},
+			"Shadow": {
+				"Shadow": { "x": -1.66, "y": 12.11, "scaleX": 2.8776, "rotation": -88.96, "width": 226, "height": 154 }
 			}
 		}
 	}
@@ -482,9 +513,6 @@
 					{ "time": 0.4, "value": 0 },
 					{ "time": 0.4667, "value": 1 },
 					{ "time": 0.6667, "value": 0 }
-				],
-				"attachment": [
-					{}
 				]
 			},
 			"EyeLight2": {
@@ -493,9 +521,6 @@
 					{ "time": 0.4, "value": 0 },
 					{ "time": 0.4667, "value": 1 },
 					{ "time": 0.6667, "value": 0 }
-				],
-				"attachment": [
-					{}
 				]
 			}
 		},
@@ -654,6 +679,19 @@
 				"translate": [
 					{ "time": 0.4 },
 					{ "time": 0.5, "x": -11.24 },
+					{ "time": 0.8 }
+				]
+			},
+			"Shadow": {
+				"translate": [
+					{ "time": 0.4 },
+					{ "time": 0.5, "x": -41.89 },
+					{ "time": 0.8 }
+				],
+				"scale": [
+					{},
+					{ "time": 0.4, "x": 0.902, "y": 0.982 },
+					{ "time": 0.5, "y": 1.229 },
 					{ "time": 0.8 }
 				]
 			}
@@ -843,7 +881,6 @@
 					{ "time": 1.7, "value": 0 }
 				],
 				"attachment": [
-					{},
 					{ "time": 1.7, "name": "EyeLight" }
 				]
 			},
@@ -854,7 +891,6 @@
 					{ "time": 1.7, "value": 0 }
 				],
 				"attachment": [
-					{},
 					{ "time": 1.7, "name": "EyeLight" }
 				]
 			}
@@ -1153,18 +1189,6 @@
 		}
 	},
 	"Defence0": {
-		"slots": {
-			"EyeLight": {
-				"attachment": [
-					{}
-				]
-			},
-			"EyeLight2": {
-				"attachment": [
-					{}
-				]
-			}
-		},
 		"bones": {
 			"AllLeftArmT": {
 				"translate": [
@@ -1511,18 +1535,6 @@
 		]
 	},
 	"Idle": {
-		"slots": {
-			"EyeLight": {
-				"attachment": [
-					{}
-				]
-			},
-			"EyeLight2": {
-				"attachment": [
-					{}
-				]
-			}
-		},
 		"bones": {
 			"AllLeftArmT": {
 				"translate": [

@@ -1,11 +1,11 @@
 {
 "skeleton": {
-	"hash": "HFQEMBa2EZg",
-	"spine": "4.2.20",
+	"hash": "OJI4jc4iZ44",
+	"spine": "4.2.26",
 	"x": -569.44,
-	"y": 9.79,
+	"y": -48.67,
 	"width": 754.69,
-	"height": 745.43,
+	"height": 803.89,
 	"images": "",
 	"audio": "C:/Users/Nullaby/Desktop/GJ_ing/spine/01_monster/01_S1_Elite02_Twins"
 },
@@ -397,9 +397,11 @@
 	},
 	{ "name": "HFaceMoveBack", "parent": "HHead", "x": 56.05, "y": 93.76, "color": "8e4300ff", "icon": "arrows" },
 	{ "name": "HBodyMove", "parent": "HBody4", "x": 49.22, "y": -134.96, "color": "fff600ff", "icon": "arrows" },
-	{ "name": "HLegLeftMove", "parent": "HLegLeft2", "x": 86.58, "y": 43.16, "color": "02ff00ff", "icon": "arrows" }
+	{ "name": "HLegLeftMove", "parent": "HLegLeft2", "x": 86.58, "y": 43.16, "color": "02ff00ff", "icon": "arrows" },
+	{ "name": "Shadow", "parent": "root", "length": 26.12, "rotation": 91.79, "x": -186.45, "y": 14.29 }
 ],
 "slots": [
+	{ "name": "Shadow", "bone": "Shadow", "color": "ffffffb4", "attachment": "Shadow", "blend": "multiply" },
 	{ "name": "HHeadBack", "bone": "HHeadBack", "attachment": "HHeadBack" },
 	{ "name": "HTail", "bone": "HTail", "attachment": "HTail" },
 	{ "name": "HLegRight", "bone": "HLegRight", "attachment": "SLegRight" },
@@ -453,6 +455,20 @@
 ],
 "transform": [
 	{
+		"name": "HBodyToShadow",
+		"order": 7,
+		"bones": [ "Shadow" ],
+		"target": "HBody",
+		"rotation": 91.79,
+		"x": 42.8,
+		"y": -460.44,
+		"mixRotate": 0,
+		"mixX": 0.9,
+		"mixY": 0,
+		"mixScaleX": 0,
+		"mixShearY": 0
+	},
+	{
 		"name": "HFaceMove",
 		"order": 4,
 		"bones": [ "HFaceMoveBack" ],
@@ -492,7 +508,7 @@
 "path": [
 	{
 		"name": "HHeadLeftLine",
-		"order": 7,
+		"order": 8,
 		"bones": [ "HHead14", "HHead14b", "HHead14c", "HHead14d", "HHead14e", "HHead14f", "HHead14g", "HHead14h", "HHead14i", "HHead14j", "HHead14k", "HHead14l", "HHead14m", "HHead14n", "HHead14o", "HHead14p", "HHead14q", "HHead14r", "HHead14s", "HHead14t" ],
 		"target": "HHeadLeftLine",
 		"spacingMode": "percent",
@@ -501,7 +517,7 @@
 	},
 	{
 		"name": "HHeadRight",
-		"order": 9,
+		"order": 10,
 		"bones": [ "HHead13", "HHead13b", "HHead13c", "HHead13d", "HHead13e", "HHead13f", "HHead13g", "HHead13h", "HHead13i", "HHead13j", "HHead13k", "HHead13l", "HHead13m", "HHead13n", "HHead13o", "HHead13p", "HHead13q", "HHead13r", "HHead13s", "HHead13t" ],
 		"target": "HHeadRight",
 		"spacingMode": "percent",
@@ -510,7 +526,7 @@
 	},
 	{
 		"name": "HTailLine",
-		"order": 8,
+		"order": 9,
 		"bones": [ "HTail2", "HTail2b", "HTail2c", "HTail2d", "HTail2e", "HTail2f", "HTail2g", "HTail2h", "HTail2i", "HTail2j", "HTail2k", "HTail2l", "HTail2m", "HTail2n", "HTail2o", "HTail2p", "HTail2q", "HTail2r", "HTail2s", "HTail2t", "HTail2u", "HTail2v", "HTail2w", "HTail2x", "HTail2y", "HTail2z", "HTail2{", "HTail2|", "HTail2}", "HTail2~", "HTail2", "HTail2", "HTail2", "HTail2", "HTail2", "HTail2", "HTail2", "HTail2", "HTail2", "HTail2" ],
 		"target": "HTailLine",
 		"spacingMode": "percent",
@@ -677,6 +693,9 @@
 					"width": 754,
 					"height": 424
 				}
+			},
+			"Shadow": {
+				"Shadow": { "x": -0.85, "y": -1.2, "scaleY": 0.807, "rotation": -91.79, "width": 226, "height": 154 }
 			}
 		}
 	}
@@ -2110,6 +2129,21 @@
 					{ "time": 1.4333, "x": 16.32, "y": 18.2 },
 					{ "time": 1.6667 }
 				]
+			},
+			"Shadow": {
+				"translate": [
+					{},
+					{ "time": 0.4333, "x": -292.94, "curve": "stepped" },
+					{ "time": 0.7667, "x": -292.94 },
+					{ "time": 0.9333 }
+				],
+				"scale": [
+					{},
+					{ "time": 0.4333, "y": 1.213, "curve": "stepped" },
+					{ "time": 0.7667, "y": 1.213 },
+					{ "time": 0.9333, "x": 0.907, "y": 0.908 },
+					{ "time": 1.6667 }
+				]
 			}
 		},
 		"events": [
@@ -2783,6 +2817,14 @@
 						"y": 20.45,
 						"curve": [ 1.333, 104.19, 1.5, 0, 1.333, 20.45, 1.5, 0 ]
 					},
+					{ "time": 1.6667 }
+				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 0.3333, "x": 0.907, "y": 0.946, "curve": "stepped" },
+					{ "time": 1.1667, "x": 0.907, "y": 0.946 },
 					{ "time": 1.6667 }
 				]
 			}
@@ -3514,6 +3556,13 @@
 				"translate": [
 					{},
 					{ "time": 0.1333, "x": 144.01, "y": -73.14 },
+					{ "time": 0.6667 }
+				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 0.1333, "x": 1.1, "y": 1.278 },
 					{ "time": 0.6667 }
 				]
 			}
@@ -4302,6 +4351,15 @@
 					{ "time": 0.8333, "x": 12.2, "y": 37.21 },
 					{ "time": 1.6667 },
 					{ "time": 2.5, "x": 9.35, "y": -49.23 },
+					{ "time": 3.3333 }
+				]
+			},
+			"Shadow": {
+				"scale": [
+					{},
+					{ "time": 0.8333, "x": 0.896, "y": 0.943 },
+					{ "time": 1.6667 },
+					{ "time": 2.5, "x": 0.919, "y": 0.959 },
 					{ "time": 3.3333 }
 				]
 			}

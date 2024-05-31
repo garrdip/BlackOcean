@@ -4885,6 +4885,7 @@ GameObject:
   - component: {fileID: 1148659860880846136}
   - component: {fileID: 8096410808096216691}
   - component: {fileID: -2845337402497649874}
+  - component: {fileID: -4189096865527981114}
   m_Layer: 0
   m_Name: WacherB
   m_TagString: TargetObject
@@ -4936,7 +4937,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e4dac0edad5ca3a4195cb96ec178d205, type: 2}
+  - {fileID: 2100000, guid: 81e41234a96d86945b44fc738708c2fa, type: 2}
+  - {fileID: 2100000, guid: 1c22bac2974da0940bfd0cd3a350019c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4955,7 +4957,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -822484745
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2526679034711088660
@@ -4970,7 +4972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 9ba2c58c17f10684e8787c85d308bffb, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: ab2e9a0a39201a04cb2a46f81b32424b, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -5109,7 +5111,23 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
-  defaultMaterial: {fileID: 2100000, guid: e4dac0edad5ca3a4195cb96ec178d205, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: daebdd30e0d3e474e91f69ab11a1f3fc, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: bd1bbdcfb3f259d4985796e017ed3036, type: 2}
   dissolveParticle: {fileID: 590674247389558172}
+--- !u!114 &-4189096865527981114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2526679034711088660}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 81e41234a96d86945b44fc738708c2fa, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 003ac451abe9cd54f895bc1b89cdc82f, type: 2}

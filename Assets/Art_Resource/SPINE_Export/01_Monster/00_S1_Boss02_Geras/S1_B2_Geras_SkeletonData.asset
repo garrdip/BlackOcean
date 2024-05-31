@@ -18,10 +18,12 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: 3661afdc6b7c28841b7716661903fcc5, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials: []
-    multiplyMaterials: []
+    multiplyMaterials:
+    - pageName: S1_B2_Geras.png
+      material: {fileID: 2100000, guid: 2f137c877c9e6a14dbf83f387fa574c3, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []

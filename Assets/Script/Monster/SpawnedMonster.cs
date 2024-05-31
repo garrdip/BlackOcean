@@ -44,16 +44,12 @@ public class SpawnedMonster : NetworkBehaviour
 
     public bool isActive = false;
 
-    public MaterialPropertyBlock materialPropertyBlock;
+    private MaterialPropertyBlock materialPropertyBlock;
+
+    private SkeletonRendererCustomMaterials skeletonRendererCustomMaterials;
 
     [Header("몬스터 MeshRenderer")]
     public MeshRenderer meshRenderer;
-
-    [Header("몬스터 기본 Material")]
-    public Material defaultMaterial;
-
-    [Header("몬스터 외곽선 Material")]
-    public Material outLineMaterial;
 
     [Header("몬스터 처치 효과 Material")]
     public Material dissolveMaterial;
@@ -67,6 +63,8 @@ public class SpawnedMonster : NetworkBehaviour
 
     void Start()
     {
+        skeletonRendererCustomMaterials = GetComponent<SkeletonRendererCustomMaterials>();
+        skeletonRendererCustomMaterials.enabled = false;
         materialPropertyBlock = new MaterialPropertyBlock();
         meshRenderer = GetComponent<MeshRenderer>();
         anim = GetComponent<SkeletonAnimation>();
@@ -79,14 +77,14 @@ public class SpawnedMonster : NetworkBehaviour
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
-            meshRenderer.material = outLineMaterial;
+            skeletonRendererCustomMaterials.enabled = true;
         }
     }
 
     private void OnTriggerExit2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
-            meshRenderer.material = defaultMaterial;
+            skeletonRendererCustomMaterials.enabled = false;
         }
     }
 

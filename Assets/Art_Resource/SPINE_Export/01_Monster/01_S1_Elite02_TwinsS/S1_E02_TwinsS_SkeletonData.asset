@@ -18,10 +18,12 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: 3b493b6f198294b4d8609060008c3546, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials: []
-    multiplyMaterials: []
+    multiplyMaterials:
+    - pageName: S1_E02_TwinsS.png
+      material: {fileID: 2100000, guid: 605b044ce950a0b49a248570138fa16f, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []

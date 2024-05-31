@@ -4885,6 +4885,7 @@ GameObject:
   - component: {fileID: 1148659860880846136}
   - component: {fileID: 5998776068240495281}
   - component: {fileID: -7116327632464265827}
+  - component: {fileID: -2288042111737824083}
   m_Layer: 0
   m_Name: Saddy
   m_TagString: TargetObject
@@ -4937,6 +4938,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: d01b4f3612769364aa886eb9b8a0d219, type: 2}
+  - {fileID: 2100000, guid: 605b044ce950a0b49a248570138fa16f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4955,7 +4957,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -822484745
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2526679034711088660
@@ -5057,8 +5059,6 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
-  defaultMaterial: {fileID: 2100000, guid: d01b4f3612769364aa886eb9b8a0d219, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 2ed2fd98f44e5cf4ba753bdcf0f52580, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 0e4696a689922034284a39d0c767a811, type: 2}
   dissolveParticle: {fileID: 7007860767895456606}
 --- !u!60 &-7116327632464265827
@@ -5112,3 +5112,21 @@ PolygonCollider2D:
       - {x: 2.8924246, y: 4.6168776}
       - {x: 3.2898183, y: 5.2545104}
       - {x: 4.7771034, y: 5.7267427}
+--- !u!114 &-2288042111737824083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2526679034711088660}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: d01b4f3612769364aa886eb9b8a0d219, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 8dd42112e60436e4e9884719088e456b, type: 2}

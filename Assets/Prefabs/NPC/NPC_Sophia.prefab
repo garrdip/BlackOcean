@@ -67,7 +67,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2e671423464c2ec4dbb913cf7efd6802, type: 2}
-  - {fileID: 2100000, guid: 9326d6724e8aeb143b20aa7e6a68f6b9, type: 2}
+  - {fileID: 2100000, guid: 6b2a0feda6a6335418446feda14efc55, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -188,8 +188,6 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 0}
-  defaultMaterial: {fileID: 2100000, guid: 9326d6724e8aeb143b20aa7e6a68f6b9, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: 6b2a0feda6a6335418446feda14efc55, type: 2}
   dissolveMaterial: {fileID: 0}
   dissolveParticle: {fileID: 0}
   skeletonAnimation: {fileID: 6485683146298960187}
@@ -256,6 +254,3 @@ MonoBehaviour:
   - overrideDisabled: 0
     originalMaterial: {fileID: 2100000, guid: 9326d6724e8aeb143b20aa7e6a68f6b9, type: 2}
     replacementMaterial: {fileID: 2100000, guid: 6b2a0feda6a6335418446feda14efc55, type: 2}
-  - overrideDisabled: 0
-    originalMaterial: {fileID: 2100000, guid: 2e671423464c2ec4dbb913cf7efd6802, type: 2}
-    replacementMaterial: {fileID: 2100000, guid: f7b355ff670543b43819e90a2892073f, type: 2}

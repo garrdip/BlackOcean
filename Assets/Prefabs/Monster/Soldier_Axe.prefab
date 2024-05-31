@@ -4885,6 +4885,7 @@ GameObject:
   - component: {fileID: 1148659860880846136}
   - component: {fileID: 8885147150581239099}
   - component: {fileID: 395826262243898315}
+  - component: {fileID: -999849576386325433}
   m_Layer: 0
   m_Name: Soldier_Axe
   m_TagString: TargetObject
@@ -4936,7 +4937,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bdc2164d92fe9964fade4a525efffc55, type: 2}
+  - {fileID: 2100000, guid: 9330b7c01dfc1ed4a9924d1fa81284da, type: 2}
+  - {fileID: 2100000, guid: 51ea2ada7f5705e4abfbe696566c1e1b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4955,7 +4957,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -822484745
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2526679034711088660
@@ -4970,7 +4972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 0377c754065c154498b0603db55ba7e5, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: ec01f25541712ed42a1bbeeca890b6d6, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -5057,8 +5059,6 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
-  defaultMaterial: {fileID: 2100000, guid: bdc2164d92fe9964fade4a525efffc55, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: d848d5cb01d749d4cb89ef74e3c1d082, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 78f00cac7b8b33844ba7a76221fd6823, type: 2}
   dissolveParticle: {fileID: 7286526893056829630}
 --- !u!60 &395826262243898315
@@ -5111,3 +5111,21 @@ PolygonCollider2D:
       - {x: 1.5952308, y: -0.13369262}
       - {x: 1.807908, y: -0.018584132}
       - {x: 1.3165717, y: 1.1794959}
+--- !u!114 &-999849576386325433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2526679034711088660}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 51ea2ada7f5705e4abfbe696566c1e1b, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: fcf16aff781526346bafea0ff54b0d78, type: 2}

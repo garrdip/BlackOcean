@@ -4885,6 +4885,7 @@ GameObject:
   - component: {fileID: 1148659860880846136}
   - component: {fileID: 1706543831696299792}
   - component: {fileID: -4551968895252972967}
+  - component: {fileID: 5092342999255802376}
   m_Layer: 0
   m_Name: SpearManA
   m_TagString: TargetObject
@@ -4936,7 +4937,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 306e4b0517b31dc4abdb8794d60e7a0b, type: 2}
+  - {fileID: 2100000, guid: 47100479df3a92040a2dc009efe7218e, type: 2}
+  - {fileID: 2100000, guid: 3ad20401f00463b4bb468e8e8ee0e5e8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4955,7 +4957,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -822484745
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2526679034711088660
@@ -4970,7 +4972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 86828aa05e51ac9478471912b6692911, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 0ddb7878089f1a64eac3f376d6bc4293, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -5100,7 +5102,23 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
-  defaultMaterial: {fileID: 2100000, guid: 306e4b0517b31dc4abdb8794d60e7a0b, type: 2}
-  outLineMaterial: {fileID: 2100000, guid: c2fbf106ca4963e4cb4e7de9526d087a, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 59e3e7686ede3024c88a25e00ba02f6a, type: 2}
   dissolveParticle: {fileID: 1664601628319646737}
+--- !u!114 &5092342999255802376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2526679034711088660}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 3ad20401f00463b4bb468e8e8ee0e5e8, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 051d7be97603d71459c4d50b9d548329, type: 2}

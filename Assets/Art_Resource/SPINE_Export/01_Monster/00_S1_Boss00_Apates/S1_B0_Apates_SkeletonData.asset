@@ -18,10 +18,12 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: 69ec29e58b4d6ca4b8e2b1c65004b388, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials: []
-    multiplyMaterials: []
+    multiplyMaterials:
+    - pageName: S1_B0_Apates.png
+      material: {fileID: 2100000, guid: fa8706b10d770754a82ccc7c871820c5, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []

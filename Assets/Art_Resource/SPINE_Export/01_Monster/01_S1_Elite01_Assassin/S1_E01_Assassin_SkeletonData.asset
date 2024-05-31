@@ -18,10 +18,12 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: f7e767acc1c4aa342842547becb6cd4d, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials: []
-    multiplyMaterials: []
+    multiplyMaterials:
+    - pageName: S1_E01_Assassin.png
+      material: {fileID: 2100000, guid: 3a8a3c940c5545c449424d164d920c35, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []

@@ -4885,6 +4885,7 @@ GameObject:
   - component: {fileID: 1148659860880846136}
   - component: {fileID: -6011305782047808678}
   - component: {fileID: 7146516297162732159}
+  - component: {fileID: 3605773125986361232}
   m_Layer: 0
   m_Name: Boss_Momos
   m_TagString: TargetObject
@@ -4936,6 +4937,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
+  - {fileID: 2100000, guid: f724da7e21b775644b0d3d6f8e02d149, type: 2}
   - {fileID: 2100000, guid: 942ebf37aa5d5c14a96a48c3eb2f8624, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -4955,7 +4957,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -822484745
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2526679034711088660
@@ -5057,7 +5059,7 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
-  defaultMaterial: {fileID: 2100000, guid: 942ebf37aa5d5c14a96a48c3eb2f8624, type: 2}
+  defaultMaterial: {fileID: 0}
   outLineMaterial: {fileID: 2100000, guid: 9f858ab00f2fda247a74342bb5553b59, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 4e086e5cbe2f57c4e8b0250915c06696, type: 2}
   dissolveParticle: {fileID: 1337810226639892101}
@@ -5112,3 +5114,24 @@ PolygonCollider2D:
       - {x: 3.801092, y: 6.3935256}
       - {x: 3.2056968, y: 8.042325}
       - {x: 3.8278728, y: 8.8416605}
+--- !u!114 &3605773125986361232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2526679034711088660}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 942ebf37aa5d5c14a96a48c3eb2f8624, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 5d437b435bf67e94d9a2cd9ecf2c6f52, type: 2}
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: f724da7e21b775644b0d3d6f8e02d149, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: a4f6aa05318358f4fb621c6c2594b35d, type: 2}

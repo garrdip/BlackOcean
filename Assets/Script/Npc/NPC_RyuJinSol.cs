@@ -22,7 +22,7 @@ public class NPC_RyuJinSol : SpawnedMonster
 
     void Start()
     {
-        GetComponent<SkeletonRendererCustomMaterials>().enabled = true;
+        GetComponent<SkeletonRendererCustomMaterials>().enabled = false;
         GetAnimationNames(skeletonAnimation);
         PlayRandomAnimation();
         eyeBlikCoroutine = StartCoroutine(StartEyeBlinkAnimation());
