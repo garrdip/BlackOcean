@@ -55,6 +55,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public readonly SyncList<Card> addtionDrawCards = new SyncList<Card>(); // 추가 드로우 카드
 
+    public readonly SyncList<Card> shopCards = new SyncList<Card>(); // 상점 카드
+
     public int currentIndex = 0; // 패 제거 팝업에서 삭제하기 위해 선택된 카드들의 인덱스(순환용)
 
     public CardOnHand[] choosedCardOnHands;  // 패 제거 팝업에서 삭제하기 위해 선택된 카드 오브젝트들을 담을 배열
@@ -95,6 +97,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         rewards.Callback += OnRewardUpdated;
         rewardCards.Callback += OnRewardCardUpdated;
         addtionDrawCards.Callback += OnAddtionCardUpdated;
+        shopCards.Callback += OnShopCardUpdated;
         if(isOwned){
             GameUIManager.instance.currentIchiText.text = currentIchi.ToString(); // 현재 이치값 초기 뷰 세팅
             GameUIManager.instance.maxIchiText.text = maxIchi.ToString(); // 최대 이치값 초기 뷰 세팅
@@ -645,6 +648,19 @@ public partial class GamePlayerDeck : NetworkBehaviour
         CardData.instance.H26_CallBack(targetObject, choosedCardCount); // 패 제거 팝업에서 선택한 카드 갯수 넘겨줌
     }
 
+    // 상점 카드 구매 요청 커맨드
+    [Command]
+    public void CmdPurchaseShopCard(string guid)
+    {
+        int index = shopCards.FindIndex((c) => c.guid.Equals(guid));
+        if(index != -1){
+            Card purchasedCard = shopCards[index].CardDeepCopy(false);
+            purchasedCard.isSoldout = true;
+            shopCards[index] = purchasedCard;
+            gold -= shopCards[index].cardPrice; // 구매한 플레이어가 소유한 골드에서 카드 가격만큼 감소
+        }
+    }
+
     // ------------------------------------------------- Rpc Method ---------------------------------------------------//
 
     [ClientRpc]
@@ -749,14 +765,14 @@ public partial class GamePlayerDeck : NetworkBehaviour
             case SyncList<Card>.Operation.OP_INSERT:
                 break;
             case SyncList<Card>.Operation.OP_REMOVEAT:
-                if(isOwned && PopUpUIManager.instance.isCardRemovePopUpOpen){
+                if(PopUpUIManager.instance.isCardRemovePopUpOpen){
                     CardRemovePopUp cardRemovePopUp = PopUpUIManager.instance.cardRemovePopUp.GetComponent<CardRemovePopUp>();
                     cardRemovePopUp.ClearRemoveableCards();
                     cardRemovePopUp.CreateRemoveableCards();
                 }
                 break;
             case SyncList<Card>.Operation.OP_SET:
-                if(isOwned && PopUpUIManager.instance.isCardEnhancePopUpOpen){
+                if(PopUpUIManager.instance.isCardEnhancePopUpOpen){
                     CardEnhancePopUp cardEnhancePopUp = PopUpUIManager.instance.cardEnhancePopUp.GetComponent<CardEnhancePopUp>();
                     cardEnhancePopUp.ClearAllEnhanceableCards();
                     cardEnhancePopUp.CreateEnhanceableCards();
@@ -1004,6 +1020,33 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 break;
             case SyncList<Card>.Operation.OP_SET:
                 
+                break;
+            case SyncList<Card>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
+    // 상점 카드 리스트 콜백
+    void OnShopCardUpdated(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
+    {
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+
+                break;
+            case SyncList<Card>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<Card>.Operation.OP_SET:
+                MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
+                if(PopUpUIManager.instance.isMercuriusPopUpOpen){
+                    mercuriusPopUp.RemoveShopCards();
+                    mercuriusPopUp.CreateShopCards();
+                }
                 break;
             case SyncList<Card>.Operation.OP_CLEAR:
                 

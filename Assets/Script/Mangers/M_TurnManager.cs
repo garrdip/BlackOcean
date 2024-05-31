@@ -285,17 +285,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         M_SoundManager.instance.PlayVoice(eventVoice, eventVoice.length);
     }
 
-    // -------------------------------------------------------------------- Command Method ---------------------------------------------------------------------//
-
-    // 해당 플레이어의 상점카드 데이터에서 구매한 카드의 상태값 변경
-    [Command (requiresAuthority = false)]
-    public void CmdChangeShopCardSoldOut(GamePlayer gamePlayer, int index)
-    {
-        if(npc_Mercurius.shopCardDictionary.TryGetValue(gamePlayer, out List<Card> shopCards)){
-            shopCards[index].isSoldout = true;
-            gamePlayer.GetComponent<GamePlayerDeck>().gold -= shopCards[index].cardPrice; // 구매한 플레이어가 소유한 골드에서 카드 가격만큼 감소
-        }
-    }
 
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
 
@@ -950,7 +939,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
         var cardNPC = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_Mercurius"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
         NPC_Mercurius mercurius = cardNPC.GetComponent<NPC_Mercurius>();
-        mercurius.isOrigin = true;
 
         // 상점판매용 캐릭터별 카드 추출해서 NPC_Mercurius SyncDictionary에 추가
         foreach(uint netId in playerOrder){
@@ -958,7 +946,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 int shopCardCount = gamePlayerDeck.maxShopCardCount; // 플레이어별로 설정된 구매가능한 상점카드 최대 갯수
-                List<Card> shopCards = new List<Card>();
                 List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
                 if(cardsByCharacter.Count > 0){
                     for(int i = 0; i < shopCardCount; i++){
@@ -966,11 +953,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         Card shopCard = cardsByCharacter[randomIndex].CardDeepCopy(false);
                         shopCard.guid = System.Guid.NewGuid().ToString();
                         shopCard.cardPrice = 1; // TODO : 카드 가격 설정. 임시로 가격 1원 설정
-                        shopCards.Add(shopCard);
                         cardsByCharacter.RemoveAt(randomIndex);
+                        gamePlayerDeck.shopCards.Add(shopCard); // 각 플레이어의 shopCards synclist에 상점카드 데이터 추가
                     }
                 }
-                mercurius.shopCardDictionary.Add(gamePlayer, shopCards); // NPC_Mercurius의 SyncDictionary에 각 플레이어와 추출한 랜덤카드를 한쌍의 데이터로 저장
             }
         }
         NetworkServer.Spawn(cardNPC.gameObject);

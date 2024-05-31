@@ -43,6 +43,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     void Start()
     {
+        textCardName.color = card.isEnhanced ? Color.green : Color.white; // 강화 카드는 이름 녹색
         originScale = isShopCardInfo ? new Vector3(1.8f, 1.8f, 1.8f) : Vector3.one;
         initCardData(card);
         InitCardTemplateByCharacter(card);
@@ -278,19 +279,15 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // 선택한 카드 구매 커맨드 전송
     private void RequestCardPurchase()
     {
-        if(M_TurnManager.instance.npc_Mercurius.shopCardDictionary.TryGetValue(cardOwner, out List<Card> cards)){
-            int index = cards.FindIndex((c) => c.guid.Equals(card.guid));
-            if(index != -1){
-                M_TurnManager.instance.CmdChangeShopCardSoldOut(cardOwner, index);
-                card.isSoldout = true;
-            }
-        }
+        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        gamePlayerDeck.CmdPurchaseShopCard(card.guid);
     }
 
     // CardOnDeck SoldOut 상태로 변경 및 컴포넌트들 알파값 0.5 변경
     public void ChangeCardOnDeckSoldOutState()
     {
         if(!isShopCardInfo){
+            card.isSoldout = true; // 클라이언트에서도 isSoldout 변수값을 변경시켜 중복구매 방지
             cardSoldOut.SetActive(true);
             // 캔버스 그룹 요소들 상호작용 이벤트 비활성화 
             canvasGroup.interactable = false;
@@ -361,7 +358,6 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         if(card.experience >= card.baseCard.maxExperience || card.isEnhanced || card.tempEnhanced)
         {
-            textCardName.color = Color.green;
             CardBase cardBase = CardData.instance.cards.Find(x => x.cardNumber == card.baseCard.cardNumber + "_E");
             if(cardBase != null){
                 textCardName.text = cardBase.name;

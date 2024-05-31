@@ -6,12 +6,14 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
 using ProjectD;
+using TMPro;
 
 public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
 {
     public CanvasGroup canvasGroup;
     public GameObject frameLayout;
     public bool isMouseOnFrame = false;
+    public List<GameObject> shopCardObjectList = new List<GameObject>(); // 상점 카드 오브젝트 리스트
     public List<GridLayoutGroup> grids = new List<GridLayoutGroup>();
     public List<Button> tabButtons = new List<Button>();
     public List<Button> tabCardEnhanceButtons = new List<Button>();
@@ -108,10 +110,10 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     {
         HideAllTabButtons();
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-        if(playerInterface.ownedPlayers.Count > 1){
+        if(playerInterface.ownedPlayers.Count > 1){ // 제어할 플레이어가 2명 이상이면
             for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
                 GamePlayer gamePlayer = playerInterface.ownedPlayers[i];
-                tabButtons[i].gameObject.SetActive(true); // 제어할 플레이어가 2명 이상이면 플레이어 수만큼 탭버튼 활성화
+                tabButtons[i].gameObject.SetActive(true); // 플레이어 수만큼 탭버튼 활성화
                 if(gamePlayer.netId == playerInterface.currentGamePlayerNetId){
                     tabButtons[i].GetComponent<CanvasGroup>().alpha = 1f; // 제어할 플레이어중 현재 플레이어의 탭버튼 알파값 1 설정
                 }
@@ -128,7 +130,14 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
                         break;
                 }
             }
-        }   
+        }else{ // 제어할 플레이어가 1명인 경우
+            GamePlayer gamePlayer = playerInterface.currentGamePlayer.GetComponent<GamePlayer>();
+            for(int i=0; i<M_TurnManager.instance.playerOrder.Count; i++){
+                if(M_TurnManager.instance.playerOrder[i] == gamePlayer.netId){
+                    tabFrames[i].SetActive(true);
+                }
+            }
+        }
     }
 
     // 선택한 탭 활성화
@@ -179,6 +188,53 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
         cardInfoCanvasGroup.DOFade(0f, 0.3f);  
     }
 
+    // 각 플레이어들의 상점 카드 오브젝트 생성
+    public void CreateShopCards()
+    {
+        for(int i=0; i<M_TurnManager.instance.playerOrder.Count; i++){
+            uint netId = M_TurnManager.instance.playerOrder[i];
+            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayerDeck gamePlayerDeck = networkIdentity.GetComponent<GamePlayerDeck>();
+                // 각 플레이어들의 shopCards synclist 데이터로 상점 카드 오브젝트 생성
+                foreach(Card card in gamePlayerDeck.shopCards){
+                    // 상점 카드 슬롯(최상단 부모 오브젝트)
+                    GameObject cardShopSlot = Instantiate(PopUpUIManager.instance.CardShopSlot,Vector3.zero, Quaternion.identity);
+                    cardShopSlot.transform.SetParent(grids[i].transform);
+                    cardShopSlot.transform.localScale = Vector3.one;
+                    cardShopSlot.transform.localPosition = Vector3.zero;
+
+                    // 상점 카드
+                    GameObject cardOnDeckObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, Vector3.zero, Quaternion.identity);
+                    cardOnDeckObject.transform.SetParent(cardShopSlot.transform);
+                    cardOnDeckObject.transform.localScale = Vector3.one;
+                    cardOnDeckObject.transform.localPosition = Vector3.zero;
+                    CardOnDeck cardOnDeck = cardOnDeckObject.GetComponent<CardOnDeck>();
+                    cardOnDeck.card = card;
+                    cardOnDeck.cardOwner =  networkIdentity.GetComponent<GamePlayer>();
+
+                    // 상점 카드 가격 아이콘 + 텍스트
+                    GameObject cardShopPrice = Instantiate(PopUpUIManager.instance.CardShopPrice, Vector3.zero, Quaternion.identity);
+                    cardShopPrice.transform.SetParent(cardShopSlot.transform);
+                    cardShopPrice.transform.localScale = Vector3.one;
+                    cardShopPrice.transform.localPosition = new Vector3(0f, 30f, 0f);
+
+                    TextMeshProUGUI textPrice = cardShopPrice.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+                    textPrice.text = "100";
+
+                    shopCardObjectList.Add(cardShopSlot);
+                }
+            }
+        }
+    }
+
+    // 상점 카드 오브젝트 제거
+    public void RemoveShopCards()
+    {
+        for(int i = shopCardObjectList.Count - 1; i >= 0; i--){
+            Destroy(shopCardObjectList[i]);
+            shopCardObjectList.RemoveAt(i);
+        }
+    }
 
     // -------------------------------------------------------------------  이벤트 트리거 함수 -------------------------------------------------------------------------- //
 
@@ -242,6 +298,7 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     {
         canvasGroup.DOFade(1.0f, 0.5f);
         SetTabButtonByOwnedPlayersCount();
+        CreateShopCards();
     }
 
     // MercuriusPopUp 비활성화 콜백
@@ -251,5 +308,6 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
             gameObject.SetActive(false);
             isMouseOnFrame = false;
         });
+        RemoveShopCards();
     }
 }

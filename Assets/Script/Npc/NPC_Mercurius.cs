@@ -34,17 +34,9 @@ public class NPC_Mercurius : SpawnedMonster
     public Material todOutlineMaterial;
 
 
-    
-    [SyncVar]
-    public bool isOrigin = false; // 원본 오브젝트인지 구분값(타겟오브젝트들은 원본과 클론이 존재해서 둘중 하나만 호출되어야 함)
-    public readonly SyncDictionary<GamePlayer, List<Card>> shopCardDictionary = new  SyncDictionary<GamePlayer, List<Card>>(); // 각 플레이어별 상점 카드 페어 데이터
-
-
     void Awake()
     {
         mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
-        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        networkRoomManager.onClientDisconnected += OnClientDisconnected;
         minion0Anim = transform.GetChild(1).GetComponent<SkeletonAnimation>();
         minion1Anim = transform.GetChild(2).GetComponent<SkeletonAnimation>();
         minion2Anim = transform.GetChild(3).GetComponent<SkeletonAnimation>();
@@ -55,15 +47,31 @@ public class NPC_Mercurius : SpawnedMonster
         minionVoiceCoroutine = PlayMinionsVoice();
     }
 
-    // NPC_Mercurius 각 클라이언트에 생성될 때 현재 플레이어의 카드 데이터에서 6개의 랜덤 카드데이터를 추출하여 팝업에 6개의 상점카드 세팅
-    public override void OnStartClient()
+    public override void OnStopServer()
     {
-        if(isOrigin && mercuriusPopUp != null){
-            InitShopCardByCharacter();
-            StartCoroutine(minionVoiceCoroutine);
+        base.OnStopServer();
+        // OnStopServer 시점에 각 플레이어들의 shopCard 리스트 데이터 제거
+        foreach(uint netId in M_TurnManager.instance.playerOrder){
+            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayerDeck gamePlayerDeck = networkIdentity.GetComponent<GamePlayerDeck>();
+                gamePlayerDeck.shopCards.Clear();
+            }
         }
     }
-    
+
+    public override void OnStartClient()
+    {
+        if(mercuriusPopUp != null){
+            StartCoroutine(minionVoiceCoroutine); // 미니언 음성 재생
+        }
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        StopCoroutine(minionVoiceCoroutine); // 미니언 음성 재생 중지
+    }
+
     // NPC_Mercurius 생성 10초후에 5초마다 미니언 랜덤 음성 재생
     private IEnumerator PlayMinionsVoice()
     {
@@ -75,25 +83,6 @@ public class NPC_Mercurius : SpawnedMonster
             M_SoundManager.instance.PlayVoice(clipToPlay, clipToPlay.length);
             yield return new WaitForSeconds(5f);
         }
-    }
-
-    // 클라이언트 연결 해제 이벤트 수신시 상점 카드 정보 갱신
-    private void OnClientDisconnected(GamePlayer gamePlayer)
-    {
-        RemoveShopCard();
-        InitShopCardByCharacter();
-    }
-
-    // NPC_Mercurius 파괴될 때 리스트 비움
-    void OnDestroy()
-    {
-        if(mercuriusPopUp != null){
-            for(int i= shopCardObjectList.Count-1; i >=0; i--){
-                Destroy(shopCardObjectList[i]);
-                shopCardObjectList.RemoveAt(i);
-            }
-        }
-        StopCoroutine(minionVoiceCoroutine);
     }
 
     public void OnPointerEnterMercurius(PointerEventData eventData)
@@ -146,59 +135,6 @@ public class NPC_Mercurius : SpawnedMonster
         pointerExitEntry.eventID = EventTriggerType.PointerExit;
         pointerExitEntry.callback.AddListener((data) => { OnPointerExitMercurius((PointerEventData)data); });
         eventTrigger.triggers.Add(pointerExitEntry);
-    }
-
-    // 현재 로컬 플레이어의 캐릭터에 설정된 상점카드 데이터로 상점카드 오브젝트 생성
-    private void InitShopCardByCharacter()
-    {
-        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-        for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
-            GamePlayer gamePlayer = playerInterface.ownedPlayers[i];
-            if(shopCardDictionary.TryGetValue(gamePlayer, out List<Card> shopCards)){
-                CreateShopCard(shopCards, gamePlayer, i);
-            }
-        }
-    }
-
-    // 상점카드 오브젝트 생성
-    private void CreateShopCard(List<Card> shopCards, GamePlayer cardOwner, int index)
-    {
-        foreach(Card card in shopCards){                    
-            // 상점 카드 슬롯(최상단 부모 오브젝트)
-            GameObject cardShopSlot = Instantiate(PopUpUIManager.instance.CardShopSlot,Vector3.zero, Quaternion.identity);
-            cardShopSlot.transform.SetParent(mercuriusPopUp.grids[index].transform);
-            cardShopSlot.transform.localScale = Vector3.one;
-            cardShopSlot.transform.localPosition = Vector3.zero;
-
-            // 상점 카드
-            GameObject cardOnDeckObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, Vector3.zero, Quaternion.identity);
-            cardOnDeckObject.transform.SetParent(cardShopSlot.transform);
-            cardOnDeckObject.transform.localScale = Vector3.one;
-            cardOnDeckObject.transform.localPosition = Vector3.zero;
-            CardOnDeck cardOnDeck = cardOnDeckObject.GetComponent<CardOnDeck>();
-            cardOnDeck.card = card;
-            cardOnDeck.cardOwner = cardOwner;
-
-            // 상점 카드 가격 아이콘 + 텍스트
-            GameObject cardShopPrice = Instantiate(PopUpUIManager.instance.CardShopPrice, Vector3.zero, Quaternion.identity);
-            cardShopPrice.transform.SetParent(cardShopSlot.transform);
-            cardShopPrice.transform.localScale = Vector3.one;
-            cardShopPrice.transform.localPosition = new Vector3(0f, 30f, 0f);
-
-            TextMeshProUGUI textPrice = cardShopPrice.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-            textPrice.text = "100";
-
-            shopCardObjectList.Add(cardShopSlot);
-        }
-    }
-
-    // 상점카드 오브젝트 제거
-    private void RemoveShopCard()
-    {
-        for(int i = shopCardObjectList.Count - 1; i >= 0; i--){
-            Destroy(shopCardObjectList[i]);
-            shopCardObjectList.RemoveAt(i);
-        }
     }
 
     public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
