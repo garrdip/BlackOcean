@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7821855001177509042}
   - component: {fileID: 731948145362558339}
   - component: {fileID: -8832475246937749543}
+  - component: {fileID: 337532787164892241}
   m_Layer: 0
   m_Name: Eris
   m_TagString: TargetObject
@@ -197,3 +198,24 @@ MonoBehaviour:
   meshRenderer: {fileID: 1046600963234684866}
   defaultMaterial: {fileID: 2100000, guid: eb5a51cc4f2725242a6af3834309bbcc, type: 2}
   outLineMaterial: {fileID: 2100000, guid: 8229b61a1e7a4e14ea82dd9aa410ccdf, type: 2}
+--- !u!114 &337532787164892241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238078986054683857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 5125707426590756295}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: eb5a51cc4f2725242a6af3834309bbcc, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 8229b61a1e7a4e14ea82dd9aa410ccdf, type: 2}
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: d0e8d13e3ffead44884cd97451faaaba, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: e6e347202204b48428b04b48e7c035e0, type: 2}

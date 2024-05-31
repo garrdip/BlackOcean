@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7821855001177509042}
   - component: {fileID: 4875696266653849357}
   - component: {fileID: 3882302177938675239}
+  - component: {fileID: -4371420289188217748}
   m_Layer: 0
   m_Name: Geork
   m_TagString: TargetObject
@@ -211,3 +212,24 @@ MonoBehaviour:
   meshRenderer: {fileID: 1046600963234684866}
   defaultMaterial: {fileID: 2100000, guid: dd10999db70b85b4b9032f33d75acf73, type: 2}
   outLineMaterial: {fileID: 2100000, guid: 7ee8a17ad4d33404386338a70b5681fb, type: 2}
+--- !u!114 &-4371420289188217748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238078986054683857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 5125707426590756295}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: dd10999db70b85b4b9032f33d75acf73, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 7ee8a17ad4d33404386338a70b5681fb, type: 2}
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: ceffbab569562874bb1c72c5b88565cc, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 1e9862c98c2a4534d98c9cb0aa84d870, type: 2}

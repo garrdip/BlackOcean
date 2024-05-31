@@ -1,28 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using Mirror;
+using Spine.Unity;
 using ProjectD;
 
 public class CharactorSelector : MonoBehaviour
 {
-    public MeshRenderer meshRenderer;
-    public Material defaultMaterial;
-    public Material outLineMaterial;
+    private SkeletonRendererCustomMaterials skeletonRendererCustomMaterials;
+
+    void Start()
+    {
+        skeletonRendererCustomMaterials.enabled = false;
+    }
 
     void OnMouseEnter()
     {
         if(IsSelectablePlayer()){
-            meshRenderer.material = outLineMaterial;
+            skeletonRendererCustomMaterials.enabled = true;
         }
     }
 
     void OnMouseExit()
     {
         if(IsSelectablePlayer()){
-            meshRenderer.material = defaultMaterial;
+            skeletonRendererCustomMaterials.enabled = false;
         }
     }
 
