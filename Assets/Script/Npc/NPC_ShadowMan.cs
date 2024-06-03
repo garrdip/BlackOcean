@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using Mirror;
 using Spine.Unity;
 using Spine;
+using ProjectD;
 
 public class NPC_ShadowMan : SpawnedMonster
 {
@@ -23,6 +24,14 @@ public class NPC_ShadowMan : SpawnedMonster
         GetComponent<SkeletonRendererCustomMaterials>().enabled = false;
         GetAnimationNames(skeletonAnimation);
         PlayRandomAnimation();
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        PlayNPCVoice(() => {
+            PlayCharacterVoiceOnItemShop();
+        });
     }
 
     void OnDestroy()
@@ -91,5 +100,40 @@ public class NPC_ShadowMan : SpawnedMonster
         pointerExitEntry.eventID = EventTriggerType.PointerExit;
         pointerExitEntry.callback.AddListener((data) => { OnPointerExitShadowMan((PointerEventData)data); });
         eventTrigger.triggers.Add(pointerExitEntry);
+    }
+
+    // ShadowMan 음성 리스트 추출해서 랜덤재생
+    private void PlayNPCVoice(System.Action callback = null)
+    {
+        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.ShadowMan]; // ShadowMan 오디오 클립 조회
+        int randomIndex = Random.Range(0, clips.Count);
+        AudioClip clipToPlay = clips[randomIndex];
+        M_SoundManager.instance.PlayVoice(clipToPlay, clipToPlay.length, false, () => {
+            if(callback != null){
+                callback();
+            }
+        });
+    }
+
+    // 아이템 상인에 대한 캐릭터들 상호작용 음성 재생
+    private void PlayCharacterVoiceOnItemShop()
+    {
+        AudioClip meetItemNpcVoice = null;
+        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+        switch(character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 80, 3);
+                meetItemNpcVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 92, 3);
+                meetItemNpcVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 138, 3);
+                meetItemNpcVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(meetItemNpcVoice, meetItemNpcVoice.length);
     }
 }

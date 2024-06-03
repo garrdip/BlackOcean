@@ -168,103 +168,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         rewardCardObjects.Clear();
     }
 
-    // NPC별로 음성 리스트 추출해서 랜덤재생
-    private void PlayNPCVoice(VOICE_TYPE voice_Type, System.Action callback = null)
-    {
-        List<AudioClip> clips = M_SoundManager.instance.voiceClips[voice_Type]; // 해당 NPC 음성 리스트 추출
-        int randomIndex = Random.Range(0, clips.Count);
-        AudioClip clipToPlay = clips[randomIndex];
-        M_SoundManager.instance.PlayVoice(clipToPlay, clipToPlay.length, false, () => {
-            if(callback != null){
-                callback();
-            }
-        });
-    }
-
-    // Todd 초기 음성 재생
-    private void PlayToddVoice(System.Action callback = null)
-    {
-        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("thoth")); // Todd 음성 리스트 추출
-        AudioClip firstVoice = clips[0];
-        AudioClip secondVoice = clips[1];
-        M_SoundManager.instance.PlayVoice(firstVoice, firstVoice.length, false, () => {
-            M_SoundManager.instance.PlayVoice(secondVoice, secondVoice.length, false, () =>{
-                if(callback != null){
-                    callback();
-                }
-            });
-        });
-    }
-
-    // 카드 상인에 대한 캐릭터들 상호작용 음성 재생
-    private void PlayPlayerVoiceOnCardShop()
-    {
-        AudioClip meetCardNpcVoice = null;
-        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
-        switch(character){
-            case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 77, 3);
-                meetCardNpcVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
-                break;
-            case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 89, 3);
-                meetCardNpcVoice = georkVoices[Random.Range(0, georkVoices.Count)];
-                break;
-            case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 135, 3);
-                meetCardNpcVoice = erisVoices[Random.Range(0, erisVoices.Count)];
-                break;
-        }
-        M_SoundManager.instance.PlayVoice(meetCardNpcVoice, meetCardNpcVoice.length);
-    }
-
-    // 아이템 상인에 대한 캐릭터들 상호작용 음성 재생
-    private void PlayPlayerVoiceOnItemShop()
-    {
-        AudioClip meetItemNpcVoice = null;
-        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
-        switch(character){
-            case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 80, 3);
-                meetItemNpcVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
-                break;
-            case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 92, 3);
-                meetItemNpcVoice = georkVoices[Random.Range(0, georkVoices.Count)];
-                break;
-            case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 138, 3);
-                meetItemNpcVoice = erisVoices[Random.Range(0, erisVoices.Count)];
-                break;
-        }
-        M_SoundManager.instance.PlayVoice(meetItemNpcVoice, meetItemNpcVoice.length);
-    }
-
-    // 전초기지 NPC에 대한 캐릭터들 상호작용 음성 재생
-    private void PlayPlayerVoiceOnBaseCamp()
-    {
-        // 전초기지 방문시 캐릭터들 음성 재생
-        AudioClip baseCampVoice = null;
-        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
-        switch(character){
-            case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 83, 3);
-                baseCampVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
-                break;
-            case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 95, 3);
-                baseCampVoice = georkVoices[Random.Range(0, georkVoices.Count)];
-                break;
-            case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 141, 3);
-                baseCampVoice = erisVoices[Random.Range(0, erisVoices.Count)];
-                break;
-        }
-        M_SoundManager.instance.PlayVoice(baseCampVoice, baseCampVoice.length);
-    }
-
-    // 이벤트 대한 캐릭터들 상호작용 음성 재생
-    private void PlayPlayerVoiceOnEvent(bool isPositive)
+    // 이벤트 방 대화 재생
+    public void PlayEventConversation(bool isPositive)
     {
         AudioClip eventVoice = null;
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
@@ -284,7 +189,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
         M_SoundManager.instance.PlayVoice(eventVoice, eventVoice.length);
     }
-
 
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
 
@@ -871,12 +775,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             case RoomType.ITEM_NPC:
                 GenerateItemNPC();
                 break;
-            case RoomType.EVENT_POSITIIVE:
-                RpcPlayEventConversation(true);
-                break;
-            case RoomType.EVENT_NEGATIVE:
-                RpcPlayEventConversation(false);
-                break;
         }
     }
 
@@ -897,7 +795,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             avatar.GetComponent<TargetObject>().monster = campRyuJinSol;
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
             campRyuJinSol.parent = avatar.GetComponent<TargetObject>();
-            RpcPlayCampConversation(VOICE_TYPE.RyuJinSol);
         }else{
             // Sophia 생성
             var campSophia = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_Sophia"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
@@ -909,7 +806,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             avatar.GetComponent<TargetObject>().monster = campSophia;
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
             campSophia.parent = avatar.GetComponent<TargetObject>();
-            RpcPlayCampConversation(VOICE_TYPE.Sofia);
         }
     }
 
@@ -928,7 +824,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         avatar.GetComponent<TargetObject>().monster = itemShopNPC;
         spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
         itemShopNPC.parent = avatar.GetComponent<TargetObject>();
-        RpcPlayItemShopConversation();
     }
 
     // 카드상점 NPC 생성
@@ -969,7 +864,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         avatar.GetComponent<TargetObject>().monster = cardNPC;
         spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
         cardNPC.parent = avatar.GetComponent<TargetObject>();  // monster 오브젝트의 부모오브젝트 참조값 설정
-        RpcPlayCardShopConversation();
     }
 
     [Server]
@@ -1201,6 +1095,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .TextColor(Color.white)
                     .Text("전투 : 일반 몬스터")
                     .Show();  
+                
                 // BGM 재생     
                 string audioName = Random.Range(0, 2) == 0 ? "Monster_Battle_N_1" : "Monster_Battle_N_2";
                 AudioClip audioClip_monster_n = M_SoundManager.instance.bgmClips[BGM_TYPE.Battle].Find((audioClip) => audioClip.name.Equals(audioName));
@@ -1225,6 +1120,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         break;
                 }
                 break;
+
             case RoomType.ELITE:
                 // 토스트 메시지 표시
                 M_MessageManager.instance
@@ -1235,7 +1131,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .TextColor(Color.white)
                     .Text("전투 : 엘리트 몬스터")
                     .Show();
-
+               
                 // BGM 재생            
                 AudioClip audioClip_monster_e = M_SoundManager.instance.bgmClips[BGM_TYPE.Battle].Find((audioClip) => audioClip.name.Equals("Monster_Battle_E"));
                 M_SoundManager.instance.PlayBGM(audioClip_monster_e, MusicTransition.Swift, 1.5f);
@@ -1280,6 +1176,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .Show();
                 AudioClip audioClip_event_positive = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Positive_Event"));
                 M_SoundManager.instance.PlayBGM(audioClip_event_positive, MusicTransition.Swift, 1.5f);
+                PlayEventConversation(true);
                 break;
             case RoomType.EVENT_NEGATIVE:
                 M_MessageManager.instance
@@ -1292,6 +1189,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     .Show();
                 AudioClip audioClip_event_negative = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Negative_Event"));
                 M_SoundManager.instance.PlayBGM(audioClip_event_negative, MusicTransition.Swift, 1.5f);
+                PlayEventConversation(false);
                 break;
             case RoomType.CAMP:
                 M_MessageManager.instance
@@ -1333,42 +1231,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 M_SoundManager.instance.PlayBGM(audioClip_item_hop, MusicTransition.Swift, 1.5f);            
                 break;
         }
-    }
-
-    // 전초 기지 대화 실행
-    [ClientRpc]
-    public void RpcPlayCampConversation(VOICE_TYPE voice_type)
-    {
-        PlayNPCVoice(voice_type, () => {
-            PlayPlayerVoiceOnBaseCamp();
-        });
-    }
-
-    // 카드 상점 대화 실행
-    [ClientRpc]
-    public void RpcPlayCardShopConversation()
-    {
-        // Todd -> 플레이어 -> 미니언즈 순서로 음성 재생
-        PlayToddVoice(() => {
-            PlayPlayerVoiceOnCardShop();
-        });
-    }
-
-    // 아이템 상점 대화 실행
-    [ClientRpc]
-    public void RpcPlayItemShopConversation()
-    {
-        // ShadowMan -> 플레이어 순서로 음성 재생
-        PlayNPCVoice(VOICE_TYPE.ShadowMan, () => {
-            PlayPlayerVoiceOnItemShop();
-        });
-    }
-
-    // 이벤트 방 대화 실행
-    [ClientRpc]
-    public void RpcPlayEventConversation(bool isPositive)
-    {
-        PlayPlayerVoiceOnEvent(isPositive);
     }
 
     [ClientRpc]

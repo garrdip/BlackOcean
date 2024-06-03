@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using Mirror;
 using Spine.Unity;
 using Spine;
+using ProjectD;
 
 public class NPC_Sophia : SpawnedMonster
 {
@@ -26,6 +27,14 @@ public class NPC_Sophia : SpawnedMonster
         GetAnimationNames(skeletonAnimation);
         PlayRandomAnimation();
         eyeBlikCoroutine = StartCoroutine(StartEyeBlinkAnimation());
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        PlayNPCVoice(() => {
+            PlayCharacterVoiceOnBaseCamp();
+        });
     }
 
     void OnDestroy()
@@ -113,5 +122,41 @@ public class NPC_Sophia : SpawnedMonster
         pointerExitEntry.eventID = EventTriggerType.PointerExit;
         pointerExitEntry.callback.AddListener((data) => { OnPointerExitRyuJinSol((PointerEventData)data); });
         eventTrigger.triggers.Add(pointerExitEntry);
+    }
+    
+    // Sofia 음성 리스트 추출해서 랜덤재생
+    private void PlayNPCVoice(System.Action callback = null)
+    {
+        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Sofia]; // Sofia 오디오 클립 조회
+        int randomIndex = Random.Range(0, clips.Count);
+        AudioClip clipToPlay = clips[randomIndex];
+        M_SoundManager.instance.PlayVoice(clipToPlay, clipToPlay.length, false, () => {
+            if(callback != null){
+                callback();
+            }
+        });
+    }
+
+    // 전초기지 NPC에 대한 캐릭터들 상호작용 음성 재생
+    private void PlayCharacterVoiceOnBaseCamp()
+    {
+        // 전초기지 방문시 캐릭터들 음성 재생
+        AudioClip baseCampVoice = null;
+        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+        switch(character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 83, 3);
+                baseCampVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 95, 3);
+                baseCampVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 141, 3);
+                baseCampVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(baseCampVoice, baseCampVoice.length);
     }
 }

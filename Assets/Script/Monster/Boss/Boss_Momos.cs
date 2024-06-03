@@ -141,7 +141,7 @@ public class Boss_Momos : SpawnedMonster
     {
         base.OnChangedHpValue(oldHpValue, newHpValue);
         if(newHpValue <= 0){
-            int index = Random.Range(0, 1) == 0 ? 45 : 46; // Moon_45, Moon_46중 랜덤재생
+            int index = Random.Range(0, 1) == 0 ? 45 : 46; // Moon_46, Moon_47중 랜덤재생
             AudioClip momosDeadVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.MoonGirl][index];
             M_SoundManager.instance.PlayVoice(momosDeadVoice, momosDeadVoice.length); // 모모스 사망시 달의소녀 나레이션 재생
         }

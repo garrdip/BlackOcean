@@ -55,6 +55,10 @@ public class NPC_Mercurius : SpawnedMonster
     public override void OnStartClient()
     {
         if(mercuriusPopUp != null){
+            // Todd -> 플레이어 -> 미니언즈 순서로 음성 재생
+            PlayToddVoice(() => {
+                PlayCharacterVoiceOnCardShop();
+            });
             StartCoroutine(minionVoiceCoroutine); // 미니언 음성 재생
         }
     }
@@ -63,6 +67,43 @@ public class NPC_Mercurius : SpawnedMonster
     {
         base.OnStopClient();
         StopCoroutine(minionVoiceCoroutine); // 미니언 음성 재생 중지
+    }
+
+    // Todd 초기 음성 재생
+    private void PlayToddVoice(System.Action callback = null)
+    {
+        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("thoth")); // Todd 음성 리스트 추출
+        AudioClip firstVoice = clips[0];
+        AudioClip secondVoice = clips[1];
+        M_SoundManager.instance.PlayVoice(firstVoice, firstVoice.length, false, () => {
+            M_SoundManager.instance.PlayVoice(secondVoice, secondVoice.length, false, () =>{
+                if(callback != null){
+                    callback();
+                }
+            });
+        });
+    }
+
+    // 카드 상인에 대한 캐릭터들 상호작용 음성 재생
+    private void PlayCharacterVoiceOnCardShop()
+    {
+        AudioClip meetCardNpcVoice = null;
+        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+        switch(character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 77, 3);
+                meetCardNpcVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 89, 3);
+                meetCardNpcVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 135, 3);
+                meetCardNpcVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(meetCardNpcVoice, meetCardNpcVoice.length);
     }
 
     // NPC_Mercurius 생성 10초후에 5초마다 미니언 랜덤 음성 재생
