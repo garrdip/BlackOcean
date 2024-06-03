@@ -15,28 +15,30 @@ public class Boss_Momos : SpawnedMonster
         M_SoundManager.instance.PlayBGM(momosBGM, MusicTransition.Swift, 1.5f);
 
         // 플레이어별 모모스 조우 대화 오디오클립 조회
-        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
-        AudioClip playerVoice = null;
-        AudioClip momosVoice = null;
-        switch(character){
-            case Character.HONGDANHYANG:
-                momosVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Momos][11];
-                playerVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][157];
-                break;
-            case Character.GEORK:
-                momosVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Momos][12];
-                playerVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Geork][166];
-                break;
-            case Character.ERIS:
-                int index = Random.Range(0, 1);
-                momosVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Momos][index == 0 ? 13 : 14];
-                playerVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Eris][index == 0 ? 217 : 218];
-                // TODO : 에리스 공허상태인 경우 대화 분기 처리 
-                break;
+        if(NetworkClient.localPlayer != null){
+            Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+            AudioClip playerVoice = null;
+            AudioClip momosVoice = null;
+            switch(character){
+                case Character.HONGDANHYANG:
+                    momosVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Momos][11];
+                    playerVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][157];
+                    break;
+                case Character.GEORK:
+                    momosVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Momos][12];
+                    playerVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Geork][166];
+                    break;
+                case Character.ERIS:
+                    int index = Random.Range(0, 1);
+                    momosVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Momos][index == 0 ? 13 : 14];
+                    playerVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Eris][index == 0 ? 217 : 218];
+                    // TODO : 에리스 공허상태인 경우 대화 분기 처리 
+                    break;
+            }
+            M_SoundManager.instance.PlayVoice(momosVoice, momosVoice.length, true, () => { // 모모스 대화 재생
+                M_SoundManager.instance.PlayVoice(playerVoice, playerVoice.length); // 플레이어 대화 재생
+            });
         }
-        M_SoundManager.instance.PlayVoice(momosVoice, momosVoice.length, true, () => { // 모모스 대화 재생
-            M_SoundManager.instance.PlayVoice(playerVoice, playerVoice.length); // 플레이어 대화 재생
-        });
     }
 
     public override IEnumerator DoAction()

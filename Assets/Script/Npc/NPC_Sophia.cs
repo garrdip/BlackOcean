@@ -140,23 +140,25 @@ public class NPC_Sophia : SpawnedMonster
     // 전초기지 NPC에 대한 캐릭터들 상호작용 음성 재생
     private void PlayCharacterVoiceOnBaseCamp()
     {
-        // 전초기지 방문시 캐릭터들 음성 재생
-        AudioClip baseCampVoice = null;
-        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
-        switch(character){
-            case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 83, 3);
-                baseCampVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
-                break;
-            case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 95, 3);
-                baseCampVoice = georkVoices[Random.Range(0, georkVoices.Count)];
-                break;
-            case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 141, 3);
-                baseCampVoice = erisVoices[Random.Range(0, erisVoices.Count)];
-                break;
+        if(NetworkClient.localPlayer != null){
+            // 전초기지 방문시 캐릭터들 음성 재생
+            AudioClip baseCampVoice = null;
+            Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+            switch(character){
+                case Character.HONGDANHYANG:
+                    List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 83, 3);
+                    baseCampVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                    break;
+                case Character.GEORK:
+                    List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 95, 3);
+                    baseCampVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                    break;
+                case Character.ERIS:
+                    List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 141, 3);
+                    baseCampVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                    break;
+            }
+            M_SoundManager.instance.PlayVoice(baseCampVoice, baseCampVoice.length);
         }
-        M_SoundManager.instance.PlayVoice(baseCampVoice, baseCampVoice.length);
     }
 }
