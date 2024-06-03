@@ -31,7 +31,7 @@ public class TargetObject : NetworkBehaviour
     public NextActionIndicator nextActionIndicator;
 
     [Header("타겟 오브젝트 타입")]
-     [SyncVar (hook = nameof(OnChangeObjectType))]
+    [SyncVar (hook = nameof(OnChangeObjectType))]
     public ObjectType objectType;
 
     // Player 의 경우 
@@ -873,6 +873,15 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
+    void OnChangedIronDemonLocation(TargetObject oldVal, TargetObject newVal)
+    {
+        if(newVal == this)
+        { 
+            ironDemon.GetComponent<SkeletonAnimation>().state.Complete -= OnIronDemonAnimationComplete;
+            ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
+        }
+    }
+
     // ---------------------------------------------- Spine Animation Event 처리 구간 ---------------------------------------------------//
     
     // Animation Event 총괄 처리
@@ -913,15 +922,6 @@ public class TargetObject : NetworkBehaviour
     public void ApllyIronDemonAnimationCallbackFunction()
     {
         OnChangedIronDemonLocation(this,this);
-    }
-
-    void OnChangedIronDemonLocation(TargetObject oldVal, TargetObject newVal)
-    {
-        if(newVal == this)
-        { 
-            ironDemon.GetComponent<SkeletonAnimation>().state.Complete -= OnIronDemonAnimationComplete;
-            ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
-        }
     }
 
     // --------------------------------------------------------- Server Method -----------------------------------------------------------//
