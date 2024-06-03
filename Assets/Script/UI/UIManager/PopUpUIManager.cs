@@ -98,7 +98,13 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject CardShopPrice;
 
 
-    // PrefareDeck 정보 팝업 활성화
+    private void Start()
+    {
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        networkRoomManager.persistentComponents.Add(gameObject.name, gameObject); // DDOL 관리 컴포넌트에 등록
+    }
+
+    // PrefareDeck 정보 팝업 활성화(씬 버튼에 이벤트 등록)
     public void HandleShowPrefareDeckListPopUp()
     {
         isDeckListPopUpOpen = true;
@@ -110,7 +116,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
-    // TrashDeck 정보 팝업 활성화
+    // TrashDeck 정보 팝업 활성화(씬 버튼에 이벤트 등록)
     public void HandleShowTrashDeckListPopUp()
     {
         isDeckListPopUpOpen = true;
@@ -122,6 +128,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
+    // ForgottenDeck 정보 팝업 활성화(씬 버튼에 이벤트 등록)
     public void HandShowForgottenDeckListPopUp()
     {
         isDeckListPopUpOpen = true;

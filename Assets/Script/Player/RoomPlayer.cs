@@ -1,11 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Mirror;
-using TMPro;
 using ProjectD;
-using Steamworks;
+
 
 public class RoomPlayer : NetworkRoomPlayer
 {
@@ -24,7 +22,7 @@ public class RoomPlayer : NetworkRoomPlayer
     [SyncVar]
     public PlayOrder order = PlayOrder.FIRST;
 
-    [SyncVar(hook = nameof(ChangeReadyState))]
+    [SyncVar(hook = nameof(OnChangeReady))]
     public bool isReady = false;
 
     [SyncVar(hook = nameof(OnChangedSteamID))]
@@ -33,55 +31,29 @@ public class RoomPlayer : NetworkRoomPlayer
     [SyncVar]
     public string steamPersonaName;
 
-    [SyncVar]
-    public bool isValidAvatar;
-
-    public readonly SyncList<byte> image = new SyncList<byte>();
-
-    [SyncVar]
-    public int imageWidth, imageHeight;
     
-    public void ChangeReadyState(bool oldVal, bool newVal)
-    {
-        if(isLocalPlayer){
-            ReadyButtonOnRoom readyButtonOnRoom = RoomUI.instance.readyButton.GetComponent<ReadyButtonOnRoom>();
-            readyButtonOnRoom.SetReadyButtonViewByReadyState(newVal);
-        }
-        if(isServer)
-            M_LobbyMananger.instance.RoomPlayerReadyCheck();
-        if(onChangeReadyState != null){
-            onChangeReadyState.Invoke(newVal);
-        }
-    }
 
-    // 로컬 플레이어로 시작 시 상단바 인디케이터 변경  Todo
     public override void OnStartLocalPlayer()
     {
-        byte[] uploadableImage;
-
-        if(!isServer)RoomUI.instance.SetReadyButton("READY");
-        else RoomUI.instance.SetReadyButton("");
-        steamID = (ulong)SteamUser.GetSteamID();
-
-        steamPersonaName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
-        // Avatar
-        int imageId = SteamFriends.GetLargeFriendAvatar((CSteamID)steamID);
-        uploadableImage = M_SteamManager.instance.GetSteamImageAsByteArray(imageId,out bool isValid, out uint width, out uint height);
-        if(isValid)
-        {
-            imageWidth = (int)width;
-            imageHeight = (int)height;
-            isValidAvatar = true;
-            for(int i = 0 ;i < uploadableImage.Length ; i ++)
-                image.Add(uploadableImage[i]);
-        }
-
-        if(isServer)
-        {
+        RoomUI.instance.SetReadyButton(!isServer ? "READY" : "");
+        if(isServer){
             GenerateManagers();
         }
     }
 
+    // 방에 다른 유저 들어오면 로컬플레이어의 레디상태 해제
+    public override void OnClientEnterRoom()
+    {
+        base.OnClientEnterRoom();
+        if(isLocalPlayer){
+            isReady = false;
+            OnChangeReady(false, false);
+        }
+    }
+
+    // ----------------------------------------------------------------- Server Method --------------------------------------------------------------------------------//
+
+    [Server]
     public void GenerateManagers()
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
@@ -100,6 +72,42 @@ public class RoomPlayer : NetworkRoomPlayer
         NetworkServer.Spawn(saveManager);
     }
 
+    // ----------------------------------------------------------------- Rpc Method --------------------------------------------------------------------------------//
+
+    [ClientRpc]
+    void ChangeSaveDataFromServer(SaveDataPlayer saveDataPlayer)
+    {
+        if(isLocalPlayer)
+        {
+            character = saveDataPlayer.character;
+        }
+    }
+
+    // ----------------------------------------------------------------- SyncVar Hook --------------------------------------------------------------------------------//
+
+    public void OnChangeReady(bool oldVal, bool newVal)
+    {
+        if(isLocalPlayer){
+            ReadyButtonOnRoom readyButtonOnRoom = RoomUI.instance.readyButton.GetComponent<ReadyButtonOnRoom>();
+            readyButtonOnRoom.SetReadyButtonViewByReadyState(newVal);
+        }
+        if(isServer)
+            M_LobbyMananger.instance.RoomPlayerReadyCheck();
+        if(onChangeReadyState != null){
+            onChangeReadyState.Invoke(newVal);
+        }
+    }
+
+    public void OnChangedCharacter(Character oldVal, Character newVal)
+    {
+        if(isServer){
+            M_LobbyMananger.instance.RoomPlayerReadyCheck();
+        }
+        if(onSelectCompleteCharacter != null){
+            onSelectCompleteCharacter.Invoke(newVal);
+        }
+    }
+
     void OnChangedSteamID(ulong oldVal,  ulong newVal)
     {
         /*
@@ -115,25 +123,6 @@ public class RoomPlayer : NetworkRoomPlayer
             }
         }
         */
-    }
-
-    [ClientRpc]
-    void ChangeSaveDataFromServer(SaveDataPlayer saveDataPlayer)
-    {
-        if(isLocalPlayer)
-        {
-            character = saveDataPlayer.character;
-        }
-    }
-
-    public void OnChangedCharacter(Character oldVal, Character newVal)
-    {
-        if(isServer){
-            M_LobbyMananger.instance.RoomPlayerReadyCheck();
-        }
-        if(onSelectCompleteCharacter != null){
-            onSelectCompleteCharacter.Invoke(newVal);
-        }
     }
 }
 

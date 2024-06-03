@@ -410,7 +410,7 @@ public class LobbyPlayer : NetworkBehaviour
             roomPlayer.character = Character.NONE; // 캐릭터 선택값 NONE으로 리셋
             roomPlayer.OnChangedCharacter(Character.NONE, Character.NONE);
             roomPlayer.isReady = false; // 레디상태 false로 리셋
-            roomPlayer.ChangeReadyState(false, false);
+            roomPlayer.OnChangeReady(false, false);
             ChangeSelectLayoutState(true); // 캐릭터 다시 선택할수 있도록 선택창 활성화
             ChangeClassLayoutFade();
         }
