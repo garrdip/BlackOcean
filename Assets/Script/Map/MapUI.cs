@@ -19,6 +19,7 @@ public class MapUI : InstanceD<MapUI>
     public GameObject deckInfoPopUp;
     public GridLayoutGroup gridLayoutGroup;
     public Button buttonCloseDeckInfoPopUp;
+    public List<GameObject> deckInfoPopUpItems = new List<GameObject>();
 
     [Header("mapBaseLayout")]
     public GameObject mapBaseLayout;
@@ -85,6 +86,7 @@ public class MapUI : InstanceD<MapUI>
         mapTurnLayoutPosition = mapTurnLayout.GetComponent<RectTransform>().localPosition;
         buttonCloseDeckInfoPopUp.onClick.AddListener(() => {
             deckInfoPopUp.SetActive(false);
+            ClearDeckInfoPopUpItem();
         });
     }
 
@@ -294,5 +296,25 @@ public class MapUI : InstanceD<MapUI>
             Destroy(mapInfoPopUp.gameObject);
         }
         mapInfoPopUps.Clear();
+    }
+
+    public void CreatDeckInfoPopUpItem(GamePlayerDeck gamePlayerDeck)
+    {
+        foreach(Card card in gamePlayerDeck.deck){
+            GameObject cardObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, Vector3.zero, Quaternion.identity);
+            cardObject.transform.SetParent(MapUI.instance.gridLayoutGroup.transform);
+            cardObject.transform.localScale = Vector3.one;
+            CardOnDeck cardOnDeck = cardObject.GetComponent<CardOnDeck>();
+            cardOnDeck.card = card.CardDeepCopy(false);
+            deckInfoPopUpItems.Add(cardObject);
+        }
+    }
+
+    public void ClearDeckInfoPopUpItem()
+    {
+        foreach(GameObject gameObject in deckInfoPopUpItems){
+            Destroy(gameObject);
+        }
+        deckInfoPopUpItems.Clear();
     }
 }

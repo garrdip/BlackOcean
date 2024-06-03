@@ -49,10 +49,10 @@ public class ReadyButtonOnRoom : MonoBehaviour, IPointerEnterHandler, IPointerEx
     {
         RoomPlayer roomPlayer = NetworkClient.localPlayer.gameObject.GetComponent<RoomPlayer>();
         if(roomPlayer.character != Character.NONE){
-            if(!roomPlayer.isServer){ //클라이언트만 레디
+            if(roomPlayer.isServer){ //서버케이스
+                if(textReady.text == "START" )ChangeGameScene();
+            }else{ //클라이언트만 레디
                 roomPlayer.isReady = !roomPlayer.isReady;
-            }else{ //서버케이스
-                if(textReady.text == "START" )HandleChangeGameScene();
             }
             SetReadyButtonViewByReadyState(roomPlayer.isReady);
             RoomUI.instance.ChangeSwapButtonsIconState();
@@ -89,7 +89,7 @@ public class ReadyButtonOnRoom : MonoBehaviour, IPointerEnterHandler, IPointerEx
     }
 
     // 게임씬 이동
-    public void HandleChangeGameScene()
+    public void ChangeGameScene()
     {
         M_LoadingManager.instance.SetLoadingScreen(true);
         M_LoadingManager.instance.state = LOADING_STATE.SCENE_LOADING;

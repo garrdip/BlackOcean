@@ -111,6 +111,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
 
     private void HandleOpenDeckInfoPopUp()
     {
+        MapUI.instance.CreatDeckInfoPopUpItem(gamePlayer.GetComponent<GamePlayerDeck>());
         MapUI.instance.deckInfoPopUp.SetActive(true);
     }
 
