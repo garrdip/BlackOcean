@@ -32,11 +32,11 @@ Material:
     - _OutlineOpaqueAlpha: 1
     - _OutlineReferenceTexWidth: 1024
     - _OutlineSmoothness: 1
-    - _OutlineWidth: 6
+    - _OutlineWidth: 8
     - _StencilComp: 8
     - _StencilRef: 1
     - _StraightAlphaInput: 0
-    - _ThresholdEnd: 0.25
+    - _ThresholdEnd: 0
     - _Use8Neighbourhood: 1
     m_Colors:
     - _OutlineColor: {r: 1, g: 0.23921569, b: 0, a: 1}
