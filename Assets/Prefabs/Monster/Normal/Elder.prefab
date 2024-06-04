@@ -4887,7 +4887,7 @@ GameObject:
   - component: {fileID: -5743452806132661159}
   m_Layer: 0
   m_Name: Elder
-  m_TagString: Untagged
+  m_TagString: TargetObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4937,7 +4937,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2aa4f911cd85a7042b1901223592e5e7, type: 2}
-  - {fileID: 2100000, guid: e4258acff768c774aa62d843a0a5e594, type: 2}
+  - {fileID: 2100000, guid: 9764c19f42a49564284511b1b6433ab0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4999,7 +4999,7 @@ MonoBehaviour:
   physicsMovementRelativeTo: {fileID: 0}
   updateTiming: 1
   unscaledTime: 0
-  _animationName: 
+  _animationName: Idle
   loop: 1
   timeScale: 1
 --- !u!114 &-7125968660153738155

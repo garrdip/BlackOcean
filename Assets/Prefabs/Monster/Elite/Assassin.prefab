@@ -4887,7 +4887,7 @@ GameObject:
   - component: {fileID: 8009242376950150703}
   m_Layer: 0
   m_Name: Assassin
-  m_TagString: Untagged
+  m_TagString: TargetObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4937,7 +4937,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 3a8a3c940c5545c449424d164d920c35, type: 2}
-  - {fileID: 2100000, guid: 5ceaa19a5f6ee3d498f6f4c269afe6e1, type: 2}
+  - {fileID: 2100000, guid: 3b32bf6541a7d0841b9f908da91d5014, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4999,7 +4999,7 @@ MonoBehaviour:
   physicsMovementRelativeTo: {fileID: 0}
   updateTiming: 1
   unscaledTime: 0
-  _animationName: 
+  _animationName: Idle
   loop: 1
   timeScale: 1
 --- !u!114 &4068062369094213885

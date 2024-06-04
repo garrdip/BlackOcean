@@ -4888,7 +4888,7 @@ GameObject:
   - component: {fileID: -221518484851686537}
   m_Layer: 0
   m_Name: Boss_Apates
-  m_TagString: Untagged
+  m_TagString: TargetObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4954,7 +4954,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3bd7ac7a2cafd9d4a951e8405efdc008, type: 2}
+  - {fileID: 2100000, guid: 83dd9c3008f013b4ca274ce5f76ba816, type: 2}
   - {fileID: 2100000, guid: fa8706b10d770754a82ccc7c871820c5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
