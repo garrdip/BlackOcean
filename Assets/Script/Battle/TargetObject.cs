@@ -80,10 +80,11 @@ public class TargetObject : NetworkBehaviour
     public readonly SyncList<Buff> buffs = new SyncList<Buff>();
 
 
-// 전투용 변수들
+    // 전투용 변수들
     [SyncVar(hook = nameof(OnChangedDefense))]
     public int defense = 0;
-// 플레이어용 변수
+    
+    // 플레이어용 변수
     [SyncVar]
     public int currentIchi = 3;
     [SyncVar]
@@ -129,73 +130,6 @@ public class TargetObject : NetworkBehaviour
         StartCoroutine(InitNamePlate());
     }
 
-    public void OnChangePlayerOrder(int order)
-    {
-        transform.DOMove(M_TurnManager.instance.targetObjectPosition[order], 0.5f); // 플레이어 오더 변경 이벤트 수신하여 타겟오브젝트 위치 이동
-    }
-
-    IEnumerator InitNamePlate()
-    {
-        while(true)
-        {
-            if(playerHP > 0 && playerMaxHP >0)
-            {
-                selectedNamePlate.SetHPValue(playerHP,playerMaxHP,10);
-                break;
-            }
-            yield return new WaitForSeconds(0.01f);
-        }
-    }
-
-    IEnumerator FindChildObjects()
-    {
-        while(true)
-        {
-            yield return new WaitForSeconds(0.01f);
-            if(avatar == null && monster == null)
-                continue;
-
-            if(objectType == ObjectType.PLAYER)
-            {
-                anim = avatar.GetComponent<SkeletonAnimation>();
-            }
-            else
-            {
-                anim = monster.GetComponent<SkeletonAnimation>();
-            }
-            if(anim != null){
-                anim.state.Event += OnAnimationEvent;
-                anim.state.Start += OnAnimationStart;
-                anim.state.Complete += OnAnimationComplete;
-                anim.timeScale = Random.Range(0.9f,1.1f); // 칼군무 방지 코드
-                if(objectType == ObjectType.PLAYER)
-                    if(player.character == Character.HONGDANHYANG){
-                        StartCoroutine(HongDanHyangEyeFlicker());
-                        while(ironDemon == null)
-                            yield return new WaitForSeconds(0.01f);
-                        ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
-                    }
-                break;
-            }
-        }
-    }
-
-    public void InitMonsterNamePlate()
-    {
-        selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
-        selectedNamePlate.SetHPValue(monster.HP,monster.MAXHP,(int)transform.position.x);
-        playerNamePlate.SetActive(false);
-    }
-
-    IEnumerator HongDanHyangEyeFlicker()
-    {
-        while(true)
-        {
-            yield return new WaitForSeconds(Random.Range(2f,5f));
-            anim.state.SetAnimation(1,"Eye",false);
-        }
-    }
-
     void OnDestroy()
     {
         transform.DOKill();
@@ -215,44 +149,18 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
-    public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
+    public void OnChangePlayerOrder(int order)
     {
-        if(objectType == ObjectType.PLAYER)
-        {
-            switch(player.character)
-            {
-                case Character.GEORK :
-                    avatar = Instantiate(characters[2],transform.position,Quaternion.identity,transform);
-                break;
-                case Character.ERIS :
-                    avatar = Instantiate(characters[1],transform.position,Quaternion.identity,transform);
-                break;
-                case Character.HONGDANHYANG :
-                    avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
-                    avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
-                    ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
-                    if(NetworkClient.localPlayer.transform.GetChild(0).GetComponent<GamePlayer>() == player){
-                        ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 1f;
-                    }else{
-                        ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 0.5f;
-                    }
-                    ironDemonLocation = this;
-                    ironDemon.GetComponent<SkeletonAnimation>().timeScale = Random.Range(0.9f,1.1f);
-                    
-                break;
-            }
-            selectedNamePlate = playerNamePlate.GetComponent<NamePlate>();
-            playerName.text = player.objectOwner.steamPersonaName;
-            monsterNamePlate.SetActive(false);
-            if(newVal.objectOwner.isLocalPlayer){
-                avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
-                targetObjectUI.GetComponent<SortingGroup>().sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-                selectedNamePlate.nameCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-                selectedNamePlate.hpCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-                selectedNamePlate.shieldCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-            }
-        }
+        transform.DOMove(M_TurnManager.instance.targetObjectPosition[order], 0.5f); // 플레이어 오더 변경 이벤트 수신하여 타겟오브젝트 위치 이동
     }
+
+    public void InitMonsterNamePlate()
+    {
+        selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
+        selectedNamePlate.SetHPValue(monster.HP,monster.MAXHP,(int)transform.position.x);
+        playerNamePlate.SetActive(false);
+    }
+
 
     // 남은 코스트 없음 표시하는 말풍선 페이드인 후 페이드아웃
     public void ShowCostNotReaminBubble(GamePlayer gamePlayer)
@@ -328,6 +236,48 @@ public class TargetObject : NetworkBehaviour
             M_SoundManager.instance.StopAllVoice();
             M_SoundManager.instance.PlayVoice(clipToPlay, clipToPlay.length);
         }
+    }
+
+    // 캐릭터별 피격 음성 재생
+    private void PlayCharaterHitVoice()
+    {
+        AudioClip hitVoice = null;
+        switch(player.character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 58, 4);
+                hitVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 65, 9);
+                hitVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 99, 6);
+                hitVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(hitVoice, hitVoice.length);
+    }
+
+    // 캐릭터별 사망 음성 재생
+    private void PlayChararcterDeathVoice()
+    {
+        AudioClip playerDeathVoice = null;
+        switch(player.character){
+            case Character.HONGDANHYANG:
+                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 62, 3);
+                playerDeathVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                break;
+            case Character.GEORK:
+                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 74, 3);
+                playerDeathVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                break;
+            case Character.ERIS:
+                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 112, 3);
+                playerDeathVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                break;
+        }
+        M_SoundManager.instance.PlayVoice(playerDeathVoice, playerDeathVoice.length);
     }
 
     // ----------------------------------------------       게오르크 고행 관련 함수      ---------------------------------------------------//
@@ -419,14 +369,6 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
-    IEnumerator ErisTransform()
-    {
-        M_TurnManager.instance.StartAnimation(this,0,"Change1",false);
-        erisMode = ErisMode.MAD;
-        yield return new WaitForSeconds(2f);
-        M_TurnManager.instance.StartAnimation(this,0,"VIdle",true);
-    }
-
     public void DamageToMonster(int damage, TargetObject from)
     {
         // 붕괴 적용
@@ -470,6 +412,127 @@ public class TargetObject : NetworkBehaviour
                 RpcMonsterDissolve();
             }
             monster.HP -= remind;
+        }
+    }
+
+    IEnumerator InitNamePlate()
+    {
+        while(true)
+        {
+            if(playerHP > 0 && playerMaxHP >0)
+            {
+                selectedNamePlate.SetHPValue(playerHP,playerMaxHP,10);
+                break;
+            }
+            yield return new WaitForSeconds(0.01f);
+        }
+    }
+
+    IEnumerator FindChildObjects()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(0.01f);
+            if(avatar == null && monster == null)
+                continue;
+
+            if(objectType == ObjectType.PLAYER)
+            {
+                anim = avatar.GetComponent<SkeletonAnimation>();
+            }
+            else
+            {
+                anim = monster.GetComponent<SkeletonAnimation>();
+            }
+            if(anim != null){
+                anim.state.Event += OnAnimationEvent;
+                anim.state.Start += OnAnimationStart;
+                anim.state.Complete += OnAnimationComplete;
+                anim.timeScale = Random.Range(0.9f,1.1f); // 칼군무 방지 코드
+                if(objectType == ObjectType.PLAYER)
+                    if(player.character == Character.HONGDANHYANG){
+                        StartCoroutine(HongDanHyangEyeFlicker());
+                        while(ironDemon == null)
+                            yield return new WaitForSeconds(0.01f);
+                        ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
+                    }
+                break;
+            }
+        }
+    }
+
+    IEnumerator HongDanHyangEyeFlicker()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(Random.Range(2f,5f));
+            anim.state.SetAnimation(1,"Eye",false);
+        }
+    }
+
+    IEnumerator ErisTransform()
+    {
+        M_TurnManager.instance.StartAnimation(this,0,"Change1",false);
+        erisMode = ErisMode.MAD;
+        yield return new WaitForSeconds(2f);
+        M_TurnManager.instance.StartAnimation(this,0,"VIdle",true);
+    }
+
+    IEnumerator ErisAdditionalMadAnimation()
+    {
+        WaitForSeconds loopTime = new WaitForSeconds(0.1f);
+        float haedTimer = Random.Range(1f,2f);
+        float lbTimer = Random.Range(1f,2f);
+        float ltTimer = Random.Range(1f,2f);
+        float rTimer = Random.Range(1f,2f);
+        Spine.TrackEntry track = null;
+        while(erisMode == ErisMode.MAD)
+        {
+            if(haedTimer <= 0f)
+            {
+                haedTimer = Random.Range(1f,2f);
+                track =  anim.state.SetAnimation(1,"VAniHead",false);
+                track.MixBlend = Spine.MixBlend.Add;
+                track.Alpha = 1f;
+            }
+            if(lbTimer <= 0f)
+            {
+
+                lbTimer = Random.Range(1f,2f);
+                if(Random.Range(0,2) == 0)
+                    track =  anim.state.SetAnimation(1,"VAniLBArm0",false);
+                else
+                    track =  anim.state.SetAnimation(1,"VAniLBArm1",false);
+                track.MixBlend = Spine.MixBlend.Add;
+                track.Alpha = 1f;
+
+            }
+            if(ltTimer <= 0f)
+            {
+
+                ltTimer = Random.Range(1f,2f);
+                if(Random.Range(0,2) == 0)
+                    track =  anim.state.SetAnimation(1,"VAniLTArm0",false);
+                else
+                    track =  anim.state.SetAnimation(1,"VAniLTArm1",false);
+                track.MixBlend = Spine.MixBlend.Add;
+                track.Alpha = 1f;
+            }
+            if(rTimer <= 0f)
+            {
+                rTimer = Random.Range(1f,2f);
+                if(Random.Range(0,2) == 0)
+                    track =  anim.state.SetAnimation(1,"VAniRArm0",false);
+                else
+                    track =  anim.state.SetAnimation(1,"VAniRArm1",false);
+                track.MixBlend = Spine.MixBlend.Add;
+                track.Alpha = 1f;
+            }
+            haedTimer -= 0.1f;
+            lbTimer -= 0.1f;
+            ltTimer -= 0.1f;
+            rTimer -= 0.1f;
+            yield return loopTime;
         }
     }
 
@@ -581,35 +644,6 @@ public class TargetObject : NetworkBehaviour
         return buffs.FindIndex(buff => buff.type == buffType && buff.user == user.netId) != -1;
     }
 
-    // ----------------------------------------------  SyncVar, SyncList 콜백 처리 구간 ---------------------------------------------------//
-    public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
-    {
-        if(newBuff != null)
-            if((newBuff.type == BuffType.ICHI_ATTACK || newBuff.type == BuffType.ICHI_DEFENSE) && objectType == ObjectType.PLAYER)
-                foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
-                    cardOnHand.CardInfoChangedEvent.Invoke();
-        switch (op)
-        {
-            case SyncList<Buff>.Operation.OP_ADD:
-                buffIndicator.SetBuff(newBuff,index);
-                break;
-            case SyncList<Buff>.Operation.OP_INSERT:
-                buffIndicator.SetBuff(newBuff,index);
-                break;
-            case SyncList<Buff>.Operation.OP_REMOVEAT:
-                ReArrangeBuffEffectIndex(index);
-                buffIndicator.RemoveBuff(index);
-                buffTrunBeginEffect.Remove(index);
-                break;
-            case SyncList<Buff>.Operation.OP_SET:
-                buffIndicator.SetBuff(newBuff,index);
-                break;
-            case SyncList<Buff>.Operation.OP_CLEAR:
-                break;
-        }
-       
-    }
-
     private void ReArrangeBuffEffectIndex(int index)
     {
         buffTrunBeginEffect.Remove(index);
@@ -652,205 +686,6 @@ public class TargetObject : NetworkBehaviour
                 buffTurnEndEffect.Add(itemKey-1,buffTurnEndEffect[itemKey]);
                 buffTurnEndEffect.Remove(itemKey);
             }
-        }
-    }
-
-    void OnChangedPlayerHP(int oldVal, int newVal)
-    {
-        if(oldVal > 0){
-            M_EffectManager.instance.DisPlayeDamage(this, (oldVal - newVal));
-        }
-        if(player != null){
-            if(player.netIdentity == NetworkClient.connection.identity){
-                player.HP = newVal;
-            }
-        }
-        if(playerMaxHP != 0)
-            selectedNamePlate.SetHPValue(playerHP,playerMaxHP,(int)transform.position.x);
-        
-        if(oldVal > 0 && newVal > 0){ // 체력이 0 이상이면, 캐릭터 피격음성 재생
-           PlayCharaterHitVoice();
-        }else if(newVal == 0){ // 체력이 0이면 캐릭터 사망 음성 재생
-            if(isServer){
-                StartCoroutine(PlayerDeathProcess());
-            }
-            PlayChararcterDeathVoice();
-        }
-    }
-
-    // 캐릭터별 피격 음성 재생
-    private void PlayCharaterHitVoice()
-    {
-        AudioClip hitVoice = null;
-        switch(player.character){
-            case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 58, 4);
-                hitVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
-                break;
-            case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 65, 9);
-                hitVoice = georkVoices[Random.Range(0, georkVoices.Count)];
-                break;
-            case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 99, 6);
-                hitVoice = erisVoices[Random.Range(0, erisVoices.Count)];
-                break;
-        }
-        M_SoundManager.instance.PlayVoice(hitVoice, hitVoice.length);
-    }
-
-    // 캐릭터별 사망 음성 재생
-    private void PlayChararcterDeathVoice()
-    {
-        AudioClip playerDeathVoice = null;
-        switch(player.character){
-            case Character.HONGDANHYANG:
-                List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 62, 3);
-                playerDeathVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
-                break;
-            case Character.GEORK:
-                List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 74, 3);
-                playerDeathVoice = georkVoices[Random.Range(0, georkVoices.Count)];
-                break;
-            case Character.ERIS:
-                List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 112, 3);
-                playerDeathVoice = erisVoices[Random.Range(0, erisVoices.Count)];
-                break;
-        }
-        M_SoundManager.instance.PlayVoice(playerDeathVoice, playerDeathVoice.length);
-    }
-
-    IEnumerator PlayerDeathProcess()
-    {
-        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
-        {
-            if(target.player.character == Character.HONGDANHYANG)
-            {
-                if(target.ironDemonLocation == this)
-                {
-                    yield return M_TurnManager.instance.IronDemonReturnProcess(target);
-                }
-            }
-        }
-        foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
-            NetworkServer.Destroy(cardOnHand.gameObject);
-        player.GetComponent<GamePlayerDeck>().cardOnHands.Clear();
-        M_TurnManager.instance.spawnedPlayerList.Remove(this);
-        NetworkServer.Destroy(this.gameObject);
-    }
-
-
-    void OnChangedDefense(int oldVal, int newVal)
-    {
-        selectedNamePlate.SetShieldValue(newVal,oldVal == 0,objectType != ObjectType.PLAYER);
-        if(newVal > 0){
-            int value = newVal - oldVal;
-            if(oldVal > newVal){
-                M_EffectManager.instance.DisplayDefence(this, false, value);
-                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_down"));
-                M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
-            }else{
-                M_EffectManager.instance.DisplayDefence(this, true, value);
-                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_up"));
-                M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
-            }
-        }else{
-            if(objectType != ObjectType.PLAYER && !M_TurnManager.instance.monsterShieldInitialize)
-                monster.OnBreakedShield();
-        }
-    }
-
-
-    void OnChangedErisMode(ErisMode oldVal, ErisMode newVal)
-    {
-        if(newVal == ErisMode.MAD)
-        {
-            StartCoroutine(ErisAdditionalMadAnimation());
-        }
-    }
-
-    IEnumerator ErisAdditionalMadAnimation()
-    {
-        WaitForSeconds loopTime = new WaitForSeconds(0.1f);
-        float haedTimer = Random.Range(1f,2f);
-        float lbTimer = Random.Range(1f,2f);
-        float ltTimer = Random.Range(1f,2f);
-        float rTimer = Random.Range(1f,2f);
-        Spine.TrackEntry track = null;
-        while(erisMode == ErisMode.MAD)
-        {
-            if(haedTimer <= 0f)
-            {
-                haedTimer = Random.Range(1f,2f);
-                track =  anim.state.SetAnimation(1,"VAniHead",false);
-                track.MixBlend = Spine.MixBlend.Add;
-                track.Alpha = 1f;
-            }
-            if(lbTimer <= 0f)
-            {
-
-                lbTimer = Random.Range(1f,2f);
-                if(Random.Range(0,2) == 0)
-                    track =  anim.state.SetAnimation(1,"VAniLBArm0",false);
-                else
-                    track =  anim.state.SetAnimation(1,"VAniLBArm1",false);
-                track.MixBlend = Spine.MixBlend.Add;
-                track.Alpha = 1f;
-
-            }
-            if(ltTimer <= 0f)
-            {
-
-                ltTimer = Random.Range(1f,2f);
-                if(Random.Range(0,2) == 0)
-                    track =  anim.state.SetAnimation(1,"VAniLTArm0",false);
-                else
-                    track =  anim.state.SetAnimation(1,"VAniLTArm1",false);
-                track.MixBlend = Spine.MixBlend.Add;
-                track.Alpha = 1f;
-            }
-            if(rTimer <= 0f)
-            {
-                rTimer = Random.Range(1f,2f);
-                if(Random.Range(0,2) == 0)
-                    track =  anim.state.SetAnimation(1,"VAniRArm0",false);
-                else
-                    track =  anim.state.SetAnimation(1,"VAniRArm1",false);
-                track.MixBlend = Spine.MixBlend.Add;
-                track.Alpha = 1f;
-            }
-            haedTimer -= 0.1f;
-            lbTimer -= 0.1f;
-            ltTimer -= 0.1f;
-            rTimer -= 0.1f;
-            yield return loopTime;
-        }
-    }
-
-    public void OnChangeObjectType(ObjectType oldValue, ObjectType newValue)
-    {
-        switch(objectType){
-            case ObjectType.PLAYER:
-                playerNamePlate.SetActive(true);
-                monsterNamePlate.SetActive(false);
-                break;
-            case ObjectType.ENEMY:
-                playerNamePlate.SetActive(false);
-                monsterNamePlate.SetActive(true);
-                break;
-            case ObjectType.BOSS:
-                playerNamePlate.SetActive(false);
-                monsterNamePlate.SetActive(true);
-                break;
-        }
-    }
-
-    void OnChangedIronDemonLocation(TargetObject oldVal, TargetObject newVal)
-    {
-        if(newVal == this)
-        { 
-            ironDemon.GetComponent<SkeletonAnimation>().state.Complete -= OnIronDemonAnimationComplete;
-            ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
         }
     }
 
@@ -899,6 +734,26 @@ public class TargetObject : NetworkBehaviour
     // --------------------------------------------------------- Server Method -----------------------------------------------------------//
 
     [Server]
+    IEnumerator PlayerDeathProcess()
+    {
+        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
+        {
+            if(target.player.character == Character.HONGDANHYANG)
+            {
+                if(target.ironDemonLocation == this)
+                {
+                    yield return M_TurnManager.instance.IronDemonReturnProcess(target);
+                }
+            }
+        }
+        foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
+            NetworkServer.Destroy(cardOnHand.gameObject);
+        player.GetComponent<GamePlayerDeck>().cardOnHands.Clear();
+        M_TurnManager.instance.spawnedPlayerList.Remove(this);
+        NetworkServer.Destroy(this.gameObject);
+    }
+
+    [Server]
     public void ServerProcessMonsterDeath()
     {
         M_TurnManager.instance.monsterDeathOperating = true;
@@ -922,6 +777,152 @@ public class TargetObject : NetworkBehaviour
                     ServerProcessMonsterDeath();
                 }
             });
+        }
+    }
+
+    // ---------------------------------------------------------SynclList Callback ,Syncvar Hook -----------------------------------------------------------//
+
+    public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
+    {
+        if(newBuff != null)
+            if((newBuff.type == BuffType.ICHI_ATTACK || newBuff.type == BuffType.ICHI_DEFENSE) && objectType == ObjectType.PLAYER)
+                foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
+                    cardOnHand.CardInfoChangedEvent.Invoke();
+        switch (op)
+        {
+            case SyncList<Buff>.Operation.OP_ADD:
+                buffIndicator.SetBuff(newBuff,index);
+                break;
+            case SyncList<Buff>.Operation.OP_INSERT:
+                buffIndicator.SetBuff(newBuff,index);
+                break;
+            case SyncList<Buff>.Operation.OP_REMOVEAT:
+                ReArrangeBuffEffectIndex(index);
+                buffIndicator.RemoveBuff(index);
+                buffTrunBeginEffect.Remove(index);
+                break;
+            case SyncList<Buff>.Operation.OP_SET:
+                buffIndicator.SetBuff(newBuff,index);
+                break;
+            case SyncList<Buff>.Operation.OP_CLEAR:
+                break;
+        }
+    }
+
+    public void OnChangeObjectType(ObjectType oldValue, ObjectType newValue)
+    {
+        switch(objectType){
+            case ObjectType.PLAYER:
+                playerNamePlate.SetActive(true);
+                monsterNamePlate.SetActive(false);
+                break;
+            case ObjectType.ENEMY:
+                playerNamePlate.SetActive(false);
+                monsterNamePlate.SetActive(true);
+                break;
+            case ObjectType.BOSS:
+                playerNamePlate.SetActive(false);
+                monsterNamePlate.SetActive(true);
+                break;
+        }
+    }
+
+    void OnChangedIronDemonLocation(TargetObject oldVal, TargetObject newVal)
+    {
+        if(newVal == this)
+        { 
+            ironDemon.GetComponent<SkeletonAnimation>().state.Complete -= OnIronDemonAnimationComplete;
+            ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
+        }
+    }
+
+    public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
+    {
+        if(objectType == ObjectType.PLAYER)
+        {
+            switch(player.character)
+            {
+                case Character.GEORK :
+                    avatar = Instantiate(characters[2],transform.position,Quaternion.identity,transform);
+                break;
+                case Character.ERIS :
+                    avatar = Instantiate(characters[1],transform.position,Quaternion.identity,transform);
+                break;
+                case Character.HONGDANHYANG :
+                    avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
+                    avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
+                    ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
+                    if(NetworkClient.localPlayer.transform.GetChild(0).GetComponent<GamePlayer>() == player){
+                        ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 1f;
+                    }else{
+                        ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 0.5f;
+                    }
+                    ironDemonLocation = this;
+                    ironDemon.GetComponent<SkeletonAnimation>().timeScale = Random.Range(0.9f,1.1f);
+                    
+                break;
+            }
+            selectedNamePlate = playerNamePlate.GetComponent<NamePlate>();
+            playerName.text = player.objectOwner.steamPersonaName;
+            monsterNamePlate.SetActive(false);
+            if(newVal.objectOwner.isLocalPlayer){
+                avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
+                targetObjectUI.GetComponent<SortingGroup>().sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+                selectedNamePlate.nameCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+                selectedNamePlate.hpCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+                selectedNamePlate.shieldCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+            }
+        }
+    }
+
+    void OnChangedErisMode(ErisMode oldVal, ErisMode newVal)
+    {
+        if(newVal == ErisMode.MAD)
+        {
+            StartCoroutine(ErisAdditionalMadAnimation());
+        }
+    }
+
+    void OnChangedPlayerHP(int oldVal, int newVal)
+    {
+        if(oldVal > 0){
+            M_EffectManager.instance.DisPlayeDamage(this, (oldVal - newVal));
+        }
+        if(player != null){
+            if(player.netIdentity == NetworkClient.connection.identity){
+                player.HP = newVal;
+            }
+        }
+        if(playerMaxHP != 0)
+            selectedNamePlate.SetHPValue(playerHP,playerMaxHP,(int)transform.position.x);
+        
+        if(oldVal > 0 && newVal > 0){ // 체력이 0 이상이면, 캐릭터 피격음성 재생
+           PlayCharaterHitVoice();
+        }else if(newVal == 0){ // 체력이 0이면 캐릭터 사망 음성 재생
+            if(isServer){
+                StartCoroutine(PlayerDeathProcess());
+            }
+            PlayChararcterDeathVoice();
+        }
+    }
+
+    void OnChangedDefense(int oldVal, int newVal)
+    {
+        selectedNamePlate.SetShieldValue(newVal,oldVal == 0,objectType != ObjectType.PLAYER);
+        if(newVal > 0){
+            int value = newVal - oldVal;
+            if(oldVal > newVal){
+                M_EffectManager.instance.DisplayDefence(this, false, value);
+                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_down"));
+                M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
+            }else{
+                M_EffectManager.instance.DisplayDefence(this, true, value);
+                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_up"));
+                M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
+            }
+        }else{
+            if(objectType != ObjectType.PLAYER && !M_TurnManager.instance.monsterShieldInitialize)
+                monster.OnBreakedShield();
         }
     }
 }
