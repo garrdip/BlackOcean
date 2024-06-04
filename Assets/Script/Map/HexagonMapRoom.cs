@@ -57,6 +57,8 @@ public class HexagonMapRoom : NetworkBehaviour
     public GameObject mapTileGrid;
     public SortingGroup sortingGroup;
     public Vector3 expandMapTilePosition;
+    private float expandValue = 0.25f;
+    private float expandDuration = 0.5f;
 
     [Header("맵 UI")]
     public GameObject hexagonMapRoomUI;
@@ -248,6 +250,7 @@ public class HexagonMapRoom : NetworkBehaviour
         ChangeMapExpandedState(newValue);
         ChangeMapVoteIconState();
         ChangeMapHazardValue();
+        ChangeMapBossExpandedPosition(newValue);
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)
@@ -260,6 +263,9 @@ public class HexagonMapRoom : NetworkBehaviour
                 M_MapManager.instance.SetRoomTypeBossRoom(this);
             }
         }
+        if(newValue != null){
+            newValue.transform.localPosition = expandMapTilePosition + (isSelected ? new Vector3(0f, expandValue, 0f) : Vector3.zero);
+        } 
     }
 
     // ------------------------------------------------------------ Normal Method --------------------------------------------------------------- //
@@ -339,26 +345,20 @@ public class HexagonMapRoom : NetworkBehaviour
     {
         if(isSelected){
             expandMapTile.transform.DOKill();
-            expandMapTile.transform.DOLocalMoveY(0.25f, 0.5f);
+            expandMapTile.transform.DOLocalMoveY(expandValue, expandDuration);
             mapTileMask.GetComponent<SpriteMask>().enabled = true;
             mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             mapTileBase.SetActive(true);
-            hexagonMapRoomUI.transform.DOLocalMoveY(0.25f, 0.5f);
+            hexagonMapRoomUI.transform.DOLocalMoveY(expandValue, expandDuration);
             hexagonMapRoomUI.SetActive(true);              
-            if(mapBoss != null){
-                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y + 0.25f, 0.5f);
-            }
         }else{
-            expandMapTile.transform.DOLocalMoveY(0f, 0.5f).OnComplete(() => {
+            expandMapTile.transform.DOLocalMoveY(0f, expandDuration).OnComplete(() => {
                 mapTileMask.GetComponent<SpriteMask>().enabled = false;
                 mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
                 mapTileBase.SetActive(false);
             });
-            hexagonMapRoomUI.transform.DOLocalMoveY(0f, 0.5f);
+            hexagonMapRoomUI.transform.DOLocalMoveY(0f, expandDuration);
             hexagonMapRoomUI.SetActive(false);
-            if(mapBoss != null){
-                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y, 0.5f);
-            }
         }
         mapIcon.GetComponent<SpriteRenderer>().DOFade(isSelected == true ? 0.25f : 1f, 0.5f);
         sortingGroup.sortingLayerName = isSelected ? "HexagonMapRoomSelected" : "HexagonMapRoom";
@@ -396,6 +396,18 @@ public class HexagonMapRoom : NetworkBehaviour
             mapVoteIcons[order].transform.GetChild(1).gameObject.SetActive(true);
             mapVoteIconsAnother[order].transform.GetChild(0).gameObject.SetActive(true);
             mapVoteIconsAnother[order].transform.GetChild(1).gameObject.SetActive(true);
+        }
+    }
+
+    // 해당 방에 위치한 맵보스의 위치 Y좌표 조정(확장되는 맵타일과 동일하게)
+    public void ChangeMapBossExpandedPosition(bool isSelected)
+    {
+        if(mapBoss != null){
+            if(isSelected){
+                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y + expandValue, expandDuration);
+            }else{
+                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y, expandDuration);
+            }
         }
     }
 }
