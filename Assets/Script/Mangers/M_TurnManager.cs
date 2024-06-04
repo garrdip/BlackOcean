@@ -731,7 +731,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 avatar.GetComponent<TargetObject>().player = gamePlayer;
                 avatar.GetComponent<TargetObject>().playerMaxHP = gamePlayer.MaxHP;
                 avatar.GetComponent<TargetObject>().playerHP = gamePlayer.HP;
-                avatar.GetComponent<TargetObject>().conn = gamePlayer.netIdentity;
                 avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
 
                 gamePlayer.GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;

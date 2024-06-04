@@ -13,56 +13,32 @@ using System.Linq;
 
 public class TargetObject : NetworkBehaviour
 {
+    [Header("공통 참조값")]
+    public SkeletonAnimation anim;
     public GameObject targetObjectUI;
+    public NamePlate selectedNamePlate;
+    public BuffIndicatorController buffIndicator;
+    public NextActionIndicator nextActionIndicator;
+    public Dictionary<int,CardBlessEffect> buffTrunBeginEffect = new Dictionary<int, CardBlessEffect>();
+    public Dictionary<int,CardBlessEffect> buffCardDrowEffect = new Dictionary<int, CardBlessEffect>();
+    public Dictionary<int,CardBlessEffect> buffTurnEndEffect = new Dictionary<int, CardBlessEffect>();
+    public Dictionary<int,CardBlessEffect> buffCardUseEffect = new Dictionary<int, CardBlessEffect>();
+    public List<int> initialUseEffectIndex = new List<int>();
+
+
+    [Header("플레이어용 참조값")]
+    public GameObject avatar;
     public GameObject playerNamePlate;
     public Canvas playerHpCanvas;
     public Canvas playerNameCanvas;
     public Canvas playerShieldCanvas;
-    public GameObject monsterNamePlate;
-    public Canvas monsterHpCanvas;
-    public Canvas monsterNameCanvas;
-    public Canvas monsterShieldCanvas;
-    public NamePlate selectedNamePlate;
     public TextMeshProUGUI playerName;
-    public TextMeshProUGUI monsterName;
     public Canvas playerMessageCavnas;
     public TextMeshProUGUI playerMessageBubble;
-    public BuffIndicatorController buffIndicator;
-    public NextActionIndicator nextActionIndicator;
-
-    [Header("타겟 오브젝트 타입")]
-    [SyncVar (hook = nameof(OnChangeObjectType))]
-    public ObjectType objectType;
-
-    // Player 의 경우 
-    [SyncVar (hook = nameof(InitTargetObjectPlayer))]
-    public GamePlayer player;
+    public List<GameObject> characters; 
     public SkeletonDataAsset[] ironDemonData = new SkeletonDataAsset[2];
-
-    [SyncVar (hook = nameof(OnChangedPlayerHP))]
-    public int playerHP;
-    
-    [SyncVar]
-    public int playerMaxHP;
-
-    public NetworkIdentity conn;
-
-    // Monster 의 경우
-    [SyncVar]
-    public SpawnedMonster monster;
-
-    public List<GameObject> characters;
-    public List<GameObject> monsters;
-    
-    public GameObject avatar;
-
-    // 철귀
-    public GameObject ironDemon;
-    [SyncVar (hook = nameof(OnChangedIronDemonLocation))]
-    public TargetObject ironDemonLocation;
-
+    public GameObject ironDemon; // 철귀
     public bool isIronDemonMoving = false;
-
     public int sizeOfIronDemon
     {
         get
@@ -74,32 +50,57 @@ public class TargetObject : NetworkBehaviour
             buffs.Find(x => x.type == BuffType.IRONDEMON).value = value;
         }
     }
-
-    public SkeletonAnimation anim;
-
-    public readonly SyncList<Buff> buffs = new SyncList<Buff>();
+    public bool usingGOHENG = false;
+    public List<int> usedGOHENG = new List<int>();
 
 
-    // 전투용 변수들
+    [Header("몬스터용 참조값")]
+    public GameObject monsterNamePlate;
+    public Canvas monsterHpCanvas;
+    public Canvas monsterNameCanvas;
+    public Canvas monsterShieldCanvas;
+    public TextMeshProUGUI monsterName;
+
+
+    [Header("네트워크 참조값")]
+    [SyncVar (hook = nameof(OnChangeObjectType))]
+    public ObjectType objectType;
+
+    [SyncVar (hook = nameof(InitTargetObjectPlayer))]
+    public GamePlayer player; // Player 의 경우
+
+    [SyncVar (hook = nameof(OnChangedPlayerHP))]
+    public int playerHP;
+    
+    [SyncVar]
+    public int playerMaxHP;
+
+    [SyncVar (hook = nameof(OnChangedIronDemonLocation))]
+    public TargetObject ironDemonLocation;
+
+    [SyncVar]
+    public SpawnedMonster monster; // Monster 의 경우
+    
+    // -------------------------------   전투용 변수들   ------------------------------------//
+
     [SyncVar(hook = nameof(OnChangedDefense))]
     public int defense = 0;
     
-    // 플레이어용 변수
+    // -------------------------------   플레이어용 변수들   ------------------------------------//
     [SyncVar]
     public int currentIchi = 3;
+
     [SyncVar]
     public int maxIchi = 3;
+
     [SyncVar]
     public int limitiChi = 6;
+
     [SyncVar]
     public bool isTransformed = false;
+
     [SyncVar (hook = nameof(OnChangedErisMode))]
     public ErisMode erisMode = ErisMode.NORMAL;
-    [SyncVar]
-    public int currentApDoRequirement = 8;
-    [SyncVar]
-    public bool isDying = false;
-
     public string GetErisMode()
     {
         string retVal = null;
@@ -111,14 +112,15 @@ public class TargetObject : NetworkBehaviour
         }
         return retVal;
     }
-    public bool usingGOHENG = false;
-    public List<int> usedGOHENG = new List<int>();
 
-    public Dictionary<int,CardBlessEffect> buffTrunBeginEffect = new Dictionary<int, CardBlessEffect>();
-    public Dictionary<int,CardBlessEffect> buffCardDrowEffect = new Dictionary<int, CardBlessEffect>();
-    public Dictionary<int,CardBlessEffect> buffTurnEndEffect = new Dictionary<int, CardBlessEffect>();
-    public Dictionary<int,CardBlessEffect> buffCardUseEffect = new Dictionary<int, CardBlessEffect>();
-    public List<int> initialUseEffectIndex = new List<int>();
+    [SyncVar]
+    public int currentApDoRequirement = 8;
+
+    [SyncVar]
+    public bool isDying = false;
+
+    public readonly SyncList<Buff> buffs = new SyncList<Buff>();
+
 
     void Start()
     {
