@@ -245,47 +245,9 @@ public class HexagonMapRoom : NetworkBehaviour
     // HexagonMapRoom 선택 상태 변경
     void OnChangedIsSelected(bool oldValue, bool newValue)
     {
-        if(newValue){
-            expandMapTile.transform.DOKill();
-            expandMapTile.transform.DOLocalMoveY(0.25f, 0.5f);
-            mapTileMask.GetComponent<SpriteMask>().enabled = true;
-            mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
-            mapTileBase.SetActive(true);
-            hexagonMapRoomUI.transform.DOLocalMoveY(0.25f, 0.5f);
-            hexagonMapRoomUI.SetActive(true);              
-            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("ingame_menu_stage_mouseclick"));
-            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-            if(mapBoss != null){
-                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y + 0.25f, 0.5f);
-            }
-        }else{
-            expandMapTile.transform.DOLocalMoveY(0f, 0.5f).OnComplete(() => {
-                mapTileMask.GetComponent<SpriteMask>().enabled = false;
-                mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
-                mapTileBase.SetActive(false);
-            });
-            hexagonMapRoomUI.transform.DOLocalMoveY(0f, 0.5f);
-            hexagonMapRoomUI.SetActive(false);
-            if(mapBoss != null){
-                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y, 0.5f);
-            }
-        }
+        ChangeMapExpandedState(newValue);
         ChangeMapVoteIconState();
-        mapIcon.GetComponent<SpriteRenderer>().DOFade(newValue == true ? 0.25f : 1f, 0.5f);
-        sortingGroup.sortingLayerName = newValue ? "HexagonMapRoomSelected" : "HexagonMapRoom";
-
-        int hazardValue = hazard - M_MapManager.instance.currentRoom.hazard;
-        textHazardCount.text = Mathf.Abs(hazardValue).ToString();
-        if(hazardValue == 0){
-            hazardArrow.gameObject.SetActive(false);
-            textHazardTitle.text = "위험도 동일";
-            hazardArrow.color = Color.white;
-        }else{
-            hazardArrow.gameObject.SetActive(true);
-            textHazardTitle.text = hazardValue > 0 ? "위험도 증가" : "위험도 감소" ;
-            hazardArrow.flipY = hazardValue > 0 ? false : true;
-            hazardArrow.color =  hazardValue > 0 ? Color.red : ColorUtils.HexToColor("#0080ff");
-        }
+        ChangeMapHazardValue();
     }
 
     // HexagonMapRoom의 SyncVar참조값인 MapBoss의 변화 감지(방의 MapBoss참조값이 할당되었다는 것은 해당 방으로 보스가 이동했다는 것)
@@ -369,6 +331,55 @@ public class HexagonMapRoom : NetworkBehaviour
                 TurnLayout.SetActive(false);
                 DangerLayout.SetActive(false);
             }
+        }
+    }
+
+    // 방 선택 상태에 따라 Expand 상태 변경
+    private void ChangeMapExpandedState(bool isSelected)
+    {
+        if(isSelected){
+            expandMapTile.transform.DOKill();
+            expandMapTile.transform.DOLocalMoveY(0.25f, 0.5f);
+            mapTileMask.GetComponent<SpriteMask>().enabled = true;
+            mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+            mapTileBase.SetActive(true);
+            hexagonMapRoomUI.transform.DOLocalMoveY(0.25f, 0.5f);
+            hexagonMapRoomUI.SetActive(true);              
+            if(mapBoss != null){
+                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y + 0.25f, 0.5f);
+            }
+        }else{
+            expandMapTile.transform.DOLocalMoveY(0f, 0.5f).OnComplete(() => {
+                mapTileMask.GetComponent<SpriteMask>().enabled = false;
+                mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
+                mapTileBase.SetActive(false);
+            });
+            hexagonMapRoomUI.transform.DOLocalMoveY(0f, 0.5f);
+            hexagonMapRoomUI.SetActive(false);
+            if(mapBoss != null){
+                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y, 0.5f);
+            }
+        }
+        mapIcon.GetComponent<SpriteRenderer>().DOFade(isSelected == true ? 0.25f : 1f, 0.5f);
+        sortingGroup.sortingLayerName = isSelected ? "HexagonMapRoomSelected" : "HexagonMapRoom";
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("ingame_menu_stage_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+    }
+
+    // 방 위험도 표시
+    private void ChangeMapHazardValue()
+    {
+        int hazardValue = hazard - M_MapManager.instance.currentRoom.hazard; // 현재 위치한 방과 다음 목적지로 선택한 방의 위험도 차이값
+        textHazardCount.text = Mathf.Abs(hazardValue).ToString();
+        if(hazardValue == 0){
+            hazardArrow.gameObject.SetActive(false);
+            textHazardTitle.text = "위험도 동일";
+            hazardArrow.color = Color.white;
+        }else{
+            hazardArrow.gameObject.SetActive(true);
+            textHazardTitle.text = hazardValue > 0 ? "위험도 증가" : "위험도 감소" ;
+            hazardArrow.flipY = hazardValue > 0 ? false : true;
+            hazardArrow.color =  hazardValue > 0 ? Color.red : ColorUtils.HexToColor("#0080ff");
         }
     }
 

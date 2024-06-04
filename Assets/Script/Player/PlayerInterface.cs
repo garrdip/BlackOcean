@@ -260,8 +260,15 @@ public class PlayerInterface : NetworkBehaviour
             // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
             HexagonMapRoom hexagonMapRoom = M_MapManager.instance.GetVoteHexagonMapRoomResult();
             if(hexagonMapRoom != null){
-                if(hexagonMapRoom == M_MapManager.instance.currentRoom) return;
-                M_TurnManager.instance.EnterTheRoom(hexagonMapRoom); // 모든 플레이어 레디상태 확인 시 전투 시작
+                if(hexagonMapRoom == M_MapManager.instance.currentRoom){
+                    if(hexagonMapRoom.roomType == RoomType.BOSS || hexagonMapRoom.roomType == RoomType.RUINS){
+                        M_TurnManager.instance.EnterTheRoom(hexagonMapRoom); // 보스방은 현재 위치한 방이어도 방 진입
+                    }else{
+                        return;
+                    }
+                }else{
+                    M_TurnManager.instance.EnterTheRoom(hexagonMapRoom);
+                }
             }
         }    
     }
