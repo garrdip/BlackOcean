@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Steamworks;
 using Mirror;
 using ProjectD;
 
@@ -35,6 +36,8 @@ public class RoomPlayer : NetworkRoomPlayer
 
     public override void OnStartLocalPlayer()
     {
+        steamID = (ulong)SteamUser.GetSteamID();
+        steamPersonaName = SteamFriends.GetFriendPersonaName((CSteamID)steamID);
         RoomUI.instance.SetReadyButton(!isServer ? "READY" : "");
         if(isServer){
             GenerateManagers();

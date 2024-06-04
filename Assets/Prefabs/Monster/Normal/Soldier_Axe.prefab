@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7286526893056829625}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.33, y: 2.11, z: 0}
+  m_LocalPosition: {x: -1.07, y: 2.09, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -732,7 +732,7 @@ ParticleSystem:
     m_Mesh: {fileID: 0}
     m_MeshRenderer: {fileID: 0}
     m_SkinnedMeshRenderer: {fileID: 0}
-    m_Sprite: {fileID: 21300000, guid: cb9f13c760f9cd44d9c08db8cf756db5, type: 3}
+    m_Sprite: {fileID: 21300000, guid: dd026816d5c624b469ca25ad7941d29d, type: 3}
     m_SpriteRenderer: {fileID: 0}
     m_UseMeshMaterialIndex: 0
     m_UseMeshColors: 1
@@ -4938,7 +4938,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 9330b7c01dfc1ed4a9924d1fa81284da, type: 2}
-  - {fileID: 2100000, guid: 51ea2ada7f5705e4abfbe696566c1e1b, type: 2}
+  - {fileID: 2100000, guid: fcf16aff781526346bafea0ff54b0d78, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -732,7 +732,7 @@ ParticleSystem:
     m_Mesh: {fileID: 0}
     m_MeshRenderer: {fileID: 0}
     m_SkinnedMeshRenderer: {fileID: 0}
-    m_Sprite: {fileID: 21300000, guid: 75e446f041e17b146a122e6a01bc183c, type: 3}
+    m_Sprite: {fileID: 21300000, guid: 69b0b0e405792764ca5a0333ebf8002b, type: 3}
     m_SpriteRenderer: {fileID: 0}
     m_UseMeshMaterialIndex: 0
     m_UseMeshColors: 1
@@ -4938,7 +4938,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 47100479df3a92040a2dc009efe7218e, type: 2}
-  - {fileID: 2100000, guid: 3ad20401f00463b4bb468e8e8ee0e5e8, type: 2}
+  - {fileID: 2100000, guid: 051d7be97603d71459c4d50b9d548329, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
