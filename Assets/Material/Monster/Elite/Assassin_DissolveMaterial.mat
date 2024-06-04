@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Boss_Momos_DissolveMaterial
+  m_Name: Assassin_DissolveMaterial
   m_Shader: {fileID: 4800000, guid: 8aa2b80f5083921428f6f29068f2771f, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -41,7 +41,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 845889bf4c0c041488a4b28822291211, type: 3}
+        m_Texture: {fileID: 2800000, guid: d8ebea1805df70f4f945a3462e0d8af6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -49,7 +49,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
-        m_Texture: {fileID: 2800000, guid: c332a8d1957f95c47a5bed7034c39ee9, type: 3}
+        m_Texture: {fileID: 2800000, guid: d30a0effe4564ab4fa82332923988f7c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -67,7 +67,7 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Edges: 0.087
+    - _Edges: 0.083
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1

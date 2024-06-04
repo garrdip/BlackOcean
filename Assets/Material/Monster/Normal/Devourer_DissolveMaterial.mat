@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GiantSoldier_DissolveMaterial
+  m_Name: Devourer_DissolveMaterial
   m_Shader: {fileID: 4800000, guid: 8aa2b80f5083921428f6f29068f2771f, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -41,7 +41,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: dcd0f8a9298f2a44c9c5aef61a19b01d, type: 3}
+        m_Texture: {fileID: 2800000, guid: d2cb51dfc3a2afb4dbd537c593029658, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -83,7 +83,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EdgeColour1: {r: 0.05490196, g: 0.08235294, b: 0.15686275, a: 1}
-    - _EdgeColour2: {r: 0.05490196, g: 0.08235294, b: 0.15686275, a: 1}
+    - _EdgeColour1: {r: 1, g: 1, b: 1, a: 1}
+    - _EdgeColour2: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

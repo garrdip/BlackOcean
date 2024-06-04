@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SpearManA_DissolveMaterial
+  m_Name: SpearManB_DissolveMaterial
   m_Shader: {fileID: 4800000, guid: 8aa2b80f5083921428f6f29068f2771f, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -41,7 +41,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 69b0b0e405792764ca5a0333ebf8002b, type: 3}
+        m_Texture: {fileID: 2800000, guid: c2b4194a612d201459eb397b72fc6c32, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:

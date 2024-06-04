@@ -5059,6 +5059,7 @@ MonoBehaviour:
   turn: 0
   isActive: 0
   meshRenderer: {fileID: 7778458032851223039}
+  originMaterial: {fileID: 2100000, guid: 942ebf37aa5d5c14a96a48c3eb2f8624, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 4e086e5cbe2f57c4e8b0250915c06696, type: 2}
   dissolveParticle: {fileID: 1337810226639892101}
 --- !u!114 &3605773125986361232

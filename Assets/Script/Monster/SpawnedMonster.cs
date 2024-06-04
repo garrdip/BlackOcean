@@ -51,6 +51,9 @@ public class SpawnedMonster : NetworkBehaviour
     [Header("몬스터 MeshRenderer")]
     public MeshRenderer meshRenderer;
 
+    [Header("몬스터 기본 Material")]
+    public Material originMaterial;
+
     [Header("몬스터 처치 효과 Material")]
     public Material dissolveMaterial;
 

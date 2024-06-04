@@ -4883,9 +4883,9 @@ GameObject:
   - component: {fileID: 7778458032851223039}
   - component: {fileID: 2526679034711088660}
   - component: {fileID: 1148659860880846136}
-  - component: {fileID: 8096410808096216691}
   - component: {fileID: -2845337402497649874}
   - component: {fileID: -4189096865527981114}
+  - component: {fileID: 8096410808096216691}
   m_Layer: 0
   m_Name: WacherB
   m_TagString: TargetObject
@@ -4937,7 +4937,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 003ac451abe9cd54f895bc1b89cdc82f, type: 2}
+  - {fileID: 2100000, guid: 81e41234a96d86945b44fc738708c2fa, type: 2}
   - {fileID: 2100000, guid: 1c22bac2974da0940bfd0cd3a350019c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -5020,6 +5020,66 @@ MonoBehaviour:
   serverOnly: 0
   visible: 0
   hasSpawned: 0
+--- !u!114 &-2845337402497649874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31e152350c688f743a9195e7d86852d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  monsterName: 
+  MAXHP: 0
+  HP: 0
+  sheild: 0
+  nextAction:
+    actionName: 
+    actionNumber: 0
+    actionValue: 0
+    actionTarget: 0
+  currentBehavior:
+    ActionList: []
+    frequency: 0
+  currentBehaviorSequence: 0
+  nextTargetObject: {fileID: 0}
+  nextTarget: 0
+  monsterData:
+    name: 
+    MAXHP: 0
+    behavior: []
+    buffList: []
+  parent: {fileID: 0}
+  turn: 0
+  isActive: 0
+  meshRenderer: {fileID: 7778458032851223039}
+  originMaterial: {fileID: 2100000, guid: 81e41234a96d86945b44fc738708c2fa, type: 2}
+  dissolveMaterial: {fileID: 2100000, guid: bd1bbdcfb3f259d4985796e017ed3036, type: 2}
+  dissolveParticle: {fileID: 590674247389558172}
+--- !u!114 &-4189096865527981114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715637313035057607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2526679034711088660}
+  customSlotMaterials: []
+  customMaterialOverrides:
+  - overrideDisabled: 0
+    originalMaterial: {fileID: 2100000, guid: 81e41234a96d86945b44fc738708c2fa, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 003ac451abe9cd54f895bc1b89cdc82f, type: 2}
 --- !u!60 &8096410808096216691
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -5072,62 +5132,3 @@ PolygonCollider2D:
       - {x: 0.44723034, y: 4.97545}
       - {x: 0.898577, y: 5.4547415}
       - {x: 1.1809065, y: 6.614388}
---- !u!114 &-2845337402497649874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8715637313035057607}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31e152350c688f743a9195e7d86852d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  monsterName: 
-  MAXHP: 0
-  HP: 0
-  sheild: 0
-  nextAction:
-    actionName: 
-    actionNumber: 0
-    actionValue: 0
-    actionTarget: 0
-  currentBehavior:
-    ActionList: []
-    frequency: 0
-  currentBehaviorSequence: 0
-  nextTargetObject: {fileID: 0}
-  nextTarget: 0
-  monsterData:
-    name: 
-    MAXHP: 0
-    behavior: []
-    buffList: []
-  parent: {fileID: 0}
-  turn: 0
-  isActive: 0
-  meshRenderer: {fileID: 7778458032851223039}
-  dissolveMaterial: {fileID: 2100000, guid: bd1bbdcfb3f259d4985796e017ed3036, type: 2}
-  dissolveParticle: {fileID: 590674247389558172}
---- !u!114 &-4189096865527981114
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8715637313035057607}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26947ae098a8447408d80c0c86e35b48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skeletonRenderer: {fileID: 2526679034711088660}
-  customSlotMaterials: []
-  customMaterialOverrides:
-  - overrideDisabled: 0
-    originalMaterial: {fileID: 2100000, guid: 81e41234a96d86945b44fc738708c2fa, type: 2}
-    replacementMaterial: {fileID: 2100000, guid: 003ac451abe9cd54f895bc1b89cdc82f, type: 2}

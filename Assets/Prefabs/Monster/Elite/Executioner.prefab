@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9215500757412967967}
   - component: {fileID: 5404166174162970652}
   - component: {fileID: 4771580005128538003}
+  - component: {fileID: 4312746367729427949}
   - component: {fileID: -1383966369196519256}
   - component: {fileID: 2225805875900504913}
   m_Layer: 0
@@ -149,6 +150,48 @@ MonoBehaviour:
   serverOnly: 0
   visible: 0
   hasSpawned: 0
+--- !u!114 &4312746367729427949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4774192479524571168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee7ac55ac018d049a1ca7e4202841f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  monsterName: 
+  MAXHP: 0
+  HP: 0
+  sheild: 0
+  nextAction:
+    actionName: 
+    actionNumber: 0
+    actionValue: 0
+    actionTarget: 0
+  currentBehavior:
+    ActionList: []
+    frequency: 0
+  currentBehaviorSequence: 0
+  nextTargetObject: {fileID: 0}
+  nextTarget: 0
+  monsterData:
+    name: 
+    MAXHP: 0
+    behavior: []
+    buffList: []
+  parent: {fileID: 0}
+  turn: 0
+  isActive: 0
+  meshRenderer: {fileID: 9215500757412967967}
+  originMaterial: {fileID: 2100000, guid: b2729e91ebb15e4439febfa60e8ce289, type: 2}
+  dissolveMaterial: {fileID: 2100000, guid: c666cb16ce6678c41b10ec98f0a1da3f, type: 2}
+  dissolveParticle: {fileID: 3821640102750316182}
 --- !u!114 &-1383966369196519256
 MonoBehaviour:
   m_ObjectHideFlags: 0
