@@ -60,8 +60,6 @@ public class SpawnedMonster : NetworkBehaviour
     [Header("Dissolve 효과 파티클 오브젝트")]
     public ParticleSystem dissolveParticle;
 
-    SkeletonAnimation anim;
-    
     MonsterAction sturnedAction = new MonsterAction("APDO",0,0);
 
     void Start()
@@ -70,7 +68,6 @@ public class SpawnedMonster : NetworkBehaviour
         skeletonRendererCustomMaterials.enabled = false;
         materialPropertyBlock = new MaterialPropertyBlock();
         meshRenderer = GetComponent<MeshRenderer>();
-        anim = GetComponent<SkeletonAnimation>();
         if(dissolveParticle != null){
             dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingLayerName = "FrontLayer";
             dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingOrder = 999;
@@ -91,10 +88,32 @@ public class SpawnedMonster : NetworkBehaviour
         }
     }
 
-    public void SetDissolveLevel(float dissolveRatio)
+    // 사라지는 이펙트
+    public void StartDissolveEffect(System.Action dissloveCallback = null)
     {
-        materialPropertyBlock.SetFloat("_Level", dissolveRatio);
-        meshRenderer.SetPropertyBlock(materialPropertyBlock);
+        SkeletonAnimation skeletonAnimation = GetComponent<SkeletonAnimation>();
+        skeletonAnimation.timeScale = 0f;
+        skeletonAnimation.CustomMaterialOverride[originMaterial] = dissolveMaterial; // 몬스터의 머티리얼을 dissolveMaterial로 변경
+        dissolveParticle.gameObject.SetActive(true); // dissolveParticle 활성화
+        StartCoroutine(DissolveCoroutine(() => {
+            dissloveCallback();
+        }));
+    }
+    
+    // Dissolve 효과 코루틴 (materialPropertyBlock을 이용해 Dissolve 머티리얼의 프로퍼티값 변경)
+    public IEnumerator DissolveCoroutine( System.Action callbacak = null)
+    {
+        float duration = 2.5f;
+        float timer = 0f;
+        while (timer < duration)
+        {
+            float dissolveRatio = timer / duration;
+            materialPropertyBlock.SetFloat("_Level", dissolveRatio);
+            meshRenderer.SetPropertyBlock(materialPropertyBlock);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        callbacak();
     }
 
     [Server]
