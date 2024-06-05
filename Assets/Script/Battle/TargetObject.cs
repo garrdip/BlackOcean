@@ -66,7 +66,9 @@ public class TargetObject : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeObjectType))]
     public ObjectType objectType;
 
-    [SyncVar (hook = nameof(InitTargetObjectPlayer))]
+    // -------------------------------   플레이어용 Syncvar 변수들   ------------------------------------//
+
+    [SyncVar]
     public GamePlayer player; // Player 의 경우
 
     [SyncVar (hook = nameof(OnChangedPlayerHP))]
@@ -78,15 +80,6 @@ public class TargetObject : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedIronDemonLocation))]
     public TargetObject ironDemonLocation;
 
-    [SyncVar]
-    public SpawnedMonster monster; // Monster 의 경우
-    
-    // -------------------------------   전투용 변수들   ------------------------------------//
-
-    [SyncVar(hook = nameof(OnChangedDefense))]
-    public int defense = 0;
-    
-    // -------------------------------   플레이어용 변수들   ------------------------------------//
     [SyncVar]
     public int currentIchi = 3;
 
@@ -119,17 +112,34 @@ public class TargetObject : NetworkBehaviour
     [SyncVar]
     public bool isDying = false;
 
+    // -------------------------------   몬스터용 Syncvar 변수들   ------------------------------------//
+    
+    [SyncVar]
+    public SpawnedMonster monster; // Monster 의 경우
+    
+    // -------------------------------   전투용 Syncvar 변수들   ------------------------------------//
+
+    [SyncVar(hook = nameof(OnChangedDefense))]
+    public int defense = 0;
+
     public readonly SyncList<Buff> buffs = new SyncList<Buff>();
 
 
     void Start()
     {
         buffs.Callback += OnChangedBuff;
-        if(player != null){
-            player.onChangePlayerOrder += OnChangePlayerOrder; // 플레이어 타겟오브젝트인 경우 오더 변경 델리게이트 이벤트 리스너 추가
-        }
         StartCoroutine(FindChildObjects());
-        StartCoroutine(InitNamePlate());
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        if(objectType == ObjectType.PLAYER){
+            player.onChangePlayerOrder += OnChangePlayerOrder; // 플레이어 타겟오브젝트인 경우 오더 변경 델리게이트 이벤트 리스너 추가
+            InitTargetObjectPlayer(player);
+        }else{
+            InitTargetObjectMonster(monster);
+        }
     }
 
     void OnDestroy()
@@ -151,18 +161,56 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
+    // 플레이어 타입의 타겟오브젝트 초기화
+    public void InitTargetObjectPlayer(GamePlayer player)
+    {
+        selectedNamePlate = playerNamePlate.GetComponent<NamePlate>();
+        selectedNamePlate.SetHPValue(playerHP, playerMaxHP, 10);
+        monsterNamePlate.SetActive(false);
+        switch(player.character)
+        {
+            case Character.GEORK :
+                avatar = Instantiate(characters[2],transform.position,Quaternion.identity,transform);
+                break;
+            case Character.ERIS :
+                avatar = Instantiate(characters[1],transform.position,Quaternion.identity,transform);
+                break;
+            case Character.HONGDANHYANG :
+                avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
+                avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
+                ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
+                if(NetworkClient.localPlayer.transform.GetChild(0).GetComponent<GamePlayer>() == player){
+                    ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 1f;
+                }else{
+                    ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 0.5f;
+                }
+                ironDemonLocation = this;
+                ironDemon.GetComponent<SkeletonAnimation>().timeScale = Random.Range(0.9f,1.1f);
+                break;
+        }
+        playerName.text = player.objectOwner.steamPersonaName;
+        if(player.objectOwner.isLocalPlayer){
+            avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
+            targetObjectUI.GetComponent<SortingGroup>().sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+            selectedNamePlate.nameCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+            selectedNamePlate.hpCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+            selectedNamePlate.shieldCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
+        }
+    }
+
+    // 콘스터 타입의 타겟오브젝트 초기화
+    public void InitTargetObjectMonster(SpawnedMonster monster)
+    {
+        selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
+        selectedNamePlate.SetHPValue(monster.HP, monster.MAXHP, (int)transform.position.x);
+        monsterName.text = monster.monsterName;
+        playerNamePlate.SetActive(false);
+    }
+
     public void OnChangePlayerOrder(int order)
     {
         transform.DOMove(M_TurnManager.instance.targetObjectPosition[order], 0.5f); // 플레이어 오더 변경 이벤트 수신하여 타겟오브젝트 위치 이동
     }
-
-    public void InitMonsterNamePlate()
-    {
-        selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
-        selectedNamePlate.SetHPValue(monster.HP,monster.MAXHP,(int)transform.position.x);
-        playerNamePlate.SetActive(false);
-    }
-
 
     // 남은 코스트 없음 표시하는 말풍선 페이드인 후 페이드아웃
     public void ShowCostNotReaminBubble(GamePlayer gamePlayer)
@@ -414,19 +462,6 @@ public class TargetObject : NetworkBehaviour
                 RpcMonsterDissolve();
             }
             monster.HP -= remind;
-        }
-    }
-
-    IEnumerator InitNamePlate()
-    {
-        while(true)
-        {
-            if(playerHP > 0 && playerMaxHP >0)
-            {
-                selectedNamePlate.SetHPValue(playerHP,playerMaxHP,10);
-                break;
-            }
-            yield return new WaitForSeconds(0.01f);
         }
     }
 
@@ -838,45 +873,6 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
-    public void InitTargetObjectPlayer(GamePlayer oldVal, GamePlayer newVal)
-    {
-        if(objectType == ObjectType.PLAYER)
-        {
-            switch(player.character)
-            {
-                case Character.GEORK :
-                    avatar = Instantiate(characters[2],transform.position,Quaternion.identity,transform);
-                break;
-                case Character.ERIS :
-                    avatar = Instantiate(characters[1],transform.position,Quaternion.identity,transform);
-                break;
-                case Character.HONGDANHYANG :
-                    avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
-                    avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
-                    ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
-                    if(NetworkClient.localPlayer.transform.GetChild(0).GetComponent<GamePlayer>() == player){
-                        ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 1f;
-                    }else{
-                        ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 0.5f;
-                    }
-                    ironDemonLocation = this;
-                    ironDemon.GetComponent<SkeletonAnimation>().timeScale = Random.Range(0.9f,1.1f);
-                    
-                break;
-            }
-            selectedNamePlate = playerNamePlate.GetComponent<NamePlate>();
-            playerName.text = player.objectOwner.steamPersonaName;
-            monsterNamePlate.SetActive(false);
-            if(newVal.objectOwner.isLocalPlayer){
-                avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
-                targetObjectUI.GetComponent<SortingGroup>().sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-                selectedNamePlate.nameCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-                selectedNamePlate.hpCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-                selectedNamePlate.shieldCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-            }
-        }
-    }
-
     void OnChangedErisMode(ErisMode oldVal, ErisMode newVal)
     {
         if(newVal == ErisMode.MAD)
@@ -895,9 +891,6 @@ public class TargetObject : NetworkBehaviour
                 player.HP = newVal;
             }
         }
-        if(playerMaxHP != 0)
-            selectedNamePlate.SetHPValue(playerHP,playerMaxHP,(int)transform.position.x);
-        
         if(oldVal > 0 && newVal > 0){ // 체력이 0 이상이면, 캐릭터 피격음성 재생
            PlayCharaterHitVoice();
         }else if(newVal == 0){ // 체력이 0이면 캐릭터 사망 음성 재생

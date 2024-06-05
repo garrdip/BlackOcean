@@ -1,9 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using Mirror;
 using ProjectD;
 using Spine.Unity;
@@ -270,23 +267,7 @@ public class SpawnedMonster : NetworkBehaviour
     public void OnChangeParent(TargetObject oldPrent, TargetObject newParent)
     {
         transform.SetParent(newParent.transform);
-        newParent.monsterName.text = monsterName;
-        StartCoroutine(InitMonsterNamePlate());
-    }
-
-    IEnumerator InitMonsterNamePlate()
-    {
-        while(true)
-        {
-            if(parent.monster != null)
-            {
-                if(parent.monster.MAXHP != 0)
-                {
-                    parent.InitMonsterNamePlate();
-                }
-            }
-            yield return new WaitForSeconds(0.01f);
-        }
+        transform.localPosition = Vector3.zero;
     }
     
     //-------------------------------------- Battle Method ----------------------------------//

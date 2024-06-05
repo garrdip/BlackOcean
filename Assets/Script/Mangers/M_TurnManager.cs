@@ -727,15 +727,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
                 Vector3 avatarOrderPosition = targetObjectPosition[gamePlayer.selectOrder]; // 게임플레이어의 오더값에 맞춰 생성될 아바타 위치 설정
                 GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), avatarOrderPosition, Quaternion.identity);
-                NetworkServer.Spawn(avatar);
+                avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
                 avatar.GetComponent<TargetObject>().player = gamePlayer;
                 avatar.GetComponent<TargetObject>().playerMaxHP = gamePlayer.MaxHP;
                 avatar.GetComponent<TargetObject>().playerHP = gamePlayer.HP;
-                avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+                NetworkServer.Spawn(avatar);
 
-                gamePlayer.GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
                 spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
                 spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);
+                gamePlayer.GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
             }
         }
     }
@@ -746,17 +746,19 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         MonsterGroup selectedMonsterGroup = M_MonsterManager.instance.GetMonsterGroup(currentRoom.hazard);
         for(int i = 0 ; i < selectedMonsterGroup.monsters.Count ; i ++)
-        {
-            var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == selectedMonsterGroup.monsters[i].name),targetObjectPosition[i+3],Quaternion.identity).GetComponent<SpawnedMonster>();
-            NetworkServer.Spawn(monster.gameObject);
+        {   
+            Vector3 position = targetObjectPosition[i + 3];
+            var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == selectedMonsterGroup.monsters[i].name), position, Quaternion.identity).GetComponent<SpawnedMonster>();
             monster.monsterData = selectedMonsterGroup.monsters[i];
-            var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[i+3],Quaternion.identity);
-            NetworkServer.Spawn(avatar);
+            NetworkServer.Spawn(monster.gameObject);
+            
+            var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), position, Quaternion.identity);
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
             avatar.GetComponent<TargetObject>().monster = monster;
+            NetworkServer.Spawn(avatar);
+
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
-            // monster 오브젝트의 부모오브젝트 참조값 설정
-            monster.parent = avatar.GetComponent<TargetObject>();
+            monster.parent = avatar.GetComponent<TargetObject>(); // monster 오브젝트의 부모오브젝트 참조값 설정
         }
     }
 
@@ -789,9 +791,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             NetworkServer.Spawn(campRyuJinSol.gameObject);
 
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
-            NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
             avatar.GetComponent<TargetObject>().monster = campRyuJinSol;
+            NetworkServer.Spawn(avatar);
+            
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
             campRyuJinSol.parent = avatar.GetComponent<TargetObject>();
         }else{
@@ -800,9 +803,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             NetworkServer.Spawn(campSophia.gameObject);
 
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
-            NetworkServer.Spawn(avatar);
             avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
             avatar.GetComponent<TargetObject>().monster = campSophia;
+            NetworkServer.Spawn(avatar);
+            
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
             campSophia.parent = avatar.GetComponent<TargetObject>();
         }
@@ -818,9 +822,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         NetworkServer.Spawn(itemShopNPC.gameObject);
 
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
-        NetworkServer.Spawn(avatar);
         avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
         avatar.GetComponent<TargetObject>().monster = itemShopNPC;
+        NetworkServer.Spawn(avatar);
+        
         spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
         itemShopNPC.parent = avatar.GetComponent<TargetObject>();
     }
@@ -853,14 +858,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 }
             }
         }
+        cardNPC.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_Mercurius"));
         NetworkServer.Spawn(cardNPC.gameObject);
         npc_Mercurius = mercurius; // NPC_Mercurius의 참조값 설정
-        cardNPC.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_Mercurius"));
 
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
-        NetworkServer.Spawn(avatar);
         avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
         avatar.GetComponent<TargetObject>().monster = cardNPC;
+        NetworkServer.Spawn(avatar);
+
         spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
         cardNPC.parent = avatar.GetComponent<TargetObject>();  // monster 오브젝트의 부모오브젝트 참조값 설정
     }
@@ -874,12 +880,13 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         switch(randomNumber){
             case 0:
                 var bossMoMos = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "Boss_Momos"),targetObjectPosition[4],Quaternion.identity).GetComponent<SpawnedMonster>();
-                NetworkServer.Spawn(bossMoMos.gameObject);
                 bossMoMos.monsterData = M_MonsterManager.instance.monsterDataList.Find(x => x.name == "Boss_Momos");
+                NetworkServer.Spawn(bossMoMos.gameObject);
                 var bossMoMosAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
-                NetworkServer.Spawn(bossMoMosAvatar);
-                bossMoMosAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+                bossMoMosAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.BOSS;
                 bossMoMosAvatar.GetComponent<TargetObject>().monster = bossMoMos;
+                NetworkServer.Spawn(bossMoMosAvatar);
+
                 spawnedMonsterList.Add(bossMoMosAvatar.GetComponent<TargetObject>());
                 bossMoMos.parent = bossMoMosAvatar.GetComponent<TargetObject>(); // monster 오브젝트의 부모오브젝트 참조값 설정
                 break;
@@ -887,9 +894,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 var bossApates = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "Boss_Apates"),targetObjectPosition[4],Quaternion.identity).GetComponent<SpawnedMonster>();
                 NetworkServer.Spawn(bossApates.gameObject);
                 var bossApatesAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
-                NetworkServer.Spawn(bossApatesAvatar);
-                bossApatesAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+                bossApatesAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.BOSS;
                 bossApatesAvatar.GetComponent<TargetObject>().monster = bossApates;
+                NetworkServer.Spawn(bossApatesAvatar);
                 spawnedMonsterList.Add(bossApatesAvatar.GetComponent<TargetObject>());
                 bossApates.parent = bossApatesAvatar.GetComponent<TargetObject>();
                 break;
@@ -897,9 +904,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 var bossGeras = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "Boss_Geras"),targetObjectPosition[4],Quaternion.identity).GetComponent<SpawnedMonster>();
                 NetworkServer.Spawn(bossGeras.gameObject);
                 var bossGerasAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
-                NetworkServer.Spawn(bossGerasAvatar);
-                bossGerasAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+                bossGerasAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.BOSS;
                 bossGerasAvatar.GetComponent<TargetObject>().monster = bossGeras;
+                NetworkServer.Spawn(bossGerasAvatar);
                 spawnedMonsterList.Add(bossGerasAvatar.GetComponent<TargetObject>());
                 bossGeras.parent = bossGerasAvatar.GetComponent<TargetObject>();
                 break;
