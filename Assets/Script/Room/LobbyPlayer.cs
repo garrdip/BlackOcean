@@ -89,15 +89,31 @@ public class LobbyPlayer : NetworkBehaviour
     void Start()
     {
         avatarImageLoaded = Callback<AvatarImageLoaded_t>.Create(OnAvatarImageLoaded);
-        roomPlayer.onSelectCompleteCharacter += OnChangeSelectCharacter; // 캐릭터 선택 이벤트 등록
-        roomPlayer.onChangeReadyState += OnChangeReadyState; // 레디 상태 변경 이벤트 등록
-        InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
         buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
         buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
         characterSelectCompleteImage.GetComponent<Button>().onClick.AddListener(() => HandleClickSelectCompleteImage()); // 캐릭터 선택 완료된 상태에서 캐릭터 이미지 클릭
-        if(isServer){
-            outIconLayout.GetComponent<Button>().onClick.AddListener(() => HandleClickLobbyPlayerKickOut()); // 강퇴 버튼 클릭 이벤트(서버 유저만 이벤트 등록)
-        }
+        outIconLayout.GetComponent<Button>().onClick.AddListener(() => HandleClickLobbyPlayerKickOut()); // 강퇴 버튼 클릭 이벤트(서버 유저만 호출 가능)
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        roomPlayer.onSelectCompleteCharacter += OnChangeSelectCharacter; // 캐릭터 선택 이벤트 등록
+        roomPlayer.onChangeReadyState += OnChangeReadyState; // 레디 상태 변경 이벤트 등록
+        InitLobbyPlayerView(isOwned); // 로비플레이어 뷰 초기화
+    }
+
+    public override void OnStartAuthority()
+    {
+        base.OnStartAuthority();
+        CmdSetSteamId((ulong)SteamUser.GetSteamID());// 로컬유저의 스팀아이디를 조회하여 다른 클라이언트들에 공유
+        M_LobbyMananger.instance.ownedLobbyPlayer = GetComponent<NetworkIdentity>().netId; // 로비매니저에 로컬플레이어 소유의 로비플레이어 오브젝트 참조값 설정
+    }
+
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
+        M_LobbyMananger.instance.RemoveLobbyPlayer(GetComponent<NetworkIdentity>().netId); // 로비플레이어가 서버에서 사라질 때 리스트에서 제거
     }
 
     // 로비플레이어 오브젝트 파괴시 수행중인 트위닝 제거
@@ -116,25 +132,6 @@ public class LobbyPlayer : NetworkBehaviour
         characterSelectCompleteImage.DOKill();
         sequence.Kill(); // FadeIn, FadeOut, Up, Down 트위닝 시퀀스 제거
         RoomUI.instance.KillTweenSwapButtons(); // 로비플레이어의 SetLobbyPlayerFadeEffect 함수에서 작동시킨 스왑버튼 트위닝 제거
-    }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        OnChangeSelectCharacter(roomPlayer.character); // 클라 생성 시점에도 캐릭터 선택 정보 세팅(클라이언트가 방에 접속할때 다른 유저가 이미 선택한 상태일 경우 그 값을 수신받아 설정하는 용도)
-    }
-
-    public override void OnStartAuthority()
-    {
-        base.OnStartAuthority();
-        CmdSetSteamId((ulong)SteamUser.GetSteamID());// 로컬유저의 스팀아이디를 조회하여 다른 클라이언트들에 공유
-        M_LobbyMananger.instance.ownedLobbyPlayer = GetComponent<NetworkIdentity>().netId; // 로비매니저에 로컬플레이어 소유의 로비플레이어 오브젝트 참조값 설정
-    }
-
-    public override void OnStopServer()
-    {
-        base.OnStopServer();
-        M_LobbyMananger.instance.RemoveLobbyPlayer(GetComponent<NetworkIdentity>().netId); // 로비플레이어가 서버에서 사라질 때 리스트에서 제거
     }
 
     // 스왑 승인 버튼 클릭
@@ -265,15 +262,12 @@ public class LobbyPlayer : NetworkBehaviour
     // 로비플레이어 초기 뷰 컴포넌트 설정(부모 오브젝트 설정 및 트랜스폼 값 설정)
     private void InitLobbyPlayerView(bool isOwned)
     {
-        int index = M_LobbyMananger.instance.lobbyPlayers.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId);
-        if(index != -1){
-            SetLobbyPlayerFadeEffect(index);
-            OnChangeSelectCharacter(roomPlayer.character); // 룸플레이어의 캐릭터 값으로 초기 설정
-            SetOrderTextByPlayerOrder(roomPlayer.order); // 룸플레이어의 오더값으로 초기 설정
-            ChangeClassLayoutFade(); // 캐릭터 클래스 레이아웃 Fade 애니매이션
-            SetCapAndOutIconByPermission(); // 로비플레이어 상단 좌측의 방장표시 및 강퇴 아이콘을 권한에 따라 설정
-            RoomUI.instance.ChangeSwapButtonsIconState(); // 스왑버튼 아이콘 상태 변경
-        }
+        SetLobbyPlayerFadeEffect((int)roomPlayer.order);
+        OnChangeSelectCharacter(roomPlayer.character); // 룸플레이어의 캐릭터 값으로 초기 설정
+        SetOrderTextByPlayerOrder(roomPlayer.order); // 룸플레이어의 오더값으로 초기 설정
+        ChangeClassLayoutFade(); // 캐릭터 클래스 레이아웃 Fade 애니매이션
+        SetCapAndOutIconByPermission(); // 로비플레이어 상단 좌측의 방장표시 및 강퇴 아이콘을 권한에 따라 설정
+        RoomUI.instance.ChangeSwapButtonsIconState(); // 스왑버튼 아이콘 상태 변경
     }
 
     // 룸플레이어 캐릭터 선택 변경 이벤트 수신
