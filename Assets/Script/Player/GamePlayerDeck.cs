@@ -80,6 +80,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public string usedCardName;
 
+    [SyncVar]
+    public int gainCurseCardCount = 0;
+
     public override void OnStartServer()
     {
         SetInitialValue();
@@ -329,7 +332,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
             }
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
-
+            if(cardOnHand.card.baseCard.cardNumber.Contains("G57"))currentIchi++;
             cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
         }
     }
@@ -463,7 +466,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
             }
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
-
+            if(cardOnHand.card.baseCard.cardNumber.Contains("G57"))currentIchi++;
             cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
         }
     }
@@ -488,6 +491,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 cardOnHand.parent = cardPocket.GetComponent<CardPocket>();
             }
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
+            if(cardOnHand.card.baseCard.cardNumber.Contains("G57"))currentIchi++;
             cardOnHands.Add(cardOnHand);
             if(i != index) cards.Add(addtionDrawCards[i]);
             else cards.Insert(0,addtionDrawCards[i]);
@@ -799,6 +803,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         StartCoroutine(CardOnHandDrawSequenceFromTrashDeckCoroutine(newCardOnHand, index));
                     }    
                 }
+                if(newCardOnHand.card.baseCard.cardType == CardType.CURSE)gainCurseCardCount++;
                 break;
             case SyncList<CardOnHand>.Operation.OP_INSERT:
                 
@@ -821,7 +826,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:
-                
+                if(newPrefareDeck.baseCard.cardType == CardType.CURSE)gainCurseCardCount++;
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
                 

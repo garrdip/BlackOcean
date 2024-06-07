@@ -301,7 +301,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             List<int> currentKeys = tar.buffTrunBeginEffect.Keys.ToList();
             foreach(int buffIndex in currentKeys)
             { 
-                yield return tar.buffTrunBeginEffect[buffIndex](tar,buffIndex);
+                yield return tar.buffTrunBeginEffect[buffIndex](tar,buffIndex,null);
             }
         }
     }
@@ -364,7 +364,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             foreach(int buffIndex in tar.buffCardDrowEffect.Keys)
             { 
-                yield return tar.buffCardDrowEffect[buffIndex](tar,buffIndex);
+                yield return tar.buffCardDrowEffect[buffIndex](tar,buffIndex,null);
             }
         }
         phase = BattleTurn.PLAYER_ACTIVE;
@@ -380,7 +380,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             List<int> currentKeys = tar.buffTrunBeginEffect.Keys.ToList();
             foreach(int buffIndex in currentKeys)
             { 
-                yield return tar.buffTrunBeginEffect[buffIndex](tar,buffIndex);
+                yield return tar.buffTrunBeginEffect[buffIndex](tar,buffIndex,null);
             }   
             int indexOfOldItem = tar.buffs.Count;
             for(int i = indexOfOldItem -1 ; i >= 0 ; i--)
@@ -486,7 +486,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
                 //해방 카드를 위한 카드 카운팅 종료
                 gamePlayerDeck.numOfUsedCard = 0;
-                
+
+                //저주카드 획득량 제거
+                gamePlayerDeck.gainCurseCardCount = 0;
+
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
                     NetworkServer.Destroy(cardOnHand.gameObject);
                 }
@@ -574,6 +577,11 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                             continue;
                         }
 
+                        foreach(int index in tar[0].buffCardUseEffect.Keys)
+                        {
+                            yield return tar[0].buffCardUseEffect[index](tar[0],index,cardOnHand.card);
+                        }
+                        
                         yield return CardData.instance.RunCard(cardOnHand.card,tar);
 
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.HWAHAP))
@@ -589,15 +597,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                             gpd.destroyCardList.Add(cardOnHand);
                         gpd.numOfUsedCard++;
                         // 카드 사용후 효과 여기서 발동
-                        foreach(int index in tar[0].buffCardUseEffect.Keys)
-                        {
-                            if(tar[0].initialUseEffectIndex.FindIndex(x => x == index) != -1) //방금 버프 등록한 카드의 경우 효과 발동 안함
-                            {
-                                tar[0].initialUseEffectIndex.Remove(index);
-                                continue;
-                            }
-                            yield return tar[0].buffCardUseEffect[index](tar[0],index);
-                        }
+
                     }
                 }
                 else
@@ -945,7 +945,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             List<int> currentKeys = tar.buffTurnEndEffect.Keys.ToList();
             foreach(int buffIndex in currentKeys)
             { 
-                yield return tar.buffTurnEndEffect[buffIndex](tar,buffIndex);
+                yield return tar.buffTurnEndEffect[buffIndex](tar,buffIndex,null);
             }   
         }
         yield return IronDemonPreEffect();

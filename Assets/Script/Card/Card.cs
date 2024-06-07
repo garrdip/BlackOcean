@@ -16,6 +16,7 @@ public class Card
     public bool isReturnable; // 지치지 않는자에서만 런타임으로 쓰임
     public bool isSoldout; // 상점카드에서만 사용되는 구매상태 변수
     public int cardPrice; // 상점카드에서만 사용되는 카드가격 변수
+    public int stackCount; // 카드 스택 ( ex . 전리품 수집 )
 
 
     public Card(CardBase basecard)

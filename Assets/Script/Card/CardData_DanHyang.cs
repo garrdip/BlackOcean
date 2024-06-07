@@ -46,7 +46,7 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.6f); // 공격모션 끝남
     }
 
-    public IEnumerator FlowerPowderEffect(TargetObject tar,int index)
+    public IEnumerator FlowerPowderEffect(TargetObject tar,int index, Card card)
     {
         if(tar.objectType == ObjectType.PLAYER)
         {
@@ -716,7 +716,7 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
     }
 
-    public IEnumerator H24_Buff_Effect(TargetObject tar, int index)
+    public IEnumerator H24_Buff_Effect(TargetObject tar, int index,Card card)
     {
         tar.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H0")),1);
         tar.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H1")),1);
@@ -799,7 +799,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
 
-    public IEnumerator H28_BlessEffect(TargetObject tar, int index)
+    public IEnumerator H28_BlessEffect(TargetObject tar, int index, Card card)
     {
         tar.GainBuff(BuffType.IRONDEMON,2,false,false,false,false,tar,null);
         yield return null;
@@ -947,7 +947,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
 
-    public IEnumerator H34_CardUseEffect(TargetObject tar, int index)
+    public IEnumerator H34_CardUseEffect(TargetObject tar, int index, Card card)
     {
         if(tar.GetBuffValueByIndex(index) == 2)
         {
@@ -1259,7 +1259,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
     }
 
-    public IEnumerator H48_BlessEffect(TargetObject tar, int index)
+    public IEnumerator H48_BlessEffect(TargetObject tar, int index,Card card)
     {
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
         {
