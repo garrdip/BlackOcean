@@ -50,24 +50,10 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
 
     void Start()
     {
-        if(gamePlayer != null){
-            gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
-            gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
-        }
         buttonSwapAccept.onClick.AddListener(() => HandleClickButtonSwapAccept()); // 교환 수락 버튼
         buttonSwapReject.onClick.AddListener(() => HandleClickButtonSwapReject()); // 교환 거절 버튼
         buttonDecKInfo.gameObject.SetActive(isOwned);
         buttonDecKInfo.onClick.AddListener(() => HandleOpenDeckInfoPopUp());
-     }
-
-    void OnDestroy()
-    {
-        GetComponent<CanvasGroup>().DOKill();
-        GetComponent<RectTransform>().DOKill();
-        sequence.Kill();
-        if(gamePlayer != null){
-            gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
-        }
     }
 
     public override void OnStartServer()
@@ -80,15 +66,23 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     public override void OnStartClient()
     {
         base.OnStartClient();
-        if(gamePlayer != null){
-            InitMapPlayerView(gamePlayer.selectOrder);
-        }
+        gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
+        gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
+        InitMapPlayerView(gamePlayer.selectOrder);
     }
 
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
         M_MapManager.instance.ownedGamePlayer = gamePlayer.netId;
+    }
+
+    void OnDestroy()
+    {
+        GetComponent<CanvasGroup>().DOKill();
+        GetComponent<RectTransform>().DOKill();
+        sequence.Kill();
+        gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
     }
 
     // 스왑 승인 버튼 클릭
