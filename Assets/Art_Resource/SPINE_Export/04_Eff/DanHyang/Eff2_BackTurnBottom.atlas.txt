@@ -1,0 +1,7 @@
+Eff2_BackTurnBottom.png
+size:176,177
+filter:Linear,Linear
+pma:true
+Flower1
+bounds:2,2,172,173
+offsets:2,1,175,176

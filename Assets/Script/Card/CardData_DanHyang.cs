@@ -183,6 +183,7 @@ public partial class CardData : SingletonD<CardData>
 
         M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]);
         GeneralGetDefense(tar[0],tar[0],5,card);
+        M_EffectManager.instance.RpcEffectFlowerShield(tar[0].transform.position);
         yield return new WaitForSeconds(1.33f);
 
         yield return MoveIronDemonCoroutine(tar[0],preLocation);
@@ -211,6 +212,7 @@ public partial class CardData : SingletonD<CardData>
 
         M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]);
         GeneralGetDefense(tar[0],tar[1],5,card);
+        M_EffectManager.instance.RpcEffectFlowerShield(tar[1].transform.position);
         yield return new WaitForSeconds(1.33f);
 
         yield return MoveIronDemonCoroutine(tar[0],preLocation);
@@ -238,8 +240,10 @@ public partial class CardData : SingletonD<CardData>
         yield return MoveIronDemonCoroutine(tar[0],tar[0]); // 철귀 단향이로 이동
 
         M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]);
-        foreach(TargetObject player in M_TurnManager.instance.spawnedPlayerList)
+        foreach(TargetObject player in M_TurnManager.instance.spawnedPlayerList){
             GeneralGetDefense(tar[0],player,4,card);
+            M_EffectManager.instance.RpcEffectFlowerShield(player.transform.position);
+        }
         tar[0].GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar[0],card);
         yield return new WaitForSeconds(1.33f);
 
@@ -351,8 +355,12 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(M_TurnManager.instance.spawnedPlayerList);
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
 
-        foreach(TargetObject player in M_TurnManager.instance.spawnedPlayerList)
-            if(player != tar[0])GeneralGetDefense(tar[0],player,30,card);
+        foreach(TargetObject player in M_TurnManager.instance.spawnedPlayerList){
+            if(player != tar[0]){
+                GeneralGetDefense(tar[0],player,30,card);
+                M_EffectManager.instance.RpcEffectFlowerShield(player.transform.position);
+            }
+        }
         tar[0].GainBuff(BuffType.BOONGGUI,3,true,false,true,false,tar[0],card);
         yield return new WaitForSeconds(1.33f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
@@ -449,6 +457,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         GeneralGetDefense(tar[0],tar[0],7,card);
+        M_EffectManager.instance.RpcEffectFlowerShield(tar[0].transform.position);
         yield return new WaitForSeconds(1.33f);
         MovePosition(true,tar[0]);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -563,6 +572,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         GeneralGetDefense(tar[0],tar[0],10,card);
+        M_EffectManager.instance.RpcEffectFlowerShield(tar[0].transform.position);
         yield return new WaitForSeconds(1.33f);
         MovePosition(tar[0],tar[1]);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -669,6 +679,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         GeneralGetDefense(tar[0],tar[0],7,card);
+        M_EffectManager.instance.RpcEffectFlowerShield(tar[0].transform.position);
         yield return new WaitForSeconds(1f);
         tar[0].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H0")),3);
         if(tar[0].GetBuffValue(BuffType.FURYOFIRON) != 0)FuryOfIronEffect(tar[0]);
@@ -843,6 +854,7 @@ public partial class CardData : SingletonD<CardData>
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
         {
             GeneralGetDefense(tar[0],target,30,card);
+            M_EffectManager.instance.RpcEffectFlowerShield(target.transform.position);
         }
         yield return new WaitForSeconds(0.5f);
         
@@ -1029,8 +1041,10 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
         {
-            if(target != tar[0])
+            if(target != tar[0]){
                 GeneralGetDefense(tar[0],target,8,card);
+                M_EffectManager.instance.RpcEffectFlowerShield(target.transform.position);
+            }  
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
@@ -1055,6 +1069,7 @@ public partial class CardData : SingletonD<CardData>
         {
             yield return GeneralIronDemonAttack(tar[0], tar[1], 2); // 철귀 공격
             GeneralGetDefense(tar[0],tar[0],2,card);
+            M_EffectManager.instance.RpcEffectFlowerShield(tar[0].transform.position);
         }
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
 
@@ -1285,6 +1300,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
         GeneralGetDefense(tar[0],tar[0],8,card);
+        M_EffectManager.instance.RpcEffectFlowerShield(tar[0].transform.position);
         int index = tar[0].GainBuff(BuffType.FLOWERPOWDER,2,false,false,false,true,tar[0],card);
         if(!tar[0].buffTurnEndEffect.Keys.Contains<int>(index))tar[0].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);

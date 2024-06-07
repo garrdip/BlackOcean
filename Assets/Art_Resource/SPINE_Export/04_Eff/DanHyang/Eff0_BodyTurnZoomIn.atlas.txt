@@ -1,0 +1,7 @@
+Eff0_BodyTurnZoomIn.png
+size:124,123
+filter:Linear,Linear
+pma:true
+Flower0
+bounds:2,2,120,119
+offsets:2,2,126,123

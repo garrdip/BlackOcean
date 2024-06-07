@@ -1,0 +1,12 @@
+Eff3_UpLight.png
+size:297,36
+filter:Linear,Linear
+pma:true
+Light0
+bounds:2,8,26,234
+offsets:1,2,29,238
+rotate:90
+Light1
+bounds:238,2,32,57
+offsets:1,2,34,60
+rotate:90

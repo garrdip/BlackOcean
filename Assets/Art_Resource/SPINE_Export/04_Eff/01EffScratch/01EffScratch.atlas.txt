@@ -1,8 +1,0 @@
-01EffScratch.png
-size:791,519
-filter:Linear,Linear
-pma:true
-TE 5
-bounds:536,115,253,402
-TE 6
-bounds:2,2,532,515

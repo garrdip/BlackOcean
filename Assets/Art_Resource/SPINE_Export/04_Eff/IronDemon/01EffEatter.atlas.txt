@@ -1,0 +1,18 @@
+01EffEatter.png
+size:437,544
+filter:Linear,Linear
+pma:true
+TE 1
+bounds:2,2,540,271
+offsets:0,1,540,273
+rotate:90
+TE 2
+bounds:275,140,402,160
+rotate:90
+TE 3
+bounds:275,48,54,90
+offsets:2,2,57,94
+TE 4
+bounds:275,12,34,51
+offsets:2,3,38,56
+rotate:90

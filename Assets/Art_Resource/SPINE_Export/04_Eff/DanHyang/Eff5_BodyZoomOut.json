@@ -1,0 +1,55 @@
+{
+"skeleton": {
+	"hash": "F/HVeNFk3UU",
+	"spine": "4.2.29",
+	"x": -78.26,
+	"y": 253.23,
+	"width": 175,
+	"height": 176,
+	"images": "./Eff/",
+	"audio": "C:/Users/Nullaby/Desktop/GJ_ing/spine/02_character/02_DanHyang"
+},
+"bones": [
+	{ "name": "root" },
+	{ "name": "Flower1", "parent": "root", "x": 9.71, "y": 341.23 }
+],
+"slots": [
+	{ "name": "Flower1", "bone": "Flower1", "attachment": "Flower1" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"Flower1": {
+				"Flower1": { "x": -0.46, "width": 175, "height": 176 }
+			}
+		}
+	}
+],
+"animations": {
+	"Eff5_BodyZoomOut": {
+		"slots": {
+			"Flower1": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.1, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 0.9, "color": "ffffffff" },
+					{ "time": 1, "color": "ffffff00" }
+				]
+			}
+		},
+		"bones": {
+			"Flower1": {
+				"scale": [
+					{
+						"x": 2,
+						"y": 2,
+						"curve": [ 0.192, 1.588, -0.004, 1, 0.192, 1.588, -0.004, 1 ]
+					},
+					{ "time": 1 }
+				]
+			}
+		}
+	}
+}
+}

@@ -1,0 +1,7 @@
+Eff6_Shield.png
+size:116,146
+filter:Linear,Linear
+pma:true
+Shield
+bounds:2,2,112,142
+offsets:1,5,114,149

@@ -1,0 +1,431 @@
+{
+"skeleton": {
+	"hash": "T7cbCZP6o0g",
+	"spine": "4.2.29",
+	"x": -146.46,
+	"y": 253.65,
+	"width": 429.26,
+	"height": 494.58,
+	"images": "./Eff/",
+	"audio": "C:/Users/Nullaby/Desktop/GJ_ing/spine/02_character/02_DanHyang"
+},
+"bones": [
+	{ "name": "root" },
+	{ "name": "Leaf0", "parent": "root", "length": 20.15, "rotation": -141.07, "x": -139.74, "y": 546.39 },
+	{ "name": "Leaf1", "parent": "root", "length": 25.93, "rotation": -125.54, "x": 120.69, "y": 545.19 },
+	{ "name": "Leaf3", "parent": "root", "length": 21.1, "rotation": -126.87, "x": 66.43, "y": 432.45 },
+	{ "name": "Leaf2", "parent": "root", "length": 25.59, "rotation": -133.09, "x": 159.87, "y": 353.48 },
+	{ "name": "Leaf5", "parent": "root", "length": 24.25, "rotation": -124.88, "x": -77.05, "y": 337.8 },
+	{ "name": "Leaf6", "parent": "root", "length": 25.18, "rotation": -137.91, "x": -75.84, "y": 158.15 },
+	{ "name": "Leaf4", "parent": "root", "length": 33.7, "rotation": -132.83, "x": 163.49, "y": 167.8 },
+	{ "name": "Leaf7", "parent": "root", "length": 21.1, "rotation": -126.87, "x": 66.43, "y": 432.45 },
+	{ "name": "Leaf8", "parent": "root", "length": 33.7, "rotation": -132.83, "x": 204.26, "y": 780.41 }
+],
+"slots": [
+	{ "name": "Leaf0", "bone": "Leaf0", "attachment": "Leaf0" },
+	{ "name": "Leaf3", "bone": "Leaf3", "attachment": "Leaf0" },
+	{ "name": "Leaf7", "bone": "Leaf7", "attachment": "Leaf0" },
+	{ "name": "Leaf1", "bone": "Leaf1", "attachment": "Leaf1" },
+	{ "name": "Leaf2", "bone": "Leaf2", "attachment": "Leaf2" },
+	{ "name": "Leaf6", "bone": "Leaf6", "attachment": "Leaf2" },
+	{ "name": "Leaf5", "bone": "Leaf5", "attachment": "Leaf3" },
+	{ "name": "Leaf4", "bone": "Leaf4", "attachment": "Leaf3" },
+	{ "name": "Leaf8", "bone": "Leaf8", "attachment": "Leaf3" },
+	{ "name": "falling0", "bone": "root", "attachment": "falling0" },
+	{ "name": "falling7", "bone": "root", "attachment": "falling0" },
+	{ "name": "falling1", "bone": "root", "attachment": "falling1" },
+	{ "name": "falling2", "bone": "root", "attachment": "falling2" },
+	{ "name": "falling3", "bone": "root", "attachment": "falling3" },
+	{ "name": "falling6", "bone": "root", "attachment": "falling3" },
+	{ "name": "falling4", "bone": "root", "attachment": "falling4" },
+	{ "name": "falling5", "bone": "root", "attachment": "falling5" }
+],
+"path": [
+	{
+		"name": "falling00",
+		"bones": [ "Leaf0" ],
+		"target": "falling0"
+	},
+	{
+		"name": "falling01",
+		"order": 5,
+		"bones": [ "Leaf3" ],
+		"target": "falling0",
+		"position": 0.3
+	},
+	{
+		"name": "falling7",
+		"order": 8,
+		"bones": [ "Leaf8" ],
+		"target": "falling7"
+	},
+	{
+		"name": "falling10",
+		"order": 2,
+		"bones": [ "Leaf5" ],
+		"target": "falling1"
+	},
+	{
+		"name": "falling21",
+		"order": 4,
+		"bones": [ "Leaf4" ],
+		"target": "falling2",
+		"position": 0.3
+	},
+	{
+		"name": "falling30",
+		"order": 1,
+		"bones": [ "Leaf1" ],
+		"target": "falling3"
+	},
+	{
+		"name": "falling40",
+		"order": 3,
+		"bones": [ "Leaf6" ],
+		"target": "falling4"
+	},
+	{
+		"name": "falling50",
+		"order": 6,
+		"bones": [ "Leaf7" ],
+		"target": "falling5"
+	},
+	{
+		"name": "falling60",
+		"order": 7,
+		"bones": [ "Leaf2" ],
+		"target": "falling6"
+	}
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"falling0": {
+				"falling0": {
+					"type": "path",
+					"lengths": [ 507.45, 1009.92 ],
+					"vertexCount": 6,
+					"vertices": [ 158.22, 687.32, 5.25, 660.62, -220.19, 621.27, -138.5, 354.49, -277.62, 266.01, -408.65, 182.66 ]
+				}
+			},
+			"falling1": {
+				"falling1": {
+					"type": "path",
+					"lengths": [ 722.11, 1450.37 ],
+					"vertexCount": 6,
+					"vertices": [ 423.43, 675.1, 230.52, 581.5, 98.74, 517.56, -53.7, 131.71, -269.25, 70.57, -475.52, 12.05 ]
+				}
+			},
+			"falling2": {
+				"falling2": {
+					"type": "path",
+					"lengths": [ 545.73, 1096.65 ],
+					"vertexCount": 6,
+					"vertices": [ 511.2, 587.91, 355.98, 543.4, 223.08, 505.28, 166.4, 212.96, -12.57, 151.12, -165.18, 98.38 ]
+				}
+			},
+			"falling3": {
+				"falling3": {
+					"type": "path",
+					"lengths": [ 422.8, 849.08 ],
+					"vertexCount": 6,
+					"vertices": [ 387.27, 594.19, 273.32, 540.62, 170.3, 492.17, 94.36, 280.54, -14.25, 234.89, -130.33, 186.1 ]
+				}
+			},
+			"falling4": {
+				"falling4": {
+					"type": "path",
+					"lengths": [ 338.1, 679.21 ],
+					"vertexCount": 6,
+					"vertices": [ 375.06, 280.58, 276.21, 273.21, 170.71, 265.34, 146.97, 61.02, 53.48, 29.14, -40.34, -2.84 ]
+				}
+			},
+			"falling5": {
+				"falling5": {
+					"type": "path",
+					"lengths": [ 772.01, 1539.16 ],
+					"vertexCount": 6,
+					"vertices": [ 454.41, 771.84, 232.73, 705.7, 55.86, 652.92, 62.97, 190.74, -288.34, 179.07, -519.55, 171.4 ]
+				}
+			},
+			"falling6": {
+				"falling3": {
+					"type": "path",
+					"lengths": [ 422.8, 849.08 ],
+					"vertexCount": 6,
+					"vertices": [ 236.98, 786.48, 123.03, 732.9, 20.01, 684.46, -55.93, 472.82, -164.54, 427.18, -280.62, 378.39 ]
+				}
+			},
+			"falling7": {
+				"falling0": {
+					"type": "path",
+					"lengths": [ 507.45, 1009.92 ],
+					"vertexCount": 6,
+					"vertices": [ 344.43, 758.94, 191.45, 732.24, -33.98, 692.89, 47.7, 426.11, -91.42, 337.62, -222.45, 254.28 ]
+				}
+			},
+			"Leaf0": {
+				"Leaf0": {
+					"x": 9.17,
+					"y": -0.45,
+					"scaleX": 0.7,
+					"scaleY": 0.7,
+					"rotation": 141.07,
+					"width": 36,
+					"height": 33
+				}
+			},
+			"Leaf1": {
+				"Leaf1": {
+					"x": 11.45,
+					"y": -0.66,
+					"scaleX": 0.7,
+					"scaleY": 0.7,
+					"rotation": 125.54,
+					"width": 38,
+					"height": 40
+				}
+			},
+			"Leaf2": {
+				"Leaf2": {
+					"x": 11.52,
+					"y": -0.92,
+					"scaleX": 0.7,
+					"scaleY": 0.7,
+					"rotation": 133.09,
+					"width": 38,
+					"height": 35
+				}
+			},
+			"Leaf3": {
+				"Leaf0": {
+					"x": 10.67,
+					"y": 0.08,
+					"scaleX": 0.7,
+					"scaleY": 0.7,
+					"rotation": 85.47,
+					"width": 36,
+					"height": 33
+				}
+			},
+			"Leaf4": {
+				"Leaf3": {
+					"x": 13.68,
+					"y": 0.17,
+					"scaleX": 0.7,
+					"scaleY": 0.7,
+					"rotation": -177.6,
+					"width": 51,
+					"height": 43
+				}
+			},
+			"Leaf5": {
+				"Leaf3": {
+					"x": 8.98,
+					"y": -0.3,
+					"scaleX": 0.7,
+					"scaleY": 0.7,
+					"rotation": 124.88,
+					"width": 51,
+					"height": 43
+				}
+			},
+			"Leaf6": {
+				"Leaf2": {
+					"x": 11.1,
+					"y": 0.86,
+					"scaleX": 0.7,
+					"scaleY": 0.7,
+					"rotation": 119.83,
+					"width": 38,
+					"height": 35
+				}
+			},
+			"Leaf7": {
+				"Leaf0": {
+					"x": 11.34,
+					"y": -0.4,
+					"scaleX": 0.7,
+					"scaleY": 0.7,
+					"rotation": 85.47,
+					"width": 36,
+					"height": 33
+				}
+			},
+			"Leaf8": {
+				"Leaf3": {
+					"x": 13.68,
+					"y": 0.17,
+					"scaleX": 0.7,
+					"scaleY": 0.7,
+					"rotation": -177.6,
+					"width": 51,
+					"height": 43
+				}
+			}
+		}
+	}
+],
+"animations": {
+	"Eff4_FallingLeaf": {
+		"slots": {
+			"Leaf0": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 1, "color": "ffffffff" },
+					{ "time": 1.3333, "color": "ffffff00" }
+				]
+			},
+			"Leaf1": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 1, "color": "ffffffff" },
+					{ "time": 1.3333, "color": "ffffff00" }
+				]
+			},
+			"Leaf2": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 1, "color": "ffffffff" },
+					{ "time": 1.3333, "color": "ffffff00" }
+				]
+			},
+			"Leaf3": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 1, "color": "ffffffff" },
+					{ "time": 1.3333, "color": "ffffff00" }
+				]
+			},
+			"Leaf4": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 1, "color": "ffffffff" },
+					{ "time": 1.3333, "color": "ffffff00" }
+				]
+			},
+			"Leaf5": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 1, "color": "ffffffff" },
+					{ "time": 1.3333, "color": "ffffff00" }
+				]
+			},
+			"Leaf6": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 1, "color": "ffffffff" },
+					{ "time": 1.3333, "color": "ffffff00" }
+				]
+			},
+			"Leaf7": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 1, "color": "ffffffff" },
+					{ "time": 1.3333, "color": "ffffff00" }
+				]
+			},
+			"Leaf8": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 1, "color": "ffffffff" },
+					{ "time": 1.3333, "color": "ffffff00" }
+				]
+			}
+		},
+		"bones": {
+			"Leaf1": {
+				"shear": [
+					{},
+					{ "time": 1.3333, "x": -2.71, "y": -22.03 }
+				]
+			},
+			"Leaf0": {
+				"shear": [
+					{},
+					{ "time": 0.6667, "x": -26.61, "y": 18.79 },
+					{ "time": 1.3333 }
+				]
+			},
+			"Leaf5": {
+				"shear": [
+					{},
+					{ "time": 1.3333, "y": -25.88 }
+				]
+			},
+			"Leaf7": {
+				"shear": [
+					{},
+					{ "time": 1.3333, "y": -51.3 }
+				]
+			}
+		},
+		"path": {
+			"falling00": {
+				"position": [
+					{},
+					{ "time": 1.3333, "value": 1 }
+				]
+			},
+			"falling01": {
+				"position": [
+					{ "value": 0.3 },
+					{ "time": 1.3333, "value": 1.2 }
+				]
+			},
+			"falling10": {
+				"position": [
+					{},
+					{ "time": 1.3333, "value": 1 }
+				]
+			},
+			"falling21": {
+				"position": [
+					{ "value": 0.3 },
+					{ "time": 1.3333, "value": 1.2 }
+				]
+			},
+			"falling30": {
+				"position": [
+					{},
+					{ "time": 1.3333, "value": 1 }
+				]
+			},
+			"falling40": {
+				"position": [
+					{},
+					{ "time": 1.3333, "value": 1 }
+				]
+			},
+			"falling50": {
+				"position": [
+					{},
+					{ "time": 1.3333, "value": 1 }
+				]
+			},
+			"falling60": {
+				"position": [
+					{},
+					{ "time": 1.3333, "value": 1 }
+				]
+			},
+			"falling7": {
+				"position": [
+					{},
+					{ "time": 1.3333, "value": 1 }
+				]
+			}
+		}
+	}
+}
+}

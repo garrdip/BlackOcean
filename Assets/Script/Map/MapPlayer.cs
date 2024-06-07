@@ -71,6 +71,12 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         InitMapPlayerView(gamePlayer.selectOrder);
     }
 
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
+    }
+
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
@@ -82,7 +88,6 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         GetComponent<CanvasGroup>().DOKill();
         GetComponent<RectTransform>().DOKill();
         sequence.Kill();
-        gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
     }
 
     // 스왑 승인 버튼 클릭

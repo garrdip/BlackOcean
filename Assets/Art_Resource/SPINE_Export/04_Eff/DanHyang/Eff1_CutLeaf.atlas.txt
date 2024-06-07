@@ -1,0 +1,15 @@
+Eff1_CutLeaf.png
+size:512,319
+filter:Linear,Linear
+pma:true
+AttLeaf
+bounds:453,240,57,77
+offsets:2,2,61,81
+CutLine
+bounds:2,2,449,315
+Leaf0
+bounds:453,173,33,30
+offsets:1,2,36,33
+Leaf2
+bounds:453,205,34,33
+offsets:2,1,38,35

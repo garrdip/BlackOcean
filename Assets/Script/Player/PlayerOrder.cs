@@ -49,13 +49,18 @@ public class PlayerOrder : NetworkBehaviour
         }
     }
 
-    void OnDestroy()
+    public override void OnStopClient()
     {
-        transform.DOKill();
+        base.OnStopClient();
         if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
             GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
             gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
         }
+    }
+
+    void OnDestroy()
+    {
+        transform.DOKill();
     }
 
     void OnMouseEnter()

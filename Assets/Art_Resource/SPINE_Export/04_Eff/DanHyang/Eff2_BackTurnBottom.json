@@ -1,0 +1,82 @@
+{
+"skeleton": {
+	"hash": "uZeGosV04IE",
+	"spine": "4.2.29",
+	"x": -63.74,
+	"y": -75.02,
+	"width": 175,
+	"height": 176,
+	"images": "./Eff/",
+	"audio": "C:/Users/Nullaby/Desktop/GJ_ing/spine/02_character/02_DanHyang"
+},
+"bones": [
+	{ "name": "root" },
+	{ "name": "bone2", "parent": "root", "x": 24.29, "y": 12.15 },
+	{ "name": "bone", "parent": "bone2", "x": -0.48, "y": 0.42 },
+	{ "name": "D 5 - 1", "parent": "bone", "length": 76.57, "rotation": 89.2, "x": 0.01, "y": 0.05 }
+],
+"slots": [
+	{ "name": "D 5 - 1", "bone": "D 5 - 1", "attachment": "Flower1" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"D 5 - 1": {
+				"Flower1": { "x": 0.36, "y": 0.07, "rotation": -89.2, "width": 175, "height": 176 }
+			}
+		}
+	}
+],
+"events": {
+	"Attack0End": {},
+	"Attack1End": {},
+	"Attack2End": {},
+	"Buff0End": {},
+	"Buff1End": {},
+	"DefenseEnd": {},
+	"EyeEnd": {},
+	"IdleEnd": {}
+},
+"animations": {
+	"Eff2_TurnBottom": {
+		"bones": {
+			"D 5 - 1": {
+				"rotate": [
+					{
+						"curve": [ 0.333, 0, 0.343, 264.29 ]
+					},
+					{
+						"time": 1,
+						"value": 264.29,
+						"curve": [ 1.281, 264.29, 1.542, -179.2 ]
+					},
+					{ "time": 1.6667, "value": -179.2 }
+				]
+			},
+			"bone": {
+				"scale": [
+					{ "x": 2, "y": 0.7 }
+				]
+			},
+			"bone2": {
+				"scale": [
+					{
+						"x": 0,
+						"y": 0,
+						"curve": [ 0.389, 0, 0.542, 2.412, 0.389, 0, 0.542, 2.412 ]
+					},
+					{
+						"time": 1.1667,
+						"curve": [ 1.223, 0.872, 1.215, 0, 1.223, 0.872, 1.215, 0 ]
+					},
+					{ "time": 1.6667, "x": 0, "y": 0 }
+				]
+			}
+		},
+		"events": [
+			{ "time": 1.3333, "name": "Buff1End" }
+		]
+	}
+}
+}

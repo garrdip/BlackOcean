@@ -116,6 +116,13 @@ public class LobbyPlayer : NetworkBehaviour
         M_LobbyMananger.instance.RemoveLobbyPlayer(GetComponent<NetworkIdentity>().netId); // 로비플레이어가 서버에서 사라질 때 리스트에서 제거
     }
 
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        roomPlayer.onSelectCompleteCharacter -= OnChangeSelectCharacter; // 캐릭터 선택 이벤트 제거
+        roomPlayer.onChangeReadyState -= OnChangeReadyState; // 레디 상태 변경 이벤트 제거
+    }
+
     // 로비플레이어 오브젝트 파괴시 수행중인 트위닝 제거
     void OnDestroy()
     {
@@ -132,8 +139,6 @@ public class LobbyPlayer : NetworkBehaviour
         characterSelectCompleteImage.DOKill();
         sequence.Kill(); // FadeIn, FadeOut, Up, Down 트위닝 시퀀스 제거
         RoomUI.instance.KillTweenSwapButtons(); // 로비플레이어의 SetLobbyPlayerFadeEffect 함수에서 작동시킨 스왑버튼 트위닝 제거
-        roomPlayer.onSelectCompleteCharacter -= OnChangeSelectCharacter; // 캐릭터 선택 이벤트 제거
-        roomPlayer.onChangeReadyState -= OnChangeReadyState; // 레디 상태 변경 이벤트 제거
     }
 
     // 스왑 승인 버튼 클릭
