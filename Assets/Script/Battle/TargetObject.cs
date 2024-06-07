@@ -197,7 +197,7 @@ public class TargetObject : NetworkBehaviour
         }
     }
 
-    // 콘스터 타입의 타겟오브젝트 초기화
+    // 몬스터 타입의 타겟오브젝트 초기화
     public void InitTargetObjectMonster(SpawnedMonster monster)
     {
         selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
@@ -891,7 +891,8 @@ public class TargetObject : NetworkBehaviour
             }
         }
         if(oldVal > 0 && newVal > 0){ // 체력이 0 이상이면, 캐릭터 피격음성 재생
-           PlayCharaterHitVoice();
+            selectedNamePlate.SetHPValue(newVal, playerMaxHP, 10);
+            PlayCharaterHitVoice();
         }else if(newVal == 0){ // 체력이 0이면 캐릭터 사망 음성 재생
             if(isServer){
                 StartCoroutine(PlayerDeathProcess());
@@ -902,7 +903,7 @@ public class TargetObject : NetworkBehaviour
 
     void OnChangedDefense(int oldVal, int newVal)
     {
-        selectedNamePlate.SetShieldValue(newVal,oldVal == 0,objectType != ObjectType.PLAYER);
+        selectedNamePlate.SetShieldValue(newVal,oldVal == 0, objectType != ObjectType.PLAYER);
         if(newVal > 0){
             int value = newVal - oldVal;
             if(oldVal > newVal){
@@ -915,8 +916,9 @@ public class TargetObject : NetworkBehaviour
                 M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
             }
         }else{
-            if(objectType != ObjectType.PLAYER && !M_TurnManager.instance.monsterShieldInitialize)
+            if(objectType != ObjectType.PLAYER && !M_TurnManager.instance.monsterShieldInitialize && isServer){
                 monster.OnBreakedShield();
+            }
         }
     }
 }

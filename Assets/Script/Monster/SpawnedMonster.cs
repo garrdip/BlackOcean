@@ -113,6 +113,8 @@ public class SpawnedMonster : NetworkBehaviour
         callbacak();
     }
 
+    // ------------------------------------------------------------------ Server Method ------------------------------------------------------------------------//
+
     [Server]
     public void SetNextAction()
     {
@@ -180,16 +182,6 @@ public class SpawnedMonster : NetworkBehaviour
         }
     }
 
-    public virtual void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
-    {
-
-    }
-
-    public virtual void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
-    {
-        
-    }
-
     [Server]
     public virtual IEnumerator DoAction()
     {
@@ -202,6 +194,20 @@ public class SpawnedMonster : NetworkBehaviour
         yield return null;
     }
 
+    [Server]
+    public virtual void OnBreakedShield()
+    {
+        RpcBreadkShield();
+    }
+
+    [Server]
+    public void APDO()
+    {
+        nextAction = sturnedAction;
+    }
+
+    // ------------------------------------------------------------------ Rpc Method ------------------------------------------------------------------------//
+ 
     [ClientRpc]
     public virtual void ReturnToIdleAnimation()
     {
@@ -209,35 +215,11 @@ public class SpawnedMonster : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcBreakedShield()
+    public void RpcBreadkShield()
     {
         // 실드 파괴음
         AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_down"));
         M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
-    }
-
-    [Server]
-    public virtual void OnChangedSheild(int oldValue, int newValue)
-    {
-
-    }
-
-    [Server]
-    public virtual void OnAppliedCard(Card card, TargetObject[] tar)
-    {
-
-    }
-
-    [Server]    
-    public virtual void OnBreakedShield()
-    {
-        RpcBreakedShield();
-    }
-
-    [Server]
-    public void APDO()
-    {
-        nextAction = sturnedAction;
     }
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
@@ -253,6 +235,21 @@ public class SpawnedMonster : NetworkBehaviour
         {
             HP = monsterData.MAXHP;
         }
+    }
+
+    public virtual void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
+    {
+
+    }
+
+    public virtual void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
+    {
+        
+    }
+
+    public virtual void OnChangedSheild(int oldValue, int newValue)
+    {
+
     }
 
     public virtual void OnChangedHpValue(int oldHpValue, int newHpValue)
