@@ -36,26 +36,24 @@ public class PlayerOrder : NetworkBehaviour
     public GameObject lastCardBaseLingLight;
 
     [SyncVar]
-    public GamePlayer gamePlayer;
+    public uint gamePlayerNetId;
 
-    public override void OnStartServer()
+    public override void OnStartClient()
     {
-        base.OnStartServer();
-    }
-
-    void Start()
-    {
-        if(gamePlayer != null){
+        base.OnStartClient();
+        if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
+            GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
             gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
+            SetParentAndPostion(gamePlayer.selectOrder);
+            SetOwnedViewComponent();
         }
-        SetParentAndPostion(gamePlayer.selectOrder);
-        SetOwnedViewComponent();
     }
 
     void OnDestroy()
     {
         transform.DOKill();
-        if(gamePlayer != null){
+        if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
+            GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
             gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
         }
     }
@@ -82,13 +80,13 @@ public class PlayerOrder : NetworkBehaviour
 
     public void OnChangePlayerOrder(int order)
     {
-        SetParentAndPostion(gamePlayer.selectOrder);
+        SetParentAndPostion(order);
     }
 
     // 참조된 게임플레이어 클래스로부터 오더값 조회하여 값에 맞춰 뷰 컴포넌트 세팅
     private void SetParentAndPostion(int order)
     {
-        transform.DOMove(new Vector3(M_TurnManager.instance.targetObjectPosition[gamePlayer.selectOrder].x, 8f, 0f), 0.5f);
+        transform.DOMove(new Vector3(M_TurnManager.instance.targetObjectPosition[order].x, 8f, 0f), 0.5f);
         transform.localScale = new Vector3(1f, 1f, 1f);
     }
 

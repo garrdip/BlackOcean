@@ -25,9 +25,6 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public Character character;
 
-    [SyncVar]
-    public uint playerOrderNetId;
-
     [SyncVar(hook = nameof(OnChangeMapPlayerNetId))]
     public uint mapPlayerNetId;
 
@@ -36,7 +33,6 @@ public class GamePlayer : NetworkBehaviour
     {
         base.OnStartServer();
 
-        GeneratePlayerOrder();
         if(M_SaveManager.instance.isSaveGame)
         {
             foreach(SaveDataPlayer saveDataPlayer in M_SaveManager.instance.loadData.players)
@@ -54,19 +50,6 @@ public class GamePlayer : NetworkBehaviour
     // ------------------------------------------------------------- Command Method ------------------------------------------------------------------//
 
     // ------------------------------------------------------------- Server Method --------------------------------------------------------------------//
-
-    // 게임씬에서 플레이어 오더 및 정보들을 보여주는 오브젝트 생성
-    [Server]
-    private void GeneratePlayerOrder()
-    {
-        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        GameObject playerOrderObject = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "PlayerOrder"), Vector3.zero, Quaternion.identity);
-        PlayerOrder playerOrder = playerOrderObject.GetComponent<PlayerOrder>();
-        playerOrder.gamePlayer = this;
-        NetworkServer.Spawn(playerOrderObject, connectionToClient);
-        playerOrderNetId = playerOrder.netId;
-    }
-
 
     [Server]
     public void SetPlayerOrder(int num)

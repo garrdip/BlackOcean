@@ -106,15 +106,21 @@ public class PlayerInterface : NetworkBehaviour
     void GenerateGamePlayer()
     {
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        var cloneAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "GamePlayer"),new Vector3(0,0,0),Quaternion.identity);
-        
-        GamePlayer gamePlayer = cloneAvatar.GetComponent<GamePlayer>();
+        // GamePlayer 오브젝트 생성
+        GameObject gamePlayerObject = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "GamePlayer"),new Vector3(0,0,0),Quaternion.identity);
+        GamePlayer gamePlayer = gamePlayerObject.GetComponent<GamePlayer>();
         gamePlayer.objectOwner = this;
         gamePlayer.character = character;
         gamePlayer.selectOrder = selectOrder;
         gamePlayer.HP = 50;
         gamePlayer.MaxHP = 50;
-        NetworkServer.Spawn(cloneAvatar,connectionToClient);
+        NetworkServer.Spawn(gamePlayerObject, connectionToClient);
+
+        // 게임씬에서 플레이어 오더 및 정보들을 보여주는 PlayerOrder 오브젝트 생성
+        GameObject playerOrderObject = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "PlayerOrder"), Vector3.zero, Quaternion.identity);
+        PlayerOrder playerOrder = playerOrderObject.GetComponent<PlayerOrder>();
+        playerOrder.gamePlayerNetId = gamePlayer.netId;
+        NetworkServer.Spawn(playerOrderObject, connectionToClient);
     }
 
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
