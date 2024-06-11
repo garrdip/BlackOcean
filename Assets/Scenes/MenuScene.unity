@@ -17114,6 +17114,12 @@ MonoBehaviour:
       Value: {fileID: 21300000, guid: e3d016b131979fd42afef8ae9936b3c7, type: 3}
     - Key: 34
       Value: {fileID: 21300000, guid: ecf6d5ba83d3f2843ab900a4bd9def66, type: 3}
+    - Key: 24
+      Value: {fileID: 21300000, guid: a67b58d6cddcd4345b1e001340de5a76, type: 3}
+    - Key: 25
+      Value: {fileID: 21300000, guid: a67b58d6cddcd4345b1e001340de5a76, type: 3}
+    - Key: 23
+      Value: {fileID: 21300000, guid: a67b58d6cddcd4345b1e001340de5a76, type: 3}
   isCardOperatingTEST: 0
   colorList:
   - <#ff0000>
