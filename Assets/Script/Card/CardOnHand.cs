@@ -79,6 +79,7 @@ public class CardOnHand : NetworkBehaviour
     public Material rippleRed;
     public Material rippleYellow;
     public Material rippleBlue;
+    public TrailRenderer trailRenderer;
 
     public delegate void CardInfoChanged();
     public CardInfoChanged CardInfoChangedEvent;
@@ -116,6 +117,7 @@ public class CardOnHand : NetworkBehaviour
                 InitCardIllust(card, georkCardSprites);
                 InitCardTemplateByCardEnhanced(card, georkCardSprites);
                 InitCardExpBar(card, georkCardSprites);
+                InitCardTrailColor(ColorUtils.HexToColor("#FF6400"));
                 rippleParticle.GetComponent<ParticleSystemRenderer>().material = rippleYellow;
                 break;
             case Character.ERIS:
@@ -124,6 +126,7 @@ public class CardOnHand : NetworkBehaviour
                 InitCardIllust(card, erisCardSprites);
                 InitCardTemplateByCardEnhanced(card, erisCardSprites);
                 InitCardExpBar(card, erisCardSprites);
+                InitCardTrailColor(ColorUtils.HexToColor("#0068A1"));
                 rippleParticle.GetComponent<ParticleSystemRenderer>().material = rippleBlue;
                 break;
             case Character.HONGDANHYANG:
@@ -132,9 +135,22 @@ public class CardOnHand : NetworkBehaviour
                 InitCardIllust(card, danhyangCardSprites);
                 InitCardTemplateByCardEnhanced(card, danhyangCardSprites);
                 InitCardExpBar(card, danhyangCardSprites);
+                InitCardTrailColor(ColorUtils.HexToColor("#FF0000"));
                 rippleParticle.GetComponent<ParticleSystemRenderer>().material = rippleRed;
                 break;
         }
+    }
+
+    // 카드 TrailRenderer 색상 설정
+    private void InitCardTrailColor(Color color)
+    {
+        float alpha = 1.0f;
+        Gradient gradient = new Gradient();
+        gradient.SetKeys(
+            new GradientColorKey[] { new GradientColorKey(color, 0f), new GradientColorKey(Color.white, 1f) },
+            new GradientAlphaKey[] { new GradientAlphaKey(alpha, 1f), new GradientAlphaKey(alpha, 0f) }
+        );
+        trailRenderer.colorGradient = gradient;
     }
 
     // 카드 타입에 따라 외형 틀 세팅

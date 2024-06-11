@@ -314,6 +314,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             if(prefareDeck.Count == 0){
                 while(trashDeck.Count != 0){
                     Card card = trashDeck[0];
+                    card.isChargedCard = true;
                     trashDeck.RemoveAt(0);
                     prefareDeck.Add(card);
                 }
@@ -448,6 +449,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             if(prefareDeck.Count == 0){
                 while(trashDeck.Count != 0){
                     Card card = trashDeck[0];
+                    card.isChargedCard = true;
                     trashDeck.RemoveAt(0);
                     prefareDeck.Add(card);
                 }
@@ -826,7 +828,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:
-                if(newPrefareDeck.baseCard.cardType == CardType.CURSE)gainCurseCardCount++;
+                if(newPrefareDeck.baseCard.cardType == CardType.CURSE){
+                    gainCurseCardCount++;
+                }
+                if(newPrefareDeck.isChargedCard){
+                    M_CardManager.instance.CardOnHandChargedSequence(newPrefareDeck, index);
+                }
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
                 

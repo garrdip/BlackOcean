@@ -55,6 +55,9 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     [Header("카드 정렬 순서 최대값")]
     public readonly int maxSortOrder = 999;
 
+    [Header("카드 이동 궤적 표시용 TrailRenderer 오브젝트")]
+    public GameObject CardTrail;
+
     [Header("화살표 활성화 상태 여부")]
     public bool isArrowActive = false;
 
@@ -214,18 +217,68 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
             cardOnHand.transform.localScale = new Vector3(0.02f, 0.02f, 0f);
             Sequence sequence = DOTween.Sequence();
-            sequence.Append(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.2f)
-                .SetDelay(index * 0.1f)
-                .SetEase(Ease.OutSine)
-                .OnComplete(() => {
-                    cardOnHand.isMoving = false;
-                    sequence.Kill();
-                    if(cardOnHand.isOwned){
-                        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));
-                        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-                    }
-                }));      
+            sequence.InsertCallback(0.5f, () => {
+                cardOnHand.transform
+                    .DORotate(new Vector3(0f, 0f, 0f), 0.2f)
+                    .SetDelay(index * 0.1f)
+                    .SetEase(Ease.OutSine)
+                    .OnComplete(() => {
+                        cardOnHand.rippleParticle.gameObject.SetActive(true);
+                        cardOnHand.isMoving = false;
+                        sequence.Kill();
+                        if(cardOnHand.isOwned){
+                            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));
+                            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+                        }
+                    });
+            });
         }
+    }
+
+    // 버린덱에서 뽑을덱으로 TrailRenderer 오브젝트 이동 시퀀스(뽑을덱 없어서 버린덱에서 충전할 때)
+    public void CardOnHandChargedSequence(Card card, int index)
+    {
+        // Card Trail 오브젝트 생성
+        GameObject cardTrail = Instantiate(CardTrail, GameUIManager.instance.buttonTrashDeck.transform.position, Quaternion.identity);
+        TrailRenderer trailRenderer = cardTrail.GetComponent<TrailRenderer>();
+        
+        // 캐릭터별 Card Trail 색상 설정
+        float alpha = 1.0f;
+        Gradient gradient = new Gradient();
+        switch(card.baseCard.character){
+            case Character.GEORK:
+                gradient.SetKeys(
+                    new GradientColorKey[] { new GradientColorKey(ColorUtils.HexToColor("#FF6400"), 0f), new GradientColorKey(Color.white, 1f) },
+                    new GradientAlphaKey[] { new GradientAlphaKey(alpha, 1f), new GradientAlphaKey(alpha, 0f) }
+                );    
+                break;
+            case Character.ERIS:
+                gradient.SetKeys(
+                    new GradientColorKey[] { new GradientColorKey(ColorUtils.HexToColor("#0068A1"), 0f), new GradientColorKey(Color.white, 1f) },
+                    new GradientAlphaKey[] { new GradientAlphaKey(alpha, 1f), new GradientAlphaKey(alpha, 0f) }
+                );   
+                break;
+            case Character.HONGDANHYANG:
+                gradient.SetKeys(
+                    new GradientColorKey[] { new GradientColorKey(ColorUtils.HexToColor("#FF0000"), 0f), new GradientColorKey(Color.white, 1f) },
+                    new GradientAlphaKey[] { new GradientAlphaKey(alpha, 1f), new GradientAlphaKey(alpha, 0f) }
+                );
+                break;
+        }
+        trailRenderer.colorGradient = gradient;
+
+        // Card Trail 오브젝트 버린덱에서 뽑을덱으로 포물선 이동 애니매이션
+        Vector3 startPosition = cardTrail.transform.position;
+        Vector3 targetPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
+        Vector3 midPoint = ((startPosition + targetPosition) / 2) + new Vector3(0f, 2f, 0f);
+        Vector3[] path = new Vector3[] { startPosition, midPoint, targetPosition };
+        cardTrail.transform
+            .DOPath(path, 0.5f, PathType.CatmullRom)
+            .SetEase(Ease.Linear)
+            .SetDelay(0.1f * index)
+            .OnComplete(() => {
+                Destroy(cardTrail);
+            });
     }
 
     // 추가 드로우된 CardOnHand 이동 시퀀스
@@ -240,6 +293,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 .SetDelay(index * 0.1f)
                 .SetEase(Ease.OutSine)
                 .OnComplete(() => {
+                    cardOnHand.rippleParticle.gameObject.SetActive(true);
                     cardOnHand.isMoving = false;
                     currentGamePlayerDeck.CmdChangeCardOnHandIsAddtionDraw(cardOnHand, false);
                     sequence.Kill();
@@ -268,6 +322,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 .SetDelay(index * 0.1f)
                 .SetEase(Ease.OutSine)
                 .OnComplete(() => {
+                    cardOnHand.rippleParticle.gameObject.SetActive(true);
                     cardOnHand.isMoving = false;
                     sequence.Kill();
                     if(cardOnHand.isOwned){
@@ -293,7 +348,9 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             Sequence sequence = DOTween.Sequence();
             
             // 시퀸스에 회전 초기화, 현재위치에서 중앙 0.5f위쪽 위치로 이동 애니매이션 추가
-            sequence.Prepend(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f));
+            sequence.Prepend(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f).OnComplete(() => {
+                cardOnHand.trailRenderer.enabled = true;
+            }));
             sequence.Join(cardOnHand.transform
                                 .DOMove(new Vector3(0f, 0.5f, 0f), 0.5f)
                                 .SetEase(Ease.OutSine));
@@ -326,6 +383,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         
         Sequence sequence = DOTween.Sequence();
         sequence.PrependCallback(() => {
+            cardOnHand.trailRenderer.enabled = true;
             cardOnHand.isMoving = true;
             cardOnHand.isUsed = true;
             if(cardOnHand.isOwned){
@@ -336,11 +394,11 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration));
         sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
         sequence.Join(cardOnHand.transform.DOMove(position, duration).SetEase(Ease.OutCirc).SetDelay(delay));
-        sequence.SetDelay(delay);
         sequence.OnComplete(() => {
                     GameUIManager.instance.buttonEndTurn.interactable = true;
                     gamePlayerDeck.CmdDestroyCardOnHandToTrash(cardOnHand);
                     ChangeCurrentPlayerCardOnHandState(false);
+                    sequence.Kill();
                 });
     }
 

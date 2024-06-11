@@ -27089,6 +27089,7 @@ MonoBehaviour:
   hoveredPositionY: 0
   cardOriginSize: {x: 0, y: 0, z: 0}
   cardOverSize: {x: 0, y: 0, z: 0}
+  CardTrail: {fileID: 2708076018879494513, guid: 09cc3fcc02516b04bb546dcfd1b364ba, type: 3}
   isArrowActive: 0
   isAbilityArrowActive: 0
 --- !u!114 &2095118380
@@ -53780,6 +53781,7 @@ MonoBehaviour:
     isReturnable: 0
     isSoldout: 0
     cardPrice: 0
+    stackCount: 0
   cardOwner: {fileID: 0}
   canvasGroup: {fileID: 617208569021601904}
   cardImages: []
