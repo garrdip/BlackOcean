@@ -272,11 +272,12 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G5_H(card,tar);
 	}
+
+	// 흔들리는 신념 ( 이 카드는 존재하지 않습니다. )
 	public IEnumerator G6(Card card,List<TargetObject> tar)
 	{
 		yield return null;
 	}
-
 	public IEnumerator G6_Effect(TargetObject tar)
 	{
 		yield return null;
@@ -293,9 +294,16 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return null;
 	}
+
+	// 굳건한 신념
 	public IEnumerator G7(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false);
+        yield return new WaitForSeconds(0.5f);
+        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
+        yield return new WaitForSeconds(1f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G7_E(Card card,List<TargetObject> tar)
 	{
@@ -309,7 +317,13 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G7_H(Card card,List<TargetObject> tar)
 	{
-		yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+        M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
+        yield return new WaitForSeconds(0.5f);
+        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(3); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
+        tar[0].player.GetComponent<GamePlayerDeck>().currentIchi += 2;
+        yield return new WaitForSeconds(1f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G7_H_E(Card card,List<TargetObject> tar)
 	{
