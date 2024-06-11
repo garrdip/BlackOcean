@@ -832,7 +832,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     gainCurseCardCount++;
                 }
                 if(newPrefareDeck.isChargedCard){
-                    M_CardManager.instance.CardOnHandChargedSequence(newPrefareDeck, index);
+                    Vector3 startPosition = GameUIManager.instance.buttonTrashDeck.transform.position;
+                    Vector3 endPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
+                    M_CardManager.instance.CardOnHandChargedSequence(newPrefareDeck, index, startPosition, endPosition);
                 }
                 break;
             case SyncList<Card>.Operation.OP_INSERT:

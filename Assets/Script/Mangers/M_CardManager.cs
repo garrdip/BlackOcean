@@ -236,10 +236,10 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     }
 
     // 버린덱에서 뽑을덱으로 TrailRenderer 오브젝트 이동 시퀀스(뽑을덱 없어서 버린덱에서 충전할 때)
-    public void CardOnHandChargedSequence(Card card, int index)
+    public void CardOnHandChargedSequence(Card card, int index, Vector3 startPosition, Vector3 endPosition)
     {
         // Card Trail 오브젝트 생성
-        GameObject cardTrail = Instantiate(CardTrail, GameUIManager.instance.buttonTrashDeck.transform.position, Quaternion.identity);
+        GameObject cardTrail = Instantiate(CardTrail, startPosition, Quaternion.identity);
         TrailRenderer trailRenderer = cardTrail.GetComponent<TrailRenderer>();
         
         // 캐릭터별 Card Trail 색상 설정
@@ -268,10 +268,8 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         trailRenderer.colorGradient = gradient;
 
         // Card Trail 오브젝트 버린덱에서 뽑을덱으로 포물선 이동 애니매이션
-        Vector3 startPosition = cardTrail.transform.position;
-        Vector3 targetPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
-        Vector3 midPoint = ((startPosition + targetPosition) / 2) + new Vector3(0f, 2f, 0f);
-        Vector3[] path = new Vector3[] { startPosition, midPoint, targetPosition };
+        Vector3 midPoint = ((startPosition + endPosition) / 2) + new Vector3(0f, 2f, 0f);
+        Vector3[] path = new Vector3[] { startPosition, midPoint, endPosition };
         cardTrail.transform
             .DOPath(path, 0.5f, PathType.CatmullRom)
             .SetEase(Ease.Linear)
