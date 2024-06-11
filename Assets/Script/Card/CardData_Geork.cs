@@ -1244,7 +1244,7 @@ public partial class CardData : SingletonD<CardData>
 			{
 				if(target != tar[1])
 				{
-					GeneralApDo(tar[0],target,3);
+					tar[0].GainBuff(BuffType.APDO,3,true,false,false,true,tar[0],card);
 				}
 			}
 		}
@@ -1315,7 +1315,7 @@ public partial class CardData : SingletonD<CardData>
 	//선봉대
 	public IEnumerator G63(Card card,List<TargetObject> tar)
 	{
-		if(M_TurnManager.instance.playerOrder.FindIndex(x => x == tar[0].player.netId) == 0)
+		if(M_TurnManager.instance.playerOrder.FindIndex(x => x == tar[0].player.netId) == 2)
 		{
 			M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 			GeorkAnimation(tar[0],"Buff0");
@@ -1325,7 +1325,7 @@ public partial class CardData : SingletonD<CardData>
 		}
 		else
 		{
-			ChangePosition(tar[0],0);
+			ChangePosition(tar[0],2);
 			yield return new WaitForSeconds(0.5f); // 위치 스왑 완료 후
 			List<TargetObject> dimmingList = new List<TargetObject>();
 			dimmingList.Add(tar[0]);

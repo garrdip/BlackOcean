@@ -198,9 +198,11 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         if(M_TurnManager.instance.phase == BattleTurn.PLAYER_ACTIVE) // 노병의 지혜
         {
+            if(NetworkServer.spawned.ContainsKey(playerOrder[oldIndex]))
             if(NetworkServer.spawned[playerOrder[oldIndex]].GetComponent<GamePlayerTarget>().GetTargetObject().HasBuff(BuffType.WISDOMOFOLDSOLDIER))
                 foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
                     CardData.instance.GeneralGetDefense(NetworkServer.spawned[playerOrder[oldIndex]].GetComponent<GamePlayerTarget>().GetTargetObject(),target,5,null);
+            if(NetworkServer.spawned.ContainsKey(playerOrder[newIndex]))
             if(NetworkServer.spawned[playerOrder[newIndex]].GetComponent<GamePlayerTarget>().GetTargetObject().HasBuff(BuffType.WISDOMOFOLDSOLDIER))
                 foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
                     CardData.instance.GeneralGetDefense(NetworkServer.spawned[playerOrder[newIndex]].GetComponent<GamePlayerTarget>().GetTargetObject(),target,5,null);          
