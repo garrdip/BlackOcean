@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
-using ProjectD;
+using Mirror;
 
 
 public class GameUIManager : SingletonD<GameUIManager>
@@ -22,8 +22,8 @@ public class GameUIManager : SingletonD<GameUIManager>
     public GameObject MaxItchPrefab;
     public List<GameObject> currentIchiIcons = new List<GameObject>();
     public List<GameObject> maxIchiIcons = new List<GameObject>();
-    public Canvas EffectCanvas;
-    public GameObject FloatingDamageText;
+
+
 
     [Header("UI 컴포넌트")]
 
@@ -40,6 +40,14 @@ public class GameUIManager : SingletonD<GameUIManager>
     public TextMeshProUGUI currentIchiText;
     public TextMeshProUGUI maxIchiText;
 
+    // 카드 큐 UI
+    public HorizontalLayoutGroup cardQueueLayout;
+    public ScrollRect scrollRect;
+    public GameObject cardQueuePopUp;
+    public TextMeshProUGUI textCardQueueName;
+    public TextMeshProUGUI textCardQueueType;
+    public TextMeshProUGUI textCardQueueDesc;
+    public TextMeshProUGUI textCardOwnerName;
 
     [Header("화면 Dim 처리용 이미지")]
     public Image blackCurtain;
@@ -74,5 +82,38 @@ public class GameUIManager : SingletonD<GameUIManager>
                 callback(blackCurtain);
             }
         }); 
+    }
+
+    public void CardQueueScrollToEnd()
+    {
+        StartCoroutine(MoveScrollToEnd());
+    }
+
+    private IEnumerator MoveScrollToEnd()
+    {
+        yield return null;
+        GameUIManager.instance.scrollRect.horizontalNormalizedPosition = 1f;
+    }
+
+    public void HandleCardQueuePopUp(CardQueue cardQueue, bool isOpen)
+    {
+        if(isOpen){
+            GamePlayerDeck gamePlayerDeck = NetworkClient.spawned[cardQueue.cardOwnerNetId].GetComponent<NetworkIdentity>().GetComponent<GamePlayerDeck>();
+            string playerName = gamePlayerDeck.GetComponent<GamePlayer>().objectOwner.steamPersonaName;
+            textCardOwnerName.text = playerName;
+            Card card = cardQueue.card;
+            textCardQueueName.text = card.baseCard.name.ToString();
+            textCardQueueType.text = card.baseCard.cardType.ToString();
+            textCardQueueDesc.text = card.baseCard.description.ToString();
+            cardQueuePopUp.gameObject.SetActive(true);
+            cardQueuePopUp.GetComponent<CanvasGroup>().DOFade(1f, 0.25f);
+        }else{
+            textCardOwnerName.text = string.Empty;
+            textCardQueueName.text = string.Empty;
+            textCardQueueType.text = string.Empty;
+            textCardQueueDesc.text = string.Empty;
+            cardQueuePopUp.GetComponent<CanvasGroup>().alpha = 0f;
+            cardQueuePopUp.gameObject.SetActive(false);
+        }
     }
 }

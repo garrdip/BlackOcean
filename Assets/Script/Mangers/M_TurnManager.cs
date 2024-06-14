@@ -32,7 +32,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     // 각 클라이언트에서 참조할 현재 참가한 플레이어들의 타겟오브젝트 목록
     public readonly SyncList<uint> spawnedPlayerSyncList = new SyncList<uint>();
 
+    // 카드 큐 데이터 저장할 Synclist
+    public readonly SyncList<CardQueue> cardQueueList = new SyncList<CardQueue>();
 
+    [Header("카드 큐 프리팹")]
+    public GameObject cardQueueItemPrefab;
+
+    public List<GameObject> cardQueueItems = new List<GameObject>();
+    
     [SerializedDictionary("게임플레이어", "보상카드선택유무")]
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
 
@@ -90,6 +97,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public override void OnStartClient()
     {
         playerOrder.Callback += OnPlayerOrderUpdated;
+        cardQueueList.Callback += OnCardQueueUpdated;
     }
 
     // -------------------------------------------------------------------- Normal Method ---------------------------------------------------------------------//
@@ -500,6 +508,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
         RpcShowBattleResultPopUp(); // 전투 종료 팝업 호출
         ResetEndTurnState(); // 턴종료 상태 리셋
+        cardQueueList.Clear(); // 카드 큐 Synclist 클리어
     }
 
     [Server]
@@ -600,6 +609,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         gpd.numOfUsedCard++;
                         // 카드 사용후 효과 여기서 발동
 
+                        // 카드 큐 Synclist에 사용한 카드 정보와 플레이어 정보 저장
+                        CardQueue cardQueue = new CardQueue(){
+                            cardOwnerNetId = gpd.netId,
+                            card = cardOnHand.card
+                        };
+                        cardQueueList.Add(cardQueue);
                     }
                 }
                 else
@@ -1593,6 +1608,39 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
                 
+                break;
+        }
+    }
+
+    private void OnCardQueueUpdated(SyncList<CardQueue>.Operation op, int index, CardQueue oldVal, CardQueue newVal)
+    {
+        switch (op)
+        {
+            case SyncList<CardQueue>.Operation.OP_ADD:
+                GameObject cardQueueItemObject = Instantiate(cardQueueItemPrefab, Vector3.zero, Quaternion.identity, GameUIManager.instance.cardQueueLayout.transform);
+                CardQueueItem cardQueueItem = cardQueueItemObject.GetComponent<CardQueueItem>();
+                cardQueueItem.cardQueue = newVal;
+                foreach(GameObject queueItem in cardQueueItems){
+                    queueItem.GetComponent<CardQueueItem>().smallCardQueue.gameObject.SetActive(true);
+                    queueItem.GetComponent<CardQueueItem>().bigCardQueue.gameObject.SetActive(false);
+                }
+                cardQueueItems.Add(cardQueueItemObject);
+                GameUIManager.instance.CardQueueScrollToEnd();
+                break;
+            case SyncList<CardQueue>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<CardQueue>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<CardQueue>.Operation.OP_SET:
+
+                break;
+            case SyncList<CardQueue>.Operation.OP_CLEAR:
+                foreach(GameObject cardQueueObject in cardQueueItems){
+                    Destroy(cardQueueObject);
+                }
+                cardQueueItems.Clear();
                 break;
         }
     }
