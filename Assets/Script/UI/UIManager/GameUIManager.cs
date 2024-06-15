@@ -24,10 +24,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     public List<GameObject> maxIchiIcons = new List<GameObject>();
 
 
-
-    [Header("UI 컴포넌트")]
-
-    // 카드 전투 UI
+    [Header("카드 전투 UI")]
     public Button buttonEndTurn;
     public Button buttonPrefareDeck;
     public Button buttonTrashDeck;
@@ -40,14 +37,15 @@ public class GameUIManager : SingletonD<GameUIManager>
     public TextMeshProUGUI currentIchiText;
     public TextMeshProUGUI maxIchiText;
 
-    // 카드 큐 UI
+    [Header("카드 큐 UI")]
     public HorizontalLayoutGroup cardQueueLayout;
-    public ScrollRect scrollRect;
+    public ScrollRect cardQueueScrollRect;
     public GameObject cardQueuePopUp;
     public TextMeshProUGUI textCardQueueName;
     public TextMeshProUGUI textCardQueueType;
     public TextMeshProUGUI textCardQueueDesc;
     public TextMeshProUGUI textCardOwnerName;
+    private Coroutine cardQueueScrollCoroutine;
 
     [Header("화면 Dim 처리용 이미지")]
     public Image blackCurtain;
@@ -86,13 +84,25 @@ public class GameUIManager : SingletonD<GameUIManager>
 
     public void CardQueueScrollToEnd()
     {
-        StartCoroutine(MoveScrollToEnd());
+        if(cardQueueScrollCoroutine != null){
+            StopCoroutine(cardQueueScrollCoroutine);
+        }
+        cardQueueScrollCoroutine = StartCoroutine(MoveScrollToEnd());
     }
 
     private IEnumerator MoveScrollToEnd()
     {
         yield return null;
-        GameUIManager.instance.scrollRect.horizontalNormalizedPosition = 1f;
+        float startPosition = cardQueueScrollRect.horizontalNormalizedPosition;
+        float targetPosition = 1f;
+        float elapsedTime = 0f;
+        float scrollDuration = 0.5f;
+        while (elapsedTime < scrollDuration)
+        {
+            cardQueueScrollRect.horizontalNormalizedPosition = Mathf.Lerp(startPosition, targetPosition, elapsedTime / scrollDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
     }
 
     public void HandleCardQueuePopUp(CardQueue cardQueue, bool isOpen)
