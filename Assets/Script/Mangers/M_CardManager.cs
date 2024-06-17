@@ -337,6 +337,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         if(NetworkClient.connection != null && NetworkClient.active){
             GameUIManager.instance.buttonEndTurn.interactable = false;        
             cardOnHand.isMoving = true;
+            cardOnHand.isUsed = true;
             float duration = 0.5f;
             bool isChalna = CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA);
             Vector3 position = isChalna ? GameUIManager.instance.ForgottenDeck.GetComponent<RectTransform>().position : GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;

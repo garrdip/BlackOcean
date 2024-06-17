@@ -68,12 +68,12 @@ public class GameUIManager : SingletonD<GameUIManager>
 
     void Update()
     {
-        UpdateScrollButtonVisibility();
-        HandleScrollViewByScrollButton();   
+        UpdateCardQueueScrollButtonVisibility();
+        HandleCardQueueScrollViewByButton();   
     }
 
     // 버튼으로 스크롤 뷰 제어
-    private void HandleScrollViewByScrollButton()
+    private void HandleCardQueueScrollViewByButton()
     {
         if(isPointerDown){
             float contentWidth = cardQueueScrollRect.content.rect.width;
@@ -92,7 +92,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     }
 
     // 스크롤 뷰 내부 컨텐츠요소의 길이에 따라 스크롤 버튼의 활성화 상태 변경
-    private void UpdateScrollButtonVisibility()
+    private void UpdateCardQueueScrollButtonVisibility()
     {
         float contentWidth = cardQueueScrollRect.content.rect.width;
         float viewportWidth = cardQueueScrollRect.viewport.rect.width;
