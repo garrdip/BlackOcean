@@ -37,8 +37,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     [Header("카드 큐 프리팹")]
     public GameObject cardQueueItemPrefab;
-
     public List<GameObject> cardQueueItems = new List<GameObject>();
+    public int cardQueueListIndex; // 카드 큐 인덱스
+    private const int cardQueueListIndexInitialValue = -1; // 카드 큐 인덱스 초기값 (리스트 인덱스와 맞추기 위해 초기값 -1)
     
     [SerializedDictionary("게임플레이어", "보상카드선택유무")]
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
@@ -91,6 +92,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public override void OnStartServer()
     {
         base.OnStartServer();
+        cardQueueListIndex = cardQueueListIndexInitialValue;
         StartCoroutine(ProcessCardQueue());
     }
 
@@ -509,6 +511,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         RpcShowBattleResultPopUp(); // 전투 종료 팝업 호출
         ResetEndTurnState(); // 턴종료 상태 리셋
         cardQueueList.Clear(); // 카드 큐 Synclist 클리어
+        cardQueueListIndex = cardQueueListIndexInitialValue; // 카드 큐 Synclist에 사용하는 index 값 초기화
     }
 
     [Server]
@@ -555,6 +558,29 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
+    // 카드 큐 Synclist에 데이터 추가
+    [Server]
+    public void AddCardQueueList(CardOnHand cardOnHand, uint netId)
+    {
+        CardQueue cardQueue = new CardQueue(){
+            cardOwnerNetId = netId,
+            card = cardOnHand.card
+        };
+        M_TurnManager.instance.cardQueueList.Add(cardQueue);
+    }
+
+    // 카드 큐 Synclist 요소에 데이터 새로 세팅
+    [Server]
+    public void SetCardQueueList(CardOnHand cardOnHand, uint netId)
+    {
+        CardQueue cardQueue = new CardQueue(){
+            cardOwnerNetId = netId,
+            card = cardOnHand.card
+        };
+        cardQueueListIndex++;
+        cardQueueList[cardQueueListIndex] = cardQueue; 
+    }
+
     public IEnumerator ProcessCardQueue()
     {
         // 무한루프에서 인스턴스 생성시 생기는 가비지 방지를 위해 함수호출에서 미리 인스턴스 생성하여 캐싱후 루프 안에서 사용
@@ -575,6 +601,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     if(cardOnHand.card.baseCard.isTargetable && tar[1] == null)
                     {
                         gpd.ReturnToCardOnHand(cardOnHand);
+                        cardQueueList.RemoveAt(cardQueueList.Count - 1);
                         gpd.currentIchi += totalCost;
                         CardData.instance.isCardOperating = false;
                     }
@@ -583,6 +610,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         if(tar[1].isDying)
                         {
                             gpd.ReturnToCardOnHand(cardOnHand);
+                            cardQueueList.RemoveAt(cardQueueList.Count - 1);
                             gpd.currentIchi += totalCost;
                             CardData.instance.isCardOperating = false;
                             continue;
@@ -602,19 +630,16 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.JOONGREUK))
                             cardOnHand.card.costAddition ++;
 
-                        if(cardOnHand.card.isReturnable)
+                        if(cardOnHand.card.isReturnable){
                             gpd.ReturnToCardOnHand(cardOnHand);
-                        else
+                            cardQueueList.RemoveAt(cardQueueList.Count - 1);
+                        }else{
                             gpd.destroyCardList.Add(cardOnHand);
+                        }
                         gpd.numOfUsedCard++;
                         // 카드 사용후 효과 여기서 발동
 
-                        // 카드 큐 Synclist에 사용한 카드 정보와 플레이어 정보 저장
-                        CardQueue cardQueue = new CardQueue(){
-                            cardOwnerNetId = gpd.netId,
-                            card = cardOnHand.card
-                        };
-                        cardQueueList.Add(cardQueue);
+                        SetCardQueueList(cardOnHand, gpd.netId); // 카드 큐 Synclist 요소에 데이터 새로 세팅
                     }
                 }
                 else
@@ -1612,6 +1637,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
+    // 카드 큐 시스템
+    // 1. 큐에서 Enqueue 될 때 Synclist에도 동일하게 추가(Add)하여 카드 큐 오브젝트를 생성
+    // 2. 큐에서 Dequeue 될 때 타겟이 유효하지 않아 되돌아올 경우 Synclist에서 마지막 데이터를 제거(RemoveAt)하여 카드 큐 오브젝트 제거
+    // 3. 큐에서 Dequeue 될 때 카드 사용이 유효하면, Synclist에 데이터 변경(Set)하여 현재 수행된 카드 큐 오브젝트 표시
     private void OnCardQueueUpdated(SyncList<CardQueue>.Operation op, int index, CardQueue oldVal, CardQueue newVal)
     {
         switch (op)
@@ -1620,10 +1649,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 GameObject cardQueueItemObject = Instantiate(cardQueueItemPrefab, Vector3.zero, Quaternion.identity, GameUIManager.instance.cardQueueLayout.transform);
                 CardQueueItem cardQueueItem = cardQueueItemObject.GetComponent<CardQueueItem>();
                 cardQueueItem.cardQueue = newVal;
-                foreach(GameObject queueItem in cardQueueItems){
-                    queueItem.GetComponent<CardQueueItem>().smallCardQueue.gameObject.SetActive(true);
-                    queueItem.GetComponent<CardQueueItem>().bigCardQueue.gameObject.SetActive(false);
-                }
                 cardQueueItems.Add(cardQueueItemObject);
                 GameUIManager.instance.CardQueueScrollToEnd();
                 break;
@@ -1631,10 +1656,21 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 
                 break;
             case SyncList<CardQueue>.Operation.OP_REMOVEAT:
-
+                Destroy(cardQueueItems[index]);
+                cardQueueItems.RemoveAt(index);
                 break;
             case SyncList<CardQueue>.Operation.OP_SET:
-
+                foreach(GameObject gameObject in cardQueueItems){
+                    CardQueueItem item = gameObject.GetComponent<CardQueueItem>();
+                    item.bigCardQueue.gameObject.SetActive(false);
+                    item.smallCardQueue.gameObject.SetActive(true);
+                }
+                CardQueueItem currentCardQueue = cardQueueItems[index].GetComponent<CardQueueItem>();
+                currentCardQueue.bigCardQueue.gameObject.SetActive(true);
+                currentCardQueue.smallCardQueue.gameObject.SetActive(false);
+                currentCardQueue.transform.DOScale(1.5f, 0.25f).OnComplete(() => {
+                    currentCardQueue.transform.DOScale(1f, 0.25f);
+                });
                 break;
             case SyncList<CardQueue>.Operation.OP_CLEAR:
                 foreach(GameObject cardQueueObject in cardQueueItems){

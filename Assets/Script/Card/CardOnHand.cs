@@ -114,7 +114,7 @@ public class CardOnHand : NetworkBehaviour
             case Character.GEORK:
                 SerializedDictionary<string, Sprite> georkCardSprites = CardData.instance.characterCardTemplate[Character.GEORK];
                 InitCardTemplateByCardType(card, georkCardSprites);
-                InitCardIllust(card, georkCardSprites);
+                InitCardIllust(card);
                 InitCardTemplateByCardEnhanced(card, georkCardSprites);
                 InitCardExpBar(card, georkCardSprites);
                 InitCardTrailColor(ColorUtils.HexToColor("#FF6400"));
@@ -123,7 +123,7 @@ public class CardOnHand : NetworkBehaviour
             case Character.ERIS:
                 SerializedDictionary<string, Sprite> erisCardSprites = CardData.instance.characterCardTemplate[Character.ERIS];
                 InitCardTemplateByCardType(card, erisCardSprites);
-                InitCardIllust(card, erisCardSprites);
+                InitCardIllust(card);
                 InitCardTemplateByCardEnhanced(card, erisCardSprites);
                 InitCardExpBar(card, erisCardSprites);
                 InitCardTrailColor(ColorUtils.HexToColor("#0068A1"));
@@ -132,7 +132,7 @@ public class CardOnHand : NetworkBehaviour
             case Character.HONGDANHYANG:
                 SerializedDictionary<string, Sprite> danhyangCardSprites = CardData.instance.characterCardTemplate[Character.HONGDANHYANG];
                 InitCardTemplateByCardType(card, danhyangCardSprites);
-                InitCardIllust(card, danhyangCardSprites);
+                InitCardIllust(card);
                 InitCardTemplateByCardEnhanced(card, danhyangCardSprites);
                 InitCardExpBar(card, danhyangCardSprites);
                 InitCardTrailColor(ColorUtils.HexToColor("#FF0000"));
@@ -188,7 +188,7 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // 카드 일러스트 세팅
-    private void InitCardIllust(Card card, SerializedDictionary<string, Sprite> sprites)
+    private void InitCardIllust(Card card)
     {
         if(!card.baseCard.cardNumber.Contains("HA")){
             if(card.baseCard.cardNumber.Contains("_E")){

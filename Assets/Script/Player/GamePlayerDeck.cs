@@ -294,7 +294,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
             targetObjects.AddRange(M_TurnManager.instance.GetPlayerObjects());
             targetObjects.AddRange(M_TurnManager.instance.GetMonsterObjects());
 
-            M_TurnManager.instance.cardTargetPairQueue.Enqueue((this, totalCost, cardOnHand, targetObjects));
+            M_TurnManager.instance.cardTargetPairQueue.Enqueue((this, totalCost, cardOnHand, targetObjects)); // 큐에 데이터 추가
+
+            M_TurnManager.instance.AddCardQueueList(cardOnHand, this.netId); // 카드 큐 Synclist에 데이터 추가
         }
     }
 
