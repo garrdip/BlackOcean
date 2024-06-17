@@ -23,6 +23,8 @@ public class GameUIManager : SingletonD<GameUIManager>
     public List<GameObject> currentIchiIcons = new List<GameObject>();
     public List<GameObject> maxIchiIcons = new List<GameObject>();
 
+    [Header("화면 Dim 처리용 이미지")]
+    public Image blackCurtain;
 
     [Header("카드 전투 UI")]
     public Button buttonEndTurn;
@@ -46,10 +48,72 @@ public class GameUIManager : SingletonD<GameUIManager>
     public TextMeshProUGUI textCardQueueDesc;
     public TextMeshProUGUI textCardOwnerName;
     private Coroutine cardQueueScrollCoroutine;
+    public ScrollButtonDirection direction;
+    public Button leftScrollButton;
+    public Button rightScrollButton;
+    public float scrollSpeed;
+    private bool isPointerDown = false;
+    public enum ScrollButtonDirection
+    {
+        NONE,
+        LEFT,
+        RIGHT
+    }
 
-    [Header("화면 Dim 처리용 이미지")]
-    public Image blackCurtain;
 
+    void Start()
+    {
+        scrollSpeed = 500f;
+    }
+
+    void Update()
+    {
+        UpdateScrollButtonVisibility();
+        HandleScrollViewByScrollButton();   
+    }
+
+    // 버튼으로 스크롤 뷰 제어
+    private void HandleScrollViewByScrollButton()
+    {
+        if(isPointerDown){
+            float contentWidth = cardQueueScrollRect.content.rect.width;
+            float viewportWidth = cardQueueScrollRect.viewport.rect.width;
+            float maxScrollWidth = contentWidth - viewportWidth;
+            if(maxScrollWidth <= 0){
+                return;
+            }
+            float scrollAmount = (scrollSpeed / maxScrollWidth) * Time.deltaTime;
+            if(direction == ScrollButtonDirection.LEFT){
+                cardQueueScrollRect.horizontalNormalizedPosition = Mathf.Clamp01(cardQueueScrollRect.horizontalNormalizedPosition - scrollAmount);
+            }else{
+                cardQueueScrollRect.horizontalNormalizedPosition = Mathf.Clamp01(cardQueueScrollRect.horizontalNormalizedPosition + scrollAmount);
+            }
+        }
+    }
+
+    // 스크롤 뷰 내부 컨텐츠요소의 길이에 따라 스크롤 버튼의 활성화 상태 변경
+    private void UpdateScrollButtonVisibility()
+    {
+        float contentWidth = cardQueueScrollRect.content.rect.width;
+        float viewportWidth = cardQueueScrollRect.viewport.rect.width;
+
+        if(contentWidth <= viewportWidth){
+            leftScrollButton.gameObject.SetActive(false);
+            rightScrollButton.gameObject.SetActive(false);
+        }else{
+            if(cardQueueScrollRect.horizontalNormalizedPosition <= 0){
+                leftScrollButton.gameObject.SetActive(false); // 스크롤바가 왼쪽 끝에 있는 경우 왼쪽 버튼 비활성화
+            }else{
+                leftScrollButton.gameObject.SetActive(true);
+            }
+            if(cardQueueScrollRect.horizontalNormalizedPosition >= 1){
+                rightScrollButton.gameObject.SetActive(false); // 스크롤바가 오른쪽 끝에 있는 경우 오른쪽 버튼 비활성화
+
+            }else{
+                rightScrollButton.gameObject.SetActive(true);
+            }
+        }
+    }
 
     // 댁 카운트 텍스트 컴포넌트들의 크기 변경 애니매이션(댁 카운트 변경 시 크기 커졌다 작아지는 애니매이션)
     public void DeckCountTextScaleAnimation(Text textComponent, int count)
@@ -125,5 +189,36 @@ public class GameUIManager : SingletonD<GameUIManager>
             cardQueuePopUp.GetComponent<CanvasGroup>().alpha = 0f;
             cardQueuePopUp.gameObject.SetActive(false);
         }
+    }
+
+    // ------------------------------------ 스크롤 버튼 이벤트 트리거 컴포넌트에 할당된 함수 -------------------------------------//
+    public void OnPointerEnterScrollView()
+    {
+        isPointerDown = false;
+        direction = ScrollButtonDirection.NONE;
+    }
+    
+    public void OnPointerDownLeftScrollButton()
+    {
+        isPointerDown = true;
+        direction = ScrollButtonDirection.LEFT;
+    }
+
+    public void OnPointerUpLeftScrollButton()
+    {
+        isPointerDown = false;
+        direction = ScrollButtonDirection.NONE;
+    }
+
+    public void OnPointerDownRightScrollButton()
+    {
+        isPointerDown = true;
+        direction = ScrollButtonDirection.RIGHT;
+    }
+
+    public void OnPointerUpRightScrollButton()
+    {
+        isPointerDown = false;
+        direction = ScrollButtonDirection.NONE;
     }
 }
