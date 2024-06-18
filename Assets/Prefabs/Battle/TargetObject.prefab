@@ -194,7 +194,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -822484745
-  m_SortingOrder: 2
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &5887812446922134476
 MonoBehaviour:
@@ -2022,44 +2022,42 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  anim: {fileID: 0}
   targetObjectUI: {fileID: 4996807731787544662}
+  selectedNamePlate: {fileID: 0}
+  buffIndicator: {fileID: 3626619607479802059}
+  nextActionIndicator: {fileID: 2888408972560071505}
+  avatar: {fileID: 0}
   playerNamePlate: {fileID: 5848243873048461331}
   playerHpCanvas: {fileID: 385931046176798487}
   playerNameCanvas: {fileID: 4070067216940239103}
   playerShieldCanvas: {fileID: 2791132235251908804}
-  monsterNamePlate: {fileID: 3821587419960410389}
-  monsterHpCanvas: {fileID: 6071475505774024666}
-  monsterNameCanvas: {fileID: 3786259486837499860}
-  monsterShieldCanvas: {fileID: 6206956365603746555}
-  selectedNamePlate: {fileID: 0}
   playerName: {fileID: 6524595984880732055}
-  monsterName: {fileID: 3461204254331568624}
   playerMessageCavnas: {fileID: 7208020436336796324}
   playerMessageBubble: {fileID: 1231679801373926788}
-  buffIndicator: {fileID: 3626619607479802059}
-  nextActionIndicator: {fileID: 2888408972560071505}
-  objectType: 0
-  player: {fileID: 0}
-  ironDemonData:
-  - {fileID: 11400000, guid: a2473eec38dcb134ca7b2bba3cb9b70d, type: 2}
-  - {fileID: 11400000, guid: d89e29a69d7259e4ca9f9240acda9272, type: 2}
-  playerHP: 0
-  playerMaxHP: 0
-  conn: {fileID: 0}
-  monster: {fileID: 0}
   characters:
   - {fileID: 1238078986054683857, guid: d547f9af7596d4f4e9c8bba8024996e3, type: 3}
   - {fileID: 1238078986054683857, guid: 19decaaa4c666534494b39af1cee56b8, type: 3}
   - {fileID: 1238078986054683857, guid: c9b6d7b83beb28c46b6dfd46a0abaf4c, type: 3}
   - {fileID: 1238078986054683857, guid: bbfdd8ca06184df4fa0339d236132534, type: 3}
-  monsters:
-  - {fileID: 7282913678413976495, guid: b9a0165d22875e044b8c8a0d37a31d50, type: 3}
-  avatar: {fileID: 0}
+  ironDemonData:
+  - {fileID: 11400000, guid: a2473eec38dcb134ca7b2bba3cb9b70d, type: 2}
+  - {fileID: 11400000, guid: d89e29a69d7259e4ca9f9240acda9272, type: 2}
   ironDemon: {fileID: 0}
-  ironDemonLocation: {fileID: 0}
   isIronDemonMoving: 0
-  anim: {fileID: 0}
-  defense: 0
+  usingGOHENG: 0
+  usedGOHENG: 
+  monsterNamePlate: {fileID: 3821587419960410389}
+  monsterHpCanvas: {fileID: 6071475505774024666}
+  monsterNameCanvas: {fileID: 3786259486837499860}
+  monsterShieldCanvas: {fileID: 6206956365603746555}
+  nextActionCanvas: {fileID: 6244826236674996419}
+  monsterName: {fileID: 3461204254331568624}
+  objectType: 0
+  player: {fileID: 0}
+  playerHP: 0
+  playerMaxHP: 0
+  ironDemonLocation: {fileID: 0}
   currentIchi: 3
   maxIchi: 3
   limitiChi: 6
@@ -2067,9 +2065,8 @@ MonoBehaviour:
   erisMode: 0
   currentApDoRequirement: 8
   isDying: 0
-  usingGOHENG: 0
-  usedGOHENG: 
-  initialUseEffectIndex: 
+  monster: {fileID: 0}
+  defense: 0
 --- !u!114 &457687340931919250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2788,7 +2785,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6623405929306813625}
   - component: {fileID: 5689302365548812729}
-  - component: {fileID: 270728812904873065}
   m_Layer: 0
   m_Name: MonsterPlate
   m_TagString: Untagged
@@ -2835,17 +2831,6 @@ MonoBehaviour:
   nameCanvas: {fileID: 3786259486837499860}
   hpCanvas: {fileID: 6071475505774024666}
   shieldCanvas: {fileID: 6206956365603746555}
---- !u!210 &270728812904873065
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3821587419960410389}
-  m_Enabled: 0
-  m_SortingLayerID: -822484745
-  m_SortingLayer: 2
-  m_SortingOrder: 0
 --- !u!1 &3979793123935941712
 GameObject:
   m_ObjectHideFlags: 0
@@ -3900,7 +3885,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -822484745
-  m_SortingOrder: 2
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &3581798121314012772
 MonoBehaviour:
@@ -4053,7 +4038,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1583920948548683124}
   - component: {fileID: 6406118518676920202}
-  - component: {fileID: 3385097194972294271}
   m_Layer: 0
   m_Name: PlayerPlate
   m_TagString: Untagged
@@ -4100,17 +4084,6 @@ MonoBehaviour:
   nameCanvas: {fileID: 4070067216940239103}
   hpCanvas: {fileID: 385931046176798487}
   shieldCanvas: {fileID: 2791132235251908804}
---- !u!210 &3385097194972294271
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5848243873048461331}
-  m_Enabled: 0
-  m_SortingLayerID: -822484745
-  m_SortingLayer: 2
-  m_SortingOrder: 0
 --- !u!1 &5868235136009666276
 GameObject:
   m_ObjectHideFlags: 0
@@ -4210,7 +4183,7 @@ SortingGroup:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5868235136009666276}
-  m_Enabled: 0
+  m_Enabled: 1
   m_SortingLayerID: -822484745
   m_SortingLayer: 2
   m_SortingOrder: 0
@@ -4744,7 +4717,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -822484745
-  m_SortingOrder: 2
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &2434299524908794535
 MonoBehaviour:
@@ -5499,7 +5472,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -822484745
-  m_SortingOrder: 2
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &562836862198812440
 MonoBehaviour:

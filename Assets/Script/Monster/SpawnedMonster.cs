@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Mirror;
 using ProjectD;
 using Spine.Unity;
@@ -80,6 +81,11 @@ public class SpawnedMonster : NetworkBehaviour
         if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
             skeletonRendererCustomMaterials.enabled = true;
             meshRenderer.sortingLayerName = "FrontLayer";
+            parent.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "FrontLayer";
+            parent.monsterHpCanvas.sortingLayerName = "FrontLayer";
+            parent.monsterNameCanvas.sortingLayerName = "FrontLayer";
+            parent.monsterShieldCanvas.sortingLayerName = "FrontLayer";
+            parent.nextActionCanvas.sortingLayerName = "FrontLayer";
         }
     }
 
@@ -88,6 +94,11 @@ public class SpawnedMonster : NetworkBehaviour
         if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
             skeletonRendererCustomMaterials.enabled = false;
             meshRenderer.sortingLayerName = "BackLayer";
+            parent.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "BackLayer";
+            parent.monsterHpCanvas.sortingLayerName = "BackLayer";
+            parent.monsterNameCanvas.sortingLayerName = "BackLayer";
+            parent.monsterShieldCanvas.sortingLayerName = "BackLayer";
+            parent.nextActionCanvas.sortingLayerName = "BackLayer";
         }
     }
 
@@ -271,6 +282,12 @@ public class SpawnedMonster : NetworkBehaviour
     {
         transform.SetParent(newParent.transform);
         transform.localPosition = Vector3.zero;
+        // UI 및 캔버스 오브젝트들을 매쉬랜더러 보다 1단계 위에 랜더링
+        newParent.targetObjectUI.GetComponent<SortingGroup>().sortingOrder = index + 1;
+        newParent.monsterHpCanvas.sortingOrder = index + 1;
+        newParent.monsterNameCanvas.sortingOrder = index + 1;
+        newParent.monsterShieldCanvas.sortingOrder = index + 1;
+        newParent.nextActionCanvas.sortingOrder = index + 1;
     }
     
     //-------------------------------------- Battle Method ----------------------------------//

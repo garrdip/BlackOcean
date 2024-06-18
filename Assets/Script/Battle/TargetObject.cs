@@ -58,6 +58,7 @@ public class TargetObject : NetworkBehaviour
     public Canvas monsterHpCanvas;
     public Canvas monsterNameCanvas;
     public Canvas monsterShieldCanvas;
+    public Canvas nextActionCanvas;
     public TextMeshProUGUI monsterName;
 
 
