@@ -35,8 +35,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     [Header("카드 큐 프리팹")]
     public GameObject cardQueueItemPrefab;
-    public int cardQueueListIndex; // 카드 큐 인덱스
-    private const int cardQueueListIndexInitialValue = -1; // 카드 큐 인덱스 초기값 (리스트 인덱스와 맞추기 위해 초기값 -1)
+    public int currentCardQueueIndex; // 현재 카드 큐 인덱스
+    private const int currentCardQueueInitalValue = -1; // 현재 카드 큐 인덱스 초기값 (리스트 인덱스와 맞추기 위해 초기값 -1)
     public List<GameObject> cardQueueItems = new List<GameObject>();
     
     [SerializedDictionary("게임플레이어", "보상카드선택유무")]
@@ -90,7 +90,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public override void OnStartServer()
     {
         base.OnStartServer();
-        cardQueueListIndex = cardQueueListIndexInitialValue;
+        currentCardQueueIndex = currentCardQueueInitalValue;
         StartCoroutine(ProcessCardQueue());
     }
 
@@ -509,7 +509,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         RpcShowBattleResultPopUp(); // 전투 종료 팝업 호출
         ResetEndTurnState(); // 턴종료 상태 리셋
         cardQueueList.Clear(); // 카드 큐 Synclist 클리어
-        cardQueueListIndex = cardQueueListIndexInitialValue; // 카드 큐 Synclist에 사용하는 index 값 초기화
+        currentCardQueueIndex = currentCardQueueInitalValue; // 카드 큐 Synclist에 사용하는 index 값 초기화
     }
 
     [Server]
@@ -573,15 +573,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     isCardQueueOperating = true;
                     (GamePlayerDeck gpd, int totalCost, CardOnHand cardOnHand,List<TargetObject> tar) = cardTargetPairQueue.Dequeue(); // 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
                     
-                    cardQueueListIndex++; // 카드큐 인덱스 증가(초기값은 -1임. 0이 되어 리스트의 인덱스와 동일한 인덱스);
-                    SerCurrentCardQueue(cardOnHand, gpd.netId, cardQueueListIndex); // 해당 인덱스의 카드 큐를 현재 카드 큐로 설정
+                    currentCardQueueIndex++; // 현재 카드 큐 인덱스 증가(초기값은 -1 임. 0 이 되어 리스트의 인덱스와 동일한 인덱스);
+                    SerCurrentCardQueue(cardOnHand, gpd.netId, currentCardQueueIndex); // 해당 인덱스의 카드 큐를 현재 카드 큐로 설정
 
                     if(cardOnHand.card.baseCard.isTargetable && tar[1] == null)
                     {
                         gpd.ReturnToCardOnHand(cardOnHand);
                         cardQueueList.RemoveAt(cardQueueList.Count - 1);
-                        cardQueueListIndex--;
-                        SerCurrentCardQueue(cardOnHand, gpd.netId, cardQueueListIndex);
+                        currentCardQueueIndex--;
+                        SerCurrentCardQueue(cardOnHand, gpd.netId, currentCardQueueIndex);
                         gpd.currentIchi += totalCost;
                         CardData.instance.isCardOperating = false;
                     }
@@ -591,8 +591,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         {
                             gpd.ReturnToCardOnHand(cardOnHand);
                             cardQueueList.RemoveAt(cardQueueList.Count - 1);
-                            cardQueueListIndex--;
-                            SerCurrentCardQueue(cardOnHand, gpd.netId, cardQueueListIndex);
+                            currentCardQueueIndex--;
+                            SerCurrentCardQueue(cardOnHand, gpd.netId, currentCardQueueIndex);
                             gpd.currentIchi += totalCost;
                             CardData.instance.isCardOperating = false;
                             continue;
@@ -615,8 +615,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         if(cardOnHand.card.isReturnable){
                             gpd.ReturnToCardOnHand(cardOnHand);
                             cardQueueList.RemoveAt(cardQueueList.Count - 1);
-                            cardQueueListIndex--;
-                            SerCurrentCardQueue(cardOnHand, gpd.netId, cardQueueListIndex);
+                            currentCardQueueIndex--;
+                            SerCurrentCardQueue(cardOnHand, gpd.netId, currentCardQueueIndex);
                         }else{
                             gpd.destroyCardList.Add(cardOnHand);
                         }
