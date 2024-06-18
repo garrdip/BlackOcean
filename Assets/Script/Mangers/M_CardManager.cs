@@ -605,9 +605,9 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     {
         Debug.Log("Start CurseCardEffect!");
         Debug.Log(curseCardQueue.Count);
-        foreach((Card,TargetObject) item in curseCardQueue)
+        for (int i = 0; i < curseCardQueue.Count; i++)
         {
-            yield return CardData.instance.CurseCardEffect(item.Item1,item.Item2);
+            yield return CardData.instance.CurseCardEffect(curseCardQueue[i].Item1, curseCardQueue[i].Item2);
         }
         curseCardQueue.Clear();
         M_TurnManager.instance.phase = BattleTurn.MONSTER_ORDERSELECT;

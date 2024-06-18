@@ -733,9 +733,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     IEnumerator MonsterActionSeuqence()
     {
         WaitForSeconds loopWait = new WaitForSeconds(0.01f);
-        foreach(TargetObject target in spawnedMonsterList)
+        for(int i=0; i<spawnedMonsterList.Count; i++)
         {
-
+            TargetObject target = spawnedMonsterList[i];
             target.monster.isActive = true;
             StartCoroutine(target.monster.DoAction());
             while(true)
