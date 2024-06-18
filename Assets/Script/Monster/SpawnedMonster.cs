@@ -10,6 +10,9 @@ public class SpawnedMonster : NetworkBehaviour
     public string monsterName;
 
     [SyncVar]
+    public int index;
+
+    [SyncVar]
     public int MAXHP;
 
     [SyncVar (hook = nameof(OnChangedHpValue))]
@@ -69,12 +72,14 @@ public class SpawnedMonster : NetworkBehaviour
             dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingLayerName = "FrontLayer";
             dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingOrder = 999;
         }
+        meshRenderer.sortingOrder = index;
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
             skeletonRendererCustomMaterials.enabled = true;
+            meshRenderer.sortingLayerName = "FrontLayer";
         }
     }
 
@@ -82,6 +87,7 @@ public class SpawnedMonster : NetworkBehaviour
     {
         if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
             skeletonRendererCustomMaterials.enabled = false;
+            meshRenderer.sortingLayerName = "BackLayer";
         }
     }
 

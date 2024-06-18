@@ -562,23 +562,27 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public void AddCardQueueList(CardOnHand cardOnHand, uint netId)
     {
-        CardQueue cardQueue = new CardQueue(){
-            cardOwnerNetId = netId,
-            card = cardOnHand.card
-        };
-        M_TurnManager.instance.cardQueueList.Add(cardQueue);
+        if(!cardOnHand.card.baseCard.cardNumber.Equals("HA")){ // 철귀 이동 카드는 제외
+            CardQueue cardQueue = new CardQueue(){
+                cardOwnerNetId = netId,
+                card = cardOnHand.card
+            };
+            M_TurnManager.instance.cardQueueList.Add(cardQueue);
+        }
     }
 
     // 카드 큐 Synclist 요소에 데이터 새로 세팅
     [Server]
     public void SetCardQueueList(CardOnHand cardOnHand, uint netId)
     {
-        CardQueue cardQueue = new CardQueue(){
-            cardOwnerNetId = netId,
-            card = cardOnHand.card
-        };
-        cardQueueListIndex++;
-        cardQueueList[cardQueueListIndex] = cardQueue; 
+        if(!cardOnHand.card.baseCard.cardNumber.Equals("HA")){ // 철귀 이동 카드는 제외
+            CardQueue cardQueue = new CardQueue(){
+                cardOwnerNetId = netId,
+                card = cardOnHand.card
+            };
+            cardQueueListIndex++;
+            cardQueueList[cardQueueListIndex] = cardQueue;
+        }
     }
 
     public IEnumerator ProcessCardQueue()
@@ -792,6 +796,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             Vector3 position = targetObjectPosition[i + 3];
             var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == selectedMonsterGroup.monsters[i].name), position, Quaternion.identity).GetComponent<SpawnedMonster>();
             monster.monsterData = selectedMonsterGroup.monsters[i];
+            monster.index = selectedMonsterGroup.monsters.Count - i;
             NetworkServer.Spawn(monster.gameObject);
             
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), position, Quaternion.identity);
