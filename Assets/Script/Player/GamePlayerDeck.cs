@@ -833,7 +833,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 if(newPrefareDeck.baseCard.cardType == CardType.CURSE){
                     gainCurseCardCount++;
                 }
-                if(newPrefareDeck.isChargedCard){
+                // 현재 플레이하는 캐릭터의 카드 충전 이펙트 실행
+                PlayerInterface playerInterface = GetComponent<GamePlayer>().objectOwner;
+                if(playerInterface.currentGamePlayerNetId == GetComponent<GamePlayer>().netId && newPrefareDeck.isChargedCard){
                     Vector3 startPosition = GameUIManager.instance.buttonTrashDeck.transform.position;
                     Vector3 endPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
                     M_CardManager.instance.CardOnHandChargedSequence(newPrefareDeck, index, startPosition, endPosition);

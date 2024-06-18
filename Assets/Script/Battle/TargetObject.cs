@@ -240,15 +240,17 @@ public class TargetObject : NetworkBehaviour
         }
         // 페이드인 1초 후 페이드아웃 1초 
         CanvasGroup canvasGroup = playerMessageCavnas.GetComponent<CanvasGroup>();
-        if(DOTween.IsTweening(canvasGroup)){
-            DOTween.Kill(canvasGroup);
-        }
-        canvasGroup.gameObject.SetActive(true);
-        canvasGroup.DOFade(1.0f, 1f).OnComplete(() => {
-            canvasGroup.DOFade(0.0f, 1f).OnComplete(() => {
-                canvasGroup.gameObject.SetActive(false);
+        if(canvasGroup != null){
+            if(DOTween.IsTweening(canvasGroup)){
+                canvasGroup.DOKill();
+            }
+            canvasGroup.gameObject.SetActive(true);
+            canvasGroup.DOFade(1.0f, 1f).OnComplete(() => {
+                canvasGroup.DOFade(0.0f, 1f).OnComplete(() => {
+                    canvasGroup.gameObject.SetActive(false);
+                }); 
             }); 
-        }); 
+        }
     }
 
     // 캐릭터별 음성 생성 및 팝업창 텍스트 세팅
