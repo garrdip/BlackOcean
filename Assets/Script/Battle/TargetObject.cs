@@ -858,10 +858,6 @@ public class TargetObject : NetworkBehaviour
                 playerNamePlate.SetActive(false);
                 monsterNamePlate.SetActive(true);
                 break;
-            case ObjectType.BOSS:
-                playerNamePlate.SetActive(false);
-                monsterNamePlate.SetActive(true);
-                break;
         }
     }
 

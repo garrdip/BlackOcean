@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ProjectD
 {
     public enum Character { NONE, GEORK, ERIS, HONGDANHYANG }
-    public enum ObjectType {PLAYER, ENEMY, BOSS}
+    public enum ObjectType {PLAYER, ENEMY}
     public enum ActionType {DEFENSE, ATTACK, ATTACKX2, ATTACKANDDEBUFF}
     public enum ActionTarget {UNDEFINED ,FRONT, MIDDLE, BACK, FRONT_MIDDLE, FRONT_BACK, MIDDLE_BACK, WHOLE, FIXEDPLAYER, RANDOM, NONE, RANDOM_FRONT_MIDDLE, RANDOM_FRONT_BACK, RANDOM_MIDDLE_BACK, RANDOM_SINGLE, RANDOM_DOUBLE, ENEMY_SINGLE}
     public enum PlayOrder { FIRST = 0, SECOND = 1, THIRD = 2 }

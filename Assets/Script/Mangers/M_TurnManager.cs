@@ -35,9 +35,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     [Header("카드 큐 프리팹")]
     public GameObject cardQueueItemPrefab;
-    public List<GameObject> cardQueueItems = new List<GameObject>();
     public int cardQueueListIndex; // 카드 큐 인덱스
     private const int cardQueueListIndexInitialValue = -1; // 카드 큐 인덱스 초기값 (리스트 인덱스와 맞추기 위해 초기값 -1)
+    public List<GameObject> cardQueueItems = new List<GameObject>();
     
     [SerializedDictionary("게임플레이어", "보상카드선택유무")]
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
@@ -571,12 +571,17 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 if(cardTargetPairQueue.Count != 0){
                     CardData.instance.isCardOperating = true;
                     isCardQueueOperating = true;
-                    // TODO : 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
-                    (GamePlayerDeck gpd, int totalCost, CardOnHand cardOnHand,List<TargetObject> tar) = cardTargetPairQueue.Dequeue();
+                    (GamePlayerDeck gpd, int totalCost, CardOnHand cardOnHand,List<TargetObject> tar) = cardTargetPairQueue.Dequeue(); // 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
+                    
+                    cardQueueListIndex++; // 카드큐 인덱스 증가(초기값은 -1임. 0이 되어 리스트의 인덱스와 동일한 인덱스);
+                    SerCurrentCardQueue(cardOnHand, gpd.netId, cardQueueListIndex); // 해당 인덱스의 카드 큐를 현재 카드 큐로 설정
+
                     if(cardOnHand.card.baseCard.isTargetable && tar[1] == null)
                     {
                         gpd.ReturnToCardOnHand(cardOnHand);
                         cardQueueList.RemoveAt(cardQueueList.Count - 1);
+                        cardQueueListIndex--;
+                        SerCurrentCardQueue(cardOnHand, gpd.netId, cardQueueListIndex);
                         gpd.currentIchi += totalCost;
                         CardData.instance.isCardOperating = false;
                     }
@@ -586,6 +591,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         {
                             gpd.ReturnToCardOnHand(cardOnHand);
                             cardQueueList.RemoveAt(cardQueueList.Count - 1);
+                            cardQueueListIndex--;
+                            SerCurrentCardQueue(cardOnHand, gpd.netId, cardQueueListIndex);
                             gpd.currentIchi += totalCost;
                             CardData.instance.isCardOperating = false;
                             continue;
@@ -608,13 +615,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         if(cardOnHand.card.isReturnable){
                             gpd.ReturnToCardOnHand(cardOnHand);
                             cardQueueList.RemoveAt(cardQueueList.Count - 1);
+                            cardQueueListIndex--;
+                            SerCurrentCardQueue(cardOnHand, gpd.netId, cardQueueListIndex);
                         }else{
                             gpd.destroyCardList.Add(cardOnHand);
                         }
                         gpd.numOfUsedCard++;
                         // 카드 사용후 효과 여기서 발동
 
-                        SerCurrentCardQueue(cardOnHand, gpd.netId);
                     }
                 }
                 else
@@ -638,17 +646,16 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
-    // 카드 사용이 완료되면 유효한 카드이므로, 해당 카드를 현재 카드 큐로 설정하여 표시
+    // 해당 인덱스의 카드 큐를 현재 카드 큐로 설정
     [Server]
-    public void SerCurrentCardQueue(CardOnHand cardOnHand, uint netId)
+    public void SerCurrentCardQueue(CardOnHand cardOnHand, uint netId, int index)
     {
         if(!cardOnHand.card.baseCard.cardNumber.Equals("HA")){ // 철귀 이동 카드는 제외
             CardQueue cardQueue = new CardQueue(){
                 cardOwnerNetId = netId,
                 card = cardOnHand.card
             };
-            cardQueueListIndex++;
-            cardQueueList[cardQueueListIndex] = cardQueue;
+            cardQueueList[index] = cardQueue;
         }
     }
 
@@ -930,7 +937,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 bossMoMos.monsterData = M_MonsterManager.instance.monsterDataList.Find(x => x.name == "Boss_Momos");
                 NetworkServer.Spawn(bossMoMos.gameObject);
                 var bossMoMosAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
-                bossMoMosAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.BOSS;
+                bossMoMosAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
                 bossMoMosAvatar.GetComponent<TargetObject>().monster = bossMoMos;
                 NetworkServer.Spawn(bossMoMosAvatar);
                 spawnedMonsterList.Add(bossMoMosAvatar.GetComponent<TargetObject>());
@@ -941,7 +948,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 bossApates.monsterData = M_MonsterManager.instance.monsterDataList.Find(x => x.name == "Boss_Apates");
                 NetworkServer.Spawn(bossApates.gameObject);
                 var bossApatesAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
-                bossApatesAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.BOSS;
+                bossApatesAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
                 bossApatesAvatar.GetComponent<TargetObject>().monster = bossApates;
                 NetworkServer.Spawn(bossApatesAvatar);
                 spawnedMonsterList.Add(bossApatesAvatar.GetComponent<TargetObject>());
@@ -952,7 +959,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 bossGeras.monsterData = M_MonsterManager.instance.monsterDataList.Find(x => x.name == "Boss_Geras");
                 NetworkServer.Spawn(bossGeras.gameObject);
                 var bossGerasAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
-                bossGerasAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.BOSS;
+                bossGerasAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
                 bossGerasAvatar.GetComponent<TargetObject>().monster = bossGeras;
                 NetworkServer.Spawn(bossGerasAvatar);
                 spawnedMonsterList.Add(bossGerasAvatar.GetComponent<TargetObject>());
