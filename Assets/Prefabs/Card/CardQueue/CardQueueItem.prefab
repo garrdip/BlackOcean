@@ -169,7 +169,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3638564102892829738
 RectTransform:
   m_ObjectHideFlags: 0
@@ -336,7 +336,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3638564103085022574
 RectTransform:
   m_ObjectHideFlags: 0
@@ -412,7 +412,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3638564103415843827
 RectTransform:
   m_ObjectHideFlags: 0
@@ -488,7 +488,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3638564103802928732
 RectTransform:
   m_ObjectHideFlags: 0
@@ -797,9 +797,16 @@ MonoBehaviour:
   canvasGroup: {fileID: -8293420247205726298}
   smallCardQueue: {fileID: 3638564104021483588}
   smallCardQueueEm: {fileID: 7601755139809853117}
+  smallCardQueueLights:
+  - {fileID: 3638564104745908763}
+  - {fileID: 3638564102892829741}
   smallCardQueueIllust: {fileID: 4507247659561445722}
   bigCardQueue: {fileID: 3638564104078353272}
   bigCardQueueEm: {fileID: 8466569291262401562}
+  bigCardQueueLights:
+  - {fileID: 3638564103415843826}
+  - {fileID: 3638564103802928735}
+  - {fileID: 3638564103085022545}
   bigCardQueueIllust: {fileID: 3686971439034351752}
 --- !u!1 &3638564104438719315
 GameObject:
@@ -1137,7 +1144,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3638564104745908760
 RectTransform:
   m_ObjectHideFlags: 0

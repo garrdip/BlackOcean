@@ -23,8 +23,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         OnChangedPhase();
     }}
 
-    [SyncVar]
-    public NPC_Mercurius npc_Mercurius;
 
     // 서버에서 관리할 PlayerOrder SyncList : 요소값이 0인 인덱스는 빈 슬롯을 의미. 플레이어들이 추가될 때 0인 인덱스의 값을 제거하고 해당 플레이어의 netId를 추가
     public readonly SyncList<uint> playerOrder = new SyncList<uint>(){ 0, 0, 0 };
@@ -558,33 +556,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
-    // 카드 큐 Synclist에 데이터 추가
-    [Server]
-    public void AddCardQueueList(CardOnHand cardOnHand, uint netId)
-    {
-        if(!cardOnHand.card.baseCard.cardNumber.Equals("HA")){ // 철귀 이동 카드는 제외
-            CardQueue cardQueue = new CardQueue(){
-                cardOwnerNetId = netId,
-                card = cardOnHand.card
-            };
-            M_TurnManager.instance.cardQueueList.Add(cardQueue);
-        }
-    }
-
-    // 카드 큐 Synclist 요소에 데이터 새로 세팅
-    [Server]
-    public void SetCardQueueList(CardOnHand cardOnHand, uint netId)
-    {
-        if(!cardOnHand.card.baseCard.cardNumber.Equals("HA")){ // 철귀 이동 카드는 제외
-            CardQueue cardQueue = new CardQueue(){
-                cardOwnerNetId = netId,
-                card = cardOnHand.card
-            };
-            cardQueueListIndex++;
-            cardQueueList[cardQueueListIndex] = cardQueue;
-        }
-    }
-
     public IEnumerator ProcessCardQueue()
     {
         // 무한루프에서 인스턴스 생성시 생기는 가비지 방지를 위해 함수호출에서 미리 인스턴스 생성하여 캐싱후 루프 안에서 사용
@@ -643,7 +614,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         gpd.numOfUsedCard++;
                         // 카드 사용후 효과 여기서 발동
 
-                        SetCardQueueList(cardOnHand, gpd.netId); // 카드 큐 Synclist 요소에 데이터 새로 세팅
+                        SerCurrentCardQueue(cardOnHand, gpd.netId);
                     }
                 }
                 else
@@ -651,6 +622,33 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     isCardQueueOperating = false;
                 }
             }
+        }
+    }
+
+    // 카드 큐 Synclist에 데이터 추가
+    [Server]
+    public void AddCardQueueList(CardOnHand cardOnHand, uint netId)
+    {
+        if(!cardOnHand.card.baseCard.cardNumber.Equals("HA")){ // 철귀 이동 카드는 제외
+            CardQueue cardQueue = new CardQueue(){
+                cardOwnerNetId = netId,
+                card = cardOnHand.card
+            };
+            M_TurnManager.instance.cardQueueList.Add(cardQueue);
+        }
+    }
+
+    // 카드 사용이 완료되면 유효한 카드이므로, 해당 카드를 현재 카드 큐로 설정하여 표시
+    [Server]
+    public void SerCurrentCardQueue(CardOnHand cardOnHand, uint netId)
+    {
+        if(!cardOnHand.card.baseCard.cardNumber.Equals("HA")){ // 철귀 이동 카드는 제외
+            CardQueue cardQueue = new CardQueue(){
+                cardOwnerNetId = netId,
+                card = cardOnHand.card
+            };
+            cardQueueListIndex++;
+            cardQueueList[cardQueueListIndex] = cardQueue;
         }
     }
 
@@ -910,7 +908,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
         cardNPC.monsterData = M_MonsterManager.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_Mercurius"));
         NetworkServer.Spawn(cardNPC.gameObject);
-        npc_Mercurius = mercurius; // NPC_Mercurius의 참조값 설정
 
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
         avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;

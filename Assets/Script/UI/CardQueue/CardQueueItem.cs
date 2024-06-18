@@ -13,11 +13,13 @@ public class CardQueueItem : MonoBehaviour
     [Header("Small 카드 큐")]
     public GameObject smallCardQueue;
     public GameObject smallCardQueueEm;
+    public List<GameObject> smallCardQueueLights;
     public Image smallCardQueueIllust;
     
     [Header("Big 카드 큐")]
     public GameObject bigCardQueue;
     public GameObject bigCardQueueEm;
+    public List<GameObject> bigCardQueueLights;
     public Image bigCardQueueIllust;
 
 
@@ -31,6 +33,7 @@ public class CardQueueItem : MonoBehaviour
     private void OnDestroy()
     {
         transform.DOKill();
+        canvasGroup.DOKill();
     }
 
     // 카드 큐 일러스트 이미지에 사용된 카드의 일러스트 세팅
@@ -59,13 +62,28 @@ public class CardQueueItem : MonoBehaviour
         GameUIManager.instance.HandleCardQueuePopUp(cardQueue, true);
         if(smallCardQueue.activeSelf){
             GameUIManager.instance.cardQueuePopUp.transform.position = smallCardQueueEm.transform.position + new Vector3(0f, -150f, 0f);
+            foreach(GameObject lightObject in smallCardQueueLights){
+                lightObject.SetActive(true);
+            }
         }else{
             GameUIManager.instance.cardQueuePopUp.transform.position = bigCardQueueEm.transform.position + new Vector3(0f, -150f, 0f);
+            foreach(GameObject lightObject in bigCardQueueLights){
+                lightObject.SetActive(true);
+            }
         }
     }
 
     public void OnPointerExit()
     {
         GameUIManager.instance.HandleCardQueuePopUp(cardQueue, false);
+        if(smallCardQueue.activeSelf){
+            foreach(GameObject lightObject in smallCardQueueLights){
+                lightObject.SetActive(false);
+            }
+        }else{
+            foreach(GameObject lightObject in bigCardQueueLights){
+                lightObject.SetActive(false);
+            }
+        }
     }
 }
