@@ -17120,6 +17120,34 @@ MonoBehaviour:
       Value: {fileID: 21300000, guid: a67b58d6cddcd4345b1e001340de5a76, type: 3}
     - Key: 23
       Value: {fileID: 21300000, guid: a67b58d6cddcd4345b1e001340de5a76, type: 3}
+    - Key: 35
+      Value: {fileID: 21300000, guid: da3707b8613dca74dbe64864ad415a8e, type: 3}
+    - Key: 36
+      Value: {fileID: 21300000, guid: 7ed5d92c89a25964f8c1e56068b5f79e, type: 3}
+    - Key: 37
+      Value: {fileID: 21300000, guid: da917518b83747642b74606510d6818e, type: 3}
+    - Key: 38
+      Value: {fileID: 21300000, guid: a26ad3f37cac55049a986c368cfe7e1f, type: 3}
+    - Key: 39
+      Value: {fileID: 21300000, guid: 896f7ae365bbef8458aaade8de687449, type: 3}
+    - Key: 13
+      Value: {fileID: 21300000, guid: f8394fd299125de46975ddab5618a96a, type: 3}
+    - Key: 40
+      Value: {fileID: 21300000, guid: 0e06b569dfe4227469896d71a22a286d, type: 3}
+    - Key: 41
+      Value: {fileID: 21300000, guid: b1b960c1531760e47ad9576264f601ca, type: 3}
+    - Key: 42
+      Value: {fileID: 21300000, guid: b7f6685192849f243a7dbc4b1fb5d0c3, type: 3}
+    - Key: 43
+      Value: {fileID: 21300000, guid: 33b9c1fc1796f44408957584d35028d8, type: 3}
+    - Key: 44
+      Value: {fileID: 21300000, guid: e6a3691d3c19b72419b2807c6ea5d590, type: 3}
+    - Key: 45
+      Value: {fileID: 21300000, guid: f446a997a40224f49bb6266d1f50d4ad, type: 3}
+    - Key: 46
+      Value: {fileID: 21300000, guid: 435c93ffcfe32ae45a360f3a0da3d70a, type: 3}
+    - Key: 47
+      Value: {fileID: 21300000, guid: 49d39d9f23fcbea47bb01c4c67b82b32, type: 3}
   isCardOperatingTEST: 0
   colorList:
   - <#ff0000>

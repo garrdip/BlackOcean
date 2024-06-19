@@ -10,53 +10,94 @@ using Spine.Unity;
 
 public partial class CardData : SingletonD<CardData>
 {
+    // 권능 : 찌르기
     public IEnumerator E0(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.8f);
+		GeneralSingleAttack(tar[0],tar[1],5);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E0_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E0(card,tar);
     }
+
+    // 권능 : 깊게 찌르기
     public IEnumerator E1(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+		GeneralSingleAttack(tar[0],tar[1],8);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E1_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E1(card,tar);
     }
+    // 변형된 팔
     public IEnumerator E2(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralGetDefense(tar[0],tar[0],4,card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E2_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E2(card,tar);
     }
+    // 구원의 팔
     public IEnumerator E3(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.5f);
+		GeneralGetDefense(tar[0],tar[1],3,card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E3_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E3(card,tar);
     }
+    
+    // 부서지세요
     public IEnumerator E4(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.8f);
+		GeneralSingleAttack(tar[0],tar[1],5);
+        tar[1].GainBuff(BuffType.BOONGGUI,1,true,false,true,false,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E4_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E4(card,tar);
     }
+
+    // 별 따기
     public IEnumerator E5(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Attack0");
+		yield return new WaitForSeconds(0.8f);
+		GeneralSingleAttack(tar[0],tar[1],2);
+        tar[0].GainBuff(BuffType.BYEOLMURI,1,false,false,false,false,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E5_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E5(card,tar);
     }
     public IEnumerator E6(Card card,List<TargetObject> tar)
     {

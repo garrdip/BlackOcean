@@ -194,16 +194,16 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     //}
                     break;
                 case Character.ERIS:
-                    for(int i = 0; i < 8; i++)
-                    {
-                        if(i % 2 == 0){
-                            Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E0")));
-                            deck.Add(attackCard);
-                        }else{
-                            Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E1")));
-                            deck.Add(defenseCard);
-                        }
-                    }
+                    //for(int i = 0; i < 8; i++)
+                    //{
+                    //    if(i % 2 == 0){
+                    //        Card attackCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E0")));
+                    //        deck.Add(attackCard);
+                    //    }else{
+                    //        Card defenseCard = new Card(CardData.instance.cards.Find(c => c.character.Equals(character) && c.cardNumber.Equals("E1")));
+                    //        deck.Add(defenseCard);
+                    //    }
+                    //}
                     break;
                 case Character.HONGDANHYANG:
                     //for(int i = 0; i < 10; i++)
