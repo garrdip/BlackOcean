@@ -38,6 +38,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public int currentCardQueueIndex; // 현재 카드 큐 인덱스
     private const int currentCardQueueInitalValue = -1; // 현재 카드 큐 인덱스 초기값 (리스트 인덱스와 맞추기 위해 초기값 -1)
     public List<GameObject> cardQueueItems = new List<GameObject>();
+    public enum INDEX_OPERATION {
+        INCREASE,
+        DECREASE
+    }
     
     [SerializedDictionary("게임플레이어", "보상카드선택유무")]
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
@@ -573,15 +577,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     isCardQueueOperating = true;
                     (GamePlayerDeck gpd, int totalCost, CardOnHand cardOnHand,List<TargetObject> tar) = cardTargetPairQueue.Dequeue(); // 큐에서 하나씩 빼서 카드의 타겟에 대한 로직 수행
                     
-                    currentCardQueueIndex++; // 현재 카드 큐 인덱스 증가(초기값은 -1 임. 0 이 되어 리스트의 인덱스와 동일한 인덱스);
-                    SerCurrentCardQueue(cardOnHand, gpd.netId, currentCardQueueIndex); // 해당 인덱스의 카드 큐를 현재 카드 큐로 설정
-
+                    SerCurrentCardQueue(cardOnHand, gpd.netId, INDEX_OPERATION.INCREASE); // 해당 인덱스의 카드 큐를 현재 카드 큐로 설정
                     if(cardOnHand.card.baseCard.isTargetable && tar[1] == null)
                     {
                         gpd.ReturnToCardOnHand(cardOnHand);
                         cardQueueList.RemoveAt(cardQueueList.Count - 1);
-                        currentCardQueueIndex--;
-                        SerCurrentCardQueue(cardOnHand, gpd.netId, currentCardQueueIndex);
+                        SerCurrentCardQueue(cardOnHand, gpd.netId, INDEX_OPERATION.DECREASE);
                         gpd.currentIchi += totalCost;
                         CardData.instance.isCardOperating = false;
                     }
@@ -591,8 +592,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         {
                             gpd.ReturnToCardOnHand(cardOnHand);
                             cardQueueList.RemoveAt(cardQueueList.Count - 1);
-                            currentCardQueueIndex--;
-                            SerCurrentCardQueue(cardOnHand, gpd.netId, currentCardQueueIndex);
+                            SerCurrentCardQueue(cardOnHand, gpd.netId, INDEX_OPERATION.DECREASE);
                             gpd.currentIchi += totalCost;
                             CardData.instance.isCardOperating = false;
                             continue;
@@ -615,8 +615,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         if(cardOnHand.card.isReturnable){
                             gpd.ReturnToCardOnHand(cardOnHand);
                             cardQueueList.RemoveAt(cardQueueList.Count - 1);
-                            currentCardQueueIndex--;
-                            SerCurrentCardQueue(cardOnHand, gpd.netId, currentCardQueueIndex);
+                            SerCurrentCardQueue(cardOnHand, gpd.netId, INDEX_OPERATION.DECREASE);
                         }else{
                             gpd.destroyCardList.Add(cardOnHand);
                         }
@@ -648,14 +647,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     // 해당 인덱스의 카드 큐를 현재 카드 큐로 설정
     [Server]
-    public void SerCurrentCardQueue(CardOnHand cardOnHand, uint netId, int index)
+    public void SerCurrentCardQueue(CardOnHand cardOnHand, uint netId, INDEX_OPERATION operation)
     {
-        if(!cardOnHand.card.baseCard.cardNumber.Equals("HA")){ // 철귀 이동 카드는 제외
+        if(!cardOnHand.card.baseCard.cardNumber.Equals("HA")){ // 철귀 이동 카드는 제외  
+            currentCardQueueIndex = operation == INDEX_OPERATION.INCREASE ? (currentCardQueueIndex + 1) : (currentCardQueueIndex - 1);
             CardQueue cardQueue = new CardQueue(){
                 cardOwnerNetId = netId,
                 card = cardOnHand.card
             };
-            cardQueueList[index] = cardQueue;
+            cardQueueList[currentCardQueueIndex] = cardQueue;
         }
     }
 

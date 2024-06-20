@@ -107,6 +107,7 @@ public partial class M_EffectManager
         );
     }
 
+    // 꽃잎 이펙트(오브젝트 뒤쪽)
     [ClientRpc]
     public void RpcEffectBackFallingLeaf(Vector3 position)
     {
@@ -115,10 +116,11 @@ public partial class M_EffectManager
             "Eff4_FallingLeaf",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
-            "FrontLayer") 
+            "BackLayer") 
         );
     }
 
+    // 꽃잎 이펙트(오브젝트 앞쪽)
     [ClientRpc]
     public void RpcEffectFallingLeaf(Vector3 position)
     {

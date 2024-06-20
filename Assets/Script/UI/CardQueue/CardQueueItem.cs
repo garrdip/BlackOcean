@@ -61,12 +61,12 @@ public class CardQueueItem : MonoBehaviour
     {
         GameUIManager.instance.HandleCardQueuePopUp(cardQueue, true);
         if(smallCardQueue.activeSelf){
-            GameUIManager.instance.cardQueuePopUp.transform.position = smallCardQueueEm.transform.position + new Vector3(0f, -150f, 0f);
+            GameUIManager.instance.cardQueuePopUp.transform.position = smallCardQueueEm.transform.position + new Vector3(0f, -80f, 0f);
             foreach(GameObject lightObject in smallCardQueueLights){
                 lightObject.SetActive(true);
             }
         }else{
-            GameUIManager.instance.cardQueuePopUp.transform.position = bigCardQueueEm.transform.position + new Vector3(0f, -150f, 0f);
+            GameUIManager.instance.cardQueuePopUp.transform.position = bigCardQueueEm.transform.position + new Vector3(0f, -80f, 0f);
             foreach(GameObject lightObject in bigCardQueueLights){
                 lightObject.SetActive(true);
             }
