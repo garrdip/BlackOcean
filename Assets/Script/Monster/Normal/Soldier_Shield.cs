@@ -10,15 +10,18 @@ public class Soldier_Shield : SpawnedMonster
     {
         switch(nextAction.actionName){
             case "혼자방어" :
-                parent.GainDefense(nextAction.actionValue);
                 DoAnimation("Buff0");
+                M_EffectManager.instance.RpcEffectNormalMonsterShield(parent.transform.position);
+                parent.GainDefense(nextAction.actionValue);
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;
             case "팀방어" :
-                foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList)
-                    tar.GainDefense(nextAction.actionValue);
                 DoAnimation("Buff0");
+                foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList){
+                    M_EffectManager.instance.RpcEffectNormalMonsterShield(tar.transform.position);
+                    tar.GainDefense(nextAction.actionValue);
+                }
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;
@@ -32,18 +35,6 @@ public class Soldier_Shield : SpawnedMonster
     public void DoAnimation(string actionName)
     {
         parent.anim.state.SetAnimation(1,actionName,false);
-        switch(actionName){
-            case "Attack0":
-                // 공격 효과음
-                AudioClip attackSound= M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Shield].Find((audioClip) => audioClip.name.Equals("monster_nor_sw_shd_1_3"));
-                M_SoundManager.instance.PlaySFX(attackSound, attackSound.length);
-                break;
-            case "Buff0":
-                // 버프 효과음
-                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_3"));
-                M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
-                break;
-        }
     }
 
     [Server]

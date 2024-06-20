@@ -1,0 +1,7 @@
+Eff04_Buff.png
+size:55,52
+filter:Linear,Linear
+pma:true
+05Buff0
+bounds:2,2,51,48
+offsets:1,2,53,52

@@ -1,0 +1,12 @@
+Eff05_Shield.png
+size:390,170
+filter:Linear,Linear
+pma:true
+06Shield0
+bounds:235,3,165,153
+offsets:2,2,168,157
+rotate:90
+06Shield1
+bounds:2,2,166,231
+offsets:2,2,169,235
+rotate:90

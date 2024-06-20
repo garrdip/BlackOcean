@@ -1,0 +1,212 @@
+{
+"skeleton": {
+	"hash": "nFTOFWQGYkk",
+	"spine": "4.2.31",
+	"x": -95.17,
+	"y": 122.23,
+	"width": 178.44,
+	"height": 273.77,
+	"images": "../../04_Eff/MonsterEff/",
+	"audio": ""
+},
+"bones": [
+	{ "name": "root" },
+	{
+		"name": "06Shield2",
+		"parent": "root",
+		"rotation": 130.47,
+		"x": -6.6,
+		"y": 294.71,
+		"color": "ffa700ff",
+		"icon": "gear"
+	},
+	{ "name": "06Shield0", "parent": "06Shield2", "length": 112.12, "x": 3.81, "y": 0.7, "color": "ff0000ff" },
+	{
+		"name": "06Shield1",
+		"parent": "06Shield2",
+		"length": 144.54,
+		"rotation": -177.88,
+		"x": -2.79,
+		"y": -0.55,
+		"color": "ff0000ff"
+	},
+	{
+		"name": "06Shield3",
+		"parent": "root",
+		"rotation": 130.47,
+		"x": -6.6,
+		"y": 294.71,
+		"color": "ffa700ff",
+		"icon": "gear"
+	},
+	{ "name": "06Shield4", "parent": "06Shield3", "length": 112.12, "x": 3.81, "y": 0.7, "color": "ff0000ff" },
+	{
+		"name": "06Shield5",
+		"parent": "06Shield3",
+		"length": 144.54,
+		"rotation": -177.88,
+		"x": -2.79,
+		"y": -0.55,
+		"color": "ff0000ff"
+	}
+],
+"slots": [
+	{ "name": "06Shield3", "bone": "06Shield5", "attachment": "06Shield1" },
+	{ "name": "06Shield2", "bone": "06Shield4", "attachment": "06Shield0" },
+	{ "name": "06Shield1", "bone": "06Shield1", "attachment": "06Shield1" },
+	{ "name": "06Shield0", "bone": "06Shield0", "attachment": "06Shield0" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"06Shield0": {
+				"06Shield0": { "x": 16.49, "y": -12.01, "rotation": -130.47, "width": 168, "height": 157 }
+			},
+			"06Shield1": {
+				"06Shield1": { "x": 41.29, "y": -33.7, "rotation": 47.41, "width": 169, "height": 235 }
+			},
+			"06Shield2": {
+				"06Shield0": { "x": 16.49, "y": -12.01, "rotation": -130.47, "width": 168, "height": 157 }
+			},
+			"06Shield3": {
+				"06Shield1": { "x": 41.29, "y": -33.7, "rotation": 47.41, "width": 169, "height": 235 }
+			}
+		}
+	}
+],
+"events": {
+	"Eff05_ShieldEnd": {}
+},
+"animations": {
+	"Eff05_Shield": {
+		"slots": {
+			"06Shield0": {
+				"rgba": [
+					{
+						"color": "ffffff00",
+						"curve": [ 0.089, 1, 0.178, 1, 0.089, 1, 0.178, 1, 0.089, 1, 0.178, 1, 0.266, 0, 0.267, 1 ]
+					},
+					{ "time": 0.2667, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 0.8333, "color": "ffffffff" },
+					{ "time": 1, "color": "ffffff00" }
+				]
+			},
+			"06Shield1": {
+				"rgba": [
+					{
+						"color": "ffffff00",
+						"curve": [ 0.089, 1, 0.178, 1, 0.089, 1, 0.178, 1, 0.089, 1, 0.178, 1, 0.266, 0, 0.267, 1 ]
+					},
+					{ "time": 0.2667, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 0.8333, "color": "ffffffff" },
+					{ "time": 1, "color": "ffffff00" }
+				]
+			},
+			"06Shield2": {
+				"rgba": [
+					{ "color": "ffffff00", "curve": "stepped" },
+					{ "time": 0.1667, "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff" },
+					{ "time": 0.5667, "color": "ffffff00" }
+				]
+			},
+			"06Shield3": {
+				"rgba": [
+					{ "color": "ffffff00", "curve": "stepped" },
+					{ "time": 0.1667, "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff" },
+					{ "time": 0.5667, "color": "ffffff00" }
+				]
+			}
+		},
+		"bones": {
+			"06Shield0": {
+				"translate": [
+					{
+						"y": 196.05,
+						"curve": [ 0.122, 0, 0.244, 0, 0.264, 196.05, 0.25, 0 ]
+					},
+					{ "time": 0.3667, "curve": "stepped" },
+					{ "time": 0.8333 },
+					{ "time": 1, "y": -70.74 }
+				],
+				"scale": [
+					{
+						"x": 1.5,
+						"y": 1.5,
+						"curve": [ 0.275, 1.5, 0.275, 1.516, 0.275, 1.5, 0.275, 1.516 ]
+					},
+					{ "time": 0.3667 },
+					{ "time": 0.4, "x": 0.7, "y": 0.7 },
+					{ "time": 0.4333 }
+				]
+			},
+			"06Shield1": {
+				"translate": [
+					{
+						"y": -189.52,
+						"curve": [ 0.122, 0, 0.244, 0, 0.264, -189.52, 0.25, 0 ]
+					},
+					{ "time": 0.3667, "curve": "stepped" },
+					{ "time": 0.8333 },
+					{ "time": 1, "x": -2.61, "y": 70.69 }
+				],
+				"scale": [
+					{
+						"x": 1.5,
+						"y": 1.5,
+						"curve": [ 0.275, 1.5, 0.275, 1.516, 0.275, 1.5, 0.275, 1.516 ]
+					},
+					{ "time": 0.3667 },
+					{ "time": 0.4, "x": 0.7, "y": 0.7 },
+					{ "time": 0.4333 }
+				]
+			},
+			"06Shield4": {
+				"translate": [
+					{
+						"y": 196.05,
+						"curve": [ 0.122, 0, 0.244, 0, 0.264, 196.05, 0.25, 0 ]
+					},
+					{ "time": 0.3667 }
+				],
+				"scale": [
+					{
+						"curve": [ 0.167, 1, 0.111, 1.2, 0.167, 1, 0.111, 1.2 ]
+					},
+					{ "time": 0.1667, "x": 1.2, "y": 1.2 },
+					{
+						"time": 0.3333,
+						"curve": [ 0.493, 1, 0.567, 1.251, 0.493, 1, 0.567, 1.251 ]
+					},
+					{ "time": 0.5667, "x": 1.5, "y": 1.5 }
+				]
+			},
+			"06Shield5": {
+				"translate": [
+					{
+						"y": -189.52,
+						"curve": [ 0.122, 0, 0.244, 0, 0.264, -189.52, 0.25, 0 ]
+					},
+					{ "time": 0.3667 }
+				],
+				"scale": [
+					{
+						"curve": [ 0.167, 1, 0.111, 1.2, 0.167, 1, 0.111, 1.2 ]
+					},
+					{ "time": 0.1667, "x": 1.2, "y": 1.2 },
+					{
+						"time": 0.3333,
+						"curve": [ 0.493, 1, 0.567, 1.251, 0.493, 1, 0.567, 1.251 ]
+					},
+					{ "time": 0.5667, "x": 1.5, "y": 1.5 }
+				]
+			}
+		},
+		"events": [
+			{ "time": 1, "name": "Eff05_ShieldEnd" }
+		]
+	}
+}
+}

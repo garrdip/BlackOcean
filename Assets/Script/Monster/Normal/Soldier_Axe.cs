@@ -13,16 +13,25 @@ public class Soldier_Axe : SpawnedMonster
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.4f);
                 GeneralAttack();
+                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
+                {
+                    M_EffectManager.instance.RpcEffectNormalMonsterCut(true, tar.transform.position);
+                }
                 yield return new WaitForSeconds(0.4f);
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.4f);
                 GeneralAttack();
+                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
+                {
+                    M_EffectManager.instance.RpcEffectNormalMonsterCut(true, tar.transform.position);
+                }
                 yield return new WaitForSeconds(0.4f);
                 ReturnToIdleAnimation();
                 break;
             case "힘증가" :
                 parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent.GetComponent<TargetObject>(),null);
                 DoAnimation("Buff0");
+                M_EffectManager.instance.RpcEffectNormalMonsterBuff(parent.transform.position);
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;
@@ -36,18 +45,6 @@ public class Soldier_Axe : SpawnedMonster
     public void DoAnimation(string actionName)
     {
         parent.anim.state.SetAnimation(1,actionName,false);
-        switch(actionName){
-            case "Attack0":
-                // 공격 효과음
-                AudioClip attackSound= M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_1_3"));
-                M_SoundManager.instance.PlaySFX(attackSound, attackSound.length);
-                break;
-            case "Buff0":
-                // 버프 효과음
-                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_3"));
-                M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
-                break;
-        }
     }
 
     [Server]

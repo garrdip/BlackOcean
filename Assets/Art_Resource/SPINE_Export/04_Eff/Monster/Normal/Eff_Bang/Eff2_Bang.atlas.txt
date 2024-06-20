@@ -1,0 +1,6 @@
+Eff2_Bang.png
+size:573,584
+filter:Linear,Linear
+pma:true
+03Bang
+bounds:2,2,569,580

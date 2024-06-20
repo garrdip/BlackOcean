@@ -10,7 +10,6 @@ using Spine.Unity;
 
 public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
 {
-    public SerializedDictionary<Card_Effect, SkeletonDataAsset> effects = new SerializedDictionary<Card_Effect, SkeletonDataAsset>();
     public Canvas EffectCanvas;
     public GameObject FloatingDamageText;
 
@@ -29,7 +28,7 @@ public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
         yield return new WaitForSeconds(0.01f); 
         var spineObject = SkeletonAnimation.NewSkeletonAnimationGameObject(skeletonDataAsset); // https://ko.esotericsoftware.com/spine-unity#Advanced---Instantiation-at-Runtime
         spineObject.gameObject.name = animationName;
-        CardEffectBase cardEffectBase = spineObject.gameObject.AddComponent<CardEffectBase>();
+        EffectBase cardEffectBase = spineObject.gameObject.AddComponent<EffectBase>();
         cardEffectBase.sfx = sfx;
         spineObject.transform.position = position;
         spineObject.GetComponent<MeshRenderer>().sortingLayerName = layer;

@@ -9610,7 +9610,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  effects:
+  danhyangCardEffects:
     _serializedList:
     - Key: 0
       Value: {fileID: 11400000, guid: ef14757de423d964585f7ff0afef97d8, type: 2}
@@ -9623,7 +9623,7 @@ MonoBehaviour:
     - Key: 4
       Value: {fileID: 11400000, guid: 14a78029b5d6ec84ea4db72582b91d9a, type: 2}
     - Key: 5
-      Value: {fileID: 11400000, guid: 539568934b502114da79407d8897a58a, type: 2}
+      Value: {fileID: 11400000, guid: 14a78029b5d6ec84ea4db72582b91d9a, type: 2}
     - Key: 6
       Value: {fileID: 11400000, guid: 50d590c5a9f741e4ca82959333bda4d5, type: 2}
     - Key: 7
@@ -9634,6 +9634,20 @@ MonoBehaviour:
       Value: {fileID: 11400000, guid: d8bfdaab06f0470449348f74b828d585, type: 2}
     - Key: 10
       Value: {fileID: 11400000, guid: 26d939e792e113c47bf8acc334ce0213, type: 2}
+  normalMonsterEffects:
+    _serializedList:
+    - Key: 0
+      Value: {fileID: 11400000, guid: 4d77e49ec29b6ba4fba3027081304342, type: 2}
+    - Key: 1
+      Value: {fileID: 11400000, guid: da2a341b4f7b83b4ab31198feadf12be, type: 2}
+    - Key: 2
+      Value: {fileID: 11400000, guid: 72004d8a998adc14ca969bf729f388ab, type: 2}
+    - Key: 3
+      Value: {fileID: 11400000, guid: c511dcf6f944ec14182262042dee7f2e, type: 2}
+    - Key: 4
+      Value: {fileID: 11400000, guid: 5e49972cb86847e41972806a2256fc1f, type: 2}
+    - Key: 5
+      Value: {fileID: 11400000, guid: 837900476acc64e46ba0c4b25ea5cad7, type: 2}
   EffectCanvas: {fileID: 481710162}
   FloatingDamageText: {fileID: 2572344723661254293, guid: ba3d091ba066c3141823a924988d3af3, type: 3}
 --- !u!114 &743138901
@@ -10179,6 +10193,7 @@ MonoBehaviour:
   MaxItchPrefab: {fileID: 6094358996269297318, guid: a381004cb017a8c42981f0b2b297be8d, type: 3}
   currentIchiIcons: []
   maxIchiIcons: []
+  blackCurtain: {fileID: 492361048}
   buttonEndTurn: {fileID: 1065066847}
   buttonPrefareDeck: {fileID: 22229867}
   buttonTrashDeck: {fileID: 791626060}
@@ -10201,7 +10216,6 @@ MonoBehaviour:
   leftScrollButton: {fileID: 199151361}
   rightScrollButton: {fileID: 1049375909}
   scrollSpeed: 0
-  blackCurtain: {fileID: 492361048}
 --- !u!1 &788110885
 GameObject:
   m_ObjectHideFlags: 0
@@ -29205,8 +29219,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   Phase: 0
-  npc_Mercurius: {fileID: 0}
   cardQueueItemPrefab: {fileID: 3638564104287510282, guid: c594336229e16324b85b8ff78e4bb051, type: 3}
+  currentCardQueueIndex: 0
   cardQueueItems: []
   playerRewardedDic:
     _serializedList: []

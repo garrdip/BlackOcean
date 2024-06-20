@@ -2,17 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-
+using AYellowpaper.SerializedCollections;
+using Spine.Unity;
 
 // 단향 카드 이펙트용 클래스 : M_EffectManager의 partial 클래스
 public partial class M_EffectManager
 {
+    public SerializedDictionary<Card_Effect, SkeletonDataAsset> danhyangCardEffects = new SerializedDictionary<Card_Effect, SkeletonDataAsset>();
+
     // 이빨 공격 이펙트
     [ClientRpc]
     public void RpcEffectEatter(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_Eatter],
+            danhyangCardEffects[Card_Effect.Effect_Eatter],
             "EffEatter",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][8],
@@ -25,7 +28,7 @@ public partial class M_EffectManager
     public void RpcEffectClaw(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_Scratch],
+            danhyangCardEffects[Card_Effect.Effect_Scratch],
             "01EffScratch",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][4],
@@ -38,7 +41,7 @@ public partial class M_EffectManager
     public void RpcEffectFlowerShield(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_Shield],
+            danhyangCardEffects[Card_Effect.Effect_Shield],
             "Eff6_Shield",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][12],
@@ -51,7 +54,7 @@ public partial class M_EffectManager
     public void RpcEffectCutLeafAttack(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_CutLeaf],
+            danhyangCardEffects[Card_Effect.Effect_CutLeaf],
             "Eff1_CutLeaf",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][101],
@@ -63,7 +66,7 @@ public partial class M_EffectManager
     public void RpcEffectBodyTurnLeaf(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_BodyTurnZoomIn],
+            danhyangCardEffects[Card_Effect.Effect_BodyTurnZoomIn],
             "Eff0_BodyZoomIn",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
@@ -75,7 +78,7 @@ public partial class M_EffectManager
     public void RpcEffectBackTurnBottomLeaf(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_BackTurnBottom],
+            danhyangCardEffects[Card_Effect.Effect_BackTurnBottom],
             "Eff2_TurnBottom",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
@@ -87,7 +90,7 @@ public partial class M_EffectManager
     public void RpcEffectTurnBottomLeaf(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_TurnBottom],
+            danhyangCardEffects[Card_Effect.Effect_TurnBottom],
             "Eff2_TurnBottom",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
@@ -99,7 +102,7 @@ public partial class M_EffectManager
     public void RpcEffectUpLight(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_UpLight],
+            danhyangCardEffects[Card_Effect.Effect_UpLight],
             "Eff3_UpLight",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
@@ -112,7 +115,7 @@ public partial class M_EffectManager
     public void RpcEffectBackFallingLeaf(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_BackFallingLeaf],
+            danhyangCardEffects[Card_Effect.Effect_BackFallingLeaf],
             "Eff4_FallingLeaf",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
@@ -125,7 +128,7 @@ public partial class M_EffectManager
     public void RpcEffectFallingLeaf(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_FallingLeaf],
+            danhyangCardEffects[Card_Effect.Effect_FallingLeaf],
             "Eff4_FallingLeaf",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
@@ -137,7 +140,7 @@ public partial class M_EffectManager
     public void RpcEffectBodyZoomOut(Vector3 position)
     {
         StartCoroutine(StartEffect(
-            effects[Card_Effect.Effect_BodyZoomOut],
+            danhyangCardEffects[Card_Effect.Effect_BodyZoomOut],
             "Eff5_BodyZoomOut",
             position,
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0],
