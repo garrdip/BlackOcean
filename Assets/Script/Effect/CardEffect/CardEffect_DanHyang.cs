@@ -51,25 +51,25 @@ public partial class M_EffectManager
 
     // 단향 직접 공격류 이펙트
     [ClientRpc]
-    public void RpcEffectCutLeafAttack(Vector3 position)
+    public void RpcEffectCutLeafAttack(Vector3 position, int index)
     {
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_CutLeaf],
             "Eff1_CutLeaf",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][101],
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
             "Effect")
         );
     }
 
     [ClientRpc]
-    public void RpcEffectBodyTurnLeaf(Vector3 position)
+    public void RpcEffectBodyTurnLeaf(Vector3 position, int index)
     {
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BodyTurnZoomIn],
             "Eff0_BodyZoomIn",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
             "Effect") 
         );
     }
@@ -88,13 +88,13 @@ public partial class M_EffectManager
     }
 
     [ClientRpc]
-    public void RpcEffectTurnBottomLeaf(Vector3 position)
+    public void RpcEffectTurnBottomLeaf(Vector3 position, int index)
     {
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_TurnBottom],
             "Eff2_TurnBottom",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
             "Effect") 
         );
     }
@@ -138,14 +138,14 @@ public partial class M_EffectManager
     }
 
     [ClientRpc]
-    public void RpcEffectBodyZoomOut(Vector3 position)
+    public void RpcEffectBodyZoomOut(Vector3 position, int index)
     {
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BodyZoomOut],
             "Eff5_BodyZoomOut",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0],
-            "Effect") // 이펙트에 맞는 SFX로 변경 해야함
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
+            "Effect")
         );
     }
 }

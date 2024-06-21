@@ -1129,7 +1129,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
         GeneralSingleAttack(tar[0],tar[1],3);
-        M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position);
+        M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position, 89);
         yield return new WaitForSeconds(0.5f);
         M_EffectManager.instance.RpcEffectFallingLeaf(tar[1].transform.position, 88);
         int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,2,true,false,false,true,tar[0],card);
@@ -1215,7 +1215,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
-        M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position);
+        M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position, 97);
         if(tar[1].GetBuffValue(BuffType.FLOWERPOWDER) >= 1)GeneralSingleAttack(tar[0],tar[1],14);
         GeneralSingleAttack(tar[0],tar[1],7);
         yield return new WaitForSeconds(0.5f);
@@ -1381,7 +1381,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
-        M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position);
+        M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position, 104);
         GeneralSingleDamage(tar[1],tar[1].GetBuffValue(BuffType.FLOWERPOWDER));
         tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1);
         yield return new WaitForSeconds(0.3f);
@@ -1398,7 +1398,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
-        M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position);
+        M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position, 107);
         GeneralSingleDamage(tar[1],tar[1].GetBuffValue(BuffType.FLOWERPOWDER)*3);
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
