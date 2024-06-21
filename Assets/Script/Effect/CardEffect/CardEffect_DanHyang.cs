@@ -10,7 +10,7 @@ public partial class M_EffectManager
 {
     public SerializedDictionary<Card_Effect, SkeletonDataAsset> danhyangCardEffects = new SerializedDictionary<Card_Effect, SkeletonDataAsset>();
 
-    // 이빨 공격 이펙트
+    // 철귀 이빨 공격 이펙트
     [ClientRpc]
     public void RpcEffectEatter(Vector3 position)
     {
@@ -23,7 +23,7 @@ public partial class M_EffectManager
         );
     }
 
-    // 손톱 공격 이펙트
+    // 철귀 손톱 공격 이펙트
     [ClientRpc]
     public void RpcEffectClaw(Vector3 position)
     {
@@ -74,14 +74,15 @@ public partial class M_EffectManager
         );
     }
 
+    // 개화 이펙트
     [ClientRpc]
-    public void RpcEffectBackTurnBottomLeaf(Vector3 position)
+    public void RpcEffectBackTurnBottomLeaf(Vector3 position, int index)
     {
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BackTurnBottom],
             "Eff2_TurnBottom",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
             "FrontLayer") 
         );
     }
@@ -110,7 +111,7 @@ public partial class M_EffectManager
         );
     }
 
-    // 꽃잎 이펙트(오브젝트 뒤쪽)
+    // 꽃가루 이펙트(오브젝트 뒤쪽 꽃잎 )
     [ClientRpc]
     public void RpcEffectBackFallingLeaf(Vector3 position, int index)
     {
@@ -123,7 +124,7 @@ public partial class M_EffectManager
         );
     }
 
-    // 꽃잎 이펙트(오브젝트 앞쪽)
+    // 꽃가루 이펙트(오브젝트 앞쪽 꽃잎)
     [ClientRpc]
     public void RpcEffectFallingLeaf(Vector3 position, int index)
     {

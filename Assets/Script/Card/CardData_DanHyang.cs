@@ -1415,15 +1415,17 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(1f);
         foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
         {
+            M_EffectManager.instance.RpcEffectBackTurnBottomLeaf(target.transform.position, 108);
             target.GainBuff(BuffType.FLOWER,target.GetBuffValue(BuffType.FLOWERPOWDER),true,false,false,false,tar[0],card);
             target.buffs.Remove(target.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
         }
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
         {
+            M_EffectManager.instance.RpcEffectBackTurnBottomLeaf(target.transform.position, 108);
             target.GainBuff(BuffType.FLOWER,target.GetBuffValue(BuffType.FLOWERPOWDER),false,false,false,false,tar[0],card);
             target.buffs.Remove(target.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.25f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
     }
     public IEnumerator H54_E(Card card, List<TargetObject> tar)
@@ -1443,6 +1445,7 @@ public partial class CardData : SingletonD<CardData>
             yield return new WaitForSeconds(0.5f);
             foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
             {
+                M_EffectManager.instance.RpcEffectBackTurnBottomLeaf(target.transform.position, 113);
                 target.GainBuff(BuffType.FLOWER,target.GetBuffValue(BuffType.FLOWERPOWDER),false,false,false,false,tar[0],card);
                 target.buffs.Remove(target.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
             }
@@ -1456,11 +1459,12 @@ public partial class CardData : SingletonD<CardData>
             yield return new WaitForSeconds(0.5f);
             foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
             {
+                M_EffectManager.instance.RpcEffectBackTurnBottomLeaf(target.transform.position, 113);
                 target.GainBuff(BuffType.FLOWER,target.GetBuffValue(BuffType.FLOWERPOWDER),true,false,false,false,tar[0],card);
                 target.buffs.Remove(target.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
             }
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.25f);
         M_DimmingManager.instance.StopDimming(allEnemy);
     }
     public IEnumerator H55_E(Card card, List<TargetObject> tar)
@@ -1474,9 +1478,10 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
+        M_EffectManager.instance.RpcEffectBackTurnBottomLeaf(tar[1].transform.position, 115);
         tar[1].GainBuff(BuffType.FLOWER,tar[1].GetBuffValue(BuffType.FLOWERPOWDER),false,false,false,false,tar[0],card);
         tar[1].buffs.Remove(tar[1].buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.25f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator H56_E(Card card, List<TargetObject> tar)
@@ -1497,7 +1502,9 @@ public partial class CardData : SingletonD<CardData>
         tar[0].ironDemonLocation.GainBuff(BuffType.FLOWERPOWDER,3,false,false,false,true,tar[0],card);
         tar[0].ironDemonLocation.GainBuff(BuffType.FLOWER,tar[0].ironDemonLocation.GetBuffValue(BuffType.FLOWERPOWDER),false,false,false,false,tar[0],card);
         tar[0].ironDemonLocation.buffs.Remove(tar[0].ironDemonLocation.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.25f);
+        M_EffectManager.instance.RpcEffectBackTurnBottomLeaf(tar[0].ironDemonLocation.transform.position, 119);
+        yield return new WaitForSeconds(1.25f);
         M_DimmingManager.instance.StopDimming(allTarget);
     }
     public IEnumerator H57_E(Card card, List<TargetObject> tar)
