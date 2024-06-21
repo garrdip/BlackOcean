@@ -99,6 +99,7 @@ public partial class M_EffectManager
         );
     }
 
+    // 화합 이펙트
     [ClientRpc]
     public void RpcEffectUpLight(Vector3 position, int index)
     {

@@ -954,6 +954,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
+        M_EffectManager.instance.RpcEffectUpLight(tar[0].transform.position, 78);
         int index = tar[0].GainBuff(BuffType.FURYOFFLOWER, -1, false, true, false, false, tar[0],card);
         tar[0].buffCardUseEffect.Add(index,H34_CardUseEffect);
         yield return new WaitForSeconds(0.3f);
@@ -993,8 +994,10 @@ public partial class CardData : SingletonD<CardData>
             StartCoroutine(enemy.monster.OnHitAnimation());
         }
         yield return new WaitForSeconds(0.5f);
-        if(tar[0].ironDemonLocation.objectType == ObjectType.ENEMY)
+        if(tar[0].ironDemonLocation.objectType == ObjectType.ENEMY){
+            M_EffectManager.instance.RpcEffectUpLight(tar[0].transform.position, 74);
             yield return HWAHAP(tar[0]);
+        }
         M_DimmingManager.instance.StopDimming(allEnemy);
         
     }
@@ -1010,7 +1013,9 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return MoveIronDemonCoroutine(tar[0],tar[0]); // 철귀 자신의 위치로
         yield return HWAHAP(tar[0]);
+        M_EffectManager.instance.RpcEffectUpLight(tar[0].transform.position, 78);
         yield return HWAHAP(tar[0]);
+        M_EffectManager.instance.RpcEffectUpLight(tar[0].transform.position, 78);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
     }
@@ -1024,6 +1029,7 @@ public partial class CardData : SingletonD<CardData>
     {
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
+        M_EffectManager.instance.RpcEffectUpLight(tar[0].transform.position, 80);
         tar[0].GainBuff(BuffType.IRONDEMON,1,false,false,false,false,tar[0],card);
         yield return HWAHAP(tar[0]);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -1086,9 +1092,10 @@ public partial class CardData : SingletonD<CardData>
     // 신중한 명령
     public IEnumerator H40(Card card, List<TargetObject> tar)
     {
-        for(int i = 0 ; i < 3 ; i ++)
+        for(int i = 0 ; i < 3 ; i ++){
+            M_EffectManager.instance.RpcEffectUpLight(tar[0].transform.position, 78);
             yield return HWAHAP(tar[0]);
-        
+        }
     }
     public IEnumerator H40_E(Card card, List<TargetObject> tar)
     {
