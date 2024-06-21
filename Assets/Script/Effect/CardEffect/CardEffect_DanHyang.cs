@@ -38,13 +38,13 @@ public partial class M_EffectManager
 
     // 단향 카드 실드류 이펙트
     [ClientRpc]
-    public void RpcEffectFlowerShield(Vector3 position)
+    public void RpcEffectFlowerShield(Vector3 position, int index)
     {
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_Shield],
             "Eff6_Shield",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][12],
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
             "Effect")
         );
     }
@@ -100,13 +100,13 @@ public partial class M_EffectManager
     }
 
     [ClientRpc]
-    public void RpcEffectUpLight(Vector3 position)
+    public void RpcEffectUpLight(Vector3 position, int index)
     {
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_UpLight],
             "Eff3_UpLight",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
             "Effect") 
         );
     }
