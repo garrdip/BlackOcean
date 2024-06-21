@@ -112,26 +112,26 @@ public partial class M_EffectManager
 
     // 꽃잎 이펙트(오브젝트 뒤쪽)
     [ClientRpc]
-    public void RpcEffectBackFallingLeaf(Vector3 position)
+    public void RpcEffectBackFallingLeaf(Vector3 position, int index)
     {
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BackFallingLeaf],
             "Eff4_FallingLeaf",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
             "BackLayer") 
         );
     }
 
     // 꽃잎 이펙트(오브젝트 앞쪽)
     [ClientRpc]
-    public void RpcEffectFallingLeaf(Vector3 position)
+    public void RpcEffectFallingLeaf(Vector3 position, int index)
     {
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_FallingLeaf],
             "Eff4_FallingLeaf",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][0], // 이펙트에 맞는 SFX로 변경 해야함
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
             "Effect")
         );
     }
