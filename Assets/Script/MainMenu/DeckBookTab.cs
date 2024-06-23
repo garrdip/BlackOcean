@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.UI;
 using ProjectD;
 using UnlimitedScrollUI;
+using TMPro;
 
 
 public class DeckBookTab : MonoBehaviour
@@ -11,7 +14,8 @@ public class DeckBookTab : MonoBehaviour
     public List<CardBase> cardsByCharacter = new List<CardBase>();
     public GridUnlimitedScroller gridUnlimitedScroller;
     public IUnlimitedScroller unlimitedScroller; 
-
+    public TMP_InputField inputField;
+    public Button buttonSearch;
 
     void Awake()
     {
@@ -19,14 +23,48 @@ public class DeckBookTab : MonoBehaviour
         unlimitedScroller = gridUnlimitedScroller.GetComponent<IUnlimitedScroller>();
     }
 
+    void Start()
+    {
+        inputField.onSubmit.AddListener(OnSubmitInputField);
+        buttonSearch.onClick.AddListener(OnClickButtonSearch);
+    }
+
     void OnEnable()
     {
-        GetCardDataFromDatabase();
+        CreateDeckBookCard(cardsByCharacter);
     }
 
     void OnDisable()
     {
         unlimitedScroller.Clear();
+        inputField.text = string.Empty;
+    }
+
+    private void OnClickButtonSearch()
+    {
+        OnSubmitInputField(inputField.text);
+    }
+
+    private void OnSubmitInputField(string text)
+    {
+        unlimitedScroller.Clear();
+        string regexPattern = Regex.Escape(text);
+        List<CardBase> serachedList = FullTextSearchByCardName(regexPattern);
+        CreateDeckBookCard(serachedList);
+        inputField.ActivateInputField();
+    }
+
+    // 정규표현식을 이용해 카드 이름을 검색하여, 해당하는 카드를 담은 리스트 반환
+    private List<CardBase> FullTextSearchByCardName(string pattern)
+    {
+        List<CardBase> serachedList = new List<CardBase>();
+        Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+        for(int i = 0; i < cardsByCharacter.Count; i++){
+            if(regex.IsMatch(cardsByCharacter[i].name)){
+                serachedList.Add(cardsByCharacter[i]);
+            }
+        }
+        return serachedList;
     }
 
     // 탭 인덱스값에 따라 캐릭터 카드데이터 리스트 세팅
@@ -59,14 +97,14 @@ public class DeckBookTab : MonoBehaviour
         return CardData.instance.cards.FindAll((cardBase) => cardBase.character == character && !cardBase.cardNumber.Contains("_E")); 
     }
 
-    public void GetCardDataFromDatabase()
+    private void CreateDeckBookCard(List<CardBase> cards)
     {
         GameObject cardOnBookPrefab = DeckBookUI.instance.cellPrefab; // 스크롤뷰에 생성할 Cell 오브젝트(CardOnBook 프리팹)
-        int totalCount = cardsByCharacter.Count; // Cell 총 갯수
+        int totalCount = cards.Count; // Cell 총 갯수
         unlimitedScroller.Generate(cardOnBookPrefab, totalCount, (index, iCell) => {
             var regularCell = iCell as RegularCell;
             CardOnBook cardOnBook = regularCell.GetComponent<CardOnBook>();
-            cardOnBook.cardBase = cardsByCharacter[index];
+            cardOnBook.cardBase = cards[index];
             if (regularCell != null){
                 regularCell.onGenerated?.Invoke(index);
             }
