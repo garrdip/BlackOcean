@@ -186,6 +186,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     public void TargetResponseSwapAccept(NetworkConnectionToClient target)
     {
         M_MessageManager.instance
+            .MakeToast()
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.green)
             .TextColor(Color.white)
@@ -198,6 +199,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     public void TargetResponseSwapReject(NetworkConnectionToClient target)
     {
         M_MessageManager.instance
+            .MakeToast()
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.red)
             .TextColor(Color.white)

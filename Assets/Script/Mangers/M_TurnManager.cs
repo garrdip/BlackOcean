@@ -1127,9 +1127,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         M_SoundManager.instance.PlaySFX(stageStartAudio, stageStartAudio.length);
         Camera.main.orthographicSize = battelSceneCameraSize;
         M_MessageManager.instance
+            .MakeToast()
             .Position(ToastPosition.Top)
-            .FadeInTime(1.5f)
-            .FadeOutTime(1.5f)
+            .FadeInTime(1f)
+            .FadeOutTime(1f)
             .MessageBoxColor(ColorUtils.HexToColor("#E700FF"))
             .TextColor(Color.white)
             .Text("전투 : 보스")
@@ -1149,9 +1150,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             case RoomType.MONSTER:
                 // 토스트 메시지 표시
                 M_MessageManager.instance
+                    .MakeToast()
                     .Position(ToastPosition.Top)
-                    .FadeInTime(1.5f)
-                    .FadeOutTime(1.5f)
+                    .FadeInTime(1f)
+                    .FadeOutTime(1f)
                     .MessageBoxColor(Color.red)
                     .TextColor(Color.white)
                     .Text("전투 : 일반 몬스터")
@@ -1185,9 +1187,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             case RoomType.ELITE:
                 // 토스트 메시지 표시
                 M_MessageManager.instance
+                    .MakeToast()
                     .Position(ToastPosition.Top)
-                    .FadeInTime(1.5f)
-                    .FadeOutTime(1.5f)
+                    .FadeInTime(1f)
+                    .FadeOutTime(1f)
                     .MessageBoxColor(Color.red)
                     .TextColor(Color.white)
                     .Text("전투 : 엘리트 몬스터")
@@ -1228,9 +1231,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             case RoomType.EVENT_POSITIIVE:
                 M_MessageManager.instance
+                    .MakeToast()
                     .Position(ToastPosition.Top)
-                    .FadeInTime(2.5f)
-                    .FadeOutTime(1.5f)
+                    .FadeInTime(1f)
+                    .FadeOutTime(1f)
                     .MessageBoxColor(Color.yellow)
                     .TextColor(Color.white)
                     .Text("긍정적 이벤트")
@@ -1241,9 +1245,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 break;
             case RoomType.EVENT_NEGATIVE:
                 M_MessageManager.instance
+                    .MakeToast()
                     .Position(ToastPosition.Top)
-                    .FadeInTime(2.5f)
-                    .FadeOutTime(1.5f)
+                    .FadeInTime(1f)
+                    .FadeOutTime(1f)
                     .MessageBoxColor(Color.yellow)
                     .TextColor(Color.white)
                     .Text("부정적 이벤트")
@@ -1254,9 +1259,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 break;
             case RoomType.CAMP:
                 M_MessageManager.instance
+                    .MakeToast()
                     .Position(ToastPosition.Top)
-                    .FadeInTime(2.5f)
-                    .FadeOutTime(1.5f)
+                    .FadeInTime(1f)
+                    .FadeOutTime(1f)
                     .MessageBoxColor( Color.green)
                     .TextColor(Color.white)
                     .Text("전초기지")
@@ -1267,9 +1273,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 break;
             case RoomType.CARD_NPC:
                 M_MessageManager.instance
+                    .MakeToast()
                     .Position(ToastPosition.Top)
-                    .FadeInTime(2.5f)
-                    .FadeOutTime(1.5f)
+                    .FadeInTime(1f)
+                    .FadeOutTime(1f)
                     .MessageBoxColor(Color.magenta)
                     .TextColor(Color.white)
                     .Text("카드 상점")
@@ -1280,9 +1287,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 break;
             case RoomType.ITEM_NPC:
                 M_MessageManager.instance
+                    .MakeToast()
                     .Position(ToastPosition.Top)
-                    .FadeInTime(2.5f)
-                    .FadeOutTime(1.5f)
+                    .FadeInTime(1f)
+                    .FadeOutTime(1f)
                     .MessageBoxColor(Color.blue)
                     .TextColor(Color.white)
                     .Text("아이템 상점")

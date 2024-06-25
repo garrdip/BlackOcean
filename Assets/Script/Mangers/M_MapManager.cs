@@ -815,8 +815,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         if(newValue != null){
             M_MessageManager.instance
+                .MakeToast()
                 .Position(ToastPosition.Top)
-                .FadeInTime(1.5f)
+                .FadeInTime(2.5f)
                 .FadeOutTime(1.5f)
                 .MessageBoxColor(ColorUtils.HexToColor("#E700FF"))
                 .TextColor(Color.white)

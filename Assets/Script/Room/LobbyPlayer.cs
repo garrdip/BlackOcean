@@ -233,6 +233,7 @@ public class LobbyPlayer : NetworkBehaviour
     public void TargetResponseSwapAccept(NetworkConnectionToClient target)
     {
         M_MessageManager.instance
+            .MakeToast()
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.green)
             .TextColor(Color.white)
@@ -245,6 +246,7 @@ public class LobbyPlayer : NetworkBehaviour
     public void TargetResponseSwapReject(NetworkConnectionToClient target)
     {
         M_MessageManager.instance
+            .MakeToast()
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.red)
             .TextColor(Color.white)

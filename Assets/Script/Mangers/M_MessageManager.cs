@@ -21,11 +21,9 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
 
     [Header("토스트 메시지 컴포넌트용 필드")]
     public GameObject toastMessageCanvas;
-    public CanvasGroup canvasGroup;
-    public Image toastMessageContainer;
-    public TextMeshProUGUI toastMessageText;
-    public float fadeInTime = 1.0f;
-    public float fadeOutTime = 1.0f;
+    public GameObject toastMessageLayout;
+    public GameObject toastMessagePrefab;
+    public List<GameObject> toastMessages = new List<GameObject>();
 
     [Header("채팅창 컴포넌트용 필드")]
     public GameObject chatCanvas;
@@ -72,7 +70,6 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         fadeInTweener.Kill();
         fadeOutTweener.Kill();
         notiLoopSequence.Kill();
-        DOTween.Kill(canvasGroup);
     }
 
     void Update()
@@ -90,74 +87,13 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         }
     }
 
-    // 토스트 메시지의 외곽 박스 색상 설정
-    public M_MessageManager MessageBoxColor(Color color)
+    // 토스트 메시지 생성
+    public ToastMessage MakeToast()
     {
-        toastMessageContainer.color = color;
-        return this;
-    }
-
-    // 토스트 메시지 FadeIn Time 설정
-    public M_MessageManager FadeInTime(float time)
-    {
-        fadeInTime = time;
-        return this;
-    }
-
-    // 토스트 메시지 FadeOut Time 설정
-    public M_MessageManager FadeOutTime(float time)
-    {
-        fadeOutTime = time;
-        return this;
-    }
-
-    // 토스트 메시지 위치 설정
-    public M_MessageManager Position(ToastPosition position)
-    {
-        RectTransform canvasRectTransform = canvasGroup.GetComponent<RectTransform>();
-        switch (position)
-        {
-            case ToastPosition.Top:
-                canvasRectTransform.anchorMin = new Vector2(0.5f, 1);
-                canvasRectTransform.anchorMax = new Vector2(0.5f, 1);
-                canvasRectTransform.pivot = new Vector2(0.5f, 1);
-                canvasRectTransform.anchoredPosition = new Vector2(canvasRectTransform.anchoredPosition.x, -250f);
-                break;
-            case ToastPosition.Bottom:
-                canvasRectTransform.anchorMin = new Vector2(0.5f, 0);
-                canvasRectTransform.anchorMax = new Vector2(0.5f, 0);
-                canvasRectTransform.pivot = new Vector2(0.5f, 0);
-                canvasRectTransform.anchoredPosition = new Vector2(canvasRectTransform.anchoredPosition.x, 250f);
-                break;
-        }
-        return this;
-    }
-
-    // 토스트 메시지 텍스트 설정
-    public M_MessageManager Text(string text)
-    {
-        toastMessageText.text = text;
-        return this;
-    }
-
-    // 토스트 메시지 텍스트 색상설정
-    public M_MessageManager TextColor(Color color)
-    {
-        toastMessageText.color = color;
-        return this;
-    }
-
-    // 토스트 메시지 출력 후 사라짐
-    public void Show()
-    {
-        canvasGroup.gameObject.SetActive(true);
-        canvasGroup.DOFade(1.0f, fadeInTime).OnComplete(() => {
-            canvasGroup.DOFade(0.0f, fadeOutTime).OnComplete(() => {
-                canvasGroup.gameObject.SetActive(false);
-                canvasGroup.transform.DOKill();
-                toastMessageText.text = string.Empty;
-            });
-        });
+        GameObject toastMessageObject = Instantiate(toastMessagePrefab, Vector3.zero, Quaternion.identity, toastMessageLayout.transform);
+        ToastMessage toastMessage = toastMessageObject.GetComponent<ToastMessage>();
+        toastMessages.Add(toastMessageObject);
+        return toastMessage;
     }
 
     // 채팅 내용 세팅
@@ -255,23 +191,23 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     [ClientRpc]
     public void RpcOtherPlayerDisconnectedInRoomScene(string oldOwner, string newOwner)
     {
-        M_MessageManager.instance
-            .Position(ToastPosition.Bottom)
-            .MessageBoxColor(Color.red)
-            .TextColor(Color.white)
-            .Text($"{oldOwner} 님이 대기방을 나갔습니다.")
-            .Show();
+        MakeToast()
+        .Position(ToastPosition.Bottom)
+        .MessageBoxColor(Color.red)
+        .TextColor(Color.white)
+        .Text($"{oldOwner} 님이 대기방을 나갔습니다.")
+        .Show();
     }
 
     // 게임씬에서 다른 클라 연결해제 이벤트 수신
     [ClientRpc]
     public void RpcOtherPlayerDisconnectedInGameScene(string oldPlayer ,string newPlayer)
     {
-        M_MessageManager.instance
-            .Position(ToastPosition.Bottom)
-            .MessageBoxColor(Color.red)
-            .TextColor(Color.white)
-            .Text($"{oldPlayer} 님이 게임을 나갔습니다.\n{newPlayer} 님에게 권한이 이전됩니다.")
-            .Show();
+        MakeToast()
+        .Position(ToastPosition.Bottom)
+        .MessageBoxColor(Color.red)
+        .TextColor(Color.white)
+        .Text($"{oldPlayer} 님이 게임을 나갔습니다.\n{newPlayer} 님에게 권한이 이전됩니다.")
+        .Show();
     }
 }
