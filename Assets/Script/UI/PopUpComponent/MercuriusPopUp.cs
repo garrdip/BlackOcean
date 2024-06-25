@@ -132,19 +132,13 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
             }
         }else{ // 제어할 플레이어가 1명인 경우
             GamePlayer gamePlayer = playerInterface.currentGamePlayer.GetComponent<GamePlayer>();
-            for(int i=0; i<M_TurnManager.instance.playerOrder.Count; i++){
-                if(M_TurnManager.instance.playerOrder[i] == gamePlayer.netId){
-                    tabFrames[i].SetActive(true);
-                }
-            }
+            ShowTab(gamePlayer.selectOrder);
         }
     }
 
     // 선택한 탭 활성화
     public void ShowTab(int index)
     {
-        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-        playerInterface.currentGamePlayerNetId = playerInterface.ownedPlayers[index].netId;
         currentIndex = index;
         tabFrames[index].SetActive(true);
         tabButtons[index].GetComponent<CanvasGroup>().alpha = 1f;
