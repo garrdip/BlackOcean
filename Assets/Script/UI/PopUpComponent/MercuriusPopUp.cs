@@ -113,20 +113,21 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
         if(playerInterface.ownedPlayers.Count > 1){ // 제어할 플레이어가 2명 이상이면
             for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
                 GamePlayer gamePlayer = playerInterface.ownedPlayers[i];
-                tabButtons[i].gameObject.SetActive(true); // 플레이어 수만큼 탭버튼 활성화
+                int index = gamePlayer.selectOrder;
+                tabButtons[index].gameObject.SetActive(true); // 플레이어 수만큼 탭버튼 활성화
                 if(gamePlayer.netId == playerInterface.currentGamePlayerNetId){
-                    tabButtons[i].GetComponent<CanvasGroup>().alpha = 1f; // 제어할 플레이어중 현재 플레이어의 탭버튼 알파값 1 설정
+                    tabButtons[index].GetComponent<CanvasGroup>().alpha = 1f; // 제어할 플레이어중 현재 플레이어의 탭버튼 알파값 1 설정
                 }
                 switch(gamePlayer.character)
                 {
                     case Character.GEORK:
-                        tabButtons[i].transform.GetChild(2).GetComponent<Image>().sprite = georkIcon;
+                        tabButtons[index].transform.GetChild(2).GetComponent<Image>().sprite = georkIcon;
                         break;
                     case Character.HONGDANHYANG:
-                        tabButtons[i].transform.GetChild(2).GetComponent<Image>().sprite = danhyangIcon;
+                        tabButtons[index].transform.GetChild(2).GetComponent<Image>().sprite = danhyangIcon;
                         break;
                     case Character.ERIS:
-                        tabButtons[i].transform.GetChild(2).GetComponent<Image>().sprite = erisIcon;
+                        tabButtons[index].transform.GetChild(2).GetComponent<Image>().sprite = erisIcon;
                         break;
                 }
             }
