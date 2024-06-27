@@ -739,7 +739,14 @@ public class TargetObject : NetworkBehaviour
     // Animation Event 시작 시 처리
     public void OnAnimationStart(Spine.TrackEntry trackEntry)
     {
-        // TODO : Animation Event 시작 시점 처리
+        // 애니매이션 시작 시 정렬값 변경(Idle은 원래값, 나머지 애니매이션은 맨 앞으로)
+        if(objectType == ObjectType.ENEMY && monster != null){
+            if(trackEntry.Animation.Name.Contains("Idle")){
+                monster.meshRenderer.sortingOrder = monster.index;
+            }else{
+                monster.meshRenderer.sortingOrder = 999;
+            }
+        }
     }
 
     // Animationm Event 완료 시 처리
@@ -756,6 +763,9 @@ public class TargetObject : NetworkBehaviour
                 else
                     anim.state.SetAnimation(0,"Idle",true);
             }
+        }else if(objectType == ObjectType.ENEMY && monster != null){
+            // 애니매이션 종료 시 정렬값 원래값으로 변경
+            monster.meshRenderer.sortingOrder = monster.index;
         }
     }
 

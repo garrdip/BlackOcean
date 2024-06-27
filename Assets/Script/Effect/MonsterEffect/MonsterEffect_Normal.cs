@@ -44,7 +44,7 @@ public partial class M_EffectManager
     {
         StartCoroutine(StartEffect(
             normalMonsterEffects[Monster_Effect.Eff_Bang],
-            "Eff2_bang",
+            "Eff2_Bang",
             position,
             null,
             "Effect")
