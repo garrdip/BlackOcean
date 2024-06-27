@@ -98,13 +98,19 @@ public class CardOnHand : NetworkBehaviour
 
     void OnDestroy()
     {
-        DOTween.Kill(transform);
+        transform.DOKill();
     }
 
     // 클라이언트에서 생성 시 현재 플레이어 참조값 미리 캐싱
     public override void OnStartClient()
     {
         InitCardTemplateByCharacter(card);
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        transform.DOKill();
     }
 
     // CardData의 스프라이트 데이터로부터 선택한 캐릭터의 카드 이미지 세팅
