@@ -109,11 +109,17 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     private void HandleBgmVolumeChange(float value)
     {
         M_SoundManager.instance.MusicVolume = value;
+        if(value > 0){
+            bgmToggle.isOn = false;
+        }
     }
 
     private void HandleBgmToggleChanage(bool isOn)
     {
         M_SoundManager.instance.IsMusicOn = !isOn;
+        if(isOn){
+            bgmVolumeSlider.value = 0f;
+        }
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
@@ -121,11 +127,17 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     private void HandleVoiceVolumeChange(float value)
     {
         M_SoundManager.instance.VoiceVolume = value;
+        if(value > 0){
+            voiceToggle.isOn = false;
+        }
     }
 
     private void HandleVoiceToggleChanage(bool isOn)
     {
         M_SoundManager.instance.IsVoiceOn = !isOn;
+        if(isOn){
+            voiceVolumeSlider.value = 0f;
+        }
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
@@ -134,11 +146,17 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     private void HandleSfxVolumeChange(float value)
     {
         M_SoundManager.instance.SoundVolume = value;
+        if(value > 0){
+            sfxToggle.isOn = false;
+        }
     }
 
     private void HandleSfxToggleChanage(bool isOn)
     {
         M_SoundManager.instance.IsSoundOn = !isOn;
+        if(isOn){
+            sfxVolumeSlider.value = 0f;
+        }
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }

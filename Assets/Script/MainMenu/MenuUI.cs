@@ -60,14 +60,15 @@ public class MenuUI : MonoBehaviour
 
     public void HandleSettings()
     {
-        OptionUIManager.instance.HandShowOptionPopUp(true);
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+        OptionUIManager.instance.HandShowOptionPopUp(true);
     }
 
     public void HandleQuit()
     {
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+        Application.Quit();
     }
 }
