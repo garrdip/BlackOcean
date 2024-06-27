@@ -31,6 +31,7 @@ public class GiantSoldier : SpawnedMonster
                     case 0 :
                         DoAnimation("Buff0");
                         yield return new WaitForSeconds(0.5f);
+                        M_EffectManager.instance.RpcEffectNormalMonsterShield(parent.transform.position);
                         parent.GainDefense(10);
                         yield return new WaitForSeconds(0.5f);
                         currentLevel++;
@@ -38,6 +39,7 @@ public class GiantSoldier : SpawnedMonster
                     case 1 :
                         DoAnimation("Buff0");
                         yield return new WaitForSeconds(0.5f);
+                        M_EffectManager.instance.RpcEffectNormalMonsterShield(parent.transform.position);
                         parent.GainDefense(15);
                         yield return new WaitForSeconds(0.5f);
                         currentLevel++;
@@ -45,6 +47,7 @@ public class GiantSoldier : SpawnedMonster
                     case 2 :
                         DoAnimation("Buff0");
                         yield return new WaitForSeconds(0.5f);
+                        M_EffectManager.instance.RpcEffectNormalMonsterShield(parent.transform.position);
                         parent.GainDefense(20);
                         yield return new WaitForSeconds(0.5f);
                         currentLevel++;

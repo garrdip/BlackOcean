@@ -20,6 +20,10 @@ public class SpearManA : SpawnedMonster
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.867f);
                 GeneralAttack();
+                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
+                {
+                    M_EffectManager.instance.RpcEffectNormalMonsterSting(transform.position);
+                }
                 yield return new WaitForSeconds(0.8f);
                 ReturnToIdleAnimation();
                 break;

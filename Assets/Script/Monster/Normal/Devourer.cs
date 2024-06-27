@@ -13,16 +13,24 @@ public class Devourer : SpawnedMonster
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.5f);
                 GeneralAttack();
-                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
+                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
+                    M_EffectManager.instance.RpcEffectNormalMonsterMagicAttack(tar.transform.position);
+                }
+                yield return new WaitForSeconds(0.5f);
+                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
+                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position);
                     tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,parent,null);
+                }  
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
                 break;
             case "광역붕괴" :
                 DoAnimation("Buff0");
                 yield return new WaitForSeconds(0.867f);
-                foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList)
+                foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList){
+                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position);
                     tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,parent,null);
+                }
                 yield return new WaitForSeconds(0.8f);
                 ReturnToIdleAnimation();
                 break;

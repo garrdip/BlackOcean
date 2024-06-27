@@ -14,32 +14,40 @@ public class WacherA : SpawnedMonster
             case "쇠락부여" :
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.5f);
-                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
+                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
+                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position);
                     tar.GainBuff(BuffType.SOIRAK,2,true,false,true,false,parent,null);
+                }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
                 break;
             case "붕괴부여" :
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.5f);
-                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
+                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
+                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position);
                     tar.GainBuff(BuffType.BOONGGUI,2,true,false,true,false,parent,null);
+                }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
                 break;
             case "힘감소" :
                 DoAnimation("Buff0");
                 yield return new WaitForSeconds(0.5f);
-                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
+                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
+                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position);
                     tar.GainBuff(BuffType.ICHI_ATTACK,-2,true,false,false,false,parent,null);
+                }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
                 break;
             case "방어감소" :
                 DoAnimation("Buff0");
                 yield return new WaitForSeconds(0.5f);
-                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
+                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
+                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position);
                     tar.GainBuff(BuffType.ICHI_DEFENSE,-2,true,false,false,false,parent,null);
+                }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
                 break;
