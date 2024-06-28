@@ -75,7 +75,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     // 버튼으로 스크롤 뷰 제어
     private void HandleCardQueueScrollViewByButton()
     {
-        if(isPointerDown){
+        if(isPointerDown && cardQueueScrollRect != null){
             float contentWidth = cardQueueScrollRect.content.rect.width;
             float viewportWidth = cardQueueScrollRect.viewport.rect.width;
             float maxScrollWidth = contentWidth - viewportWidth;
@@ -94,23 +94,23 @@ public class GameUIManager : SingletonD<GameUIManager>
     // 스크롤 뷰 내부 컨텐츠요소의 길이에 따라 스크롤 버튼의 활성화 상태 변경
     private void UpdateCardQueueScrollButtonVisibility()
     {
-        float contentWidth = cardQueueScrollRect.content.rect.width;
-        float viewportWidth = cardQueueScrollRect.viewport.rect.width;
-
-        if(contentWidth <= viewportWidth){
-            leftScrollButton.gameObject.SetActive(false);
-            rightScrollButton.gameObject.SetActive(false);
-        }else{
-            if(cardQueueScrollRect.horizontalNormalizedPosition <= 0){
-                leftScrollButton.gameObject.SetActive(false); // 스크롤바가 왼쪽 끝에 있는 경우 왼쪽 버튼 비활성화
+        if(cardQueueScrollRect != null){
+            float contentWidth = cardQueueScrollRect.content.rect.width;
+            float viewportWidth = cardQueueScrollRect.viewport.rect.width;
+            if(contentWidth <= viewportWidth){
+                leftScrollButton.gameObject.SetActive(false);
+                rightScrollButton.gameObject.SetActive(false);
             }else{
-                leftScrollButton.gameObject.SetActive(true);
-            }
-            if(cardQueueScrollRect.horizontalNormalizedPosition >= 1){
-                rightScrollButton.gameObject.SetActive(false); // 스크롤바가 오른쪽 끝에 있는 경우 오른쪽 버튼 비활성화
-
-            }else{
-                rightScrollButton.gameObject.SetActive(true);
+                if(cardQueueScrollRect.horizontalNormalizedPosition <= 0){
+                    leftScrollButton.gameObject.SetActive(false); // 스크롤바가 왼쪽 끝에 있는 경우 왼쪽 버튼 비활성화
+                }else{
+                    leftScrollButton.gameObject.SetActive(true);
+                }
+                if(cardQueueScrollRect.horizontalNormalizedPosition >= 1){
+                    rightScrollButton.gameObject.SetActive(false); // 스크롤바가 오른쪽 끝에 있는 경우 오른쪽 버튼 비활성화
+                }else{
+                    rightScrollButton.gameObject.SetActive(true);
+                }
             }
         }
     }

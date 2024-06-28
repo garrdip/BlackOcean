@@ -129,7 +129,6 @@ public class TargetObject : NetworkBehaviour
     void Start()
     {
         buffs.Callback += OnChangedBuff;
-        StartCoroutine(FindChildObjects());
     }
 
     public override void OnStartClient()
@@ -138,9 +137,17 @@ public class TargetObject : NetworkBehaviour
         if(objectType == ObjectType.PLAYER){
             player.onChangePlayerOrder += OnChangePlayerOrder; // 플레이어 타겟오브젝트인 경우 오더 변경 델리게이트 이벤트 리스너 추가
             InitTargetObjectPlayer(player);
+            anim = avatar.GetComponent<SkeletonAnimation>();
         }else{
             InitTargetObjectMonster(monster);
+            anim = monster.GetComponent<SkeletonAnimation>();
         }
+        if(anim != null){
+            anim.state.Event += OnAnimationEvent;
+            anim.state.Start += OnAnimationStart;
+            anim.state.Complete += OnAnimationComplete;
+            anim.timeScale = Random.Range(0.9f,1.1f); // 칼군무 방지 코드
+        }    
     }
 
     void OnDestroy()
@@ -187,6 +194,8 @@ public class TargetObject : NetworkBehaviour
                 }
                 ironDemonLocation = this;
                 ironDemon.GetComponent<SkeletonAnimation>().timeScale = Random.Range(0.9f,1.1f);
+                ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
+                StartCoroutine(HongDanHyangEyeFlicker());  
                 break;
         }
         SetPlayerTargetObjectOrder(player.selectOrder);
@@ -469,39 +478,6 @@ public class TargetObject : NetworkBehaviour
                 RpcMonsterDissolve();
             }
             monster.HP -= remind;
-        }
-    }
-
-    IEnumerator FindChildObjects()
-    {
-        while(true)
-        {
-            yield return new WaitForSeconds(0.01f);
-            if(avatar == null && monster == null)
-                continue;
-
-            if(objectType == ObjectType.PLAYER)
-            {
-                anim = avatar.GetComponent<SkeletonAnimation>();
-            }
-            else
-            {
-                anim = monster.GetComponent<SkeletonAnimation>();
-            }
-            if(anim != null){
-                anim.state.Event += OnAnimationEvent;
-                anim.state.Start += OnAnimationStart;
-                anim.state.Complete += OnAnimationComplete;
-                anim.timeScale = Random.Range(0.9f,1.1f); // 칼군무 방지 코드
-                if(objectType == ObjectType.PLAYER)
-                    if(player.character == Character.HONGDANHYANG){
-                        StartCoroutine(HongDanHyangEyeFlicker());
-                        while(ironDemon == null)
-                            yield return new WaitForSeconds(0.01f);
-                        ironDemon.GetComponent<SkeletonAnimation>().state.Complete += OnIronDemonAnimationComplete;
-                    }
-                break;
-            }
         }
     }
 
