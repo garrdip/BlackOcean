@@ -70,8 +70,7 @@ public class SpawnedMonster : NetworkBehaviour
         materialPropertyBlock = new MaterialPropertyBlock();
         meshRenderer = GetComponent<MeshRenderer>();
         if(dissolveParticle != null){
-            dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingLayerName = "FrontLayer";
-            dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingOrder = 999;
+            dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingLayerName = "Effect";
         }
         meshRenderer.sortingOrder = index;
     }

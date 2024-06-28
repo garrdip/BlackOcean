@@ -51,6 +51,7 @@ public class TargetObject : NetworkBehaviour
     }
     public bool usingGOHENG = false;
     public List<int> usedGOHENG = new List<int>();
+    private const int maxOrder = 999;
 
 
     [Header("몬스터용 참조값")]
@@ -167,6 +168,7 @@ public class TargetObject : NetworkBehaviour
         selectedNamePlate = playerNamePlate.GetComponent<NamePlate>();
         selectedNamePlate.SetHPValue(playerHP, playerMaxHP, 10);
         monsterNamePlate.SetActive(false);
+        playerName.text = player.objectOwner.steamPersonaName;
         switch(player.character)
         {
             case Character.GEORK :
@@ -177,7 +179,6 @@ public class TargetObject : NetworkBehaviour
                 break;
             case Character.HONGDANHYANG :
                 avatar = Instantiate(characters[0],transform.position,Quaternion.identity,transform);
-                avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
                 ironDemon = Instantiate(characters.Find(x => x.name == "IronDemon"),transform.position,Quaternion.identity,transform);
                 if(NetworkClient.localPlayer.transform.GetChild(0).GetComponent<GamePlayer>() == player){
                     ironDemon.GetComponent<SkeletonRenderTexture>().color.a = 1f;
@@ -188,14 +189,7 @@ public class TargetObject : NetworkBehaviour
                 ironDemon.GetComponent<SkeletonAnimation>().timeScale = Random.Range(0.9f,1.1f);
                 break;
         }
-        playerName.text = player.objectOwner.steamPersonaName;
-        if(player.objectOwner.isLocalPlayer){
-            avatar.GetComponent<MeshRenderer>().sortingOrder = 1;
-            targetObjectUI.GetComponent<SortingGroup>().sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-            selectedNamePlate.nameCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-            selectedNamePlate.hpCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-            selectedNamePlate.shieldCanvas.sortingOrder = avatar.GetComponent<MeshRenderer>().sortingOrder + 1;
-        }
+        SetPlayerTargetObjectOrder(player.selectOrder);
     }
 
     // 몬스터 타입의 타겟오브젝트 초기화
@@ -210,6 +204,17 @@ public class TargetObject : NetworkBehaviour
     public void OnChangePlayerOrder(int order)
     {
         transform.DOMove(M_TurnManager.instance.targetObjectPosition[order], 0.5f); // 플레이어 오더 변경 이벤트 수신하여 타겟오브젝트 위치 이동
+        SetPlayerTargetObjectOrder(order);
+    }
+
+    // 플레이어 타겟오브젝트의 정렬값 변경 (로컬플레이어는 최대값으로 설정하여 항상 맨 앞, 나머지는 player의 selectorder값으로 정렬값 설정)
+    private void SetPlayerTargetObjectOrder(int order)
+    {
+        avatar.GetComponent<MeshRenderer>().sortingOrder = player.objectOwner.isLocalPlayer ? maxOrder :  order;
+        targetObjectUI.GetComponent<SortingGroup>().sortingOrder = player.objectOwner.isLocalPlayer ? maxOrder : order + 1;
+        selectedNamePlate.nameCanvas.sortingOrder = player.objectOwner.isLocalPlayer ? maxOrder : order + 1;
+        selectedNamePlate.hpCanvas.sortingOrder = player.objectOwner.isLocalPlayer ? maxOrder : order + 1;
+        selectedNamePlate.shieldCanvas.sortingOrder = player.objectOwner.isLocalPlayer ? maxOrder : order + 1;
     }
 
     // 남은 코스트 없음 표시하는 말풍선 페이드인 후 페이드아웃
@@ -744,7 +749,7 @@ public class TargetObject : NetworkBehaviour
             if(trackEntry.Animation.Name.Contains("Idle")){
                 monster.meshRenderer.sortingOrder = monster.index;
             }else{
-                monster.meshRenderer.sortingOrder = 999;
+                monster.meshRenderer.sortingOrder = maxOrder;
             }
         }
     }
