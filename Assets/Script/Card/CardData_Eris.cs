@@ -146,8 +146,12 @@ public partial class CardData : SingletonD<CardData>
 
     public void H8_CallBack(GamePlayerDeck gpd, List<CardOnHand> cards)
     {
-        gpd.ServerDestroyCardOnHandToForgotten(cards[2]);
-        gpd.ServerDestroyCardOnHandToForgotten(cards[1]);
+        gpd.cardOnHands.Remove(cards[2]);
+        gpd.cardOnHands.Remove(cards[1]);
+        gpd.forgottenDeck.Add(cards[2].card);
+        gpd.forgottenDeck.Add(cards[1].card);
+        M_CardManager.instance.CardOnHandThrowAwayToTrashSequence(gpd.netIdentity.connectionToClient,cards[2]);
+        M_CardManager.instance.CardOnHandThrowAwayToTrashSequence(gpd.netIdentity.connectionToClient,cards[1]);
     }
 
     public IEnumerator E8_E(Card card,List<TargetObject> tar)

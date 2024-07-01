@@ -372,6 +372,48 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         }
     }
 
+    [TargetRpc]
+    public void CardOnHandThrowAwayToTrashSequence(NetworkConnection target,CardOnHand cardOnHand)
+    {
+        if(NetworkClient.connection != null && NetworkClient.active){
+            GameUIManager.instance.buttonEndTurn.interactable = false;        
+            cardOnHand.isMoving = true;
+            cardOnHand.isUsed = true;
+            float duration = 0.5f;
+            bool isChalna = true;
+            Vector3 position = isChalna ? GameUIManager.instance.ForgottenDeck.GetComponent<RectTransform>().position : GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
+            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+
+            // Dotween 애니매이션 시퀀스 생성
+            Sequence sequence = DOTween.Sequence();
+            
+            // 시퀸스에 회전 초기화, 현재위치에서 중앙 0.5f위쪽 위치로 이동 애니매이션 추가
+            sequence.Prepend(cardOnHand.transform.DORotate(new Vector3(0f, 0f, 0f), 0.5f).OnComplete(() => {
+                cardOnHand.trailRenderer.enabled = true;
+            }));
+            sequence.Join(cardOnHand.transform
+                                .DOMove(new Vector3(0f, 0.5f, 0f), 0.5f)
+                                .SetEase(Ease.OutSine));
+
+            // 시퀀스에 사이즈 축소, 오른쪽으로 90도 회전, 현재위치에서 화면의 우측하단 방향으로 포물선 이동 애니매이션 추가
+            sequence.Append(cardOnHand.transform.DOScale(new Vector3(0f, 0f, 0f), duration));
+            sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
+            sequence.Join(cardOnHand.transform.DOMove(position, duration).SetEase(Ease.InOutCirc));
+            sequence.OnComplete(() =>
+            {
+                // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행
+                if(gamePlayerDeck.isOwned){
+                    GameUIManager.instance.buttonEndTurn.interactable = true;
+                    sequence.Kill();
+                    cardOnHand.isUsed = true;
+                    NetworkClient.connection.identity.GetComponent<PlayerInterface>().destroyCards.Add(cardOnHand);
+                    ChangeCurrentPlayerCardOnHandState(false);
+                }
+            });
+        }
+    }
+    
+
     // CardOnHand 모두 trashDeck으로 버리는 애니매이션(턴 종료시 호출)
     public void CardOnHandAllThrowAwaySequence(CardOnHand cardOnHand, GamePlayerDeck gamePlayerDeck)
     {
