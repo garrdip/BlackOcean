@@ -531,14 +531,15 @@ public partial class CardData : SingletonD<CardData>
         tar[0].player.GetComponent<GamePlayerDeck>().AddDrawCard(2); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
+    
     public IEnumerator H17_E(Card card, List<TargetObject> tar)
     {
         yield return H17(card,tar);
     }
 
-    public void H17_CallBack(List<Card> cards)
+    public void H17_CallBack(GamePlayerDeck gpd,List<CardOnHand> cards)
     {
-        cards[0].cardCharacteristics.Add(CardCharacteristic.JOONGREUK);
+        cards[0].card.cardCharacteristics.Add(CardCharacteristic.JOONGREUK);
     }
 
     // 주조 (강화 이펙트 추가)

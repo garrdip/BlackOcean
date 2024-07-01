@@ -480,7 +480,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void CmdSpawnAddtionDrawCard(Card card, int index)
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        List<Card> cards = new List<Card>();
+        List<CardOnHand> cards = new List<CardOnHand>();
         for(int i=0; i<addtionDrawCards.Count; i++){
             GameObject cardOnHandObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
@@ -497,10 +497,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
             if(cardOnHand.card.baseCard.cardNumber.Contains("G57"))currentIchi++;
             cardOnHands.Add(cardOnHand);
-            if(i != index) cards.Add(addtionDrawCards[i]);
-            else cards.Insert(0,addtionDrawCards[i]);
+            if(i != index) cards.Add(cardOnHand);
+            else cards.Insert(0,cardOnHand);
         }
-        CardData.instance.cardSelectCallBack(cards);
+        CardData.instance.cardSelectCallBack(this,cards);
         addtionDrawCards.Clear();
     }
 
@@ -631,6 +631,14 @@ public partial class GamePlayerDeck : NetworkBehaviour
     // 카드 제거(잊혀진 덱으로 보내는 경우)
     [Command]
     public void CmdDestroyCardOnHandToForgotten(CardOnHand cardOnHand)
+    {
+        forgottenDeck.Add(cardOnHand.card);
+        cardOnHands.Remove(cardOnHand);
+        NetworkServer.Destroy(cardOnHand.gameObject);
+    }
+
+    [Server]
+    public void ServerDestroyCardOnHandToForgotten(CardOnHand cardOnHand)
     {
         forgottenDeck.Add(cardOnHand.card);
         cardOnHands.Remove(cardOnHand);

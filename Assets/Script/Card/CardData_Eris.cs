@@ -99,26 +99,57 @@ public partial class CardData : SingletonD<CardData>
     {
         yield return E5(card,tar);
     }
+
+    // 별의 축복
     public IEnumerator E6(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.8f);
+		GeneralGetDefense(tar[0],tar[1],5,card);
+        tar[1].GainBuff(BuffType.BYEOLMURI,1,false,false,false,false,tar[0],card);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E6_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E6(card,tar);
     }
+    // 돌로레
     public IEnumerator E7(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.8f);
+		tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(2);
+        tar[0].DamageToPlayer(6);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E7_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E7(card,tar);
     }
+    
+    // 한번 볼까요
     public IEnumerator E8(Card card,List<TargetObject> tar)
     {
+        cardSelectCallBack = H8_CallBack;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		GeorkAnimation(tar[0],"Buff0");
+		yield return new WaitForSeconds(0.8f);
+        tar[0].player.GetComponent<GamePlayerDeck>().AddDrawCard(3);
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         yield return null;
     }
+
+    public void H8_CallBack(GamePlayerDeck gpd, List<CardOnHand> cards)
+    {
+        gpd.ServerDestroyCardOnHandToForgotten(cards[2]);
+        gpd.ServerDestroyCardOnHandToForgotten(cards[1]);
+    }
+
     public IEnumerator E8_E(Card card,List<TargetObject> tar)
     {
         yield return null;

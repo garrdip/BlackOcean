@@ -61,7 +61,7 @@ namespace ProjectD
     public delegate IEnumerator ExecuteCard(Card card,List<TargetObject> target);
     public delegate IEnumerator CurssEffect(TargetObject target);
     public delegate void ItemEventHanddler(TargetObject sender);
-    public delegate void CardSelectCallBack(List<Card> cards);
+    public delegate void CardSelectCallBack(GamePlayerDeck gpd, List<CardOnHand> cards);
     public delegate IEnumerator CardBlessEffect(TargetObject target,int index, Card card);
     public delegate IEnumerator GOHENGEffcet(TargetObject target);
 
