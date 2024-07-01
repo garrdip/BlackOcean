@@ -134,7 +134,7 @@ public partial class CardData : SingletonD<CardData>
     // 한번 볼까요
     public IEnumerator E8(Card card,List<TargetObject> tar)
     {
-        cardSelectCallBack = H8_CallBack;
+        cardSelectCallBack = E8_CallBack;
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		GeorkAnimation(tar[0],"Buff0");
 		yield return new WaitForSeconds(0.8f);
@@ -144,14 +144,14 @@ public partial class CardData : SingletonD<CardData>
         yield return null;
     }
 
-    public void H8_CallBack(GamePlayerDeck gpd, List<CardOnHand> cards)
+    public void E8_CallBack(GamePlayerDeck gpd, List<CardOnHand> cards)
     {
         gpd.cardOnHands.Remove(cards[2]);
         gpd.cardOnHands.Remove(cards[1]);
         gpd.forgottenDeck.Add(cards[2].card);
         gpd.forgottenDeck.Add(cards[1].card);
-        M_CardManager.instance.CardOnHandThrowAwayToTrashSequence(gpd.netIdentity.connectionToClient,cards[2]);
-        M_CardManager.instance.CardOnHandThrowAwayToTrashSequence(gpd.netIdentity.connectionToClient,cards[1]);
+        gpd.TargetCardOnHandRemoveToForgotenDeck(cards[2]);
+        gpd.TargetCardOnHandRemoveToForgotenDeck(cards[1]);
     }
 
     public IEnumerator E8_E(Card card,List<TargetObject> tar)

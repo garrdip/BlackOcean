@@ -692,6 +692,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
     }
     
+    // 전투 보상 데이터 세팅 RPC 수신
     [TargetRpc]
     public void TargetPlayerRewarded(NetworkConnectionToClient target)
     {
@@ -701,16 +702,25 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    // 드로우 카드 팝업 활성화 RPC 수신
     [TargetRpc]
     public void TargetDrawPopUpShow()
     {
-        PopUpUIManager.instance.HandleShowDeckDrawPopUp(); // 드로우 카드 팝업 활성화
+        PopUpUIManager.instance.HandleShowDeckDrawPopUp();
     }
 
+    // 패 카드 제거 팝업 활성화 RPC 수신
     [TargetRpc]
     public void TargetCardOnHandRemovePopUpShow()
     {
-        PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp(); // 패 카드 제거 팝업 활성화
+        PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp();
+    }
+
+    // 버려진 덱으로 카드 보내는 RPC 수신
+    [TargetRpc]
+    public void TargetCardOnHandRemoveToForgotenDeck(CardOnHand cardOnHand)
+    {
+        M_CardManager.instance.CardOnHandThrowAwaySequence(cardOnHand);
     }
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
