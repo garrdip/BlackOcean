@@ -16,14 +16,14 @@ public class Soldier_Spear : SpawnedMonster
                 GeneralAttack();
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
                 {
-                    M_EffectManager.instance.RpcEffectNormalMonsterSting(tar.transform.position);
+                    M_EffectManager.instance.RpcEffectNormalMonsterSting(tar.transform.position, SFX_TYPE.Normal_Spear, 1);
                 }
                 yield return new WaitForSeconds(0.4f);
                 ReturnToIdleAnimation();
                 break;
             case "방어" :
                 DoAnimation("Buff0");
-                M_EffectManager.instance.RpcEffectNormalMonsterShield(parent.transform.position);
+                M_EffectManager.instance.RpcEffectNormalMonsterShield(parent.transform.position, SFX_TYPE.Normal_Axe, 6);
                 parent.GainDefense(nextAction.actionValue);
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();

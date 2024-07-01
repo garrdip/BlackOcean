@@ -22,7 +22,7 @@ public class SpearManA : SpawnedMonster
                 GeneralAttack();
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
                 {
-                    M_EffectManager.instance.RpcEffectNormalMonsterSting(transform.position);
+                    M_EffectManager.instance.RpcEffectNormalMonsterSting(transform.position, SFX_TYPE.Normal_Spear, 4);
                 }
                 yield return new WaitForSeconds(0.8f);
                 ReturnToIdleAnimation();

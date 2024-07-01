@@ -11,7 +11,7 @@ public class Soldier_Shield : SpawnedMonster
         switch(nextAction.actionName){
             case "혼자방어" :
                 DoAnimation("Buff0");
-                M_EffectManager.instance.RpcEffectNormalMonsterShield(parent.transform.position);
+                M_EffectManager.instance.RpcEffectNormalMonsterShield(parent.transform.position, SFX_TYPE.Normal_Axe, 6);
                 parent.GainDefense(nextAction.actionValue);
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
@@ -19,7 +19,7 @@ public class Soldier_Shield : SpawnedMonster
             case "팀방어" :
                 DoAnimation("Buff0");
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList){
-                    M_EffectManager.instance.RpcEffectNormalMonsterShield(tar.transform.position);
+                    M_EffectManager.instance.RpcEffectNormalMonsterShield(tar.transform.position, SFX_TYPE.Normal_Axe, 6);
                     tar.GainDefense(nextAction.actionValue);
                 }
                 yield return new WaitForSeconds(1.7f);

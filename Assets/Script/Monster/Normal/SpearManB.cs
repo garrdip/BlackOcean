@@ -14,7 +14,7 @@ public class SpearManB : SpawnedMonster
                 yield return new WaitForSeconds(0.5f);
                 GeneralAttack();
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList){
-                    M_EffectManager.instance.RpcEffectNormalMonsterSting(tar.transform.position);
+                    M_EffectManager.instance.RpcEffectNormalMonsterSting(tar.transform.position, SFX_TYPE.Normal_Spear, 3);
                     tar.GainBuff(BuffType.ICHI_ATTACK,2,false,false,false,false,parent,null);
                 }
                 yield return new WaitForSeconds(0.833f);
@@ -25,7 +25,7 @@ public class SpearManB : SpawnedMonster
                 yield return new WaitForSeconds(0.867f);
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList)
                 {
-                    M_EffectManager.instance.RpcEffectNormalMonsterShield(tar.transform.position);
+                    M_EffectManager.instance.RpcEffectNormalMonsterShield(tar.transform.position, SFX_TYPE.Normal_Axe, 6);
                     tar.GainDefense(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_DEFENSE));
                     tar.GainBuff(BuffType.ICHI_DEFENSE,2,false,false,false,false,parent,null);
                 }

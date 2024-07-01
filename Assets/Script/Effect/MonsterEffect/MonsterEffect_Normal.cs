@@ -11,81 +11,84 @@ public partial class M_EffectManager
 
     // 몬스터 찌르기 공격 이펙트
     [ClientRpc]
-    public void RpcEffectNormalMonsterSting(Vector3 position)
+    public void RpcEffectNormalMonsterSting(Vector3 position, SFX_TYPE sfx_type, int index)
     {
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[sfx_type][index];
         StartCoroutine(StartEffect(
             normalMonsterEffects[Monster_Effect.Eff_Sting],
             "Eff0_Sting",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Spear].Find((audioClip) => audioClip.name.Equals("monster_nor_spear_1_1")),
+            audioClip,
             "Effect")
         );
     }
 
     // 몬스터 베기 공격 이펙트
     [ClientRpc]
-    public void RpcEffectNormalMonsterCut(bool isSoldierAxe, Vector3 position)
+    public void RpcEffectNormalMonsterCut(Vector3 position,  SFX_TYPE sfx_type, int index)
     {
-        AudioClip attackSFX = isSoldierAxe ? 
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_1_3")) :
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_sw_shd_1_3"));
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[sfx_type][index];
         StartCoroutine(StartEffect(
             normalMonsterEffects[Monster_Effect.Eff_Cut],
             "Eff1_Cut",
             position,
-            attackSFX,
+            audioClip,
             "Effect")
         );
     }
 
     // 몬스터 디버프 이펙트
     [ClientRpc]
-    public void RpcEffectNormalMonsterBang(Vector3 position)
+    public void RpcEffectNormalMonsterBang(Vector3 position, SFX_TYPE sfx_type, int index)
     {
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[sfx_type][index];
         StartCoroutine(StartEffect(
             normalMonsterEffects[Monster_Effect.Eff_Bang],
             "Eff2_Bang",
             position,
-            null,
+            audioClip,
             "Effect")
         );
     }
 
     // 몬스터 마법 공격 이펙트
     [ClientRpc]
-    public void RpcEffectNormalMonsterMagicAttack(Vector3 position)
+    public void RpcEffectNormalMonsterMagicAttack(Vector3 position, SFX_TYPE sfx_type, int index)
     {
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[sfx_type][index];
         StartCoroutine(StartEffect(
             normalMonsterEffects[Monster_Effect.Eff_MagicAttack],
             "Eff3_MagicAttack",
             position,
-            null,
+            audioClip,
             "Effect")
         );
     }
 
     // 몬스터 버프 이펙트
     [ClientRpc]
-    public void RpcEffectNormalMonsterBuff(Vector3 position)
+    public void RpcEffectNormalMonsterBuff(Vector3 position, SFX_TYPE sfx_type, int index)
     {
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[sfx_type][index];
         StartCoroutine(StartEffect(
             normalMonsterEffects[Monster_Effect.Eff_Buff],
             "Eff04_Buff",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_3")),
+            audioClip,
             "Effect")
         );
     }
 
     // 몬스터 방어 버프 이펙트
     [ClientRpc]
-    public void RpcEffectNormalMonsterShield(Vector3 position)
+    public void RpcEffectNormalMonsterShield(Vector3 position, SFX_TYPE sfx_type, int index)
     {
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[sfx_type][index];
         StartCoroutine(StartEffect(
             normalMonsterEffects[Monster_Effect.Eff_Shield],
             "Eff05_Shield",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Normal_Axe].Find((audioClip) => audioClip.name.Equals("monster_nor_axe_4_1")),
+            audioClip,
             "Effect")
         );
     }

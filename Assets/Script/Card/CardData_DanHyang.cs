@@ -184,7 +184,7 @@ public partial class CardData : SingletonD<CardData>
 
         M_TurnManager.instance.AnimIronDemon("Buff0",tar[0]);
         GeneralGetDefense(tar[0],tar[0],5,card);
-        M_EffectManager.instance.RpcEffectFlowerShield(tar[0].transform.position, 6);
+        M_EffectManager.instance.RpcEffectFlowerShield(tar[0].transform.position, 9);
         yield return new WaitForSeconds(1.33f);
 
         yield return MoveIronDemonCoroutine(tar[0],preLocation);
