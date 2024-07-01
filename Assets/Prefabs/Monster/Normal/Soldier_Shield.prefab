@@ -4901,7 +4901,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8715637313035057607}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.77, y: 1.65, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4938,7 +4938,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 8965b78ae6e49794e9ca451a54807803, type: 2}
-  - {fileID: 2100000, guid: eb197d5c11895ae4db5de7f013eb55b6, type: 2}
+  - {fileID: 2100000, guid: 20945464e55f98c42ba89e578bce38e6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5036,6 +5036,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   monsterName: 
+  index: 0
   MAXHP: 0
   HP: 0
   sheild: 0
