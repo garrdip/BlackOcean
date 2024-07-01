@@ -79,6 +79,11 @@ public class GiantSoldier : SpawnedMonster
     public void DoAnimation(string actionName)
     {
         parent.anim.state.SetAnimation(1,actionName,false);
+        // 거병은 예외적으로 공격 SFX 호출을 애니매이션과 동일한 시점에 재생(추후 조정 필요)
+        if(actionName.Equals("Attact0")){
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.Elite_GiantSoldier][2];
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+        }
     }
 
     [Server]

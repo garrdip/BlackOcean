@@ -23,6 +23,13 @@ public class Happy : SpawnedMonster
         yield return new WaitForSeconds(1f);
         isActive = false;
     }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        transform.localPosition = new Vector3(2f, 0f, 0f);
+        parent.nextActionIndicator.GetComponent<Transform>().position += new Vector3(0,3,0);
+    }
     
     [ClientRpc]
     public void DoAnimation(string actionName)

@@ -429,7 +429,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             cardOnHand.isUsed = true;
             if(cardOnHand.isOwned){
                 AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_discard"));
-                M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+                M_SoundManager.instance.PlaySFX(audioClip, audioClip.length, 0.5f);
             }
         });
         sequence.Append(cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration));

@@ -756,8 +756,9 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="duration">재생시간</param>
     /// <param name="singleton">효과음이 싱글톤인지 여부</param>
     /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlaySFX (AudioClip clip, Vector2 location, float duration, bool singleton = false, Action callback = null) {
-        return PlayAudioClipSFX (clip, location, duration, _soundFxVolume, singleton, 1f, callback);
+    public AudioSource PlaySFX (AudioClip clip, Vector2 location, float duration, float volume = 0f, bool singleton = false, Action callback = null) {
+        float sfxVolume = (volume > 0f) ? volume : _soundFxVolume;
+        return PlayAudioClipSFX (clip, location, duration, sfxVolume, singleton, 1f, callback);
     }
 
     /// <summary>
@@ -768,8 +769,9 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="duration">재생시간</param>
     /// <param name="singleton">효과음이 싱글톤인지 여부</param>
     /// <param name="callback">재생이 끝나면 콜백할 액션</param>
-    public AudioSource PlaySFX (AudioClip clip, float duration, bool singleton = false, Action callback = null) {
-        return PlayAudioClipSFX (clip, Vector2.zero, duration, _soundFxVolume, singleton, 1f, callback);
+    public AudioSource PlaySFX (AudioClip clip, float duration, float volume = 0f, bool singleton = false, Action callback = null) {
+        float sfxVolume = (volume > 0f) ? volume : _soundFxVolume;
+        return PlayAudioClipSFX (clip, Vector2.zero, duration, sfxVolume, singleton, 1f, callback);
     }
 
     /// <summary>

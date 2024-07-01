@@ -38,6 +38,9 @@ public class Devourer : SpawnedMonster
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.5f);
                 GeneralAttack();
+                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
+                    M_EffectManager.instance.RpcEffectNormalMonsterMagicAttack(tar.transform.position, SFX_TYPE.Elite_Devourer, 2);
+                }
                 if(HP + nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK) > MAXHP)
                     HP = MAXHP;
                 else

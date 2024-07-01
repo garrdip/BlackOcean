@@ -20,19 +20,11 @@ public class EffectBase : MonoBehaviour
 
     private void OnAnimationStart(Spine.TrackEntry trackEntry)
     {
-        StartCoroutine(PlayEffectSFX());
+        M_SoundManager.instance.PlaySFX(sfx, sfx.length);
     }
 
     private void OnAnimationComplete(Spine.TrackEntry trackEntry)
     {
         Destroy(gameObject);
-    }
-
-    private IEnumerator PlayEffectSFX()
-    {
-        yield return new WaitForSeconds(0.5f);
-        if(sfx != null){
-            M_SoundManager.instance.PlaySFX(sfx, sfx.length);
-        }
     }
 }
