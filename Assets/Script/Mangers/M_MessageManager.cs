@@ -122,20 +122,22 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     // 채팅창 Visible 상태 변경(이벤트는 인스펙터에 할당되어 있음)
     public void ChangeChatBoxVisibileState()
     {
-        isChatBoxVisible = !isChatBoxVisible;
-        if(isChatBoxVisible){
-            chatMessageBoxTween = chatMessageBoxRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
-            chatInputTween = chatMessageInputRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
-            buttonChatBoxTween = buttonChatBoxRect.DOAnchorPosX(875f, 0.5f);
-            chatNotificationIcon.SetActive(false);
-            chatNotificationIconLight.SetActive(false);
-            fadeInTweener.Kill();
-            fadeOutTweener.Kill();
-            notiLoopSequence.Kill();
-        }else{
-            chatMessageBoxTween = chatMessageBoxRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
-            chatInputTween =  chatMessageInputRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
-            buttonChatBoxTween = buttonChatBoxRect.DOAnchorPosX(150f, 0.5f);
+        if(!DeckBookUI.instance.dekcBookMenu.activeSelf){
+            isChatBoxVisible = !isChatBoxVisible;
+            if(isChatBoxVisible){
+                chatMessageBoxTween = chatMessageBoxRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
+                chatInputTween = chatMessageInputRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);
+                buttonChatBoxTween = buttonChatBoxRect.DOAnchorPosX(875f, 0.5f);
+                chatNotificationIcon.SetActive(false);
+                chatNotificationIconLight.SetActive(false);
+                fadeInTweener.Kill();
+                fadeOutTweener.Kill();
+                notiLoopSequence.Kill();
+            }else{
+                chatMessageBoxTween = chatMessageBoxRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
+                chatInputTween =  chatMessageInputRect.DOAnchorPosX(-chatMessageBoxRect.rect.width / 2, 0.5f);
+                buttonChatBoxTween = buttonChatBoxRect.DOAnchorPosX(150f, 0.5f);
+            }
         }
     }
 

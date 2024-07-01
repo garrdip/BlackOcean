@@ -40,11 +40,12 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectFlowerShield(Vector3 position, int index)
     {
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_Shield],
             "Eff6_Shield",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
+            audioClip,
             "Effect")
         );
     }
@@ -53,11 +54,12 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectCutLeafAttack(Vector3 position, int index)
     {
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_CutLeaf],
             "Eff1_CutLeaf",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
+            audioClip,
             "Effect")
         );
     }
@@ -65,11 +67,12 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectBodyTurnLeaf(Vector3 position, int index)
     {
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BodyTurnZoomIn],
             "Eff0_BodyZoomIn",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
+            audioClip,
             "Effect") 
         );
     }
@@ -78,11 +81,12 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectBackTurnBottomLeaf(Vector3 position, int index)
     {
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BackTurnBottom],
             "Eff2_TurnBottom",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
+            audioClip,
             "FrontLayer") 
         );
     }
@@ -90,11 +94,12 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectTurnBottomLeaf(Vector3 position, int index)
     {
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_TurnBottom],
             "Eff2_TurnBottom",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
+            audioClip,
             "Effect") 
         );
     }
@@ -103,11 +108,12 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectUpLight(Vector3 position, int index)
     {
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_UpLight],
             "Eff3_UpLight",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
+            audioClip,
             "Effect") 
         );
     }
@@ -116,11 +122,12 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectBackFallingLeaf(Vector3 position, int index)
     {
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BackFallingLeaf],
             "Eff4_FallingLeaf",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
+            audioClip,
             "BackLayer") 
         );
     }
@@ -129,11 +136,12 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectFallingLeaf(Vector3 position, int index)
     {
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_FallingLeaf],
             "Eff4_FallingLeaf",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
+            audioClip,
             "Effect")
         );
     }
@@ -141,11 +149,12 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectBodyZoomOut(Vector3 position, int index)
     {
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BodyZoomOut],
             "Eff5_BodyZoomOut",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index],
+            audioClip,
             "Effect")
         );
     }

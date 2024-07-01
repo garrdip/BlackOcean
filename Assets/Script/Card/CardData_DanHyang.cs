@@ -1109,6 +1109,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
         M_EffectManager.instance.RpcEffectFallingLeaf(tar[1].transform.position, 86);
+        M_EffectManager.instance.RpcEffectBackFallingLeaf(tar[1].transform.position, -1);
         int index = 0;
         if(tar[1].objectType == ObjectType.PLAYER){
             index = tar[1].GainBuff(BuffType.FLOWERPOWDER,5,false,false,false,true,tar[0],card);
@@ -1139,6 +1140,7 @@ public partial class CardData : SingletonD<CardData>
         M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position, 89);
         yield return new WaitForSeconds(0.5f);
         M_EffectManager.instance.RpcEffectFallingLeaf(tar[1].transform.position, 88);
+        M_EffectManager.instance.RpcEffectBackFallingLeaf(tar[1].transform.position, -1);
         int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,2,true,false,false,true,tar[0],card);
         if(!tar[1].buffTrunBeginEffect.Keys.Contains<int>(index))tar[1].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
@@ -1240,6 +1242,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
         M_EffectManager.instance.RpcEffectFallingLeaf(tar[1].transform.position, 98);
+        M_EffectManager.instance.RpcEffectBackFallingLeaf(tar[1].transform.position, -1);
         int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,tar[1].GetBuffValue(BuffType.FLOWERPOWDER),false,false,false,true,tar[0],card);
         if(!tar[1].buffTrunBeginEffect.Keys.Contains<int>(index))tar[1].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
@@ -1328,6 +1331,7 @@ public partial class CardData : SingletonD<CardData>
         GeneralGetDefense(tar[0],tar[0],8,card);
         M_EffectManager.instance.RpcEffectFlowerShield(tar[0].transform.position, 100);
         M_EffectManager.instance.RpcEffectFallingLeaf(tar[0].transform.position, 100);
+        M_EffectManager.instance.RpcEffectBackFallingLeaf(tar[0].transform.position, 98);
         int index = tar[0].GainBuff(BuffType.FLOWERPOWDER,2,false,false,false,true,tar[0],card);
         if(!tar[0].buffTurnEndEffect.Keys.Contains<int>(index))tar[0].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
@@ -1347,6 +1351,7 @@ public partial class CardData : SingletonD<CardData>
             M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
             yield return new WaitForSeconds(0.5f);
             M_EffectManager.instance.RpcEffectFallingLeaf(tar[1].transform.position, 101);
+            M_EffectManager.instance.RpcEffectBackFallingLeaf(tar[1].transform.position, -1);
             int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,3,false,false,false,true,tar[0],card);
             if(!tar[1].buffTurnEndEffect.Keys.Contains<int>(index))tar[1].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         }
@@ -1355,6 +1360,7 @@ public partial class CardData : SingletonD<CardData>
             M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
             yield return new WaitForSeconds(0.5f);
             M_EffectManager.instance.RpcEffectFallingLeaf(tar[1].transform.position, 101);
+            M_EffectManager.instance.RpcEffectBackFallingLeaf(tar[1].transform.position, -1);
             int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,3,true,false,false,true,tar[0],card);
             if(!tar[1].buffTrunBeginEffect.Keys.Contains<int>(index))tar[1].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         }
@@ -1507,6 +1513,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
         M_EffectManager.instance.RpcEffectFallingLeaf(tar[0].ironDemonLocation.transform.position, 117);
+        M_EffectManager.instance.RpcEffectBackFallingLeaf(tar[0].ironDemonLocation.transform.position, -1);
         tar[0].ironDemonLocation.GainBuff(BuffType.FLOWERPOWDER,3,false,false,false,true,tar[0],card);
         tar[0].ironDemonLocation.GainBuff(BuffType.FLOWER,tar[0].ironDemonLocation.GetBuffValue(BuffType.FLOWERPOWDER),false,false,false,false,tar[0],card);
         tar[0].ironDemonLocation.buffs.Remove(tar[0].ironDemonLocation.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
