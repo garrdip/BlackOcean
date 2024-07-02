@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -79,5 +80,25 @@ public class DeckBookUI : SingletonD<DeckBookUI>
     public void OnPointerExitCloseDeckBookButton()
     {
         buttonCloseLight.SetActive(false);
+    }
+
+    // 정규표현식을 이용한 카드 설명 문자열 치환
+    public string ReplaceDescription(string str)
+    {
+        string patternDamage = @"!(\S+)"; // !피해량
+        str = Regex.Replace(str, patternDamage, match => $"<color=green>{match.Groups[1].Value}</color>");
+
+        string patternDeffence = @"(?<!<)#(\d+)"; // !방어도
+        str = Regex.Replace(str, patternDeffence, match => $"<color=green>{match.Groups[1].Value}</color>");
+
+        string patternMultipleDamage = @"\$(\d+)\s*\$(\d+)"; // $피해량$타수
+        Regex regex = new Regex(patternMultipleDamage);
+        foreach(Match match in regex.Matches(str)){
+            if(match.Groups.Count == 3){
+                string replacedText = $"<color=green>{match.Groups[1].Value}</color>를 <color=blue>{match.Groups[2].Value}</color>번";
+                str = str.Replace(match.Value, replacedText);
+            }
+        }
+        return str;
     }
 }
