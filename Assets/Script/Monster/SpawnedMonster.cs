@@ -49,7 +49,7 @@ public class SpawnedMonster : NetworkBehaviour
 
     private SkeletonRendererCustomMaterials skeletonRendererCustomMaterials;
 
-    private SkeletonAnimation skeletonAnimation;
+    public SkeletonAnimation skeletonAnimation;
 
     [Header("몬스터 MeshRenderer")]
     public MeshRenderer meshRenderer;

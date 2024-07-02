@@ -10,7 +10,6 @@ using ProjectD;
 public class NPC_RyuJinSol : SpawnedMonster
 {
     [Header("스켈레톤 애니매이션 컴포넌트")]
-    public SkeletonAnimation skeletonAnimation;
     public List<string> animationNames = new List<string>();
     private TrackEntry trackEntry;
     public Coroutine eyeBlikCoroutine;

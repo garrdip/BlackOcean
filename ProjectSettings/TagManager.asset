@@ -71,6 +71,9 @@ TagManager:
   - name: CardOnHandOverPopUp
     uniqueID: 1678806035
     locked: 0
+  - name: MapBackground
+    uniqueID: 4023370453
+    locked: 0
   - name: HexagonMapRoom
     uniqueID: 1918249161
     locked: 0
