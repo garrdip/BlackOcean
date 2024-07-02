@@ -637,14 +637,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         NetworkServer.Destroy(cardOnHand.gameObject);
     }
 
-    [Server]
-    public void ServerDestroyCardOnHandToForgotten(CardOnHand cardOnHand)
-    {
-        forgottenDeck.Add(cardOnHand.card);
-        cardOnHands.Remove(cardOnHand);
-        NetworkServer.Destroy(cardOnHand.gameObject);
-    }
-
     // 카드 제거(버려진 or 잊혀진 댁으로 보내지 않고 제거만 수행)
     [Command]
     public void CmdDestroyAllCardOnHandWithOutTrashDeck()
@@ -716,11 +708,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
         PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp();
     }
 
-    // 버려진 덱으로 카드 보내는 RPC 수신
+    // 잊혀진 덱으로 카드 보내는 RPC 수신
     [TargetRpc]
     public void TargetCardOnHandRemoveToForgotenDeck(CardOnHand cardOnHand)
     {
-        M_CardManager.instance.CardOnHandThrowAwaySequence(cardOnHand);
+        M_CardManager.instance.CardOnHandThrowAwaySequenceToForgotenDeck(cardOnHand);
     }
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
