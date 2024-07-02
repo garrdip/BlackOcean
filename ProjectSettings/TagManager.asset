@@ -83,9 +83,6 @@ TagManager:
   - name: HexagonMapRoomSelected
     uniqueID: 3341493313
     locked: 0
-  - name: HexagonGrid
-    uniqueID: 1381287363
-    locked: 0
   - name: MapPlayerPiece
     uniqueID: 1914233205
     locked: 0
