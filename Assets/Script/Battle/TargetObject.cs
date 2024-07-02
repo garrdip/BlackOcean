@@ -51,7 +51,6 @@ public class TargetObject : NetworkBehaviour
     }
     public bool usingGOHENG = false;
     public List<int> usedGOHENG = new List<int>();
-    private const int maxOrder = 999;
 
 
     [Header("몬스터용 참조값")]
@@ -219,11 +218,11 @@ public class TargetObject : NetworkBehaviour
     // 플레이어 타겟오브젝트의 정렬값 변경 (로컬플레이어는 최대값으로 설정하여 항상 맨 앞, 나머지는 player의 selectorder값으로 정렬값 설정)
     private void SetPlayerTargetObjectOrder(int order)
     {
-        avatar.GetComponent<MeshRenderer>().sortingOrder = player.objectOwner.isLocalPlayer ? maxOrder :  order;
-        targetObjectUI.GetComponent<SortingGroup>().sortingOrder = player.objectOwner.isLocalPlayer ? maxOrder : order + 1;
-        selectedNamePlate.nameCanvas.sortingOrder = player.objectOwner.isLocalPlayer ? maxOrder : order + 1;
-        selectedNamePlate.hpCanvas.sortingOrder = player.objectOwner.isLocalPlayer ? maxOrder : order + 1;
-        selectedNamePlate.shieldCanvas.sortingOrder = player.objectOwner.isLocalPlayer ? maxOrder : order + 1;
+        avatar.GetComponent<MeshRenderer>().sortingOrder = player.objectOwner.isLocalPlayer ? Const.MAX_ORDER :  order;
+        targetObjectUI.GetComponent<SortingGroup>().sortingOrder = player.objectOwner.isLocalPlayer ? Const.MAX_ORDER : order + 1;
+        selectedNamePlate.nameCanvas.sortingOrder = player.objectOwner.isLocalPlayer ? Const.MAX_ORDER : order + 1;
+        selectedNamePlate.hpCanvas.sortingOrder = player.objectOwner.isLocalPlayer ? Const.MAX_ORDER : order + 1;
+        selectedNamePlate.shieldCanvas.sortingOrder = player.objectOwner.isLocalPlayer ? Const.MAX_ORDER : order + 1;
     }
 
     // 남은 코스트 없음 표시하는 말풍선 페이드인 후 페이드아웃
@@ -720,14 +719,7 @@ public class TargetObject : NetworkBehaviour
     // Animation Event 시작 시 처리
     public void OnAnimationStart(Spine.TrackEntry trackEntry)
     {
-        // 애니매이션 시작 시 정렬값 변경(Idle은 원래값, 나머지 애니매이션은 맨 앞으로)
-        if(objectType == ObjectType.ENEMY && monster != null){
-            if(trackEntry.Animation.Name.Contains("Idle")){
-                monster.meshRenderer.sortingOrder = monster.index;
-            }else{
-                monster.meshRenderer.sortingOrder = maxOrder;
-            }
-        }
+
     }
 
     // Animationm Event 완료 시 처리
@@ -744,9 +736,6 @@ public class TargetObject : NetworkBehaviour
                 else
                     anim.state.SetAnimation(0,"Idle",true);
             }
-        }else if(objectType == ObjectType.ENEMY && monster != null){
-            // 애니매이션 종료 시 정렬값 원래값으로 변경
-            monster.meshRenderer.sortingOrder = monster.index;
         }
     }
 

@@ -1,5 +1,8 @@
 public static class Const 
 {
+    // Sorting Order
+    public const int MAX_ORDER = 999;
+
     // Room Type
     public const string RoomType_StartLocation = "시작";
     public const string RoomType_Complete = "완료";

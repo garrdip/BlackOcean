@@ -49,6 +49,8 @@ public class SpawnedMonster : NetworkBehaviour
 
     private SkeletonRendererCustomMaterials skeletonRendererCustomMaterials;
 
+    private SkeletonAnimation skeletonAnimation;
+
     [Header("몬스터 MeshRenderer")]
     public MeshRenderer meshRenderer;
 
@@ -65,6 +67,7 @@ public class SpawnedMonster : NetworkBehaviour
 
     void Start()
     {
+        skeletonAnimation = GetComponent<SkeletonAnimation>();
         skeletonRendererCustomMaterials = GetComponent<SkeletonRendererCustomMaterials>();
         skeletonRendererCustomMaterials.enabled = false;
         materialPropertyBlock = new MaterialPropertyBlock();
@@ -223,11 +226,19 @@ public class SpawnedMonster : NetworkBehaviour
     }
 
     // ------------------------------------------------------------------ Rpc Method ------------------------------------------------------------------------//
- 
+    
+    [ClientRpc]
+    public virtual void DoAnimation(string actionName)
+    {
+        meshRenderer.sortingOrder = Const.MAX_ORDER;
+        skeletonAnimation.state.SetAnimation(1, actionName, false);
+    }
+
     [ClientRpc]
     public virtual void ReturnToIdleAnimation()
     {
-
+        meshRenderer.sortingOrder = index;
+        skeletonAnimation.state.SetAnimation(1, "Idle", true);
     }
 
     [ClientRpc]

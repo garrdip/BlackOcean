@@ -62,12 +62,6 @@ public class Devourer : SpawnedMonster
         parent.nextActionIndicator.GetComponent<Transform>().position += new Vector3(0,3,0);
     }
 
-    [ClientRpc]
-    public void DoAnimation(string actionName)
-    {
-        parent.anim.state.SetAnimation(1,actionName,false);
-    }
-
     [Server]
     public override IEnumerator OnHitAnimation()
     {
@@ -80,12 +74,6 @@ public class Devourer : SpawnedMonster
     public void OnHitAnimationRPC()
     {
         parent.anim.state.SetAnimation(1,"Defense0",false);
-    }
-
-    [ClientRpc]
-    public override void ReturnToIdleAnimation()
-    {
-        parent.anim.state.SetAnimation(1,"Idle",true);
     }
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)

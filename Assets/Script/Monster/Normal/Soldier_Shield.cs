@@ -30,12 +30,6 @@ public class Soldier_Shield : SpawnedMonster
         }
         isActive = false;
     }
-    
-    [ClientRpc]
-    public void DoAnimation(string actionName)
-    {
-        parent.anim.state.SetAnimation(1,actionName,false);
-    }
 
     [Server]
     public override IEnumerator OnHitAnimation()
@@ -49,12 +43,6 @@ public class Soldier_Shield : SpawnedMonster
     public void OnHitAnimationRPC()
     {
         parent.anim.state.SetAnimation(1,"Defence0",false);
-    }
-
-    [ClientRpc]
-    public override void ReturnToIdleAnimation()
-    {
-        parent.anim.state.SetAnimation(1,"Idle",true);
     }
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)

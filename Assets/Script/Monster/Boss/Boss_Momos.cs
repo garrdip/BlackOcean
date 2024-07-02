@@ -92,9 +92,9 @@ public class Boss_Momos : SpawnedMonster
     }
 */
     [ClientRpc]
-    public void DoAnimation(string actionName)
+    public override void DoAnimation(string actionName)
     {
-        parent.anim.state.SetAnimation(1,actionName,false);
+        base.DoAnimation(actionName);
         if(actionName.Equals("Attact0") || actionName.Equals("Attact1") ){
             List<AudioClip> attackVoices = new List<AudioClip>(M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Momos, 0, 7));
             int randomIndex = Random.Range(0, attackVoices.Count);
@@ -119,12 +119,6 @@ public class Boss_Momos : SpawnedMonster
         int randomIndex = Random.Range(0, hitVoices.Count);
         AudioClip hitVoice = hitVoices[randomIndex];
         M_SoundManager.instance.PlayVoice(hitVoice, hitVoice.length);  // 피격 애니매이션 실행시 피격 음성중 하나 랜덤 재생
-    }
-
-    [ClientRpc]
-    public override void ReturnToIdleAnimation()
-    {
-        parent.anim.state.SetAnimation(1,"Idle",true);
     }
 
     public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)

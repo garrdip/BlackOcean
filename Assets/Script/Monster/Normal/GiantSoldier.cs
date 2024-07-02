@@ -35,6 +35,7 @@ public class GiantSoldier : SpawnedMonster
                         parent.GainDefense(10);
                         yield return new WaitForSeconds(0.5f);
                         currentLevel++;
+                        ReturnToIdleAnimation();
                         break;
                     case 1 :
                         DoAnimation("Buff0");
@@ -43,6 +44,7 @@ public class GiantSoldier : SpawnedMonster
                         parent.GainDefense(15);
                         yield return new WaitForSeconds(0.5f);
                         currentLevel++;
+                        ReturnToIdleAnimation();
                         break;
                     case 2 :
                         DoAnimation("Buff0");
@@ -51,6 +53,7 @@ public class GiantSoldier : SpawnedMonster
                         parent.GainDefense(20);
                         yield return new WaitForSeconds(0.5f);
                         currentLevel++;
+                        ReturnToIdleAnimation();
                         break;
                     case 3 :
                         DoAnimation("Attact0");
@@ -58,6 +61,7 @@ public class GiantSoldier : SpawnedMonster
                         GeneralAttack();
                         yield return new WaitForSeconds(0.667f);
                         currentLevel = 0;
+                        ReturnToIdleAnimation();
                         break;
                 }
                 break;
@@ -76,9 +80,9 @@ public class GiantSoldier : SpawnedMonster
     }
 
     [ClientRpc]
-    public void DoAnimation(string actionName)
+    public override void DoAnimation(string actionName)
     {
-        parent.anim.state.SetAnimation(1,actionName,false);
+        base.DoAnimation(actionName);
         // 거병은 예외적으로 공격 SFX 호출을 애니매이션과 동일한 시점에 재생(추후 조정 필요)
         if(actionName.Equals("Attact0")){
             AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.Elite_GiantSoldier][2];
@@ -98,12 +102,6 @@ public class GiantSoldier : SpawnedMonster
     public void OnHitAnimationRPC()
     {
         parent.anim.state.SetAnimation(1,"Defense0",false);
-    }
-
-    [ClientRpc]
-    public override void ReturnToIdleAnimation()
-    {
-        parent.anim.state.SetAnimation(1,"Idle",true);
     }
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)

@@ -34,12 +34,6 @@ public class Soldier_Spear : SpawnedMonster
         yield return new WaitForSeconds(1f);
         isActive = false;
     }
-    
-    [ClientRpc]
-    public void DoAnimation(string actionName)
-    {
-        parent.anim.state.SetAnimation(1,actionName,false);
-    }
 
     [Server]
     public override IEnumerator OnHitAnimation()
@@ -53,12 +47,6 @@ public class Soldier_Spear : SpawnedMonster
     public void OnHitAnimationRPC()
     {
         parent.anim.state.SetAnimation(1,"Defence0",false);
-    }
-
-    [ClientRpc]
-    public override void ReturnToIdleAnimation()
-    {
-        parent.anim.state.SetAnimation(1,"Idle",true);
     }
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)

@@ -30,12 +30,6 @@ public class Saddy : SpawnedMonster
         transform.localPosition = new Vector3(-2f, 0f, 0f);
         parent.nextActionIndicator.GetComponent<Transform>().position += new Vector3(0,3,0);
     }
-    
-    [ClientRpc]
-    public void DoAnimation(string actionName)
-    {
-        parent.anim.state.SetAnimation(1,actionName,false);
-    }
 
     [Server]
     public override IEnumerator OnHitAnimation()
@@ -49,12 +43,6 @@ public class Saddy : SpawnedMonster
     public void OnHitAnimationRPC()
     {
         parent.anim.state.SetAnimation(1,"3Defence",false);
-    }
-
-    [ClientRpc]
-    public override void ReturnToIdleAnimation()
-    {
-        parent.anim.state.SetAnimation(1,"3Idle",true);
     }
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
