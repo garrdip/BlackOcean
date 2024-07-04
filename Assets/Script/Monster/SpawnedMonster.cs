@@ -46,9 +46,6 @@ public class SpawnedMonster : NetworkBehaviour
 
     public bool isActive = false;
 
-    [Header("몬스터 스킬 이펙트 스파인 데이터 에셋")]
-    public List<SkeletonDataAsset> effectDataAssets = new List<SkeletonDataAsset>();
-
     private MaterialPropertyBlock materialPropertyBlock;
 
     private SkeletonRendererCustomMaterials skeletonRendererCustomMaterials;
@@ -66,6 +63,9 @@ public class SpawnedMonster : NetworkBehaviour
 
     [Header("Dissolve 효과 파티클 오브젝트")]
     public ParticleSystem dissolveParticle;
+    
+    [Header("몬스터 스킬 이펙트 스파인 데이터 에셋")]
+    public List<SkeletonDataAsset> effectDataAssets = new List<SkeletonDataAsset>();
 
     MonsterAction sturnedAction = new MonsterAction("APDO",0,0);
 

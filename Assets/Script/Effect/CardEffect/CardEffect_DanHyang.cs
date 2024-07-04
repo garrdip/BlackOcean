@@ -65,7 +65,7 @@ public partial class M_EffectManager
     }
 
     [ClientRpc]
-    public void RpcEffectBodyTurnLeaf(Vector3 position, int index)
+    public void RpcEffectBodyTurnZoomIn(Vector3 position, int index)
     {
         AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
         StartCoroutine(StartEffect(
@@ -146,6 +146,7 @@ public partial class M_EffectManager
         );
     }
 
+    // 이치 부여 이펙트
     [ClientRpc]
     public void RpcEffectBodyZoomOut(Vector3 position, int index)
     {
