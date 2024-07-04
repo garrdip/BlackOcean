@@ -15,7 +15,7 @@ public class WacherB : SpawnedMonster
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.5f);
                 nextTargetObject.GainBuff(BuffType.ICHI_ATTACK,4,false,false,false,false,parent,null);
-                M_EffectManager.instance.RpcEffectNormalMonsterBuff(parent.transform.position, SFX_TYPE.Normal_Axe, 5);
+                RpcStartSkillEffect(0, "Eff04_Buff", parent.transform.position, SFX_TYPE.Normal_Axe, 5, "Effect");
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
                 break;
@@ -23,7 +23,7 @@ public class WacherB : SpawnedMonster
                 DoAnimation("Buff0");
                 yield return new WaitForSeconds(0.5f);
                 parent.GainDefense(15);
-                M_EffectManager.instance.RpcEffectNormalMonsterShield(parent.transform.position, SFX_TYPE.Normal_Axe, 6);
+                RpcStartSkillEffect(1, "Eff05_Shield", parent.transform.position, SFX_TYPE.Normal_Axe, 6, "Effect"); ;
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
                 break;
@@ -31,7 +31,7 @@ public class WacherB : SpawnedMonster
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList){
-                    M_EffectManager.instance.RpcEffectNormalMonsterBuff(tar.transform.position, SFX_TYPE.Normal_Axe, 5);
+                    RpcStartSkillEffect(0, "Eff04_Buff", tar.transform.position, SFX_TYPE.Normal_Axe, 5, "Effect");
                     tar.GainBuff(BuffType.ICHI_ATTACK,2,false,false,false,false,parent,null);
                 }
                 yield return new WaitForSeconds(0.833f);

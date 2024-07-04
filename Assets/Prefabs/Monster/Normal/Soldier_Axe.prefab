@@ -5036,6 +5036,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   monsterName: 
+  index: 0
   MAXHP: 0
   HP: 0
   sheild: 0
@@ -5058,10 +5059,14 @@ MonoBehaviour:
   parent: {fileID: 0}
   turn: 0
   isActive: 0
+  skeletonAnimation: {fileID: 0}
   meshRenderer: {fileID: 7778458032851223039}
   originMaterial: {fileID: 2100000, guid: 51ea2ada7f5705e4abfbe696566c1e1b, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 78f00cac7b8b33844ba7a76221fd6823, type: 2}
   dissolveParticle: {fileID: 7286526893056829630}
+  effectDataAssets:
+  - {fileID: 11400000, guid: 72004d8a998adc14ca969bf729f388ab, type: 2}
+  - {fileID: 11400000, guid: da2a341b4f7b83b4ab31198feadf12be, type: 2}
 --- !u!114 &-999849576386325433
 MonoBehaviour:
   m_ObjectHideFlags: 0

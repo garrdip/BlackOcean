@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectD;
 using Mirror;
-using Spine.Unity;
 
 public class WacherA : SpawnedMonster
 {
@@ -15,7 +14,7 @@ public class WacherA : SpawnedMonster
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
-                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position, SFX_TYPE.Elite_Watcher, 0);
+                    RpcStartSkillEffect(0, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Watcher, 0, "Effect");
                     tar.GainBuff(BuffType.SOIRAK,2,true,false,true,false,parent,null);
                 }
                 yield return new WaitForSeconds(0.833f);
@@ -25,7 +24,7 @@ public class WacherA : SpawnedMonster
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
-                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position, SFX_TYPE.Elite_Watcher, 1);
+                    RpcStartSkillEffect(0, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Watcher, 1, "Effect");
                     tar.GainBuff(BuffType.BOONGGUI,2,true,false,true,false,parent,null);
                 }
                 yield return new WaitForSeconds(0.833f);
@@ -35,7 +34,7 @@ public class WacherA : SpawnedMonster
                 DoAnimation("Buff0");
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
-                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position, SFX_TYPE.Elite_Watcher, 2);
+                    RpcStartSkillEffect(0, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Watcher, 2, "Effect");
                     tar.GainBuff(BuffType.ICHI_ATTACK,-2,true,false,false,false,parent,null);
                 }
                 yield return new WaitForSeconds(0.833f);
@@ -45,7 +44,7 @@ public class WacherA : SpawnedMonster
                 DoAnimation("Buff0");
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
-                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position, SFX_TYPE.Elite_Watcher, 3);
+                    RpcStartSkillEffect(0, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Watcher, 3, "Effect");
                     tar.GainBuff(BuffType.ICHI_DEFENSE,-2,true,false,false,false,parent,null);
                 }
                 yield return new WaitForSeconds(0.833f);

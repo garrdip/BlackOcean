@@ -5059,6 +5059,10 @@ MonoBehaviour:
   parent: {fileID: 0}
   turn: 0
   isActive: 0
+  effectDataAssets:
+  - {fileID: 11400000, guid: c511dcf6f944ec14182262042dee7f2e, type: 2}
+  - {fileID: 11400000, guid: 4d77e49ec29b6ba4fba3027081304342, type: 2}
+  skeletonAnimation: {fileID: 0}
   meshRenderer: {fileID: 7778458032851223039}
   originMaterial: {fileID: 2100000, guid: b957da2689365764686e7b8e627ad670, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 4534ae9dd30d940479468d53a3c51639, type: 2}

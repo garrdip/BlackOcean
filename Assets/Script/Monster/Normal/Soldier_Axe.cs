@@ -15,7 +15,7 @@ public class Soldier_Axe : SpawnedMonster
                 GeneralAttack();
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
                 {
-                    M_EffectManager.instance.RpcEffectNormalMonsterCut(tar.transform.position, SFX_TYPE.Normal_Axe, 0);
+                    RpcStartSkillEffect(0, "Eff1_Cut", tar.transform.position, SFX_TYPE.Normal_Axe, 0, "Effect");
                 }
                 yield return new WaitForSeconds(0.4f);
                 DoAnimation("Attack0");
@@ -23,7 +23,7 @@ public class Soldier_Axe : SpawnedMonster
                 GeneralAttack();
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget))
                 {
-                    M_EffectManager.instance.RpcEffectNormalMonsterCut(tar.transform.position, SFX_TYPE.Normal_Axe, 0);
+                    RpcStartSkillEffect(0, "Eff1_Cut", tar.transform.position, SFX_TYPE.Normal_Axe, 0, "Effect");
                 }
                 yield return new WaitForSeconds(0.4f);
                 ReturnToIdleAnimation();
@@ -31,7 +31,7 @@ public class Soldier_Axe : SpawnedMonster
             case "힘증가" :
                 parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent.GetComponent<TargetObject>(),null);
                 DoAnimation("Buff0");
-                M_EffectManager.instance.RpcEffectNormalMonsterBuff(parent.transform.position, SFX_TYPE.Normal_Axe, 5);
+                RpcStartSkillEffect(1, "Eff04_Buff", parent.transform.position, SFX_TYPE.Normal_Axe, 5, "Effect");
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;

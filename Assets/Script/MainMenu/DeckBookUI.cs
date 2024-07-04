@@ -88,7 +88,7 @@ public class DeckBookUI : SingletonD<DeckBookUI>
         string patternDamage = @"!(\S+)"; // !피해량
         str = Regex.Replace(str, patternDamage, match => $"<color=green>{match.Groups[1].Value}</color>");
 
-        string patternDeffence = @"(?<!<)#(\d+)"; // !방어도
+        string patternDeffence = @"(?<!<)#(\d+)"; // #방어도
         str = Regex.Replace(str, patternDeffence, match => $"<color=green>{match.Groups[1].Value}</color>");
 
         string patternMultipleDamage = @"\$(\d+)\s*\$(\d+)"; // $피해량$타수

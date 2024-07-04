@@ -14,11 +14,11 @@ public class Guardian : SpawnedMonster
                 yield return new WaitForSeconds(0.5f);
                 GeneralAttack();
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
-                    M_EffectManager.instance.RpcEffectNormalMonsterMagicAttack(tar.transform.position, SFX_TYPE.Elite_Devourer, 0);
+                    RpcStartSkillEffect(0, "Eff3_MagicAttack", tar.transform.position, SFX_TYPE.Elite_Devourer, 0, "Effect");
                 }
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
-                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position, SFX_TYPE.Elite_Devourer, 2);
+                    RpcStartSkillEffect(1, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Devourer, 2, "Effect");
                     tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,parent,null);
                 }  
                 yield return new WaitForSeconds(0.833f);
@@ -28,7 +28,7 @@ public class Guardian : SpawnedMonster
                 DoAnimation("Buff0");
                 yield return new WaitForSeconds(0.867f);
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList){
-                    M_EffectManager.instance.RpcEffectNormalMonsterBang(tar.transform.position, SFX_TYPE.Elite_Devourer, 2);
+                    RpcStartSkillEffect(1, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Devourer, 2, "Effect");
                     tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,parent,null);
                 }
                 yield return new WaitForSeconds(0.8f);

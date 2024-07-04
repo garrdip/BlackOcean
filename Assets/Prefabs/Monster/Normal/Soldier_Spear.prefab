@@ -4938,7 +4938,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 817ecbec4c7dccc4fb9443e0076c2b26, type: 2}
-  - {fileID: 2100000, guid: cf8d154720982b7469e6e52fe9b0962e, type: 2}
+  - {fileID: 2100000, guid: afb80ff9249a4ba41a9e6339b207fd81, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5036,6 +5036,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   monsterName: 
+  index: 0
   MAXHP: 0
   HP: 0
   sheild: 0
@@ -5058,10 +5059,14 @@ MonoBehaviour:
   parent: {fileID: 0}
   turn: 0
   isActive: 0
+  skeletonAnimation: {fileID: 0}
   meshRenderer: {fileID: 7778458032851223039}
   originMaterial: {fileID: 2100000, guid: afb80ff9249a4ba41a9e6339b207fd81, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 20b2c8fe487c06443b91d7fd333a37d7, type: 2}
   dissolveParticle: {fileID: 4446474489746563252}
+  effectDataAssets:
+  - {fileID: 11400000, guid: 837900476acc64e46ba0c4b25ea5cad7, type: 2}
+  - {fileID: 11400000, guid: 5e49972cb86847e41972806a2256fc1f, type: 2}
 --- !u!114 &6550115236143217990
 MonoBehaviour:
   m_ObjectHideFlags: 0

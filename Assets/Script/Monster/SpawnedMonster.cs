@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Mirror;
@@ -44,6 +45,9 @@ public class SpawnedMonster : NetworkBehaviour
     public int turn = 0;
 
     public bool isActive = false;
+
+    [Header("몬스터 스킬 이펙트 스파인 데이터 에셋")]
+    public List<SkeletonDataAsset> effectDataAssets = new List<SkeletonDataAsset>();
 
     private MaterialPropertyBlock materialPropertyBlock;
 
@@ -102,6 +106,19 @@ public class SpawnedMonster : NetworkBehaviour
             parent.monsterShieldCanvas.sortingLayerName = "BackLayer";
             parent.nextActionCanvas.sortingLayerName = "BackLayer";
         }
+    }
+
+    // 몬스터 스킬 이펙트 오브젝트 동적 생성
+    public IEnumerator StartEffect(SkeletonDataAsset skeletonDataAsset, string animationName, Vector3 position, AudioClip sfx, string layer)
+    {
+        yield return new WaitForSeconds(0.01f); 
+        var spineObject = SkeletonAnimation.NewSkeletonAnimationGameObject(skeletonDataAsset); // https://ko.esotericsoftware.com/spine-unity#Advanced---Instantiation-at-Runtime
+        spineObject.gameObject.name = animationName;
+        EffectBase cardEffectBase = spineObject.gameObject.AddComponent<EffectBase>();
+        cardEffectBase.sfx = sfx;
+        spineObject.transform.position = position;
+        spineObject.GetComponent<MeshRenderer>().sortingLayerName = layer;
+        spineObject.AnimationState.SetAnimation(0, animationName, false);
     }
 
     // 사라지는 이펙트
@@ -247,6 +264,28 @@ public class SpawnedMonster : NetworkBehaviour
         // 실드 파괴음
         AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_down"));
         M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
+    }
+
+
+    /*
+        effectIndex : 스켈레톤 데이터 에셋 인덱스 값
+        animationName : 스켈레톤 데이터 에셋에서 실행할 애니매이션 이름
+        position : 이펙트가 보여질 위치 값
+        sft_type : 사운드 매니저에서 해당 이펙트의 효과음이 있는 리스트의 카테고리 값(Dic 키값)
+        audioClipIndex : 사운드 매니저에서 해당 이펙트 효과음 오디오 클립 인덱스 값
+        layer : 이펙트 랜더링 정렬 값
+    */
+    [ClientRpc]
+    public virtual void RpcStartSkillEffect(int effectIndex, string animationName, Vector3 position, SFX_TYPE sfx_type, int audioClipIndex, string layer)
+    {
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[sfx_type][audioClipIndex];
+        StartCoroutine(StartEffect(
+            effectDataAssets[effectIndex],
+            animationName,
+            position,
+            audioClip,
+            layer)
+        );
     }
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
