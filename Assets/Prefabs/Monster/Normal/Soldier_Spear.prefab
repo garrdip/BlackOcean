@@ -4937,8 +4937,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 817ecbec4c7dccc4fb9443e0076c2b26, type: 2}
-  - {fileID: 2100000, guid: afb80ff9249a4ba41a9e6339b207fd81, type: 2}
+  - {fileID: 2100000, guid: 221839c191267d645a2567d65ba819ee, type: 2}
+  - {fileID: 2100000, guid: 5c1f60c84d8fd3946a76651c26f14334, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4972,7 +4972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 5f9570fae784619449a10fcfbd590548, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 9b1f167adf2a025419d39206e0e80ffc, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -5061,7 +5061,7 @@ MonoBehaviour:
   isActive: 0
   skeletonAnimation: {fileID: 0}
   meshRenderer: {fileID: 7778458032851223039}
-  originMaterial: {fileID: 2100000, guid: afb80ff9249a4ba41a9e6339b207fd81, type: 2}
+  originMaterial: {fileID: 2100000, guid: 5c1f60c84d8fd3946a76651c26f14334, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 20b2c8fe487c06443b91d7fd333a37d7, type: 2}
   dissolveParticle: {fileID: 4446474489746563252}
   effectDataAssets:
@@ -5083,8 +5083,8 @@ MonoBehaviour:
   customSlotMaterials: []
   customMaterialOverrides:
   - overrideDisabled: 0
-    originalMaterial: {fileID: 2100000, guid: afb80ff9249a4ba41a9e6339b207fd81, type: 2}
-    replacementMaterial: {fileID: 2100000, guid: cf8d154720982b7469e6e52fe9b0962e, type: 2}
+    originalMaterial: {fileID: 2100000, guid: 5c1f60c84d8fd3946a76651c26f14334, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 4ea6cf714ab7cf645b012215ec6124ca, type: 2}
 --- !u!60 &2346207074153922678
 PolygonCollider2D:
   m_ObjectHideFlags: 0

@@ -4937,8 +4937,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b0091a078747b4e40bbffb9859f9ad24, type: 2}
-  - {fileID: 2100000, guid: b957da2689365764686e7b8e627ad670, type: 2}
+  - {fileID: 2100000, guid: 546d36d18a8f30948a999480134f5232, type: 2}
+  - {fileID: 2100000, guid: a8cf61d0013ae1a43a8af5dfa92ee24f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4972,7 +4972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: af76864763de28842804c0c2dde2f832, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 2bdf0d70516f29c40af0fb242e1a0ed8, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -5059,14 +5059,14 @@ MonoBehaviour:
   parent: {fileID: 0}
   turn: 0
   isActive: 0
+  skeletonAnimation: {fileID: 0}
+  meshRenderer: {fileID: 7778458032851223039}
+  originMaterial: {fileID: 2100000, guid: a8cf61d0013ae1a43a8af5dfa92ee24f, type: 2}
+  dissolveMaterial: {fileID: 2100000, guid: 4534ae9dd30d940479468d53a3c51639, type: 2}
+  dissolveParticle: {fileID: 478036249072804183}
   effectDataAssets:
   - {fileID: 11400000, guid: c511dcf6f944ec14182262042dee7f2e, type: 2}
   - {fileID: 11400000, guid: 4d77e49ec29b6ba4fba3027081304342, type: 2}
-  skeletonAnimation: {fileID: 0}
-  meshRenderer: {fileID: 7778458032851223039}
-  originMaterial: {fileID: 2100000, guid: b957da2689365764686e7b8e627ad670, type: 2}
-  dissolveMaterial: {fileID: 2100000, guid: 4534ae9dd30d940479468d53a3c51639, type: 2}
-  dissolveParticle: {fileID: 478036249072804183}
 --- !u!114 &8362952195732297882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5083,8 +5083,8 @@ MonoBehaviour:
   customSlotMaterials: []
   customMaterialOverrides:
   - overrideDisabled: 0
-    originalMaterial: {fileID: 2100000, guid: b957da2689365764686e7b8e627ad670, type: 2}
-    replacementMaterial: {fileID: 2100000, guid: fb4586a9d3de4e343b389fb94f7f1276, type: 2}
+    originalMaterial: {fileID: 2100000, guid: a8cf61d0013ae1a43a8af5dfa92ee24f, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 709ff3dc6d9bb6f48aa00e79d209d42d, type: 2}
 --- !u!60 &5469504535334016129
 PolygonCollider2D:
   m_ObjectHideFlags: 0

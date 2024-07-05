@@ -4937,8 +4937,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 54fa18576f917f94da00f5dec2a369f6, type: 2}
-  - {fileID: 2100000, guid: 74c3becd65a9d64498fe085bb10f3034, type: 2}
+  - {fileID: 2100000, guid: c3112d4b087de214cb21b38a7d33e911, type: 2}
+  - {fileID: 2100000, guid: cdf61b31273f3d14ea4e7ea1509eea3a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4972,7 +4972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: f5917215aff92814e929d364b526a74c, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 00828d01812ba8649869712301556283, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -5059,13 +5059,13 @@ MonoBehaviour:
   parent: {fileID: 0}
   turn: 0
   isActive: 0
-  effectDataAssets:
-  - {fileID: 11400000, guid: 4d77e49ec29b6ba4fba3027081304342, type: 2}
   skeletonAnimation: {fileID: 0}
   meshRenderer: {fileID: 7778458032851223039}
-  originMaterial: {fileID: 2100000, guid: 74c3becd65a9d64498fe085bb10f3034, type: 2}
+  originMaterial: {fileID: 2100000, guid: cdf61b31273f3d14ea4e7ea1509eea3a, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 52a1a85455ccc8144a81b8d598edbd14, type: 2}
   dissolveParticle: {fileID: 240341317199563373}
+  effectDataAssets:
+  - {fileID: 11400000, guid: 4d77e49ec29b6ba4fba3027081304342, type: 2}
 --- !u!114 &5918856524445248274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5082,8 +5082,8 @@ MonoBehaviour:
   customSlotMaterials: []
   customMaterialOverrides:
   - overrideDisabled: 0
-    originalMaterial: {fileID: 2100000, guid: 74c3becd65a9d64498fe085bb10f3034, type: 2}
-    replacementMaterial: {fileID: 2100000, guid: 73e04a7420670184f9eb3f0b076e983e, type: 2}
+    originalMaterial: {fileID: 2100000, guid: cdf61b31273f3d14ea4e7ea1509eea3a, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: c5815c85af6a64447b0de9dc4c4844f0, type: 2}
 --- !u!60 &8096410808096216691
 PolygonCollider2D:
   m_ObjectHideFlags: 0
