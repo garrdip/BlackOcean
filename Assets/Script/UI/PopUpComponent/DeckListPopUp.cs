@@ -18,14 +18,13 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>, IPointerClickHandler
     public GameObject scrollViewLayout;
     public GridLayoutGroup deckListPopUpGrid;
     public TextMeshProUGUI textTitle;
-    public bool isMouseOnFrame = false;
+    public bool isMouseOnCardOnDeck = false;
 
 
     protected override void Awake()
     {
         PopUpUIManager.instance.onChangeDeckListPopUpShow += OnChangeDeckListPopUpShow;
         PopUpUIManager.instance.onChangeDeckListPopUpHide += OnChangeDeckListPopUpHide;
-        AddEventTriggers();
     }
 
     void OnDestroy()
@@ -35,38 +34,10 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(!isMouseOnFrame){
+        if(!isMouseOnCardOnDeck){
             PopUpUIManager.instance.HandleHideDeckListPopUp();
         }
     }
-
-    public void OnPointerEnterFramLayout(PointerEventData eventData)
-    {
-        isMouseOnFrame = true;
-    }
-
-    public void OnPointerExitFramLayout(PointerEventData eventData)
-    {
-        isMouseOnFrame = false;
-    }
-
-    private void AddEventTriggers()
-    {
-        EventTrigger eventTrigger = scrollViewLayout.AddComponent<EventTrigger>();
-        
-        // PointerEnter 이벤트 추가
-        EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
-        pointerEnterEntry.eventID = EventTriggerType.PointerEnter;
-        pointerEnterEntry.callback.AddListener((data) => { OnPointerEnterFramLayout((PointerEventData)data); });
-        eventTrigger.triggers.Add(pointerEnterEntry);
-
-        // PointerExit 이벤트 추가
-        EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
-        pointerExitEntry.eventID = EventTriggerType.PointerExit;
-        pointerExitEntry.callback.AddListener((data) => { OnPointerExitFramLayout((PointerEventData)data); });
-        eventTrigger.triggers.Add(pointerExitEntry); 
-    }
-
 
     // Deck정보 리스트 요소 추가
     private void AddDeckList(SyncList<Card> cards, GridLayoutGroup gridLayoutGroup)

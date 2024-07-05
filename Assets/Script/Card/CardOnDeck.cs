@@ -182,6 +182,9 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 mercuriusPopUp.ShowHoverdCardInfo(card);
             }else{
                 transform.DOScale(originScale * 1.3f, 0.3f);
+                if(PopUpUIManager.instance.isDeckListPopUpOpen){
+                    PopUpUIManager.instance.deckListPopUp.GetComponent<DeckListPopUp>().isMouseOnCardOnDeck = true;
+                }
             }
             GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
             TextDetector.instance.StartTextDetect(graphicRaycaster);
@@ -200,6 +203,9 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 mercuriusPopUp.HideHoverdCardInfo();
             }else{
                 transform.DOScale(originScale, 0.3f);
+                if(PopUpUIManager.instance.isDeckListPopUpOpen){
+                    PopUpUIManager.instance.deckListPopUp.GetComponent<DeckListPopUp>().isMouseOnCardOnDeck = false;
+                }
             }
             TextDetector.instance.StopTextDetect();
         }
