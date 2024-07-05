@@ -83,7 +83,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EdgeColour1: {r: 0.05490196, g: 0.08235294, b: 0.15686275, a: 1}
-    - _EdgeColour2: {r: 0.05490196, g: 0.08235294, b: 0.15686275, a: 1}
+    - _EdgeColour1: {r: 1, g: 0, b: 0.09163618, a: 1}
+    - _EdgeColour2: {r: 0.15686275, g: 0.063684955, b: 0.054901958, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
