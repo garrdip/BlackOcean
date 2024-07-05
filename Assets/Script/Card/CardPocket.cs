@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using DG.Tweening;
+
 
 public class CardPocket : NetworkBehaviour
 {
@@ -17,5 +19,11 @@ public class CardPocket : NetworkBehaviour
         }else{
             transform.localPosition = new Vector3(0f, -100f, 0f); // 다른 플레이어 소유의 CardPocket은 좌측 -100 위치
         }
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        transform.DOKill();
     }
 }
