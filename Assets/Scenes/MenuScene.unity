@@ -3286,8 +3286,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1359, y: 868}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 1361.2, y: 869.8}
+  m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &387303791
 MonoBehaviour:
@@ -24607,6 +24607,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionPopUp: {fileID: 2773947420514976167}
+  background: {fileID: 1511919112}
   buttonOption: {fileID: 2773947419522645055}
   backButton: {fileID: 387303791}
   backButtonLight: {fileID: 925150617}

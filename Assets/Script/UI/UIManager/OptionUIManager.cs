@@ -10,6 +10,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     public delegate void OnChangeOptionPopUpShow(bool isActive);
     public OnChangeOptionPopUpShow onChangeOptionPopUpShow;
     public GameObject optionPopUp;
+    public Image background;
     public Button buttonOption;
     public Button backButton;
     public GameObject backButtonLight;
@@ -29,6 +30,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
 
     void Start()
     {
+        background.alphaHitTestMinimumThreshold = 0.1f;
         DontDestroyOnLoad(gameObject);
         onChangeOptionPopUpShow += OnChangeOptionPopUpActive; // 옵션 팝업 활성화 상태 변경 이벤트 수신
         SceneManager.activeSceneChanged += OnChangedActiveScene; // 씬 변경 이벤트 수신
@@ -58,6 +60,13 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         languageDropdown.onValueChanged.AddListener(delegate{
             HandleChangeLanguageDropdown(languageDropdown);
         });
+    }
+
+    void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape)){
+            HandShowOptionPopUp(true);
+        }
     }
 
     private void OnChangedActiveScene(Scene current, Scene next)
