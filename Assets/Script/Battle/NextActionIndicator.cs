@@ -59,6 +59,16 @@ public class NextActionIndicator : MonoBehaviour
 
     void OnMouseEnter()
     {
+        NextActionIndicatorFocusOn();
+    }
+
+    void OnMouseExit()
+    {
+        NextActionIndicatorFocusOff();
+    }
+
+    public void NextActionIndicatorFocusOn()
+    {
         pointLeft.transform.DOLocalMoveX(leftPointOriginPosition.x - 0.15f, 0.3f);
         pointRight.transform.DOLocalMoveX(rightPointOriginPosition.x + 0.15f, 0.3f);
         pointLeftLight.SetActive(true);
@@ -71,7 +81,7 @@ public class NextActionIndicator : MonoBehaviour
             .SetLoops(-1);
     }
 
-    void OnMouseExit()
+    public void NextActionIndicatorFocusOff()
     {
         pointLeftLight.SetActive(false);
         pointRightLight.SetActive(false);

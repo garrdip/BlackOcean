@@ -249,6 +249,7 @@ public class SpawnedMonster : NetworkBehaviour
     {
         meshRenderer.sortingOrder = Const.MAX_ORDER;
         skeletonAnimation.state.SetAnimation(1, actionName, false);
+        parent.nextActionIndicator.NextActionIndicatorFocusOn();
     }
 
     [ClientRpc]
@@ -256,6 +257,7 @@ public class SpawnedMonster : NetworkBehaviour
     {
         meshRenderer.sortingOrder = index;
         skeletonAnimation.state.SetAnimation(1, "Idle", true);
+        parent.nextActionIndicator.NextActionIndicatorFocusOff();
     }
 
     [ClientRpc]
