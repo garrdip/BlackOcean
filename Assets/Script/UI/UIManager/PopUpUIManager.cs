@@ -43,6 +43,20 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public delegate void OnMercuriusPopUpHide();
     public OnMercuriusPopUpHide onMercuriusPopUpHide;
 
+    
+    // ItemShop PopUp Delegate
+    public delegate void OnItemShopPopUpShow();
+    public OnItemShopPopUpShow onItemShopPopUpShow;
+    public delegate void OnItemShopPopUpHide();
+    public OnItemShopPopUpHide onItemShopPopUpHide;
+
+    
+    // Camp PopUp Delegate
+    public delegate void OnCampPopUpShow();
+    public OnCampPopUpShow onCampPopUpShow;
+    public delegate void OnCampPopUpHide();
+    public OnCampPopUpHide onCampPopUpHide;
+
 
     // CardEnhance PopUp Delegate
     public delegate void OnCardEnhancePopUpShow();
@@ -63,6 +77,8 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public bool isCardOnHandRemovePopUpOpen = false;
     public bool isBattleResultPopUpOpen = false;
     public bool isMercuriusPopUpOpen = false;
+    public bool isCampPopUpOpen = false;
+    public bool isItemShopPopUpOpen = false;
     public bool isCardEnhancePopUpOpen = false;
     public bool isCardRemovePopUpOpen = false;
     public bool isGameoverPopUpOpen = false;
@@ -73,7 +89,9 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject deckDrawPopUp; // 덱 드로우 팝업
     public GameObject cardOnHandRemovePopUp; // 패 제거 팝업
     public GameObject battleResultPopUp; // 전투 보상 팝업
-    public GameObject mercuriusPopUp; // 상점 카드 팝업
+    public GameObject mercuriusPopUp; // 카드 상점 팝업
+    public GameObject campPopUp; // 전초 기지 팝업
+    public GameObject itemShopPopUp; // 아이템 상점 팝업
     public GameObject cardEnhancePopUp; // 카드 강화 팝업
     public GameObject cardRemovePopUp; // 카드 제거 팝업
     public GameObject gameOverPopUp; // 게임 오버 팝업
@@ -220,6 +238,38 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }else{
             if(onMercuriusPopUpHide != null){
                 onMercuriusPopUpHide.Invoke();
+            }
+        }
+    }
+
+    // 전초기지 팝업
+    public void HandleCampPopUp(bool isPopUp)
+    {
+        isCampPopUpOpen = isPopUp;
+        if(isPopUp){
+            campPopUp.SetActive(true);
+            if(onCampPopUpShow != null){
+                onCampPopUpShow.Invoke(); 
+            }  
+        }else{
+            if(onCampPopUpHide != null){
+                onCampPopUpHide.Invoke();
+            }
+        }
+    }
+
+    // 아이템 상점 팝업
+    public void HandleItemShopPopUp(bool isPopUp)
+    {
+        isItemShopPopUpOpen = isPopUp;
+        if(isPopUp){
+            itemShopPopUp.SetActive(true);
+            if(onItemShopPopUpShow != null){
+                onItemShopPopUpShow.Invoke(); 
+            }  
+        }else{
+            if(onItemShopPopUpHide != null){
+                onItemShopPopUpHide.Invoke();
             }
         }
     }

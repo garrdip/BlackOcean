@@ -44,7 +44,9 @@ public class NPC_RyuJinSol : SpawnedMonster
 
     public void OnClickRyuJinSol(PointerEventData pointerEventData)
     {
-        // 클릭 이벤트 처리
+        if(M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE){
+            PopUpUIManager.instance.HandleCampPopUp(true);
+        }
     }
 
     public void OnPointerEnterRyuJinSol(PointerEventData eventData)

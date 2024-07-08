@@ -39,7 +39,9 @@ public class NPC_ShadowMan : SpawnedMonster
 
     public void OnClickShadowMan(PointerEventData pointerEventData)
     {
-        // 클릭 이벤트 처리
+        if(M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE){
+            PopUpUIManager.instance.HandleItemShopPopUp(true);
+        }
     }
 
     public void OnPointerEnterShadowMan(PointerEventData eventData)
