@@ -65,7 +65,8 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Escape)){
-            HandShowOptionPopUp(true);
+            isOptionPopUpActive = !isOptionPopUpActive;
+            HandShowOptionPopUp(isOptionPopUpActive);
         }
     }
 
