@@ -832,6 +832,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
+        M_CardManager.instance.RefreshCardOnHandsSortingOrder(cardOnHands); // CardOnHand 리스트 값이 변경될 때 마다 CardOnHand의 정렬값 재설정
     }
 
     // 뽑을 덱 리스트 콜백

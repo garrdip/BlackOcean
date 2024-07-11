@@ -116,6 +116,9 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                     if(cardOnHand != null){
                         if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed && !cardOnHand.isAddtionDrawCard){
                             if(cardOnHand.isMouseOver){
+                                cardOnHand.sortingGroup.sortingOrder = maxSortOrder;
+                                cardOnHand.cardOnHandCanvas.sortingOrder = maxSortOrder;
+
                                 // 위치값
                                 Vector3 cardOverPosition = new Vector3(cardOnHand.originPosition.x, hoveredPositionY, cardOnHand.transform.localPosition.z);
                                 cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, cardOverPosition, Time.deltaTime * 10f);
@@ -163,9 +166,9 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                     }
                                 }
                             }else{
-                                cardOnHand.sortingGroup.sortingOrder = i; // 스프라이트 정렬 인덱스
-                                cardOnHand.cardOnHandCanvas.sortingOrder = i; // 카드 이름 및 설명 텍스트 요소의 정렬 인덱스
-                                cardOnHand.transform.SetSiblingIndex(i); // 오브젝트 스택 순서 인덱스
+                                cardOnHand.originSortingOrder = i;
+                                cardOnHand.sortingGroup.sortingOrder = i;
+                                cardOnHand.cardOnHandCanvas.sortingOrder = i;
 
                                 // 대칭값 계산
                                 float symmetryValue = (i - ((count - 1) / 2.0f));
@@ -561,6 +564,17 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
             }
+        }
+    }
+
+    // CardOnHand 정렬값 갱신
+    public void RefreshCardOnHandsSortingOrder(SyncList<CardOnHand> cardOnHands)
+    {
+        for(int i=0; i<cardOnHands.Count; i++){
+            CardOnHand cardOnHand = cardOnHands[i];
+            cardOnHand.originSortingOrder = i; // 마우스 오버되기 이전의 원래 정렬 인덱스
+            cardOnHand.sortingGroup.sortingOrder = i; // 스프라이트 정렬 인덱스
+            cardOnHand.cardOnHandCanvas.sortingOrder = i;  // 카드 UI 요소의 정렬 인덱스
         }
     }
 

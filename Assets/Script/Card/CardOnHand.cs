@@ -53,6 +53,8 @@ public class CardOnHand : NetworkBehaviour
 
     public bool isUsed = false; // 사용된 상태인지 여부
 
+    public int originSortingOrder; // 마우스 오버되지 않은 원래 상태에서의 정렬값
+
     [Header("CardOnHand UI Canvas 컴포넌트")]
     public Canvas cardOnHandCanvas;
 
@@ -252,6 +254,7 @@ public class CardOnHand : NetworkBehaviour
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
                 AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_mouseover_3"));
                 M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+                CmdChangeMouseOverdState(true);
             }
             TextDetector.instance.StartTextDetect();
         }
@@ -265,6 +268,7 @@ public class CardOnHand : NetworkBehaviour
                 isMouseOver = false;
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
                 StartCoroutine(MouseExitDelay());
+                CmdChangeMouseOverdState(false);
             }
             TextDetector.instance.StopTextDetect();
         }
@@ -360,12 +364,6 @@ public class CardOnHand : NetworkBehaviour
         }
     }
 
-    [Command]
-    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck)
-    {
-        gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null));
-    }
-
     // 마우스 좌표에 따라 카드 오브젝트 드래그
     private void DragCardOnHand(CardOnHand cardOnHand)
     {
@@ -425,21 +423,6 @@ public class CardOnHand : NetworkBehaviour
         return M_CardManager.instance.isArrowActive;
     }
 
-    // 카드 정렬값 이벤트 수신
-    [ClientRpc]
-    public void RpcSortOrder(int index)
-    {
-        transform.GetComponent<SortingGroup>().sortingOrder = index;
-        cardOnHandCanvas.sortingOrder = index;
-        transform.SetSiblingIndex(index);
-    }
-
-    // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
-    [ClientRpc]
-    public void RpcCardOnHandSetParent(GameObject cardPocket)
-    {
-        transform.SetParent(cardPocket.transform);
-    }
 
     void OnChangedIsChoosedState()
     {
@@ -455,6 +438,38 @@ public class CardOnHand : NetworkBehaviour
             }
             createdPopUpWindow.Clear();
         }
+    }
+
+    // --------------------------------------------------------------- Command Method -----------------------------------------------------------------//
+    
+    [Command]
+    void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck)
+    {
+        gamePlayerDeck.serverCardPredictQueue.Enqueue((this, null));
+    }
+
+    // CardOnHand 마우스 오버상태 변경 커맨드
+    [Command]
+    public void CmdChangeMouseOverdState(bool isMouseOvered)
+    {
+        RpcMouseOveredState(isMouseOvered);
+    }
+
+    // --------------------------------------------------------------- Rpc Method -----------------------------------------------------------------//
+    
+    // CardOnHand 마우스 오버상태 변경 수신 RPC 
+    [ClientRpc]
+    public void RpcMouseOveredState(bool isMouseOvered)
+    {
+        sortingGroup.sortingOrder = isMouseOvered ?  M_CardManager.instance.maxSortOrder : originSortingOrder;
+        cardOnHandCanvas.sortingOrder = isMouseOvered ? M_CardManager.instance.maxSortOrder : originSortingOrder;
+    }
+
+    // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
+    [ClientRpc]
+    public void RpcCardOnHandSetParent(GameObject cardPocket)
+    {
+        transform.SetParent(cardPocket.transform);
     }
 
     // --------------------------------------------------------------- SyncVar Hook -----------------------------------------------------------------//
