@@ -20,7 +20,9 @@ public class EffectBase : MonoBehaviour
 
     private void OnAnimationStart(Spine.TrackEntry trackEntry)
     {
-        M_SoundManager.instance.PlaySFX(sfx, sfx.length);
+        if(sfx != null){
+            M_SoundManager.instance.PlaySFX(sfx, sfx.length);
+        }
     }
 
     private void OnAnimationComplete(Spine.TrackEntry trackEntry)
