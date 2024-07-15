@@ -10,6 +10,8 @@ public partial class M_EffectManager
 {
     public SerializedDictionary<Card_Effect, SkeletonDataAsset> danhyangCardEffects = new SerializedDictionary<Card_Effect, SkeletonDataAsset>();
 
+    public List<ParticleSystem> danhyangCardEffectParticles = new List<ParticleSystem>();
+
     // 철귀 이빨 공격 이펙트
     [ClientRpc]
     public void RpcEffectEatter(Vector3 position)
@@ -89,6 +91,7 @@ public partial class M_EffectManager
             audioClip,
             "FrontLayer") 
         );
+        Instantiate(danhyangCardEffectParticles[0], position, Quaternion.identity, transform); // 파티클 생성
     }
 
     [ClientRpc]

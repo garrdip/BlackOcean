@@ -4444,9 +4444,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29fce2b2cf0cfa540ac4820466c4a395, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 325265378}
   frameLayout: {fileID: 820832614}
   isMouseOnFrame: 0
-  canvasGroup: {fileID: 325265378}
 --- !u!1 &327418901
 GameObject:
   m_ObjectHideFlags: 0
@@ -7548,9 +7548,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a4029a0c71c4ce4c97b565a5873e560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 571315583}
   frameLayout: {fileID: 1288571538}
   isMouseOnFrame: 0
-  canvasGroup: {fileID: 571315583}
 --- !u!1 &578121416
 GameObject:
   m_ObjectHideFlags: 0
@@ -9867,6 +9867,8 @@ MonoBehaviour:
       Value: {fileID: 11400000, guid: d8bfdaab06f0470449348f74b828d585, type: 2}
     - Key: 10
       Value: {fileID: 11400000, guid: 26d939e792e113c47bf8acc334ce0213, type: 2}
+  danhyangCardEffectParticles:
+  - {fileID: 6498355376624205919, guid: 972d6c05602ab9942856cad2005e2a94, type: 3}
   EffectCanvas: {fileID: 481710162}
   FloatingDamageText: {fileID: 2572344723661254293, guid: ba3d091ba066c3141823a924988d3af3, type: 3}
 --- !u!114 &743138901
