@@ -15,6 +15,7 @@ public class Devourer : SpawnedMonster
                 GeneralAttack();
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
                     RpcStartSkillEffect(0, "Eff3_MagicAttack", tar.transform.position, SFX_TYPE.Elite_Devourer, 0, "Effect");
+                    RpcStartSkillParticle(0, tar.transform.position + new Vector3(0f, 3.5f, 0f));
                 }
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
@@ -40,6 +41,7 @@ public class Devourer : SpawnedMonster
                 GeneralAttack();
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
                     RpcStartSkillEffect(0, "Eff3_MagicAttack", tar.transform.position, SFX_TYPE.Elite_Devourer, 2, "Effect");
+                    RpcStartSkillParticle(0, tar.transform.position + new Vector3(0f, 3.5f, 0f));
                 }
                 if(HP + nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK) > MAXHP)
                     HP = MAXHP;

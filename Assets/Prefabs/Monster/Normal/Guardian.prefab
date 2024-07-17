@@ -5059,14 +5059,16 @@ MonoBehaviour:
   parent: {fileID: 0}
   turn: 0
   isActive: 0
-  effectDataAssets:
-  - {fileID: 11400000, guid: c511dcf6f944ec14182262042dee7f2e, type: 2}
-  - {fileID: 11400000, guid: 4d77e49ec29b6ba4fba3027081304342, type: 2}
   skeletonAnimation: {fileID: 0}
   meshRenderer: {fileID: 7778458032851223039}
   originMaterial: {fileID: 2100000, guid: 9eabe69070748504f9c599d877caa8c1, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: 692b2a6078615a846aaf77f3afb1c793, type: 2}
   dissolveParticle: {fileID: 3349238903052611215}
+  effectDataAssets:
+  - {fileID: 11400000, guid: c511dcf6f944ec14182262042dee7f2e, type: 2}
+  - {fileID: 11400000, guid: 4d77e49ec29b6ba4fba3027081304342, type: 2}
+  effectParticles:
+  - {fileID: 8443315704496310908, guid: 218951a42ac7f824ab86a286f546343c, type: 3}
 --- !u!114 &7835395992500016597
 MonoBehaviour:
   m_ObjectHideFlags: 0

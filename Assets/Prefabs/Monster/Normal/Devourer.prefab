@@ -5067,6 +5067,8 @@ MonoBehaviour:
   effectDataAssets:
   - {fileID: 11400000, guid: c511dcf6f944ec14182262042dee7f2e, type: 2}
   - {fileID: 11400000, guid: 4d77e49ec29b6ba4fba3027081304342, type: 2}
+  effectParticles:
+  - {fileID: 8443315704496310908, guid: 218951a42ac7f824ab86a286f546343c, type: 3}
 --- !u!114 &8362952195732297882
 MonoBehaviour:
   m_ObjectHideFlags: 0

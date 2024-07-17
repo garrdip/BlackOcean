@@ -67,6 +67,9 @@ public class SpawnedMonster : NetworkBehaviour
     [Header("몬스터 스킬 이펙트 스파인 데이터 에셋")]
     public List<SkeletonDataAsset> effectDataAssets = new List<SkeletonDataAsset>();
 
+    [Header("몬스터 스킬 이펙트 파티클")]
+    public List<ParticleSystem> effectParticles = new List<ParticleSystem>();
+
     MonsterAction sturnedAction = new MonsterAction("APDO",0,0);
 
     void Start()
@@ -270,6 +273,7 @@ public class SpawnedMonster : NetworkBehaviour
 
 
     /*
+        [몬스터 스킬 이펙트 스파인 오브젝트 생성]
         effectIndex : 스켈레톤 데이터 에셋 인덱스 값
         animationName : 스켈레톤 데이터 에셋에서 실행할 애니매이션 이름
         position : 이펙트가 보여질 위치 값
@@ -288,6 +292,17 @@ public class SpawnedMonster : NetworkBehaviour
             audioClip,
             layer)
         );
+    }
+
+    /*
+        [몬스터 스킬 이펙트 파티클 생성]
+        index : 파티클 리스트에서 해당 파티클의 인덱스 값
+        position : 이펙트 보여질 위치 값
+    */
+    [ClientRpc]
+    public virtual void RpcStartSkillParticle(int index, Vector3 position)
+    {
+        Instantiate(effectParticles[index], position, Quaternion.identity);
     }
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
