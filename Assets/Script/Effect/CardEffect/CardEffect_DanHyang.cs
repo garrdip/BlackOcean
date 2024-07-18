@@ -91,7 +91,9 @@ public partial class M_EffectManager
             audioClip,
             "FrontLayer") 
         );
-        Instantiate(danhyangCardEffectParticles[0], position, Quaternion.identity, transform); // 파티클 생성
+        ParticleSystem particleSystem = Instantiate(danhyangCardEffectParticles[0], position, Quaternion.identity); // 파티클 생성
+        ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
+        renderer.sortingLayerName = "Effect";
     }
 
     [ClientRpc]

@@ -282,7 +282,7 @@ public class SpawnedMonster : NetworkBehaviour
         layer : 이펙트 랜더링 정렬 값
     */
     [ClientRpc]
-    public virtual void RpcStartSkillEffect(int effectIndex, string animationName, Vector3 position, SFX_TYPE sfx_type, int audioClipIndex, string layer)
+    public void RpcStartSkillEffect(int effectIndex, string animationName, Vector3 position, SFX_TYPE sfx_type, int audioClipIndex, string layer)
     {
         AudioClip audioClip = M_SoundManager.instance.sfxClips[sfx_type][audioClipIndex];
         StartCoroutine(StartEffect(
@@ -300,9 +300,11 @@ public class SpawnedMonster : NetworkBehaviour
         position : 이펙트 보여질 위치 값
     */
     [ClientRpc]
-    public virtual void RpcStartSkillParticle(int index, Vector3 position)
+    public void RpcStartSkillParticle(int index, Vector3 position)
     {
-        Instantiate(effectParticles[index], position, Quaternion.identity);
+        ParticleSystem particleSystem = Instantiate(effectParticles[index], position, Quaternion.identity);
+        ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
+        renderer.sortingLayerName = "Effect";
     }
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
