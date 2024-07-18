@@ -8,7 +8,7 @@ using ProjectD;
 using Mirror;
 using DG.Tweening;
 using TMPro;
-using AYellowpaper.SerializedCollections;
+
 
 public class CardOnHand : NetworkBehaviour
 {
@@ -120,30 +120,30 @@ public class CardOnHand : NetworkBehaviour
     {
         switch(card.baseCard.character){
             case Character.GEORK:
-                SerializedDictionary<string, Sprite> georkCardSprites = CardData.instance.characterCardTemplate[Character.GEORK];
+                AYellowpaper.SerializedCollections.SerializedDictionary<string, Sprite> georkCardSprites = CardData.instance.characterCardTemplate[Character.GEORK];
                 InitCardTemplateByCardType(card, georkCardSprites);
                 InitCardIllust(card);
                 InitCardTemplateByCardEnhanced(card, georkCardSprites);
                 InitCardExpBar(card, georkCardSprites);
-                InitCardTrailColor(ColorUtils.HexToColor("#FF6400"));
+                InitCardTrailColor(ProjectD.ColorUtils.HexToColor("#FF6400"));
                 rippleParticle.GetComponent<ParticleSystemRenderer>().material = rippleYellow;
                 break;
             case Character.ERIS:
-                SerializedDictionary<string, Sprite> erisCardSprites = CardData.instance.characterCardTemplate[Character.ERIS];
+                AYellowpaper.SerializedCollections.SerializedDictionary<string, Sprite> erisCardSprites = CardData.instance.characterCardTemplate[Character.ERIS];
                 InitCardTemplateByCardType(card, erisCardSprites);
                 InitCardIllust(card);
                 InitCardTemplateByCardEnhanced(card, erisCardSprites);
                 InitCardExpBar(card, erisCardSprites);
-                InitCardTrailColor(ColorUtils.HexToColor("#0068A1"));
+                InitCardTrailColor(ProjectD.ColorUtils.HexToColor("#0068A1"));
                 rippleParticle.GetComponent<ParticleSystemRenderer>().material = rippleBlue;
                 break;
             case Character.HONGDANHYANG:
-                SerializedDictionary<string, Sprite> danhyangCardSprites = CardData.instance.characterCardTemplate[Character.HONGDANHYANG];
+                AYellowpaper.SerializedCollections.SerializedDictionary<string, Sprite> danhyangCardSprites = CardData.instance.characterCardTemplate[Character.HONGDANHYANG];
                 InitCardTemplateByCardType(card, danhyangCardSprites);
                 InitCardIllust(card);
                 InitCardTemplateByCardEnhanced(card, danhyangCardSprites);
                 InitCardExpBar(card, danhyangCardSprites);
-                InitCardTrailColor(ColorUtils.HexToColor("#FF0000"));
+                InitCardTrailColor(ProjectD.ColorUtils.HexToColor("#FF0000"));
                 rippleParticle.GetComponent<ParticleSystemRenderer>().material = rippleRed;
                 break;
         }
@@ -162,7 +162,7 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // 카드 타입에 따라 외형 틀 세팅
-    private void InitCardTemplateByCardType(Card card, SerializedDictionary<string, Sprite> sprites)
+    private void InitCardTemplateByCardType(Card card, AYellowpaper.SerializedCollections.SerializedDictionary<string, Sprite> sprites)
     {
         if(!card.baseCard.cardNumber.Equals("HA")){
             switch(card.baseCard.cardType){
@@ -213,7 +213,7 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // 카드 강화 상태 프레임 세팅
-    private void InitCardTemplateByCardEnhanced(Card card, SerializedDictionary<string, Sprite> sprites)
+    private void InitCardTemplateByCardEnhanced(Card card, AYellowpaper.SerializedCollections.SerializedDictionary<string, Sprite> sprites)
     {
         if(card.isEnhanced){
             cardGradeFrame.sprite = sprites[Const.ENHANCE_NORMAL_GRADE_FRAME];
@@ -223,7 +223,7 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // 카드 경험치 바 초기화 : card 데이터에서 최대 경험치 정보를 가져와 해당 숫자 만큼의 경험치 바 내부 블록 생성
-    private void InitCardExpBar(Card card, SerializedDictionary<string, Sprite> sprites)
+    private void InitCardExpBar(Card card, AYellowpaper.SerializedCollections.SerializedDictionary<string, Sprite> sprites)
     {
         // 철귀 이동카드는 경험치 오브젝트 초기화 제외
         if(!card.baseCard.cardNumber.Equals("HA")){

@@ -222,7 +222,7 @@ public class HexagonMapRoom : NetworkBehaviour
                 break;
             case RoomType.BOSS :
                 mapIcon.SetActive(false);
-                mapTileIcon.GetComponent<SpriteRenderer>().color = ColorUtils.HexToColor("#E700FF");
+                mapTileIcon.GetComponent<SpriteRenderer>().color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 break;
         }
     }
@@ -379,7 +379,7 @@ public class HexagonMapRoom : NetworkBehaviour
             hazardArrow.gameObject.SetActive(true);
             textHazardTitle.text = hazardValue > 0 ? "위험도 증가" : "위험도 감소" ;
             hazardArrow.flipY = hazardValue > 0 ? false : true;
-            hazardArrow.color =  hazardValue > 0 ? Color.red : ColorUtils.HexToColor("#0080ff");
+            hazardArrow.color =  hazardValue > 0 ? Color.red : ProjectD.ColorUtils.HexToColor("#0080ff");
         }
     }
 

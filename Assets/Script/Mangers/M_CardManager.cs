@@ -251,19 +251,19 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         switch(card.baseCard.character){
             case Character.GEORK:
                 gradient.SetKeys(
-                    new GradientColorKey[] { new GradientColorKey(ColorUtils.HexToColor("#FF6400"), 0f), new GradientColorKey(Color.white, 1f) },
+                    new GradientColorKey[] { new GradientColorKey(ProjectD.ColorUtils.HexToColor("#FF6400"), 0f), new GradientColorKey(Color.white, 1f) },
                     new GradientAlphaKey[] { new GradientAlphaKey(alpha, 1f), new GradientAlphaKey(alpha, 0f) }
                 );    
                 break;
             case Character.ERIS:
                 gradient.SetKeys(
-                    new GradientColorKey[] { new GradientColorKey(ColorUtils.HexToColor("#0068A1"), 0f), new GradientColorKey(Color.white, 1f) },
+                    new GradientColorKey[] { new GradientColorKey(ProjectD.ColorUtils.HexToColor("#0068A1"), 0f), new GradientColorKey(Color.white, 1f) },
                     new GradientAlphaKey[] { new GradientAlphaKey(alpha, 1f), new GradientAlphaKey(alpha, 0f) }
                 );   
                 break;
             case Character.HONGDANHYANG:
                 gradient.SetKeys(
-                    new GradientColorKey[] { new GradientColorKey(ColorUtils.HexToColor("#FF0000"), 0f), new GradientColorKey(Color.white, 1f) },
+                    new GradientColorKey[] { new GradientColorKey(ProjectD.ColorUtils.HexToColor("#FF0000"), 0f), new GradientColorKey(Color.white, 1f) },
                     new GradientAlphaKey[] { new GradientAlphaKey(alpha, 1f), new GradientAlphaKey(alpha, 0f) }
                 );
                 break;
