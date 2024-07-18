@@ -207,6 +207,7 @@ public class TargetObject : NetworkBehaviour
         selectedNamePlate.SetHPValue(monster.HP, monster.MAXHP, (int)transform.position.x);
         monsterName.text = monster.monsterName;
         playerNamePlate.SetActive(false);
+        nextActionIndicator.StartBounce(monster.index);
     }
 
     public void OnChangePlayerOrder(int order)

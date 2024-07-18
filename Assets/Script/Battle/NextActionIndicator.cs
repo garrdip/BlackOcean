@@ -24,12 +24,14 @@ public class NextActionIndicator : MonoBehaviour
     private Sequence sequence;
     private Vector3 leftPointOriginPosition;
     private Vector3 rightPointOriginPosition;
+    public Vector3 actionIndicatorOriginPosition;
 
 
     void Start()
     {
         leftPointOriginPosition = pointLeft.transform.localPosition;
         rightPointOriginPosition = pointRight.transform.localPosition;
+        actionIndicatorOriginPosition = transform.position;
     }
 
     void OnDestroy()
@@ -37,6 +39,33 @@ public class NextActionIndicator : MonoBehaviour
         pointLeft.transform.DOKill();
         pointRight.transform.DOKill();
         sequence.Kill();
+        transform.DOKill();
+    }
+
+    public void StartBounce(int index)
+    {
+        StartCoroutine(Delay(index));
+    }
+
+    private IEnumerator Delay(int index)
+    {
+        yield return new WaitForSeconds((4 - index) * 0.5f);
+        NextActionIndicatorBounce();
+    }
+
+    public void NextActionIndicatorBounce()
+    {
+        transform.DOMoveY(actionIndicatorOriginPosition.y + 0.1f, 1f)
+            .SetEase(Ease.InOutSine)
+            .OnComplete(() =>
+            {
+                transform.DOMoveY(actionIndicatorOriginPosition.y - 0.1f, 1f)
+                    .SetEase(Ease.InOutSine)
+                    .OnComplete(() =>
+                    {
+                        NextActionIndicatorBounce();
+                    });
+            });
     }
 
     public void SetNextTargetAction(ActionType type, bool isTargetable, ActionTarget tar, string value)
