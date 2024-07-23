@@ -52,13 +52,13 @@ public class ToastMessage : MonoBehaviour
         switch (position)
         {
             case ToastPosition.Top:
-                canvasRectTransform.anchorMin = new Vector2(0.5f, 1);
-                canvasRectTransform.anchorMax = new Vector2(0.5f, 1);
+                canvasRectTransform.anchorMin = new Vector2(0.5f, 0.95f);
+                canvasRectTransform.anchorMax = new Vector2(0.5f, 0.95f);
                 canvasRectTransform.pivot = new Vector2(0.5f, 1);
                 break;
             case ToastPosition.Bottom:
-                canvasRectTransform.anchorMin = new Vector2(0.5f, 0);
-                canvasRectTransform.anchorMax = new Vector2(0.5f, 0);
+                canvasRectTransform.anchorMin = new Vector2(0.5f, 0.05f);
+                canvasRectTransform.anchorMax = new Vector2(0.5f, 0.05f);
                 canvasRectTransform.pivot = new Vector2(0.5f, 0);
                 break;
         }
