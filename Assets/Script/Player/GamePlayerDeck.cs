@@ -786,14 +786,14 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 if(PopUpUIManager.instance.isCardRemovePopUpOpen){
                     CardRemovePopUp cardRemovePopUp = PopUpUIManager.instance.cardRemovePopUp.GetComponent<CardRemovePopUp>();
                     cardRemovePopUp.ClearRemoveableCards();
-                    cardRemovePopUp.CreateRemoveableCards();
+                    cardRemovePopUp.CreateRemoveableCards(deck);
                 }
                 break;
             case SyncList<Card>.Operation.OP_SET:
                 if(PopUpUIManager.instance.isCardEnhancePopUpOpen){
                     CardEnhancePopUp cardEnhancePopUp = PopUpUIManager.instance.cardEnhancePopUp.GetComponent<CardEnhancePopUp>();
                     cardEnhancePopUp.ClearAllEnhanceableCards();
-                    cardEnhancePopUp.CreateEnhanceableCards();
+                    cardEnhancePopUp.CreateEnhanceableCards(deck);
                 }
                 break;
             case SyncList<Card>.Operation.OP_CLEAR:
