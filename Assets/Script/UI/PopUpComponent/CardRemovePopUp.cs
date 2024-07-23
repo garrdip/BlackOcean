@@ -31,10 +31,25 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
         buttonCardRemoveCancel.onClick.AddListener(() => HandleClickCardRemoveCancel());
     }
 
+    void OnDestroy()
+    {
+        DOTween.Kill(canvasGroup);
+    }
+
     // 카드 제거 승인
     private void HandleClickCardRemoveOk()
     {
-        NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().CmdRemoveDeck(selectCardGuid);
+        MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
+        GamePlayerDeck gamePlayerDeck = mercuriusPopUp.GetSelectedGamePlayerDeck();
+        if(gamePlayerDeck != null){
+            gamePlayerDeck.CmdRemoveDeck(selectCardGuid); // 카드 제거 커맨드 전송
+            StartCardRemoveAnimation();
+        }
+    }
+
+    // 카드 제거 애니매이션
+    private void StartCardRemoveAnimation()
+    {
         CardOnDeck cardOnDeck = removePreviewCards[0].GetComponent<CardOnDeck>();
         buttonCardRemoveOk.gameObject.SetActive(false);
         buttonCardRemoveCancel.gameObject.SetActive(false);
@@ -84,10 +99,10 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
         removePreviewCards.Add(removeCardObject);
     }
 
-    // 현재 플레이어의 deck 데이터로 카드 오브젝트 생성
-    public void CreateRemoveableCards()
+    // 플레이어의 deck 데이터로 카드 오브젝트 생성
+    public void CreateRemoveableCards(SyncList<Card> deck)
     {
-        foreach(Card card in NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().deck){
+        foreach(Card card in deck){
             GameObject cardObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, Vector3.zero, Quaternion.identity);
             CardOnDeck cardOnDeck = cardObject.GetComponent<CardOnDeck>();
             cardOnDeck.transform.SetParent(gridLayoutGroup.transform);
@@ -111,9 +126,13 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
     // CardRemovePopUp 활성화 콜백
     public void OnCardRemovePopUpShow()
     {
+        MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
+        GamePlayerDeck gamePlayerDeck = mercuriusPopUp.GetSelectedGamePlayerDeck();
+        if(gamePlayerDeck != null){
+            CreateRemoveableCards(gamePlayerDeck.deck);
+        }
         canvasGroup.DOFade(1.0f, 0.5f);
-        CreateRemoveableCards();
-        PopUpUIManager.instance.HandleMercuriusPopUp(false); // 카드 제거 팝업 활성화 될때 상점 팝업은 비활성화
+        PopUpUIManager.instance.mercuriusPopUp.GetComponent<CanvasGroup>().DOFade(0f, 0.5f);
     }
 
     // CardRemovePopUp 비활성화 콜백
@@ -123,6 +142,6 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
             ClearRemoveableCards();
             gameObject.SetActive(false);
         });
-        PopUpUIManager.instance.HandleMercuriusPopUp(true); // 카드 제거 팝업 비활성화 될때 상점 팝업은 활성화
+        PopUpUIManager.instance.mercuriusPopUp.GetComponent<CanvasGroup>().DOFade(1f, 0.5f);
     }
 }

@@ -231,6 +231,19 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
         }
     }
 
+    // 현재 활성화된 탭에 해당하는 플레이어의 GamePlayerDeck을 조회하여 반환
+    // - 카드 강화 및 제거 팝업은 MercuriusPopUp을 통해서 넘어오는 UX임. 
+    // - 다수의 플레이어 조종 시 MercuriusPopUp의 currentIndex를 통해 현재 어떤 플레이어의 카드 강화 및 제거를 수행하는지 조회하여 기능 수행.
+    public GamePlayerDeck GetSelectedGamePlayerDeck()
+    {
+        uint netId = M_TurnManager.instance.playerOrder[currentIndex];
+        if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+            GamePlayerDeck gamePlayerDeck = networkIdentity.GetComponent<GamePlayerDeck>();
+            return gamePlayerDeck;
+        }
+        return null;
+    }
+
     // -------------------------------------------------------------------  이벤트 트리거 함수 -------------------------------------------------------------------------- //
 
     public void OnPointerEnterCardEnhanceButton()
