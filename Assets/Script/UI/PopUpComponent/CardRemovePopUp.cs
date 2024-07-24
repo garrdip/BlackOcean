@@ -132,7 +132,7 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
             CreateRemoveableCards(gamePlayerDeck.deck);
         }
         canvasGroup.DOFade(1.0f, 0.5f);
-        PopUpUIManager.instance.mercuriusPopUp.GetComponent<CanvasGroup>().DOFade(0f, 0.5f);
+        PopUpUIManager.instance.HandleMercuriusPopUp(false);
     }
 
     // CardRemovePopUp 비활성화 콜백
@@ -142,6 +142,6 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
             ClearRemoveableCards();
             gameObject.SetActive(false);
         });
-        PopUpUIManager.instance.mercuriusPopUp.GetComponent<CanvasGroup>().DOFade(1f, 0.5f);
+        PopUpUIManager.instance.HandleMercuriusPopUp(true);
     }
 }
