@@ -38,28 +38,47 @@ public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
     // 데미지 표시 트위닝
     public void DisPlayeDamage(TargetObject targetObject, int damage)
     {
-        Camera.main.GetComponent<Shake>().Shaking();
-        GameObject floatingDamage = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
-        floatingDamage.transform.SetParent(EffectCanvas.transform);
-        floatingDamage.transform.position = targetObject.transform.position + new Vector3(0f, 6f, 0f);
-        floatingDamage.transform.localScale = new Vector3(2.5f, 2.5f, 2.5f);
-        floatingDamage.GetComponent<TextMeshProUGUI>().text = damage.ToString();
-
-        bool reversePath = Random.Range(0, 2) == 0; // 좌측커브 or 우측커브 랜덤 결정
-        Vector3 endPoint = reversePath ? floatingDamage.transform.position + new Vector3(-3f, -12f, 0f) : floatingDamage.transform.position + new Vector3(3f, -12f, 0f);
-        Tween curveTween = floatingDamage.transform.DOJump(endPoint, 9f, 1, 0.5f);
-        Tween fadeTween = floatingDamage.GetComponent<CanvasGroup>().DOFade(0f, 1f);
-        Tween scaleTween = floatingDamage.transform.DOPunchScale(new Vector3(3f, 3f, 3f), 0.5f, 2, 1f).SetEase(Ease.OutCubic);
-        Tween scaleReturnTween = floatingDamage.transform.DOScale(1f, 0.5f);
-        Sequence sequence = DOTween.Sequence();
-        sequence.Append(scaleTween);
-        sequence.Join(curveTween);
-        sequence.Insert(0.2f, scaleReturnTween);
-        sequence.Join(fadeTween)
+        if(damage < 0){ // 데미지가 음수 이면 회복 텍스트
+            GameObject hpRecoverText = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
+            hpRecoverText.transform.SetParent(EffectCanvas.transform);
+            hpRecoverText.transform.localScale = Vector3.one;
+            hpRecoverText.transform.position = targetObject.transform.position + new Vector3(0f, 8f, 0f);
+            hpRecoverText.GetComponent<TextMeshProUGUI>().color = Color.green;
+            hpRecoverText.GetComponent<TextMeshProUGUI>().text = "+" + Mathf.Abs(damage).ToString();
+            
+            Tween moveTween = hpRecoverText.transform.DOMoveY(3f, 1f).SetEase(Ease.OutSine);
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(moveTween);
+            sequence.Join(hpRecoverText.GetComponent<CanvasGroup>().DOFade(1f, 0.5f));
+            sequence.Append(hpRecoverText.GetComponent<CanvasGroup>().DOFade(0f, 0.5f))
                 .OnComplete(() => {
-                    floatingDamage.transform.DOKill();
-                    Destroy(floatingDamage);
+                    hpRecoverText.transform.DOKill();
+                    Destroy(hpRecoverText);
                 });
+        }else{ // 데미지가 양수 이면 데미지 텍스트
+            Camera.main.GetComponent<Shake>().Shaking();
+            GameObject floatingDamage = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
+            floatingDamage.transform.SetParent(EffectCanvas.transform);
+            floatingDamage.transform.position = targetObject.transform.position + new Vector3(0f, 6f, 0f);
+            floatingDamage.transform.localScale = new Vector3(2.5f, 2.5f, 2.5f);
+            floatingDamage.GetComponent<TextMeshProUGUI>().text = damage.ToString();
+
+            bool reversePath = Random.Range(0, 2) == 0; // 좌측커브 or 우측커브 랜덤 결정
+            Vector3 endPoint = reversePath ? floatingDamage.transform.position + new Vector3(-3f, -12f, 0f) : floatingDamage.transform.position + new Vector3(3f, -12f, 0f);
+            Tween curveTween = floatingDamage.transform.DOJump(endPoint, 9f, 1, 0.5f);
+            Tween fadeTween = floatingDamage.GetComponent<CanvasGroup>().DOFade(0f, 1f);
+            Tween scaleTween = floatingDamage.transform.DOPunchScale(new Vector3(3f, 3f, 3f), 0.5f, 2, 1f).SetEase(Ease.OutCubic);
+            Tween scaleReturnTween = floatingDamage.transform.DOScale(1f, 0.5f);
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(scaleTween);
+            sequence.Join(curveTween);
+            sequence.Insert(0.2f, scaleReturnTween);
+            sequence.Join(fadeTween)
+                    .OnComplete(() => {
+                        floatingDamage.transform.DOKill();
+                        Destroy(floatingDamage);
+                    });
+        }
     }
 
     // 방어도 표시 트위닝

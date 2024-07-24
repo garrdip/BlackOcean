@@ -862,17 +862,17 @@ public class TargetObject : NetworkBehaviour
 
     void OnChangedPlayerHP(int oldVal, int newVal)
     {
+        if(isServer && player != null){
+            player.HP = newVal; // 타겟오브젝트의 체력 값과 GamePlayer의 체력 값 동기화
+        }
         if(oldVal > 0){
-            M_EffectManager.instance.DisPlayeDamage(this, (oldVal - newVal));
-        }
-        if(player != null){
-            if(player.netIdentity == NetworkClient.connection.identity){
-                player.HP = newVal;
+            M_EffectManager.instance.DisPlayeDamage(this, (oldVal - newVal)); // 데미지 or 회복 표시 이펙트 생성
+            if(newVal > 0){
+                selectedNamePlate.SetHPValue(newVal, playerMaxHP, 10);
+                if((oldVal - newVal) > 0){
+                    PlayCharaterHitVoice(); // 체력이 떨어지면, 캐릭터 피격음성 재생
+                }
             }
-        }
-        if(oldVal > 0 && newVal > 0){ // 체력이 0 이상이면, 캐릭터 피격음성 재생
-            selectedNamePlate.SetHPValue(newVal, playerMaxHP, 10);
-            PlayCharaterHitVoice();
         }else if(newVal == 0){ // 체력이 0이면 캐릭터 사망 음성 재생
             if(isServer){
                 StartCoroutine(PlayerDeathProcess());

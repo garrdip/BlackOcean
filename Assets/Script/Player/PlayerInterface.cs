@@ -114,6 +114,7 @@ public class PlayerInterface : NetworkBehaviour
         gamePlayer.selectOrder = selectOrder;
         gamePlayer.HP = 50;
         gamePlayer.MaxHP = 50;
+        gamePlayer.recoverValue = 15;
         NetworkServer.Spawn(gamePlayerObject, connectionToClient);
 
         // 게임씬에서 플레이어 오더 및 정보들을 보여주는 PlayerOrder 오브젝트 생성

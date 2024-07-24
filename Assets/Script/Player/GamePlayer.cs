@@ -13,8 +13,12 @@ public class GamePlayer : NetworkBehaviour
 
     [SyncVar (hook = nameof(OnChangHpValue))]
     public int HP;
+    
     [SyncVar]
     public int MaxHP;
+
+    [SyncVar]
+    public int recoverValue; // 체력 회복 수치
 
     [SyncVar (hook = nameof(OnChangedObjectOwner))]
     public PlayerInterface objectOwner;
@@ -48,6 +52,15 @@ public class GamePlayer : NetworkBehaviour
     }
 
     // ------------------------------------------------------------- Command Method ------------------------------------------------------------------//
+    
+    [Command]
+    public void CmdHpRecover()
+    {
+        TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(this);
+        if(targetObject.player != null){
+            targetObject.playerHP += recoverValue;
+        }
+    }
 
     // ------------------------------------------------------------- Server Method --------------------------------------------------------------------//
 

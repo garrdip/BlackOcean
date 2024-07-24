@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 
@@ -9,12 +10,37 @@ public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
     public CanvasGroup canvasGroup;
     public GameObject frameLayout;
     public bool isMouseOnFrame = false;
+    private TabLayout tabLayout;
 
     protected override void Awake()
     {
+        tabLayout = GetComponent<TabLayout>();
         PopUpUIManager.instance.onCampPopUpShow += OnCampPopUpShow;
         PopUpUIManager.instance.onCampPopUpHide += OnCampPopUpHide;
         AddEventTriggers();   
+    }
+
+    void Start()
+    {
+        foreach(GameObject frame in tabLayout.tabFrames){
+            Button buttonHealing = frame.transform.GetChild(0).GetComponent<Button>();
+            buttonHealing.onClick.AddListener(() =>  HandleClickHealing());
+            Button buttonGiveGold = frame.transform.GetChild(1).GetComponent<Button>();
+            buttonGiveGold.onClick.AddListener(() =>  HandleClickGiveGold());
+        }
+    }
+
+    private void HandleClickHealing()
+    {
+        GamePlayer gamePlayer = tabLayout.GetSelectedGamePlayerDeck().GetComponent<GamePlayer>();
+        if(gamePlayer != null){
+            gamePlayer.CmdHpRecover();
+        }
+    }
+
+    private void HandleClickGiveGold()
+    {
+        GamePlayer gamePlayer = tabLayout.GetSelectedGamePlayerDeck().GetComponent<GamePlayer>();
     }
 
     private void AddEventTriggers()

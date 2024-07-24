@@ -5,7 +5,6 @@ using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
-using ProjectD;
 using TMPro;
 
 public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
@@ -15,7 +14,7 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     public bool isMouseOnFrame = false;
     public List<GameObject> shopCardObjectList = new List<GameObject>(); // 상점 카드 오브젝트 리스트
     public List<GridLayoutGroup> grids = new List<GridLayoutGroup>();
-    private TabLayout tabLayout;
+    public TabLayout tabLayout;
     public List<Button> tabCardEnhanceButtons = new List<Button>();
     public List<Vector2> tabCardEnhanceButtonPositions = new List<Vector2>();
     public List<Button> tabCardRemoveButtons = new List<Button>();
@@ -151,19 +150,6 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
             Destroy(shopCardObjectList[i]);
             shopCardObjectList.RemoveAt(i);
         }
-    }
-
-    // 현재 활성화된 탭에 해당하는 플레이어의 GamePlayerDeck을 조회하여 반환
-    // - 카드 강화 및 제거 팝업은 MercuriusPopUp을 통해서 넘어오는 UX임. 
-    // - 다수의 플레이어 조종 시 MercuriusPopUp의 currentIndex를 통해 현재 어떤 플레이어의 카드 강화 및 제거를 수행하는지 조회하여 기능 수행.
-    public GamePlayerDeck GetSelectedGamePlayerDeck()
-    {
-        uint netId = M_TurnManager.instance.playerOrder[tabLayout.currentIndex];
-        if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-            GamePlayerDeck gamePlayerDeck = networkIdentity.GetComponent<GamePlayerDeck>();
-            return gamePlayerDeck;
-        }
-        return null;
     }
 
     // -------------------------------------------------------------------  이벤트 트리거 함수 -------------------------------------------------------------------------- //

@@ -48,7 +48,7 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
     private void HandleClickCardEnhnaceOk()
     {
         MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
-        GamePlayerDeck gamePlayerDeck = mercuriusPopUp.GetSelectedGamePlayerDeck();
+        GamePlayerDeck gamePlayerDeck = mercuriusPopUp.tabLayout.GetSelectedGamePlayerDeck();
         if(gamePlayerDeck != null){
             gamePlayerDeck.CmdEnhanceDeck(selectCardGuid); // 카드 강화 커맨드 전송
             StartCardEnhanceAnimation();
@@ -195,7 +195,7 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>
     public void OnCardEnhancePopUpShow()
     {
         MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
-        GamePlayerDeck gamePlayerDeck = mercuriusPopUp.GetSelectedGamePlayerDeck();
+        GamePlayerDeck gamePlayerDeck = mercuriusPopUp.tabLayout.GetSelectedGamePlayerDeck();
         if(gamePlayerDeck != null){
             CreateEnhanceableCards(gamePlayerDeck.deck);
         }
