@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Mirror;
 using ProjectD;
-using Steamworks;
+
 
 public class GamePlayer : NetworkBehaviour
 {
@@ -18,7 +17,7 @@ public class GamePlayer : NetworkBehaviour
     public int MaxHP;
 
     [SyncVar]
-    public int recoverValue; // 체력 회복 수치
+    public int recoveryValue; // 체력 회복 수치
 
     [SyncVar (hook = nameof(OnChangedObjectOwner))]
     public PlayerInterface objectOwner;
@@ -32,6 +31,7 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar(hook = nameof(OnChangeMapPlayerNetId))]
     public uint mapPlayerNetId;
 
+    public ParticleSystem recoverParticle; // 체력 회복 파티클 이펙트
 
     public override void OnStartServer()
     {
@@ -54,11 +54,12 @@ public class GamePlayer : NetworkBehaviour
     // ------------------------------------------------------------- Command Method ------------------------------------------------------------------//
     
     [Command]
-    public void CmdHpRecover()
+    public void CmdHpRecovery()
     {
         TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(this);
         if(targetObject.player != null){
-            targetObject.playerHP += recoverValue;
+            targetObject.playerHP += recoveryValue;
+            RpcHpRecovery();
         }
     }
 
@@ -105,6 +106,15 @@ public class GamePlayer : NetworkBehaviour
     public void RpcGameOver()
     {
         PopUpUIManager.instance.HandleShowGameOverPopUp();
+    }
+
+    [ClientRpc]
+    public void RpcHpRecovery()
+    {
+        TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(this);
+        ParticleSystem particleSystem = Instantiate(recoverParticle, targetObject.transform.position, Quaternion.identity);
+        ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
+        renderer.sortingLayerName = "Effect";
     }
 
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//

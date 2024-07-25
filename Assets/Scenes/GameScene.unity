@@ -10317,6 +10317,7 @@ MonoBehaviour:
   - {fileID: 6498355376624205919, guid: 972d6c05602ab9942856cad2005e2a94, type: 3}
   EffectCanvas: {fileID: 481710162}
   FloatingDamageText: {fileID: 2572344723661254293, guid: ba3d091ba066c3141823a924988d3af3, type: 3}
+  recoverParticle: {fileID: 6498355376624205919, guid: 8822c90b53ebd7840aa9c04f213b3442, type: 3}
 --- !u!114 &743138901
 MonoBehaviour:
   m_ObjectHideFlags: 0

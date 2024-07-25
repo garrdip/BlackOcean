@@ -70,11 +70,12 @@ MonoBehaviour:
   syncInterval: 0.1
   HP: 0
   MaxHP: 0
+  recoverValue: 0
   objectOwner: {fileID: 0}
   selectOrder: 0
   character: 0
-  playerOrderNetId: 0
   mapPlayerNetId: 0
+  recoverParticle: {fileID: 6498355376624205919, guid: 8822c90b53ebd7840aa9c04f213b3442, type: 3}
 --- !u!114 &-5967311515642577051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,6 +91,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  gold: 0
   currentDeckCount: 0
   maxShopCardCount: 0
   maxRewardCardCount: 0
@@ -104,7 +106,10 @@ MonoBehaviour:
   previousCardType: 0
   destroyCardList: []
   numOfUsedIronTeeth: 0
+  numOfUsedCard: 0
   AdditionalSizeOfIromDemon: 0
+  usedCardName: 
+  gainCurseCardCount: 0
   currentIchi: 0
   maxIchi: 0
   limitiChi: 0

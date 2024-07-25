@@ -34,7 +34,7 @@ public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
     {
         GamePlayer gamePlayer = tabLayout.GetSelectedGamePlayerDeck().GetComponent<GamePlayer>();
         if(gamePlayer != null){
-            gamePlayer.CmdHpRecover();
+            gamePlayer.CmdHpRecovery();
         }
     }
 
