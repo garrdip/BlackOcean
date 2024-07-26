@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
 using DG.Tweening;
+using TMPro;
 
 public class PlayerOrder : NetworkBehaviour
 {
@@ -38,6 +39,8 @@ public class PlayerOrder : NetworkBehaviour
     public GameObject lastCardBaseLine;
     public GameObject lastCardBaseLingLight;
     public bool isCardPeekLocked = false;
+
+    public TextMeshProUGUI textGold;
 
     [SyncVar]
     public uint gamePlayerNetId;
@@ -148,8 +151,10 @@ public class PlayerOrder : NetworkBehaviour
         if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
             GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
             gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
+            gamePlayer.onChangeGold += OnChangeGold;
             SetParentAndPostion(gamePlayer.selectOrder);
             SetOwnedViewComponent();
+            textGold.text = gamePlayer.gold.ToString();
         }
     }
 
@@ -190,6 +195,11 @@ public class PlayerOrder : NetworkBehaviour
     public void OnChangePlayerOrder(int order)
     {
         SetParentAndPostion(order);
+    }
+
+    public void OnChangeGold(int gold)
+    {
+        textGold.text = gold.ToString();
     }
 
     // 참조된 게임플레이어 클래스로부터 오더값 조회하여 값에 맞춰 뷰 컴포넌트 세팅

@@ -10,11 +10,17 @@ public class GamePlayer : NetworkBehaviour
     public delegate void OnChangePlayerOrder(int order);
     public OnChangePlayerOrder onChangePlayerOrder;
 
+    public delegate void OnChangeGold(int gold);
+    public OnChangeGold onChangeGold;
+
+    [SyncVar (hook = nameof(OnChangePlayerGold))]
+    public int gold = 0; // 현재 플레이어 보유 골드
+
     [SyncVar (hook = nameof(OnChangHpValue))]
-    public int HP;
+    public int HP; // 체력
     
     [SyncVar]
-    public int MaxHP;
+    public int MaxHP; // 최대 체력
 
     [SyncVar]
     public int recoveryValue; // 체력 회복 수치
@@ -119,10 +125,17 @@ public class GamePlayer : NetworkBehaviour
 
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
 
-    public void OnChangedSelectOrder(int oldVal,int newVal)
+    public void OnChangePlayerGold(int oldVal, int newVal)
     {
-        if(onChangePlayerOrder != null){
-            onChangePlayerOrder.Invoke(newVal);
+        if(onChangeGold != null){
+            onChangeGold.Invoke(newVal);
+        }
+    }
+
+    public void OnChangHpValue(int oldVal, int newVal)
+    {
+        if(isServer){
+            CheckAllPlayersIsDead();
         }
     }
 
@@ -131,10 +144,10 @@ public class GamePlayer : NetworkBehaviour
         transform.SetParent(newVal.transform);
     }
 
-    public void OnChangHpValue(int oldVal, int newVal)
+    public void OnChangedSelectOrder(int oldVal,int newVal)
     {
-        if(isServer){
-            CheckAllPlayersIsDead();
+        if(onChangePlayerOrder != null){
+            onChangePlayerOrder.Invoke(newVal);
         }
     }
 

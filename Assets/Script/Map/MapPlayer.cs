@@ -32,6 +32,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
     [Header("Player Info Layout")]
     public TextMeshProUGUI textOrder;
     public TextMeshProUGUI steamDisplayName;
+    public TextMeshProUGUI textGold;
 
     // Dotween 참조값
     public Sequence sequence;
@@ -68,6 +69,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         base.OnStartClient();
         gamePlayer.objectOwner.onChangeReady += OnChangeReadyState;
         gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
+        gamePlayer.onChangeGold += OnChangeGold;
         InitMapPlayerView(gamePlayer.selectOrder);
     }
 
@@ -216,6 +218,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         p_INFO_M_L.SetActive(isOwned);
         steamDisplayName.text = gamePlayer.objectOwner.steamPersonaName;
         SetOrderTextByPlayerOrder(index);
+        textGold.text  = gamePlayer.gold.ToString();
         MapUI.instance.ChangeSwapButtonsState(index);
         MapUI.instance.ChangeSwapButtonsIconState();
         if(isOwned){
@@ -279,5 +282,10 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         MapUI.instance.ChangeSwapButtonsState(order);
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("choose_position"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+    }
+
+    public void OnChangeGold(int gold)
+    {
+        textGold.text = gold.ToString();
     }
 }
