@@ -10,6 +10,7 @@ public class ItemShopPopUp : SingletonD<ItemShopPopUp>, IPointerClickHandler
     public CanvasGroup canvasGroup;
     public GameObject frameLayout;
     public bool isMouseOnFrame = false;
+    public TabLayout tabLayout;
 
     protected override void Awake()
     {

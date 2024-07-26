@@ -10,11 +10,10 @@ public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
     public CanvasGroup canvasGroup;
     public GameObject frameLayout;
     public bool isMouseOnFrame = false;
-    private TabLayout tabLayout;
+    public TabLayout tabLayout;
 
     protected override void Awake()
     {
-        tabLayout = GetComponent<TabLayout>();
         PopUpUIManager.instance.onCampPopUpShow += OnCampPopUpShow;
         PopUpUIManager.instance.onCampPopUpHide += OnCampPopUpHide;
         AddEventTriggers();   

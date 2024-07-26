@@ -4354,7 +4354,6 @@ GameObject:
   - component: {fileID: 325265379}
   - component: {fileID: 325265378}
   - component: {fileID: 325265381}
-  - component: {fileID: 325265382}
   m_Layer: 5
   m_Name: CampPopUp
   m_TagString: Untagged
@@ -4448,30 +4447,7 @@ MonoBehaviour:
   canvasGroup: {fileID: 325265378}
   frameLayout: {fileID: 6796259976598344646}
   isMouseOnFrame: 0
---- !u!114 &325265382
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 325265375}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6b962c03c7ba5e429ec649424744c12, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tabFrames:
-  - {fileID: 6796259976147084678}
-  - {fileID: 6796259975613186614}
-  - {fileID: 6796259976662324072}
-  tabButtons:
-  - {fileID: 6796259976859935328}
-  - {fileID: 6796259976814423967}
-  - {fileID: 6796259976328256248}
-  currentIndex: 0
-  georkIcon: {fileID: 21300000, guid: 7c3d2e830ae5a4f47aba8da62a4f33ff, type: 3}
-  danhyangIcon: {fileID: 21300000, guid: 901bfa970383bb247a9d39a33602fd16, type: 3}
-  erisIcon: {fileID: 21300000, guid: 26fbcd2f646259d4099cb95cc23e26ab, type: 3}
+  tabLayout: {fileID: 5869363433801560595}
 --- !u!1 &327418901
 GameObject:
   m_ObjectHideFlags: 0
@@ -7742,7 +7718,6 @@ GameObject:
   - component: {fileID: 571315584}
   - component: {fileID: 571315583}
   - component: {fileID: 571315586}
-  - component: {fileID: 571315587}
   m_Layer: 5
   m_Name: ItemShopPopUp
   m_TagString: Untagged
@@ -7836,30 +7811,7 @@ MonoBehaviour:
   canvasGroup: {fileID: 571315583}
   frameLayout: {fileID: 6729625345844545929}
   isMouseOnFrame: 0
---- !u!114 &571315587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 571315580}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6b962c03c7ba5e429ec649424744c12, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tabFrames:
-  - {fileID: 6729625345394048969}
-  - {fileID: 6729625344854186105}
-  - {fileID: 6729625345918978343}
-  tabButtons:
-  - {fileID: 6729625345553479727}
-  - {fileID: 6729625345800320464}
-  - {fileID: 6729625345040761015}
-  currentIndex: 0
-  georkIcon: {fileID: 21300000, guid: 7c3d2e830ae5a4f47aba8da62a4f33ff, type: 3}
-  danhyangIcon: {fileID: 21300000, guid: 901bfa970383bb247a9d39a33602fd16, type: 3}
-  erisIcon: {fileID: 21300000, guid: 26fbcd2f646259d4099cb95cc23e26ab, type: 3}
+  tabLayout: {fileID: 5927139643512744030}
 --- !u!1 &578121416
 GameObject:
   m_ObjectHideFlags: 0
@@ -10317,7 +10269,6 @@ MonoBehaviour:
   - {fileID: 6498355376624205919, guid: 972d6c05602ab9942856cad2005e2a94, type: 3}
   EffectCanvas: {fileID: 481710162}
   FloatingDamageText: {fileID: 2572344723661254293, guid: ba3d091ba066c3141823a924988d3af3, type: 3}
-  recoverParticle: {fileID: 6498355376624205919, guid: 8822c90b53ebd7840aa9c04f213b3442, type: 3}
 --- !u!114 &743138901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11323,6 +11274,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 806157725}
+  - component: {fileID: 806157726}
   m_Layer: 5
   m_Name: TabLayout
   m_TagString: Untagged
@@ -11352,6 +11304,30 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &806157726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 806157724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b962c03c7ba5e429ec649424744c12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tabFrames:
+  - {fileID: 2024808805}
+  - {fileID: 1482852053}
+  - {fileID: 434771851}
+  tabButtons:
+  - {fileID: 238249603}
+  - {fileID: 16378748}
+  - {fileID: 1837342235}
+  currentIndex: 0
+  georkIcon: {fileID: 21300000, guid: 7c3d2e830ae5a4f47aba8da62a4f33ff, type: 3}
+  danhyangIcon: {fileID: 21300000, guid: 901bfa970383bb247a9d39a33602fd16, type: 3}
+  erisIcon: {fileID: 21300000, guid: 26fbcd2f646259d4099cb95cc23e26ab, type: 3}
 --- !u!1 &814245094
 GameObject:
   m_ObjectHideFlags: 0
@@ -26573,7 +26549,6 @@ GameObject:
   - component: {fileID: 1869874388}
   - component: {fileID: 1869874387}
   - component: {fileID: 1869874386}
-  - component: {fileID: 1869874390}
   m_Layer: 5
   m_Name: MercuriusPopUp
   m_TagString: Untagged
@@ -26624,7 +26599,7 @@ MonoBehaviour:
   - {fileID: 491847336}
   - {fileID: 1771181360}
   - {fileID: 294591410}
-  tabLayout: {fileID: 0}
+  tabLayout: {fileID: 806157726}
   tabCardEnhanceButtons:
   - {fileID: 2124233166}
   - {fileID: 1771118504}
@@ -26689,30 +26664,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1869874384}
   m_CullTransparentMesh: 1
---- !u!114 &1869874390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1869874384}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6b962c03c7ba5e429ec649424744c12, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tabFrames:
-  - {fileID: 2024808805}
-  - {fileID: 1482852053}
-  - {fileID: 434771851}
-  tabButtons:
-  - {fileID: 238249603}
-  - {fileID: 16378748}
-  - {fileID: 1837342235}
-  currentIndex: 0
-  georkIcon: {fileID: 21300000, guid: 7c3d2e830ae5a4f47aba8da62a4f33ff, type: 3}
-  danhyangIcon: {fileID: 21300000, guid: 901bfa970383bb247a9d39a33602fd16, type: 3}
-  erisIcon: {fileID: 21300000, guid: 26fbcd2f646259d4099cb95cc23e26ab, type: 3}
 --- !u!1 &1870994965
 GameObject:
   m_ObjectHideFlags: 0
@@ -31926,6 +31877,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5869363433801560594}
+  - component: {fileID: 5869363433801560595}
   m_Layer: 5
   m_Name: TabLayout
   m_TagString: Untagged
@@ -31942,6 +31894,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5927139643512744029}
+  - component: {fileID: 5927139643512744030}
   m_Layer: 5
   m_Name: TabLayout
   m_TagString: Untagged
@@ -33545,6 +33498,30 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5869363433801560595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4996430114194267732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b962c03c7ba5e429ec649424744c12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tabFrames:
+  - {fileID: 6796259976147084678}
+  - {fileID: 6796259975613186614}
+  - {fileID: 6796259976662324072}
+  tabButtons:
+  - {fileID: 6796259976859935328}
+  - {fileID: 6796259976814423967}
+  - {fileID: 6796259976328256248}
+  currentIndex: 0
+  georkIcon: {fileID: 21300000, guid: 7c3d2e830ae5a4f47aba8da62a4f33ff, type: 3}
+  danhyangIcon: {fileID: 21300000, guid: 901bfa970383bb247a9d39a33602fd16, type: 3}
+  erisIcon: {fileID: 21300000, guid: 26fbcd2f646259d4099cb95cc23e26ab, type: 3}
 --- !u!224 &5927139643512744029
 RectTransform:
   m_ObjectHideFlags: 0
@@ -33567,6 +33544,30 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5927139643512744030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5072080534134572059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b962c03c7ba5e429ec649424744c12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tabFrames:
+  - {fileID: 6729625345394048969}
+  - {fileID: 6729625344854186105}
+  - {fileID: 6729625345918978343}
+  tabButtons:
+  - {fileID: 6729625345553479727}
+  - {fileID: 6729625345800320464}
+  - {fileID: 6729625345040761015}
+  currentIndex: 0
+  georkIcon: {fileID: 21300000, guid: 7c3d2e830ae5a4f47aba8da62a4f33ff, type: 3}
+  danhyangIcon: {fileID: 21300000, guid: 901bfa970383bb247a9d39a33602fd16, type: 3}
+  erisIcon: {fileID: 21300000, guid: 26fbcd2f646259d4099cb95cc23e26ab, type: 3}
 --- !u!1 &5949006200059438674
 GameObject:
   m_ObjectHideFlags: 0

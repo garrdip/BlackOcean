@@ -27,7 +27,6 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
 
     protected override void Awake()
     {
-        tabLayout = GetComponent<TabLayout>(); 
         PopUpUIManager.instance.onMercuriusPopUpShow += OnMercuriusPopUpShow;
         PopUpUIManager.instance.onMercuriusPopUpHide += OnMercuriusPopUpHide;
         AddEventTriggers();   
