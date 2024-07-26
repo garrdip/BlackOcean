@@ -659,7 +659,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         GamePlayer gamePlayer = GetComponent<GamePlayer>();
         int index = shopCards.FindIndex((c) => c.guid.Equals(guid));
         if(index != -1){
-            Card purchasedCard = shopCards[index].CardDeepCopy(false);
+            Card purchasedCard = shopCards[index];
             purchasedCard.isSoldout = true;
             shopCards[index] = purchasedCard;
             gamePlayer.gold -= shopCards[index].cardPrice; // 구매한 플레이어가 소유한 골드에서 카드 가격만큼 감소

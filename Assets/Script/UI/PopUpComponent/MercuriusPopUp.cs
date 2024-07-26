@@ -134,7 +134,7 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
                     cardShopPrice.transform.localPosition = new Vector3(0f, 30f, 0f);
 
                     TextMeshProUGUI textPrice = cardShopPrice.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-                    textPrice.text = "100";
+                    textPrice.text = card.cardPrice.ToString();
 
                     shopCardObjectList.Add(cardShopSlot);
                 }
