@@ -71,6 +71,11 @@ public class TabLayout : MonoBehaviour
     // 선택한 탭 활성화
     public void ShowTab(int index)
     {
+        uint netId = M_TurnManager.instance.playerOrder[index];
+        if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+            GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+            NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId = gamePlayer.netId; // 선택된 탭에 해당하는 gamePlayer를 currentGamePlayer로 설정
+        }
         currentIndex = index;
         tabFrames[index].SetActive(true);
         tabButtons[index].GetComponent<CanvasGroup>().alpha = 1f;
@@ -95,18 +100,5 @@ public class TabLayout : MonoBehaviour
             tabButton.gameObject.SetActive(false);
             tabButton.GetComponent<CanvasGroup>().alpha = 0.5f;
         }
-    }
-
-    // 현재 활성화된 탭에 해당하는 플레이어의 GamePlayerDeck을 조회하여 반환
-    // - 카드 강화 및 제거 팝업은 MercuriusPopUp을 통해서 넘어오는 UX임. 
-    // - 다수의 플레이어 조종 시 MercuriusPopUp의 currentIndex를 통해 현재 어떤 플레이어의 카드 강화 및 제거를 수행하는지 조회하여 기능 수행.
-    public GamePlayerDeck GetSelectedGamePlayerDeck()
-    {
-        uint netId = M_TurnManager.instance.playerOrder[currentIndex];
-        if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-            GamePlayerDeck gamePlayerDeck = networkIdentity.GetComponent<GamePlayerDeck>();
-            return gamePlayerDeck;
-        }
-        return null;
     }
 }

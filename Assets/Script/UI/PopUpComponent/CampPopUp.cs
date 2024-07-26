@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using Mirror;
 
 public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
 {
@@ -31,7 +32,7 @@ public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
 
     private void HandleClickHealing()
     {
-        GamePlayer gamePlayer = tabLayout.GetSelectedGamePlayerDeck().GetComponent<GamePlayer>();
+        GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
         if(gamePlayer != null){
             gamePlayer.CmdHpRecovery();
         }
@@ -39,7 +40,7 @@ public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
 
     private void HandleClickGiveGold()
     {
-        GamePlayer gamePlayer = tabLayout.GetSelectedGamePlayerDeck().GetComponent<GamePlayer>();
+        GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
     }
 
     private void AddEventTriggers()

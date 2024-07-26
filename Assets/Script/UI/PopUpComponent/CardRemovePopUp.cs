@@ -39,8 +39,7 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
     // 카드 제거 승인
     private void HandleClickCardRemoveOk()
     {
-        MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
-        GamePlayerDeck gamePlayerDeck = mercuriusPopUp.tabLayout.GetSelectedGamePlayerDeck();
+        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
         if(gamePlayerDeck != null){
             gamePlayerDeck.CmdRemoveDeck(selectCardGuid); // 카드 제거 커맨드 전송
             StartCardRemoveAnimation();
@@ -126,8 +125,7 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
     // CardRemovePopUp 활성화 콜백
     public void OnCardRemovePopUpShow()
     {
-        MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
-        GamePlayerDeck gamePlayerDeck = mercuriusPopUp.tabLayout.GetSelectedGamePlayerDeck();
+        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
         if(gamePlayerDeck != null){
             CreateRemoveableCards(gamePlayerDeck.deck);
         }
