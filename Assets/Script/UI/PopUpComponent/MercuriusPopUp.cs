@@ -15,10 +15,6 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     public List<GameObject> shopCardObjectList = new List<GameObject>(); // 상점 카드 오브젝트 리스트
     public List<GridLayoutGroup> grids = new List<GridLayoutGroup>();
     public TabLayout tabLayout;
-    public List<Button> tabCardEnhanceButtons = new List<Button>();
-    public List<Vector2> tabCardEnhanceButtonPositions = new List<Vector2>();
-    public List<Button> tabCardRemoveButtons = new List<Button>();
-    public List<Vector2> tabCardRemoveButtonPositions = new List<Vector2>();
     public Button buttonClose;
     public GameObject buttonCloseLight;
     public CanvasGroup cardInfoCanvasGroup;
@@ -28,19 +24,12 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     protected override void Awake()
     {
         PopUpUIManager.instance.onMercuriusPopUpShow += OnMercuriusPopUpShow;
-        PopUpUIManager.instance.onMercuriusPopUpHide += OnMercuriusPopUpHide;
-        AddEventTriggers();   
+        PopUpUIManager.instance.onMercuriusPopUpHide += OnMercuriusPopUpHide; 
     }
 
     void Start()
     {
         buttonClose.onClick.AddListener(() => PopUpUIManager.instance.HandleMercuriusPopUp(false));
-        foreach(Button enhanceButton in tabCardEnhanceButtons){
-            tabCardEnhanceButtonPositions.Add(enhanceButton.transform.GetChild(0).transform.localPosition);
-        }
-        foreach(Button removeButton in tabCardRemoveButtons){
-            tabCardRemoveButtonPositions.Add(removeButton.transform.GetChild(0).transform.localPosition);
-        }
     }
 
     void OnDestroy()
@@ -51,39 +40,9 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     // mercuriusPop의 PointerClick 이벤트
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(!isMouseOnFrame){
+        if(!tabLayout.isMouseOnFrame){
             PopUpUIManager.instance.HandleMercuriusPopUp(false);
         }
-    }
-
-    // mercuriusPop의 FrameLayout 오브젝트 PointerEnter 이벤트
-    public void OnPointerEnterFramLayout(PointerEventData eventData)
-    {
-        isMouseOnFrame = true;
-    }
-
-    // mercuriusPop의 FrameLayout 오브젝트 PointerExit 이벤트
-    public void OnPointerExitFramLayout(PointerEventData eventData)
-    {
-        isMouseOnFrame = false;
-    }
-
-    private void AddEventTriggers()
-    {
-        // 각 프레임들의 부모오브젝트인 frameLayout에 이벤트 트리거 컴포넌트 추가
-        EventTrigger eventTrigger = frameLayout.AddComponent<EventTrigger>();
-        
-        // PointerEnter 이벤트 추가
-        EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
-        pointerEnterEntry.eventID = EventTriggerType.PointerEnter;
-        pointerEnterEntry.callback.AddListener((data) => { OnPointerEnterFramLayout((PointerEventData)data); });
-        eventTrigger.triggers.Add(pointerEnterEntry);
-
-        // PointerExit 이벤트 추가
-        EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
-        pointerExitEntry.eventID = EventTriggerType.PointerExit;
-        pointerExitEntry.callback.AddListener((data) => { OnPointerExitFramLayout((PointerEventData)data); });
-        eventTrigger.triggers.Add(pointerExitEntry); 
     }
 
     // 마우스 오버된 상점카드 정보 활성화
@@ -152,48 +111,6 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     }
 
     // -------------------------------------------------------------------  이벤트 트리거 함수 -------------------------------------------------------------------------- //
-
-    public void OnPointerEnterCardEnhanceButton()
-    {
-        tabCardEnhanceButtons[tabLayout.currentIndex].transform.GetChild(0).DOLocalMoveX(
-            tabCardEnhanceButtonPositions[tabLayout.currentIndex].x + 25f, 0.3f
-        );
-        tabCardEnhanceButtons[tabLayout.currentIndex].transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
-    }
-
-    public void OnPointerExitCardEnhanceButton()
-    {
-        tabCardEnhanceButtons[tabLayout.currentIndex].transform.GetChild(0).DOLocalMoveX(
-            tabCardEnhanceButtonPositions[tabLayout.currentIndex].x, 0.3f
-        );
-        tabCardEnhanceButtons[tabLayout.currentIndex].transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
-    }
-
-    public void OnPointerEnterCardRemoveButton()
-    {
-        tabCardRemoveButtons[tabLayout.currentIndex].transform.GetChild(0).DOLocalMoveX(
-            tabCardRemoveButtonPositions[tabLayout.currentIndex].x - 25f, 0.3f
-        );
-        tabCardRemoveButtons[tabLayout.currentIndex].transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
-    }
-
-    public void OnPointerExitCardRemoveButton()
-    {
-        tabCardRemoveButtons[tabLayout.currentIndex].transform.GetChild(0).DOLocalMoveX(
-            tabCardRemoveButtonPositions[tabLayout.currentIndex].x, 0.3f
-        );
-        tabCardRemoveButtons[tabLayout.currentIndex].transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
-    }
-
-    public void OnPointerClickCardEnhanceButton()
-    {
-        PopUpUIManager.instance.HandleCardEnhancePopUp(true);
-    }
-
-    public void OnPointerClickCardRemoveButton()
-    {
-        PopUpUIManager.instance.HandleCardRemovePopUp(true);
-    }
 
     public void OnPointerEnterCloseButton()
     {

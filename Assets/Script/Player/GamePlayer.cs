@@ -25,6 +25,9 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public int recoveryValue; // 체력 회복 수치
 
+    [SyncVar]
+    public int recoveryLimitCount; // 체력 회복 횟수 제한
+
     [SyncVar (hook = nameof(OnChangedObjectOwner))]
     public PlayerInterface objectOwner;
 
@@ -38,6 +41,8 @@ public class GamePlayer : NetworkBehaviour
     public uint mapPlayerNetId;
 
     public ParticleSystem recoverParticle; // 체력 회복 파티클 이펙트
+
+    public bool isReadyHeal = false;
 
     public override void OnStartServer()
     {
@@ -64,8 +69,13 @@ public class GamePlayer : NetworkBehaviour
     {
         TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(this);
         if(targetObject.player != null){
-            targetObject.playerHP += recoveryValue;
-            RpcHpRecovery();
+            if(recoveryLimitCount <= 0){
+                TargetLimitedRecoveryCount();
+            }else{
+                targetObject.playerHP += recoveryValue;
+                recoveryLimitCount--;
+                RpcHpRecovery();
+            }
         }
     }
 
@@ -122,7 +132,20 @@ public class GamePlayer : NetworkBehaviour
         ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
         renderer.sortingLayerName = "Effect";
     }
-
+    
+    [TargetRpc]
+    public void TargetLimitedRecoveryCount()
+    {
+        M_MessageManager.instance
+                .MakeToast()
+                .Position(ToastPosition.Bottom)
+                .MessageBoxColor(Color.red)
+                .TextColor(Color.white)
+                .Text("체력 회복 제한 횟수를 초과하였습니다.")
+                .FadeInTime(2f)
+                .FadeOutTime(2f)
+                .Show();
+    }
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
 
     public void OnChangePlayerGold(int oldVal, int newVal)

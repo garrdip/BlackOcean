@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using Mirror;
 using ProjectD;
 
 public class TabLayout : MonoBehaviour
 {
+    public GameObject frameLayout;
+    public bool isMouseOnFrame = false;
     public List<GameObject> tabFrames = new List<GameObject>();
     public List<Button> tabButtons = new List<Button>();
     public int currentIndex = 0;
@@ -19,6 +22,7 @@ public class TabLayout : MonoBehaviour
     {
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         networkRoomManager.onClientDisconnected += OnClientDisconnected;
+        AddEventTriggers();
     }
 
     void Start()
@@ -28,6 +32,35 @@ public class TabLayout : MonoBehaviour
             tabButtons[i].onClick.AddListener(() => ShowTab(buttonIndex));
         }
         SetTabButtonByOwnedPlayersCount();
+    }
+
+    // 동적 이벤트 트리거 컴포넌트 할당(프레임 레이아웃에 마우스 이벤트를 추가하여 팝업에서 마우스가 프레임 위에 있는지 아닌지 유무 체크)
+    private void AddEventTriggers()
+    {
+        // 각 프레임들의 부모오브젝트인 frameLayout에 이벤트 트리거 컴포넌트 추가
+        EventTrigger eventTrigger = frameLayout.AddComponent<EventTrigger>();
+        
+        // PointerEnter 이벤트 추가
+        EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
+        pointerEnterEntry.eventID = EventTriggerType.PointerEnter;
+        pointerEnterEntry.callback.AddListener((data) => { OnPointerEnterFramLayout((PointerEventData)data); });
+        eventTrigger.triggers.Add(pointerEnterEntry);
+
+        // PointerExit 이벤트 추가
+        EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
+        pointerExitEntry.eventID = EventTriggerType.PointerExit;
+        pointerExitEntry.callback.AddListener((data) => { OnPointerExitFramLayout((PointerEventData)data); });
+        eventTrigger.triggers.Add(pointerExitEntry); 
+    }
+
+    private void OnPointerEnterFramLayout(PointerEventData eventData)
+    {
+        isMouseOnFrame = true;
+    }
+
+    private void OnPointerExitFramLayout(PointerEventData eventData)
+    {
+        isMouseOnFrame = false;
     }
 
     // 클라이언트 연결 해제 이벤트 수신
@@ -47,7 +80,7 @@ public class TabLayout : MonoBehaviour
                 int index = gamePlayer.selectOrder;
                 tabButtons[index].gameObject.SetActive(true); // 플레이어 수만큼 탭버튼 활성화
                 if(gamePlayer.netId == playerInterface.currentGamePlayerNetId){
-                    tabButtons[index].GetComponent<CanvasGroup>().alpha = 1f; // 제어할 플레이어중 현재 플레이어의 탭버튼 알파값 1 설정
+                    ShowTab(index);
                 }
                 switch(gamePlayer.character)
                 {

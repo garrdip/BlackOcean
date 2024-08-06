@@ -23,18 +23,8 @@ public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
     void Start()
     {
         foreach(GameObject frame in tabLayout.tabFrames){
-            Button buttonHealing = frame.transform.GetChild(0).GetComponent<Button>();
-            buttonHealing.onClick.AddListener(() =>  HandleClickHealing());
-            Button buttonGiveGold = frame.transform.GetChild(1).GetComponent<Button>();
+            Button buttonGiveGold = frame.transform.GetChild(0).GetComponent<Button>();
             buttonGiveGold.onClick.AddListener(() =>  HandleClickGiveGold());
-        }
-    }
-
-    private void HandleClickHealing()
-    {
-        GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
-        if(gamePlayer != null){
-            gamePlayer.CmdHpRecovery();
         }
     }
 

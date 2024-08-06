@@ -77,8 +77,8 @@ public class PlayerOrder : NetworkBehaviour
 
     public void OnPointerEnterBase(PointerEventData eventData)
     {
-        uMyLineLight.SetActive(isOwned);
-        topMyLight.SetActive(isOwned);
+        uMyLineLight.SetActive(isOwned && uMyLine.activeSelf);
+        topMyLight.SetActive(isOwned && topMy.activeSelf);
         uLineLight.SetActive(true);
         topBaseLight.SetActive(true);
         topSeeLight.SetActive(true);

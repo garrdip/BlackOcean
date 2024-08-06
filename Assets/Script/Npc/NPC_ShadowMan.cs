@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
 using Spine.Unity;
@@ -11,10 +12,14 @@ public class NPC_ShadowMan : SpawnedMonster
 {
     public List<string> animationNames = new List<string>();
     private TrackEntry trackEntry;
+    public ExpandableButtonGroup expandableButtonGroup;
+    private bool isOpenExpandableButtons = false;
+    public Button buttonItemShop;
 
     void Awake()
     {
         AddEventTrigger();
+        buttonItemShop.onClick.AddListener(() => OnClickItemShopButton());
     }
 
     void Start()
@@ -40,8 +45,18 @@ public class NPC_ShadowMan : SpawnedMonster
     public void OnClickShadowMan(PointerEventData pointerEventData)
     {
         if(M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE){
-            PopUpUIManager.instance.HandleItemShopPopUp(true);
+            isOpenExpandableButtons = !isOpenExpandableButtons;
+            if(isOpenExpandableButtons){
+                expandableButtonGroup.OpenExpandableButtonGroup();
+            }else{
+                expandableButtonGroup.HideExpandableButtonGroup();
+            }
         }
+    }
+
+    public void OnClickItemShopButton()
+    {
+        PopUpUIManager.instance.HandleItemShopPopUp(true);
     }
 
     public void OnPointerEnterShadowMan(PointerEventData eventData)

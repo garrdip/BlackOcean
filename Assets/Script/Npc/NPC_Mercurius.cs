@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using ProjectD;
 using Mirror;
@@ -18,6 +19,11 @@ public class NPC_Mercurius : SpawnedMonster
     private SkeletonAnimation todGreenAnim;
     private SkeletonAnimation todRedAnim;
     private SkeletonAnimation todYellowAnim;
+    public ExpandableButtonGroup expandableButtonGroup;
+    private bool isOpenExpandableButtons = false;
+    public Button buttonCardShop;
+    public Button buttonCardEnhance;
+    public Button buttonCardRemove;
 
 
     void Awake()
@@ -31,6 +37,9 @@ public class NPC_Mercurius : SpawnedMonster
         StartCoroutine(ToddAnimationBlend());
         AddEventTrigger();
         minionVoiceCoroutine = PlayMinionsVoice();
+        buttonCardShop.onClick.AddListener(() => OnClickCardShopButton());
+        buttonCardEnhance.onClick.AddListener(() => OnClickCardEnhanceButton());
+        buttonCardRemove.onClick.AddListener(() => OnClickCardRemoveButton());
     }
 
     void Start()
@@ -139,8 +148,28 @@ public class NPC_Mercurius : SpawnedMonster
     public void OnClickMercurius(PointerEventData pointerEventData)
     {
         if(M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE){
-            PopUpUIManager.instance.HandleMercuriusPopUp(true);
+            isOpenExpandableButtons = !isOpenExpandableButtons;
+            if(isOpenExpandableButtons){
+                expandableButtonGroup.OpenExpandableButtonGroup();
+            }else{
+                expandableButtonGroup.HideExpandableButtonGroup();
+            }
         }
+    }
+
+    public void OnClickCardShopButton()
+    {
+        PopUpUIManager.instance.HandleMercuriusPopUp(true);
+    }
+
+    public void OnClickCardEnhanceButton()
+    {
+        PopUpUIManager.instance.HandleCardEnhancePopUp(true);
+    }
+
+    public void OnClickCardRemoveButton()
+    {
+        PopUpUIManager.instance.HandleCardRemovePopUp(true);
     }
 
     // EventTrigger를 이용한 동적 클릭 이벤트 할당

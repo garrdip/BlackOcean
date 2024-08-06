@@ -2,14 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using Mirror;
 using DG.Tweening;
 
-public class CardRemovePopUp : SingletonD<CardRemovePopUp>
+public class CardRemovePopUp : SingletonD<CardRemovePopUp>, IPointerClickHandler
 {
     public List<GameObject> removableCards = new List<GameObject>();
     public List<GameObject> removePreviewCards = new List<GameObject>();
     public string selectCardGuid;
+    public TabLayout tabLayout;
+    public List<GridLayoutGroup> grids = new List<GridLayoutGroup>();
 
     public GameObject cardRemovePreview;
 
@@ -34,6 +37,13 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
     void OnDestroy()
     {
         DOTween.Kill(canvasGroup);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if(!tabLayout.isMouseOnFrame){
+            PopUpUIManager.instance.HandleCardRemovePopUp(false);
+        }
     }
 
     // 카드 제거 승인
@@ -70,15 +80,15 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
     // 카드 제거 프리뷰창 활성화
     public void HandleCardRemovePreviewOpen()
     {
+        tabLayout.gameObject.SetActive(false);
         cardRemovePreview.SetActive(true);
-        gridLayoutGroup.gameObject.SetActive(false);
     }
 
     // 카드 제거 프리뷰창 비활성화
     public void HandleCardRemovePreviewHide()
     {
+        tabLayout.gameObject.SetActive(true);
         cardRemovePreview.SetActive(false);
-        gridLayoutGroup.gameObject.SetActive(true);
         foreach(GameObject card in removePreviewCards){
             Destroy(card);
         }
@@ -101,13 +111,19 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
     // 플레이어의 deck 데이터로 카드 오브젝트 생성
     public void CreateRemoveableCards(SyncList<Card> deck)
     {
-        foreach(Card card in deck){
-            GameObject cardObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, Vector3.zero, Quaternion.identity);
-            CardOnDeck cardOnDeck = cardObject.GetComponent<CardOnDeck>();
-            cardOnDeck.transform.SetParent(gridLayoutGroup.transform);
-            cardOnDeck.transform.localScale = Vector3.one;
-            cardOnDeck.card = card.CardDeepCopy(false);
-            removableCards.Add(cardObject);
+        for(int i=0; i<M_TurnManager.instance.playerOrder.Count; i++){
+            uint netId = M_TurnManager.instance.playerOrder[i];
+            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayerDeck gamePlayerDeck = networkIdentity.GetComponent<GamePlayerDeck>();
+                foreach(Card card in gamePlayerDeck.deck){
+                    GameObject cardObject = Instantiate(PopUpUIManager.instance.CardOnDeckPrefab, Vector3.zero, Quaternion.identity);
+                    CardOnDeck cardOnDeck = cardObject.GetComponent<CardOnDeck>();
+                    cardOnDeck.transform.SetParent(grids[i].transform);
+                    cardOnDeck.transform.localScale = Vector3.one;
+                    cardOnDeck.card = card.CardDeepCopy(false);
+                    removableCards.Add(cardObject);
+                }
+            }
         }
     }
 
@@ -130,7 +146,6 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
             CreateRemoveableCards(gamePlayerDeck.deck);
         }
         canvasGroup.DOFade(1.0f, 0.5f);
-        PopUpUIManager.instance.HandleMercuriusPopUp(false);
     }
 
     // CardRemovePopUp 비활성화 콜백
@@ -140,6 +155,5 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>
             ClearRemoveableCards();
             gameObject.SetActive(false);
         });
-        PopUpUIManager.instance.HandleMercuriusPopUp(true);
     }
 }

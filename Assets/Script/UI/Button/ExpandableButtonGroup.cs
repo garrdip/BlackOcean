@@ -8,8 +8,8 @@ using DG.Tweening;
 public class ExpandableButtonGroup : MonoBehaviour
 {
     public List<Button> expandableButtons = new List<Button>();
-    private const float defaultStartAngle = 180f;
-    private const float defaultEndAngle = 90f;
+    private float defaultStartAngle;
+    private float defaultEndAngle;
     private const float angleChangePerButton = 10f; // 버튼 갯수당 추가 및 감소 될 각도 비율값
     private const int defaultCount = 3; // 기본 버튼 갯수
     private float radius;
@@ -21,6 +21,7 @@ public class ExpandableButtonGroup : MonoBehaviour
         foreach(Button button in expandableButtons){
             button.GetComponent<CanvasGroup>().alpha = 0f;
         }
+        SetAngleByButtonCount();
     }
 
     public void OpenExpandableButtonGroup()
@@ -47,6 +48,21 @@ public class ExpandableButtonGroup : MonoBehaviour
         foreach(Button button in expandableButtons){
             button.GetComponent<RectTransform>().DOLocalMove(Vector3.zero, 0.5f);
             button.GetComponent<CanvasGroup>().DOFade(0f, 0.5f);
+        }
+    }
+
+    // 버튼 갯수에 따라 확장시 위치하게될 각도 범위값 설정
+    private void SetAngleByButtonCount()
+    {
+        if(expandableButtons.Count == 1){
+            defaultStartAngle = 90f;
+            defaultEndAngle = 90f;
+        }else if(expandableButtons.Count == 2){
+            defaultStartAngle = 125f;
+            defaultEndAngle = 55f;
+        }else{
+            defaultStartAngle = 180f;
+            defaultEndAngle = 90f;
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
 using Spine.Unity;
@@ -12,11 +13,17 @@ public class NPC_Sophia : SpawnedMonster
     public List<string> animationNames = new List<string>();
     private TrackEntry trackEntry;
     public Coroutine eyeBlikCoroutine;
+    public ExpandableButtonGroup expandableButtonGroup;
+    private bool isOpenExpandableButtons = false;
+    public Button buttonHeal;
+    public Button butonGiveGold;
 
 
     void Awake()
     {
         AddEventTrigger();
+        buttonHeal.onClick.AddListener(() => OnClickHealButton());
+        butonGiveGold.onClick.AddListener(() => OnClickGiveGoldButton());
     }
 
     void Start()
@@ -44,8 +51,37 @@ public class NPC_Sophia : SpawnedMonster
     public void OnClickRyuJinSol(PointerEventData pointerEventData)
     {
         if(M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE){
-            PopUpUIManager.instance.HandleCampPopUp(true);
+            isOpenExpandableButtons = !isOpenExpandableButtons;
+            if(isOpenExpandableButtons){
+                expandableButtonGroup.OpenExpandableButtonGroup();
+            }else{
+                expandableButtonGroup.HideExpandableButtonGroup();
+            }
         }
+    }
+
+    public void OnClickHealButton()
+    {
+        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers.Count <= 1){ // 제어하는 플레이어 1명인 경우 버튼 클릭 시 본인 캐릭터 힐
+            GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
+            gamePlayer.CmdHpRecovery();
+        }else{
+            M_TurnManager.instance.SetPlayersReadyHeal(true); // 제어하는 플레이어가 다수일 경우, 모든 캐릭터들을 마우스 오버 및 클릭 할수 있도록 세팅 후 선택한 캐릭터 힐
+            M_MessageManager.instance
+                .MakeToast()
+                .Position(ToastPosition.Bottom)
+                .MessageBoxColor(Color.green)
+                .TextColor(Color.white)
+                .Text("체력을 회복할 캐릭터를 선택하세요.")
+                .FadeInTime(5f)
+                .FadeOutTime(5f)
+                .Show();
+        }
+    }
+
+    public void OnClickGiveGoldButton()
+    {
+        PopUpUIManager.instance.HandleCampPopUp(true);
     }
 
     public void OnPointerEnterRyuJinSol(PointerEventData eventData)

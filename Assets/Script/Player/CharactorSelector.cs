@@ -17,32 +17,42 @@ public class CharactorSelector : MonoBehaviour
 
     void OnMouseEnter()
     {
+        GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
         if(IsSelectablePlayer()){
+            skeletonRendererCustomMaterials.enabled = true;
+        }else if(IsNPCRoomType() && NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers.Count > 1 && gamePlayer.isReadyHeal){
             skeletonRendererCustomMaterials.enabled = true;
         }
     }
 
     void OnMouseExit()
     {
+        GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
         if(IsSelectablePlayer()){
+            skeletonRendererCustomMaterials.enabled = false;
+        }else if(IsNPCRoomType() &&  NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers.Count > 1 && gamePlayer.isReadyHeal){
             skeletonRendererCustomMaterials.enabled = false;
         }
     }
 
     void OnMouseDown()
     {
-        if(IsSelectablePlayer() && IsSelectableState()){
+        GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
+        if(IsSelectablePlayer() && IsPopUpOpened()){
             PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-            GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
             playerInterface.currentGamePlayerNetId = gamePlayer.netId;
             if(gamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.Count == 0 && gamePlayer.GetComponent<GamePlayerDeck>().trashDeck.Count == 0)
                 gamePlayer.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand();
             M_CardManager.instance.SetCurrentGamePlayerDeck(gamePlayer.GetComponent<GamePlayerDeck>());
+        }else if(IsNPCRoomType() && NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers.Count > 1 && gamePlayer.isReadyHeal){
+            gamePlayer.CmdHpRecovery();
+            M_TurnManager.instance.SetPlayersReadyHeal(false);
+            skeletonRendererCustomMaterials.enabled = false;
         }
     }
 
     // 팝업 UI에 등록된 팝업목록들중 활성화된 팝업이 있으면 캐릭터 클릭되지 않도록 조건 체크
-    private bool IsSelectableState()
+    private bool IsPopUpOpened()
     {
         int index = PopUpUIManager.instance.popUpList.FindIndex((popUp) => popUp.activeSelf);
         if(index != -1){
@@ -69,7 +79,7 @@ public class CharactorSelector : MonoBehaviour
         return false;
     }
 
-    // 전투가 이루어지는 방 타입인지 여부 체크
+    // 전투가 이루어지는 방 타입인지 체크
     private bool IsBattleRoomType()
     { 
         if(M_MapManager.instance.currentRoom.roomType == RoomType.MONSTER || M_MapManager.instance.currentRoom.roomType == RoomType.ELITE || M_MapManager.instance.currentRoom.roomType == RoomType.BOSS)
@@ -77,5 +87,15 @@ public class CharactorSelector : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    // 전초기지, 카드 상점, 아이템 상점 방 타입인지 체크
+    private bool IsNPCRoomType()
+    {
+        if(M_MapManager.instance.currentRoom.roomType == RoomType.CAMP || M_MapManager.instance.currentRoom.roomType == RoomType.CARD_NPC || M_MapManager.instance.currentRoom.roomType == RoomType.ITEM_NPC)
+        {
+            return true;
+        }
+        return false; 
     }
 }
