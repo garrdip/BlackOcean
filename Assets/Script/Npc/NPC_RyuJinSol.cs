@@ -203,6 +203,9 @@ public class NPC_RyuJinSol : SpawnedMonster
         // 전초기지 팝업 활성화 시 NPC 캐릭터 레이어 팝업 위로 보이도록 변경
         TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
         M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
+        foreach(Button button in expandableButtonGroup.expandableButtons){
+            button.interactable = false;
+        }
     }
 
     public void OnCampPopUpHide()
@@ -210,5 +213,8 @@ public class NPC_RyuJinSol : SpawnedMonster
         // 전초기지 팝업 비활성화 시 NPC 캐릭터 레이어 원래 상태로 변경
         TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
         M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "NPC");
+        foreach(Button button in expandableButtonGroup.expandableButtons){
+            button.interactable = true;
+        }
     }
 }

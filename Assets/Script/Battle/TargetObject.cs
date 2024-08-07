@@ -137,6 +137,9 @@ public class TargetObject : NetworkBehaviour
             player.onChangePlayerOrder += OnChangePlayerOrder; // 플레이어 타겟오브젝트인 경우 오더 변경 델리게이트 이벤트 리스너 추가
             InitTargetObjectPlayer(player);
             anim = avatar.GetComponent<SkeletonAnimation>();
+        }else if(objectType == ObjectType.NPC){
+            InitTargetObjectNPC(monster);
+            anim = monster.GetComponent<SkeletonAnimation>();
         }else{
             InitTargetObjectMonster(monster);
             anim = monster.GetComponent<SkeletonAnimation>();
@@ -198,6 +201,16 @@ public class TargetObject : NetworkBehaviour
                 break;
         }
         SetPlayerTargetObjectOrder(player.selectOrder);
+    }
+
+    // NPC 타입의 타겟오브젝트 초기화
+    public void InitTargetObjectNPC(SpawnedMonster monster)
+    {
+        selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
+        selectedNamePlate.SetHPValue(monster.HP, monster.MAXHP, (int)transform.position.x);
+        monsterName.text = monster.monsterName;
+        playerNamePlate.SetActive(false);
+        nextActionIndicator.gameObject.SetActive(false);
     }
 
     // 몬스터 타입의 타겟오브젝트 초기화
@@ -837,6 +850,10 @@ public class TargetObject : NetworkBehaviour
                 monsterNamePlate.SetActive(false);
                 break;
             case ObjectType.ENEMY:
+                playerNamePlate.SetActive(false);
+                monsterNamePlate.SetActive(true);
+                break;
+            case ObjectType.NPC:
                 playerNamePlate.SetActive(false);
                 monsterNamePlate.SetActive(true);
                 break;

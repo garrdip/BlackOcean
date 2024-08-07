@@ -856,7 +856,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             NetworkServer.Spawn(campRyuJinSol.gameObject);
 
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
-            avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+            avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.NPC;
             avatar.GetComponent<TargetObject>().monster = campRyuJinSol;
             NetworkServer.Spawn(avatar);
             
@@ -869,7 +869,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             NetworkServer.Spawn(campSophia.gameObject);
 
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
-            avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+            avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.NPC;
             avatar.GetComponent<TargetObject>().monster = campSophia;
             NetworkServer.Spawn(avatar);
             
@@ -896,7 +896,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         NetworkServer.Spawn(itemShopNPC.gameObject);
 
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
-        avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+        avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.NPC;
         avatar.GetComponent<TargetObject>().monster = itemShopNPC;
         NetworkServer.Spawn(avatar);
         
@@ -936,7 +936,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         NetworkServer.Spawn(cardNPC.gameObject);
 
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
-        avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
+        avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.NPC;
         avatar.GetComponent<TargetObject>().monster = cardNPC;
         NetworkServer.Spawn(avatar);
 
