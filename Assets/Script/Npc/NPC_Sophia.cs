@@ -44,6 +44,13 @@ public class NPC_Sophia : SpawnedMonster
         });
     }
 
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        PopUpUIManager.instance.onCampPopUpShow -= OnCampPopUpShow;
+        PopUpUIManager.instance.onCampPopUpHide -= OnCampPopUpHide;
+    }
+
     void OnDestroy()
     {
         trackEntry.Complete -= OnAnimationComplete;
