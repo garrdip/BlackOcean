@@ -3106,6 +3106,8 @@ MonoBehaviour:
   - {fileID: 67203787}
   - {fileID: 914976635}
   - {fileID: 869835846}
+  - {fileID: 325265375}
+  - {fileID: 571315580}
   deckListPopUp: {fileID: 1581196589}
   deckDrawPopUp: {fileID: 67203787}
   cardOnHandRemovePopUp: {fileID: 1022321676}

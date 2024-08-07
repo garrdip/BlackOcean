@@ -20,26 +20,9 @@ public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
         PopUpUIManager.instance.onCampPopUpHide += OnCampPopUpHide;
     }
 
-    private void HandleClickGiveGold()
-    {
-        GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
-    }
-
-    public void OnPointerEnterFramLayout(PointerEventData eventData)
-    {
-        isMouseOnFrame = true;
-    }
-
-    public void OnPointerExitFramLayout(PointerEventData eventData)
-    {
-        isMouseOnFrame = false;
-    }
-
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(!isMouseOnFrame){
-            PopUpUIManager.instance.HandleCampPopUp(false);
-        }
+        PopUpUIManager.instance.HandleCampPopUp(false);
     }
 
     // -------------------------------------------------------------------  델리게이트 이벤트 콜백 함수 -------------------------------------------------------------------------- //

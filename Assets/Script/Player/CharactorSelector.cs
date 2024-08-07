@@ -18,7 +18,7 @@ public class CharactorSelector : MonoBehaviour
     void OnMouseEnter()
     {
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player;
-        if(IsSelectablePlayer()){
+        if(IsSelectablePlayer() && !IsOpenedPopUpExist()){
             skeletonRendererCustomMaterials.enabled = true;
         }else if(IsNPCRoomType() && targetPlayer.isSelectable){
             skeletonRendererCustomMaterials.enabled = true;
@@ -28,7 +28,7 @@ public class CharactorSelector : MonoBehaviour
     void OnMouseExit()
     {
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player;
-        if(IsSelectablePlayer()){
+        if(IsSelectablePlayer() && !IsOpenedPopUpExist()){
             skeletonRendererCustomMaterials.enabled = false;
         }else if(IsNPCRoomType() && targetPlayer.isSelectable){
             skeletonRendererCustomMaterials.enabled = false;
@@ -40,7 +40,7 @@ public class CharactorSelector : MonoBehaviour
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player; // 클릭한 캐릭터의 GamePlayer 인스턴스
         GamePlayer localPlayer = playerInterface.currentGamePlayer; // 로컬 플레이어의 GamePlayer 인스턴스
-        if(IsSelectablePlayer() && IsPopUpOpened()){
+        if(IsBattleRoomType() && IsSelectablePlayer() && !IsOpenedPopUpExist()){
             playerInterface.currentGamePlayerNetId = targetPlayer.netId;
             if(targetPlayer.GetComponent<GamePlayerDeck>().cardOnHands.Count == 0 && targetPlayer.GetComponent<GamePlayerDeck>().trashDeck.Count == 0)
                 targetPlayer.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand();
@@ -65,10 +65,10 @@ public class CharactorSelector : MonoBehaviour
     }
 
     // 팝업 UI에 등록된 팝업목록들중 활성화된 팝업이 있으면 캐릭터 클릭되지 않도록 조건 체크
-    private bool IsPopUpOpened()
+    private bool IsOpenedPopUpExist()
     {
         int index = PopUpUIManager.instance.popUpList.FindIndex((popUp) => popUp.activeSelf);
-        if(index != -1){
+        if(index == -1){
             return false;
         }
         return true;
@@ -85,7 +85,6 @@ public class CharactorSelector : MonoBehaviour
             && playerInterface.ownedPlayers.Count > 1 // 소유권한이 있는 플레이어수가 2명 이상인 경우
             && !M_CardManager.instance.isArrowActive // 화살표가 비활성화 상태인 경우
             && !PopUpUIManager.instance.battleResultPopUp.activeSelf // 전투보상팝업이 비활성화인 경우
-            && IsBattleRoomType() // 전투 방인 경우
         ){
             return true;
         }
