@@ -17,36 +17,49 @@ public class CharactorSelector : MonoBehaviour
 
     void OnMouseEnter()
     {
-        GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
+        GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player;
         if(IsSelectablePlayer()){
             skeletonRendererCustomMaterials.enabled = true;
-        }else if(IsNPCRoomType() && NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers.Count > 1 && gamePlayer.isReadyHeal){
+        }else if(IsNPCRoomType() && targetPlayer.isSelectable){
             skeletonRendererCustomMaterials.enabled = true;
         }
     }
 
     void OnMouseExit()
     {
-        GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
+        GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player;
         if(IsSelectablePlayer()){
             skeletonRendererCustomMaterials.enabled = false;
-        }else if(IsNPCRoomType() &&  NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers.Count > 1 && gamePlayer.isReadyHeal){
+        }else if(IsNPCRoomType() && targetPlayer.isSelectable){
             skeletonRendererCustomMaterials.enabled = false;
         }
     }
 
     void OnMouseDown()
     {
-        GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
+        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player; // 클릭한 캐릭터의 GamePlayer 인스턴스
+        GamePlayer localPlayer = playerInterface.currentGamePlayer; // 로컬 플레이어의 GamePlayer 인스턴스
         if(IsSelectablePlayer() && IsPopUpOpened()){
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-            playerInterface.currentGamePlayerNetId = gamePlayer.netId;
-            if(gamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.Count == 0 && gamePlayer.GetComponent<GamePlayerDeck>().trashDeck.Count == 0)
-                gamePlayer.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand();
-            M_CardManager.instance.SetCurrentGamePlayerDeck(gamePlayer.GetComponent<GamePlayerDeck>());
-        }else if(IsNPCRoomType() && NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers.Count > 1 && gamePlayer.isReadyHeal){
-            gamePlayer.CmdHpRecovery();
-            M_TurnManager.instance.SetPlayersReadyHeal(false);
+            playerInterface.currentGamePlayerNetId = targetPlayer.netId;
+            if(targetPlayer.GetComponent<GamePlayerDeck>().cardOnHands.Count == 0 && targetPlayer.GetComponent<GamePlayerDeck>().trashDeck.Count == 0)
+                targetPlayer.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand();
+            M_CardManager.instance.SetCurrentGamePlayerDeck(targetPlayer.GetComponent<GamePlayerDeck>());
+        }else if(IsNPCRoomType() && targetPlayer.isSelectable){
+            if(localPlayer.recoveryLimitCount <= 0){
+                M_MessageManager.instance
+                    .MakeToast()
+                    .Position(ToastPosition.Bottom)
+                    .MessageBoxColor(Color.red)
+                    .TextColor(Color.white)
+                    .Text("체력 회복 제한 횟수를 초과하였습니다.")
+                    .FadeInTime(2f)
+                    .FadeOutTime(2f)
+                    .Show();
+            }else{
+                localPlayer.CmdHpRecovery(targetPlayer.netId);
+            }
+            M_TurnManager.instance.SetPlayerSelectable(false);
             skeletonRendererCustomMaterials.enabled = false;
         }
     }

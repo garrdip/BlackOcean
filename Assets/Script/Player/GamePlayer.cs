@@ -42,7 +42,7 @@ public class GamePlayer : NetworkBehaviour
 
     public ParticleSystem recoverParticle; // 체력 회복 파티클 이펙트
 
-    public bool isReadyHeal = false;
+    public bool isSelectable = false; // CharacterSelector 클래스에서 사용되는 플래그 변수(캐릭터 오브젝트의 마우스 오버 및 클릭 가능 상태 변경 용도)
 
     public override void OnStartServer()
     {
@@ -65,16 +65,15 @@ public class GamePlayer : NetworkBehaviour
     // ------------------------------------------------------------- Command Method ------------------------------------------------------------------//
     
     [Command]
-    public void CmdHpRecovery()
+    public void CmdHpRecovery(uint targetPlayerNetId)
     {
-        TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(this);
-        if(targetObject.player != null){
-            if(recoveryLimitCount <= 0){
-                TargetLimitedRecoveryCount();
-            }else{
+        if(NetworkServer.spawned.TryGetValue(targetPlayerNetId, out NetworkIdentity networkIdentity)){
+            GamePlayer targetPlayer = networkIdentity.GetComponent<GamePlayer>();
+            TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(targetPlayer);
+            if(targetObject.player != null && recoveryLimitCount > 0){
                 targetObject.playerHP += recoveryValue;
                 recoveryLimitCount--;
-                RpcHpRecovery();
+                RpcHpRecovery(targetPlayerNetId);
             }
         }
     }
@@ -125,27 +124,17 @@ public class GamePlayer : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcHpRecovery()
-    {
-        TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(this);
-        ParticleSystem particleSystem = Instantiate(recoverParticle, targetObject.transform.position, Quaternion.identity);
-        ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
-        renderer.sortingLayerName = "Effect";
+    public void RpcHpRecovery(uint targetPlayerNetId)
+    { 
+        if(NetworkClient.spawned.TryGetValue(targetPlayerNetId, out NetworkIdentity networkIdentity)){
+            GamePlayer targetPlayer = networkIdentity.GetComponent<GamePlayer>();
+            TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(targetPlayer);
+            ParticleSystem particleSystem = Instantiate(recoverParticle, targetObject.transform.position, Quaternion.identity);
+            ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
+            renderer.sortingLayerName = "Effect";
+        }
     }
-    
-    [TargetRpc]
-    public void TargetLimitedRecoveryCount()
-    {
-        M_MessageManager.instance
-                .MakeToast()
-                .Position(ToastPosition.Bottom)
-                .MessageBoxColor(Color.red)
-                .TextColor(Color.white)
-                .Text("체력 회복 제한 횟수를 초과하였습니다.")
-                .FadeInTime(2f)
-                .FadeOutTime(2f)
-                .Show();
-    }
+
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
 
     public void OnChangePlayerGold(int oldVal, int newVal)

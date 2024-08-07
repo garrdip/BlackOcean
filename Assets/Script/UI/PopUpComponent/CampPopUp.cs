@@ -9,46 +9,20 @@ using Mirror;
 public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
 {
     public CanvasGroup canvasGroup;
-    public GameObject frameLayout;
     public bool isMouseOnFrame = false;
-    public TabLayout tabLayout;
+    public GameObject healingLayout;
+    public GameObject giveGoldLayout;
+
 
     protected override void Awake()
     {
         PopUpUIManager.instance.onCampPopUpShow += OnCampPopUpShow;
         PopUpUIManager.instance.onCampPopUpHide += OnCampPopUpHide;
-        AddEventTriggers();   
-    }
-
-    void Start()
-    {
-        foreach(GameObject frame in tabLayout.tabFrames){
-            Button buttonGiveGold = frame.transform.GetChild(0).GetComponent<Button>();
-            buttonGiveGold.onClick.AddListener(() =>  HandleClickGiveGold());
-        }
     }
 
     private void HandleClickGiveGold()
     {
         GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
-    }
-
-    private void AddEventTriggers()
-    {
-        // 각 프레임들의 부모오브젝트인 frameLayout에 이벤트 트리거 컴포넌트 추가
-        EventTrigger eventTrigger = frameLayout.AddComponent<EventTrigger>();
-        
-        // PointerEnter 이벤트 추가
-        EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
-        pointerEnterEntry.eventID = EventTriggerType.PointerEnter;
-        pointerEnterEntry.callback.AddListener((data) => { OnPointerEnterFramLayout((PointerEventData)data); });
-        eventTrigger.triggers.Add(pointerEnterEntry);
-
-        // PointerExit 이벤트 추가
-        EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
-        pointerExitEntry.eventID = EventTriggerType.PointerExit;
-        pointerExitEntry.callback.AddListener((data) => { OnPointerExitFramLayout((PointerEventData)data); });
-        eventTrigger.triggers.Add(pointerExitEntry); 
     }
 
     public void OnPointerEnterFramLayout(PointerEventData eventData)
@@ -74,7 +48,13 @@ public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
     public void OnCampPopUpShow()
     {
         canvasGroup.DOFade(1.0f, 0.5f);
-
+        foreach(uint netId in M_TurnManager.instance.playerOrder){
+             if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
+                M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
+            }
+        }
     }
 
     // 전초기지 팝업 비활성화 콜백
@@ -83,6 +63,16 @@ public class CampPopUp : SingletonD<CampPopUp>, IPointerClickHandler
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
             gameObject.SetActive(false);
             isMouseOnFrame = false;
+            giveGoldLayout.SetActive(false);
+            healingLayout.SetActive(false);
         });
+        foreach(uint netId in M_TurnManager.instance.playerOrder){
+             if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+                TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
+                M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "BackLayer");
+            }
+        }
+        M_TurnManager.instance.SetPlayerSelectable(false);
     }
 }

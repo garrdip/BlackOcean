@@ -25,6 +25,8 @@ public class NPC_RyuJinSol : SpawnedMonster
         AddEventTrigger();
         buttonHeal.onClick.AddListener(() => OnClickHealButton());
         butonGiveGold.onClick.AddListener(() => OnClickGiveGoldButton());
+        PopUpUIManager.instance.onCampPopUpShow += OnCampPopUpShow;
+        PopUpUIManager.instance.onCampPopUpHide += OnCampPopUpHide;
     }
 
     void Start()
@@ -63,26 +65,16 @@ public class NPC_RyuJinSol : SpawnedMonster
 
     public void OnClickHealButton()
     {
-        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers.Count <= 1){ // 제어하는 플레이어 1명인 경우 버튼 클릭 시 본인 캐릭터 힐
-            GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
-            gamePlayer.CmdHpRecovery();
-        }else{
-            M_TurnManager.instance.SetPlayersReadyHeal(true); // 제어하는 플레이어가 다수일 경우, 모든 캐릭터들을 마우스 오버 및 클릭 할수 있도록 세팅 후 선택한 캐릭터 힐
-            M_MessageManager.instance
-                .MakeToast()
-                .Position(ToastPosition.Bottom)
-                .MessageBoxColor(Color.green)
-                .TextColor(Color.white)
-                .Text("체력을 회복할 캐릭터를 선택하세요.")
-                .FadeInTime(5f)
-                .FadeOutTime(5f)
-                .Show();
-        }
+        PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>().healingLayout.SetActive(true);
+        PopUpUIManager.instance.HandleCampPopUp(true);
+        M_TurnManager.instance.SetPlayerSelectable(true);
     }
 
     public void OnClickGiveGoldButton()
-    {
+{
+        PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>().giveGoldLayout.SetActive(true);
         PopUpUIManager.instance.HandleCampPopUp(true);
+        M_TurnManager.instance.SetPlayerSelectable(true);
     }
 
     public void OnPointerEnterRyuJinSol(PointerEventData eventData)
@@ -197,5 +189,19 @@ public class NPC_RyuJinSol : SpawnedMonster
             }
             M_SoundManager.instance.PlayVoice(baseCampVoice, baseCampVoice.length);
         }
+    }
+
+    public void OnCampPopUpShow()
+    {
+        // 전초기지 팝업 활성화 시 NPC 캐릭터 레이어 팝업 위로 보이도록 변경
+        TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
+        M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
+    }
+
+    public void OnCampPopUpHide()
+    {
+        // 전초기지 팝업 비활성화 시 NPC 캐릭터 레이어 원래 상태로 변경
+        TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
+        M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "NPC");
     }
 }

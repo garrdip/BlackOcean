@@ -202,14 +202,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         M_SoundManager.instance.PlayVoice(eventVoice, eventVoice.length);
     }
 
-    // 다수의 플레이어 제어 시 체력 회복을 위해 캐릭터 선택 이벤트 수행을 위한 플래그 변수 세팅(isReadyHeal 변수가 true인 캐릭터는 마우스 오버 및 클릭을 통해 체력 회복 수행하도록)
-    public void SetPlayersReadyHeal(bool isReadyHeal)
+    // 해당 플레이어의 캐릭터 오브젝트를 마우스 오버 및 클릭 할 수 있는 상태로 변경(isSelectable 플래그 변수의 상태값에 따라 작동)
+    public void SetPlayerSelectable(bool isSelectable)
     {
         for(int i=0; i<playerOrder.Count; i++){
             uint netId = playerOrder[i];
             if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
                 GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
-                gamePlayer.isReadyHeal = isReadyHeal;
+                gamePlayer.isSelectable = isSelectable;
             }
         }
     }
