@@ -52,7 +52,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
 
     
     // Camp PopUp Delegate
-    public delegate void OnCampPopUpShow();
+    public delegate void OnCampPopUpShow(CampAction campAction);
     public OnCampPopUpShow onCampPopUpShow;
     public delegate void OnCampPopUpHide();
     public OnCampPopUpHide onCampPopUpHide;
@@ -242,19 +242,22 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }
     }
 
-    // 전초기지 팝업
-    public void HandleCampPopUp(bool isPopUp)
+    // 전초기지 팝업 활성화
+    public void HandleCampPopUpShow(CampAction campAction)
     {
-        isCampPopUpOpen = isPopUp;
-        if(isPopUp){
-            campPopUp.SetActive(true);
-            if(onCampPopUpShow != null){
-                onCampPopUpShow.Invoke(); 
-            }  
-        }else{
-            if(onCampPopUpHide != null){
-                onCampPopUpHide.Invoke();
-            }
+        isCampPopUpOpen = true;
+        campPopUp.SetActive(true);
+        if(onCampPopUpShow != null){
+            onCampPopUpShow.Invoke(campAction); 
+        }  
+    }
+
+    // 전초기지 팝업 비활성화
+    public void HandleCampPopUpHide()
+    {
+        isCampPopUpOpen = false;
+        if(onCampPopUpHide != null){
+            onCampPopUpHide.Invoke();
         }
     }
 

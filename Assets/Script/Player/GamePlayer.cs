@@ -70,10 +70,34 @@ public class GamePlayer : NetworkBehaviour
         if(NetworkServer.spawned.TryGetValue(targetPlayerNetId, out NetworkIdentity networkIdentity)){
             GamePlayer targetPlayer = networkIdentity.GetComponent<GamePlayer>();
             TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(targetPlayer);
-            if(targetObject.player != null && recoveryLimitCount > 0){
-                targetObject.playerHP += recoveryValue;
-                recoveryLimitCount--;
-                RpcHpRecovery(targetPlayerNetId);
+            if(targetObject.player != null){
+                if(recoveryLimitCount > 0){
+                    targetObject.playerHP += recoveryValue;
+                    recoveryLimitCount--;
+                    RpcHpRecovery(targetPlayerNetId);
+                }else{
+                    TargetErrorMessage(Const.ERR_RECOVERY_COUNT_LIMITED);
+                }
+            }
+        }
+    }
+
+    [Command]
+    public void CmdAddGoldValue(uint localPlayerNetId, uint targetPlayerNetId, int giveGold)
+    {
+        if(NetworkServer.spawned.TryGetValue(targetPlayerNetId, out NetworkIdentity networkIdentity)){
+            GamePlayer targetPlayer = networkIdentity.GetComponent<GamePlayer>();
+            if(targetPlayerNetId == localPlayerNetId){
+                TargetErrorMessage(Const.ERR_DENIED_GIVE_GOLD_LOCAL_PLAYER);
+            }else{
+                int resultGold = gold - giveGold;
+                if((resultGold >= 0) && (gold >= resultGold)){
+                    gold -= giveGold; // 요청한 플레이어의 골드 감소
+                    targetPlayer.gold += giveGold; // 전달한 플레이어의 골드 증가
+                    RpcGetGold(targetPlayerNetId);
+                }else{
+                    TargetErrorMessage(Const.ERR_NOT_ENOUGH_GOLD);
+                }
             }
         }
     }
@@ -133,6 +157,34 @@ public class GamePlayer : NetworkBehaviour
             ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
             renderer.sortingLayerName = "Effect";
         }
+    }
+
+    [ClientRpc]
+    public void RpcGetGold(uint targetPlayerNetId)
+    {
+        // 임시 힐링 이펙트
+        if(NetworkClient.spawned.TryGetValue(targetPlayerNetId, out NetworkIdentity networkIdentity)){
+            GamePlayer targetPlayer = networkIdentity.GetComponent<GamePlayer>();
+            TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(targetPlayer);
+            ParticleSystem particleSystem = Instantiate(recoverParticle, targetObject.transform.position, Quaternion.identity);
+            ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
+            renderer.sortingLayerName = "Effect";
+        }
+    }
+
+    // 커맨드 요청한 플레이어에게 전달되는 오류 메시지 수신
+    [TargetRpc]
+    public void TargetErrorMessage(string err)
+    {
+        M_MessageManager.instance
+            .MakeToast()
+            .Position(ToastPosition.Bottom)
+            .MessageBoxColor(Color.red)
+            .TextColor(Color.white)
+            .Text(err)
+            .FadeInTime(2f)
+            .FadeOutTime(2f)
+            .Show();
     }
 
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//

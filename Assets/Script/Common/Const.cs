@@ -58,4 +58,10 @@ public static class Const
     public const string FORGOTTEN_DECK = "잊혀진 덱";
 
     public const string DEFEND_TEXT = "Defend";
+
+
+    // 오류 메시지
+    public const string ERR_RECOVERY_COUNT_LIMITED = "체력 회복 제한 횟수를 초과하였습니다.";
+    public const string ERR_DENIED_GIVE_GOLD_LOCAL_PLAYER = "본인에게는 골드를 전달할 수 없습니다.";
+    public const string ERR_NOT_ENOUGH_GOLD = "보유한 골드가 부족합니다.";
 }

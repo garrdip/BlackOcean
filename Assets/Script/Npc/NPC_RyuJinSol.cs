@@ -73,14 +73,14 @@ public class NPC_RyuJinSol : SpawnedMonster
     public void OnClickHealButton()
     {
         PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>().healingLayout.SetActive(true);
-        PopUpUIManager.instance.HandleCampPopUp(true);
+        PopUpUIManager.instance.HandleCampPopUpShow(CampAction.Heal);
         M_TurnManager.instance.SetPlayerSelectable(true);
     }
 
     public void OnClickGiveGoldButton()
 {
         PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>().giveGoldLayout.SetActive(true);
-        PopUpUIManager.instance.HandleCampPopUp(true);
+        PopUpUIManager.instance.HandleCampPopUpShow(CampAction.Gold);
         M_TurnManager.instance.SetPlayerSelectable(true);
     }
 
@@ -198,7 +198,7 @@ public class NPC_RyuJinSol : SpawnedMonster
         }
     }
 
-    public void OnCampPopUpShow()
+    public void OnCampPopUpShow(CampAction campAction)
     {
         // 전초기지 팝업 활성화 시 NPC 캐릭터 레이어 팝업 위로 보이도록 변경
         TargetObject targetObject = transform.parent.GetComponent<TargetObject>();

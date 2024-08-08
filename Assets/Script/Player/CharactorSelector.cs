@@ -18,9 +18,9 @@ public class CharactorSelector : MonoBehaviour
     void OnMouseEnter()
     {
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player;
-        if(IsSelectablePlayer() && !IsOpenedPopUpExist()){
+        if(IsServerAuthorityPlayer() && !IsOpenedPopUpExist()){
             skeletonRendererCustomMaterials.enabled = true;
-        }else if(IsNPCRoomType() && targetPlayer.isSelectable){
+        }else if(M_MapManager.instance.currentRoom.roomType == RoomType.CAMP && targetPlayer.isSelectable){
             skeletonRendererCustomMaterials.enabled = true;
         }
     }
@@ -28,9 +28,9 @@ public class CharactorSelector : MonoBehaviour
     void OnMouseExit()
     {
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player;
-        if(IsSelectablePlayer() && !IsOpenedPopUpExist()){
+        if(IsServerAuthorityPlayer() && !IsOpenedPopUpExist()){
             skeletonRendererCustomMaterials.enabled = false;
-        }else if(IsNPCRoomType() && targetPlayer.isSelectable){
+        }else if(M_MapManager.instance.currentRoom.roomType == RoomType.CAMP && targetPlayer.isSelectable){
             skeletonRendererCustomMaterials.enabled = false;
         }
     }
@@ -40,28 +40,28 @@ public class CharactorSelector : MonoBehaviour
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player; // 클릭한 캐릭터의 GamePlayer 인스턴스
         GamePlayer localPlayer = playerInterface.currentGamePlayer; // 로컬 플레이어의 GamePlayer 인스턴스
-        if(IsBattleRoomType() && IsSelectablePlayer() && !IsOpenedPopUpExist()){
-            playerInterface.currentGamePlayerNetId = targetPlayer.netId;
+        if(IsServerAuthorityPlayer() && !targetPlayer.isSelectable){
+            playerInterface.currentGamePlayerNetId = targetPlayer.netId; // 선택한 플레이어를 현재 제어할 플레이어로 변경
+        }
+        if(IsBattleRoomType() && !IsOpenedPopUpExist()){
             if(targetPlayer.GetComponent<GamePlayerDeck>().cardOnHands.Count == 0 && targetPlayer.GetComponent<GamePlayerDeck>().trashDeck.Count == 0)
                 targetPlayer.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand();
             M_CardManager.instance.SetCurrentGamePlayerDeck(targetPlayer.GetComponent<GamePlayerDeck>());
-        }else if(IsNPCRoomType() && targetPlayer.isSelectable){
-            if(localPlayer.recoveryLimitCount <= 0){
-                M_MessageManager.instance
-                    .MakeToast()
-                    .Position(ToastPosition.Bottom)
-                    .MessageBoxColor(Color.red)
-                    .TextColor(Color.white)
-                    .Text("체력 회복 제한 횟수를 초과하였습니다.")
-                    .FadeInTime(2f)
-                    .FadeOutTime(2f)
-                    .Show();
-            }else{
-                localPlayer.CmdHpRecovery(targetPlayer.netId);
+        }else if(M_MapManager.instance.currentRoom.roomType == RoomType.CAMP && targetPlayer.isSelectable){
+            CampPopUp campPopUp = PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>();
+            switch(campPopUp.campAction){
+                case CampAction.Heal:
+                    localPlayer.CmdHpRecovery(targetPlayer.netId);
+                    PopUpUIManager.instance.HandleCampPopUpHide();
+                    break;
+                case CampAction.Gold:
+                    campPopUp.goldInputLayout.SetActive(true);
+                    campPopUp.targetPlayerNetId = targetPlayer.netId;
+                    break;
             }
-            M_TurnManager.instance.SetPlayerSelectable(false);
-            skeletonRendererCustomMaterials.enabled = false;
         }
+        M_TurnManager.instance.SetPlayerSelectable(false);
+        skeletonRendererCustomMaterials.enabled = false;
     }
 
     // 팝업 UI에 등록된 팝업목록들중 활성화된 팝업이 있으면 캐릭터 클릭되지 않도록 조건 체크
@@ -75,7 +75,7 @@ public class CharactorSelector : MonoBehaviour
     }
 
     // 이벤트 호출하려는 플레이어 오브젝트가 현재 유저가 선택 가능한 플레이어인지 확인하는 함수
-    private bool IsSelectablePlayer()
+    private bool IsServerAuthorityPlayer()
     {
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;

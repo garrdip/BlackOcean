@@ -178,6 +178,7 @@ public class TargetObject : NetworkBehaviour
         selectedNamePlate.SetHPValue(playerHP, playerMaxHP, 10);
         monsterNamePlate.SetActive(false);
         playerName.text = player.objectOwner.steamPersonaName;
+        nextActionIndicator.gameObject.SetActive(false);
         switch(player.character)
         {
             case Character.GEORK :

@@ -85,4 +85,11 @@ public class BackButton : MonoBehaviour
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
+
+    public void OnPointerClickBackButtonOnCampPopUp()
+    {
+        PopUpUIManager.instance.HandleCampPopUpHide();
+        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+    }
 }
