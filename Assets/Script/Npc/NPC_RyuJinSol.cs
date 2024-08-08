@@ -74,14 +74,12 @@ public class NPC_RyuJinSol : SpawnedMonster
     {
         PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>().healingLayout.SetActive(true);
         PopUpUIManager.instance.HandleCampPopUpShow(CampAction.Heal);
-        M_TurnManager.instance.SetPlayerSelectable(true);
     }
 
     public void OnClickGiveGoldButton()
-{
+    {
         PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>().giveGoldLayout.SetActive(true);
         PopUpUIManager.instance.HandleCampPopUpShow(CampAction.Gold);
-        M_TurnManager.instance.SetPlayerSelectable(true);
     }
 
     public void OnPointerEnterRyuJinSol(PointerEventData eventData)

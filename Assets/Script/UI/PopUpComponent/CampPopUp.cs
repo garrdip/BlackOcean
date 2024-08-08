@@ -68,6 +68,7 @@ public class CampPopUp : SingletonD<CampPopUp>
                 M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
             }
         }
+        M_TurnManager.instance.SetPlayerSelectable(true);
     }
 
     // 전초기지 팝업 비활성화 콜백
