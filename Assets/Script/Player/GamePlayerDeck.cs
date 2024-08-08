@@ -383,9 +383,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void CmdEnhanceDeck(string guid)
     {
         int index = deck.FindIndex(card => card.guid == guid);
-        Card card = deck[index].CardDeepCopy(false);
-        card.isEnhanced = true;
-        deck[index] = card;
+        if(index != -1){
+            Card card = deck[index].CardDeepCopy(false);
+            card.isEnhanced = true;
+            deck[index] = card;
+        }
     }
 
     // deck에서 선택한 카드의 guid와 동일한 카드정보 조회하여 제거 -> deck update callback의 OP_REMOVEAT 호출됨
@@ -778,14 +780,14 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 if(PopUpUIManager.instance.isCardRemovePopUpOpen){
                     CardRemovePopUp cardRemovePopUp = PopUpUIManager.instance.cardRemovePopUp.GetComponent<CardRemovePopUp>();
                     cardRemovePopUp.ClearRemoveableCards();
-                    cardRemovePopUp.CreateRemoveableCards(deck);
+                    cardRemovePopUp.CreateRemoveableCards();
                 }
                 break;
             case SyncList<Card>.Operation.OP_SET:
                 if(PopUpUIManager.instance.isCardEnhancePopUpOpen){
                     CardEnhancePopUp cardEnhancePopUp = PopUpUIManager.instance.cardEnhancePopUp.GetComponent<CardEnhancePopUp>();
                     cardEnhancePopUp.ClearAllEnhanceableCards();
-                    cardEnhancePopUp.CreateEnhanceableCards(deck);
+                    cardEnhancePopUp.CreateEnhanceableCards();
                 }
                 break;
             case SyncList<Card>.Operation.OP_CLEAR:

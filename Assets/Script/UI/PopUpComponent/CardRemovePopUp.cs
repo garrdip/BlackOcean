@@ -109,7 +109,7 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>, IPointerClickHandler
     }
 
     // 플레이어의 deck 데이터로 카드 오브젝트 생성
-    public void CreateRemoveableCards(SyncList<Card> deck)
+    public void CreateRemoveableCards()
     {
         for(int i=0; i<M_TurnManager.instance.playerOrder.Count; i++){
             uint netId = M_TurnManager.instance.playerOrder[i];
@@ -141,11 +141,9 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>, IPointerClickHandler
     // CardRemovePopUp 활성화 콜백
     public void OnCardRemovePopUpShow()
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-        if(gamePlayerDeck != null){
-            CreateRemoveableCards(gamePlayerDeck.deck);
-        }
+        CreateRemoveableCards();
         canvasGroup.DOFade(1.0f, 0.5f);
+        tabLayout.ShowTab(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayer>().selectOrder);
     }
 
     // CardRemovePopUp 비활성화 콜백

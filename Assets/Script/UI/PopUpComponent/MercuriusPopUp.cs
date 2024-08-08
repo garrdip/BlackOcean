@@ -130,6 +130,7 @@ public class MercuriusPopUp : SingletonD<MercuriusPopUp>, IPointerClickHandler
     {
         canvasGroup.DOFade(1.0f, 0.5f);
         CreateShopCards();
+        tabLayout.ShowTab(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayer>().selectOrder);
     }
 
     // MercuriusPopUp 비활성화 콜백

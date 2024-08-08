@@ -40,7 +40,7 @@ public class CharactorSelector : MonoBehaviour
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player; // 클릭한 캐릭터의 GamePlayer 인스턴스
         GamePlayer localPlayer = playerInterface.currentGamePlayer; // 로컬 플레이어의 GamePlayer 인스턴스
-        if(IsServerAuthorityPlayer() && !targetPlayer.isSelectable){
+        if(IsServerAuthorityPlayer() && !IsOpenedPopUpExist() && !targetPlayer.isSelectable){
             playerInterface.currentGamePlayerNetId = targetPlayer.netId; // 선택한 플레이어를 현재 제어할 플레이어로 변경
         }
         if(IsBattleRoomType() && !IsOpenedPopUpExist()){

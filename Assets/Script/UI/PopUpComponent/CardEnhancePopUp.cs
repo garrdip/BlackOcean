@@ -174,7 +174,7 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>, IPointerClickHandl
     }
 
     // 플레이어의 deck 데이터로 카드 오브젝트 생성(이미 강화된 카드는 제외)
-    public void CreateEnhanceableCards(SyncList<Card> deck)
+    public void CreateEnhanceableCards()
     {
         for(int i=0; i<M_TurnManager.instance.playerOrder.Count; i++){
             uint netId = M_TurnManager.instance.playerOrder[i];
@@ -208,11 +208,9 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>, IPointerClickHandl
     // CardEnhancePopUp 활성화 콜백
     public void OnCardEnhancePopUpShow()
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-        if(gamePlayerDeck != null){
-            CreateEnhanceableCards(gamePlayerDeck.deck);
-        }
+        CreateEnhanceableCards();
         canvasGroup.DOFade(1.0f, 0.5f);
+        tabLayout.ShowTab(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayer>().selectOrder);
     }
 
     // CardEnhancePopUp 비활성화 콜백
