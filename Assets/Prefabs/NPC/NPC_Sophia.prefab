@@ -709,7 +709,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2e671423464c2ec4dbb913cf7efd6802, type: 2}
-  - {fileID: 2100000, guid: 9326d6724e8aeb143b20aa7e6a68f6b9, type: 2}
+  - {fileID: 2100000, guid: 6b2a0feda6a6335418446feda14efc55, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -838,10 +838,10 @@ MonoBehaviour:
   effectDataAssets: []
   effectParticles: []
   animationNames: []
+  expandableButtonGroupCanvas: {fileID: 7144550927008935370}
   expandableButtonGroup: {fileID: 5249819626347085762}
   buttonHeal: {fileID: 5207924798130810014}
   butonGiveGold: {fileID: 3709472974382185439}
-  healCursor: {fileID: 2800000, guid: 456b455632b22f249bab01000e3fe56c, type: 3}
 --- !u!60 &8684561159555658057
 PolygonCollider2D:
   m_ObjectHideFlags: 0

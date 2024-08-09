@@ -14,6 +14,7 @@ public class NPC_RyuJinSol : SpawnedMonster
     public List<string> animationNames = new List<string>();
     private TrackEntry trackEntry;
     public Coroutine eyeBlikCoroutine;
+    public Canvas expandableButtonGroupCanvas;
     public ExpandableButtonGroup expandableButtonGroup;
     private bool isOpenExpandableButtons = false;
     public Button buttonHeal;
@@ -201,6 +202,7 @@ public class NPC_RyuJinSol : SpawnedMonster
         // 전초기지 팝업 활성화 시 NPC 캐릭터 레이어 팝업 위로 보이도록 변경
         TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
         M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
+        expandableButtonGroupCanvas.sortingLayerName = "NPC";
         foreach(Button button in expandableButtonGroup.expandableButtons){
             button.interactable = false;
         }
