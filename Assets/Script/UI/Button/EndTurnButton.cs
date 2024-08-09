@@ -7,7 +7,7 @@ using Mirror;
 using DG.Tweening;
 
 
-public class EndTurnButton : MonoBehaviour
+public class EndTurnButton : ButtonBase
 {
     public GameObject endTurnBaseLight;
     public GameObject endTurnBaseLight2;
@@ -21,8 +21,9 @@ public class EndTurnButton : MonoBehaviour
         GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
     }
 
-    void OnDestroy()
+    public override void OnDestroy()
     {
+        base.OnDestroy();
         endTurnS1.GetComponent<RectTransform>().DOKill();
         endTurnS2.GetComponent<RectTransform>().DOKill();
     }

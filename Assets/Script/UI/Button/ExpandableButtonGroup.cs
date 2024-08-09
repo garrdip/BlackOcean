@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using DG.Tweening;
 
 
@@ -19,6 +20,7 @@ public class ExpandableButtonGroup : MonoBehaviour
     void Awake()
     {
         canvas = transform.parent.GetComponent<Canvas>();
+        AddEventTriggers();
     }
 
     void Start()
@@ -77,5 +79,32 @@ public class ExpandableButtonGroup : MonoBehaviour
             button.GetComponent<RectTransform>().DOLocalMove(Vector3.zero, 0.5f);
             button.GetComponent<CanvasGroup>().DOFade(0f, 0.5f);
         }
+    }
+
+    private void AddEventTriggers()
+    {
+        foreach(Button button in expandableButtons){
+            EventTrigger eventTrigger = button.gameObject.AddComponent<EventTrigger>();
+            
+            EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
+            pointerEnterEntry.eventID = EventTriggerType.PointerDown;
+            pointerEnterEntry.callback.AddListener((data) => { OnPointerDownExpandableButton((PointerEventData)data, button); });
+            eventTrigger.triggers.Add(pointerEnterEntry);
+
+            EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
+            pointerExitEntry.eventID = EventTriggerType.PointerUp;
+            pointerExitEntry.callback.AddListener((data) => { OnPointerUpExpandableButton((PointerEventData)data, button); });
+            eventTrigger.triggers.Add(pointerExitEntry); 
+        }
+    }
+
+    private void OnPointerDownExpandableButton(PointerEventData pointerEventData, Button button)
+    {
+        button.GetComponent<RectTransform>().DOScale(0.8f, 0.25f);
+    }
+
+    private void OnPointerUpExpandableButton(PointerEventData pointerEventData, Button button)
+    {
+        button.GetComponent<RectTransform>().transform.DOScale(1f, 0.25f);
     }
 }

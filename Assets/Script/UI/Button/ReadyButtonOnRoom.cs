@@ -8,7 +8,7 @@ using Mirror;
 using ProjectD;
 using DG.Tweening;
 
-public class ReadyButtonOnRoom : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class ReadyButtonOnRoom : ButtonBase, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public GameObject readyBaseL1;
     public GameObject readyBaseL2;
@@ -23,8 +23,9 @@ public class ReadyButtonOnRoom : MonoBehaviour, IPointerEnterHandler, IPointerEx
         GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
     }
 
-    void OnDestroy()
+    public override void OnDestroy()
     {
+        base.OnDestroy();
         readyS1.GetComponent<RectTransform>().DOKill();
         readyS2.GetComponent<RectTransform>().DOKill();
     }
