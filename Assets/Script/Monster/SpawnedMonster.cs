@@ -72,7 +72,7 @@ public class SpawnedMonster : NetworkBehaviour
 
     MonsterAction sturnedAction = new MonsterAction("APDO",0,0);
 
-    void Start()
+    public virtual void Start() 
     {
         skeletonAnimation = GetComponent<SkeletonAnimation>();
         skeletonRendererCustomMaterials = GetComponent<SkeletonRendererCustomMaterials>();

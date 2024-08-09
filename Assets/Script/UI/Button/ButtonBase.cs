@@ -33,7 +33,7 @@ public class ButtonBase : MonoBehaviour
 
     private void OnPointerDownExpandableButton(PointerEventData pointerEventData)
     {
-        GetComponent<RectTransform>().DOScale(0.8f, 0.25f);
+        GetComponent<RectTransform>().DOScale(0.9f, 0.25f);
     }
 
     private void OnPointerUpExpandableButton(PointerEventData pointerEventData)

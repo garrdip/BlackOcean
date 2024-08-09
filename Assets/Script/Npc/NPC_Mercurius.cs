@@ -42,8 +42,9 @@ public class NPC_Mercurius : SpawnedMonster
         buttonCardRemove.onClick.AddListener(() => OnClickCardRemoveButton());
     }
 
-    void Start()
+    public override void Start()
     {
+        base.Start();
         for(int i=0; i<6; i++){
             transform.GetChild(i).GetComponent<SkeletonRendererCustomMaterials>().enabled = false;
         }

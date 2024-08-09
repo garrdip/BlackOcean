@@ -3,9 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using ProjectD;
+using Spine.Unity;
+using Spine;
 
 public class Boss_Apates : SpawnedMonster
 {
+    private List<Skin> apatesSkins = new List<Skin>(); // 아파테스 스파인 스킨 목록
+
+    public override void Start()
+    { 
+        base.Start();
+        skeletonAnimation.skeleton.SetSkin(GetApatesFaceSkins(1)); // 1번 얼굴 스킨 적용
+    }
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -49,5 +59,19 @@ public class Boss_Apates : SpawnedMonster
             AudioClip momosDeadVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.MoonGirl][index];
             M_SoundManager.instance.PlayVoice(momosDeadVoice, momosDeadVoice.length); // 아파테스 사망시 달의소녀 나레이션 재생
         }
+    }
+
+    // [ 아파테스 얼굴 스킨 3종 중에서 해당 인덱스의 스킨 반환 ]
+    // 1번 스킨 : Default(얼굴 없음)
+    // 2번 스킨 : Skin1
+    // 3번 스킨 : Skin2
+    // 4번 스킨 : Skin3
+    public Skin GetApatesFaceSkins(int index)
+    {
+        ExposedList<Skin> apaptesFaceSkins = skeletonAnimation.skeleton.Data.Skins;
+        foreach(Skin skin in apaptesFaceSkins){
+            apatesSkins.Add(skin);
+        }
+        return apatesSkins[index];
     }
 }

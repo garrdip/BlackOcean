@@ -29,8 +29,9 @@ public class NPC_Sophia : SpawnedMonster
         PopUpUIManager.instance.onCampPopUpHide += OnCampPopUpHide;
     }
 
-    void Start()
+    public override void Start()
     {
+        base.Start();
         GetComponent<SkeletonRendererCustomMaterials>().enabled = false;
         GetAnimationNames(skeletonAnimation);
         PlayRandomAnimation();
