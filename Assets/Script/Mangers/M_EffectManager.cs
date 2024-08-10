@@ -12,6 +12,7 @@ public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
 {
     public Canvas EffectCanvas;
     public GameObject FloatingDamageText;
+    public GameObject FloatingGoldText;
 
     protected override void Start()
     {
@@ -121,5 +122,36 @@ public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
                     Destroy(defendText);
                 });
         }
+    }
+
+    // 골드 획득 표시 트위닝
+    public void DisplayGold(TargetObject targetObject, int gold)
+    {
+        GameObject floatingGoldText = Instantiate(FloatingGoldText, Vector3.zero, Quaternion.identity);
+        floatingGoldText.transform.SetParent(EffectCanvas.transform);
+        floatingGoldText.transform.localScale = Vector3.one;
+        floatingGoldText.transform.position = targetObject.transform.position + new Vector3(0f, 6f, 0f);
+        
+        CanvasGroup canvasGroup = floatingGoldText.GetComponent<CanvasGroup>();
+        canvasGroup.alpha = 0f;
+
+        TextMeshProUGUI textGold = floatingGoldText.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+        textGold.text = gold.ToString();
+        
+        float duration = 0.75f;
+        Tweener upTweener = floatingGoldText.transform.DOMoveY(floatingGoldText.transform.position.y + 2f, duration).SetEase(Ease.OutSine);
+        Tweener downTweener = floatingGoldText.transform.DOMoveY(floatingGoldText.transform.position.y, duration).SetEase(Ease.InSine);
+        Tweener fadeInTweener = canvasGroup.DOFade(1f, duration);
+        Tweener fadeOutTweener = canvasGroup.DOFade(0f, duration);
+        Sequence sequence = DOTween.Sequence()
+            .Append(upTweener)
+            .Join(fadeInTweener)
+            .Append(downTweener)
+            .Join(fadeOutTweener)
+            .OnComplete(() => {
+                floatingGoldText.transform.DOKill();
+                canvasGroup.DOKill();
+                Destroy(floatingGoldText);
+            });
     }
 }    

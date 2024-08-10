@@ -94,7 +94,7 @@ public class GamePlayer : NetworkBehaviour
                 if((resultGold >= 0) && (gold >= resultGold)){
                     gold -= giveGold; // 요청한 플레이어의 골드 감소
                     targetPlayer.gold += giveGold; // 전달한 플레이어의 골드 증가
-                    RpcGetGold(targetPlayerNetId);
+                    RpcGetGold(targetPlayerNetId, giveGold);
                 }else{
                     TargetErrorMessage(Const.ERR_NOT_ENOUGH_GOLD);
                 }
@@ -160,15 +160,12 @@ public class GamePlayer : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcGetGold(uint targetPlayerNetId)
+    public void RpcGetGold(uint targetPlayerNetId, int giveGold)
     {
-        // 임시 힐링 이펙트
         if(NetworkClient.spawned.TryGetValue(targetPlayerNetId, out NetworkIdentity networkIdentity)){
             GamePlayer targetPlayer = networkIdentity.GetComponent<GamePlayer>();
             TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(targetPlayer);
-            ParticleSystem particleSystem = Instantiate(recoverParticle, targetObject.transform.position, Quaternion.identity);
-            ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
-            renderer.sortingLayerName = "Effect";
+            M_EffectManager.instance.DisplayGold(targetObject, giveGold);
         }
     }
 
