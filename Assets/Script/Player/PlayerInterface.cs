@@ -303,11 +303,9 @@ public class PlayerInterface : NetworkBehaviour
             GameUIManager.instance.currentIchiText.text = currentGamePlayerDeck.currentIchi.ToString();
             GameUIManager.instance.maxIchiText.text = currentGamePlayerDeck.maxIchi.ToString();
 
-            // 현재 선택한 플레이어가 단향일 경우 어빌리티 버튼 활성화 상태 변경(전투방일 경우에만)
+            // 현재 선택한 플레이어가 단향일 경우 어빌리티 버튼 활성화 상태 변경
             GamePlayer gamePlayer = currentGamePlayerDeck.GetComponent<GamePlayer>();
-            if(M_MapManager.instance.currentRoom.roomType == RoomType.MONSTER || M_MapManager.instance.currentRoom.roomType == RoomType.ELITE || M_MapManager.instance.currentRoom.roomType == RoomType.BOSS){
-                M_CardManager.instance.ChangeAbilityButtonActiveState(gamePlayer.character == Character.HONGDANHYANG);
-            }
+            M_CardManager.instance.ChangeAbilityButtonActiveState(gamePlayer.character == Character.HONGDANHYANG);
 
             // 현재 선택한 플레이어의 패 제거 카드 배열값 설정
             currentGamePlayerDeck.choosedCardOnHands = new CardOnHand[currentGamePlayerDeck.maxRemoveCardCount];

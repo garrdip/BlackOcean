@@ -75,21 +75,27 @@ public class SpawnedMonster : NetworkBehaviour
     public virtual void Start() 
     {
         skeletonAnimation = GetComponent<SkeletonAnimation>();
-        skeletonRendererCustomMaterials = GetComponent<SkeletonRendererCustomMaterials>();
-        skeletonRendererCustomMaterials.enabled = false;
+        if(TryGetComponent(out SkeletonRendererCustomMaterials skeletonRendererCustomMaterials)){
+            skeletonRendererCustomMaterials.enabled = false;
+        }
+        if(TryGetComponent(out MeshRenderer meshRenderer)){
+            meshRenderer.sortingOrder = index;
+        }
         materialPropertyBlock = new MaterialPropertyBlock();
-        meshRenderer = GetComponent<MeshRenderer>();
         if(dissolveParticle != null){
             dissolveParticle.GetComponent<ParticleSystemRenderer>().sortingLayerName = "Effect";
         }
-        meshRenderer.sortingOrder = index;
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
-            skeletonRendererCustomMaterials.enabled = true;
-            meshRenderer.sortingLayerName = "FrontLayer";
+            if(TryGetComponent(out SkeletonRendererCustomMaterials skeletonRendererCustomMaterials)){
+                skeletonRendererCustomMaterials.enabled = true;
+            }
+            if(TryGetComponent(out MeshRenderer meshRenderer)){
+                meshRenderer.sortingLayerName = "FrontLayer";
+            }
             parent.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "FrontLayer";
             parent.monsterHpCanvas.sortingLayerName = "FrontLayer";
             parent.monsterNameCanvas.sortingLayerName = "FrontLayer";
@@ -101,8 +107,12 @@ public class SpawnedMonster : NetworkBehaviour
     private void OnTriggerExit2D(Collider2D collider)
     {
         if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
-            skeletonRendererCustomMaterials.enabled = false;
-            meshRenderer.sortingLayerName = "BackLayer";
+            if(TryGetComponent(out SkeletonRendererCustomMaterials skeletonRendererCustomMaterials)){
+                skeletonRendererCustomMaterials.enabled = false;
+            }
+            if(TryGetComponent(out MeshRenderer meshRenderer)){
+                meshRenderer.sortingLayerName = "BackLayer";
+            }
             parent.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "BackLayer";
             parent.monsterHpCanvas.sortingLayerName = "BackLayer";
             parent.monsterNameCanvas.sortingLayerName = "BackLayer";
