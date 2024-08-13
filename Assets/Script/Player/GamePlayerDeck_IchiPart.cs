@@ -40,7 +40,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
     {
         if(isOwned){
             GameUIManager.instance.currentIchiText.text = newVal.ToString();
-            CreateCurrentItchIcon(newVal);
+            if(newVal > oldVal){
+                CreateCurrentItchIcon(newVal - oldVal); // 현재 이치 추가
+            }else{
+                RemoveCurrentItchIcon(oldVal - newVal); // 현재 이치 감소
+            }
         }
     }
 
@@ -48,51 +52,63 @@ public partial class GamePlayerDeck : NetworkBehaviour
     {
         if(isOwned){
             GameUIManager.instance.maxIchiText.text = newVal.ToString();
-            CreateMaxItchIcon(newVal);
+            if(newVal > oldVal){
+                CreateMaxItchIcon(newVal - oldVal); // 최대 이치 추가
+            }else{
+                RemoveMaxItchIcon(oldVal - newVal); // 최대 이치 감소
+            }
         }  
     }
 
     // ------------------------------------------------------------------- Normal Method --------------------------------------------------------------//
 
     // 현재 이치 아이콘 생성
-    private void CreateCurrentItchIcon(int maxIchiValue)
+    private void CreateCurrentItchIcon(int count)
     {
-        for(int i=GameUIManager.instance.currentIchiIcons.Count-1; i >= 0; i--){
-            GameUIManager.instance.currentIchiIcons[i].transform.DOKill();
-            Destroy(GameUIManager.instance.currentIchiIcons[i]);
-            GameUIManager.instance.currentIchiIcons.RemoveAt(i);
-        }
-        for(int i=0; i < maxIchiValue; i++){
+        for(int i=0; i < count; i++){
             GameObject costIcon = Instantiate(GameUIManager.instance.CurrentItchPrefab, Vector3.zero, Quaternion.identity);
             costIcon.transform.SetParent(GameUIManager.instance.CurrentItchIconLayout.transform);
             costIcon.transform.localScale = Vector3.one;
             GameUIManager.instance.currentIchiIcons.Add(costIcon);
+            costIcon.transform.DOScale(1.5f, 0.25f).OnComplete(() => {
+                costIcon.transform.DOScale(1f, 0.25f);
+            });
         }
-        // 추가된 이치 아이콘 스케일 애니매이션 실행
-        GameObject newCurrentIchiIcon =  GameUIManager.instance.currentIchiIcons[ GameUIManager.instance.currentIchiIcons.Count - 1];
-        newCurrentIchiIcon.transform.DOScale(2f, 0.5f).OnComplete(() => {
-            newCurrentIchiIcon.transform.DOScale(1f, 0.5f);
-        });
+    }
+
+    // 현재 이치 아이콘 제거
+    private void RemoveCurrentItchIcon(int count)
+    {
+        for(int i=0; i < count; i++){
+            int lastIndex = GameUIManager.instance.currentIchiIcons.Count - 1; // 마지막 인덱스에서 하나씩 제거
+            GameUIManager.instance.currentIchiIcons[lastIndex].transform.DOKill();
+            Destroy(GameUIManager.instance.currentIchiIcons[lastIndex]);
+            GameUIManager.instance.currentIchiIcons.RemoveAt(lastIndex);
+        }
     }
 
     // 최대 이치 아이콘 생성
-    private void CreateMaxItchIcon(int maxIchiValue)
+    private void CreateMaxItchIcon(int count)
     {
-        for(int i=GameUIManager.instance.maxIchiIcons.Count-1; i >= 0; i--){
-            GameUIManager.instance.maxIchiIcons[i].transform.DOKill();
-            Destroy(GameUIManager.instance.maxIchiIcons[i]);
-            GameUIManager.instance.maxIchiIcons.RemoveAt(i);
-        }
-        for(int i=0; i < maxIchiValue; i++){
+        for(int i=0; i < count; i++){
             GameObject costIcon = Instantiate(GameUIManager.instance.MaxItchPrefab, Vector3.zero, Quaternion.identity);
             costIcon.transform.SetParent(GameUIManager.instance.MaxItchIconLayout.transform);
             costIcon.transform.localScale = Vector3.one;
             GameUIManager.instance.maxIchiIcons.Add(costIcon);
+            costIcon.transform.DOScale(1.5f, 0.25f).OnComplete(() => {
+                costIcon.transform.DOScale(1f, 0.25f);
+            });
         }
-        // 추가된 최대 이치 아이콘 스케일 애니매이션 실행
-        GameObject newMaxIchiIcon = GameUIManager.instance.maxIchiIcons[GameUIManager.instance.maxIchiIcons.Count -1];
-        newMaxIchiIcon.transform.DOScale(2f, 0.5f).OnComplete(() => {
-            newMaxIchiIcon.transform.DOScale(1f, 0.5f);
-        });
+    }
+
+    // 최대 이치 아이콘 제거
+    private void RemoveMaxItchIcon(int count)
+    {
+        for(int i=0; i < count; i++){
+            int lastIndex = GameUIManager.instance.maxIchiIcons.Count - 1; // 마지막 인덱스에서 하나씩 제거
+            GameUIManager.instance.maxIchiIcons[lastIndex].transform.DOKill();
+            Destroy(GameUIManager.instance.maxIchiIcons[lastIndex]);
+            GameUIManager.instance.maxIchiIcons.RemoveAt(lastIndex);
+        }
     }
 }
