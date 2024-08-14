@@ -155,8 +155,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                         for(int r = rStart; r <= rEnd; r++){
                             Vector3 position = GetPosition(q, r, hexagonMapRoom.position);
                             HexagonMapRoom mapRoom = hexagonMapRooms.Find(room => room.position == position);
-                            mapRoom.isActive = true;
-                            mapRoom.roomType = RoomType.COMPLETE;
+                            if(mapRoom != null){
+                                mapRoom.isActive = true;
+                                mapRoom.roomType = RoomType.COMPLETE;
+                            }
                         }
                     }
                 }
@@ -727,7 +729,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [ClientRpc]
     private void ChangeBattleScene(HexagonMapRoom hexagonMapRoom)
     {
-        GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+        ScreenTransitionManager.instance.DoTransition(() => {
             // 카메라 위치 리셋
             //Camera.main.orthographic = true;
             Camera.main.transform.position = new Vector3(0f, 0f, -10f);
@@ -762,9 +764,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 break;
             }
         }
-        GameUIManager.instance.FadeOffBlackCurtain((blackCurtain)=>{
-            blackCurtain.gameObject.SetActive(false);
-        });
     }
 
     // 전투 없이 이동 수행 : MapPlayerDestination 오브젝트 삭제 + 라인렌더러 삭제

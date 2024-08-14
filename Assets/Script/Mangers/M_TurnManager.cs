@@ -148,10 +148,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         if(!M_TurnManager.instance.playerRewardedDic.ContainsValue(false) && gamePlayer.isOwned){ // 소유한 모든 플레이어 보상받았으면 종료
             PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
-            GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
-                NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true; 
-                gamePlayer.GetComponent<GamePlayerDeck>().CmdClearRewardCards();
-            });
+            NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true; 
+            gamePlayer.GetComponent<GamePlayerDeck>().CmdClearRewardCards();
         }
     }
 
@@ -1477,7 +1475,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 player.SetIsReadyStateDefault();
             }
         }
-        GameUIManager.instance.FadeBlackCurtain((blackCurtain) => {
+        ScreenTransitionManager.instance.DoTransition(() => {
             // 카메라 위치 리셋
             Vector3 currLoc = M_MapManager.instance.currentRoom.transform.position;
             Camera.main.transform.position = currLoc + new Vector3(0,0,-8);
@@ -1493,8 +1491,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             //GameUIManager.instance.TestUI.gameObject.SetActive(false);
             
             // Dim배경 상태 변경
-            blackCurtain.gameObject.SetActive(false);
-            blackCurtain.DOFade(0.0f, 0.5f); // 원래 알파값으로 변경
             MapUI.instance.ChangeMapDimBackground(false);
             MapUI.instance.RemoveAllMapInfoPopUps();
         });

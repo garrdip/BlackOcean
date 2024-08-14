@@ -12,10 +12,12 @@ Shader "Custom/GradientWithSmokeAndTransparentMask"
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue"="Overlay" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
         LOD 100
 
         Blend SrcAlpha OneMinusSrcAlpha // 알파 블렌딩 설정
+        ZWrite Off // Z-버퍼 쓰기 비활성화
+        ZTest LEqual // 깊이 테스트 설정
 
         Pass
         {

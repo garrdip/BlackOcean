@@ -147,7 +147,7 @@ public class SpawnedMonster : NetworkBehaviour
     }
     
     // Dissolve 효과 코루틴 (materialPropertyBlock을 이용해 Dissolve 머티리얼의 프로퍼티값 변경)
-    public IEnumerator DissolveCoroutine( System.Action callbacak = null)
+    public IEnumerator DissolveCoroutine(System.Action callback = null)
     {
         float duration = 2.5f;
         float timer = 0f;
@@ -159,7 +159,9 @@ public class SpawnedMonster : NetworkBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
-        callbacak();
+        if(callback != null){
+            callback();
+        }
     }
 
     // ------------------------------------------------------------------ Server Method ------------------------------------------------------------------------//

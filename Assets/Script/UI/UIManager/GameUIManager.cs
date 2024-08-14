@@ -23,9 +23,6 @@ public class GameUIManager : SingletonD<GameUIManager>
     public List<GameObject> currentIchiIcons = new List<GameObject>();
     public List<GameObject> maxIchiIcons = new List<GameObject>();
 
-    [Header("화면 Dim 처리용 이미지")]
-    public Image blackCurtain;
-
     [Header("카드 전투 UI")]
     public Button buttonEndTurn;
     public Button buttonPrefareDeck;
@@ -124,26 +121,6 @@ public class GameUIManager : SingletonD<GameUIManager>
         textComponent.transform.DOScale(chagenScale, 0.1f).SetEase(Ease.OutQuad).OnComplete(() => {
             textComponent.transform.DOScale(originScale, 0.1f).SetEase(Ease.InQuad);
         });
-    }
-
-    // 화면 전체 Dim 효과용 이미지 컴포넌트 Fade 애니매이션
-    public void FadeBlackCurtain(System.Action<Image> callback = null)
-    {
-        blackCurtain.gameObject.SetActive(true);
-        blackCurtain.DOFade(1.0f, 0.5f).OnComplete(() => {
-            if(callback != null){
-                callback(blackCurtain);
-            }
-        }); 
-    }
-
-    public void FadeOffBlackCurtain(System.Action<Image> callback = null)
-    {
-        blackCurtain.DOFade(0.0f, 0.5f).OnComplete(() => {
-            if(callback != null){
-                callback(blackCurtain);
-            }
-        }); 
     }
 
     public void CardQueueScrollToEnd()
