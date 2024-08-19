@@ -29,15 +29,15 @@ public class ScreenTransitionManager : SingletonD<ScreenTransitionManager>
         float duration = 2.0f;
         float elapsedTime = 0f;
 
-        float initialScroll = 2.5f; // 진행상태 프로퍼티값의 초기값
+        float initialScroll = 4.5f; // 진행상태 프로퍼티값의 초기값
         float finalScroll = 0f;     // 진행상태 프로퍼티값의 최종값      
 
         while (elapsedTime < duration){
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / duration;
 
-            // Transition_In 구간 : 0에서 1사이의 t값이 0 ~ 0.5 구간에서는 2.5 -> 0 변경
-            // Transition_Out 구간 : 0에서 1사이의 t값이 0.5 ~ 1.0 구간에서는 0 -> 2.5 변경     
+            // Transition_In 구간 : 0에서 1사이의 t값이 0 ~ 0.5 구간에서는, 프로퍼티값의 초기값 -> 0 변경
+            // Transition_Out 구간 : 0에서 1사이의 t값이 0.5 ~ 1.0 구간에서는, 0 -> 프로퍼티값의 초기값 변경     
             float currentScroll = t < 0.5f
                 ? Mathf.Lerp(initialScroll, finalScroll, t * 2)
                 : Mathf.Lerp(finalScroll, initialScroll, (t - 0.5f) * 2);

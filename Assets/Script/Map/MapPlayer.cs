@@ -118,12 +118,14 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
-        hoverLine.GetComponent<Image>().color = Color.red;
+        p_INFO_L.SetActive(true);
+        p_INFO_M_L_L.SetActive(isOwned);
     }
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
-        hoverLine.GetComponent<Image>().color = Color.white;
+        p_INFO_L.SetActive(false);
+        p_INFO_M_L_L.SetActive(false);
     }
 
     // ----------------------------------------------------------------- Command Method --------------------------------------------------------------------------------//
