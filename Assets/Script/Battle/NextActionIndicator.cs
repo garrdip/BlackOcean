@@ -44,28 +44,17 @@ public class NextActionIndicator : MonoBehaviour
 
     public void StartBounce(int index)
     {
-        StartCoroutine(Delay(index));
+        NextActionIndicatorBounce(index);
     }
 
-    private IEnumerator Delay(int index)
+    public void NextActionIndicatorBounce(int index)
     {
-        yield return new WaitForSeconds((4 - index) * 0.5f);
-        NextActionIndicatorBounce();
-    }
-
-    public void NextActionIndicatorBounce()
-    {
-        transform.DOMoveY(actionIndicatorOriginPosition.y + 0.1f, 1f)
-            .SetEase(Ease.InOutSine)
-            .OnComplete(() =>
-            {
-                transform.DOMoveY(actionIndicatorOriginPosition.y - 0.1f, 1f)
-                    .SetEase(Ease.InOutSine)
-                    .OnComplete(() =>
-                    {
-                        NextActionIndicatorBounce();
-                    });
-            });
+        if(transform != null){
+            transform.DOMoveY(actionIndicatorOriginPosition.y + 0.1f, 1f)
+                .SetDelay((4 - index) * 0.5f)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(-1, LoopType.Yoyo);
+        }
     }
 
     public void SetNextTargetAction(ActionType type, bool isTargetable, ActionTarget tar, string value)
