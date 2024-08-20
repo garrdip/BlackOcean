@@ -25,6 +25,12 @@ public class GameUIManager : SingletonD<GameUIManager>
 
     [Header("화면 전환 UI")]
     public Image screenTransition;
+    public Image screenFade;
+    public enum ScreenTransitionMode {
+        Fade,
+        Transition
+    }
+    public ScreenTransitionMode screenTransitionMode;
 
     [Header("카드 전투 UI")]
     public Button buttonEndTurn;
@@ -63,6 +69,7 @@ public class GameUIManager : SingletonD<GameUIManager>
 
     void Start()
     {
+        ConfigScreenChangeMode(screenTransitionMode);
         screenTransition.material =  new Material(screenTransition.material); // 머티리얼 인스턴스 복사본을 생성하여 이미지의 머티리얼값에 할당(원본대신 복사본을 사용해 프로퍼티값 변경)
         scrollSpeed = 500f;
     }
@@ -172,7 +179,47 @@ public class GameUIManager : SingletonD<GameUIManager>
         }
     }
 
-    public void DoScreenTransition(System.Action callback = null)
+    // 화면 전환 모드에 따라 사용할 오브젝트 활성화 설정
+    public void ConfigScreenChangeMode(ScreenTransitionMode screenTransitionMode)
+    {
+        switch(screenTransitionMode){
+            case ScreenTransitionMode.Fade:
+                screenFade.gameObject.SetActive(true);
+                screenTransition.gameObject.SetActive(false);
+                break;
+            case ScreenTransitionMode.Transition:
+                screenFade.gameObject.SetActive(false);
+                screenTransition.gameObject.SetActive(true);
+                break;
+        }
+    }
+
+    // 화면 전환 모드에 따라 분기 처리
+    public void DoScreenChange(System.Action callback = null)
+    {
+        switch(screenTransitionMode){
+            case ScreenTransitionMode.Fade:
+                DoScreenFade(() => callback());
+                break;
+            case ScreenTransitionMode.Transition:
+                DoScreenTransition(() => callback());
+                break;
+        }
+    }
+
+    // 스크린 페이드 인 아웃 
+    private void DoScreenFade(System.Action callback = null)
+    {
+        screenFade.DOFade(1f, 0.5f).OnComplete(() => {
+            if(callback != null){
+                callback();
+            }
+            screenFade.DOFade(0f, 0.5f);
+        });
+    }
+
+    // 스크린 블록 트랜지션
+    private void DoScreenTransition(System.Action callback = null)
     {
         StartCoroutine(TransitionCoroutine(() => {
             if(callback != null){
@@ -181,13 +228,13 @@ public class GameUIManager : SingletonD<GameUIManager>
         }));
     }
     
-    public IEnumerator TransitionCoroutine(System.Action callback = null)
+    private IEnumerator TransitionCoroutine(System.Action callback = null)
     {
         screenTransition.enabled = true;
         float duration = 2.0f;
         float elapsedTime = 0f;
 
-        float initialScroll = 4.5f; // 진행상태 프로퍼티값의 초기값
+        float initialScroll = 2.5f; // 진행상태 프로퍼티값의 초기값
         float finalScroll = 0f;     // 진행상태 프로퍼티값의 최종값      
 
         while (elapsedTime < duration){

@@ -729,7 +729,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [ClientRpc]
     private void ChangeBattleScene(HexagonMapRoom hexagonMapRoom)
     {
-        GameUIManager.instance.DoScreenTransition(() => {
+        GameUIManager.instance.DoScreenChange(() => {
             // 카메라 위치 리셋
             //Camera.main.orthographic = true;
             Camera.main.transform.position = new Vector3(0f, 0f, -10f);
