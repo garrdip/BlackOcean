@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
+using Mirror;
 
 public class MenuUI : MonoBehaviour
 {
@@ -32,6 +32,9 @@ public class MenuUI : MonoBehaviour
 
     public void HandleSinglePlay()
     {
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        M_NetworkRoomManager.maxConnections = 1; // 방 최대 인원 1명으로 설정
+        M_NetworkRoomManager.StartHost(); // 호스트로 시작
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }   

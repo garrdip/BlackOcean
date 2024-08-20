@@ -8,9 +8,6 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
 {
     public uint ownedLobbyPlayer;
 
-    [SyncVar]
-    public int lobbyPlayersCount = 0; // lobbyPlayers SyncList의 요소들을 0으로 초기화 한 상태로 사용하기 때문에 참가한 lobbyPlayer의 카운트는 따로 변수 관리
-    
     public readonly SyncList<uint> lobbyPlayers = new SyncList<uint>(){ 0, 0, 0 }; // 리스트 요소들을 0으로 초기화. 0인 인덱스는 아직 LobbyPlayer가 추가되지 않은 빈 슬롯 상태
 
     protected override void Start()
@@ -55,6 +52,7 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
     [Server]
     public void AddLobbyPlayer(uint targetNetId)
     {
+        int lobbyPlayersCount = lobbyPlayers.FindAll((netId) => netId != 0).Count;
         if(lobbyPlayersCount <= lobbyPlayers.Count){
             if(lobbyPlayersCount == 0 || lobbyPlayers[0] == 0){ // 로비플레이어 인원이 0인 경우 or 0번이 빈 슬롯인 경우
                 lobbyPlayers.RemoveAt(0);
@@ -69,7 +67,6 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
                     lobbyPlayers.Insert(index, targetNetId);
                 }
             }
-            lobbyPlayersCount++; // LobbyPlayer Count 증가
         }
     }
 
@@ -78,8 +75,9 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
     public void RemoveLobbyPlayer(uint targetNetId)
     {
         int index = lobbyPlayers.FindIndex((netId) => netId == targetNetId);
-        lobbyPlayers[index] = 0;
-        lobbyPlayersCount--; // LobbyPlayer Count 감소
+        if(index != -1){
+            lobbyPlayers[index] = 0;
+        }
     }
 
     // 로비 플레이어 강제 퇴장
