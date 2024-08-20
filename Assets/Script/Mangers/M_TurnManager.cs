@@ -1475,7 +1475,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 player.SetIsReadyStateDefault();
             }
         }
-        ScreenTransitionManager.instance.DoTransition(() => {
+        GameUIManager.instance.DoScreenTransition(() => {
             // 카메라 위치 리셋
             Vector3 currLoc = M_MapManager.instance.currentRoom.transform.position;
             Camera.main.transform.position = currLoc + new Vector3(0,0,-8);

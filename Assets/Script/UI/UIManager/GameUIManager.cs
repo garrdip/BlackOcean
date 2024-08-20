@@ -23,6 +23,9 @@ public class GameUIManager : SingletonD<GameUIManager>
     public List<GameObject> currentIchiIcons = new List<GameObject>();
     public List<GameObject> maxIchiIcons = new List<GameObject>();
 
+    [Header("화면 전환 UI")]
+    public Image screenTransition;
+
     [Header("카드 전투 UI")]
     public Button buttonEndTurn;
     public Button buttonPrefareDeck;
@@ -60,6 +63,7 @@ public class GameUIManager : SingletonD<GameUIManager>
 
     void Start()
     {
+        screenTransition.material =  new Material(screenTransition.material); // 머티리얼 인스턴스 복사본을 생성하여 이미지의 머티리얼값에 할당(원본대신 복사본을 사용해 프로퍼티값 변경)
         scrollSpeed = 500f;
     }
 
@@ -166,6 +170,46 @@ public class GameUIManager : SingletonD<GameUIManager>
             cardQueuePopUp.GetComponent<CanvasGroup>().alpha = 0f;
             cardQueuePopUp.gameObject.SetActive(false);
         }
+    }
+
+    public void DoScreenTransition(System.Action callback = null)
+    {
+        StartCoroutine(TransitionCoroutine(() => {
+            if(callback != null){
+                callback();
+            }
+        }));
+    }
+    
+    public IEnumerator TransitionCoroutine(System.Action callback = null)
+    {
+        screenTransition.enabled = true;
+        float duration = 2.0f;
+        float elapsedTime = 0f;
+
+        float initialScroll = 4.5f; // 진행상태 프로퍼티값의 초기값
+        float finalScroll = 0f;     // 진행상태 프로퍼티값의 최종값      
+
+        while (elapsedTime < duration){
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / duration;
+
+            // Transition_In 구간 : 0에서 1사이의 t값이 0 ~ 0.5 구간에서는, 프로퍼티값의 초기값 -> 0 변경
+            // Transition_Out 구간 : 0에서 1사이의 t값이 0.5 ~ 1.0 구간에서는, 0 -> 프로퍼티값의 초기값 변경     
+            float currentScroll = t < 0.5f
+                ? Mathf.Lerp(initialScroll, finalScroll, t * 2)
+                : Mathf.Lerp(finalScroll, initialScroll, (t - 0.5f) * 2);
+            if (t >= 0.5f && callback != null){ // Transition_In 구간이 끝나고 Transition_Out 구간이 시작될 때 콜백 호출
+                callback();
+                callback = null; // 콜백이 한 번만 호출되도록 null로 설정
+            }
+            screenTransition.material.SetFloat("_Progress", currentScroll);
+
+            yield return null;
+        }
+
+        screenTransition.material.SetFloat("_Progress", initialScroll);
+        screenTransition.enabled = false;
     }
 
     // ------------------------------------ 스크롤 버튼 이벤트 트리거 컴포넌트에 할당된 함수 -------------------------------------//
