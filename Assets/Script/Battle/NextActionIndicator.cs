@@ -24,14 +24,12 @@ public class NextActionIndicator : MonoBehaviour
     private Sequence sequence;
     private Vector3 leftPointOriginPosition;
     private Vector3 rightPointOriginPosition;
-    public Vector3 actionIndicatorOriginPosition;
 
 
     void Start()
     {
         leftPointOriginPosition = pointLeft.transform.localPosition;
         rightPointOriginPosition = pointRight.transform.localPosition;
-        actionIndicatorOriginPosition = transform.position;
     }
 
     void OnDestroy()
@@ -50,7 +48,7 @@ public class NextActionIndicator : MonoBehaviour
     public void NextActionIndicatorBounce(int index)
     {
         if(transform != null){
-            transform.DOMoveY(actionIndicatorOriginPosition.y + 0.1f, 1f)
+            transform.DOMove(transform.position + new Vector3(0f, 0.15f, 0f), 1f)
                 .SetDelay((4 - index) * 0.5f)
                 .SetEase(Ease.InOutSine)
                 .SetLoops(-1, LoopType.Yoyo);

@@ -9,7 +9,7 @@ public class Shake : MonoBehaviour
 
     public Vector3 originPosition;
 
-    [Range(1f, 3f)]
+    [Range(0f, 3f)]
     public float shakeStrength;
 
     [Range(0f, 5f)]
@@ -27,9 +27,9 @@ public class Shake : MonoBehaviour
     {
         mainCamera = GetComponent<Camera>();
         originPosition = mainCamera.transform.position;
-        shakeStrength = 0.3f;
-        shakeDuration = 0.2f;
-        vibrato = 10;
+        shakeStrength = 0.5f;
+        shakeDuration = 0.1f;
+        vibrato = 12;
         randomness = 90f;
     }
 
