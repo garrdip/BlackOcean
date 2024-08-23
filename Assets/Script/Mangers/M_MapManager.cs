@@ -900,39 +900,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         else return RoomType.MONSTER;
     }
 
-    // 육각형 그리드(배경) 생성
-    public void GenerateHexgonGrid(int maxDistance)
-    {      
-        Vector3 currLoc = new Vector3(0,0,0);
-        for(int i = -maxDistance ; i <= maxDistance ; i ++)
-        {
-            if(i <= 0)
-            {
-                for(int j = Mathf.Abs(i) - maxDistance ; j <= maxDistance ; j++)
-                {
-                    currLoc = GetPosition(i,j);
-                    GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
-                    newGrid.transform.localPosition = newGrid.transform.position;
-                    newGrid.transform.localRotation = Quaternion.Euler(0,0,0);
-
-                    currLoc += new Vector3(0,1,0);
-                }
-            }
-            else
-            {
-                for(int j = -maxDistance ; j <= maxDistance - Mathf.Abs(i) ; j++)
-                {
-                    currLoc = GetPosition(i,j);
-                    GameObject newGrid = Instantiate(hexagonGrid,currLoc,Quaternion.identity,gridParent);
-                    newGrid.transform.localPosition = newGrid.transform.position;
-                    newGrid.transform.localRotation = Quaternion.Euler(0,0,0);
-
-                    currLoc += new Vector3(0,1,0);
-                }
-            }
-        }
-    }
-
     // 그리드 Axial좌표계 -> 인게임 좌표계 반환(중심점 동적 설정 Version)
     public Vector3 GetPosition(int x, int y, Vector3 centerPosition)
     {

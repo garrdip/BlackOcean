@@ -235,12 +235,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     }
 
     [Server]
-    public void ProcessCardPredict(Card card,List<TargetObject> tar)
-    {
-        CardData.instance.RunCard(card,tar);
-    }
-
-    [Server]
     public void OnChangedPhase()
     {
         Debug.Log("Phase is " + phase);
@@ -1494,65 +1488,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             MapUI.instance.ChangeMapDimBackground(false);
             MapUI.instance.RemoveAllMapInfoPopUps();
         });
-    }
-
-    public void MoveToPlayer(GamePlayer player, MoveDirection direction)
-    {
-        TargetObject forwarding = null,backwarding = null;
-        Vector3 forwardingDestination = new Vector3(0,0,0),backwardingDestination = new Vector3(0,0,0);
-        if(direction == MoveDirection.FORWARD)
-        {
-            if(player.selectOrder == 0) return;
-            uint netId = playerOrder[player.selectOrder - 1];
-            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                GamePlayer swap = networkIdentity.GetComponent<GamePlayer>();
-                playerOrder[player.selectOrder-1] = player.netId;
-                playerOrder[player.selectOrder] = swap.netId;
-                player.SetPlayerOrder(player.selectOrder - 1);
-                swap.SetPlayerOrder(swap.selectOrder + 1);
-                foreach(TargetObject tar in spawnedPlayerList)
-                {
-                    if(tar.player == player)
-                    {   
-                        forwarding = tar;
-                        backwardingDestination = tar.transform.position;
-                    }
-                    if(tar.player == swap)
-                    {
-                        backwarding = tar;
-                        forwardingDestination = tar.transform.position;
-                    }
-                }
-            }
-            
-        }
-        if(direction == MoveDirection.BACKWARD)
-        {
-            if(player.selectOrder == NetworkServer.connections.Count - 1) return;
-            uint netId = playerOrder[player.selectOrder + 1];
-            if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                GamePlayer swap = networkIdentity.GetComponent<GamePlayer>();
-                playerOrder[player.selectOrder+1] = player.netId;
-                playerOrder[player.selectOrder] = swap.netId;
-                player.SetPlayerOrder(player.selectOrder + 1);
-                swap.SetPlayerOrder(swap.selectOrder - 1);
-                foreach(TargetObject tar in spawnedPlayerList)
-                {
-                    if(tar.player == player)
-                    {   
-                        backwarding = tar;
-                        forwardingDestination = tar.transform.position;
-                    }
-                    if(tar.player == swap)
-                    {
-                        forwarding = tar;
-                        backwardingDestination = tar.transform.position;
-                    }
-                }
-            }
-        }
-        forwarding.transform.DOMove(forwardingDestination,0.5f,false).SetEase(Ease.OutQuart);
-        backwarding.transform.DOMove(backwardingDestination,0.5f,false).SetEase(Ease.OutQuart);
     }
 
     public TargetObject[] GetTargetObjectFromActionTarget(ActionTarget target)

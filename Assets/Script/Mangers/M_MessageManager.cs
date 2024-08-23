@@ -27,7 +27,6 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
 
     [Header("채팅창 컴포넌트용 필드")]
     public GameObject chatCanvas;
-    public GameObject chatContainer;
     public ScrollRect scrollRect;
     public TextMeshProUGUI chatMessage;
     public TMP_InputField messageInput;
