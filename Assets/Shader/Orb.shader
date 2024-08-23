@@ -2,8 +2,7 @@ Shader "Custom/GradientWithSmokeAndTransparentMask"
 {
     Properties
     {
-        _ColorTop ("Top Color", Color) = (1, 0, 0, 1) // 상단 색상
-        _ColorBottom ("Bottom Color", Color) = (0, 0, 1, 1) // 하단 색상
+        _BaseColor ("Base Color", Color) = (1, 0, 0, 1) // 기본 색상
         _Speed ("Speed", Float) = 1.0 // 애니메이션 속도
         _NoiseTex ("Noise Texture", 2D) = "white" {} // 노이즈 텍스처
         _NoiseStrength ("Noise Strength", Float) = 0.5 // 노이즈 강도
@@ -38,8 +37,7 @@ Shader "Custom/GradientWithSmokeAndTransparentMask"
                 float4 vertex : SV_POSITION;
             };
 
-            float4 _ColorTop;
-            float4 _ColorBottom;
+            float4 _BaseColor;
             float _Speed;
             float _NoiseStrength;
             float _NoiseScale;
@@ -56,16 +54,12 @@ Shader "Custom/GradientWithSmokeAndTransparentMask"
 
             float4 frag (v2f i) : SV_Target
             {
-                // 그라데이션 계산
-                float gradientPosition = abs(sin(_Time.y * _Speed + i.uv.y * 3.14159));
-                float4 baseColor = lerp(_ColorBottom, _ColorTop, gradientPosition);
-
-                // 노이즈 텍스처 샘플링
+                // 기본 색상에 노이즈 애니메이션 추가
                 float2 noiseUV = i.uv * _NoiseScale + float2(_Time.y * _Speed, _Time.y * _Speed);
                 float noiseValue = tex2D(_NoiseTex, noiseUV).r;
 
-                // 노이즈와 그라데이션을 결합
-                float4 colorWithNoise = lerp(baseColor, float4(1, 1, 1, 1), noiseValue * _NoiseStrength);
+                // 노이즈와 기본 색상을 결합
+                float4 colorWithNoise = lerp(_BaseColor, float4(1, 1, 1, 1), noiseValue * _NoiseStrength);
 
                 // 마스크 텍스처 적용
                 float maskValue = tex2D(_MaskTex, i.uv).a; // 마스크의 알파 채널 사용
