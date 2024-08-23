@@ -5,6 +5,7 @@ using DG.Tweening;
 public class NamePlate : MonoBehaviour
 {
     public GameObject hpBarFiller;
+    public GameObject hpBarFillerTrace;
     public TextMeshProUGUI hpText;
     public GameObject shield;
     public TextMeshProUGUI shieldValue;
@@ -34,13 +35,18 @@ public class NamePlate : MonoBehaviour
         shieldCanvas.GetComponent<CanvasGroup>().DOKill();
         shieldIcon.GetComponent<SpriteRenderer>().DOKill();
         shieldBase.GetComponent<SpriteRenderer>().DOKill();
+        hpBarFillerTrace.transform.DOKill();
         shield.transform.DOKill();
     }
 
-    public void SetHPValue(int value,int max,int order)
+    public void SetHPValue(int value, int max)
     {
-        hpBarFiller.transform.localPosition = new Vector3((3.2f * value / max) - 3.2f, 0, 0);
+        float hpValue = (3.3f * value / max) - 3.3f;
+        hpBarFiller.transform.localPosition = new Vector3(hpValue, 0, 0);
         hpText.text = value <= 0 ? ("0 / " + max) : (value + " / " + max);
+        DOVirtual.DelayedCall(1f, () => {
+            hpBarFillerTrace.transform.DOLocalMove(new Vector3(hpValue, 0, 0), 0.5f); // 1초 딜레이 후 임시 체력바 게이지를 현재 체력바 게이지 위치로 이동
+        });
     }
 
     public void SetShieldValue(int value,bool isGain, bool isEnemy)
