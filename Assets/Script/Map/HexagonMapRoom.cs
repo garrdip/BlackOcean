@@ -47,18 +47,15 @@ public class HexagonMapRoom : NetworkBehaviour
     public int FCost => GCost + HCost; // 최종 비용
 
     [Header("맵 타일")]
-    public GameObject mapTileMask; // 맵 타일 마스크
+    public GameObject mapTileBase; // 맵타일 베이스 오브젝트
     public GameObject originMapTile; // 원본 위치의 맵타일 오브젝트(라인 렌더러 위치를 위한 용도)
     public GameObject expandMapTile; // 위쪽 방향으로 확장되는 맵타일 오브젝트
-    public GameObject mapTileBase;
-    public GameObject mapTileLayer;
-    public GameObject mapTileIcon;
-    public GameObject mapIcon; // 기본 상태에서 보여지는 맵 아이콘 이미지
     public GameObject mapTileGrid;
-    public SortingGroup sortingGroup;
     public Vector3 expandMapTilePosition;
-    private float expandValue = 0.25f;
-    private float expandDuration = 0.5f;
+    private float expandValue;
+    private float originValue;
+    private const float expandDuration = 0.5f;
+    public TextMeshPro textRoomType;
 
     [Header("맵 UI")]
     public GameObject hexagonMapRoomUI;
@@ -96,21 +93,18 @@ public class HexagonMapRoom : NetworkBehaviour
         transform.SetParent(M_MapManager.instance.MapRooms.transform);
         transform.localPosition = new Vector3(transform.position.x, transform.position.y, 0f);
         transform.localRotation = Quaternion.Euler(0, 0f, 0f);
-        sortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
+        mapTileBase.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
         SetCanvasSortOrder();
         expandMapTilePosition = expandMapTile.transform.position;
+        expandValue = mapTileBase.transform.localPosition.y + 0.2f;
+        originValue = mapTileBase.transform.localPosition.y;
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-        if(!isActive){
-            mapTileBase.SetActive(false);
-            mapTileLayer.SetActive(false);
-            mapTileIcon.SetActive(false);
-            mapIcon.SetActive(false);
-            mapTileGrid.SetActive(false);
-        }
+        mapTileBase.SetActive(isActive);
+        textRoomType.gameObject.SetActive(isActive);
         votePlyers.Callback += OnUpdateVotePlayers;
     }
 
@@ -183,46 +177,38 @@ public class HexagonMapRoom : NetworkBehaviour
         switch(newVal)
         {
             case RoomType.START_LOCATION :
-                mapIcon.SetActive(false);
+                mapTileBase.GetComponent<SpriteRenderer>().color = Color.red;
+                textRoomType.text = "Start";
                 break;
             case RoomType.MONSTER :
-                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
-                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Normal_Monster];
+                textRoomType.text = "Normal Monster";
                 break;
             case RoomType.ELITE :
-                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
-                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Elite_Monster];
+                textRoomType.text = "Elite Monster";
                 break;
             case RoomType.EVENT_POSITIIVE :
-                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                textRoomType.text = "Event";
                 break;
             case RoomType.EVENT_NEGATIVE :
-                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                textRoomType.text = "Event";
                 break;
             case RoomType.CAMP :
-                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                textRoomType.text = "Camp";
                 break;
             case RoomType.ITEM_NPC :
-                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                textRoomType.text = "Item Shop";
                 break;
             case RoomType.CARD_NPC :
-                mapIcon.GetComponent<SpriteRenderer>().sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
-                mapIconSmall.sprite = M_MapManager.instance.mapTypeIcons[MapTypeIcon.Card_Shop];
+                textRoomType.text = "Card Shop";
                 break;
             case RoomType.COMPLETE :
-                mapIcon.SetActive(false);
-                mapTileIcon.GetComponent<SpriteRenderer>().color = Color.black;
+                textRoomType.text = "Complete";
                 break;
             case RoomType.RUINS :
-                mapIcon.SetActive(false);
+                mapTileBase.GetComponent<SpriteRenderer>().color = ProjectD.ColorUtils.HexToColor("#E700FF");    
                 break;
             case RoomType.BOSS :
-                mapIcon.SetActive(false);
-                mapTileIcon.GetComponent<SpriteRenderer>().color = ProjectD.ColorUtils.HexToColor("#E700FF");
+                mapTileBase.GetComponent<SpriteRenderer>().color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 break;
         }
     }
@@ -275,18 +261,8 @@ public class HexagonMapRoom : NetworkBehaviour
     void ChangeHexagonRoomActive(bool isActive)
     {
         float alpha = isActive ? 1f : 0f;
-        expandMapTile.SetActive(isActive);
-        mapTileLayer.SetActive(isActive);
-        mapTileIcon.SetActive(isActive);
-        if(roomType == RoomType.COMPLETE){
-            mapIcon.SetActive(false);
-        }else{
-            if(isRegion && !isActive){
-                mapIcon.SetActive(false);
-            }else{
-                mapIcon.SetActive(isActive);
-            }
-        }
+        mapTileBase.SetActive(isActive);
+        textRoomType.gameObject.SetActive(isActive);
     }
 
     // 선택한 HexaonMapRoom의 UI 컴포넌트들의 활성화 상태 변경(본인이 선택한 경우와 다른 플레이어가 선택한 경우 구분)
@@ -344,24 +320,14 @@ public class HexagonMapRoom : NetworkBehaviour
     private void ChangeMapExpandedState(bool isSelected)
     {
         if(isSelected){
-            expandMapTile.transform.DOKill();
-            expandMapTile.transform.DOLocalMoveY(expandValue, expandDuration);
-            mapTileMask.GetComponent<SpriteMask>().enabled = true;
-            mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
-            mapTileBase.SetActive(true);
+            mapTileBase.transform.DOLocalMoveY(expandValue, expandDuration);
             hexagonMapRoomUI.transform.DOLocalMoveY(expandValue, expandDuration);
-            hexagonMapRoomUI.SetActive(true);              
+            hexagonMapRoomUI.SetActive(true);  
         }else{
-            expandMapTile.transform.DOLocalMoveY(0f, expandDuration).OnComplete(() => {
-                mapTileMask.GetComponent<SpriteMask>().enabled = false;
-                mapTileBase.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
-                mapTileBase.SetActive(false);
-            });
-            hexagonMapRoomUI.transform.DOLocalMoveY(0f, expandDuration);
+            mapTileBase.transform.DOLocalMoveY(originValue, expandDuration);
+            hexagonMapRoomUI.transform.DOLocalMoveY(originValue, expandDuration);
             hexagonMapRoomUI.SetActive(false);
         }
-        mapIcon.GetComponent<SpriteRenderer>().DOFade(isSelected == true ? 0.25f : 1f, 0.5f);
-        sortingGroup.sortingLayerName = isSelected ? "HexagonMapRoomSelected" : "HexagonMapRoom";
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("ingame_menu_stage_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }

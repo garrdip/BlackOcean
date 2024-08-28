@@ -19,6 +19,12 @@ public class MenuUI : MonoBehaviour
     public Button buttonQuit;
     public Button buttonCloseDeckBook;
 
+    public Texture2D mouseCursorTexture;
+
+    void Awake()
+    {
+        Cursor.SetCursor(mouseCursorTexture, Vector2.zero, CursorMode.ForceSoftware);
+    }
 
     void Start()
     {

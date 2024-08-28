@@ -45,7 +45,9 @@ public class NamePlate : MonoBehaviour
         hpBarFiller.transform.localPosition = new Vector3(hpValue, 0, 0);
         hpText.text = value <= 0 ? ("0 / " + max) : (value + " / " + max);
         DOVirtual.DelayedCall(1f, () => {
-            hpBarFillerTrace.transform.DOLocalMove(new Vector3(hpValue, 0, 0), 0.5f); // 1초 딜레이 후 임시 체력바 게이지를 현재 체력바 게이지 위치로 이동
+            if(hpBarFillerTrace != null){
+                hpBarFillerTrace.transform.DOLocalMove(new Vector3(hpValue, 0, 0), 0.5f); // 1초 딜레이 후 임시 체력바 게이지를 현재 체력바 게이지 위치로 이동
+            }
         });
     }
 

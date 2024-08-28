@@ -288,38 +288,42 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         hexagonMapRooms.Add(centerRoom);
         hexagonMapRoomNetIds.Add(centerRoom.GetComponent<NetworkIdentity>().netId);
         
-        // 가운데 주위에 6개 생성
-        for (int i = 0; i < 6; i++)
+        // 시작지점 6방향에 활성화된 방 생성
+        for(int q = -1 ; q <= 1 ; q++)
         {
-            float angle = i * angleIncrement; // 새로 생성될 육각형의 각도 계산
-            Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up; // 60도씩 반시계 방향으로 육각형의 6면을 돌며 각 면의 위치에 생성
-            Vector3 position = centerRoom.transform.position + offset;
+            int rStart = Mathf.Max(-1, -q - 1);
+            int rEnd = Mathf.Min(1, -q + 1);
+     
+            for(int r = rStart; r <= rEnd; r++)
+            {
+                Vector3 position = GetPosition(q, r, centerRoom.position);
+                if(!IsPositionDuplicated(position)){
+                    GameObject aroundRoomObject = Instantiate(
+                            networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
+                            position,
+                            Quaternion.identity
+                        );
+                        HexagonMapRoom aroundRoom = aroundRoomObject.GetComponent<HexagonMapRoom>();
+                        // 방 타입 설정
+                        aroundRoom.roomType = GetRoomType();
+                        // 인게임 좌표계 값 설정
+                        aroundRoom.position = position;
+                        // 방 활성화 상태 설정
+                        aroundRoom.isActive = true;
+                        // 고유 좌표계 값 설정
+                        aroundRoom.coordinate = centerRoom.coordinate + new Vector2Int(q, r);
+                        // 위험도값 설정
+                        aroundRoom.hazard = GetDistanceFromCurrentCoordinate(centerRoom.coordinate, aroundRoom.coordinate);
+                
+                        NetworkServer.Spawn(aroundRoomObject);
 
-            GameObject aroundRoomObject = Instantiate(
-                networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
-                position,
-                Quaternion.identity
-            );
-            HexagonMapRoom aroundRoom = aroundRoomObject.GetComponent<HexagonMapRoom>();
-            // 방 타입 설정
-            aroundRoom.roomType = GetRoomType();
-            // 인게임 좌표계 값 설정
-            aroundRoom.position = position;
-            // 방 활성화 상태 설정
-            aroundRoom.isActive = true;
-            // 고유 좌표계 값 설정
-            aroundRoom.coordinate = centerRoom.coordinate + offSets[i];
-            // 위험도값 설정
-            aroundRoom.hazard = GetDistanceFromCurrentCoordinate(centerRoom.coordinate, aroundRoom.coordinate);
-    
-            NetworkServer.Spawn(aroundRoomObject);
-
-            // 육각형 위치 및 오브젝트 클래스 리스트에 추가
-            hexagonMapRooms.Add(aroundRoom);
-            hexagonMapRoomNetIds.Add(aroundRoom.GetComponent<NetworkIdentity>().netId);
+                        // 육각형 위치 및 오브젝트 클래스 리스트에 추가
+                        hexagonMapRooms.Add(aroundRoom);
+                        hexagonMapRoomNetIds.Add(aroundRoom.GetComponent<NetworkIdentity>().netId);
+                }
+            }
         }
-        // 주변 일정범위를 채우는 비활성화된 맵 생성
-        GenerateHexagonMapWorld(12, centerRoom);
+        GenerateHexagonMapWorld(12, centerRoom); // 주변 일정범위를 채우는 비활성화된 맵 생성
     }
 
     // 초기생성된 맵 주변에 비활성화된 맵 생성
@@ -494,7 +498,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         foreach(Region region in regions){
             foreach(Tile loc in region.tiles){
-                Vector3 position = GetPosition((int)loc.coordinate.x, (int)loc.coordinate.y);
                 Vector2Int coordinate = new Vector2Int((int)loc.coordinate.x, (int)loc.coordinate.y);
                 foreach(HexagonMapRoom hexagonMapRoom in hexagonMapRooms){
                     if(hexagonMapRoom.coordinate == coordinate){
@@ -903,20 +906,22 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     // 그리드 Axial좌표계 -> 인게임 좌표계 반환(중심점 동적 설정 Version)
     public Vector3 GetPosition(int x, int y, Vector3 centerPosition)
     {
+        float yOffset = 0.6f;
         float length = 1 / Mathf.Tan(Mathf.PI / 3);
         Vector3 retVal = new Vector3(0, 0, 0);
-        retVal.x = centerPosition.x + 1.5f * x * length;
-        retVal.y = centerPosition.y - y - (x * 0.5f);
+        retVal.x = centerPosition.x + (1.5f * x * length);
+        retVal.y = centerPosition.y - (y * yOffset) - (x * yOffset * 0.5f);
         return retVal;
     }
 
     // 그리드 Axial좌표계 -> 인게임 좌표계 반환(중심점 0,0,0 Version)
     public Vector3 GetPosition(int x, int y)
     {
-        float length = 1/Mathf.Tan(Mathf.PI/3);
-        Vector3 retVal = new Vector3(0,0,0);
-        retVal.x = 1.5f*x*length;
-        retVal.y = - y - ( x * 0.5f );
+        float yOffset = 0.6f;
+        float length = 1 / Mathf.Tan(Mathf.PI / 3);
+        Vector3 retVal = new Vector3(0, 0, 0);
+        retVal.x = 1.5f * x * length;
+        retVal.y = (-y * yOffset) - (x * yOffset * 0.5f);
         return retVal;
     } 
 
@@ -1000,7 +1005,39 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                         
                 }
                 newRegion.GetComponent<SpriteRenderer>().color = regionColor;
-                newRegion.transform.localRotation = Quaternion.Euler(0,0,-60*i);
+                
+                // Region 라인 위치 및 회전값 재설정(isometric 맵타일 버전)
+                switch(i)
+                {
+                    case 0 : // North
+                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(0f, -0.06f, 0f);
+                        break;
+                    case 1 : // 2시
+                        newRegion.transform.localScale = new Vector3(0.7f, 1f, 1f);
+                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, -45f);
+                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(0.07f, -0.06f, 0f);
+                        break;
+                    case 2 : // 5시
+                        newRegion.transform.localScale = new Vector3(0.7f, 1f, 1f);
+                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, -135f);
+                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(0.07f, 0.35f, 0f);
+                        break;
+                    case 3 :// 6시
+                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, -180f);
+                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(0f, 0.35f, 0f);
+                        break;
+                    case 4 :// 7시
+                        newRegion.transform.localScale = new Vector3(0.7f, 1f, 1f);
+                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, 135f);
+                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(-0.07f, 0.35f, 0f);
+                        break;
+                    case 5 :// 10시
+                        newRegion.transform.localScale = new Vector3(0.7f, 1f, 1f);
+                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, 45f);
+                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(-0.07f, -0.05f, 0f);
+                        break;
+                }
             }
         }
     }
@@ -1175,8 +1212,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         SpriteRenderer sprite = startPathLineRenderer.GetComponent<SpriteRenderer>();
         sprite.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
         path.netId = netId;
-        path.rotationZ = GetAngleFromCoordinate(startAt.coordinate, findPath[0].coordinate); // 선의 회전값 계산
-
+        float startAngle = GetAngleFromCoordinate(startAt.coordinate, findPath[0].coordinate); // 선의 회전값 계산
+        path.rotationZ = startAngle;
+        SetPathLineScaleByAngle(startAngle, startPathLineRenderer);
         Vector3 startPosition = ((startAt.originMapTile.transform.position) + (findPath[0].originMapTile.transform.position)) / 2f; // 선의 중심 위치 계산
         startPathLineRenderer.transform.position = startPosition;
         pathLineRenderers.Add(startPathLineRenderer);
@@ -1189,30 +1227,42 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             SpriteRenderer spriteRenderer = pathLineRenderer.GetComponent<SpriteRenderer>();
             spriteRenderer.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
             pathLineRendererComponent.netId = netId;
-            pathLineRendererComponent.rotationZ = GetAngleFromCoordinate(findPath[i].coordinate, findPath[i + 1].coordinate); // 선의 회전값 계산
-
+            float angle = GetAngleFromCoordinate(findPath[i].coordinate, findPath[i + 1].coordinate); // 선의 회전값 계산
+            pathLineRendererComponent.rotationZ = angle;
+            SetPathLineScaleByAngle(angle, pathLineRenderer);
             Vector3 pathPosition = ((findPath[i].originMapTile.transform.position) + (findPath[i + 1].originMapTile.transform.position)) / 2f; // 선의 중심 위치 계산
             pathLineRenderer.transform.position = pathPosition;
             pathLineRenderers.Add(pathLineRenderer);
         }
     }
 
+    // 검색 경로 라인렌더러 스케일 변경
+    private void SetPathLineScaleByAngle(float angle, GameObject pathLineRenderer)
+    {
+        if(angle == 90f || angle == -90f){
+            pathLineRenderer.transform.localScale = new Vector3(0.09f, 0.5f, 1f);
+        }else{
+            pathLineRenderer.transform.localScale = new Vector3(0.135f, 0.5f, 1f);
+        }
+        pathLineRenderers.Add(pathLineRenderer);
+    }
+
     // 고유좌표계를 이용해 시작점과 끝점 사이의 각도 뱐환
-    public float GetAngleFromCoordinate(Vector2Int start, Vector2Int end)
+    private float GetAngleFromCoordinate(Vector2Int start, Vector2Int end)
     {
         Vector2Int offset = end - start;
         if (offset == new Vector2Int(0, -1))
             return 90f;  // 북
         else if (offset == new Vector2Int(-1, 0))
-            return -30f; // 11시
+            return -19f; // 11시
         else if (offset == new Vector2Int(-1, 1))
-            return 30f;  // 7시
+            return 19f;  // 7시
         else if (offset == new Vector2Int(0, 1))
             return -90f; // 남
         else if (offset == new Vector2Int(1, 0))
-            return -30f; // 5시
+            return -19f; // 5시
         else if (offset == new Vector2Int(1, -1))
-            return 30f;  // 1시
+            return 19f;  // 1시
         else
             return 0f;
     }

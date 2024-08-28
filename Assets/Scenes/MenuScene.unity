@@ -18659,6 +18659,7 @@ MonoBehaviour:
   buttonSettings: {fileID: 1108210346}
   buttonQuit: {fileID: 1306558864}
   buttonCloseDeckBook: {fileID: 1795099829}
+  mouseCursorTexture: {fileID: 0}
 --- !u!4 &1716722581
 Transform:
   m_ObjectHideFlags: 0

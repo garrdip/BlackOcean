@@ -77,6 +77,9 @@ TagManager:
   - name: HexagonMapRoom
     uniqueID: 1918249161
     locked: 0
+  - name: HexagonMapRegion
+    uniqueID: 1761947709
+    locked: 0
   - name: MapDimBackground
     uniqueID: 927044029
     locked: 0
