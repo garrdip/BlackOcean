@@ -577,7 +577,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 playerVoteHexagonMapRoom.Remove(networkIdentity);
                 GamePlayerMap gamePlayerMap = NetworkServer.spawned[networkIdentity.netId].GetComponent<GamePlayerMap>();
                 gamePlayerMap.RpcHidePath(gamePlayerMap.GetComponent<GamePlayer>().objectOwner.netId);
-                gamePlayerMap.TargetChangeMapDimBackground(false);
             }
         }
 
@@ -856,15 +855,18 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 GamePlayer addGamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
                 RemoveMapInfoPopUpItem(addGamePlayer);
                 CreateMapInfoPopUpItem(addGamePlayer, item);
+                ChangeDimmingByPlayerVote(key, true);
                 break;
             case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_SET:
                 GamePlayer setGamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
                 RemoveMapInfoPopUpItem(setGamePlayer);
                 CreateMapInfoPopUpItem(setGamePlayer, item);
+                ChangeDimmingByPlayerVote(key, true);
                 break;
             case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_REMOVE:
                 GamePlayer removeGamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
                 RemoveMapInfoPopUpItem(removeGamePlayer);
+                ChangeDimmingByPlayerVote(key, false);
                 break;
             case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_CLEAR:
                 
@@ -1091,6 +1093,15 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         if(index != -1){
             Destroy(MapUI.instance.mapInfoPopUps[index].gameObject);
             MapUI.instance.mapInfoPopUps.RemoveAt(index);
+        }
+    }
+
+    // 로컬 플레이어가 투표한 방인 경우 맵 화면 딤처리 상태 변경
+    public void ChangeDimmingByPlayerVote(NetworkIdentity votePlayerNetIdentity, bool isActive)
+    {
+        bool isLocalPlayerVote = (votePlayerNetIdentity == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.netIdentity);
+        if(isLocalPlayerVote){
+            MapUI.instance.ChangeMapDimBackground(isActive);
         }
     }
 
