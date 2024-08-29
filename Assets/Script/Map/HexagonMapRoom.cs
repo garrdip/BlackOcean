@@ -48,6 +48,7 @@ public class HexagonMapRoom : NetworkBehaviour
 
     [Header("맵 타일")]
     public GameObject mapTileBase; // 맵타일 베이스 오브젝트
+    public GameObject mapTileMask; // 맵타일 마스크
     public GameObject originMapTile; // 원본 위치의 맵타일 오브젝트(라인 렌더러 위치를 위한 용도)
     public GameObject mapTileGrid;
     private float expandValue;
@@ -318,10 +319,22 @@ public class HexagonMapRoom : NetworkBehaviour
         if(isSelected){
             mapTileBase.transform.DOLocalMoveY(expandValue, expandDuration);
             hexagonMapRoomUI.transform.DOLocalMoveY(expandValue, expandDuration);
-            hexagonMapRoomUI.SetActive(true);  
+            mapTileMask.GetComponent<SpriteMask>().enabled = true;
+            mapTileMask.transform.localPosition = new Vector3(
+                mapTileMask.transform.localPosition.x,
+                expandValue + 0.05f, // 마스크 확장 위치는 베이스보다 y축 0.05f 높은위치에(타일 하단부는 딱 맞게)
+                mapTileMask.transform.localPosition.z
+            );
+            hexagonMapRoomUI.SetActive(true);
         }else{
             mapTileBase.transform.DOLocalMoveY(originValue, expandDuration);
             hexagonMapRoomUI.transform.DOLocalMoveY(originValue, expandDuration);
+            mapTileMask.GetComponent<SpriteMask>().enabled = false;
+            mapTileMask.transform.localPosition = new Vector3(
+                mapTileMask.transform.localPosition.x,
+                originValue,
+                mapTileMask.transform.localPosition.z
+            );  
             hexagonMapRoomUI.SetActive(false);
         }
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("ingame_menu_stage_mouseclick"));
