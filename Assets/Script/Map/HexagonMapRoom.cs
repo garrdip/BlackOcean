@@ -49,9 +49,7 @@ public class HexagonMapRoom : NetworkBehaviour
     [Header("맵 타일")]
     public GameObject mapTileBase; // 맵타일 베이스 오브젝트
     public GameObject originMapTile; // 원본 위치의 맵타일 오브젝트(라인 렌더러 위치를 위한 용도)
-    public GameObject expandMapTile; // 위쪽 방향으로 확장되는 맵타일 오브젝트
     public GameObject mapTileGrid;
-    public Vector3 expandMapTilePosition;
     private float expandValue;
     private float originValue;
     private const float expandDuration = 0.5f;
@@ -95,7 +93,6 @@ public class HexagonMapRoom : NetworkBehaviour
         transform.localRotation = Quaternion.Euler(0, 0f, 0f);
         mapTileBase.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
         SetCanvasSortOrder();
-        expandMapTilePosition = expandMapTile.transform.position;
         expandValue = mapTileBase.transform.localPosition.y + 0.2f;
         originValue = mapTileBase.transform.localPosition.y;
     }
@@ -206,9 +203,11 @@ public class HexagonMapRoom : NetworkBehaviour
                 break;
             case RoomType.RUINS :
                 mapTileBase.GetComponent<SpriteRenderer>().color = ProjectD.ColorUtils.HexToColor("#E700FF");    
+                textRoomType.text = "Ruins";
                 break;
             case RoomType.BOSS :
                 mapTileBase.GetComponent<SpriteRenderer>().color = ProjectD.ColorUtils.HexToColor("#E700FF");
+                textRoomType.text = "Boss";
                 break;
         }
     }
@@ -249,9 +248,6 @@ public class HexagonMapRoom : NetworkBehaviour
                 M_MapManager.instance.SetRoomTypeBossRoom(this);
             }
         }
-        if(newValue != null){
-            newValue.transform.localPosition = expandMapTilePosition + (isSelected ? new Vector3(0f, expandValue, 0f) : Vector3.zero);
-        } 
     }
 
     // ------------------------------------------------------------ Normal Method --------------------------------------------------------------- //
@@ -370,9 +366,9 @@ public class HexagonMapRoom : NetworkBehaviour
     {
         if(mapBoss != null){
             if(isSelected){
-                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y + expandValue, expandDuration);
+                mapBoss.transform.DOMoveY(transform.position.y + 0.35f, expandDuration);
             }else{
-                mapBoss.transform.DOLocalMoveY(expandMapTilePosition.y, expandDuration);
+                mapBoss.transform.DOMoveY(transform.position.y + 0.15f, expandDuration);
             }
         }
     }

@@ -101,6 +101,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         new Vector2Int(1, -1) // 1시
     };
 
+    private const int maxHexagonGridRange = 12;
+
     private void Awake()
     {
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
@@ -323,7 +325,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 }
             }
         }
-        GenerateHexagonMapWorld(12, centerRoom); // 주변 일정범위를 채우는 비활성화된 맵 생성
+        GenerateHexagonMapWorld(maxHexagonGridRange, centerRoom); // 주변 일정범위를 채우는 비활성화된 맵 생성
     }
 
     // 초기생성된 맵 주변에 비활성화된 맵 생성
@@ -399,7 +401,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             
             if(saveData.map.currentRoom == saveDataMapRoom.coordinate){
                 currentRoom = aroundRoom;
-                GenerateHexagonMapWorld(16, currentRoom);
+                GenerateHexagonMapWorld(maxHexagonGridRange, currentRoom);
             }
         }
     }
@@ -527,12 +529,11 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     public void GenreateMapBoss()
     {
         Vector3 centerPos = Vector3.zero;
-        int distance = Random.Range(10, 12);
+        int distance = Random.Range(maxHexagonGridRange-2, maxHexagonGridRange);
         float angle = Random.Range(0, 2 * Mathf.PI);
         centerPos.x = (int)(distance * Mathf.Cos(angle));
         centerPos.y = (int)(distance * Mathf.Sin(angle));
-        Vector3 position = GetPosition((int)centerPos.x, (int)centerPos.y) - new Vector3(0f, -0.5f, 0f);
-
+        Vector3 position = GetPosition((int)centerPos.x, (int)centerPos.y) + new Vector3(0f, 0.15f, 0f);
         var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
             GameObject mapBossObject = Instantiate(
                 networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapBoss"),
@@ -637,7 +638,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             }
 
             // 보스 위치 변경
-            mapBoss.bossPosition = GetPosition(mapBoss.coordinate.x, mapBoss.coordinate.y);
+            mapBoss.bossPosition = GetPosition(mapBoss.coordinate.x, mapBoss.coordinate.y) + new Vector3(0f, 0.15f, 0f);
 
             foreach(HexagonMapRoom hexagonMapRoom in hexagonMapRooms){
                 hexagonMapRoom.mapBoss = null;
