@@ -93,6 +93,7 @@ public class HexagonMapRoom : NetworkBehaviour
         transform.localPosition = new Vector3(transform.position.x, transform.position.y, 0f);
         transform.localRotation = Quaternion.Euler(0, 0f, 0f);
         mapTileBase.GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 10f);
+        textRoomType.sortingOrder = -(int)(transform.position.y * 10f);
         SetCanvasSortOrder();
         expandValue = mapTileBase.transform.localPosition.y + 0.2f;
         originValue = mapTileBase.transform.localPosition.y;
