@@ -1,9 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using Mirror;
 using ProjectD;
 
@@ -49,11 +46,16 @@ public class CardCtrlArrow : NetworkBehaviour
     private void HandleArrowNodesTrasnform()
     {
         if(controlPoints.Count > 0){
-            // P3 is at the mouse position
             Vector3 mousePosition = Input.mousePosition; // 마우스 좌표 가져오기
             mousePosition.z = Camera.main.nearClipPlane; // 카메라가 바라보는 위치로 설정
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition); // 화면 좌표를 월드 좌표로 변환
-            this.controlPoints[3] = worldPosition;
+
+            SpriteRenderer arrowHeadSpriteRenderer = this.arrowNodes[this.arrowNodes.Count - 1].GetComponent<SpriteRenderer>(); // 화살표 머리 오브젝트의 스프라이트 랜더러
+            float arrowHeadHeight = arrowHeadSpriteRenderer.bounds.size.y; // 화살표 머리의 스프라이트 랜더러 높이
+            Vector3 controlPoint2 = new Vector3(this.controlPoints[2].x, this.controlPoints[2].y, 0);
+            Vector3 arrowDirection = (worldPosition - controlPoint2).normalized; // 화살표가 향하는 방향
+            this.controlPoints[3] = worldPosition - arrowDirection * (arrowHeadHeight); //  P3(controlPoints[3])는 마우스 위치(화살표 머리의 위쪽 끝이 마우스 위치에 오도록 위치 보정)
+            
             if(arrowNodes.Count > 0){
                 for(int i=0; i<this.arrowNodes.Count; i++){
                     // Caculates t.
@@ -75,6 +77,15 @@ public class CardCtrlArrow : NetworkBehaviour
 
                     // The first arrow node's rotation
                     this.arrowNodes[0].transform.rotation = this.arrowNodes[1].transform.rotation;
+
+                    // 화살표 머리와 바로 이전 노드사이 위치 1.5배 더 떨어지도록 조절
+                    var lastNode = arrowNodes[arrowNodes.Count - 1];
+                    var prevLastNode = arrowNodes[arrowNodes.Count - 2];
+                    Vector3 direction = (lastNode.position - prevLastNode.position).normalized;
+                    float distance = Vector3.Distance(prevLastNode.position, lastNode.position);
+                    lastNode.position = prevLastNode.position + direction * distance * 1.5f;
+                    var finalEuler = new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, lastNode.position - prevLastNode.position));
+                    lastNode.rotation = Quaternion.Euler(finalEuler);
                 }        
             }
             CalculateBezierCurvePoint();
@@ -200,7 +211,7 @@ public class CardCtrlArrow : NetworkBehaviour
                 var scale = this.scaleFactor * (0.4f - 0.02f * (this.arrowNodes.Count -1 -i));
                 this.arrowNodes[i].localScale = (i == (arrowNodes.Count-1)) 
                     ? new Vector3(scale + 0.5f, scale + 0.5f, 0f) // Arrow Head Scale
-                    : new Vector3(scale + 0.3f, scale + 0.3f, 0f); // Arrow Node Scale
+                    : new Vector3(scale + 0.35f, scale + 0.35f, 0f); // Arrow Node Scale
             }
         }
     }
@@ -210,5 +221,6 @@ public class CardCtrlArrow : NetworkBehaviour
     {
         ChangeArrowVisible(false, GameUIManager.instance.CardOnHandsPanel.transform); // 화살표 활성화 상태 변경
         M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
+        Cursor.visible = true;
     }
 }
