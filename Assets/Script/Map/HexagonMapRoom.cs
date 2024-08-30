@@ -322,7 +322,7 @@ public class HexagonMapRoom : NetworkBehaviour
             mapTileMask.GetComponent<SpriteMask>().enabled = true;
             mapTileMask.transform.localPosition = new Vector3(
                 mapTileMask.transform.localPosition.x,
-                expandValue + 0.05f, // 마스크 확장 위치는 베이스보다 y축 0.05f 높은위치에(타일 하단부는 딱 맞게)
+                expandValue,
                 mapTileMask.transform.localPosition.z
             );
             hexagonMapRoomUI.SetActive(true);
