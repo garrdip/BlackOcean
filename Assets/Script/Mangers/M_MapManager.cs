@@ -6,6 +6,7 @@ using Mirror;
 using Spine.Unity;
 using ProjectD;
 using AYellowpaper.SerializedCollections;
+using DG.Tweening;
 
 public class M_MapManager : NetworkSingletonD<M_MapManager>
 {  
@@ -732,7 +733,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [ClientRpc]
     private void ChangeBattleScene(HexagonMapRoom hexagonMapRoom)
     {
-        GameUIManager.instance.DoScreenChange(() => {
+        GameUIManager.instance.DoScreenChangeIn(() => {
             // 카메라 위치 리셋
             //Camera.main.orthographic = true;
             Camera.main.transform.position = new Vector3(0f, 0f, -10f);
@@ -767,6 +768,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 break;
             }
         }
+        GameUIManager.instance.DoScreenChangeOut();
     }
 
     // 전투 없이 이동 수행 : MapPlayerDestination 오브젝트 삭제 + 라인렌더러 삭제

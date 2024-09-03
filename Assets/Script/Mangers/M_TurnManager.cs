@@ -1469,7 +1469,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 player.SetIsReadyStateDefault();
             }
         }
-        GameUIManager.instance.DoScreenChange(() => {
+        GameUIManager.instance.DoScreenChangeIn(() => {
             // 카메라 위치 리셋
             Vector3 currLoc = M_MapManager.instance.currentRoom.transform.position;
             Camera.main.transform.position = currLoc + new Vector3(0,0,-8);
@@ -1487,6 +1487,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             // Dim배경 상태 변경
             MapUI.instance.ChangeMapDimBackground(false);
             MapUI.instance.RemoveAllMapInfoPopUps();
+
+            GameUIManager.instance.DoScreenChangeOut();
         });
     }
 

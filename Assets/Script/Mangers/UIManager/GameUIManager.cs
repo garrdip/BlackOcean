@@ -30,7 +30,7 @@ public class GameUIManager : SingletonD<GameUIManager>
         Fade,
         Transition
     }
-    public ScreenTransitionMode screenTransitionMode;
+    public ScreenTransitionMode screenTransitionMode; // 스크린 전환 모드(페이드 인 아웃, 블록트랜지션 인 아웃)
 
     [Header("카드 전투 UI")]
     public Button buttonEndTurn;
@@ -194,44 +194,68 @@ public class GameUIManager : SingletonD<GameUIManager>
         }
     }
 
-    // 화면 전환 모드에 따라 분기 처리
-    public void DoScreenChange(System.Action callback = null)
+    // 화면 전환 모드에 따라 스크린 IN 시퀀스 수행
+    public void DoScreenChangeIn(System.Action callback = null)
     {
         switch(screenTransitionMode){
             case ScreenTransitionMode.Fade:
-                DoScreenFade(() => callback());
+                DoScreenFadeIn(() => callback());
                 break;
             case ScreenTransitionMode.Transition:
-                DoScreenTransition(() => callback());
+                DoScreenTransitionIn(() => callback());
                 break;
         }
     }
 
-    // 스크린 페이드 인 아웃 
-    private void DoScreenFade(System.Action callback = null)
+    // 화면 전환 모드에 따라 스크린 OUT 시퀀스 수행
+    public void DoScreenChangeOut()
+    {
+         switch(screenTransitionMode){
+            case ScreenTransitionMode.Fade:
+                DoScreenFadeOut();
+                break;
+            case ScreenTransitionMode.Transition:
+                DoScreenTransitionOut();
+                break;
+        }
+    }
+
+    // 스크린 Fade In 시퀀스 
+    private void DoScreenFadeIn(System.Action callback = null)
     {
         screenFade.DOFade(1f, 0.5f).OnComplete(() => {
             if(callback != null){
                 callback();
             }
-            screenFade.DOFade(0f, 0.5f);
         });
     }
 
-    // 스크린 블록 트랜지션
-    private void DoScreenTransition(System.Action callback = null)
+    // 스크린 Fade Out 시퀀스
+    private void DoScreenFadeOut()
     {
-        StartCoroutine(TransitionCoroutine(() => {
+        screenFade.DOFade(0f, 0.5f);
+    }
+
+    // 스크린 Block Transition In 시퀀스
+    private void DoScreenTransitionIn(System.Action callback = null)
+    {
+        StartCoroutine(TransitionInCoroutine(() => {
             if(callback != null){
                 callback();
             }
         }));
     }
-    
-    private IEnumerator TransitionCoroutine(System.Action callback = null)
+
+    // 스크린 Block Transition Out 시퀀스
+    private void DoScreenTransitionOut()
+    {
+        StartCoroutine(TransitionOutCoroutine());
+    }
+
+    private IEnumerator TransitionInCoroutine(System.Action callback = null)
     {
         screenTransition.enabled = true;
-        float duration = 2.0f;
+        float duration = 1.0f; // TransitionIn의 지속 시간
         float elapsedTime = 0f;
 
         float initialScroll = 2.5f; // 진행상태 프로퍼티값의 초기값
@@ -241,21 +265,40 @@ public class GameUIManager : SingletonD<GameUIManager>
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / duration;
 
-            // Transition_In 구간 : 0에서 1사이의 t값이 0 ~ 0.5 구간에서는, 프로퍼티값의 초기값 -> 0 변경
-            // Transition_Out 구간 : 0에서 1사이의 t값이 0.5 ~ 1.0 구간에서는, 0 -> 프로퍼티값의 초기값 변경     
-            float currentScroll = t < 0.5f
-                ? Mathf.Lerp(initialScroll, finalScroll, t * 2)
-                : Mathf.Lerp(finalScroll, initialScroll, (t - 0.5f) * 2);
-            if (t >= 0.5f && callback != null){ // Transition_In 구간이 끝나고 Transition_Out 구간이 시작될 때 콜백 호출
-                callback();
-                callback = null; // 콜백이 한 번만 호출되도록 null로 설정
-            }
+            // Transition_In 구간 : 0에서 1사이의 t값이 0 ~ 1 구간에서는, 프로퍼티값의 초기값 -> 0 변경
+            float currentScroll = Mathf.Lerp(initialScroll, finalScroll, t);
+
             screenTransition.material.SetFloat("_Progress", currentScroll);
 
             yield return null;
         }
+        screenTransition.material.SetFloat("_Progress", finalScroll);
+        if(callback != null){
+            callback();
+        }
+    }
 
-        screenTransition.material.SetFloat("_Progress", initialScroll);
+    private IEnumerator TransitionOutCoroutine()
+    {
+        screenTransition.enabled = true;
+        float duration = 1.0f; // TransitionOut의 지속 시간
+        float elapsedTime = 0f;
+
+        float initialScroll = 0f;     // TransitionIn에서 최종적으로 설정된 값
+        float finalScroll = 2.5f; // TransitionOut에서 되돌아갈 초기값      
+
+        while (elapsedTime < duration){
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / duration;
+
+            // Transition_Out 구간 : 0에서 1사이의 t값이 0 ~ 1 구간에서는, 0 -> 프로퍼티값의 초기값 변경
+            float currentScroll = Mathf.Lerp(initialScroll, finalScroll, t);
+
+            screenTransition.material.SetFloat("_Progress", currentScroll);
+
+            yield return null;
+        }
+        screenTransition.material.SetFloat("_Progress", finalScroll);
         screenTransition.enabled = false;
     }
 
