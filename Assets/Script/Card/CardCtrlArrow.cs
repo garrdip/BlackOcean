@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using DG.Tweening;
 using ProjectD;
 
 
@@ -16,6 +17,30 @@ public class CardCtrlArrow : NetworkBehaviour
     public List<Transform> arrowNodes = new List<Transform>();
     private readonly List<Vector2> controlPoints = new List<Vector2>();
     private readonly List<Vector2> controlPointFactors = new List<Vector2>{ new Vector2(-0.3f, 0.8f), new Vector2(0.1f, 1.4f) };
+
+
+    // 공격용 화살표
+    public Sprite attackArrowHeadEnemy; // 화살표가 타겟에 진입할 때 헤드 이미지
+    public Sprite attackArrowHeadNormal; // 화살표가 타겟에 나갈 때 헤드 이미지
+    public Sprite attackArrowNodeEnemy; // 화살표가 타겟에 진입할 때 노드 이미지
+    public Sprite attackArrowNodeNormal; // 화살표가 타겟에 나갈 때 노드 이미지
+    public GameObject arrowHeadExpanderLeft; // 화살표 헤드 확장 오브젝트 왼쪽 파츠
+    public GameObject arrowHeadExpanderRight; // 화살표 헤드 확장 오브젝트 오른쪽 파츠
+    public Sprite arrowExpandLeftNormal; // 화살표 헤드 왼쪽 기본 상태 이미지
+    public Sprite arrowExpandRightNormal; // 화살표 헤드 오른쪽 기본 상태 이미지
+    public Sprite arrowExpandLeftLight; // 화살표 헤드 왼쪽 확장 상태 이미지
+    public Sprite arrowExpandRightLight; // 화살표 헤드 오른쪽 확장 상태 이미지
+
+
+    // 버프용 화살표
+    public Sprite buffArrowHeadNormal;
+    public Sprite buffArrowHeadEnemy;
+    public Sprite buffArrowHeadAlly;
+    public Sprite buffArrowNodeNormal;
+    public Sprite buffArrowNodeEnemy;
+    public Sprite buffArrowNodeAlly;
+    public GameObject buffArrowHeadCircle;
+
 
     void Start()
     {
@@ -33,6 +58,13 @@ public class CardCtrlArrow : NetworkBehaviour
             HandleArrowRemove();
             HandleArrowNodesTrasnform();
         }
+    }
+
+    void OnDestroy()
+    {
+        arrowHeadExpanderLeft.transform.DOKill();
+        arrowHeadExpanderRight.transform.DOKill();
+        buffArrowHeadCircle.transform.DOKill();
     }
 
     private void HandleArrowPosition()
@@ -158,6 +190,7 @@ public class CardCtrlArrow : NetworkBehaviour
         ChangeArrowVisible(true, cardOnHand.transform);
         InitBezierCurvePoint(cardOnHand);
         Cursor.visible = false;
+        SetArrowByValidTarget(cardOnHand);
     }
 
     // 베지어 곡선 조작점 초기 위치값을 카드의 위치로 설정
@@ -179,6 +212,7 @@ public class CardCtrlArrow : NetworkBehaviour
             arrowOwnedCardOnHand.isMouseOver = false;
             M_CardManager.instance.ChangeCardOnHandShiftState(arrowOwnedCardOnHand, false);
             Cursor.visible = true;
+            arrowOwnedCardOnHand = null;
         }
     }
 
@@ -222,5 +256,105 @@ public class CardCtrlArrow : NetworkBehaviour
         ChangeArrowVisible(false, GameUIManager.instance.CardOnHandsPanel.transform); // 화살표 활성화 상태 변경
         M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
         Cursor.visible = true;
+        arrowOwnedCardOnHand = null;
+    }
+
+    // 타겟 유형에 따라 화살표 리소스 설정
+    private void SetArrowByValidTarget(CardOnHand cardOnHand)
+    {
+        if(cardOnHand.card.baseCard.isTargetable){
+            switch(cardOnHand.card.baseCard.validTarget)
+            {
+                case ValidTarget.ENEMY :
+                    // 공격 카드
+                    for(int i=0; i<this.arrowNodes.Count; i++){
+                        SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
+                        if(i == (arrowNodes.Count-1)){
+                            spriteRenderer.sprite = attackArrowHeadNormal;
+                        }else{
+                            spriteRenderer.sprite = attackArrowNodeNormal;
+                        }
+                    }
+                    arrowHeadExpanderLeft.SetActive(true);
+                    arrowHeadExpanderRight.SetActive(true);
+                    buffArrowHeadCircle.SetActive(false);
+                    break;
+                case ValidTarget.ALL :
+                    // 아군 및 적군 모두 적용 가능한 버프 카드
+                    for(int i=0; i<this.arrowNodes.Count; i++){
+                        SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
+                        if(i == (arrowNodes.Count-1)){
+                            spriteRenderer.sprite = buffArrowHeadNormal;
+                        }else{
+                            spriteRenderer.sprite = attackArrowNodeNormal;
+                        }
+                    }
+                    arrowHeadExpanderLeft.SetActive(false);
+                    arrowHeadExpanderRight.SetActive(false);
+                    buffArrowHeadCircle.SetActive(true);
+                    break;
+            }
+        }
+    }
+
+    // 화살표 노드들 이미지를 타겟에 진입 or 벗어날 때 상태에 따라 다른 이미지 설정
+    public void ChangeArrowStateByValidTarget(bool isEnter, GameObject target)
+    {
+        if(arrowOwnedCardOnHand.card.baseCard.isTargetable){
+            switch(arrowOwnedCardOnHand.card.baseCard.validTarget)
+            {
+                case ValidTarget.ENEMY :
+                    // 공격카드
+                    SetArrowNodesSprite(isEnter, attackArrowHeadEnemy,attackArrowHeadNormal, attackArrowNodeEnemy, attackArrowNodeNormal);
+                    SetAttackArrowExpanderState(isEnter);
+                    break;
+                case ValidTarget.ALL :
+                    // 아군 및 적군 모두 적용가능한 버프카드
+                    TargetObject targetObject = target.transform.parent.GetComponent<TargetObject>();
+                    if(targetObject.objectType == ObjectType.ENEMY){
+                        SetArrowNodesSprite(isEnter, buffArrowHeadEnemy,buffArrowHeadNormal, buffArrowNodeEnemy, buffArrowNodeNormal);
+                    }else{
+                        SetArrowNodesSprite(isEnter, buffArrowHeadAlly, buffArrowHeadNormal, buffArrowNodeAlly, buffArrowNodeNormal);
+                    }
+                    SetBuffArrowCircleRotateLoop(isEnter);
+                    break;
+            }
+        }
+    }
+
+    // 화살표를 소환한 카드의 ValidTarget에 따라 화살표 머리와 몸통 스프라이트 이미지 구별 적용
+    private void SetArrowNodesSprite(bool isEnter, Sprite activeHeadSprite, Sprite normalHeadSprite, Sprite activeNodeSprite, Sprite normalNodeSPrite)
+    {
+        for(int i=0; i<this.arrowNodes.Count; i++){
+            SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
+            if(i == (arrowNodes.Count-1)){
+                spriteRenderer.sprite = isEnter ? activeHeadSprite : normalHeadSprite; // 화살표 머리
+            }else{
+                spriteRenderer.sprite = isEnter ? activeNodeSprite : normalNodeSPrite; // 화살표 몸통
+            }
+        }
+    }
+
+    // 공격 화살표 확장 오브젝트 위치 조정 트위닝
+    private void SetAttackArrowExpanderState(bool isEnter)
+    {
+        arrowHeadExpanderLeft.GetComponent<SpriteRenderer>().sprite = isEnter ? arrowExpandLeftLight : arrowExpandLeftNormal;
+        arrowHeadExpanderRight.GetComponent<SpriteRenderer>().sprite = isEnter ? arrowExpandRightLight : arrowExpandRightNormal;
+        arrowHeadExpanderLeft.transform.DOLocalMoveX(isEnter ? -0.3f : -0.21f, 0.2f);
+        arrowHeadExpanderRight.transform.DOLocalMoveX(isEnter ? 0.3f : 0.21f, 0.2f);
+    }
+
+    // 버프 화살표 원형 오브젝트 회전 트위닝
+    private void SetBuffArrowCircleRotateLoop(bool isEnter)
+    {
+        if(isEnter){
+            buffArrowHeadCircle.transform
+                .DORotate(new Vector3(0, 0, 360), 5f, RotateMode.FastBeyond360)
+                .SetRelative(true)
+                .SetEase(Ease.Linear)
+                .SetLoops(-1);
+        }else{
+            buffArrowHeadCircle.transform.DOKill();
+        }
     }
 }
