@@ -634,8 +634,13 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             if(splitString[i].ToCharArray()[0] == '!')
             {
                 splitString[i] = splitString[i].Remove(0,1);
-                int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + totalFlower;
-                splitString[i] = "<color=green>" + result.ToString() + "</color>";
+                int parseValue;
+                if(int.TryParse(splitString[i], out parseValue)){
+                    int result = parseValue + tar.GetBuffValue(BuffType.ICHI_ATTACK) + totalFlower;
+                    splitString[i] = "<color=green>" + result.ToString() + "</color>";
+                }else{
+                    // TODO : splitString[i]가 정수로 변경 불가능한 문자열인 경우 처리
+                }
             }
             if(splitString[i].ToCharArray()[0] == '#')
             {

@@ -142,6 +142,13 @@ public partial class CardData : SingletonD<CardData>
                 string temp = cardColor + cards.Find(card => card.cardNumber == values[i]).name + "</color>";
                 values[i] = temp;
             }
+            if(values[i].ToCharArray()[0] == '~') // 뽑을덱, 버린덱, 잊혀진덱 굵은 글씨
+            {
+                values[i] = values[i].Remove(0,1);
+                card.cardInfo.Add(values[i]);
+                string temp = "<b>" + values[i] + "</b>";
+                values[i] = temp;
+            }
 
         }
         return string.Join(" ",values); // Concat 메서드를 사용하여 배열의 요소들을 하나로 합침
