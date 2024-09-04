@@ -301,16 +301,18 @@ public class CardCtrlArrow : NetworkBehaviour
     public void ChangeArrowStateByValidTarget(bool isEnter, GameObject target)
     {
         if(arrowOwnedCardOnHand.card.baseCard.isTargetable){
+            TargetObject targetObject = target.transform.parent.GetComponent<TargetObject>();
             switch(arrowOwnedCardOnHand.card.baseCard.validTarget)
             {
                 case ValidTarget.ENEMY :
                     // 공격카드
-                    SetArrowNodesSprite(isEnter, attackArrowHeadEnemy,attackArrowHeadNormal, attackArrowNodeEnemy, attackArrowNodeNormal);
-                    SetAttackArrowExpanderState(isEnter);
+                    if(targetObject.objectType == ObjectType.ENEMY){
+                        SetArrowNodesSprite(isEnter, attackArrowHeadEnemy,attackArrowHeadNormal, attackArrowNodeEnemy, attackArrowNodeNormal);
+                        SetAttackArrowExpanderState(isEnter);
+                    }
                     break;
                 case ValidTarget.ALL :
                     // 아군 및 적군 모두 적용가능한 버프카드
-                    TargetObject targetObject = target.transform.parent.GetComponent<TargetObject>();
                     if(targetObject.objectType == ObjectType.ENEMY){
                         SetArrowNodesSprite(isEnter, buffArrowHeadEnemy,buffArrowHeadNormal, buffArrowNodeEnemy, buffArrowNodeNormal);
                     }else{
