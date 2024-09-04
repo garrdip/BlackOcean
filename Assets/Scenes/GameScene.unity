@@ -28731,7 +28731,8 @@ MonoBehaviour:
   MapPathLines: {fileID: 1495258191}
   hexagonGrid: {fileID: 590561824302976873, guid: f2e6a979254885748ae72276906d5ac5, type: 3}
   gridParent: {fileID: 8899030787224276078}
-  regionIndicator: {fileID: 590561824302976873, guid: e263356188cccbb4aa7f221fdcf2899f, type: 3}
+  regionIndicatorPrefab: {fileID: 590561824302976873, guid: e263356188cccbb4aa7f221fdcf2899f, type: 3}
+  regionsIndicators: []
   mapPlayerPieces: []
   hexagonMapRooms: []
   bossZoneMapRooms: []

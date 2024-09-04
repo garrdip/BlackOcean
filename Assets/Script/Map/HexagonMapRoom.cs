@@ -327,6 +327,7 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileMask.transform.localPosition.z
             );
             hexagonMapRoomUI.SetActive(true);
+            ChangeSelectRoomRegionIndicatorMask(coordinate, SpriteMaskInteraction.None);
         }else{
             mapTileBase.transform.DOLocalMoveY(originValue, expandDuration);
             hexagonMapRoomUI.transform.DOLocalMoveY(originValue, expandDuration);
@@ -337,6 +338,7 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileMask.transform.localPosition.z
             );  
             hexagonMapRoomUI.SetActive(false);
+            ChangeSelectRoomRegionIndicatorMask(coordinate, SpriteMaskInteraction.VisibleOutsideMask);
         }
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("ingame_menu_stage_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
@@ -383,6 +385,19 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapBoss.transform.DOMoveY(transform.position.y + 0.35f, expandDuration);
             }else{
                 mapBoss.transform.DOMoveY(transform.position.y + 0.15f, expandDuration);
+            }
+        }
+    }
+
+    // 현재 선택된 방 주위의 거점지역 인디케이터를 조회하여 인덱스값이 2(4시), 3(6시), 4(8시) 인 인디케이터는 maskInteraction을 변경하여 expand된 방에 의해 가려지지 않도록 설정
+    private void ChangeSelectRoomRegionIndicatorMask(Vector2Int selectRoomCoordinate, SpriteMaskInteraction spriteMaskInteraction)
+    {
+        foreach(RegionIndicator regionIndicator in M_MapManager.instance.regionsIndicators){
+            if(regionIndicator.coordinate == selectRoomCoordinate){
+                if(regionIndicator.index == 2 || regionIndicator.index == 3 || regionIndicator.index == 4){
+                    SpriteRenderer spriteRenderer = regionIndicator.GetComponent<SpriteRenderer>();
+                    spriteRenderer.maskInteraction = spriteMaskInteraction;
+                }
             }
         }
     }

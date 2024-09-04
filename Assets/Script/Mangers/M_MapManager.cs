@@ -57,7 +57,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     [Header("그리드 부모 오브젝트")]
     public Transform gridParent;
-    public GameObject regionIndicator;
+
+    [Header("거점 지역 표시 오브젝트")]
+    public GameObject regionIndicatorPrefab;
+    public List<RegionIndicator> regionsIndicators = new List<RegionIndicator>();
 
     [Header("맵에서 플레이어가 컨트롤하는 오브젝트 리스트")]
     public List<GameObject> mapPlayerPieces;
@@ -935,22 +938,22 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         Vector3 retVal = loc;
         switch(Random.Range(0,6))
         {
-            case 0: // North
+            case 0: // 12시
                 retVal += new Vector3(0,-1,0);
                 break;
-            case 1: // 1si
+            case 1: // 2시
                 retVal += new Vector3(1,-1,0);
                 break;
-            case 2: // 5si
+            case 2: // 4시
                 retVal += new Vector3(1,0,0);
                 break;
-            case 3: // South
+            case 3: // 6시
                 retVal += new Vector3(0,1,0);
                 break;
-            case 4: // 7si
+            case 4: // 8시
                 retVal += new Vector3(-1,1,0);
                 break;
-            case 5: // 11si
+            case 5: // 10시
                 retVal += new Vector3(-1,0,0);
                 break;
         }
@@ -965,7 +968,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             {
                 switch(i)
                 {
-                    case 0 : // North
+                    case 0 : // 12시
                         if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x,loc.coordinate.y-1,0)))
                             continue;
                         break;
@@ -973,7 +976,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                         if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x+1,loc.coordinate.y-1,0)))
                             continue;
                         break;
-                    case 2 : // 5시
+                    case 2 : // 4시
                         if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x+1,loc.coordinate.y,0)))
                             continue;
                         break;
@@ -981,7 +984,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                         if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x,loc.coordinate.y+1,0)))
                             continue;
                         break;
-                    case 4 :// 7시
+                    case 4 :// 8시
                         if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x-1,loc.coordinate.y+1,0)))
                             continue;
                         break;
@@ -990,7 +993,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                             continue;
                         break;
                 }
-                GameObject newRegion = Instantiate(regionIndicator,GetPosition((int)loc.coordinate.x,(int)loc.coordinate.y),Quaternion.identity,gridParent);
+                GameObject newRegion = Instantiate(regionIndicatorPrefab, GetPosition((int)loc.coordinate.x,(int)loc.coordinate.y), Quaternion.identity,gridParent);
+                RegionIndicator regionIndicator = newRegion.GetComponent<RegionIndicator>();
+                regionIndicator.coordinate = new Vector2Int((int)loc.coordinate.x,(int)loc.coordinate.y);
+                regionIndicator.index = i;
                 newRegion.transform.localPosition = newRegion.transform.position;
                 Color regionColor = new Color(0,0,0);
                 switch(region.regionGrade)
@@ -1010,39 +1016,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                         
                 }
                 newRegion.GetComponent<SpriteRenderer>().color = regionColor;
-                
-                // Region 라인 위치 및 회전값 재설정(isometric 맵타일 버전)
-                switch(i)
-                {
-                    case 0 : // North
-                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(0f, -0.06f, 0f);
-                        break;
-                    case 1 : // 2시
-                        newRegion.transform.localScale = new Vector3(0.7f, 1f, 1f);
-                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, -45f);
-                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(0.07f, -0.06f, 0f);
-                        break;
-                    case 2 : // 5시
-                        newRegion.transform.localScale = new Vector3(0.7f, 1f, 1f);
-                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, -135f);
-                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(0.07f, 0.35f, 0f);
-                        break;
-                    case 3 :// 6시
-                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, -180f);
-                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(0f, 0.35f, 0f);
-                        break;
-                    case 4 :// 7시
-                        newRegion.transform.localScale = new Vector3(0.7f, 1f, 1f);
-                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, 135f);
-                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(-0.07f, 0.35f, 0f);
-                        break;
-                    case 5 :// 10시
-                        newRegion.transform.localScale = new Vector3(0.7f, 1f, 1f);
-                        newRegion.transform.localRotation = Quaternion.Euler(0f, 0f, 45f);
-                        newRegion.transform.localPosition = newRegion.transform.localPosition + new Vector3(-0.07f, -0.05f, 0f);
-                        break;
-                }
+                regionsIndicators.Add(regionIndicator);
             }
         }
     }
