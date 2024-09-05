@@ -631,7 +631,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         {
             foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
                 totalFlower += tar.GetBuffValue(BuffType.FLOWER,target);
-            if(splitString[i].ToCharArray()[0] == '!')
+            if(splitString[i].ToCharArray()[0] == '!') // !피해량
             {
                 splitString[i] = splitString[i].Remove(0,1);
                 int parseValue;
@@ -642,13 +642,25 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                     // TODO : splitString[i]가 정수로 변경 불가능한 문자열인 경우 처리
                 }
             }
-            if(splitString[i].ToCharArray()[0] == '#')
+            if(splitString[i].ToCharArray()[0] == '#') // #방어도
             {
                 splitString[i] = splitString[i].Remove(0,1);
                 int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_DEFENSE);
                 splitString[i] = "<color=green>" + result.ToString() + "</color>";
             }
-            if(splitString[i].ToCharArray()[0] == '$')
+            if(splitString[i].ToCharArray()[0] == '^') // ^체력
+            {
+                splitString[i] = splitString[i].Remove(0,1);
+                int result = int.Parse(splitString[i]);
+                splitString[i] = "<#FF7F00>" + result.ToString() + "</color>";
+            }
+            if(splitString[i].ToCharArray()[0] == '&') // &크기
+            {
+                splitString[i] = splitString[i].Remove(0,1);
+                int result = int.Parse(splitString[i]);
+                splitString[i] = "<color=purple>" + result.ToString() + "</color>";
+            }
+            if(splitString[i].ToCharArray()[0] == '$') // $피해량$타수
             {
                 splitString[i] = splitString[i].Remove(0,1);
                 string[] data = splitString[i].Trim().Split("$");

@@ -91,8 +91,14 @@ public class DeckBookUI : SingletonD<DeckBookUI>
         string patternDeffence = @"(?<!<)#(\d+)"; // #방어도
         str = Regex.Replace(str, patternDeffence, match => $"<color=green>{match.Groups[1].Value}</color>");
 
+        string patternHp = @"\^(\d+)"; // ^체력
+        str = Regex.Replace(str, patternHp, match => $"<#FF7F00>{match.Groups[1].Value}</color>");
+
+        string patternBulk = @"&(\d+)"; // &크기
+        str = Regex.Replace(str, patternBulk, match => $"<color=purple>{match.Groups[1].Value}</color>");
+
         string patternMultipleDamage = @"\$(\d+)\s*\$(\d+)"; // $피해량$타수
-        Regex regex = new Regex(patternMultipleDamage);
+        Regex regex = new Regex(patternMultipleDamage); // 그룹[0] : $피해량$타수, 그룹[1] : $피해량, 그룹[2] : $타수
         foreach(Match match in regex.Matches(str)){
             if(match.Groups.Count == 3){
                 string replacedText = $"<color=green>{match.Groups[1].Value}</color>를 <color=blue>{match.Groups[2].Value}</color>번";

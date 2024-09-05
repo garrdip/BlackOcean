@@ -128,24 +128,27 @@ public partial class CardData : SingletonD<CardData>
         string[] values = desc.Trim().Split(" ");
         for(int i = 0 ;i < values.Length ; i++)
         {
-            if(values[i].ToCharArray()[0] == '@')
+            if(values[i].ToCharArray()[0] == '@') // 특수 용어
             {
                 values[i] = values[i].Remove(0,1);
                 card.info.Add(new Infomation(values[i],colorCnt));
                 values[i] = colorList[colorCnt] + values[i] + "</color>";
                 colorCnt++;
             }
-            if(values[i].ToCharArray()[0] == '*') 
+            if(values[i].ToCharArray()[0] == '*') // 카드 이름
             {
                 values[i] = values[i].Remove(0,1);
                 card.cardInfo.Add(values[i]);
-                string temp = cardColor + cards.Find(card => card.cardNumber == values[i]).name + "</color>";
-                values[i] = temp;
+                foreach(CardBase cardBase in cards){
+                    if(cardBase.cardNumber == values[i]){
+                        string temp = cardColor + cardBase.name + "</color>";
+                        values[i] = temp;
+                    }
+                }
             }
             if(values[i].ToCharArray()[0] == '~') // 뽑을덱, 버린덱, 잊혀진덱 굵은 글씨
             {
                 values[i] = values[i].Remove(0,1);
-                card.cardInfo.Add(values[i]);
                 string temp = "<b>" + values[i] + "</b>";
                 values[i] = temp;
             }
