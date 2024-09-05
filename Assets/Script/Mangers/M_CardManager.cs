@@ -665,7 +665,8 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 splitString[i] = splitString[i].Remove(0,1);
                 string[] data = splitString[i].Trim().Split("$");
                 int result = int.Parse(data[0]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + totalFlower;
-                splitString[i] = "<color=green>" + result.ToString() + "</color>" + " 를 " + "<color=blue>" + data[1] + "</color>" + "번";
+                string color = CardData.instance.colorList[2];
+                splitString[i] = "<color=green>" + result.ToString() + "</color>" + " 를 " + color + data[1] + "</color>" + "번";
             }
         }
         

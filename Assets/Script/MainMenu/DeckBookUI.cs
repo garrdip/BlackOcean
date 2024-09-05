@@ -101,7 +101,8 @@ public class DeckBookUI : SingletonD<DeckBookUI>
         Regex regex = new Regex(patternMultipleDamage); // 그룹[0] : $피해량$타수, 그룹[1] : $피해량, 그룹[2] : $타수
         foreach(Match match in regex.Matches(str)){
             if(match.Groups.Count == 3){
-                string replacedText = $"<color=green>{match.Groups[1].Value}</color>를 <color=blue>{match.Groups[2].Value}</color>번";
+                string color = CardData.instance.colorList[2];
+                string replacedText = $"<color=green>{match.Groups[1].Value}</color>를 {color}{match.Groups[2].Value}</color>번";
                 str = str.Replace(match.Value, replacedText);
             }
         }

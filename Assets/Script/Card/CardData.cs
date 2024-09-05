@@ -37,7 +37,7 @@ public partial class CardData : SingletonD<CardData>
         isCardOperatingTEST = value;
     }}
 
-    public string[] colorList = {"<#ff0000>","<#00ff00>","<#0000ff>","<#ffff00>","<#00ffff>","<#ff00ff>"};
+    public string[] colorList = {"<#ff0000>","<#00ff00>","<#0EB4FC>","<#ffff00>","<#00ffff>","<#ff00ff>"};
 
     string cardColor = "<#ffb0bb>";
 
