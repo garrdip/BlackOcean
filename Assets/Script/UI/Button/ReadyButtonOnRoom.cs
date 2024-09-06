@@ -73,6 +73,9 @@ public class ReadyButtonOnRoom : ButtonBase, IPointerEnterHandler, IPointerExitH
         readyS2.SetActive(isReady);
         if(isReady){
             SetReadyCircleRotateInfinite();
+        }else{
+            readyS1.GetComponent<RectTransform>().DOKill();
+            readyS2.GetComponent<RectTransform>().DOKill();
         }
     }
 
@@ -82,10 +85,12 @@ public class ReadyButtonOnRoom : ButtonBase, IPointerEnterHandler, IPointerExitH
         if(!DOTween.IsTweening(readyS1.GetComponent<RectTransform>()) && !DOTween.IsTweening(readyS2.GetComponent<RectTransform>())){
             readyS1.GetComponent<RectTransform>().DORotate(new Vector3(0, 0, 360), 4.5f, RotateMode.FastBeyond360)
                 .SetEase(Ease.Linear)
-                .SetLoops(-1, LoopType.Incremental);
+                .SetRelative(true)
+                .SetLoops(-1, LoopType.Yoyo);
             readyS2.GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 4.5f, RotateMode.FastBeyond360)
                 .SetEase(Ease.Linear)
-                .SetLoops(-1, LoopType.Incremental);
+                .SetRelative(true)
+                .SetLoops(-1, LoopType.Yoyo);
         }
     }
 

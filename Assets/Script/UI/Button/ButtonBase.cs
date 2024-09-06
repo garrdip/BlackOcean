@@ -22,21 +22,21 @@ public class ButtonBase : MonoBehaviour
             
         EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
         pointerEnterEntry.eventID = EventTriggerType.PointerDown;
-        pointerEnterEntry.callback.AddListener((data) => { OnPointerDownExpandableButton((PointerEventData)data); });
+        pointerEnterEntry.callback.AddListener((data) => { OnPointerDownButtonBase((PointerEventData)data); });
         eventTrigger.triggers.Add(pointerEnterEntry);
 
         EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
         pointerExitEntry.eventID = EventTriggerType.PointerUp;
-        pointerExitEntry.callback.AddListener((data) => { OnPointerUpExpandableButton((PointerEventData)data); });
+        pointerExitEntry.callback.AddListener((data) => { OnPointerUpButtonBase((PointerEventData)data); });
         eventTrigger.triggers.Add(pointerExitEntry); 
     }
 
-    private void OnPointerDownExpandableButton(PointerEventData pointerEventData)
+    private void OnPointerDownButtonBase(PointerEventData pointerEventData)
     {
         GetComponent<RectTransform>().DOScale(0.9f, 0.25f);
     }
 
-    private void OnPointerUpExpandableButton(PointerEventData pointerEventData)
+    private void OnPointerUpButtonBase(PointerEventData pointerEventData)
     {
         GetComponent<RectTransform>().DOScale(1f, 0.25f);
     }

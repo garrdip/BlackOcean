@@ -57,6 +57,9 @@ public class EndTurnButton : ButtonBase
         endTurnS2.SetActive(isActive);
         if(isActive){
             SetEndTurnCircleRotateInfinite();
+        }else{
+            endTurnS1.GetComponent<RectTransform>().DOKill();
+            endTurnS2.GetComponent<RectTransform>().DOKill();
         }
     }
 
@@ -65,10 +68,12 @@ public class EndTurnButton : ButtonBase
         if(!DOTween.IsTweening(endTurnS1.GetComponent<RectTransform>()) && !DOTween.IsTweening(endTurnS2.GetComponent<RectTransform>())){
             endTurnS1.GetComponent<RectTransform>().DORotate(new Vector3(0, 0, 360), 4.5f, RotateMode.FastBeyond360)
                 .SetEase(Ease.Linear)
-                .SetLoops(-1, LoopType.Incremental);
+                .SetRelative(true)
+                .SetLoops(-1, LoopType.Yoyo);
             endTurnS2.GetComponent<RectTransform>().DORotate(new Vector3(0, 0, -360), 4.5f, RotateMode.FastBeyond360)
                 .SetEase(Ease.Linear)
-                .SetLoops(-1, LoopType.Incremental);
+                .SetRelative(true)
+                .SetLoops(-1, LoopType.Yoyo);
         }
     }
 }

@@ -296,10 +296,14 @@ public class PlayerInterface : NetworkBehaviour
             sequence.Append(prevCardPocket.transform.DOMoveY(-100f, 0.5f));
             sequence.Join(currentCardPocket.transform.DOMoveY(-8f, 0.5f));
 
-            // 현재 선택한 플레이어의 PrefareDeck, TrashDeck 카운트 텍스트 설정
+            // 현재 선택한 플레이어의 PrefareDeck, TrashDeck, ForgottenDeck 카운트 텍스트 설정
             GamePlayerDeck currentGamePlayerDeck = NetworkServer.spawned[newVal].GetComponent<GamePlayerDeck>();
-            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textPrefareDeckCount, currentGamePlayerDeck.prefareDeck.Count);
-            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textTrashDeckCount, currentGamePlayerDeck.trashDeck.Count);
+            GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
+            GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
+            GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);
+            GameUIManager.instance.textPrefareDeckCount.text = currentGamePlayerDeck.prefareDeck.Count.ToString();
+            GameUIManager.instance.textTrashDeckCount.text = currentGamePlayerDeck.trashDeck.Count.ToString();
+            GameUIManager.instance.textForgottenDeckCount.text = currentGamePlayerDeck.forgottenDeck.Count.ToString();
             GameUIManager.instance.currentIchiText.text = currentGamePlayerDeck.currentIchi.ToString();
             GameUIManager.instance.maxIchiText.text = currentGamePlayerDeck.maxIchi.ToString();
 

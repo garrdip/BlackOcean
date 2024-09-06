@@ -21,7 +21,6 @@ public class NextActionIndicator : MonoBehaviour
     public GameObject pointRight;
     public GameObject pointRightLight;
 
-    private Sequence sequence;
     private Vector3 leftPointOriginPosition;
     private Vector3 rightPointOriginPosition;
 
@@ -34,10 +33,10 @@ public class NextActionIndicator : MonoBehaviour
 
     void OnDestroy()
     {
+        transform.DOKill();
+        eInfo2.transform.DOKill();
         pointLeft.transform.DOKill();
         pointRight.transform.DOKill();
-        sequence.Kill();
-        transform.DOKill();
     }
 
     public void StartBounce(int index)
@@ -90,11 +89,12 @@ public class NextActionIndicator : MonoBehaviour
         pointLeftLight.SetActive(true);
         pointRightLight.SetActive(true);
         eInfo2.SetActive(true);
-        sequence = DOTween.Sequence()
-            .Append(eInfo2.transform.DOScale(0.8f, 0.5f))
-            .Append(eInfo2.transform.DOScale(1f, 0.5f))
+        eInfo2.transform.DOScale(0.8f, 0.5f)
+            .OnComplete(() => {
+                eInfo2.transform.DOScale(1f, 0.5f);
+            })
             .SetEase(Ease.Linear)
-            .SetLoops(-1);
+            .SetLoops(-1, LoopType.Yoyo);
     }
 
     public void NextActionIndicatorFocusOff()
@@ -105,6 +105,6 @@ public class NextActionIndicator : MonoBehaviour
         pointRight.transform.DOLocalMoveX(rightPointOriginPosition.x, 0.3f);
         eInfo2.SetActive(false);
         eInfo2.transform.localScale = Vector3.one;
-        sequence.Kill();
+        eInfo2.transform.DOKill();
     }
 }

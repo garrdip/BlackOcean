@@ -11,17 +11,8 @@ public class GameUIManager : SingletonD<GameUIManager>
 {
     [Header("게임 오브젝트")]
     public GameObject RootGameObject;
-    public GameObject CardOnHandsPanel;
-    public GameObject PrefareDeck;
-    public GameObject TrashDeck;
-    public GameObject ForgottenDeck;
     public GameObject TestUI;
-    public HorizontalLayoutGroup CurrentItchIconLayout;
-    public HorizontalLayoutGroup MaxItchIconLayout;
-    public GameObject CurrentItchPrefab;
-    public GameObject MaxItchPrefab;
-    public List<GameObject> currentIchiIcons = new List<GameObject>();
-    public List<GameObject> maxIchiIcons = new List<GameObject>();
+
 
     [Header("화면 전환 UI")]
     public Image screenTransition;
@@ -33,12 +24,30 @@ public class GameUIManager : SingletonD<GameUIManager>
     public ScreenTransitionMode screenTransitionMode; // 스크린 전환 모드(페이드 인 아웃, 블록트랜지션 인 아웃)
 
     [Header("카드 전투 UI")]
+    public GameObject CardOnHandsPanel;
+    public HorizontalLayoutGroup CurrentItchIconLayout;
+    public HorizontalLayoutGroup MaxItchIconLayout;
+    public GameObject CurrentItchPrefab;
+    public GameObject MaxItchPrefab;
+    public List<GameObject> currentIchiIcons = new List<GameObject>();
+    public List<GameObject> maxIchiIcons = new List<GameObject>();
     public Button buttonEndTurn;
+
+    public GameObject PrefareDeck;
     public Button buttonPrefareDeck;
-    public Button buttonTrashDeck;
+    public GameObject iconPrefareDeckLight;
     public Text textPrefareDeckCount;
+
+    public GameObject TrashDeck;
+    public Button buttonTrashDeck;
+    public GameObject iconTrashDeckLight;
     public Text textTrashDeckCount;
+
+    public GameObject ForgottenDeck;
+    public Button buttonForgottenDeck;
+    public GameObject iconForgottenDeckLight;
     public Text textForgottenDeckCount;
+
     public TextMeshProUGUI textCurrentActionCost;
     public TextMeshProUGUI textMaxActionCost;
     public TextMeshProUGUI textCurrentPhase;
@@ -123,14 +132,13 @@ public class GameUIManager : SingletonD<GameUIManager>
         }
     }
 
-    // 댁 카운트 텍스트 컴포넌트들의 크기 변경 애니매이션(댁 카운트 변경 시 크기 커졌다 작아지는 애니매이션)
-    public void DeckCountTextScaleAnimation(Text textComponent, int count)
+    // 뽑을덱, 버린덱, 잊혀진덱 버튼의 크기 변경 애니매이션
+    public void DeckButtonScaleAnimation(Button button)
     {
-        Vector3 chagenScale = new Vector3(2f, 2f, 2f);
+        Vector3 chagenScale = new Vector3(1.5f, 1.5f, 1.5f);
         Vector3 originScale = new Vector3(1f, 1f, 1f);
-        textComponent.text = count.ToString();
-        textComponent.transform.DOScale(chagenScale, 0.1f).SetEase(Ease.OutQuad).OnComplete(() => {
-            textComponent.transform.DOScale(originScale, 0.1f).SetEase(Ease.InQuad);
+        button.GetComponent<RectTransform>().DOScale(chagenScale, 0.1f).OnComplete(() => {
+            button.GetComponent<RectTransform>().DOScale(originScale, 0.1f);
         });
     }
 
@@ -331,5 +339,35 @@ public class GameUIManager : SingletonD<GameUIManager>
     {
         isPointerDown = false;
         direction = ScrollButtonDirection.NONE;
+    }
+
+    public void OnPointerEnterButtonPrefareDeck()
+    {
+        iconPrefareDeckLight.SetActive(true);
+    }
+
+    public void OnPointerExitButtonPrefareDeck()
+    {
+        iconPrefareDeckLight.SetActive(false);
+    }
+
+    public void OnPointerEnterButtonTrashDeck()
+    {
+        iconTrashDeckLight.SetActive(true);
+    }
+
+    public void OnPointerExitButtonTrashDeck()
+    {
+        iconTrashDeckLight.SetActive(false);
+    }
+     
+    public void OnPointerEnterButtonForgottenDeck()
+    {
+        iconForgottenDeckLight.SetActive(true);
+    }
+
+    public void OnPointerExitButtonForgottenDeck()
+    {
+        iconForgottenDeckLight.SetActive(false);
     }
 }

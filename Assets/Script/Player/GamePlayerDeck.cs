@@ -311,7 +311,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             if(prefareDeck.Count == 0){
                 while(trashDeck.Count != 0){
                     Card card = trashDeck[0];
-                    card.isChargedCard = true;
+                    card.isChargedCard = true; // prefareDeck에 충전용 카드 플래그 변수 true로 설정
                     trashDeck.RemoveAt(0);
                     prefareDeck.Add(card);
                 }
@@ -325,6 +325,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             int randomIndex = Random.Range(0, prefareDeck.Count);
             CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
             cardOnHand.card = prefareDeck[randomIndex]; // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
+            cardOnHand.card.isChargedCard = false; // prefareDeck에 카드 충전한 이후이기 때문에 충전 플래그 변수 false로 설정
             prefareDeck.RemoveAt(randomIndex);
             if(cardPocket != null){
                 cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
@@ -448,7 +449,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             if(prefareDeck.Count == 0){
                 while(trashDeck.Count != 0){
                     Card card = trashDeck[0];
-                    card.isChargedCard = true;
+                    card.isChargedCard = true; // prefareDeck에 충전용 카드 플래그 변수 true로 설정
                     trashDeck.RemoveAt(0);
                     prefareDeck.Add(card);
                 }
@@ -462,6 +463,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             int randomIndex = Random.Range(0, prefareDeck.Count);
             CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
             cardOnHand.card = prefareDeck[randomIndex]; // prefareDeck에서 랜덤으로 뽑아서 CardOnHand의 카드데이터에 추가
+            cardOnHand.card.isChargedCard = false; // prefareDeck에 카드 충전한 이후이기 때문에 충전 플래그 변수 false로 설정
             prefareDeck.RemoveAt(randomIndex);
             if(cardPocket != null){
                 cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
@@ -832,6 +834,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     // 뽑을 덱 리스트 콜백
     void OnPrefareDeckUpdated(SyncList<Card>.Operation op, int index, Card oldPrefareDeck, Card newPrefareDeck)
     {
+        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:
@@ -839,11 +842,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     gainCurseCardCount++;
                 }
                 // 현재 플레이하는 캐릭터의 카드 충전 이펙트 실행
-                PlayerInterface playerInterface = GetComponent<GamePlayer>().objectOwner;
-                if(isOwned && playerInterface.currentGamePlayerNetId == GetComponent<GamePlayer>().netId && newPrefareDeck.isChargedCard){
+                if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId && newPrefareDeck.isChargedCard){
                     Vector3 startPosition = GameUIManager.instance.buttonTrashDeck.transform.position;
                     Vector3 endPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
-                    M_CardManager.instance.CardOnHandChargedSequence(newPrefareDeck, index, startPosition, endPosition);
+                    M_CardManager.instance.CardOnHandChargedSequence(newPrefareDeck, index, startPosition, endPosition, ()=> {
+                        GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
+                    });
                 }
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
@@ -859,19 +863,21 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
         if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
-            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textPrefareDeckCount, prefareDeck.Count); // 현재 플레이어의 PrefareDeck Count 표시
+            GameUIManager.instance.textPrefareDeckCount.text = prefareDeck.Count.ToString(); // 현재 플레이어의 PrefareDeck Count 표시
         }
     }
 
     // 버린 덱 리스트 콜백
     void OnTrashDeckUpdated(SyncList<Card>.Operation op, int index, Card oldTrashDeck, Card newTrashDeck)
     {
+        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:
-                
+                if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId){
+                    GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
+                }
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
                 
@@ -886,19 +892,21 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
-        if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
-            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textTrashDeckCount, trashDeck.Count); // 현재 플레이어의 TrashDeck Count 표시
+        if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId){
+            GameUIManager.instance.textTrashDeckCount.text = trashDeck.Count.ToString(); // 현재 플레이어의 TrashDeck Count 표시
         }
     }
 
     // 잊혀진 덱 리스트 콜백
     void OnForgottenDeckUpdated(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
     {
+        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:
-
+                if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId){
+                    GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);
+                }
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
                 
@@ -913,9 +921,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 
                 break;
         }
-        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
         if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
-            GameUIManager.instance.DeckCountTextScaleAnimation(GameUIManager.instance.textForgottenDeckCount, forgottenDeck.Count); // 현재 플레이어의 ForgottenDeck Count 표시
+            GameUIManager.instance.textForgottenDeckCount.text = forgottenDeck.Count.ToString(); // 현재 플레이어의 ForgottenDeck Count 표시
         }
     }
 
