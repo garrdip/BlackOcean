@@ -90,9 +90,6 @@ public class NextActionIndicator : MonoBehaviour
         pointRightLight.SetActive(true);
         eInfo2.SetActive(true);
         eInfo2.transform.DOScale(0.8f, 0.5f)
-            .OnComplete(() => {
-                eInfo2.transform.DOScale(1f, 0.5f);
-            })
             .SetEase(Ease.Linear)
             .SetLoops(-1, LoopType.Yoyo);
     }

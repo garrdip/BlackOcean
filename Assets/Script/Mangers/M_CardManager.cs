@@ -240,7 +240,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     }
 
     // 버린덱에서 뽑을덱으로 TrailRenderer 오브젝트 이동 시퀀스(뽑을덱 없어서 버린덱에서 충전할 때)
-    public void CardOnHandChargedSequence(Card card, int index, Vector3 startPosition, Vector3 endPosition, System.Action callback)
+    public void CardOnHandChargedSequence(Card card, int index, Vector3 startPosition, Vector3 endPosition)
     {
         // Card Trail 오브젝트 생성
         GameObject cardTrail = Instantiate(CardTrail, startPosition, Quaternion.identity);
@@ -279,7 +279,6 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             .SetEase(Ease.Linear)
             .SetDelay(0.1f * index)
             .OnComplete(() => {
-                callback();
                 Destroy(cardTrail);
             });
     }

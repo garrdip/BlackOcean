@@ -74,11 +74,19 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public int AdditionalSizeOfIromDemon; //철귀 영구 크기 증가
 
     [SyncVar]
-
     public string usedCardName;
 
     [SyncVar]
     public int gainCurseCardCount = 0;
+
+    private readonly float duration = 0.05f;
+    
+    private int prefareDeckCountDelay = 0;
+    
+    private int trashDeckCountDelay = 0;
+    
+    private int forgottenDeckCountDelay = 0;
+
 
     public override void OnStartServer()
     {
@@ -845,8 +853,15 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId && newPrefareDeck.isChargedCard){
                     Vector3 startPosition = GameUIManager.instance.buttonTrashDeck.transform.position;
                     Vector3 endPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
-                    M_CardManager.instance.CardOnHandChargedSequence(newPrefareDeck, index, startPosition, endPosition, ()=> {
+                    M_CardManager.instance.CardOnHandChargedSequence(newPrefareDeck, index, startPosition, endPosition);
+                }
+                if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
+                    int count = prefareDeck.Count;
+                    prefareDeckCountDelay++;
+                    GameUIManager.instance.textPrefareDeckCount.transform.DOScale(1.2f, prefareDeckCountDelay * duration).OnComplete(() => {
                         GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
+                        GameUIManager.instance.textPrefareDeckCount.text = count.ToString();
+                        prefareDeckCountDelay--;
                     });
                 }
                 break;
@@ -854,17 +869,23 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 
                 break;
             case SyncList<Card>.Operation.OP_REMOVEAT:
-
+                if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
+                    int count = prefareDeck.Count;
+                    prefareDeckCountDelay++;
+                    GameUIManager.instance.textPrefareDeckCount.transform.DOScale(1.2f, prefareDeckCountDelay * duration).OnComplete(() => {
+                        GameUIManager.instance.textPrefareDeckCount.text = count.ToString();
+                        prefareDeckCountDelay--;
+                    });
+                }
                 break;
             case SyncList<Card>.Operation.OP_SET:
                 
                 break;
             case SyncList<Card>.Operation.OP_CLEAR:
-                
+                if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){        
+                    GameUIManager.instance.textPrefareDeckCount.text = "0";
+                }
                 break;
-        }
-        if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
-            GameUIManager.instance.textPrefareDeckCount.text = prefareDeck.Count.ToString(); // 현재 플레이어의 PrefareDeck Count 표시
         }
     }
 
@@ -876,24 +897,36 @@ public partial class GamePlayerDeck : NetworkBehaviour
         {
             case SyncList<Card>.Operation.OP_ADD:
                 if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId){
-                    GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
+                    int count = trashDeck.Count;
+                    trashDeckCountDelay++;
+                    GameUIManager.instance.textTrashDeckCount.transform.DOScale(1.2f, trashDeckCountDelay * duration).OnComplete(() => {
+                        GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
+                        GameUIManager.instance.textTrashDeckCount.text = count.ToString();
+                        trashDeckCountDelay--;
+                    });
                 }
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
                 
                 break;
             case SyncList<Card>.Operation.OP_REMOVEAT:
-
+                 if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId){
+                    int count = trashDeck.Count;
+                    trashDeckCountDelay++;
+                    GameUIManager.instance.textTrashDeckCount.transform.DOScale(1.2f, trashDeckCountDelay * duration).OnComplete(() => {
+                        GameUIManager.instance.textTrashDeckCount.text = count.ToString();
+                        trashDeckCountDelay--;
+                    });
+                }
                 break;
             case SyncList<Card>.Operation.OP_SET:
                 
                 break;
             case SyncList<Card>.Operation.OP_CLEAR:
-                
+                if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
+                    GameUIManager.instance.textTrashDeckCount.text = "0";
+                }
                 break;
-        }
-        if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId){
-            GameUIManager.instance.textTrashDeckCount.text = trashDeck.Count.ToString(); // 현재 플레이어의 TrashDeck Count 표시
         }
     }
 
@@ -905,24 +938,36 @@ public partial class GamePlayerDeck : NetworkBehaviour
         {
             case SyncList<Card>.Operation.OP_ADD:
                 if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId){
-                    GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);
+                    int count = forgottenDeck.Count;
+                    forgottenDeckCountDelay++;
+                    GameUIManager.instance.textForgottenDeckCount.transform.DOScale(1.2f, forgottenDeckCountDelay * duration).OnComplete(() => {
+                        GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);
+                        GameUIManager.instance.textForgottenDeckCount.text = count.ToString();
+                        forgottenDeckCountDelay--;
+                    });
                 }
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
                 
                 break;
             case SyncList<Card>.Operation.OP_REMOVEAT:
-
+                if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId){
+                    int count = forgottenDeck.Count;
+                    forgottenDeckCountDelay++;
+                    GameUIManager.instance.textForgottenDeckCount.transform.DOScale(1.2f, forgottenDeckCountDelay * duration).OnComplete(() => {
+                        GameUIManager.instance.textForgottenDeckCount.text = count.ToString();
+                        forgottenDeckCountDelay--;
+                    });
+                }
                 break;
             case SyncList<Card>.Operation.OP_SET:
                 
                 break;
             case SyncList<Card>.Operation.OP_CLEAR:
-                
+                if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
+                    GameUIManager.instance.textForgottenDeckCount.text = "0";
+                }
                 break;
-        }
-        if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
-            GameUIManager.instance.textForgottenDeckCount.text = forgottenDeck.Count.ToString(); // 현재 플레이어의 ForgottenDeck Count 표시
         }
     }
 
