@@ -750,11 +750,13 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             TargetObject target = spawnedMonsterList[i];
             target.monster.isActive = true;
-            StartCoroutine(target.monster.DoAction());
-            while(true)
-            {
-                if(target.monster.isActive == false) break;
-                yield return loopWait;
+            if(!target.isDying){
+                StartCoroutine(target.monster.DoAction());
+                while(true)
+                {
+                    if(target.monster.isActive == false) break;
+                    yield return loopWait;
+                }
             }
         }
         phase = BattleTurn.BATTLE_STANDBY;
