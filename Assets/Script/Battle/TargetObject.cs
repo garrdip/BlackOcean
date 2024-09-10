@@ -175,7 +175,7 @@ public class TargetObject : NetworkBehaviour
     public void InitTargetObjectPlayer(GamePlayer player)
     {
         selectedNamePlate = playerNamePlate.GetComponent<NamePlate>();
-        selectedNamePlate.SetHPValue(playerHP, playerMaxHP);
+        selectedNamePlate.InitHpValue(playerHP, playerMaxHP);
         monsterNamePlate.SetActive(false);
         playerName.text = player.objectOwner.steamPersonaName;
         nextActionIndicator.gameObject.SetActive(false);
@@ -208,7 +208,7 @@ public class TargetObject : NetworkBehaviour
     public void InitTargetObjectNPC(SpawnedMonster monster)
     {
         selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
-        selectedNamePlate.SetHPValue(monster.HP, monster.MAXHP);
+        selectedNamePlate.InitHpValue(monster.HP, monster.MAXHP);
         monsterName.text = monster.monsterName;
         playerNamePlate.SetActive(false);
         nextActionIndicator.gameObject.SetActive(false);
@@ -218,7 +218,7 @@ public class TargetObject : NetworkBehaviour
     public void InitTargetObjectMonster(SpawnedMonster monster)
     {
         selectedNamePlate = monsterNamePlate.GetComponent<NamePlate>();
-        selectedNamePlate.SetHPValue(monster.HP, monster.MAXHP);
+        selectedNamePlate.InitHpValue(monster.HP, monster.MAXHP);
         monsterName.text = monster.monsterName;
         playerNamePlate.SetActive(false);
         nextActionIndicator.StartBounce(monster.index);
@@ -825,10 +825,10 @@ public class TargetObject : NetworkBehaviour
         switch (op)
         {
             case SyncList<Buff>.Operation.OP_ADD:
-                buffIndicator.SetBuff(newBuff,index);
+                buffIndicator.SetBuff(newBuff, index, this);
                 break;
             case SyncList<Buff>.Operation.OP_INSERT:
-                buffIndicator.SetBuff(newBuff,index);
+                buffIndicator.SetBuff(newBuff, index, this);
                 break;
             case SyncList<Buff>.Operation.OP_REMOVEAT:
                 ReArrangeBuffEffectIndex(index);
@@ -836,7 +836,7 @@ public class TargetObject : NetworkBehaviour
                 buffTrunBeginEffect.Remove(index);
                 break;
             case SyncList<Buff>.Operation.OP_SET:
-                buffIndicator.SetBuff(newBuff,index);
+                buffIndicator.SetBuff(newBuff, index, this);
                 break;
             case SyncList<Buff>.Operation.OP_CLEAR:
                 break;
@@ -886,7 +886,7 @@ public class TargetObject : NetworkBehaviour
         if(oldVal > 0){
             M_EffectManager.instance.DisPlayeDamage(this, (oldVal - newVal)); // 데미지 or 회복 표시 이펙트 생성
             if(newVal > 0){
-                selectedNamePlate.SetHPValue(newVal, playerMaxHP);
+                selectedNamePlate.SetHpValue(newVal, playerMaxHP, this);
                 if((oldVal - newVal) > 0){
                     PlayCharaterHitVoice(); // 체력이 떨어지면, 캐릭터 피격음성 재생
                 }

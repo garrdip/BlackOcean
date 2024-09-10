@@ -8,7 +8,7 @@ public class AbilityButton : NetworkBehaviour
     public override void OnStartClient()
     {
         if(isOwned){
-            transform.position = new Vector3(13.5f, -6f, 0);
+            transform.position = new Vector3(16.75f, -5f, 0);
         }
         gameObject.SetActive(false); // 초기 시점에 버튼 비활성화
     }

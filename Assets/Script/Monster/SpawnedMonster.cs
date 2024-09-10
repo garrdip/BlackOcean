@@ -353,7 +353,7 @@ public class SpawnedMonster : NetworkBehaviour
     {
         if(transform.parent != null){
             TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
-            targetObject.selectedNamePlate.SetHPValue(newHpValue, MAXHP);
+            targetObject.selectedNamePlate.SetHpValue(newHpValue, MAXHP, targetObject);
             M_EffectManager.instance.DisPlayeDamage(targetObject, (oldHpValue - newHpValue));
         }
     }
