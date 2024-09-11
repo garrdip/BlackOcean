@@ -39,6 +39,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     void OnChangedCurrentIchi(int oldVal, int newVal)
     {
         if(isOwned){
+            SetCardOnHandCostTextState(newVal);
             GameUIManager.instance.currentIchiText.text = newVal.ToString();
             if(newVal > oldVal){
                 CreateCurrentItchIcon(newVal - oldVal); // 현재 이치 추가
@@ -109,6 +110,17 @@ public partial class GamePlayerDeck : NetworkBehaviour
             GameUIManager.instance.maxIchiIcons[lastIndex].transform.DOKill();
             Destroy(GameUIManager.instance.maxIchiIcons[lastIndex]);
             GameUIManager.instance.maxIchiIcons.RemoveAt(lastIndex);
+        }
+    }
+
+    private void SetCardOnHandCostTextState(int cost)
+    {
+        foreach(CardOnHand cardOnHand in cardOnHands){
+            if(cost < cardOnHand.card.baseCard.cost){
+                cardOnHand.textCardCost.color = Color.red;
+            }else{
+                cardOnHand.textCardCost.color = Color.white;
+            }
         }
     }
 }
