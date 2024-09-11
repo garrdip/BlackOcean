@@ -69,7 +69,7 @@ public partial class CardData : SingletonD<CardData>
                 //Debug.Log(values[2]);
                 card.isTargetable = (values[6] == "Y") ? true : false;
                 card.cardType = (CardType)Enum.Parse<CardType>(values[4]);
-                card.description = GetCardDescription(values[3],card);
+                card.description = values[3];
                 card.cost = int.Parse(values[5]);
                 card.validTarget = (ValidTarget)Enum.Parse<ValidTarget>(values[7]);
                 card.maxExperience = int.Parse(values[8]);
@@ -120,9 +120,15 @@ public partial class CardData : SingletonD<CardData>
                 cardCharacteristicToString.Add((CardCharacteristic)Enum.Parse<CardCharacteristic>(values[0]),values[1]);
             }
         }
+
+        // DB 파일에서 카드데이터 조회하여 cards 리스트에 추가 완료 후, 카드 정보 문자열 치환
+        foreach(CardBase cardBase in cards){
+            cardBase.description = ReplaceCardDescription(cardBase.description, cardBase);
+        }
     }
     
-    private string GetCardDescription(string desc, CardBase card)
+    // 카드 정보 문자열 치환 함수
+    private string ReplaceCardDescription(string desc, CardBase card)
     {
         int colorCnt = 0;
         string[] values = desc.Trim().Split(" ");
