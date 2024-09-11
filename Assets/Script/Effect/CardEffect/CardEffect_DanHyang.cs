@@ -4,6 +4,8 @@ using UnityEngine;
 using Mirror;
 using AYellowpaper.SerializedCollections;
 using Spine.Unity;
+using DG.Tweening;
+
 
 // 단향 카드 이펙트용 클래스 : M_EffectManager의 partial 클래스
 public partial class M_EffectManager
@@ -36,6 +38,31 @@ public partial class M_EffectManager
             M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][4],
             "Effect")
         );
+    }
+
+    // 철귀 연속 손톱 공격 이펙트
+    [ClientRpc]
+    public void RpcEffectDoubleClaw(Vector3 position, float delay)
+    {
+        // 손톱 공격 이펙트 생성
+        StartCoroutine(StartEffect(
+            danhyangCardEffects[Card_Effect.Effect_Scratch],
+            "01EffScratch",
+            position,
+            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][4],
+            "Effect")
+        );
+        // 딜레이 후 좌우 Flip된 손톱 공격 이펙트 생성
+        DOVirtual.DelayedCall(delay, () => {
+            StartCoroutine(StartEffect(
+                danhyangCardEffects[Card_Effect.Effect_Scratch],
+                "01EffScratch",
+                position,
+                M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][4],
+                "Effect",
+                Quaternion.Euler(0f, 180f, 0f))
+            );
+        });
     }
 
     // 단향 카드 실드류 이펙트

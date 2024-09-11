@@ -414,9 +414,22 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
-        yield return GeneralIronDemonAttack(tar[0], tar[1], 4); // 철귀 공격
-        StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
-        GeneralSingleAttack(tar[0],tar[1],4); // 실제 데미지 적용시점
+        M_TurnManager.instance.AnimIronDemon("Attack0", tar[0]); // 철귀 공격 모션 시작
+        
+        // 연속 손톱 공격 이펙트 생성
+        float delay = 0.35f;
+        M_EffectManager.instance.RpcEffectDoubleClaw(tar[1].transform.position, delay);
+        
+        // 1타
+        yield return new WaitForSeconds(delay);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        GeneralSingleAttack(tar[0] ,tar[1], 4);
+
+        // 2타
+        yield return new WaitForSeconds(delay);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        GeneralSingleAttack(tar[0] ,tar[1], 4);
+
         yield return new WaitForSeconds(0.6f); // 공격모션 끝남
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 

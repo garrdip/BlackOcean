@@ -24,14 +24,14 @@ public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
     // -------------------------------------------------------------- Common Method --------------------------------------------------------------------------//
 
     // 이펙트 스파인 애니매이션 오브젝트 런타임 생성
-    public IEnumerator StartEffect(SkeletonDataAsset skeletonDataAsset, string animationName, Vector3 position, AudioClip sfx, string layer)
+    public IEnumerator StartEffect(SkeletonDataAsset skeletonDataAsset, string animationName, Vector3 position, AudioClip sfx, string layer, Quaternion rotation = default)
     {
         yield return new WaitForSeconds(0.01f); 
         var spineObject = SkeletonAnimation.NewSkeletonAnimationGameObject(skeletonDataAsset); // https://ko.esotericsoftware.com/spine-unity#Advanced---Instantiation-at-Runtime
         spineObject.gameObject.name = animationName;
         EffectBase cardEffectBase = spineObject.gameObject.AddComponent<EffectBase>();
         cardEffectBase.sfx = sfx;
-        spineObject.transform.position = position;
+        spineObject.transform.SetPositionAndRotation(position, rotation);
         spineObject.GetComponent<MeshRenderer>().sortingLayerName = layer;
         spineObject.AnimationState.SetAnimation(0, animationName, false);
     }
