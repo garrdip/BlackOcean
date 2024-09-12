@@ -17,16 +17,14 @@ public partial class CardData : SingletonD<CardData>
     
     public List<CardBase> cards = new List<CardBase>(); // DB에서 조회한 전체 카드 데이터 목록
     
-    public Dictionary<string,ExecuteCard> CardMethods = new Dictionary<string, ExecuteCard>();
-    public Dictionary<string,CurssEffect> curseEffect = new Dictionary<string, CurssEffect>();
+    public Dictionary<string, ExecuteCard> CardMethods = new Dictionary<string, ExecuteCard>();
 
-    [Header("버프 타입별 아이콘")]
-    [SerializedDictionary("BuffType", "Sprite")]
-    public SerializedDictionary<BuffType, Sprite> buffIcons = new SerializedDictionary<BuffType, Sprite>();
-    
-    public Dictionary<string,InfomationDB> infomationDB = new Dictionary<string, InfomationDB>();
+    public Dictionary<string, CurssEffect> curseEffect = new Dictionary<string, CurssEffect>();
 
-    public Dictionary<CardCharacteristic,string> cardCharacteristicToString = new Dictionary<CardCharacteristic, string>();
+    public Dictionary<string, InfomationDB> infomationDB = new Dictionary<string, InfomationDB>();
+
+    public Dictionary<CardCharacteristic, string> cardCharacteristicToString = new Dictionary<CardCharacteristic, string>();
+
 
     public bool isCardOperatingTEST;
     
@@ -46,6 +44,12 @@ public partial class CardData : SingletonD<CardData>
     public CardSelectCallBack cardSelectCallBack;
 
     WaitForSeconds tempWait = new WaitForSeconds(0.3f);
+
+
+    void Start()
+    {
+        LoadCardDataFromDB();
+    }
 
     //Version 3
     public void LoadCardDataFromDB()
@@ -126,7 +130,7 @@ public partial class CardData : SingletonD<CardData>
             cardBase.description = ReplaceCardDescription(cardBase.description, cardBase);
         }
     }
-    
+
     // 카드 정보 문자열 치환 함수
     private string ReplaceCardDescription(string desc, CardBase card)
     {
@@ -327,5 +331,4 @@ public class InfomationDB
         name = nameIn;
         description = descriptionIn;
     }
-    
 }

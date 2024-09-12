@@ -13,6 +13,13 @@ public partial class ItemData : SingletonD<ItemData>
     // 아이템이름을 키값으로 가지는 DIctionary
     public Dictionary<string, ItemEventHanddler> itemEffects = new Dictionary<string, ItemEventHanddler>();
 
+
+    void Start()
+    {
+        LoadArtifactData();
+        LoadLegacyData();
+    }
+
     //Version 4
     public void LoadArtifactData()
     {

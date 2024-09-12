@@ -2110,6 +2110,7 @@ MonoBehaviour:
   targetObjectUI: {fileID: 4996807731787544662}
   selectedNamePlate: {fileID: 0}
   buffIndicator: {fileID: 3626619607479802059}
+  buffInfo: {fileID: 0}
   nextActionIndicator: {fileID: 2888408972560071505}
   avatar: {fileID: 0}
   playerNamePlate: {fileID: 5848243873048461331}
@@ -3767,7 +3768,6 @@ GameObject:
   - component: {fileID: 4283305502715033513}
   - component: {fileID: 8546009580716316466}
   - component: {fileID: 3626619607479802059}
-  - component: {fileID: 8205957427154231635}
   m_Layer: 0
   m_Name: BuffContainer
   m_TagString: Untagged
@@ -3832,17 +3832,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buffPrefab: {fileID: 5706363566948471698, guid: e06c681aebe7e3b4fbee23b267cee2b6, type: 3}
---- !u!210 &8205957427154231635
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4831697387643879440}
-  m_Enabled: 0
-  m_SortingLayerID: -822484745
-  m_SortingLayer: 2
-  m_SortingOrder: 0
 --- !u!1 &4995257119731539264
 GameObject:
   m_ObjectHideFlags: 0

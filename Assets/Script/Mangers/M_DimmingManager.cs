@@ -72,8 +72,5 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
             tar.monsterNameCanvas.sortingLayerName = layerName;
             tar.monsterShieldCanvas.sortingLayerName = layerName;
         }
-        foreach(Canvas canvas in tar.GetComponentsInChildren<Canvas>()){
-            canvas.sortingLayerName = layerName;
-        }
     }
 }
