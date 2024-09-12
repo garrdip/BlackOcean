@@ -1,10 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using Mirror;
-using ProjectD;
 
 
 public class AbilityCtrlArrow : NetworkBehaviour
@@ -20,7 +17,7 @@ public class AbilityCtrlArrow : NetworkBehaviour
     public Sprite targetEnterStateArrowNode; // 화살표가 타겟에 진입할 때 노드 이미지
     public Sprite targetExitStateArrowNode; // 화살표가 타겟에 나갈 때 노드 이미지
 
-    bool isInitialized;
+    public bool isInitialized;
 
     void Start()
     {
@@ -73,6 +70,8 @@ public class AbilityCtrlArrow : NetworkBehaviour
     {
         if(Input.GetMouseButtonDown(1)){
             RemoveAbilityCtrlArrow();
+            GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+            gamePlayerDeck.abilityButton.SetAbilityButtonActive(false);
         }
     }
 
@@ -84,6 +83,7 @@ public class AbilityCtrlArrow : NetworkBehaviour
                 GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                 CmdEnQueueCardData(gamePlayerDeck, currentTarget);
                 RemoveAbilityCtrlArrow();
+                gamePlayerDeck.abilityButton.SetAbilityButtonActive(false);
             }
         }
     }
