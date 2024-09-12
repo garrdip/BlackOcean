@@ -4938,7 +4938,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2bb5e2f6aa5762c47b6b6f953df7cda0, type: 2}
-  - {fileID: 2100000, guid: 794c321baaa3c9c4b8949af3e605fce6, type: 2}
+  - {fileID: 2100000, guid: c6f2239c84c06064a8a38937cff2fd81, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5051,7 +5051,7 @@ MonoBehaviour:
   currentBehaviorSequence: 0
   nextTargetObject: {fileID: 0}
   nextTarget: 0
-  monsterData:
+  monster:
     name: 
     MAXHP: 0
     behavior: []
@@ -5067,6 +5067,8 @@ MonoBehaviour:
   effectDataAssets:
   - {fileID: 11400000, guid: 72004d8a998adc14ca969bf729f388ab, type: 2}
   - {fileID: 11400000, guid: da2a341b4f7b83b4ab31198feadf12be, type: 2}
+  effectParticles:
+  - {fileID: 3129064805209090409, guid: 750255046b352ca499d8b7e2b7dba706, type: 3}
 --- !u!114 &-999849576386325433
 MonoBehaviour:
   m_ObjectHideFlags: 0

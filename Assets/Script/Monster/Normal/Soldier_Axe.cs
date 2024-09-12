@@ -32,6 +32,7 @@ public class Soldier_Axe : SpawnedMonster
                 parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent.GetComponent<TargetObject>(),null);
                 DoAnimation("Buff0");
                 RpcStartSkillEffect(1, "Eff04_Buff", parent.transform.position, SFX_TYPE.Normal_Axe, 5, "Effect");
+                RpcStartSkillParticle(0, parent.transform.position + new Vector3(0f, 2.5f, 0f));
                 yield return new WaitForSeconds(1.7f);
                 ReturnToIdleAnimation();
                 break;

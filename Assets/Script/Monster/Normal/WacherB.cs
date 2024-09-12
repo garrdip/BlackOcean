@@ -16,6 +16,7 @@ public class WacherB : SpawnedMonster
                 yield return new WaitForSeconds(0.5f);
                 nextTargetObject.GainBuff(BuffType.ICHI_ATTACK,4,false,false,false,false,parent,null);
                 RpcStartSkillEffect(0, "Eff04_Buff", parent.transform.position, SFX_TYPE.Normal_Axe, 5, "Effect");
+                RpcStartSkillParticle(0, parent.transform.position + new Vector3(0f, 2.5f, 0f));
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
                 break;
