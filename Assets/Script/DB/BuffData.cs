@@ -25,7 +25,7 @@ public class BuffData : SingletonD<BuffData>
     // 버프 DB 로드
     public void LoadBuffDataFromDB()
     {
-        TextAsset DBtext = Resources.Load<TextAsset>("DBs/BuffDB");
+        TextAsset DBtext = Resources.Load<TextAsset>("DB/BuffDB");
         using (StringReader DB = new StringReader(DBtext.text))
         {          
             while(true)

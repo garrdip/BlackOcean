@@ -54,7 +54,7 @@ public partial class CardData : SingletonD<CardData>
     //Version 3
     public void LoadCardDataFromDB()
     {
-        TextAsset DBtext = Resources.Load<TextAsset>("DBs/CardDB");
+        TextAsset DBtext = Resources.Load<TextAsset>("DB/CardDB");
         using (StringReader DB = new StringReader(DBtext.text))
         {          
             while(true)
@@ -96,7 +96,7 @@ public partial class CardData : SingletonD<CardData>
         curseEffect.Add("G5",G5_Effect);
         curseEffect.Add("G6",G6_Effect);
         curseEffect.Add("G7",G7_Effect);
-        DBtext = Resources.Load<TextAsset>("DBs/Description");
+        DBtext = Resources.Load<TextAsset>("DB/Description");
         using (StringReader DB = new StringReader(DBtext.text))
         {          
             while(true)
@@ -110,7 +110,7 @@ public partial class CardData : SingletonD<CardData>
                 infomationDB.Add(values[0],new InfomationDB(values[1],values[2]));
             }
         }
-        DBtext = Resources.Load<TextAsset>("DBs/CardCharacteristic");
+        DBtext = Resources.Load<TextAsset>("DB/CardCharacteristic");
         using (StringReader DB = new StringReader(DBtext.text))
         {          
             while(true)

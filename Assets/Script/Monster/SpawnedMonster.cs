@@ -36,7 +36,7 @@ public class SpawnedMonster : NetworkBehaviour
     public ActionTarget nextTarget = ActionTarget.UNDEFINED;
     
     [SyncVar (hook = nameof(OnChangedMonsterData))]
-    public MonsterData monsterData;
+    public Monster monster;
 
     [SyncVar (hook = nameof(OnChangeParent))]
     public TargetObject parent;
@@ -220,7 +220,7 @@ public class SpawnedMonster : NetworkBehaviour
         else
         {
             int randomValue = UnityEngine.Random.Range(0,100); // 0 ~ 99
-            foreach(MonsterActionList actionList in monsterData.behavior)
+            foreach(MonsterActionList actionList in monster.behavior)
             {
                 randomValue -= actionList.frequency;
                 if(randomValue < 0) {
@@ -321,16 +321,16 @@ public class SpawnedMonster : NetworkBehaviour
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
 
-    public void OnChangedMonsterData(MonsterData oldVal , MonsterData newVal)
+    public void OnChangedMonsterData(Monster oldVal , Monster newVal)
     {
-        monsterName = monsterData.name;
-        MAXHP = monsterData.MAXHP;
-        HP = monsterData.MAXHP;
+        monsterName = newVal.name;
+        MAXHP = newVal.MAXHP;
+        HP = newVal.MAXHP;
         sheild = 0;
         //SyncVar Data는 서버에서 관리
         if(isServer)
         {
-            HP = monsterData.MAXHP;
+            HP = newVal.MAXHP;
         }
     }
 

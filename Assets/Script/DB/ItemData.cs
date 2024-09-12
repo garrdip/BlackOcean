@@ -23,7 +23,7 @@ public partial class ItemData : SingletonD<ItemData>
     //Version 4
     public void LoadArtifactData()
     {
-        TextAsset DBtext = Resources.Load<TextAsset>("DBs/ArtifactDB");
+        TextAsset DBtext = Resources.Load<TextAsset>("DB/ArtifactDB");
         using (StringReader DB = new StringReader(DBtext.text))
         {          
             while(true)
@@ -42,7 +42,7 @@ public partial class ItemData : SingletonD<ItemData>
 
     public void LoadLegacyData()
     {
-        TextAsset DBtext = Resources.Load<TextAsset>("DBs/LegacyDB");
+        TextAsset DBtext = Resources.Load<TextAsset>("DB/LegacyDB");
         using (StringReader DB = new StringReader(DBtext.text))
         {          
             while(true)

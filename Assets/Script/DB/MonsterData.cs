@@ -5,9 +5,10 @@ using System;
 using UnityEngine;
 using ProjectD;
 
-public class M_MonsterManager : SingletonD<M_MonsterManager>
+
+public class MonsterData : SingletonD<MonsterData>
 {
-    public List<MonsterData> monsterDataList = new List<MonsterData>();
+    public List<Monster> monsterDataList = new List<Monster>();
     public List<MonsterGroup> monsterGroups = new List<MonsterGroup>();
 
     void Start()
@@ -18,8 +19,8 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
 
     void LoadMonsterDataFromDB()
     {
-        MonsterData monsterData = new MonsterData();
-        TextAsset DBtext = Resources.Load<TextAsset>("DBs/MonsterDB");
+        Monster monsterData = new Monster();
+        TextAsset DBtext = Resources.Load<TextAsset>("DB/MonsterDB");
         using (StringReader DB = new StringReader(DBtext.text))
         {
             while(true)
@@ -31,7 +32,7 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
                 if(values[0] == "Monster_Name") continue; // 첫번째 라인 스킵
                 if(values[0].Length != 0) // 새로운 몬스터 데이터 시작
                 {
-                    monsterData = new MonsterData();
+                    monsterData = new Monster();
                     monsterDataList.Add(monsterData);
                     
                     //CSV 파일내의 데이터를 클래스 데이터로 저장
@@ -67,7 +68,7 @@ public class M_MonsterManager : SingletonD<M_MonsterManager>
 
     void LoadMonsterGroupDataFromDB()
     {
-        TextAsset DBtext = Resources.Load<TextAsset>("DBs/MonsterGroupDB");
+        TextAsset DBtext = Resources.Load<TextAsset>("DB/MonsterGroupDB");
         using (StringReader DB = new StringReader(DBtext.text))
         {
             while(true)
