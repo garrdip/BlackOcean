@@ -20,6 +20,8 @@ public class NamePlate : MonoBehaviour
     private Vector3 shieldOriginPosition;
     private Vector3 shieldGainPosition;
     private Sequence sequence;
+    private readonly float fillRate = 3.25f; // Hp Bar 위치 계산 비율
+
 
     void Start()
     {
@@ -50,7 +52,6 @@ public class NamePlate : MonoBehaviour
     // Hp값 변경에 따라 Hp Bar의 요소들의 위치 설정 및 텍스트 설정
     public void SetHpValue(int hp, int maxHp, TargetObject tar)
     {        
-        float fillRate = 3.25f;
         float hpValue = (fillRate * hp / maxHp) - fillRate;
         if(tar.objectType == ObjectType.ENEMY){ // 몬스터인 경우의 꽃가루 버프에 대한 도트뎀 처리
             int index = tar.buffs.FindIndex((buff) => buff.type == BuffType.FLOWERPOWDER);
@@ -75,16 +76,23 @@ public class NamePlate : MonoBehaviour
         hpText.text = hp <= 0 ? ("0 / " + maxHp) : (hp + " / " + maxHp);
     }
 
-    // 중독 상태를 나타내는 Hp Bar 활성화 및 위치 설정(꽃가루 중독 데미지에 의한 Hp Bar 후속 처리는 Hp값이 감소될때 수행)
-    public void SetHpValueByFlowerPowderState(int buffValue, int hp, int maxHp, bool isNewBuff)
+    // 꽃가루 중독 상태를 나타내는 Hp Bar 활성화 및 위치 설정(꽃가루 중독 데미지에 의한 Hp Bar 후속 처리는 Hp값이 감소될때 SetHpValue 함수에서 수행)
+    public void SetHpBarByFlowerPowderState(int buffValue, int hp, int maxHp, bool isNewBuff)
     {
-        float fillRate = 3.25f;
         float value = hp - buffValue;
         float hpValue = (fillRate * value / maxHp) - fillRate;
         hpBarFillerPoison.gameObject.SetActive(true);
         if(isNewBuff){
             hpBarFillerPoison.transform.localPosition = hpBarFiller.transform.localPosition;
         }
+        hpBarFiller.transform.localPosition = new Vector3(hpValue, 0, 0);
+    }
+
+    // 일반 상태의 Hp bar로 설정(중독 상태를 나타내는 Hp Bar를 비활성화 하고, Hp bar의 위치를 최대 체력과 현재 체력에 비례해서 설정)
+    public void SetHpBarByNoneFlowerPowderState(int hp, int maxHp)
+    {
+        hpBarFillerPoison.gameObject.SetActive(false);
+        float hpValue = (fillRate * hp /  maxHp) - fillRate;
         hpBarFiller.transform.localPosition = new Vector3(hpValue, 0, 0);
     }
 

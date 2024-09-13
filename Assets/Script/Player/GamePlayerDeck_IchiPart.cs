@@ -80,11 +80,13 @@ public partial class GamePlayerDeck : NetworkBehaviour
     // 현재 이치 아이콘 제거
     private void RemoveCurrentItchIcon(int count)
     {
-        for(int i=0; i < count; i++){
-            int lastIndex = GameUIManager.instance.currentIchiIcons.Count - 1; // 마지막 인덱스에서 하나씩 제거
-            GameUIManager.instance.currentIchiIcons[lastIndex].transform.DOKill();
-            Destroy(GameUIManager.instance.currentIchiIcons[lastIndex]);
-            GameUIManager.instance.currentIchiIcons.RemoveAt(lastIndex);
+        if(GameUIManager.instance.currentIchiIcons.Count > 0){
+            for(int i=0; i < count; i++){
+                int lastIndex = GameUIManager.instance.currentIchiIcons.Count - 1; // 마지막 인덱스에서 하나씩 제거
+                GameUIManager.instance.currentIchiIcons[lastIndex].transform.DOKill();
+                Destroy(GameUIManager.instance.currentIchiIcons[lastIndex]);
+                GameUIManager.instance.currentIchiIcons.RemoveAt(lastIndex);
+            }
         }
     }
 
@@ -105,11 +107,13 @@ public partial class GamePlayerDeck : NetworkBehaviour
     // 최대 이치 아이콘 제거
     private void RemoveMaxItchIcon(int count)
     {
-        for(int i=0; i < count; i++){
-            int lastIndex = GameUIManager.instance.maxIchiIcons.Count - 1; // 마지막 인덱스에서 하나씩 제거
-            GameUIManager.instance.maxIchiIcons[lastIndex].transform.DOKill();
-            Destroy(GameUIManager.instance.maxIchiIcons[lastIndex]);
-            GameUIManager.instance.maxIchiIcons.RemoveAt(lastIndex);
+        if(GameUIManager.instance.maxIchiIcons.Count > 0){
+            for(int i=0; i < count; i++){
+                int lastIndex = GameUIManager.instance.maxIchiIcons.Count - 1; // 마지막 인덱스에서 하나씩 제거
+                GameUIManager.instance.maxIchiIcons[lastIndex].transform.DOKill();
+                Destroy(GameUIManager.instance.maxIchiIcons[lastIndex]);
+                GameUIManager.instance.maxIchiIcons.RemoveAt(lastIndex);
+            }
         }
     }
 

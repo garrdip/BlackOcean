@@ -39,17 +39,21 @@ public class BuffIndicatorController : MonoBehaviour
         }
     }
 
-    public void RemoveBuff(int index)
+    public void RemoveBuff(int index, Buff buff, TargetObject tar)
     {
+        if(buff.type == BuffType.FLOWERPOWDER && tar.objectType == ObjectType.ENEMY){
+            NamePlate namePlate = tar.monsterNamePlate.GetComponent<NamePlate>();
+            namePlate.SetHpBarByNoneFlowerPowderState(tar.monster.HP, tar.monster.MAXHP); // 몬스터인 경우 꽃가루 버프가 제거될 때 Hp Bar 상태 원래 상태로 변경
+        }
         Destroy(indicatedBuffs[index]);
         indicatedBuffs.RemoveAt(index);
     }
 
     private void SetMonsterFlowerPowder(Buff buff, TargetObject tar, bool isNewBuff)
     {
-        if(buff.type == BuffType.FLOWERPOWDER && tar.objectType == ObjectType.ENEMY){ // 몬스터인 경우의 꽃가루 버프 처리
+        if(buff.type == BuffType.FLOWERPOWDER && tar.objectType == ObjectType.ENEMY){
             NamePlate namePlate = tar.monsterNamePlate.GetComponent<NamePlate>();
-            tar.monsterNamePlate.GetComponent<NamePlate>().SetHpValueByFlowerPowderState(buff.value, tar.monster.HP, tar.monster.MAXHP, isNewBuff); // 꽃가루 버프에 의한 Hp Bar 처리
+            namePlate.SetHpBarByFlowerPowderState(buff.value, tar.monster.HP, tar.monster.MAXHP, isNewBuff); // 몬스터인 경우 꽃가루 버프가 추가될 때 Hp Bar 처리
         }
     }
 }

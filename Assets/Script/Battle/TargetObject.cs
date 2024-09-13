@@ -832,7 +832,7 @@ public class TargetObject : NetworkBehaviour
                 break;
             case SyncList<Buff>.Operation.OP_REMOVEAT:
                 ReArrangeBuffEffectIndex(index);
-                buffIndicator.RemoveBuff(index);
+                buffIndicator.RemoveBuff(index, oldBuff, this);
                 buffTrunBeginEffect.Remove(index);
                 break;
             case SyncList<Buff>.Operation.OP_SET:
