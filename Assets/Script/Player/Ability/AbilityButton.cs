@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using DG.Tweening;
+using ProjectD;
 
 
 public class AbilityButton : NetworkBehaviour
@@ -12,10 +13,14 @@ public class AbilityButton : NetworkBehaviour
     public GameObject rightLine;
     public GameObject rightLineLight;
     public GameObject lineLight;
-    public GameObject IconLight;
+    public GameObject icon;
+    public GameObject iconLight;
     private Vector3 leftOriginPosition;
     private Vector3 rightOriginPosition;
-
+    public Sprite danhyangIcon;
+    public Sprite danhyangIconLight;
+    public Sprite georkIcon;
+    public Sprite georkIconLight;
 
     public override void OnStartClient()
     {
@@ -25,6 +30,7 @@ public class AbilityButton : NetworkBehaviour
         gameObject.SetActive(false); // 초기 시점에 버튼 비활성화
         leftOriginPosition = leftLine.transform.localPosition;
         rightOriginPosition = rightLine.transform.localPosition;
+        SetAbilityButtonIcon(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayer>().character);
     }
 
     void OnMouseDown()
@@ -47,12 +53,26 @@ public class AbilityButton : NetworkBehaviour
         }
     }
 
+    private void SetAbilityButtonIcon(Character character)
+    {
+        switch(character){
+            case Character.HONGDANHYANG:
+                icon.GetComponent<SpriteRenderer>().sprite = danhyangIcon;
+                iconLight.GetComponent<SpriteRenderer>().sprite = danhyangIconLight;
+                break;
+            case Character.GEORK:
+                icon.GetComponent<SpriteRenderer>().sprite = georkIcon;
+                iconLight.GetComponent<SpriteRenderer>().sprite = georkIconLight;
+                break;
+        }
+    }
+
     public void SetAbilityButtonActive(bool isActive)
     {
         leftLineLight.SetActive(isActive);
         rightLineLight.SetActive(isActive);
         lineLight.SetActive(isActive);
-        IconLight.SetActive(isActive);
+        iconLight.SetActive(isActive);
         if(isActive){
             leftLine.transform.DOLocalMoveX(leftOriginPosition.x - 0.15f, 0.3f);
             rightLine.transform.DOLocalMoveX(rightOriginPosition.x + 0.15f, 0.3f);

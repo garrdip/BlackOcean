@@ -13,7 +13,7 @@ public class ButtonBase : MonoBehaviour
 
     public virtual void OnDestroy()
     {
-        GetComponent<RectTransform>().DOKill();
+        transform.DOKill();
     }
 
     private void AddEventTriggers()
@@ -33,11 +33,11 @@ public class ButtonBase : MonoBehaviour
 
     private void OnPointerDownButtonBase(PointerEventData pointerEventData)
     {
-        GetComponent<RectTransform>().DOScale(0.9f, 0.25f);
+        transform.DOScale(0.9f, 0.25f);
     }
 
     private void OnPointerUpButtonBase(PointerEventData pointerEventData)
     {
-        GetComponent<RectTransform>().DOScale(1f, 0.25f);
+        transform.DOScale(1f, 0.25f);
     }
 }
