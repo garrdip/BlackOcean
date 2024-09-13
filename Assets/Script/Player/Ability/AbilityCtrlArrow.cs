@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using DG.Tweening;
+using ProjectD;
 
 
 public class AbilityCtrlArrow : NetworkBehaviour
@@ -11,13 +13,16 @@ public class AbilityCtrlArrow : NetworkBehaviour
     private Transform origin;
     public List<Transform> arrowNodes = new List<Transform>();
     public Vector2[] controlPoints = new Vector2[2];
-
-    public Sprite targetEnterStateArrowHead; // 화살표가 타겟에 진입할 때 헤드 이미지
-    public Sprite targetExitStateArrowHead; // 화살표가 타겟에 나갈 때 헤드 이미지
-    public Sprite targetEnterStateArrowNode; // 화살표가 타겟에 진입할 때 노드 이미지
-    public Sprite targetExitStateArrowNode; // 화살표가 타겟에 나갈 때 노드 이미지
-
     public bool isInitialized;
+
+    public Sprite arrowHeadNormal;
+    public Sprite arrowHeadEnemy;
+    public Sprite arrowHeadAlly;
+    public Sprite arrowNodeNormal;
+    public Sprite arrowNodeEnemy;
+    public Sprite arrowNodeAlly;
+    public GameObject arrowHeadCircle;
+
 
     void Start()
     {
@@ -34,6 +39,11 @@ public class AbilityCtrlArrow : NetworkBehaviour
             HandleArrowRemove();
             HandleArrowNodesTrasnform();
         }
+    }
+
+    void OnDestroy()
+    {
+        arrowHeadCircle.transform.DOKill();
     }
 
     // 화살표 노드들의 위치, 회전값 조절
@@ -139,15 +149,43 @@ public class AbilityCtrlArrow : NetworkBehaviour
     }
 
      // 화살표 노드들 이미지를 타겟에 진입 or 벗어날 때 상태에 따라 다른 이미지 설정
-    public void ChangeArrowNodesColor(bool isEnter)
+    public void ChangeArrowNodesColor(bool isEnter, TargetObject targetObject)
     {
-        for(int i=0; i<arrowNodes.Count; i++){
-            SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
-            if(i == arrowNodes.Count-1){
-                spriteRenderer.sprite = isEnter ? targetEnterStateArrowHead : targetExitStateArrowHead;
+        if(targetObject != null){
+            if(targetObject.objectType == ObjectType.ENEMY){
+                SetArrowNodesSprite(isEnter, arrowHeadEnemy,arrowHeadNormal, arrowNodeEnemy, arrowNodeNormal);
             }else{
-                spriteRenderer.sprite = isEnter ? targetEnterStateArrowNode : targetExitStateArrowNode;
+                SetArrowNodesSprite(isEnter, arrowHeadAlly, arrowHeadNormal, arrowNodeAlly, arrowNodeNormal);
             }
+        }else{
+            SetArrowNodesSprite(isEnter, arrowHeadAlly, arrowHeadNormal, arrowNodeAlly, arrowNodeNormal);
+        }
+        SetArrowCircleRotateLoop(isEnter);
+    }
+
+    private void SetArrowNodesSprite(bool isEnter, Sprite activeHeadSprite, Sprite normalHeadSprite, Sprite activeNodeSprite, Sprite normalNodeSPrite)
+    {
+        for(int i=0; i<this.arrowNodes.Count; i++){
+            SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
+            if(i == (arrowNodes.Count-1)){
+                spriteRenderer.sprite = isEnter ? activeHeadSprite : normalHeadSprite; // 화살표 머리
+            }else{
+                spriteRenderer.sprite = isEnter ? activeNodeSprite : normalNodeSPrite; // 화살표 몸통
+            }
+        }
+    }
+
+    private void SetArrowCircleRotateLoop(bool isEnter)
+    {
+        arrowHeadCircle.SetActive(isEnter);
+        if(isEnter){
+            arrowHeadCircle.transform
+                .DORotate(new Vector3(0, 0, 360), 5f, RotateMode.FastBeyond360)
+                .SetRelative(true)
+                .SetEase(Ease.Linear)
+                .SetLoops(-1);
+        }else{
+            arrowHeadCircle.transform.DOKill();
         }
     }
 }

@@ -17,7 +17,7 @@ public class AbilityCtrlArrowHead : MonoBehaviour
     {
         if(collider != null && collider.tag.Equals("TargetObject") && abilityCtrlArrow != null){
             abilityCtrlArrow.currentTarget = collider.gameObject.transform.parent.GetComponent<TargetObject>();
-            abilityCtrlArrow.ChangeArrowNodesColor(true);
+            abilityCtrlArrow.ChangeArrowNodesColor(true, abilityCtrlArrow.currentTarget);
         }
     }
 
@@ -26,7 +26,7 @@ public class AbilityCtrlArrowHead : MonoBehaviour
     {
         if(collider != null && collider.tag.Equals("TargetObject") && abilityCtrlArrow != null){
             abilityCtrlArrow.currentTarget = null;
-            abilityCtrlArrow.ChangeArrowNodesColor(false);
+            abilityCtrlArrow.ChangeArrowNodesColor(false, abilityCtrlArrow.currentTarget);
         }
     }
 
