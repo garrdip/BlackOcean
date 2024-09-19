@@ -884,6 +884,7 @@ public class TargetObject : NetworkBehaviour
             player.HP = newVal; // 타겟오브젝트의 체력 값과 GamePlayer의 체력 값 동기화
         }
         if(oldVal > 0){
+            M_EffectManager.instance.OnHitEffectParticle(transform.position + new Vector3(0f, 3f, 0f));
             M_EffectManager.instance.DisPlayeDamage(this, (oldVal - newVal)); // 데미지 or 회복 표시 이펙트 생성
             if(newVal > 0){
                 selectedNamePlate.SetHpValue(newVal, playerMaxHP, this);

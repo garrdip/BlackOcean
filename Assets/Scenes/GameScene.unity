@@ -10975,6 +10975,7 @@ MonoBehaviour:
   EffectCanvas: {fileID: 481710162}
   FloatingDamageText: {fileID: 2572344723661254293, guid: ba3d091ba066c3141823a924988d3af3, type: 3}
   FloatingGoldText: {fileID: 1562925910074642949, guid: a6f53cc82d09be54797b9bd6be97d84c, type: 3}
+  hitParticle: {fileID: 4642848129145531053, guid: 850ff15ab74e665428e95b1a06565729, type: 3}
 --- !u!114 &743138901
 MonoBehaviour:
   m_ObjectHideFlags: 0

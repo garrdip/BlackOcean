@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using AYellowpaper.SerializedCollections;
 using DG.Tweening;
 using TMPro;
 using ProjectD;
@@ -13,6 +12,7 @@ public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
     public Canvas EffectCanvas;
     public GameObject FloatingDamageText;
     public GameObject FloatingGoldText;
+    public ParticleSystem hitParticle;
 
     protected override void Start()
     {
@@ -153,5 +153,11 @@ public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
                 canvasGroup.DOKill();
                 Destroy(floatingGoldText);
             });
+    }
+
+    // 피격 파티클 이펙트
+    public void OnHitEffectParticle(Vector3 position)
+    {
+        ParticleSystem hitEffect = Instantiate(hitParticle, position, Quaternion.identity);
     }
 }    
