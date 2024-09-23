@@ -65,6 +65,14 @@ public partial class M_EffectManager
         });
     }
 
+    [ClientRpc]
+    public void RpcEffectSlash(Vector3 position)
+    {
+        ParticleSystem particleSystem = Instantiate(danhyangCardEffectParticles[1], position + new Vector3(-1.5f, 2.5f, 0f), Quaternion.Euler(45f, 0f, 0f)); // Slash 이펙트 파티클 생성
+        ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
+        renderer.sortingLayerName = "Effect";
+    }
+
     // 단향 카드 실드류 이펙트
     [ClientRpc]
     public void RpcEffectFlowerShield(Vector3 position, int index)

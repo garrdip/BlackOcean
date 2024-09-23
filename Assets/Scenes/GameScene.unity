@@ -10939,6 +10939,7 @@ MonoBehaviour:
       Value: {fileID: 11400000, guid: 26d939e792e113c47bf8acc334ce0213, type: 2}
   danhyangCardEffectParticles:
   - {fileID: 6498355376624205919, guid: 972d6c05602ab9942856cad2005e2a94, type: 3}
+  - {fileID: 1379504315796101638, guid: 49642f9c2da375b48ac3109ec09b7644, type: 3}
   EffectCanvas: {fileID: 481710162}
   FloatingDamageText: {fileID: 2572344723661254293, guid: ba3d091ba066c3141823a924988d3af3, type: 3}
   FloatingGoldText: {fileID: 1562925910074642949, guid: a6f53cc82d09be54797b9bd6be97d84c, type: 3}
@@ -33594,6 +33595,10 @@ MonoBehaviour:
   cardQueueItemPrefab: {fileID: 3638564104287510282, guid: c594336229e16324b85b8ff78e4bb051, type: 3}
   currentCardQueueIndex: 0
   cardQueueItems: []
+  targetIndicatorContainer: {fileID: 904881989}
+  targetIndicatorPrefab: {fileID: 6244867506359388237, guid: 781c100031b01f9419584bb62d1860e5, type: 3}
+  targetIndicators: []
+  targetIndicatorCadidates: []
   playerRewardedDic:
     _serializedList: []
   rewardObjects: []
@@ -33605,9 +33610,6 @@ MonoBehaviour:
   - {x: 7, y: -3, z: 0}
   - {x: 11, y: -3, z: 0}
   - {x: 15, y: -3, z: 0}
-  targetIndicatorContainer: {fileID: 904881989}
-  targetIndicatorPrefab: {fileID: 6244867506359388237, guid: 781c100031b01f9419584bb62d1860e5, type: 3}
-  targetIndicators: []
   isCardQueueOperating: 0
   spawnedPlayerList: []
   spawnedMonsterList: []
