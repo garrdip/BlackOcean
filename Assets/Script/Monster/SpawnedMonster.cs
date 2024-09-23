@@ -121,6 +121,20 @@ public class SpawnedMonster : NetworkBehaviour
         }
     }
 
+    void OnMouseEnter()
+    {
+        if(!M_CardManager.instance.isArrowActive && !M_CardManager.instance.IsDragCardExist()){
+            M_TurnManager.instance.EnalbleTargetIndicatorByMonster(nextTarget, parent.netId);
+        }
+    }
+
+    void OnMouseExit()
+    {
+        if(!M_CardManager.instance.isArrowActive && !M_CardManager.instance.IsDragCardExist()){
+            M_TurnManager.instance.DisableTargetIndicator();
+        }
+    }
+
     // 몬스터 스킬 이펙트 오브젝트 동적 생성
     public IEnumerator StartEffect(SkeletonDataAsset skeletonDataAsset, string animationName, Vector3 position, AudioClip sfx, string layer)
     {

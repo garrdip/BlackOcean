@@ -213,6 +213,7 @@ public class CardCtrlArrow : NetworkBehaviour
             M_CardManager.instance.ChangeCardOnHandShiftState(arrowOwnedCardOnHand, false);
             Cursor.visible = true;
             arrowOwnedCardOnHand = null;
+            M_TurnManager.instance.DisableTargetIndicator();
         }
     }
 
@@ -257,6 +258,7 @@ public class CardCtrlArrow : NetworkBehaviour
         M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
         Cursor.visible = true;
         arrowOwnedCardOnHand = null;
+        M_TurnManager.instance.DisableTargetIndicator();
     }
 
     // 타겟 유형에 따라 화살표 리소스 설정
@@ -265,8 +267,8 @@ public class CardCtrlArrow : NetworkBehaviour
         if(cardOnHand.card.baseCard.isTargetable){
             switch(cardOnHand.card.baseCard.validTarget)
             {
-                case ValidTarget.ENEMY :
-                    // 공격 카드
+                case ValidTarget.ENEMY:
+                    // 단일 적 공격 카드
                     for(int i=0; i<this.arrowNodes.Count; i++){
                         SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
                         if(i == (arrowNodes.Count-1)){
@@ -279,14 +281,56 @@ public class CardCtrlArrow : NetworkBehaviour
                     arrowHeadExpanderRight.SetActive(true);
                     buffArrowHeadCircle.SetActive(false);
                     break;
-                case ValidTarget.ALL :
+                case ValidTarget.ENEMY_ALL:
+                    // 전체 적 공격 카드
+                    for(int i=0; i<this.arrowNodes.Count; i++){
+                        SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
+                        if(i == (arrowNodes.Count-1)){
+                            spriteRenderer.sprite = attackArrowHeadNormal;
+                        }else{
+                            spriteRenderer.sprite = attackArrowNodeNormal;
+                        }
+                    }
+                    arrowHeadExpanderLeft.SetActive(true);
+                    arrowHeadExpanderRight.SetActive(true);
+                    buffArrowHeadCircle.SetActive(false);
+                    break;
+                case ValidTarget.MEMBER:
+                    // 단일 아군 버프 카드
+                    for(int i=0; i<this.arrowNodes.Count; i++){
+                        SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
+                        if(i == (arrowNodes.Count-1)){
+                            spriteRenderer.sprite = buffArrowHeadNormal;
+                        }else{
+                            spriteRenderer.sprite = buffArrowNodeNormal;
+                        }
+                    }
+                    arrowHeadExpanderLeft.SetActive(false);
+                    arrowHeadExpanderRight.SetActive(false);
+                    buffArrowHeadCircle.SetActive(true);
+                    break;
+                case ValidTarget.TEAM:
+                    // 전체 아군 버프 카드
+                    for(int i=0; i<this.arrowNodes.Count; i++){
+                        SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
+                        if(i == (arrowNodes.Count-1)){
+                            spriteRenderer.sprite = buffArrowHeadNormal;
+                        }else{
+                            spriteRenderer.sprite = buffArrowNodeNormal;
+                        }
+                    }
+                    arrowHeadExpanderLeft.SetActive(false);
+                    arrowHeadExpanderRight.SetActive(false);
+                    buffArrowHeadCircle.SetActive(true);
+                    break;
+                case ValidTarget.ALL:
                     // 아군 및 적군 모두 적용 가능한 버프 카드
                     for(int i=0; i<this.arrowNodes.Count; i++){
                         SpriteRenderer spriteRenderer = arrowNodes[i].GetComponent<SpriteRenderer>();
                         if(i == (arrowNodes.Count-1)){
                             spriteRenderer.sprite = buffArrowHeadNormal;
                         }else{
-                            spriteRenderer.sprite = attackArrowNodeNormal;
+                            spriteRenderer.sprite = buffArrowNodeNormal;
                         }
                     }
                     arrowHeadExpanderLeft.SetActive(false);
@@ -302,25 +346,46 @@ public class CardCtrlArrow : NetworkBehaviour
     {
         if(arrowOwnedCardOnHand.card.baseCard.isTargetable){
             TargetObject targetObject = target.transform.parent.GetComponent<TargetObject>();
-            switch(arrowOwnedCardOnHand.card.baseCard.validTarget)
-            {
-                case ValidTarget.ENEMY :
-                    // 공격카드
-                    if(targetObject.objectType == ObjectType.ENEMY){
-                        SetArrowNodesSprite(isEnter, attackArrowHeadEnemy,attackArrowHeadNormal, attackArrowNodeEnemy, attackArrowNodeNormal);
-                        SetAttackArrowExpanderState(isEnter);
-                    }
-                    break;
-                case ValidTarget.ALL :
-                    // 아군 및 적군 모두 적용가능한 버프카드
-                    if(targetObject.objectType == ObjectType.ENEMY){
-                        SetArrowNodesSprite(isEnter, buffArrowHeadEnemy,buffArrowHeadNormal, buffArrowNodeEnemy, buffArrowNodeNormal);
-                    }else{
-                        SetArrowNodesSprite(isEnter, buffArrowHeadAlly, buffArrowHeadNormal, buffArrowNodeAlly, buffArrowNodeNormal);
-                    }
+            SetArrowNodesByValidTarget(isEnter, targetObject);
+            M_TurnManager.instance.EnableTargetIndiCatorByArrow(arrowOwnedCardOnHand.card.baseCard.validTarget, isEnter, targetObject);
+        }
+    }
+
+    // 타겟에 따라 화살표 헤드 및 노드의 이미지 구분 적용
+    private void SetArrowNodesByValidTarget(bool isEnter, TargetObject targetObject)
+    {
+        switch(arrowOwnedCardOnHand.card.baseCard.validTarget)
+        {
+            case ValidTarget.ENEMY :
+                // 공격 카드
+                if(targetObject.objectType == ObjectType.ENEMY){
+                    SetArrowNodesSprite(isEnter, attackArrowHeadEnemy,attackArrowHeadNormal, attackArrowNodeEnemy, attackArrowNodeNormal);
+                    SetAttackArrowExpanderState(isEnter);
+                }
+                break;
+            case ValidTarget.ALL :
+                // 아군 및 적군 모두 적용가능한 버프 카드
+                if(targetObject.objectType == ObjectType.ENEMY){
+                    SetArrowNodesSprite(isEnter, buffArrowHeadEnemy,buffArrowHeadNormal, buffArrowNodeEnemy, buffArrowNodeNormal);
+                }else{
+                    SetArrowNodesSprite(isEnter, buffArrowHeadAlly, buffArrowHeadNormal, buffArrowNodeAlly, buffArrowNodeNormal);
+                }
+                SetBuffArrowCircleRotateLoop(isEnter);
+                break;
+            case ValidTarget.MEMBER:
+                // 아군 단일 적용 버프 카드
+                if(targetObject.objectType == ObjectType.PLAYER){
+                    SetArrowNodesSprite(isEnter, buffArrowHeadAlly, buffArrowHeadNormal, buffArrowNodeAlly, buffArrowNodeNormal);
                     SetBuffArrowCircleRotateLoop(isEnter);
-                    break;
-            }
+                }
+                break;
+            case ValidTarget.TEAM:
+                // 아군 전체 적용 버프 카드
+                if(targetObject.objectType == ObjectType.PLAYER){
+                    SetArrowNodesSprite(isEnter, buffArrowHeadAlly, buffArrowHeadNormal, buffArrowNodeAlly, buffArrowNodeNormal);
+                    SetBuffArrowCircleRotateLoop(isEnter);
+                }
+                break;
         }
     }
 

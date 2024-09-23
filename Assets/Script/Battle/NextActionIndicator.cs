@@ -64,9 +64,9 @@ public class NextActionIndicator : MonoBehaviour
         if(isTargetable)
         {
             actionTarget.SetActive(true);
-            backTarget.SetActive(tar == ActionTarget.FRONT || tar == ActionTarget.FRONT_BACK || tar == ActionTarget.FRONT_BACK || tar == ActionTarget.WHOLE);
-            middleTarget.SetActive(tar == ActionTarget.MIDDLE || tar == ActionTarget.MIDDLE_BACK || tar == ActionTarget.FRONT_MIDDLE || tar == ActionTarget.WHOLE);
-            frontTarget.SetActive(tar == ActionTarget.BACK || tar == ActionTarget.FRONT_BACK || tar == ActionTarget.MIDDLE_BACK || tar == ActionTarget.WHOLE);
+            backTarget.SetActive(tar == ActionTarget.FRONT || tar == ActionTarget.FRONT_BACK || tar == ActionTarget.FRONT_BACK || tar == ActionTarget.WHOLE || tar == ActionTarget.WHOLE_ALLY);
+            middleTarget.SetActive(tar == ActionTarget.MIDDLE || tar == ActionTarget.MIDDLE_BACK || tar == ActionTarget.FRONT_MIDDLE || tar == ActionTarget.WHOLE || tar == ActionTarget.WHOLE_ALLY);
+            frontTarget.SetActive(tar == ActionTarget.BACK || tar == ActionTarget.FRONT_BACK || tar == ActionTarget.MIDDLE_BACK || tar == ActionTarget.WHOLE || tar == ActionTarget.WHOLE_ALLY);
         }
         else
             actionTarget.SetActive(false);

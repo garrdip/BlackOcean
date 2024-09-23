@@ -52,7 +52,7 @@ public class Soldier_Shield : SpawnedMonster
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,nextAction.actionValue.ToString());
                 break;
             case "팀방어" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,true,ActionTarget.WHOLE,nextAction.actionValue.ToString());
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,true,ActionTarget.WHOLE_ALLY,nextAction.actionValue.ToString());
                 break;
         }
     }

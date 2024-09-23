@@ -686,4 +686,14 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         M_TurnManager.instance.phase = BattleTurn.MONSTER_ORDERSELECT;
         yield return null;
     }
+
+    // 현재 패 중 드래그중인 카드가 있는지 조회
+    public bool IsDragCardExist()
+    {
+        int index = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindIndex((cardonHand) => cardonHand.isDrag);
+        if(index != -1){
+            return true;
+        }
+        return false;
+    }
 }

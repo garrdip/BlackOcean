@@ -30,6 +30,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     // 각 클라이언트에서 참조할 현재 참가한 플레이어들의 타겟오브젝트 목록
     public readonly SyncList<uint> spawnedPlayerSyncList = new SyncList<uint>();
 
+    // 각 클라이언트에서 참조할 현재 전투에 생성된 몬스터들의 타겟오브젝트 목록
+    public readonly SyncList<uint> spawnedMonsterSyncList = new SyncList<uint>();
+
     // 카드 큐 데이터 저장할 Synclist
     public readonly SyncList<CardQueue> cardQueueList = new SyncList<CardQueue>();
 
@@ -42,6 +45,12 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         INCREASE,
         DECREASE
     }
+
+    [Header("타겟 인디케이터")]
+    public GameObject targetIndicatorContainer;
+    public GameObject targetIndicatorPrefab; // 타겟 인디케이터 프리팹
+    public List<GameObject> targetIndicators = new List<GameObject>(); // 카드 액션 및 몬스터의 액션 타겟 표시 오브젝트 리스트
+    public List<GameObject> targetIndicatorCadidates = new List<GameObject>(); // 타겟 인디케이터 후보군 리스트
     
     [SerializedDictionary("게임플레이어", "보상카드선택유무")]
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
@@ -102,6 +111,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         playerOrder.Callback += OnPlayerOrderUpdated;
         cardQueueList.Callback += OnCardQueueUpdated;
+        spawnedPlayerSyncList.Callback += OnChangeSpawnedPlayerUpdated;
+        spawnedMonsterSyncList.Callback += OnChangeSpawnedMonsterUpdated;
     }
 
     // -------------------------------------------------------------------- Normal Method ---------------------------------------------------------------------//
@@ -209,6 +220,241 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
                 gamePlayer.isSelectable = isSelectable;
             }
+        }
+    }
+
+    // 화살표가 타겟오브젝트에 Enter/Exit 될 때 해당 타겟오브젝트와 카드의 ValidTarget에 따라 타겟 인디케이터 활성화 상태 변경
+    public void EnableTargetIndiCatorByArrow(ValidTarget validTarget, bool isEnter, TargetObject targetObject = null)
+    {
+        switch(validTarget){
+            case ValidTarget.NONE:
+                // 플레이어 본인 타겟 활성화
+                GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
+                foreach(GameObject targetIndicatorObject in targetIndicators){
+                    TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
+                    if(targetIndicator.netId == GetCurrentPlayerTargetObject(gamePlayer).netId){
+                        if(isEnter){
+                            targetIndicator.OnTargetEnable();
+                        }else{
+                            targetIndicator.OnTargetDisable(true);
+                        }
+                    }
+                }
+                break;
+            case ValidTarget.ENEMY:
+                // 몬스터 중 해당 몬스터의 타겟 인디케이터 활성화
+                foreach(GameObject targetIndicatorObject in targetIndicators){
+                    TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
+                    if(targetObject != null && targetObject.objectType == ObjectType.ENEMY && targetIndicator.netId == targetObject.netId ){
+                        if(isEnter){
+                            targetIndicator.OnTargetEnable();
+                        }else{
+                            targetIndicator.OnTargetDisable(true);
+                        }
+                    }
+                }
+                break;
+            case ValidTarget.ENEMY_ALL:
+                // 모든 몬스터 타겟 인디케이터 활성화
+                for(int i=0; i<targetIndicators.Count; i++){
+                    if(i != 0 && i != 1 && i != 2){
+                        if(isEnter){
+                            targetIndicators[i].GetComponent<TargetIndicator>().OnTargetEnable();
+                        }else{
+                            targetIndicators[i].GetComponent<TargetIndicator>().OnTargetDisable(true);
+                        } 
+                    }
+                }
+                break;
+            case ValidTarget.MEMBER:
+                // 팀 플레이어 중 해당 플레이어 타겟 인디케이터 활성화 
+                foreach(GameObject targetIndicatorObject in targetIndicators){
+                    TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
+                    if(targetObject != null && targetObject.objectType == ObjectType.PLAYER && targetIndicator.netId == targetObject.netId){
+                        if(isEnter){
+                            targetIndicator.OnTargetEnable();
+                        }else{
+                            targetIndicator.OnTargetDisable(true);
+                        }
+                    }
+                }
+                break;
+            case ValidTarget.TEAM:
+                // 팀 플레이어 모든 타겟 인디케이터 활성화
+                for(int i=0; i<targetIndicators.Count; i++){
+                    if(i == 0 || i == 1 || i == 2){
+                        if(isEnter){
+                            targetIndicators[i].GetComponent<TargetIndicator>().OnTargetEnable();
+                        }else{
+                            targetIndicators[i].GetComponent<TargetIndicator>().OnTargetDisable(true);
+                        } 
+                    }
+                }
+                break;
+            case ValidTarget.ALL:
+                // 팀이면 모든 팀 플레이어 or 몬스터면 모든 몬스터 타겟 인디케이터 활성화
+                if(targetObject != null && targetObject.objectType == ObjectType.PLAYER){
+                    for(int i=0; i<targetIndicators.Count; i++){
+                        if(i == 0 || i == 1 || i == 2){
+                            if(isEnter){
+                                targetIndicators[i].GetComponent<TargetIndicator>().OnTargetEnable();
+                            }else{
+                                targetIndicators[i].GetComponent<TargetIndicator>().OnTargetDisable(true);
+                            } 
+                        }
+                    }
+                }else{
+                    for(int i=0; i<targetIndicators.Count; i++){
+                        if(i != 0 && i != 1 && i != 2){
+                            if(isEnter){
+                                targetIndicators[i].GetComponent<TargetIndicator>().OnTargetEnable();
+                            }else{
+                                targetIndicators[i].GetComponent<TargetIndicator>().OnTargetDisable(true);
+                            } 
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    // 사용하려는 카드의 ValidTarget에 따라 타겟 인디케이터 후보군 상태로 설정(카드에 마우스 오버시 호출)
+    public void CandidatedTargetIndicatorByCard(ValidTarget validTarget)
+    {
+        switch(validTarget){
+            case ValidTarget.NONE:
+                // 플레이어 본인 타겟 후보로 설정
+                GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
+                TargetObject targetObject = GetCurrentPlayerTargetObject(gamePlayer);
+                foreach(GameObject targetIndicatorObject in targetIndicators){
+                    TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
+                    if(targetIndicator.netId == targetObject.netId){
+                        targetIndicator.OnTargetCandidated();
+                        targetIndicatorCadidates.Add(targetIndicator.gameObject);
+                    }
+                }
+                break;
+            case ValidTarget.ENEMY:
+                // 모든 몬스터 타겟 후보로 설정
+                for(int i=0; i<targetIndicators.Count; i++){
+                    if(i != 0 && i != 1 && i != 2){
+                        targetIndicators[i].GetComponent<TargetIndicator>().OnTargetCandidated();
+                        targetIndicatorCadidates.Add(targetIndicators[i]);
+                    }
+                }
+                break;
+            case ValidTarget.ENEMY_ALL:
+                // 모든 몬스터 타겟 후보로 설정
+                for(int i=0; i<targetIndicators.Count; i++){
+                    if(i != 0 && i != 1 && i != 2){
+                        targetIndicators[i].GetComponent<TargetIndicator>().OnTargetCandidated();
+                        targetIndicatorCadidates.Add(targetIndicators[i]);
+                    }
+                }
+                break;
+            case ValidTarget.MEMBER:
+                // 팀 플레이어들 모두 타겟 후보로 설정
+                for(int i=0; i<targetIndicators.Count; i++){
+                    if(i == 0 || i == 1 || i == 2){
+                        targetIndicators[i].GetComponent<TargetIndicator>().OnTargetCandidated();
+                        targetIndicatorCadidates.Add(targetIndicators[i]);
+                    }
+                }
+                break;
+            case ValidTarget.TEAM:
+                // 팀 플레이어들 모두 타겟 후보로 설정
+                for(int i=0; i<targetIndicators.Count; i++){
+                    if(i == 0 || i == 1 || i == 2){
+                        targetIndicators[i].GetComponent<TargetIndicator>().OnTargetCandidated();
+                        targetIndicatorCadidates.Add(targetIndicators[i]);
+                    }
+                }
+                break;
+            case ValidTarget.ALL:
+                // 팀 플레이어, 몬스터 모두 타겟 후보로 설정
+                foreach(GameObject targetIndicatorObject in targetIndicators){
+                    TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
+                    targetIndicator.OnTargetCandidated();
+                    targetIndicatorCadidates.Add(targetIndicator.gameObject);
+                }
+                break;
+        }
+    }
+
+    // 몬스터의 ActionTarget에 따라 타겟 인디케이터 활성화 상태로 설정(몬스터에 마우스 오버시 호출)
+    public void EnalbleTargetIndicatorByMonster(ActionTarget nextTarget, uint targetNetId)
+    {
+        switch(nextTarget){
+            case ActionTarget.NONE:
+                // 몬스터 본인 타겟 활성화
+                foreach(GameObject targetIndicatorObject in targetIndicators){
+                    TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
+                    if(targetIndicator.netId == targetNetId){
+                        targetIndicator.OnTargetEnable();
+                    }
+                }
+                break;
+            case ActionTarget.FRONT:
+                // 전열 플레이어 타겟 인디케이터 활성화
+                targetIndicators[2].GetComponent<TargetIndicator>().OnTargetEnable();
+                break;
+            case ActionTarget.FRONT_MIDDLE:
+                // 전열, 중열 플레이어 타겟 인디케이터 활성화
+                targetIndicators[1].GetComponent<TargetIndicator>().OnTargetEnable();
+                targetIndicators[2].GetComponent<TargetIndicator>().OnTargetEnable();
+                break;
+            case ActionTarget.FRONT_BACK:
+                // 전열 후열 플레이어 타겟 인디케이터 활성화
+                targetIndicators[0].GetComponent<TargetIndicator>().OnTargetEnable();
+                targetIndicators[2].GetComponent<TargetIndicator>().OnTargetEnable();
+                break;
+            case ActionTarget.MIDDLE:
+                // 중열 플레이어 타겟 인디케이터 활성화
+                targetIndicators[1].GetComponent<TargetIndicator>().OnTargetEnable();
+                break;
+            case ActionTarget.MIDDLE_BACK:
+                // 중열 후열 플레이어 타겟 인디케이터 활성화
+                targetIndicators[0].GetComponent<TargetIndicator>().OnTargetEnable();
+                targetIndicators[1].GetComponent<TargetIndicator>().OnTargetEnable();
+                break;
+            case ActionTarget.BACK:
+                // 후열 플레이어 타겟 인디케이터 활성화
+                targetIndicators[0].GetComponent<TargetIndicator>().OnTargetEnable();
+                break;
+            case ActionTarget.WHOLE:
+                // 플레이어 전체 타겟 인디케이터 활성화
+                for(int i=0; i<targetIndicators.Count; i++){
+                    if(i == 0 || i == 1 || i == 2){
+                        targetIndicators[i].GetComponent<TargetIndicator>().OnTargetEnable();
+                    }
+                }
+                break;
+            case ActionTarget.WHOLE_ALLY:
+                // 몬스터 전체 타겟 인디케이터 활성화
+                for(int i=0; i<targetIndicators.Count; i++){
+                    if(i != 0 && i != 1 && i != 2){
+                        targetIndicators[i].GetComponent<TargetIndicator>().OnTargetEnable();
+                    }
+                }
+                break;
+        }
+    }
+
+    // 타겟 인디케이터 모두 비활성화
+    public void DisableTargetIndicator()
+    {
+        foreach(GameObject targetIndicator in M_TurnManager.instance.targetIndicators){
+            targetIndicator.GetComponent<TargetIndicator>().OnTargetDisable(false);
+        }
+        targetIndicatorCadidates.Clear();
+    }
+
+    // 타겟 인디케이터 모두 제거
+    private void ClreatTargetIndicators()
+    {
+        for(int i=targetIndicators.Count-1; i>=0; i--){
+            Destroy(targetIndicators[i]);
+            targetIndicators.RemoveAt(i);
         }
     }
 
@@ -551,7 +797,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         ClearTargetObjectList(spawnedMonsterList);
         ClearTargetObjectList(spawnedPlayerList);
+        ClreatTargetIndicators();
         spawnedPlayerSyncList.Clear();
+        spawnedMonsterSyncList.Clear();
     }
 
     private void ClearTargetObjectList(List<TargetObject> targets)
@@ -696,7 +944,8 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         }
                 }
                 // 실제 오브젝트 삭제 과정
-                M_TurnManager.instance.spawnedMonsterList.Remove(monster);
+                spawnedMonsterList.Remove(monster);
+                spawnedMonsterSyncList.Remove(monster.netId);
                 NetworkServer.Destroy(monster.gameObject);
                 OnChangedMonsterList();
             }
@@ -779,20 +1028,24 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         for(int i = 0 ;i < playerOrder.Count ; i ++){
-            if(playerOrder[i] != 0 && NetworkServer.spawned.TryGetValue(playerOrder[i], out NetworkIdentity networkIdentity)){
-                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+            if(playerOrder[i] != 0 ){
+                if(NetworkServer.spawned.TryGetValue(playerOrder[i], out NetworkIdentity networkIdentity)){
+                    GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
 
-                Vector3 avatarOrderPosition = targetObjectPosition[gamePlayer.selectOrder]; // 게임플레이어의 오더값에 맞춰 생성될 아바타 위치 설정
-                GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), avatarOrderPosition, Quaternion.identity);
-                avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
-                avatar.GetComponent<TargetObject>().player = gamePlayer;
-                avatar.GetComponent<TargetObject>().playerMaxHP = gamePlayer.MaxHP;
-                avatar.GetComponent<TargetObject>().playerHP = gamePlayer.HP;
-                NetworkServer.Spawn(avatar);
+                    Vector3 avatarOrderPosition = targetObjectPosition[gamePlayer.selectOrder]; // 게임플레이어의 오더값에 맞춰 생성될 아바타 위치 설정
+                    GameObject avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), avatarOrderPosition, Quaternion.identity);
+                    avatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.PLAYER;
+                    avatar.GetComponent<TargetObject>().player = gamePlayer;
+                    avatar.GetComponent<TargetObject>().playerMaxHP = gamePlayer.MaxHP;
+                    avatar.GetComponent<TargetObject>().playerHP = gamePlayer.HP;
+                    NetworkServer.Spawn(avatar);
 
-                spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
-                spawnedPlayerSyncList.Add(avatar.GetComponent<NetworkIdentity>().netId);
-                gamePlayer.GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
+                    spawnedPlayerList.Add(avatar.GetComponent<TargetObject>());
+                    spawnedPlayerSyncList.Add(avatar.GetComponent<TargetObject>().netId);
+                    gamePlayer.GetComponent<GamePlayerTarget>().targetObject = avatar.GetComponent<NetworkIdentity>().netId;
+                }
+            }else{
+                spawnedPlayerSyncList.Add(playerOrder[i]);
             }
         }
     }
@@ -816,6 +1069,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             NetworkServer.Spawn(avatar);
 
             spawnedMonsterList.Add(avatar.GetComponent<TargetObject>());
+            spawnedMonsterSyncList.Add(avatar.GetComponent<TargetObject>().netId);
             monster.parent = avatar.GetComponent<TargetObject>(); // monster 오브젝트의 부모오브젝트 참조값 설정
         }
     }
@@ -954,6 +1208,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 bossMoMosAvatar.GetComponent<TargetObject>().monster = bossMoMos;
                 NetworkServer.Spawn(bossMoMosAvatar);
                 spawnedMonsterList.Add(bossMoMosAvatar.GetComponent<TargetObject>());
+                spawnedMonsterSyncList.Add(bossMoMosAvatar.GetComponent<TargetObject>().netId);
                 bossMoMos.parent = bossMoMosAvatar.GetComponent<TargetObject>(); // monster 오브젝트의 부모오브젝트 참조값 설정
                 break;
             case 1:
@@ -965,6 +1220,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 bossApatesAvatar.GetComponent<TargetObject>().monster = bossApates;
                 NetworkServer.Spawn(bossApatesAvatar);
                 spawnedMonsterList.Add(bossApatesAvatar.GetComponent<TargetObject>());
+                spawnedMonsterSyncList.Add(bossApatesAvatar.GetComponent<TargetObject>().netId);
                 bossApates.parent = bossApatesAvatar.GetComponent<TargetObject>();
                 break;
             case 2:
@@ -976,6 +1232,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 bossGerasAvatar.GetComponent<TargetObject>().monster = bossGeras;
                 NetworkServer.Spawn(bossGerasAvatar);
                 spawnedMonsterList.Add(bossGerasAvatar.GetComponent<TargetObject>());
+                spawnedMonsterSyncList.Add(bossGerasAvatar.GetComponent<TargetObject>().netId);
                 bossGeras.parent = bossGerasAvatar.GetComponent<TargetObject>();
                 break;
         }
@@ -1589,7 +1846,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
+    
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
+    
     private void OnPlayerOrderUpdated(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
     {
         switch (op)
@@ -1605,6 +1864,65 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 break;
             case SyncList<uint>.Operation.OP_SET:
                 SetGamePlayerOrder(newVal, index);
+                break;
+            case SyncList<uint>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
+    private void OnChangeSpawnedPlayerUpdated(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
+    {
+        switch (op)
+        {
+            case SyncList<uint>.Operation.OP_ADD:
+                if(newVal == 0){
+                    GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, targetObjectPosition[index] + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
+                    TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
+                    targetIndicator.netId = 0;
+                    M_TurnManager.instance.targetIndicators.Add(targetIndicatorObject);
+                }else{
+                    TargetObject targetObject = isServer ? NetworkServer.spawned[newVal].GetComponent<TargetObject>() :  NetworkClient.spawned[newVal].GetComponent<TargetObject>();
+                    GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, targetObject.transform.position + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
+                    TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
+                    targetIndicator.netId = newVal;
+                    M_TurnManager.instance.targetIndicators.Add(targetIndicatorObject);
+                }
+                break;
+            case SyncList<uint>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<uint>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<uint>.Operation.OP_SET:
+                
+                break;
+            case SyncList<uint>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
+    private void OnChangeSpawnedMonsterUpdated(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
+    {
+        switch (op)
+        {
+            case SyncList<uint>.Operation.OP_ADD:
+                TargetObject targetObject = isServer ? NetworkServer.spawned[newVal].GetComponent<TargetObject>() :  NetworkClient.spawned[newVal].GetComponent<TargetObject>();
+                GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, targetObject.transform.position + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
+                TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
+                targetIndicator.netId = newVal;
+                M_TurnManager.instance.targetIndicators.Add(targetIndicatorObject);
+                break;
+            case SyncList<uint>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<uint>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<uint>.Operation.OP_SET:
+                
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
                 

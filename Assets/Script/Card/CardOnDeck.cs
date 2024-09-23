@@ -353,7 +353,6 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         GameObject cardOnHandChoosed = Instantiate(PopUpUIManager.instance.CardOnHandChoosedPrefab);
         cardOnHandChoosed.GetComponent<CardOnHandChoosed>().card = card;
         cardOnHandChoosed.GetComponent<CardOnHandChoosed>().isTweening = true;
-        cardOnHandChoosed.transform.SetParent(GameUIManager.instance.RootGameObject.transform);
         cardOnHandChoosed.transform.position = new Vector3(0f, 0f, 0f);
 
         return cardOnHandChoosed;

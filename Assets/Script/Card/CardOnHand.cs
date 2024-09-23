@@ -53,6 +53,8 @@ public class CardOnHand : NetworkBehaviour
 
     public bool isUsed = false; // 사용된 상태인지 여부
 
+    private bool hasOverPoint = false;
+
     public int originSortingOrder; // 마우스 오버되지 않은 원래 상태에서의 정렬값
 
     [Header("CardOnHand UI Canvas 컴포넌트")]
@@ -255,6 +257,7 @@ public class CardOnHand : NetworkBehaviour
                 AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_mouseover_3"));
                 M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
                 CmdChangeMouseOverdState(true);
+                M_TurnManager.instance.CandidatedTargetIndicatorByCard(card.baseCard.validTarget);
             }
             TextDetector.instance.StartTextDetect();
         }
@@ -269,6 +272,7 @@ public class CardOnHand : NetworkBehaviour
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
                 StartCoroutine(MouseExitDelay());
                 CmdChangeMouseOverdState(false);
+                M_TurnManager.instance.DisableTargetIndicator();
             }
             TextDetector.instance.StopTextDetect();
         }
@@ -353,6 +357,7 @@ public class CardOnHand : NetworkBehaviour
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                     CmdEnQueueCardData(gamePlayerDeck);
                     M_CardManager.instance.CardOnHandThrowAwaySequence(this);
+                    M_TurnManager.instance.DisableTargetIndicator();
                 }
                 else
                 {
@@ -375,6 +380,17 @@ public class CardOnHand : NetworkBehaviour
         cardOnHand.transform.position = new Vector2(mousePosition.x, mousePosition.y);
         cardOnHand.transform.localScale = M_CardManager.instance.cardOverSize;
         cardOnHand.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+
+        // 드래그 위치가 화면 3분의 1을 넘어갈 때 유효한 타겟 오브젝트에 인디케이터 활성화. 화살표 생성되는 카드는 드래그 위치가 화살표 생성시 자동으로 중앙하단으로 이동하므로 호출되지 않고, 논 타겟 카드만 해당되는 케이스.
+        float screenPositionY = Screen.height / 3;
+        Vector3 cardOnHandPosition = Camera.main.WorldToScreenPoint(cardOnHand.transform.position);
+        if(cardOnHandPosition.y > screenPositionY && !hasOverPoint){
+            M_TurnManager.instance.EnableTargetIndiCatorByArrow(cardOnHand.card.baseCard.validTarget, true, null);
+            hasOverPoint = true; 
+        }else if(cardOnHandPosition.y <= screenPositionY && hasOverPoint){
+            M_TurnManager.instance.EnableTargetIndiCatorByArrow(cardOnHand.card.baseCard.validTarget, false, null);
+            hasOverPoint = false; 
+        }
     }
 
     // 타겟팅 카드일 경우, 드래그중 위치가 화면 하단부 3분의1을 넘어가면 화살표 생성 후 카드의 위치를 중앙으로 이동

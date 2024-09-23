@@ -35,7 +35,6 @@ public class PlayerOrder : NetworkBehaviour
 
     [Header("LastCardLayout Components")]
     public Button cardPeekButton;
-    public GameObject cardPeekIcon;
     public GameObject lastCardBaseLine;
     public GameObject lastCardBaseLingLight;
     public bool isCardPeekLocked = false;
@@ -81,7 +80,6 @@ public class PlayerOrder : NetworkBehaviour
         topMyLight.SetActive(isOwned && topMy.activeSelf);
         uLineLight.SetActive(true);
         topBaseLight.SetActive(true);
-        topSeeLight.SetActive(true);
     }
 
     public void OnPointerExitBase(PointerEventData eventData)
@@ -90,7 +88,6 @@ public class PlayerOrder : NetworkBehaviour
         topMyLight.SetActive(false);
         uLineLight.SetActive(false);
         topBaseLight.SetActive(false);
-        topSeeLight.SetActive(false);
     }
 
     public void OnPointerEnterCardPeekIcon(PointerEventData eventData)
@@ -98,7 +95,7 @@ public class PlayerOrder : NetworkBehaviour
         lastCardBaseLingLight.SetActive(true);
         if(!isCardPeekLocked){
             uint originNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
-            cardPeekIcon.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+            topSeeLight.SetActive(true);
             SwapCardPocket(originNetId, gamePlayerNetId);
         }
     }
@@ -108,7 +105,7 @@ public class PlayerOrder : NetworkBehaviour
         lastCardBaseLingLight.SetActive(false);
         if(!isCardPeekLocked){
             uint originNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
-            cardPeekIcon.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.5f);
+            topSeeLight.SetActive(false);
             SwapCardPocket(gamePlayerNetId, originNetId);
         }
     }
@@ -118,10 +115,10 @@ public class PlayerOrder : NetworkBehaviour
         uint originNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
         isCardPeekLocked = !isCardPeekLocked;
         if(isCardPeekLocked){
-            cardPeekIcon.GetComponent<Image>().color = Color.red;
+            topSeeLight.GetComponent<SpriteRenderer>().color = Color.red;
             SwapCardPocket(originNetId, gamePlayerNetId);
         }else{
-            cardPeekIcon.GetComponent<Image>().color = Color.white;
+            topSeeLight.GetComponent<SpriteRenderer>().color = Color.white;
             SwapCardPocket(gamePlayerNetId, originNetId);
         }
     }
@@ -219,7 +216,8 @@ public class PlayerOrder : NetworkBehaviour
         uLight.SetActive(isOwned);
         uMyLine.SetActive(isOwned);
         topMy.SetActive(isOwned);
-        topSee.SetActive(isOwned);
+        topSee.SetActive(!isOwned);
+        topSeeLight.SetActive(!isOwned);
         LastCardLayout.SetActive(!isOwned);
         cardPeekButton.gameObject.SetActive(!isOwned); 
     }
