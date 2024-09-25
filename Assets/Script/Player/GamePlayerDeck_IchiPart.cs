@@ -17,6 +17,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public int limitiChi;
 
+    private readonly int maxDisplayCostValue = 5; // UI 표시될 이치 아이콘 오브젝트의 최대 갯수
 
     // ------------------------------------------------------------- Server Method --------------------------------------------------------------------//
 
@@ -42,9 +43,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
             SetCardOnHandCostTextState(newVal);
             GameUIManager.instance.currentIchiText.text = newVal.ToString();
             if(newVal > oldVal){
-                CreateCurrentItchIcon(newVal - oldVal); // 현재 이치 추가
+                CreateCurrentItchIcon(newVal - oldVal); // 증가수치만큼 현재 이치 아이콘 생성
             }else{
-                RemoveCurrentItchIcon(oldVal - newVal); // 현재 이치 감소
+                RemoveCurrentItchIcon(oldVal - newVal, newVal); // 감소수치만큼 현재 이치 아이콘 제거
             }
         }
     }
@@ -54,9 +55,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
         if(isOwned){
             GameUIManager.instance.maxIchiText.text = newVal.ToString();
             if(newVal > oldVal){
-                CreateMaxItchIcon(newVal - oldVal); // 최대 이치 추가
+                CreateMaxItchIcon(newVal - oldVal); // 증가수치만큼 최대 이치 아이콘 생성
             }else{
-                RemoveMaxItchIcon(oldVal - newVal); // 최대 이치 감소
+                RemoveMaxItchIcon(oldVal - newVal, newVal); // 감소수치만큼 최대 이치 아이콘 제거
             }
         }  
     }
@@ -66,7 +67,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
     // 현재 이치 아이콘 생성
     private void CreateCurrentItchIcon(int count)
     {
-        for(int i=0; i < count; i++){
+        int createCount = Mathf.Min(count, maxDisplayCostValue - GameUIManager.instance.currentIchiIcons.Count);
+        for (int i = 0; i < createCount; i++){
             GameObject costIcon = Instantiate(GameUIManager.instance.CurrentItchPrefab, Vector3.zero, Quaternion.identity);
             costIcon.transform.SetParent(GameUIManager.instance.CurrentItchIconLayout.transform);
             costIcon.transform.localScale = Vector3.one;
@@ -78,10 +80,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     // 현재 이치 아이콘 제거
-    private void RemoveCurrentItchIcon(int count)
+    private void RemoveCurrentItchIcon(int count, int currentIchi)
     {
         if(GameUIManager.instance.currentIchiIcons.Count > 0){
-            for(int i=0; i < count; i++){
+            int removeCount = GameUIManager.instance.currentIchiIcons.Count - currentIchi;
+            for(int i=0; i < removeCount; i++){
                 int lastIndex = GameUIManager.instance.currentIchiIcons.Count - 1; // 마지막 인덱스에서 하나씩 제거
                 GameUIManager.instance.currentIchiIcons[lastIndex].transform.DOKill();
                 Destroy(GameUIManager.instance.currentIchiIcons[lastIndex]);
@@ -93,7 +96,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
     // 최대 이치 아이콘 생성
     private void CreateMaxItchIcon(int count)
     {
-        for(int i=0; i < count; i++){
+        int createCount = Mathf.Min(count, maxDisplayCostValue - GameUIManager.instance.maxIchiIcons.Count);
+        for(int i=0; i < createCount; i++){
             GameObject costIcon = Instantiate(GameUIManager.instance.MaxItchPrefab, Vector3.zero, Quaternion.identity);
             costIcon.transform.SetParent(GameUIManager.instance.MaxItchIconLayout.transform);
             costIcon.transform.localScale = Vector3.one;
@@ -105,10 +109,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     // 최대 이치 아이콘 제거
-    private void RemoveMaxItchIcon(int count)
+    private void RemoveMaxItchIcon(int count, int maxIchi)
     {
         if(GameUIManager.instance.maxIchiIcons.Count > 0){
-            for(int i=0; i < count; i++){
+            int removeCount = GameUIManager.instance.maxIchiIcons.Count - maxIchi;
+            for (int i = 0; i < removeCount; i++){
                 int lastIndex = GameUIManager.instance.maxIchiIcons.Count - 1; // 마지막 인덱스에서 하나씩 제거
                 GameUIManager.instance.maxIchiIcons[lastIndex].transform.DOKill();
                 Destroy(GameUIManager.instance.maxIchiIcons[lastIndex]);
