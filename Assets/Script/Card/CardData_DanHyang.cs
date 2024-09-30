@@ -1008,7 +1008,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         M_DimmingManager.instance.StartDimming(allEnemy);
         yield return new WaitForSeconds(0.5f);
-        M_EffectManager.instance.RpcEffectSlash(M_TurnManager.instance.spawnedMonsterList[1].transform.position);
+        M_EffectManager.instance.RpcEffectSlash(M_TurnManager.instance.targetObjectPosition[4]);
         foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
         {
             GeneralSingleAttack(tar[0],enemy,7);

@@ -43,10 +43,14 @@ public class NamePlate : MonoBehaviour
         shield.transform.DOKill();
     }
 
-    // Hp값 텍스트 초기화(초기의 체력바 오브젝트의 위치는 기본값이므로, 텍스트값만 설정)
+    // Hp Bar 초기화(임시 체력바와 꽃가루 상태 체력바의 위치도 현재 체력바 위치와 동일한 위치에 초기화)
     public void InitHpValue(int hp, int maxHp)
     {
         hpText.text = hp <= 0 ? ("0 / " + maxHp) : (hp + " / " + maxHp);
+        Vector3 hpBarPosition = new Vector3((3.2f * hp / maxHp) - fillRate, 0, 0);
+        hpBarFiller.transform.localPosition = hpBarPosition;
+        hpBarFillerTrace.transform.localPosition = hpBarPosition;
+        hpBarFillerPoison.transform.localPosition = hpBarPosition;
     }
 
     // Hp값 변경에 따라 Hp Bar의 요소들의 위치 설정 및 텍스트 설정
