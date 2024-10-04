@@ -318,7 +318,9 @@ public class HexagonMapRoom : NetworkBehaviour
     private void ChangeMapExpandedState(bool isSelected)
     {
         if(isSelected){
-            mapTileBase.transform.DOLocalMoveY(expandValue, expandDuration);
+            mapTileBase.transform.DOLocalMoveY(expandValue, expandDuration).OnComplete(() => {
+                textRoomType.sortingLayerID = SortingLayer.NameToID("HexagonMapRoomSelected");
+            });
             hexagonMapRoomUI.transform.DOLocalMoveY(expandValue, expandDuration);
             mapTileMask.GetComponent<SpriteMask>().enabled = true;
             mapTileMask.transform.localPosition = new Vector3(
@@ -329,6 +331,7 @@ public class HexagonMapRoom : NetworkBehaviour
             hexagonMapRoomUI.SetActive(true);
             ChangeSelectRoomRegionIndicatorMask(coordinate, SpriteMaskInteraction.None);
         }else{
+            textRoomType.sortingLayerID = SortingLayer.NameToID("HexagonMapRoom");
             mapTileBase.transform.DOLocalMoveY(originValue, expandDuration);
             hexagonMapRoomUI.transform.DOLocalMoveY(originValue, expandDuration);
             mapTileMask.GetComponent<SpriteMask>().enabled = false;
