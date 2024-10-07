@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using Mirror;
+using ProjectD;
 
 
 public class GameUIManager : SingletonD<GameUIManager>
@@ -174,7 +175,7 @@ public class GameUIManager : SingletonD<GameUIManager>
             Card card = cardQueue.card;
             textCardQueueName.text = card.baseCard.name.ToString();
             textCardQueueType.text = card.baseCard.cardType.ToString();
-            textCardQueueDesc.text = card.baseCard.description.ToString();
+            textCardQueueDesc.text = CardData.instance.ReplaceDescription(card.baseCard.description);
             cardQueuePopUp.gameObject.SetActive(true);
             cardQueuePopUp.GetComponent<CanvasGroup>().DOFade(1f, 0.25f);
         }else{

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.U2D;
 using System.IO;
@@ -165,6 +166,34 @@ public partial class CardData : SingletonD<CardData>
 
         }
         return string.Join(" ",values); // Concat 메서드를 사용하여 배열의 요소들을 하나로 합침
+    }
+
+    
+    // 카드 정보 문자열 치환 함수 (정규표현식 ver)
+    public string ReplaceDescription(string str)
+    {
+        string patternDamage = @"!(\S+)"; // !피해량
+        str = Regex.Replace(str, patternDamage, match => $"<color=green>{match.Groups[1].Value}</color>");
+
+        string patternDeffence = @"(?<!<)#(\d+)"; // #방어도
+        str = Regex.Replace(str, patternDeffence, match => $"<color=green>{match.Groups[1].Value}</color>");
+
+        string patternHp = @"\^(\d+)"; // ^체력
+        str = Regex.Replace(str, patternHp, match => $"<#FF7F00>{match.Groups[1].Value}</color>");
+
+        string patternBulk = @"&(\d+)"; // &크기
+        str = Regex.Replace(str, patternBulk, match => $"<color=purple>{match.Groups[1].Value}</color>");
+
+        string patternMultipleDamage = @"\$(\d+)\s*\$(\d+)"; // $피해량$타수
+        Regex regex = new Regex(patternMultipleDamage); // 그룹[0] : $피해량$타수, 그룹[1] : $피해량, 그룹[2] : $타수
+        foreach(Match match in regex.Matches(str)){
+            if(match.Groups.Count == 3){
+                string color = CardData.instance.colorList[2];
+                string replacedText = $"<color=green>{match.Groups[1].Value}</color>를 {color}{match.Groups[2].Value}</color>번";
+                str = str.Replace(match.Value, replacedText);
+            }
+        }
+        return str;
     }
 
     public IEnumerator RunCard(Card card,List<TargetObject> targets)
