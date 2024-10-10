@@ -318,9 +318,8 @@ public class HexagonMapRoom : NetworkBehaviour
     private void ChangeMapExpandedState(bool isSelected)
     {
         if(isSelected){
-            mapTileBase.transform.DOLocalMoveY(expandValue, expandDuration).OnComplete(() => {
-                textRoomType.sortingLayerID = SortingLayer.NameToID("HexagonMapRoomSelected");
-            });
+            textRoomType.sortingLayerID = SortingLayer.NameToID("HexagonMapRoomSelected");
+            mapTileBase.transform.DOLocalMoveY(expandValue, expandDuration);
             hexagonMapRoomUI.transform.DOLocalMoveY(expandValue, expandDuration);
             mapTileMask.GetComponent<SpriteMask>().enabled = true;
             mapTileMask.transform.localPosition = new Vector3(
