@@ -10364,12 +10364,12 @@ GameObject:
   - component: {fileID: 714940655}
   - component: {fileID: 714940654}
   m_Layer: 5
-  m_Name: BackGroundImage
+  m_Name: MapDimBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &714940653
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10402,7 +10402,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 7380ce7b40e3918439e2b191e0a0b2ce, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 0.5882353}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -34597,6 +34597,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 244431220}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
+      propertyPath: blurMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 7380ce7b40e3918439e2b191e0a0b2ce, type: 2}
+    - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: mapStageIcon
       value: 
       objectReference: {fileID: 610102790}
@@ -34611,7 +34615,7 @@ PrefabInstance:
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: mapBackground
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 6942051692224059263}
     - target: {fileID: 3802927380784816215, guid: 567502b3710c0ac498f3d93cf5097b31, type: 3}
       propertyPath: mapBaseLayout
       value: 
@@ -46288,7 +46292,7 @@ GameObject:
   - component: {fileID: 6942051692224059234}
   - component: {fileID: 6942051692224059233}
   m_Layer: 5
-  m_Name: BackGroundImage
+  m_Name: MapBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

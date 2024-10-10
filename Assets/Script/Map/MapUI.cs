@@ -69,6 +69,8 @@ public class MapUI : InstanceD<MapUI>
     [Header("맵 배경 오브젝트")]
     public GameObject mapBackground;
     public GameObject mapDimBackground;
+    private Material mapDimBackgroundMaterial;
+    public Material blurMaterial;
 
     [Header("카메라 이동 속도")]
     float cameraMoveSpeed = 20;
@@ -76,6 +78,9 @@ public class MapUI : InstanceD<MapUI>
 
     void Start()
     {
+        Image mapDimBackgroundImage = mapDimBackground.GetComponent<Image>();
+        mapDimBackgroundMaterial = new Material(blurMaterial);
+        mapDimBackgroundImage.material = mapDimBackgroundMaterial;
         for(int i=0; i<swapButtons.Count; i++){
             int buttonIndex = i;
             swapButtons[i].transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
@@ -287,7 +292,7 @@ public class MapUI : InstanceD<MapUI>
 
     public void ChangeMapDimBackground(bool isActive)
     {
-        mapDimBackground.SetActive(isActive);
+        StartCoroutine((ChangeMapDimBackgroundBlur(isActive)));
     }
 
     public void RemoveAllMapInfoPopUps()
@@ -316,5 +321,22 @@ public class MapUI : InstanceD<MapUI>
             Destroy(gameObject);
         }
         deckInfoPopUpItems.Clear();
+    }
+
+    public IEnumerator ChangeMapDimBackgroundBlur(bool isActive)
+    {
+        string propertyName = "_Blur";
+        float duration = 0.5f;
+        float startValue = isActive ? 0f : 10f;
+        float endValue = isActive ? 10f : 0f;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration){
+            elapsedTime += Time.deltaTime;
+            float currentValue = Mathf.Lerp(startValue, endValue, elapsedTime / duration);
+            mapDimBackgroundMaterial.SetFloat(propertyName, currentValue);
+            yield return null;
+        }
+        mapDimBackgroundMaterial.SetFloat(propertyName, endValue);
     }
 }
