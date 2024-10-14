@@ -81,15 +81,6 @@ public class TargetObject : NetworkBehaviour
     public TargetObject ironDemonLocation;
 
     [SyncVar]
-    public int currentIchi = 3;
-
-    [SyncVar]
-    public int maxIchi = 3;
-
-    [SyncVar]
-    public int limitiChi = 6;
-
-    [SyncVar]
     public bool isTransformed = false;
 
     [SyncVar (hook = nameof(OnChangedErisMode))]

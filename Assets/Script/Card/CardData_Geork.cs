@@ -329,12 +329,15 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G7_H(card,tar);
 	}
+
+	// 가르기
 	public IEnumerator G8(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],7);
+		M_EffectManager.instance.RpcEffectSwordSlash(tar[1].transform.position, false);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 		yield return null;
@@ -343,12 +346,15 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G8(card,tar);
 	}
+
+	// 찍기
 	public IEnumerator G9(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		GeorkAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],9);
+		M_EffectManager.instance.RpcEffectSwordSting(tar[1].transform.position);
 		tar[1].GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar[0],card);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -358,6 +364,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G9(card,tar);
 	}
+
+	// 막기
 	public IEnumerator G10(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
@@ -372,6 +380,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G10(card,tar);
 	}
+
+	// 막겠다
 	public IEnumerator G11(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
@@ -386,6 +396,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G11(card,tar);
 	}
+
+	// 덤벼라
 	public IEnumerator G12(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
@@ -405,6 +417,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G12(card,tar);
 	}
+
+	// 뭉개주마
 	public IEnumerator G13(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
@@ -419,9 +433,14 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G13(card,tar);
 	}
+
+	// 회전 베기
 	public IEnumerator G14(Card card,List<TargetObject> tar)
 	{
-		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		List<TargetObject> targets = new List<TargetObject>();
+        targets.Add(tar[0]);
+        targets.AddRange(M_TurnManager.instance.spawnedMonsterList);
+		M_DimmingManager.instance.StartDimming(targets);
 		GeorkAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.5f);
 		foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
@@ -433,6 +452,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G14(card,tar);
 	}
+
+	// 절단
 	public IEnumerator G15(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
@@ -673,12 +694,16 @@ public partial class CardData : SingletonD<CardData>
 	// 한번에 처리하마
 	public IEnumerator G27(Card card,List<TargetObject> tar)
 	{
-		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		List<TargetObject> targets = new List<TargetObject>();
+        targets.Add(tar[0]);
+        targets.AddRange(M_TurnManager.instance.spawnedMonsterList);
+		M_DimmingManager.instance.StartDimming(targets);
 		GeorkAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.5f);
 		foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
 		{
 			GeneralSingleAttack(tar[0],target,6);
+			M_EffectManager.instance.RpcEffectSwordSlash(target.transform.position, true);
 			target.GainBuff(BuffType.APDO,1,true,false,false,true,tar[0],card);
 		}
 		yield return new WaitForSeconds(0.5f);
@@ -692,7 +717,10 @@ public partial class CardData : SingletonD<CardData>
 	//저주자의 울부짖음
 	public IEnumerator G28(Card card,List<TargetObject> tar)
 	{
-		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		List<TargetObject> targets = new List<TargetObject>();
+        targets.Add(tar[0]);
+        targets.AddRange(M_TurnManager.instance.spawnedMonsterList);
+		M_DimmingManager.instance.StartDimming(targets);
 		GeorkAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.5f);
 		// 소유중인 저주카드 카운트
@@ -751,6 +779,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G30(card,tar);
 	}
+
+	// 고통 전가
 	public IEnumerator G31(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
@@ -774,6 +804,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G31(card,tar);
 	}
+
+	// 약점 찌르기
 	public IEnumerator G32(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
@@ -793,6 +825,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G32(card,tar);
 	}
+
+	// 대신하지
 	public IEnumerator G33(Card card,List<TargetObject> tar)
 	{
 		ChangePosition(tar[0],M_TurnManager.instance.playerOrder.FindIndex(x => x == tar[1].player.netId));
@@ -807,6 +841,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G33(card,tar);
 	}
+
+	// 내가 가마
 	public IEnumerator G34(Card card,List<TargetObject> tar)
 	{
 		MovePosition(true,tar[0]);
@@ -821,6 +857,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G34(card,tar);
 	}
+
+	// 맡기지
 	public IEnumerator G35(Card card,List<TargetObject> tar)
 	{
 		MovePosition(false,tar[0]);
@@ -835,6 +873,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G35(card,tar);
 	}
+
+	// 내 눈을 봐라
 	public IEnumerator G36(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
@@ -848,6 +888,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G36(card,tar);
 	}
+
+	// 비켜라
 	public IEnumerator G37(Card card,List<TargetObject> tar)
 	{
 		ChangePosition(tar[0],M_TurnManager.instance.playerOrder.FindIndex(x => x == tar[1].player.netId));
@@ -862,6 +904,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G37(card,tar);
 	}
+
+	// 절대 강자
 	public IEnumerator G38(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
@@ -875,6 +919,8 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G38(card,tar);
 	}
+
+	// 남아있는 한손
 	public IEnumerator G39(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
@@ -894,6 +940,7 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return G39(card,tar);
 	}
+
 	//신들린 연격
 	public IEnumerator G40(Card card,List<TargetObject> tar)
 	{
@@ -903,6 +950,7 @@ public partial class CardData : SingletonD<CardData>
 		for(int i = 0 ; i < 5 ; i ++)
 		{
 			GeneralSingleAttack(tar[0],tar[1],2);
+			M_EffectManager.instance.RpcEffectSwordSlash(tar[1].transform.position, true);
 			yield return new WaitForSeconds(0.2f);
 		}
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -915,13 +963,18 @@ public partial class CardData : SingletonD<CardData>
 	//풍차 베기
 	public IEnumerator G41(Card card,List<TargetObject> tar)
 	{
-		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		List<TargetObject> targets = new List<TargetObject>();
+        targets.Add(tar[0]);
+        targets.AddRange(M_TurnManager.instance.spawnedMonsterList);
+		M_DimmingManager.instance.StartDimming(targets);
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		for(int i = 0 ; i < 2 ; i ++)
 		{
-			foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
+			foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
 				GeneralSingleAttack(tar[0],enemy,3);
+				M_EffectManager.instance.RpcEffectSwordSlash(enemy.transform.position, true);
+			}
 			yield return new WaitForSeconds(0.2f);
 		}
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -930,6 +983,7 @@ public partial class CardData : SingletonD<CardData>
 	{
 		yield return null;
 	}
+
 	// 눈먼 공격
 	public IEnumerator G42(Card card,List<TargetObject> tar)
 	{
@@ -941,7 +995,9 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 		for(int i = 0 ; i < 3 ; i ++)
 		{
-			GeneralSingleAttack(tar[0],M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0,M_TurnManager.instance.spawnedMonsterList.Count)],4);
+			TargetObject randomTarget = M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0,M_TurnManager.instance.spawnedMonsterList.Count)];
+			M_EffectManager.instance.RpcEffectSwordSlash(randomTarget.transform.position, true);
+			GeneralSingleAttack(tar[0], randomTarget, 4);
 			yield return new WaitForSeconds(0.2f);
 		}
 		M_DimmingManager.instance.StopDimming(targets);

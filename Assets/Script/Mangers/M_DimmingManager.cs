@@ -71,6 +71,7 @@ public class M_DimmingManager : NetworkSingletonD<M_DimmingManager>
             tar.monsterHpCanvas.sortingLayerName = layerName;
             tar.monsterNameCanvas.sortingLayerName = layerName;
             tar.monsterShieldCanvas.sortingLayerName = layerName;
+            tar.nextActionCanvas.sortingLayerName = layerName;
         }
     }
 }

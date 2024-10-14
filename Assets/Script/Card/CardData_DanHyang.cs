@@ -266,8 +266,6 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         tar[1].player.GetComponent<GamePlayerDeck>().maxIchi ++;
         yield return new WaitForSeconds(1f);
-        tar[1].maxIchi ++;
-        
     }
     public IEnumerator H5_E(Card card,List<TargetObject> tar)
     {
