@@ -119,14 +119,14 @@ public class GameUIManager : SingletonD<GameUIManager>
                 leftScrollButton.gameObject.SetActive(false);
                 rightScrollButton.gameObject.SetActive(false);
             }else{
-                if(cardQueueScrollRect.horizontalNormalizedPosition <= 0){
-                    leftScrollButton.gameObject.SetActive(false); // 스크롤바가 왼쪽 끝에 있는 경우 왼쪽 버튼 비활성화
+                if(cardQueueScrollRect.horizontalNormalizedPosition <= 0.01f){
+                    leftScrollButton.gameObject.SetActive(false);
+                    rightScrollButton.gameObject.SetActive(true);
+                }else if(cardQueueScrollRect.horizontalNormalizedPosition >= 0.99f){
+                    leftScrollButton.gameObject.SetActive(true);
+                    rightScrollButton.gameObject.SetActive(false);
                 }else{
                     leftScrollButton.gameObject.SetActive(true);
-                }
-                if(cardQueueScrollRect.horizontalNormalizedPosition >= 1){
-                    rightScrollButton.gameObject.SetActive(false); // 스크롤바가 오른쪽 끝에 있는 경우 오른쪽 버튼 비활성화
-                }else{
                     rightScrollButton.gameObject.SetActive(true);
                 }
             }
