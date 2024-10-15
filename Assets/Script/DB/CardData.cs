@@ -188,12 +188,29 @@ public partial class CardData : SingletonD<CardData>
         Regex regex = new Regex(patternMultipleDamage); // 그룹[0] : $피해량$타수, 그룹[1] : $피해량, 그룹[2] : $타수
         foreach(Match match in regex.Matches(str)){
             if(match.Groups.Count == 3){
-                string color = CardData.instance.colorList[2];
-                string replacedText = $"<color=green>{match.Groups[1].Value}</color>를 {color}{match.Groups[2].Value}</color>번";
-                str = str.Replace(match.Value, replacedText);
+                int value;
+                if(int.TryParse(match.Groups[1].Value, out value)){
+                    string color = colorList[2];
+                    string damage = match.Groups[1].Value;
+                    string hitCount = match.Groups[2].Value;
+                    string preposionalParticle = GetPrepositionalParticle(value);
+                    string replacedText = $"<color=green>{damage}</color>{preposionalParticle} {color}{hitCount}</color>번";
+                    str = str.Replace(match.Value, replacedText);
+                }
             }
         }
         return str;
+    }
+
+    // 숫자값에 따라 조사(을, 를) 구분해서 반환
+    public string GetPrepositionalParticle(int number)
+    {
+        int lastDigit = number % 10; // 매개변수로 넘어오는 숫자의 마지막 자리 숫자
+        if(lastDigit == 0 || lastDigit == 1 || lastDigit == 3 || lastDigit == 6 || lastDigit == 7 || lastDigit == 8){
+            return "을"; // 받침 있는 숫자는 '을' 반환
+        }else{
+            return "를"; // 받침 없는 숫자는 '를' 반환
+        }
     }
 
     public IEnumerator RunCard(Card card,List<TargetObject> targets)
