@@ -424,7 +424,7 @@ public class CardOnHand : NetworkBehaviour
     private bool IsCardControllablePopUpActive()
     {
         // PrefareDeckPopUp, TrashDeckPopUp, BattleResultPopUp은 팝업 활성화 상태에서 카드 제어가 안되야 하므로 체크.
-        return PopUpUIManager.instance.deckListPopUp.activeSelf || PopUpUIManager.instance.battleResultPopUp.activeSelf || OptionUIManager.instance.optionPopUp.activeSelf;
+        return PopUpUIManager.instance.deckListPopUp.activeSelf || PopUpUIManager.instance.battleResultPopUp.activeSelf || PopUpUIManager.instance.deckSelectPopUp.activeSelf || OptionUIManager.instance.optionPopUp.activeSelf;
     }
 
     // CardOnHandRemove PopUp 활성화 여부 확인 함수

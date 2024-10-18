@@ -257,7 +257,7 @@ public partial class CardData : SingletonD<CardData>
         targets.Add(tar[0]);
         targets.AddRange(M_TurnManager.instance.spawnedMonsterList);
         M_DimmingManager.instance.StartDimming(targets);
-        ErisAnimation(tar[0],"Attack1");
+        ErisAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.8f);
         foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
             GeneralSingleAttack(tar[0], enemy, 3);
@@ -297,72 +297,118 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.8f);
         GeneralSingleAttack(tar[0], tar[1], 3);
         StartCoroutine(tar[1].monster.OnHitAnimation());
+        // 이번 게임동안 사용한 공격 카드의 개수 만큼 2씩 증가합니다.
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E15_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E15(card, tar);
     }
 
     // 권능 : 붕괴
     public IEnumerator E16(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        List<TargetObject> targets = new List<TargetObject>();
+        targets.Add(tar[0]);
+        targets.AddRange(M_TurnManager.instance.spawnedMonsterList);
+        M_DimmingManager.instance.StartDimming(targets);
+        ErisAnimation(tar[0],"Buff1");
+        yield return new WaitForSeconds(0.8f);
+        foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
+            enemy.GainBuff(BuffType.BOONGGUI, 2, false, false, false, false, enemy, card);
+        }
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E16_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E16(card, tar);
     }
 
     // 얼마나 버틸까요
     public IEnumerator E17(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        tar[1].defense = 0;
+        // TODO : 방어 제거 이펙트
+        yield return new WaitForSeconds(0.25f);
+        GeneralSingleAttack(tar[0], tar[1], 5);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E17_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E17(card, tar);
     }
 
     // 아니마토
     public IEnumerator E18(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        int deffence = tar[0].defense;
+        tar[0].defense = 0;
+        // TODO : 방어 제거 이펙트
+        yield return new WaitForSeconds(0.25f);
+        tar[0].playerHP += deffence;
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E18_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E18(card, tar);
     }
 
     // 물귀신
     public IEnumerator E19(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Buff1");
+        yield return new WaitForSeconds(0.8f);
+        int buffValue = 99;
+        tar[0].GainBuff(BuffType.BOONGGUI, buffValue, false, false, false, false, tar[0], card); // TODO : 어떤값인지 몰라서 3 ~ 6번 파라미터 bool값들 임시로 모두 false 처리함.
+        tar[1].GainBuff(BuffType.BOONGGUI, buffValue, false, false, false, false, tar[1], card);
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E19_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E19(card, tar);
     }
 
     // 템페스토소
     public IEnumerator E20(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        tar[0].GainBuff(BuffType.TEMPESTOSO, 0, false, false, false, false, tar[0], card);  // TODO : 템페스토소 버프 처리
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E20_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E20(card, tar);
     }
 
     // 월식
     public IEnumerator E21(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        tar[0].GainBuff(BuffType.ECLIPSE, 0, false, false, false, false, tar[0], card); // TODO : 월식 버프 처리
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E21_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E21(card, tar);
     }
 
     // 기억파편

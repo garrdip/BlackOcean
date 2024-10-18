@@ -9,6 +9,7 @@ using AYellowpaper.SerializedCollections;
 
 public class M_NetworkRoomManager : NetworkRoomManager
 {
+    private const int maxConnectionCount = 3;
     public delegate void OnClientDisconnected(GamePlayer gamePlayer);
     public OnClientDisconnected onClientDisconnected;
     public Color[] colors = new Color[]{ Color.red, Color.green, Color.blue };
@@ -168,6 +169,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
                 Destroy(component);
             }
             persistentComponents.Clear();
+            maxConnections = maxConnectionCount; // 메뉴씬 돌아올 때 최대 인원 수 기본값으로 설정
         }
     }
 }

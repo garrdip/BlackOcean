@@ -20,9 +20,6 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedHpValue))]
     public int HP;
 
-    [SyncVar (hook = nameof(OnChangedSheild))]
-    public int sheild;
-
     [SyncVar (hook = nameof(OnChanedNextAction))]
     public MonsterAction nextAction;
 
@@ -340,7 +337,6 @@ public class SpawnedMonster : NetworkBehaviour
         monsterName = newVal.name;
         MAXHP = newVal.MAXHP;
         HP = newVal.MAXHP;
-        sheild = 0;
         //SyncVar Data는 서버에서 관리
         if(isServer)
         {

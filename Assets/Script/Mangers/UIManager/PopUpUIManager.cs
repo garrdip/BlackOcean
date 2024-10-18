@@ -71,6 +71,14 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public delegate void OnCardRemovePopUpHide();
     public OnCardEnhancePopUpHide onCardRemovePopUpHide;
 
+
+    // DeckSelect PopUp Delegate
+    public delegate void OnDeckSelectPopUpShow(DeckListType type);
+    public OnDeckSelectPopUpShow onDeckSelectPopUpShow;
+    public delegate void OnDeckSelectPopUpHide();
+    public OnDeckSelectPopUpHide onDeckSelectPopUpHide;
+
+
     [Header("팝업 활성화 상태값")]
     public bool isDeckListPopUpOpen = false;
     public bool isDeckDrawPopUpOpen = false;
@@ -82,19 +90,21 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public bool isCardEnhancePopUpOpen = false;
     public bool isCardRemovePopUpOpen = false;
     public bool isGameoverPopUpOpen = false;
+    public bool isDeckSelectPopUpOpen = false;
 
     [Header("팝업 UI 오브젝트")]
     public List<GameObject> popUpList = new List<GameObject>();
-    public GameObject deckListPopUp; // 덱 목록 팝업
-    public GameObject deckDrawPopUp; // 덱 드로우 팝업
     public GameObject cardOnHandRemovePopUp; // 패 제거 팝업
+    public GameObject deckListPopUp; // 덱 목록 팝업
     public GameObject battleResultPopUp; // 전투 보상 팝업
+    public GameObject gameOverPopUp; // 게임 오버 팝업
+    public GameObject deckDrawPopUp; // 덱 드로우 팝업
+    public GameObject cardEnhancePopUp; // 카드 강화 팝업
+    public GameObject cardRemovePopUp; // 카드 제거 팝업
     public GameObject mercuriusPopUp; // 카드 상점 팝업
     public GameObject campPopUp; // 전초 기지 팝업
     public GameObject itemShopPopUp; // 아이템 상점 팝업
-    public GameObject cardEnhancePopUp; // 카드 강화 팝업
-    public GameObject cardRemovePopUp; // 카드 제거 팝업
-    public GameObject gameOverPopUp; // 게임 오버 팝업
+    public GameObject deckSelectPopUp; // 뽑을덱, 버린덱, 잊혀진덱의 카드 선택용 팝업
 
 
     [Header("패 제거 팝업 카드 위치설정용 슬롯 프리팹")]
@@ -226,7 +236,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }
     }
 
-    // 카드 상점 팝업
+    // 카드 상점 팝업 활성화/비활성화
     public void HandleMercuriusPopUp(bool isPopUp)
     {
         isMercuriusPopUpOpen = isPopUp;
@@ -261,7 +271,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }
     }
 
-    // 아이템 상점 팝업
+    // 아이템 상점 팝업 활성화/비활성화
     public void HandleItemShopPopUp(bool isPopUp)
     {
         isItemShopPopUpOpen = isPopUp;
@@ -277,7 +287,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }
     }
 
-    // 카드 상점 카드 강화 팝업
+    // 카드 상점 카드 강화 팝업 활성화/비활성화
     public void HandleCardEnhancePopUp(bool isOpen)
     {
         isCardEnhancePopUpOpen = isOpen;
@@ -293,7 +303,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }
     }
 
-    // 카드 상점 카드 제거 팝업
+    // 카드 상점 카드 제거 팝업 활성화/비활성화
     public void HandleCardRemovePopUp(bool isOpen)
     {
         isCardRemovePopUpOpen = isOpen;
@@ -305,6 +315,22 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         }else{
             if(onCardRemovePopUpHide != null){
                 onCardRemovePopUpHide.Invoke();
+            } 
+        }
+    }
+
+    // 뽑을덱, 버린덱, 잊혀진덱의 카드 선택 팝업 활성화/비활성화
+    public void HandleDeckSelectPopUp(DeckListType deckListType, bool isOpen)
+    {
+        isDeckSelectPopUpOpen = isOpen;
+        if(isOpen){
+            deckSelectPopUp.SetActive(true);
+            if(onDeckSelectPopUpShow != null){
+                onDeckSelectPopUpShow.Invoke(deckListType);  
+            }    
+        }else{
+            if(onDeckSelectPopUpHide != null){
+                onDeckSelectPopUpHide.Invoke();
             } 
         }
     }
