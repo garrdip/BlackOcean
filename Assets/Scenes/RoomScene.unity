@@ -623,7 +623,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   ownedLobbyPlayer: 0
-  lobbyPlayersCount: 0
 --- !u!114 &303193678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2197,9 +2196,9 @@ RectTransform:
   m_Father: {fileID: 1777304691}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1739, y: -887}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 181, y: 193}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1536368528
@@ -22317,7 +22316,6 @@ MonoBehaviour:
   toastMessagePrefab: {fileID: 5187507422060476950, guid: c3dd2a8e4dfde8e49bbe7cf63cb0fb29, type: 3}
   toastMessages: []
   chatCanvas: {fileID: 8742021729514458923}
-  chatContainer: {fileID: 8742021729514458922}
   scrollRect: {fileID: 8742021730799530333}
   chatMessage: {fileID: 8742021729902408952}
   messageInput: {fileID: 8742021729514458919}
