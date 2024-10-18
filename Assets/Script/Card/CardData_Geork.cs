@@ -58,6 +58,7 @@ public partial class CardData : SingletonD<CardData>
 			GeorkAnimation(tar[0],"Attack0");
 			yield return new WaitForSeconds(0.5f);
 			GeneralSingleAttack(tar[0],tar[1],9);
+			StartCoroutine(tar[1].monster.OnHitAnimation());
 			yield return new WaitForSeconds(0.5f);
 			if(!IsGISADO(tar))break;
 		}
@@ -84,6 +85,7 @@ public partial class CardData : SingletonD<CardData>
 		tar[1].defense = 0;
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],30);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -170,6 +172,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],4);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -199,6 +202,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],totalDamage);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -320,7 +324,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
-        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(3); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
+        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(3); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 3개 추가
         tar[0].player.GetComponent<GamePlayerDeck>().currentIchi += 2;
         yield return new WaitForSeconds(1f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -337,6 +341,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],7);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		M_EffectManager.instance.RpcEffectSwordSlash(tar[1].transform.position, false);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -354,6 +359,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],9);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		M_EffectManager.instance.RpcEffectSwordSting(tar[1].transform.position);
 		tar[1].GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar[0],card);
 		yield return new WaitForSeconds(0.5f);
@@ -407,6 +413,7 @@ public partial class CardData : SingletonD<CardData>
 				else GeorkAnimation(tar[0],"Attack0");
 			yield return new WaitForSeconds(0.5f);
 			GeneralSingleAttack(tar[0],tar[1],8);
+			StartCoroutine(tar[1].monster.OnHitAnimation());
 			yield return new WaitForSeconds(0.5f);
 			if(!IsGISADO(tar)) break;
 		}
@@ -425,6 +432,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],8);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		tar[1].GainBuff(BuffType.APDO,1,true,false,false,true,tar[0],card);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -443,8 +451,10 @@ public partial class CardData : SingletonD<CardData>
 		M_DimmingManager.instance.StartDimming(targets);
 		GeorkAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.5f);
-		foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
+		foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
 			GeneralSingleAttack(tar[0],enemy,6);
+			StartCoroutine(enemy.monster.OnHitAnimation());
+		}
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
@@ -514,6 +524,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],8);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1); 
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -552,6 +563,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],10);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
 		{
 			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
@@ -574,6 +586,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],11,3);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -589,6 +602,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],5);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
 		{
 			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
@@ -626,6 +640,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],5);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
 		{
 			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
@@ -683,6 +698,7 @@ public partial class CardData : SingletonD<CardData>
 		int addDamage = tar[1].GetBuffValue(BuffType.APDO) * 4;
 		tar[1].buffs.Remove(tar[1].buffs.Find(buff => buff.type == BuffType.APDO));
 		GeneralSingleAttack(tar[0],tar[1],4 + addDamage);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -704,6 +720,7 @@ public partial class CardData : SingletonD<CardData>
 		{
 			GeneralSingleAttack(tar[0],target,6);
 			M_EffectManager.instance.RpcEffectSwordSlash(target.transform.position, true);
+			StartCoroutine(target.monster.OnHitAnimation());
 			target.GainBuff(BuffType.APDO,1,true,false,false,true,tar[0],card);
 		}
 		yield return new WaitForSeconds(0.5f);
@@ -735,6 +752,7 @@ public partial class CardData : SingletonD<CardData>
 		foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
 		{
 			GeneralSingleAttack(tar[0],target,6 + addDamage);
+			StartCoroutine(target.monster.OnHitAnimation());
 		}
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -751,6 +769,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],10);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
 		{
 			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
@@ -796,6 +815,7 @@ public partial class CardData : SingletonD<CardData>
 			if(item.card.baseCard.cardType == CardType.CURSE)addDamage += 8;
 
 		GeneralSingleAttack(tar[0],tar[1],addDamage);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -812,6 +832,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],8);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
 		{
 			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
@@ -866,6 +887,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Buff0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],5);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
@@ -927,6 +949,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],4);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
 		{
 			for(int i = 0 ;i < 1 + GetAdditionalValueOfGisadoAction(tar);i++)
@@ -950,6 +973,7 @@ public partial class CardData : SingletonD<CardData>
 		for(int i = 0 ; i < 5 ; i ++)
 		{
 			GeneralSingleAttack(tar[0],tar[1],2);
+			StartCoroutine(tar[1].monster.OnHitAnimation());
 			M_EffectManager.instance.RpcEffectSwordSlash(tar[1].transform.position, true);
 			yield return new WaitForSeconds(0.2f);
 		}
@@ -974,6 +998,7 @@ public partial class CardData : SingletonD<CardData>
 			foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
 				GeneralSingleAttack(tar[0],enemy,3);
 				M_EffectManager.instance.RpcEffectSwordSlash(enemy.transform.position, true);
+				StartCoroutine(enemy.monster.OnHitAnimation());
 			}
 			yield return new WaitForSeconds(0.2f);
 		}
@@ -998,6 +1023,7 @@ public partial class CardData : SingletonD<CardData>
 			TargetObject randomTarget = M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0,M_TurnManager.instance.spawnedMonsterList.Count)];
 			M_EffectManager.instance.RpcEffectSwordSlash(randomTarget.transform.position, true);
 			GeneralSingleAttack(tar[0], randomTarget, 4);
+			StartCoroutine(randomTarget.monster.OnHitAnimation());
 			yield return new WaitForSeconds(0.2f);
 		}
 		M_DimmingManager.instance.StopDimming(targets);
@@ -1019,6 +1045,7 @@ public partial class CardData : SingletonD<CardData>
 		foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
 		{
 			GeneralSingleAttack(tar[0],enemy,4);
+			StartCoroutine(enemy.monster.OnHitAnimation());
 			enemy.GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar[0],card);
 		}
 		yield return new WaitForSeconds(0.2f);
@@ -1101,8 +1128,10 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],4);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],4);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
 			if(enemy != tar[1])enemy.GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar[0],card);
 		yield return new WaitForSeconds(0.5f);
@@ -1135,6 +1164,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],15);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck.Add(new Card(CardData.instance.cards.Find(card => card.cardNumber == "G5")));
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
@@ -1209,8 +1239,10 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.5f);
 		int numberOfenemy = M_TurnManager.instance.spawnedMonsterList.Count;
-		foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
+		foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
 			GeneralSingleAttack(tar[0],enemy,14);
+			StartCoroutine(enemy.monster.OnHitAnimation());
+		}
 		GeneralGetDefense(tar[0],tar[0],numberOfenemy*5,card);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(targets);	
@@ -1229,6 +1261,7 @@ public partial class CardData : SingletonD<CardData>
 		for(int i = 0 ;i < tar[0].GetBuffValue(BuffType.ICHI_ATTACK); i++)
 		{
 			GeneralSingleAttack(tar[0],tar[1],2);
+			StartCoroutine(tar[1].monster.OnHitAnimation());
 			yield return new WaitForSeconds(0.2f);
 		}
 		if(IsGISADO(tar)) card.isReturnable =true;
@@ -1248,6 +1281,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],15 + card.stackCount * 5);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -1294,6 +1328,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],3);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(tar[1].isDying)
 		{
 			foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
@@ -1319,6 +1354,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],10 + tar[0].player.GetComponent<GamePlayerDeck>().gainCurseCardCount);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -1333,10 +1369,13 @@ public partial class CardData : SingletonD<CardData>
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
-		if(tar[0].isTransformed)
+		if(tar[0].isTransformed){
 			GeneralSingleAttack(tar[0],tar[1],2);
-		else
+			StartCoroutine(tar[1].monster.OnHitAnimation());
+		}else{
 			GeneralSingleAttack(tar[0],tar[1],60);
+			StartCoroutine(tar[1].monster.OnHitAnimation());
+		}
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -1410,6 +1449,7 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 
 		GeneralSingleAttack(tar[0],tar[1],5);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
 			tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1);
 
@@ -1429,6 +1469,7 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 
 		GeneralSingleAttack(tar[0],tar[1],12);
+		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
 			tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck.Add(new Card(CardData.instance.cards.Find(card => card.cardNumber == "G65")));
 
