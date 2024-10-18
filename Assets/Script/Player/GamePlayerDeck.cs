@@ -375,7 +375,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
             addtionDrawCards.Add(prefareDeck[randomIndex]);
             prefareDeck.RemoveAt(randomIndex);
         }
-        TargetDrawPopUpShow(); // 카드 사용한 유저에게 추가 드로우 팝업 호출 이벤트 전송
     }
 
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
@@ -594,6 +593,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         yield return new WaitForSeconds(0.01f);
                     }
                     NetworkServer.Destroy(cardOnHand.gameObject);
+                    TargetPopUpShowByCard(cardOnHand.card);
                 }
             }
         }
@@ -703,25 +703,34 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 드로우 카드 팝업 활성화 RPC 수신
-    [TargetRpc]
-    public void TargetDrawPopUpShow()
-    {
-        PopUpUIManager.instance.HandleShowDeckDrawPopUp();
-    }
-
-    // 패 카드 제거 팝업 활성화 RPC 수신
-    [TargetRpc]
-    public void TargetCardOnHandRemovePopUpShow()
-    {
-        PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp();
-    }
-
     // 잊혀진 덱으로 카드 보내는 RPC 수신
     [TargetRpc]
     public void TargetCardOnHandRemoveToForgotenDeck(CardOnHand cardOnHand)
     {
         M_CardManager.instance.CardOnHandThrowAwaySequenceToForgotenDeck(cardOnHand);
+    }
+
+    // 카드 종류에 따라 필요한 팝업 호출
+    [TargetRpc]
+    public void TargetPopUpShowByCard(Card card)
+    {
+        switch(card.baseCard.cardNumber){
+            case "G53":
+                PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp();
+                break;
+            case "H26":
+                PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp();
+                break;
+            case "H17":
+                PopUpUIManager.instance.HandleShowDeckDrawPopUp();
+                break;
+            case "E8":
+                PopUpUIManager.instance.HandleShowDeckDrawPopUp();
+                break;
+            case "E22":
+                PopUpUIManager.instance.HandleDeckSelectPopUp(DeckListType.TRASH_DECK, true);
+                break;
+        }
     }
 
     // -------------------------------------------------SyncVar Hooks ---------------------------------------------------//
@@ -745,6 +754,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 GameObject removeCardSlot = Instantiate(PopUpUIManager.instance.RemoveCardSlotPrefab);
                 removeCardSlot.transform.SetParent(cardOnHandRemovePopUp.gridLayoutGroup.transform);
                 removeCardSlot.transform.localPosition = Vector3.zero;
+                removeCardSlot.transform.localScale = Vector3.one;
                 cardOnHandRemovePopUp.removeCardSlots.Add(removeCardSlot);
             }
         }
@@ -1055,38 +1065,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:
-                if(isOwned){
-                    DeckDrawPopUp deckDrawPopUp = PopUpUIManager.instance.deckDrawPopUp.GetComponent<DeckDrawPopUp>();
-                    GameObject cardOnDeckObject = Instantiate(
-                        PopUpUIManager.instance.CardOnDeckPrefab,
-                        GameUIManager.instance.buttonPrefareDeck.transform.position,
-                        Quaternion.identity,
-                        PopUpUIManager.instance.deckDrawPopUp.transform
-                    );
-                    CardOnDeck cardOnDeck =  cardOnDeckObject.GetComponent<CardOnDeck>();
-                    cardOnDeck.card = newVal;
-                    deckDrawPopUp.addtionDrawCardObjects.Add(cardOnDeckObject);
-                    cardOnDeck.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-                    
-                    Sequence sequence = DOTween.Sequence();
-                    sequence.PrependCallback(() => { 
-                        GameObject cardPosition = Instantiate(
-                            PopUpUIManager.instance.AddtionDrawCardSlotPrefab,
-                            Vector3.zero,
-                            Quaternion.identity,
-                            deckDrawPopUp.gridLayoutGroup.transform
-                        );
-                        deckDrawPopUp.addtionDrawCardSlots.Add(cardPosition);
-                    });
-                    sequence.InsertCallback(0.1f, () => {
-                        Sequence cardSequence = DOTween.Sequence();
-                        cardSequence.Append(cardOnDeck.transform.DOMove(deckDrawPopUp.addtionDrawCardSlots[index].transform.position, 0.5f).SetEase(Ease.InOutCirc).SetDelay(index * 0.1f));
-                        cardSequence.Join(cardOnDeck.transform.DOScale(Vector3.one, 0.5f)).OnComplete(() => { cardSequence.Kill(); });
-                    });
-                    sequence.OnComplete(() => {
-                        sequence.Kill();
-                    });
-                }
+
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
                 
