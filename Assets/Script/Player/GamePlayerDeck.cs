@@ -744,6 +744,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             for(int i=0; i<newCount; i++){
                 GameObject removeCardSlot = Instantiate(PopUpUIManager.instance.RemoveCardSlotPrefab);
                 removeCardSlot.transform.SetParent(cardOnHandRemovePopUp.gridLayoutGroup.transform);
+                removeCardSlot.transform.localPosition = Vector3.zero;
                 cardOnHandRemovePopUp.removeCardSlots.Add(removeCardSlot);
             }
         }
