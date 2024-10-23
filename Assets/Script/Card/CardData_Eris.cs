@@ -414,6 +414,7 @@ public partial class CardData : SingletonD<CardData>
     // 기억파편
     public IEnumerator E22(Card card,List<TargetObject> tar)
     {
+        tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 2;
         yield return null;
     }
     public IEnumerator E22_E(Card card,List<TargetObject> tar)
@@ -444,6 +445,7 @@ public partial class CardData : SingletonD<CardData>
     // 닿을 수 없던 꿈
     public IEnumerator E25(Card card,List<TargetObject> tar)
     {
+        tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 3;
         yield return null;
     }
     public IEnumerator E25_E(Card card,List<TargetObject> tar)
@@ -454,6 +456,7 @@ public partial class CardData : SingletonD<CardData>
     // 델리카토
     public IEnumerator E26(Card card,List<TargetObject> tar)
     {
+        tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 1;
         yield return null;
     }
     public IEnumerator E26_E(Card card,List<TargetObject> tar)
@@ -514,6 +517,7 @@ public partial class CardData : SingletonD<CardData>
     // 빙산의 일각
     public IEnumerator E32(Card card,List<TargetObject> tar)
     {
+        tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 1;
         yield return null;
     }
     public IEnumerator E32_E(Card card,List<TargetObject> tar)
@@ -564,6 +568,7 @@ public partial class CardData : SingletonD<CardData>
     // 파멸의 메아리
     public IEnumerator E37(Card card,List<TargetObject> tar)
     {
+        tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 1;
         yield return null;
     }
     public IEnumerator E37_E(Card card,List<TargetObject> tar)
@@ -594,6 +599,7 @@ public partial class CardData : SingletonD<CardData>
     // 공허 방패
     public IEnumerator E40(Card card,List<TargetObject> tar)
     {
+        tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 1;
         yield return null;
     }
     public IEnumerator E40_E(Card card,List<TargetObject> tar)
@@ -634,6 +640,7 @@ public partial class CardData : SingletonD<CardData>
     // 공허를 만지는 자
     public IEnumerator E44(Card card,List<TargetObject> tar)
     {
+        tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 2;
         yield return null;
     }
     public IEnumerator E44_E(Card card,List<TargetObject> tar)
@@ -674,6 +681,7 @@ public partial class CardData : SingletonD<CardData>
     // 그랜디오소
     public IEnumerator E48(Card card,List<TargetObject> tar)
     {
+        tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 2;
         yield return null;
     }
     public IEnumerator E48_E(Card card,List<TargetObject> tar)
@@ -714,6 +722,7 @@ public partial class CardData : SingletonD<CardData>
     // 중력파
     public IEnumerator E52(Card card,List<TargetObject> tar)
     {
+        tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 1;
         yield return null;
     }
     public IEnumerator E52_E(Card card,List<TargetObject> tar)

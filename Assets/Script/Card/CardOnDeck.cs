@@ -213,51 +213,16 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
-        if(PopUpUIManager.instance.isBattleResultPopUpOpen){
-            if(cardOwner != null){
-                RequsetCardReward();
-                ChangeCardOnDeckRewardedState(M_TurnManager.instance.rewardCardObjects);
-                CardOnDeckClickAnimation();
-                AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));
-                M_SoundManager.instance.PlaySFX(rewardCardAudio, rewardCardAudio.length);
-            }
-        }
-        // MercuriusPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
-        if(PopUpUIManager.instance.isMercuriusPopUpOpen && !card.isSoldout){
-            RequestCardPurchase();
-            ChangeCardOnDeckSoldOutState();
-            CardOnDeckClickAnimation();
-            AudioClip shopCardPurchaseAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
-            M_SoundManager.instance.PlaySFX(shopCardPurchaseAudio, shopCardPurchaseAudio.length);
-        }
-        //DeckDrawPopUp이 팝업 활성화 상태에서 카드 클릭 이벤트
-        if(PopUpUIManager.instance.isDeckDrawPopUpOpen){
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-            GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
-            PopUpUIManager.instance.HandleHideDeckDrawPopUp();
-            DeckDrawPopUp deckDrawPopUp = PopUpUIManager.instance.deckDrawPopUp.GetComponent<DeckDrawPopUp>();
-            int index = deckDrawPopUp.addtionDrawCardObjects.FindIndex((cardObject) =>  cardObject.GetComponent<CardOnDeck>() == this); // 팝업에서 선택한 카드의 인덱스 조회
-            gamePlayerDeck.CmdSpawnAddtionDrawCard(card, index);
-        }
-        if(PopUpUIManager.instance.isCardEnhancePopUpOpen){
-            CardEnhancePopUp.instance.HandleCardEnhancePreviewOpen(); // 선택한 카드 강화 프리뷰 팝업창 호출
-            if(CardEnhancePopUp.instance.cardEnhancePreview.activeSelf && !isEnhancedPreviewCard){
-                CardEnhancePopUp.instance.CreateEnhancePreviewCard(card);
-                CardEnhancePopUp.instance.selectCardGuid = card.guid;
-            }
-        }
-        if(PopUpUIManager.instance.isCardRemovePopUpOpen){
-            CardRemovePopUp.instance.HandleCardRemovePreviewOpen(); // 선택한 카드 제거 프리뷰 팝업창 호출
-            if(CardRemovePopUp.instance.cardRemovePreview.activeSelf && !isRemovePreviewCard){
-                CardRemovePopUp.instance.CreateRemovePreviewCard(card);
-                CardRemovePopUp.instance.selectCardGuid = card.guid;
-            }
-        }
+        HandleClickOnBattleResultPopUp();
+        HandleClickOnCardShopPopUp();
+        HandleClickOnDeckDrawPopUp();
+        HandleClickOnCardEnhancePopUp();
+        HandleClickOnCardRemovePopUp();
+        HandleClickOnDeckSelectPopUp(eventData);
+        HandleClickOnDeckMultipleSelectPopUp(eventData);
     }
 
+   
     // 보상카드 선택 커맨드 전송 및 오브젝트 정리
     private void RequsetCardReward()
     {
@@ -423,6 +388,99 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         }
         if(callback != null){
             callback();
+        }
+    }
+
+    // ---------------------------------------------------------- 팝업별 카드 클릭 이벤트 --------------------------------------------------------------------------- //
+
+    // 전투 결과 팝업 활성화 상태에서 카드 클릭 이벤트
+    private void HandleClickOnBattleResultPopUp()
+    {
+        if(PopUpUIManager.instance.isBattleResultPopUpOpen){
+            if(cardOwner != null){
+                RequsetCardReward();
+                ChangeCardOnDeckRewardedState(M_TurnManager.instance.rewardCardObjects);
+                CardOnDeckClickAnimation();
+                AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));
+                M_SoundManager.instance.PlaySFX(rewardCardAudio, rewardCardAudio.length);
+            }
+        }
+    }
+
+    // 카드 상점 팝업 활성화 상태에서 카드 클릭 이벤트
+    private void HandleClickOnCardShopPopUp()
+    {
+        if(PopUpUIManager.instance.isMercuriusPopUpOpen){
+            if(!card.isSoldout){
+                RequestCardPurchase();
+                ChangeCardOnDeckSoldOutState();
+                CardOnDeckClickAnimation();
+                AudioClip shopCardPurchaseAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
+                M_SoundManager.instance.PlaySFX(shopCardPurchaseAudio, shopCardPurchaseAudio.length);
+            }
+        }
+    }
+
+    //DeckDrawPopUp 활성화 상태에서 카드 클릭 이벤트
+    private void HandleClickOnDeckDrawPopUp()
+    {
+        if(PopUpUIManager.instance.isDeckDrawPopUpOpen){ 
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
+            PopUpUIManager.instance.HandleHideDeckDrawPopUp();
+            DeckDrawPopUp deckDrawPopUp = PopUpUIManager.instance.deckDrawPopUp.GetComponent<DeckDrawPopUp>();
+            int index = deckDrawPopUp.addtionDrawCardObjects.FindIndex((cardObject) =>  cardObject.GetComponent<CardOnDeck>() == this); // 팝업에서 선택한 카드의 인덱스 조회
+            gamePlayerDeck.CmdSpawnAddtionDrawCard(card, index);
+        }
+    }
+
+    // 카드 상점의 강화 팝업에서 카드 클릭 이벤트
+    private void HandleClickOnCardEnhancePopUp()
+    {
+        if(PopUpUIManager.instance.isCardEnhancePopUpOpen){
+            CardEnhancePopUp.instance.HandleCardEnhancePreviewOpen(); // 선택한 카드 강화 프리뷰 팝업창 호출
+            if(CardEnhancePopUp.instance.cardEnhancePreview.activeSelf && !isEnhancedPreviewCard){
+                CardEnhancePopUp.instance.CreateEnhancePreviewCard(card);
+                CardEnhancePopUp.instance.selectCardGuid = card.guid;
+            }
+        }
+    }
+
+    // 카드 상점의 제거 팝업에서 카드 클릭 이벤트
+    private void HandleClickOnCardRemovePopUp()
+    {
+        if(PopUpUIManager.instance.isCardRemovePopUpOpen){
+            CardRemovePopUp.instance.HandleCardRemovePreviewOpen(); // 선택한 카드 제거 프리뷰 팝업창 호출
+            if(CardRemovePopUp.instance.cardRemovePreview.activeSelf && !isRemovePreviewCard){
+                CardRemovePopUp.instance.CreateRemovePreviewCard(card);
+                CardRemovePopUp.instance.selectCardGuid = card.guid;
+            }
+        }
+    }
+ 
+    // DeckSelectPopUp 활성화 상태에서 카드 클릭 이벤트
+    private void HandleClickOnDeckSelectPopUp(PointerEventData eventData)
+    {
+        if(PopUpUIManager.instance.isDeckSelectPopUpOpen){
+            if(eventData.button == PointerEventData.InputButton.Left){
+                DeckSelectPopUp.instance.ChangeCardOnDeckSelectState(this.gameObject, true);
+            }else if(eventData.button == PointerEventData.InputButton.Right){
+                DeckSelectPopUp.instance.ChangeCardOnDeckSelectState(this.gameObject, false);
+            }
+        }
+    }
+
+    // DeckMultipleSelectPopUp 활성화 상태에서 카드 클릭 이벤트
+    private void HandleClickOnDeckMultipleSelectPopUp(PointerEventData eventData)
+    {
+        if(PopUpUIManager.instance.isDeckMultipleSelectPopUpOpen){
+            if(eventData.button == PointerEventData.InputButton.Left){
+                DeckMultipleSelectPopUp.instance.ChangeCardOnDeckSelectState(this.gameObject, true);
+            }else if(eventData.button == PointerEventData.InputButton.Right){
+                DeckMultipleSelectPopUp.instance.ChangeCardOnDeckSelectState(this.gameObject, false);
+            }
         }
     }
 }

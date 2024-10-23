@@ -67,23 +67,21 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>, IPointerClickHandler
     public void OnChangeDeckListPopUpShow(DeckListType type)
     {
         canvasGroup.DOFade(1.0f, 0.5f);
+        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
         switch(type){
             case DeckListType.PREFARE_DECK:
                 textTitle.text = Const.PREFARE_DECK;
                 M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
                 // 로컬 플레이어의 PrefareDeck 조회
                 if(NetworkClient.connection != null && NetworkClient.active){
-                    GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                     AddDeckList(gamePlayerDeck.prefareDeck, deckListPopUpGrid);
                 }
                 break;
-
             case DeckListType.TRASH_DECK:
                 textTitle.text = Const.TRASH_DECK;
                 M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
                 // 로컬 플레이어의 TrashDeck 조회
                 if(NetworkClient.connection != null && NetworkClient.active){
-                    GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                     AddDeckList(gamePlayerDeck.trashDeck, deckListPopUpGrid);
                 }
                 break;
@@ -92,7 +90,6 @@ public class DeckListPopUp : SingletonD<DeckListPopUp>, IPointerClickHandler
                 M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
                 // 로컬 플레이어의 ForgottenDeck 조회
                 if(NetworkClient.connection != null && NetworkClient.active){
-                    GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                     AddDeckList(gamePlayerDeck.forgottenDeck, deckListPopUpGrid);
                 }
                 break;

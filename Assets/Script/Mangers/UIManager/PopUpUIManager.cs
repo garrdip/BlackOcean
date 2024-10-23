@@ -73,10 +73,16 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
 
 
     // DeckSelect PopUp Delegate
-    public delegate void OnDeckSelectPopUpShow(DeckListType type);
+    public delegate void OnDeckSelectPopUpShow(DeckListType type, string cardNumber);
     public OnDeckSelectPopUpShow onDeckSelectPopUpShow;
     public delegate void OnDeckSelectPopUpHide();
     public OnDeckSelectPopUpHide onDeckSelectPopUpHide;
+
+    // DeckMultipleSelect PopUp Delegate
+    public delegate void OnDeckMultipleSelectPopUpShow();
+    public OnDeckMultipleSelectPopUpShow onDeckMultipleSelectPopUpShow;
+    public delegate void OnDeckMultipleSelectPopUpHide();
+    public OnDeckMultipleSelectPopUpHide onDeckMultipleSelectPopUpHide;
 
 
     [Header("팝업 활성화 상태값")]
@@ -91,6 +97,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public bool isCardRemovePopUpOpen = false;
     public bool isGameoverPopUpOpen = false;
     public bool isDeckSelectPopUpOpen = false;
+    public bool isDeckMultipleSelectPopUpOpen = false;
 
     [Header("팝업 UI 오브젝트")]
     public List<GameObject> popUpList = new List<GameObject>();
@@ -105,6 +112,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public GameObject campPopUp; // 전초 기지 팝업
     public GameObject itemShopPopUp; // 아이템 상점 팝업
     public GameObject deckSelectPopUp; // 뽑을덱, 버린덱, 잊혀진덱의 카드 선택용 팝업
+    public GameObject deckMultipleSelectPopUp;
 
 
     [Header("패 제거 팝업 카드 위치설정용 슬롯 프리팹")]
@@ -320,19 +328,39 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     }
 
     // 뽑을덱, 버린덱, 잊혀진덱의 카드 선택 팝업 활성화/비활성화
-    public void HandleDeckSelectPopUp(DeckListType deckListType, bool isOpen)
+    public void HandleShowDeckSelectPopUp(DeckListType deckListType, string cardNumber)
     {
-        isDeckSelectPopUpOpen = isOpen;
-        if(isOpen){
-            deckSelectPopUp.SetActive(true);
-            if(onDeckSelectPopUpShow != null){
-                onDeckSelectPopUpShow.Invoke(deckListType);  
-            }    
-        }else{
-            if(onDeckSelectPopUpHide != null){
-                onDeckSelectPopUpHide.Invoke();
-            } 
-        }
+        isDeckSelectPopUpOpen = true;
+        deckSelectPopUp.SetActive(true);
+        if(onDeckSelectPopUpShow != null){
+            onDeckSelectPopUpShow.Invoke(deckListType, cardNumber);  
+        } 
+    }
+
+    public void HandleHideDeckSelectPopUp()
+    {
+        isDeckSelectPopUpOpen = false;
+        if(onDeckSelectPopUpHide != null){
+            onDeckSelectPopUpHide.Invoke();
+        } 
+    }
+
+    // 한 화면에서 2개의 덱에서 카드 선택해야하는 팝업 활성화/비활성화 (ex. E44 - 공허를 만지는 자)
+    public void HandleShowDeckMultipleSelectPopUp()
+    {
+        isDeckMultipleSelectPopUpOpen = true;
+        deckMultipleSelectPopUp.SetActive(true);
+        if(onDeckMultipleSelectPopUpShow != null){
+            onDeckMultipleSelectPopUpShow.Invoke();  
+        } 
+    }
+
+    public void HandleHideDeckMultipleSelectPopUp()
+    {
+        isDeckMultipleSelectPopUpOpen = false;
+        if(onDeckMultipleSelectPopUpHide != null){
+            onDeckMultipleSelectPopUpHide.Invoke();
+        } 
     }
 
     // 게임오버 팝업 활성화

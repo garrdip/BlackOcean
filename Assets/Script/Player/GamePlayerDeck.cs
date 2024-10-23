@@ -22,6 +22,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public int maxRemoveCardCount = 0; // 패 제거 팝업에서 선택 가능한 카드 최대 갯수
 
     [SyncVar]
+    public int maxSelectableCardCount = 0; // DeckSelect 팝업에서 선택 가능한 카드 최대 갯수
+
+    [SyncVar]
     public CardPocket cardPocket; // 현재 플레이어 소유의 카드 포켓 오브젝트
 
     [SyncVar]
@@ -87,6 +90,13 @@ public partial class GamePlayerDeck : NetworkBehaviour
     
     private int forgottenDeckCountDelay = 0;
 
+    public enum DeckAction {
+        ACTION_DECK_DRAW,
+        ACTION_DECK_SELECT,
+        ACTION_DECK_MULTIPLE_SELECT,
+        ACTION_CARDONHAND_REMOVE
+    }
+
 
     public override void OnStartServer()
     {
@@ -109,6 +119,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
         if(isOwned){
             GameUIManager.instance.currentIchiText.text = currentIchi.ToString(); // 현재 이치값 초기 뷰 세팅
             GameUIManager.instance.maxIchiText.text = maxIchi.ToString(); // 최대 이치값 초기 뷰 세팅
+            GameUIManager.instance.textPrefareDeckCount.text = prefareDeck.Count.ToString();
+            GameUIManager.instance.textTrashDeckCount.text = trashDeck.Count.ToString();
+            GameUIManager.instance.textForgottenDeckCount.text = forgottenDeck.Count.ToString();
         }  
     }
 
@@ -304,6 +317,40 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     [Server]
+    IEnumerator ServerDestroyCardOnHand()
+    {
+        while(true)
+        {
+            PlayerInterface playerInterface = GetComponent<GamePlayer>().objectOwner;
+            yield return new WaitForSeconds(0.01f);
+            for(int i = 0 ;i < destroyCardList.Count ; i++)
+            {
+                CardOnHand cardOnHand = destroyCardList[i];
+                if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) != -1)
+                { 
+                    playerInterface.RemoveDestroyCardList(cardOnHand);
+                    bool isChalna = CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA);
+                    if(isChalna){
+                        forgottenDeck.Add(cardOnHand.card);
+                    }else{
+                        trashDeck.Add(cardOnHand.card);
+                    }
+                    cardOnHands.Remove(cardOnHand);
+                    destroyCardList.Remove(cardOnHand);
+                    while(true)
+                    {
+                        if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) == -1)
+                            break;
+                        yield return new WaitForSeconds(0.01f);
+                    }
+                    NetworkServer.Destroy(cardOnHand.gameObject);
+                    ServerCheckCardPopUpAction(cardOnHand.card);
+                }
+            }
+        }
+    }
+
+    [Server]
     public void CmdSpawnCardOnHand(int cardCount)
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
@@ -315,15 +362,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         Vector3 cardSpawnPosition = new Vector3(-100f, 0f, 0f);
 
         for(int i=0; i<cardCount; i++){
-            // TODO : 버린댁과 뽑을댁 모두 비엇을떄 예외처리 필요
-            if(prefareDeck.Count == 0){
-                while(trashDeck.Count != 0){
-                    Card card = trashDeck[0];
-                    card.isChargedCard = true; // prefareDeck에 충전용 카드 플래그 변수 true로 설정
-                    trashDeck.RemoveAt(0);
-                    prefareDeck.Add(card);
-                }
-            }
+            ReChargePrefareDeck();
             GameObject cardOnHandObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
                 cardSpawnPosition,
@@ -371,9 +410,69 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void AddDrawCard(int cardCount)
     {
         for(int i=0; i<cardCount; i++){
+            ReChargePrefareDeck();
             int randomIndex = Random.Range(0, prefareDeck.Count);
             addtionDrawCards.Add(prefareDeck[randomIndex]);
             prefareDeck.RemoveAt(randomIndex);
+        }
+    }
+
+    // CardOnHand 생성 시 뽑을 덱이 비어있는 경우 버린 덱에서 뽑을 덱으로 충전
+    [Server]
+    public void ReChargePrefareDeck()
+    {
+        // TODO : 버린댁과 뽑을댁 모두 비엇을떄 예외처리 필요
+        if(prefareDeck.Count == 0){
+            while(trashDeck.Count != 0){
+                Card card = trashDeck[0];
+                card.isChargedCard = true;
+                trashDeck.RemoveAt(0);
+                prefareDeck.Add(card);
+            }
+        }
+    }
+
+    // 카드 중 팝업을 요구하는 카드들의 경우 분기 처리하여, 해당 카드에 필요한 팝업 활성화 하는 RPC 호출
+    [Server]
+    public void ServerCheckCardPopUpAction(Card card)
+    {
+        switch(card.baseCard.cardNumber){
+            case "G53": case "G53_E":
+            case "H26": case "H26_E":
+                TargetPopUpShowByCard(card, DeckAction.ACTION_CARDONHAND_REMOVE);
+                break;
+            case "H17": case "H17_E":
+            case "E8": case "E8_E":
+                TargetPopUpShowByCard(card, DeckAction.ACTION_DECK_DRAW);
+                break;
+            case "E22": case "E22_E":
+            case "E25": case "E25_E":
+            case "E26": case "E26_E":
+            case "E32": case "E32_E":
+            case "E37": case "E37_E":
+            case "E40": case "E40_E":
+            case "E48": case "E48_E":
+            case "E52": case "E52_E":
+                TargetPopUpShowByCard(card, DeckAction.ACTION_DECK_SELECT);
+                break;
+            case "E44": case "E44_E":
+                foreach(TargetObject targetObject in M_TurnManager.instance.spawnedPlayerList){
+                    GamePlayerDeck gamePlayerDeck = targetObject.player.GetComponent<GamePlayerDeck>();
+                    gamePlayerDeck.TargetPopUpShowByCard(card, DeckAction.ACTION_DECK_MULTIPLE_SELECT);
+                }
+                break;
+        }
+    }
+
+    // from 덱에서 특정 카드를 선택하여 제거 후 to 덱에 추가
+    [Server]
+    private void SendDeckFromTo(SyncList<Card> from, SyncList<Card> to, Card selectCard)
+    {
+        foreach(Card card in from){
+            if(card.guid.Equals(selectCard.guid)){
+                from.Remove(card);
+                to.Add(card);
+            }
         }
     }
 
@@ -452,15 +551,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         Vector3 cardSpawnPosition = new Vector3(-100f, 0f, 0f);
 
         for(int i=0; i<currentDeckCount; i++){
-            // TODO : 버린댁과 뽑을댁 모두 비엇을떄 예외처리 필요
-            if(prefareDeck.Count == 0){
-                while(trashDeck.Count != 0){
-                    Card card = trashDeck[0];
-                    card.isChargedCard = true; // prefareDeck에 충전용 카드 플래그 변수 true로 설정
-                    trashDeck.RemoveAt(0);
-                    prefareDeck.Add(card);
-                }
-            }
+            ReChargePrefareDeck();
             GameObject cardOnHandObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
                 cardSpawnPosition,
@@ -479,6 +570,96 @@ public partial class GamePlayerDeck : NetworkBehaviour
             if(cardOnHand.card.baseCard.cardNumber.Contains("G57"))currentIchi++;
             cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
         }
+    }
+
+    // 덱에서 선택한 카드를 패로 생성
+    [Command]
+    public void CmdSpawnCardOnHandByDeckSelect(List<Card> selectCards)
+    {
+        foreach(Card selectCard in selectCards){
+            M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            GameObject cardOnHandObject = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+                Vector3.zero,
+                Quaternion.identity
+            );
+            CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
+            cardOnHand.card = selectCard;
+            cardOnHand.card.isChargedCard = false;
+            if(cardPocket != null){
+                cardOnHand.parent = cardPocket.GetComponent<CardPocket>();
+            }
+            NetworkServer.Spawn(cardOnHandObject, connectionToClient);
+            cardOnHands.Add(cardOnHand);
+            foreach(Card card in trashDeck){
+                if(card.guid.Equals(selectCard.guid)){
+                    trashDeck.Remove(card);
+                }
+            }
+        }
+    }
+
+    // from 과 to 의 DeckListType 따라 어떤 덱의 Synclist에 추가 및 제거할지 분기 처리 하여 서버 함수 호출
+    [Command]
+    public void CmdSendDeck(DeckListType from, DeckListType to, List<Card> cards)
+    {
+        switch(from){
+            case DeckListType.PREFARE_DECK:
+                switch (to)
+                {
+                    case DeckListType.TRASH_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(prefareDeck, trashDeck, card);
+                        }
+                        break;
+                    case DeckListType.FORGOTTEN_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(prefareDeck, forgottenDeck, card);
+                        }
+                        break;
+                }
+                break;
+
+            case DeckListType.TRASH_DECK:
+                switch (to)
+                {
+ 
+                    case DeckListType.PREFARE_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(trashDeck, prefareDeck, card);
+                        }
+                        break;
+                    case DeckListType.FORGOTTEN_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(trashDeck, forgottenDeck, card);
+                        }
+                        break;
+                }
+                break;
+
+            case DeckListType.FORGOTTEN_DECK:
+                switch (to)
+                {
+                    case DeckListType.PREFARE_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(forgottenDeck, prefareDeck, card);
+                        }
+                        break;
+                    case DeckListType.TRASH_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(forgottenDeck, trashDeck, card);
+                        }
+                        break;
+                }
+                break;
+        }
+    }
+
+    // 선택 가능 카드 갯수 초기화
+    [Command]
+    public void CmdResetMaxCardSelectableCount()
+    {
+        maxSelectableCardCount = 0;
     }
 
     // 추가 드로우 카드들을 생성하여 패로 이동. 인자값인 card는 팝업창에서 선택한 카드(중력 부여할 카드), index는 선택한 카드의 인덱스값
@@ -544,59 +725,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         abilityCardObject.GetComponent<CardOnHand>().card = abilityCardBase;
         abilityCardObject.GetComponent<CardOnHand>().RpcCardOnHandSetParent(gameObject);
         abilityCard = abilityCardObject.GetComponent<CardOnHand>();
-    }
-
-   
-   
-    IEnumerator ReturnToCardOnHandCoroutine(CardOnHand cardOnHand)
-    {
-        if(cardOnHand != null){
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
-            while(true)
-            {
-                if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) != -1)
-                {
-                    cardOnHand.isUsed = false; // 요기 널오류
-                    M_CardManager.instance.ResetCardAllState(cardOnHand,false);
-                    playerInterface.destroyCards.Remove(cardOnHand);
-                    break;
-                }
-                yield return new WaitForSeconds(0.01f);
-            }
-        }
-    }
-
-    IEnumerator ServerDestroyCardOnHand()
-    {
-        while(true)
-        {
-            PlayerInterface playerInterface = GetComponent<GamePlayer>().objectOwner;
-            yield return new WaitForSeconds(0.01f);
-            for(int i = 0 ;i < destroyCardList.Count ; i++)
-            {
-                CardOnHand cardOnHand = destroyCardList[i];
-                if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) != -1)
-                { 
-                    playerInterface.RemoveDestroyCardList(cardOnHand);
-                    bool isChalna = CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA);
-                    if(isChalna){
-                        forgottenDeck.Add(cardOnHand.card);
-                    }else{
-                        trashDeck.Add(cardOnHand.card);
-                    }
-                    cardOnHands.Remove(cardOnHand);
-                    destroyCardList.Remove(cardOnHand);
-                    while(true)
-                    {
-                        if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) == -1)
-                            break;
-                        yield return new WaitForSeconds(0.01f);
-                    }
-                    NetworkServer.Destroy(cardOnHand.gameObject);
-                    TargetPopUpShowByCard(cardOnHand.card);
-                }
-            }
-        }
     }
 
     // 보상목록 Synclist 데이터에서 netId값이 동일한 첫번째 reward 데이터를 검색해서 제거
@@ -693,6 +821,24 @@ public partial class GamePlayerDeck : NetworkBehaviour
             StartCoroutine(ReturnToCardOnHandCoroutine(cardOnHand));
     }
     
+    IEnumerator ReturnToCardOnHandCoroutine(CardOnHand cardOnHand)
+    {
+        if(cardOnHand != null){
+            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            while(true)
+            {
+                if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) != -1)
+                {
+                    cardOnHand.isUsed = false; // 요기 널오류
+                    M_CardManager.instance.ResetCardAllState(cardOnHand,false);
+                    playerInterface.destroyCards.Remove(cardOnHand);
+                    break;
+                }
+                yield return new WaitForSeconds(0.01f);
+            }
+        }
+    }
+    
     // 전투 보상 데이터 세팅 RPC 수신
     [TargetRpc]
     public void TargetPlayerRewarded(NetworkConnectionToClient target)
@@ -710,25 +856,27 @@ public partial class GamePlayerDeck : NetworkBehaviour
         M_CardManager.instance.CardOnHandThrowAwaySequenceToForgotenDeck(cardOnHand);
     }
 
-    // 카드 종류에 따라 필요한 팝업 호출
+    // PopUpAction과 카드 종류에 따라 필요한 팝업 호출
     [TargetRpc]
-    public void TargetPopUpShowByCard(Card card)
+    public void TargetPopUpShowByCard(Card card, DeckAction popUpAction)
     {
-        switch(card.baseCard.cardNumber){
-            case "G53":
-                PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp();
-                break;
-            case "H26":
-                PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp();
-                break;
-            case "H17":
+        switch(popUpAction)
+        {
+            case DeckAction.ACTION_DECK_DRAW:
                 PopUpUIManager.instance.HandleShowDeckDrawPopUp();
                 break;
-            case "E8":
-                PopUpUIManager.instance.HandleShowDeckDrawPopUp();
+            case DeckAction.ACTION_CARDONHAND_REMOVE:
+                PopUpUIManager.instance.HandleShowCardOnHandRemovePopUp();
                 break;
-            case "E22":
-                PopUpUIManager.instance.HandleDeckSelectPopUp(DeckListType.TRASH_DECK, true);
+            case DeckAction.ACTION_DECK_SELECT:
+                if(card.baseCard.cardNumber.Equals("E22") || card.baseCard.cardNumber.Equals("E22_E")){
+                    PopUpUIManager.instance.HandleShowDeckSelectPopUp(DeckListType.TRASH_DECK, card.baseCard.cardNumber);
+                }else{
+                    PopUpUIManager.instance.HandleShowDeckSelectPopUp(DeckListType.PREFARE_DECK, card.baseCard.cardNumber);
+                }
+                break;
+            case DeckAction.ACTION_DECK_MULTIPLE_SELECT:
+                PopUpUIManager.instance.HandleShowDeckMultipleSelectPopUp();
                 break;
         }
     }
