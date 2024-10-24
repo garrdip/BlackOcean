@@ -40,6 +40,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public bool isShopCardInfo = false; // 카드 상점에서 정보 자세히 보기용 카드인지 여부(카드 상점 팝업창에 미리 생성되어있는 카드 정보용 오브젝트만 true로 설정되어있음)
     public bool isEnhancedPreviewCard = false;
     public bool isRemovePreviewCard = false;
+    public DeckListType deckListType = DeckListType.NONE;
 
     void Start()
     {
@@ -476,11 +477,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     private void HandleClickOnDeckMultipleSelectPopUp(PointerEventData eventData)
     {
         if(PopUpUIManager.instance.isDeckMultipleSelectPopUpOpen){
-            if(eventData.button == PointerEventData.InputButton.Left){
-                DeckMultipleSelectPopUp.instance.ChangeCardOnDeckSelectState(this.gameObject, true);
-            }else if(eventData.button == PointerEventData.InputButton.Right){
-                DeckMultipleSelectPopUp.instance.ChangeCardOnDeckSelectState(this.gameObject, false);
-            }
+            DeckMultipleSelectPopUp.instance.ChangeCardOnDeckSelectState(this.gameObject);
         }
     }
 }

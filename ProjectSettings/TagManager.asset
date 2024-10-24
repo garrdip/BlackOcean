@@ -62,6 +62,9 @@ TagManager:
   - name: CardOnHand
     uniqueID: 2834536435
     locked: 0
+  - name: CardTrail
+    uniqueID: 971988005
+    locked: 0
   - name: Arrow
     uniqueID: 2140435773
     locked: 0

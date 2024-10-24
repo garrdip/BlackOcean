@@ -112,7 +112,7 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
         GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>(); 
         switch(requestCardNumber){
             case "E22": case "E22_E":
-                gamePlayerDeck.CmdSpawnCardOnHandByDeckSelect(selectCards); // 선택된 카드들을 패로
+                gamePlayerDeck.CmdSpawnCardOnHandExtractFromDeck(selectCards, DeckListType.TRASH_DECK); // 버린 덱에서 선택하여 패로 생성
                 break;
             case "E25": case "E25_E":
             case "E26": case "E26_E":
@@ -121,7 +121,7 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
             case "E40": case "E40_E":
             case "E48": case "E48_E":
             case "E52": case "E52_E":
-                gamePlayerDeck.CmdSendDeck(DeckListType.PREFARE_DECK, DeckListType.TRASH_DECK, selectCards); // 선택된 카드들을 뽑을 덱에서 버린 덱으로
+                gamePlayerDeck.CmdSendDeck(DeckListType.PREFARE_DECK, DeckListType.TRASH_DECK, selectCards); // 뽑을 덱에서 선택하여 버린 덱으로
                 break;
         }
         PopUpUIManager.instance.HandleHideDeckSelectPopUp();

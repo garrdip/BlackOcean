@@ -572,11 +572,35 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 덱에서 선택한 카드를 패로 생성
+    // 특정 덱에서 해당 카드 추출하여 제거 + 카드 생성
     [Command]
-    public void CmdSpawnCardOnHandByDeckSelect(List<Card> selectCards)
+    public void CmdSpawnCardOnHandExtractFromDeck(List<Card> selectCards, DeckListType deckListType)
     {
         foreach(Card selectCard in selectCards){
+            switch (deckListType)
+            {
+                case DeckListType.PREFARE_DECK:
+                    foreach(Card card in prefareDeck){
+                        if(card.guid.Equals(selectCard.guid)){
+                            prefareDeck.Remove(card);
+                        }
+                    }
+                    break;
+                case DeckListType.TRASH_DECK:
+                    foreach(Card card in trashDeck){
+                        if(card.guid.Equals(selectCard.guid)){
+                            trashDeck.Remove(card);
+                        }
+                    }
+                    break;
+                case DeckListType.FORGOTTEN_DECK:
+                    foreach(Card card in forgottenDeck){
+                        if(card.guid.Equals(selectCard.guid)){
+                            forgottenDeck.Remove(card);
+                        }
+                    }
+                    break;
+            }
             M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
             GameObject cardOnHandObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
@@ -591,11 +615,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
             }
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
             cardOnHands.Add(cardOnHand);
-            foreach(Card card in trashDeck){
-                if(card.guid.Equals(selectCard.guid)){
-                    trashDeck.Remove(card);
-                }
-            }
         }
     }
 
@@ -653,6 +672,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 }
                 break;
         }
+        TargetSendDeck(cards, from, to);
     }
 
     // 선택 가능 카드 갯수 초기화
@@ -878,6 +898,55 @@ public partial class GamePlayerDeck : NetworkBehaviour
             case DeckAction.ACTION_DECK_MULTIPLE_SELECT:
                 PopUpUIManager.instance.HandleShowDeckMultipleSelectPopUp();
                 break;
+        }
+    }
+
+    // from 덱에서 to 덱으로 가는 카드 충전 이펙트 수행 RPC
+    [TargetRpc]
+    public void TargetSendDeck(List<Card> cards, DeckListType from, DeckListType to)
+    {
+        Vector3 startPosition = Vector3.zero;
+        Vector3 endPosition = Vector3.zero;
+        switch(from){
+            case DeckListType.PREFARE_DECK:
+                startPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
+                switch (to)
+                {
+                    case DeckListType.TRASH_DECK:
+                        endPosition = GameUIManager.instance.buttonTrashDeck.transform.position;
+                        break;
+                    case DeckListType.FORGOTTEN_DECK:
+                        endPosition = GameUIManager.instance.buttonForgottenDeck.transform.position;
+                        break;
+                }
+                break;
+            case DeckListType.TRASH_DECK:
+                startPosition = GameUIManager.instance.buttonTrashDeck.transform.position;
+                switch (to)
+                {
+                    case DeckListType.PREFARE_DECK:
+                        endPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
+                        break;
+                    case DeckListType.FORGOTTEN_DECK:
+                        endPosition = GameUIManager.instance.buttonForgottenDeck.transform.position;
+                        break;
+                }
+                break;
+            case DeckListType.FORGOTTEN_DECK:
+                startPosition = GameUIManager.instance.buttonForgottenDeck.transform.position;
+                switch (to)
+                {
+                    case DeckListType.PREFARE_DECK:
+                        endPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
+                        break;
+                    case DeckListType.TRASH_DECK:
+                        endPosition = GameUIManager.instance.buttonTrashDeck.transform.position;
+                        break;
+                }
+                break;
+        }
+        for(int i=0; i<cards.Count; i++){
+            M_CardManager.instance.CardOnHandChargedSequence(cards[i], i, startPosition, endPosition);
         }
     }
 

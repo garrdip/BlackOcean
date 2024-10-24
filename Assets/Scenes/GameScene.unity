@@ -8262,7 +8262,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 586, y: 864}
+  m_CellSize: {x: 486, y: 750}
   m_Spacing: {x: 60, y: 50}
   m_Constraint: 1
   m_ConstraintCount: 3
@@ -14252,7 +14252,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 586, y: 864}
+  m_CellSize: {x: 486, y: 750}
   m_Spacing: {x: 60, y: 50}
   m_Constraint: 1
   m_ConstraintCount: 5
@@ -29285,7 +29285,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 586, y: 864}
+  m_CellSize: {x: 486, y: 750}
   m_Spacing: {x: 60, y: 50}
   m_Constraint: 1
   m_ConstraintCount: 3
@@ -33682,8 +33682,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forgottenDecks: []
   trashDecks: []
-  selectCardObjectList: []
-  selectCards: []
+  selectCardFromForgottenDeck: {fileID: 0}
+  selectCardFromTrashDeck: {fileID: 0}
   canvasGroup: {fileID: 2046079044}
   forgottenDeckScrollViewLayout: {fileID: 562062936}
   forgottenDeckGrid: {fileID: 523285127}
@@ -64015,6 +64015,7 @@ MonoBehaviour:
   isShopCardInfo: 1
   isEnhancedPreviewCard: 0
   isRemovePreviewCard: 0
+  deckListType: 0
 --- !u!4 &8899030787224276078
 Transform:
   m_ObjectHideFlags: 0

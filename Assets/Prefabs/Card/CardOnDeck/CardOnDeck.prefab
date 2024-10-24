@@ -137,7 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -213,7 +213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 100, y: 100, z: 100, w: 100}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -289,7 +289,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 100, y: 100, z: 100, w: 100}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -365,7 +365,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 100, y: 100, z: 100, w: 100}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -563,7 +563,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 586, y: 864}
+  m_SizeDelta: {x: 486, y: 730}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6285776433173605400
 CanvasRenderer:
@@ -608,6 +608,8 @@ MonoBehaviour:
     isReturnable: 0
     isSoldout: 0
     cardPrice: 0
+    stackCount: 0
+    isChargedCard: 0
   cardOwner: {fileID: 0}
   canvasGroup: {fileID: 1169466258647471963}
   cardImages:
@@ -627,11 +629,6 @@ MonoBehaviour:
   cardImageFrame: {fileID: 5004063315363468590}
   cardGradeFrame: {fileID: 4945185048719285761}
   cardEmblem: {fileID: 3692264135804330070}
-  cardBackgroundDissolveMaterial: {fileID: 2100000, guid: 4f6dca918abd4694cb53060929aeb1fc, type: 2}
-  cardIllustDissolveMaterial: {fileID: 2100000, guid: 338070d2d3d14f24eaaea9ad82a734f5, type: 2}
-  cardImageFrameDissolveMaterial: {fileID: 2100000, guid: 4b979085da6c294468221d69b239a6ad, type: 2}
-  cardGradeFrameDissolveMaterial: {fileID: 2100000, guid: 352c6080a183f274cae1d5490c2e4172, type: 2}
-  cardEmblemDissolveMaterial: {fileID: 2100000, guid: 66f5cbe0a21882c4798d33d252a5cff7, type: 2}
   textCardName: {fileID: 6285776433897151697}
   textCardDescription: {fileID: 6285776431920331037}
   textCardCost: {fileID: 2821269574311311381}
@@ -643,6 +640,7 @@ MonoBehaviour:
   isShopCardInfo: 0
   isEnhancedPreviewCard: 0
   isRemovePreviewCard: 0
+  deckListType: 0
 --- !u!225 &1169466258647471963
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1072,7 +1070,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 100, y: 100, z: 100, w: 100}
   m_Maskable: 1
   m_OnCullStateChanged:
