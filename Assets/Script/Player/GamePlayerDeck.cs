@@ -448,6 +448,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
             case "E22": case "E22_E":
             case "E25": case "E25_E":
             case "E26": case "E26_E":
+            case "E28": case "E28_E":
             case "E32": case "E32_E":
             case "E37": case "E37_E":
             case "E40": case "E40_E":
@@ -464,6 +465,63 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
+    // from 과 to 의 DeckListType 따라 어떤 덱의 Synclist에 추가 및 제거할지 분기 처리 하여 서버 함수 호출
+    [Server]
+    public void ServerSendDeck(List<Card> cards, DeckListType from, DeckListType to)
+    {
+        switch(from){
+            case DeckListType.PREFARE_DECK:
+                switch (to)
+                {
+                    case DeckListType.TRASH_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(prefareDeck, trashDeck, card);
+                        }
+                        break;
+                    case DeckListType.FORGOTTEN_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(prefareDeck, forgottenDeck, card);
+                        }
+                        break;
+                }
+                break;
+
+            case DeckListType.TRASH_DECK:
+                switch (to)
+                {
+ 
+                    case DeckListType.PREFARE_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(trashDeck, prefareDeck, card);
+                        }
+                        break;
+                    case DeckListType.FORGOTTEN_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(trashDeck, forgottenDeck, card);
+                        }
+                        break;
+                }
+                break;
+
+            case DeckListType.FORGOTTEN_DECK:
+                switch (to)
+                {
+                    case DeckListType.PREFARE_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(forgottenDeck, prefareDeck, card);
+                        }
+                        break;
+                    case DeckListType.TRASH_DECK:
+                        foreach(Card card in cards){
+                            SendDeckFromTo(forgottenDeck, trashDeck, card);
+                        }
+                        break;
+                }
+                break;
+        }
+        TargetSendDeck(cards, from, to);
+    }
+
     // from 덱에서 특정 카드를 선택하여 제거 후 to 덱에 추가
     [Server]
     private void SendDeckFromTo(SyncList<Card> from, SyncList<Card> to, Card selectCard)
@@ -474,6 +532,96 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 to.Add(card);
             }
         }
+    }
+
+    // 특정 덱에서 해당 카드 추출하여 제거 + 카드 생성 - Multiple Card Version
+    [Server]
+    public void ServerSpawnCardOnHandExtractFromDeck(List<Card> selectCards, DeckListType deckListType)
+    {
+        foreach(Card selectCard in selectCards){
+            switch (deckListType)
+            {
+                case DeckListType.PREFARE_DECK:
+                    foreach(Card card in prefareDeck){
+                        if(card.guid.Equals(selectCard.guid)){
+                            prefareDeck.Remove(card);
+                        }
+                    }
+                    break;
+                case DeckListType.TRASH_DECK:
+                    foreach(Card card in trashDeck){
+                        if(card.guid.Equals(selectCard.guid)){
+                            trashDeck.Remove(card);
+                        }
+                    }
+                    break;
+                case DeckListType.FORGOTTEN_DECK:
+                    foreach(Card card in forgottenDeck){
+                        if(card.guid.Equals(selectCard.guid)){
+                            forgottenDeck.Remove(card);
+                        }
+                    }
+                    break;
+            }
+            M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            GameObject cardOnHandObject = Instantiate(
+                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+                Vector3.zero,
+                Quaternion.identity
+            );
+            CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
+            cardOnHand.card = selectCard;
+            cardOnHand.card.isChargedCard = false;
+            if(cardPocket != null){
+                cardOnHand.parent = cardPocket.GetComponent<CardPocket>();
+            }
+            NetworkServer.Spawn(cardOnHandObject, connectionToClient);
+            cardOnHands.Add(cardOnHand);
+        }
+    }
+
+    // 특정 덱에서 해당 카드 추출하여 제거 + 카드 생성 - Single Card Version
+    [Server]
+    public void ServerSpawnCardOnHandExtractFromDeck(Card selectCard, DeckListType deckListType)
+    {
+        switch (deckListType)
+        {
+            case DeckListType.PREFARE_DECK:
+                foreach(Card card in prefareDeck){
+                    if(card.guid.Equals(selectCard.guid)){
+                        prefareDeck.Remove(card);
+                    }
+                }
+                break;
+            case DeckListType.TRASH_DECK:
+                foreach(Card card in trashDeck){
+                    if(card.guid.Equals(selectCard.guid)){
+                        trashDeck.Remove(card);
+                    }
+                }
+                break;
+            case DeckListType.FORGOTTEN_DECK:
+                foreach(Card card in forgottenDeck){
+                    if(card.guid.Equals(selectCard.guid)){
+                        forgottenDeck.Remove(card);
+                    }
+                }
+                break;
+        }
+        M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        GameObject cardOnHandObject = Instantiate(
+            M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
+            Vector3.zero,
+            Quaternion.identity
+        );
+        CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
+        cardOnHand.card = selectCard;
+        cardOnHand.card.isChargedCard = false;
+        if(cardPocket != null){
+            cardOnHand.parent = cardPocket.GetComponent<CardPocket>();
+        }
+        NetworkServer.Spawn(cardOnHandObject, connectionToClient);
+        cardOnHands.Add(cardOnHand);
     }
 
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//
@@ -572,107 +720,30 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
     }
 
-    // 특정 덱에서 해당 카드 추출하여 제거 + 카드 생성
     [Command]
-    public void CmdSpawnCardOnHandExtractFromDeck(List<Card> selectCards, DeckListType deckListType)
+    public void CmdCheckRequestCard(string requestCardNumber, List<Card> selectCards)
     {
-        foreach(Card selectCard in selectCards){
-            switch (deckListType)
-            {
-                case DeckListType.PREFARE_DECK:
-                    foreach(Card card in prefareDeck){
-                        if(card.guid.Equals(selectCard.guid)){
-                            prefareDeck.Remove(card);
-                        }
-                    }
-                    break;
-                case DeckListType.TRASH_DECK:
-                    foreach(Card card in trashDeck){
-                        if(card.guid.Equals(selectCard.guid)){
-                            trashDeck.Remove(card);
-                        }
-                    }
-                    break;
-                case DeckListType.FORGOTTEN_DECK:
-                    foreach(Card card in forgottenDeck){
-                        if(card.guid.Equals(selectCard.guid)){
-                            forgottenDeck.Remove(card);
-                        }
-                    }
-                    break;
-            }
-            M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-            GameObject cardOnHandObject = Instantiate(
-                M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
-                Vector3.zero,
-                Quaternion.identity
-            );
-            CardOnHand cardOnHand = cardOnHandObject.GetComponent<CardOnHand>();
-            cardOnHand.card = selectCard;
-            cardOnHand.card.isChargedCard = false;
-            if(cardPocket != null){
-                cardOnHand.parent = cardPocket.GetComponent<CardPocket>();
-            }
-            NetworkServer.Spawn(cardOnHandObject, connectionToClient);
-            cardOnHands.Add(cardOnHand);
+        switch(requestCardNumber){
+            case "E22": case "E22_E":
+                ServerSpawnCardOnHandExtractFromDeck(selectCards, DeckListType.TRASH_DECK); // 버린 덱에서 선택하여 패로 생성
+                break;
+            case "E25": case "E25_E":
+            case "E26": case "E26_E":
+            case "E28": case "E28_E":
+            case "E32": case "E32_E":
+            case "E37": case "E37_E":
+            case "E40": case "E40_E":
+            case "E48": case "E48_E":
+            case "E52": case "E52_E":
+                ServerSendDeck(selectCards, DeckListType.PREFARE_DECK, DeckListType.TRASH_DECK); // 뽑을 덱에서 선택하여 버린 덱으로
+                break;
         }
     }
 
-    // from 과 to 의 DeckListType 따라 어떤 덱의 Synclist에 추가 및 제거할지 분기 처리 하여 서버 함수 호출
     [Command]
-    public void CmdSendDeck(DeckListType from, DeckListType to, List<Card> cards)
+    public void CmdCheckRequestCard(Card card, DeckListType deckListType)
     {
-        switch(from){
-            case DeckListType.PREFARE_DECK:
-                switch (to)
-                {
-                    case DeckListType.TRASH_DECK:
-                        foreach(Card card in cards){
-                            SendDeckFromTo(prefareDeck, trashDeck, card);
-                        }
-                        break;
-                    case DeckListType.FORGOTTEN_DECK:
-                        foreach(Card card in cards){
-                            SendDeckFromTo(prefareDeck, forgottenDeck, card);
-                        }
-                        break;
-                }
-                break;
-
-            case DeckListType.TRASH_DECK:
-                switch (to)
-                {
- 
-                    case DeckListType.PREFARE_DECK:
-                        foreach(Card card in cards){
-                            SendDeckFromTo(trashDeck, prefareDeck, card);
-                        }
-                        break;
-                    case DeckListType.FORGOTTEN_DECK:
-                        foreach(Card card in cards){
-                            SendDeckFromTo(trashDeck, forgottenDeck, card);
-                        }
-                        break;
-                }
-                break;
-
-            case DeckListType.FORGOTTEN_DECK:
-                switch (to)
-                {
-                    case DeckListType.PREFARE_DECK:
-                        foreach(Card card in cards){
-                            SendDeckFromTo(forgottenDeck, prefareDeck, card);
-                        }
-                        break;
-                    case DeckListType.TRASH_DECK:
-                        foreach(Card card in cards){
-                            SendDeckFromTo(forgottenDeck, trashDeck, card);
-                        }
-                        break;
-                }
-                break;
-        }
-        TargetSendDeck(cards, from, to);
+        ServerSpawnCardOnHandExtractFromDeck(card, deckListType);
     }
 
     // 선택 가능 카드 갯수 초기화

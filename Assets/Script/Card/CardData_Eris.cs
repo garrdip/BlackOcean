@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Reflection;
-using System.IO;
-using System;
 using ProjectD;
 using Mirror;
-using Spine.Unity;
 
+
+/*
+    에리스 카드중 팝업을 통해 카드를 선택하는 카드들은, 특정 덱에서 N장의 카드를 고를 수 있도록 maxSelectableCardCount 값을 설정하고, 팝업은 해당 카드 수행 후 Rpc를 통해 호출됨.
+*/
 public partial class CardData : SingletonD<CardData>
 {
     private void ErisAnimation(TargetObject tar, string normal)    
@@ -297,7 +297,7 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.8f);
         GeneralSingleAttack(tar[0], tar[1], 3);
         StartCoroutine(tar[1].monster.OnHitAnimation());
-        // 이번 게임동안 사용한 공격 카드의 개수 만큼 2씩 증가합니다.
+        // TODO : 이번 게임동안 사용한 공격 카드의 개수 만큼 2씩 증가합니다.
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -419,59 +419,92 @@ public partial class CardData : SingletonD<CardData>
     }
     public IEnumerator E22_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E22(card, tar);
     }
 
     // 삼색빛별
     public IEnumerator E23(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 4;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        GeneralGetDefense(tar[0], tar[0], damage, card);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        tar[0].GainBuff(BuffType.BYEOLMURI, 1, false, false, false, false, tar[0], card);
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E23_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E23(card, tar);
     }
 
     // 도돌이표
     public IEnumerator E24(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        tar[0].GainBuff(BuffType.REPEATMARK, 1, false, false, false, false, tar[0], card);
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E24_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E24(card, tar);
     }
 
     // 닿을 수 없던 꿈
     public IEnumerator E25(Card card,List<TargetObject> tar)
     {
         tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 3;
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E25_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E25(card, tar);
     }
 
     // 델리카토
     public IEnumerator E26(Card card,List<TargetObject> tar)
     {
         tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 1;
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 12;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        // TODO :  이 카드가 뽑을덱 에서 버린덱 으로 가면 적 전체에게 피해 !8 를 줍니다.
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E26_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E26(card, tar);
     }
 
     // 공허 속 갈무리
     public IEnumerator E27(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        GamePlayerDeck gamePlayerDeck = tar[0].player.GetComponent<GamePlayerDeck>();
+        int damage = gamePlayerDeck.trashDeck.Count; // 데미지는 버린덱의 카드 수 만큼
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E27_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E27(card, tar);
     }
 
     // 권능 : 관성
@@ -487,42 +520,67 @@ public partial class CardData : SingletonD<CardData>
     // 종말의 징조
     public IEnumerator E29(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        tar[0].GainBuff(BuffType.SIGNOFEND, 1, false, false, false, false, tar[0], card);
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E29_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E29(card, tar);
     }
 
     // 창조의 권능
     public IEnumerator E30(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        tar[0].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "E10")), 2);
+        // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 E10 카드를 생성해 패에 1장 넣습니다. 
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E30_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E30(card, tar);
     }
 
     // 티끌 모으기
     public IEnumerator E31(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        tar[0].player.GetComponent<GamePlayerDeck>().currentIchi++;
+        // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 이치 2 를 얻습니다.
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E31_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E31(card, tar);
     }
 
     // 빙산의 일각
     public IEnumerator E32(Card card,List<TargetObject> tar)
     {
         tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 1;
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 8;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        // TODO :  이 카드가 뽑을덱 에서 버린덱 으로 가면 무작위 적 한명에게 피해 20을 줍니다
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E32_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E32(card, tar);
     }
 
     // 뒤틀림의 끝

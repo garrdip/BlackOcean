@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Mirror;
 using ProjectD;
+using TMPro;
 
 
 // 뽑을덱, 버린덱, 잊혀진덱 중 2개의 덱을 보여주는 팝업 (현재는 E44 카드를 위한 버린덱, 잊혀진덱의 데이터만 세팅됨)
@@ -12,21 +13,19 @@ public class DeckMultipleSelectPopUp : SingletonD<DeckMultipleSelectPopUp>
 {
     [Header("잊혀진 덱 데이터")]
     public List<GameObject> forgottenDecks = new List<GameObject>();
-    public List<Card> selectCardsFromForgottenDeck = new List<Card>();
     public CardOnDeck selectCardFromForgottenDeck;
 
     [Header("버린 덱 데이터")]
     public List<GameObject> trashDecks = new List<GameObject>();
-    public List<Card> selectCardsFromTrashDeck = new List<Card>();
     public CardOnDeck selectCardFromTrashDeck;
 
     [Header("UI 컴포넌트")]
     public CanvasGroup canvasGroup;
-    public GameObject forgottenDeckScrollViewLayout;
     public GridLayoutGroup forgottenDeckGrid;
-    public GameObject trashDeckScrollViewLayout;
     public GridLayoutGroup trashDeckGrid;
     public Button buttonSelectSubmit;
+    public TextMeshProUGUI textExplanation;
+
 
     protected override void Awake()
     {
@@ -36,18 +35,19 @@ public class DeckMultipleSelectPopUp : SingletonD<DeckMultipleSelectPopUp>
 
     void Start()
     {
+        textExplanation.text = $"잊혀진 덱에서 카드 <color=red>1</color>장, 버린 덱에서 카드 <color=red>1</color>장을 선택하세요.";
         buttonSelectSubmit.onClick.AddListener(OnClickDeckSelectSubmit);
     }
 
     public void OnClickDeckSelectSubmit()
     {
-        selectCardsFromForgottenDeck.Clear();
-        selectCardsFromTrashDeck.Clear();
-        selectCardsFromForgottenDeck.Add(selectCardFromForgottenDeck.card);
-        selectCardsFromTrashDeck.Add(selectCardFromTrashDeck.card);
         GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-        gamePlayerDeck.CmdSpawnCardOnHandExtractFromDeck(selectCardsFromForgottenDeck, DeckListType.FORGOTTEN_DECK); // 잊혀진 덱에서 선택하여 패로 생성
-        gamePlayerDeck.CmdSpawnCardOnHandExtractFromDeck(selectCardsFromTrashDeck, DeckListType.TRASH_DECK); // 버린 덱에서 선택하여 패로 생성
+        if(selectCardFromForgottenDeck != null){
+            gamePlayerDeck.CmdCheckRequestCard(selectCardFromForgottenDeck.card, DeckListType.FORGOTTEN_DECK);
+        }
+        if(selectCardFromTrashDeck != null){
+            gamePlayerDeck.CmdCheckRequestCard(selectCardFromTrashDeck.card, DeckListType.TRASH_DECK);
+        }
         PopUpUIManager.instance.HandleHideDeckMultipleSelectPopUp();
     }
 
@@ -102,12 +102,10 @@ public class DeckMultipleSelectPopUp : SingletonD<DeckMultipleSelectPopUp>
             Destroy(forgottenDecks[i]);
             forgottenDecks.RemoveAt(i);
         }
-        selectCardsFromForgottenDeck.Clear();
         for(int i=trashDecks.Count-1; i >=0; i--){
             Destroy(trashDecks[i]);
             trashDecks.RemoveAt(i);
         }
-        selectCardsFromTrashDeck.Clear();
     }
 
     public void OnDeckMultipleSelectPopUpShow()

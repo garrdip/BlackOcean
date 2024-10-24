@@ -19,7 +19,6 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
 
     [Header("UI 컴포넌트")]
     public CanvasGroup canvasGroup;
-    public GameObject scrollViewLayout;
     public GridLayoutGroup deckListPopUpGrid;
     public TextMeshProUGUI textTitle;
     public TextMeshProUGUI textExplanation;
@@ -35,7 +34,7 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
     void Start()
     {
         GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-        textExplanation.text = $"카드를 {gamePlayerDeck.maxSelectableCardCount}장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )";
+        textExplanation.text = $"카드를 <color=red>{gamePlayerDeck.maxSelectableCardCount}</color>장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )";
         buttonSelectSubmit.onClick.AddListener(OnClickDeckSelectSubmit);
     }
 
@@ -108,22 +107,8 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
     // DeckSelectPopUp 확인 버튼 클릭
     public void OnClickDeckSelectSubmit()
     {
-        // 팝업 요청한 카드의 종류에 따라 어디로 보내질지 분기 처리
         GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>(); 
-        switch(requestCardNumber){
-            case "E22": case "E22_E":
-                gamePlayerDeck.CmdSpawnCardOnHandExtractFromDeck(selectCards, DeckListType.TRASH_DECK); // 버린 덱에서 선택하여 패로 생성
-                break;
-            case "E25": case "E25_E":
-            case "E26": case "E26_E":
-            case "E32": case "E32_E":
-            case "E37": case "E37_E":
-            case "E40": case "E40_E":
-            case "E48": case "E48_E":
-            case "E52": case "E52_E":
-                gamePlayerDeck.CmdSendDeck(DeckListType.PREFARE_DECK, DeckListType.TRASH_DECK, selectCards); // 뽑을 덱에서 선택하여 버린 덱으로
-                break;
-        }
+        gamePlayerDeck.CmdCheckRequestCard(requestCardNumber, selectCards);
         PopUpUIManager.instance.HandleHideDeckSelectPopUp();
     }
     
