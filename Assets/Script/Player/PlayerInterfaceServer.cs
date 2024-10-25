@@ -48,8 +48,10 @@ public class PlayerInterfaceServer : NetworkBehaviour
                 networkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("AbilityButton")),
                 spawnPosition,
                 Quaternion.identity);
+            AbilityButton abilityButton = abilityButtonObject.GetComponent<AbilityButton>();
+            abilityButton.character = gamePlayer.character;
             NetworkServer.Spawn(abilityButtonObject, connectionToClient);
-            gamePlayerDeck.abilityButton = abilityButtonObject.GetComponent<AbilityButton>();
+            gamePlayerDeck.abilityButton = abilityButton;
 
             // 어빌리티 화살표 인디케이터 오브젝트 생성
             GameObject abilityArrowObject = Instantiate(

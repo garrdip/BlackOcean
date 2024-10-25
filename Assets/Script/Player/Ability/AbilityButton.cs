@@ -8,6 +8,9 @@ using ProjectD;
 
 public class AbilityButton : NetworkBehaviour
 {
+    [SyncVar]
+    public Character character;
+
     public GameObject leftLine;
     public GameObject leftLineLight;
     public GameObject rightLine;
@@ -24,13 +27,11 @@ public class AbilityButton : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        if(isOwned){
-            transform.position = new Vector3(17.8f, -4.9f, 0);
-        }
+        transform.position = new Vector3(17.8f, -4.9f, 0);
         gameObject.SetActive(false); // 초기 시점에 버튼 비활성화
         leftOriginPosition = leftLine.transform.localPosition;
         rightOriginPosition = rightLine.transform.localPosition;
-        SetAbilityButtonIcon(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayer>().character);
+        SetAbilityButtonIcon(character);
     }
 
     void OnMouseDown()

@@ -307,9 +307,13 @@ public class PlayerInterface : NetworkBehaviour
             GameUIManager.instance.currentIchiText.text = currentGamePlayerDeck.currentIchi.ToString();
             GameUIManager.instance.maxIchiText.text = currentGamePlayerDeck.maxIchi.ToString();
 
-            // 현재 선택한 플레이어가 단향일 경우 어빌리티 버튼 활성화 상태 변경
-            GamePlayer gamePlayer = currentGamePlayerDeck.GetComponent<GamePlayer>();
-            M_CardManager.instance.ChangeAbilityButtonActiveState(gamePlayer.character == Character.HONGDANHYANG);
+            // 현재 선택한 플레이어의 어빌리티 버튼만 활성화
+            foreach(GamePlayer gamePlayer in ownedPlayers){
+                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
+                if(gamePlayerDeck.abilityButton != null){
+                    gamePlayerDeck.abilityButton.gameObject.SetActive(gamePlayerDeck.netId == newVal);
+                }
+            }
 
             // 현재 선택한 플레이어의 패 제거 카드 배열값 설정
             currentGamePlayerDeck.choosedCardOnHands = new CardOnHand[currentGamePlayerDeck.maxRemoveCardCount];
