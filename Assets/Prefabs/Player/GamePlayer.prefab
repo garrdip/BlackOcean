@@ -68,14 +68,18 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
+  gamePlayerDeck: {fileID: -5967311515642577051}
+  gold: 0
   HP: 0
   MaxHP: 0
-  recoverValue: 0
+  recoveryValue: 0
+  recoveryLimitCount: 0
   objectOwner: {fileID: 0}
   selectOrder: 0
   character: 0
   mapPlayerNetId: 0
   recoverParticle: {fileID: 6498355376624205919, guid: 8822c90b53ebd7840aa9c04f213b3442, type: 3}
+  isSelectable: 0
 --- !u!114 &-5967311515642577051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91,11 +95,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  gold: 0
   currentDeckCount: 0
   maxShopCardCount: 0
   maxRewardCardCount: 0
   maxRemoveCardCount: 0
+  maxSelectableCardCount: 0
   cardPocket: {fileID: 0}
   cardCtrlArrow: {fileID: 0}
   abilityButton: {fileID: 0}

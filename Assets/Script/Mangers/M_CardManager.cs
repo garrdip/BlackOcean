@@ -10,8 +10,8 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
 {
     private const int maxCardOnHandCount = 10; // CardOnHand 최대 갯수
 
-    [Header("현재 선택한 플레이어의 GamePlayerDeck 참조변수")]
-    public GamePlayerDeck currentGamePlayerDeck;
+    [Header("로컬 플레이어의 PlayerInterface 참조 변수")]
+    public PlayerInterface playerInterface;
 
     [Header("랜덤 시드값")]
     public int seedNumber = 0;
@@ -82,6 +82,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         DontDestroyOnLoad(gameObject);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
+        playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>(); // PlayerInterface 참조값 캐싱
         InitCardConfigValue();
     }
 
@@ -107,12 +108,13 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     // 현재 플레이어의 CardOnHands 리스트를 통해 각 카드들의 위치, 회전, 크기 제어
     public void SetCardOnHandPositionSymmetry()
     {   
-        if(currentGamePlayerDeck != null){
+        for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
+            GamePlayerDeck currentGamePlayerDeck = playerInterface.ownedPlayers[i].gamePlayerDeck;
             List<CardOnHand> cardOnHandsIsNotChoosed = currentGamePlayerDeck.cardOnHands.FindAll(card => !card.isChoosed); // 선택되지 않은 카드 리스트 필터
             int count = cardOnHandsIsNotChoosed.Count;
             if(count > 0){
-                for(int i=0; i<count; i++){      
-                    CardOnHand cardOnHand = cardOnHandsIsNotChoosed[i];
+                for(int j=0; j<count; j++){      
+                    CardOnHand cardOnHand = cardOnHandsIsNotChoosed[j];
                     if(cardOnHand != null){
                         if(!cardOnHand.isMoving && !cardOnHand.isDrag && !cardOnHand.isUsed && !cardOnHand.isAddtionDrawCard){
                             if(cardOnHand.isMouseOver){
@@ -166,12 +168,12 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                     }
                                 }
                             }else{
-                                cardOnHand.originSortingOrder = i;
-                                cardOnHand.sortingGroup.sortingOrder = i;
-                                cardOnHand.cardOnHandCanvas.sortingOrder = i;
+                                cardOnHand.originSortingOrder = j;
+                                cardOnHand.sortingGroup.sortingOrder = j;
+                                cardOnHand.cardOnHandCanvas.sortingOrder = j;
 
                                 // 대칭값 계산
-                                float symmetryValue = (i - ((count - 1) / 2.0f));
+                                float symmetryValue = (j - ((count - 1) / 2.0f));
                                 
                                 // 위치값(카드 개수에 따라 좌우 대칭값 계산하여 각 카드의 x, y 좌표 설정)
                                 float xPosition = symmetryValue * (symmetryPositionX_Range + ((maxCardOnHandCount - count) * 0.1f));
@@ -190,8 +192,8 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                 if(cardOnHand.isShifted){
                                     int mouseOveredIndex = currentGamePlayerDeck.cardOnHands.FindIndex((card) =>  card.isMouseOver);
                                     float shiftedValue = 0f;
-                                    if(i != mouseOveredIndex){
-                                        shiftedValue = cardOnHandShiftedRange / (i - mouseOveredIndex);
+                                    if(j != mouseOveredIndex){
+                                        shiftedValue = cardOnHandShiftedRange / (j - mouseOveredIndex);
                                     }
                                     Vector3 shiftPosition = new Vector3(symmetryPosition.x + shiftedValue, symmetryPosition.y, symmetryPosition.z);
                                     cardOnHand.transform.localPosition = Vector3.Lerp(cardOnHand.transform.localPosition, shiftPosition, Time.deltaTime * 10f);
@@ -204,12 +206,6 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 }
             }
         }
-    }
-
-    // 현재 플레이어의 GamePlayerDeck 참조값 설정
-    public void SetCurrentGamePlayerDeck(GamePlayerDeck gamePlayerDeck)
-    {
-        currentGamePlayerDeck = gamePlayerDeck;
     }
 
     // CardOnHand 오브젝트들의 인덱스값에 따라 순차적인 움직임으로 날아오는 애니매이션 + Moving플래그 변수 조정
@@ -284,7 +280,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     }
 
     // 추가 드로우된 CardOnHand 이동 시퀀스
-    public void CardOnHandAdditionDrawSequence(CardOnHand cardOnHand, int index)
+    public void CardOnHandAdditionDrawSequence(CardOnHand cardOnHand, int index, GamePlayerDeck gamePlayerDeck)
     {
         if(!cardOnHand.isChoosed){
             cardOnHand.isMoving = true;
@@ -297,7 +293,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 .OnComplete(() => {
                     cardOnHand.rippleParticle.gameObject.SetActive(true);
                     cardOnHand.isMoving = false;
-                    currentGamePlayerDeck.CmdChangeCardOnHandIsAddtionDraw(cardOnHand, false);
+                    gamePlayerDeck.CmdChangeCardOnHandIsAddtionDraw(cardOnHand, false);
                     sequence.Kill();
                     if(cardOnHand.isOwned){
                         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));

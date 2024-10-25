@@ -13,6 +13,8 @@ public class GamePlayer : NetworkBehaviour
     public delegate void OnChangeGold(int gold);
     public OnChangeGold onChangeGold;
 
+    public GamePlayerDeck gamePlayerDeck; // GamePlayerDeck 참조값 (인스펙터 할당)
+
     [SyncVar (hook = nameof(OnChangePlayerGold))]
     public int gold = 0; // 현재 플레이어 보유 골드
 

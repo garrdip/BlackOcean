@@ -1146,7 +1146,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         {
             case SyncList<CardOnHand>.Operation.OP_ADD:
                 if(newCardOnHand.isAddtionDrawCard){
-                    M_CardManager.instance.CardOnHandAdditionDrawSequence(newCardOnHand, index);
+                    M_CardManager.instance.CardOnHandAdditionDrawSequence(newCardOnHand, index, this);
                 }else{
                     if(newCardOnHand.transform.position.x < 0){
                         M_CardManager.instance.CardOnHandDrawSequence(newCardOnHand, index);
