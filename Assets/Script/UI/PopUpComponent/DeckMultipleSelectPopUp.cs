@@ -35,7 +35,7 @@ public class DeckMultipleSelectPopUp : SingletonD<DeckMultipleSelectPopUp>
 
     void Start()
     {
-        textExplanation.text = $"잊혀진 덱에서 카드 <color=red>1</color>장, 버린 덱에서 카드 <color=red>1</color>장을 선택하세요.";
+        textExplanation.text = $"잊혀진 덱에서 카드 <color=green>1</color> 장, 버린 덱에서 카드 <color=red>1</color> 장을 선택하세요.";
         buttonSelectSubmit.onClick.AddListener(OnClickDeckSelectSubmit);
     }
 

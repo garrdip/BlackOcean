@@ -510,6 +510,8 @@ public partial class CardData : SingletonD<CardData>
     // 권능 : 관성
     public IEnumerator E28(Card card,List<TargetObject> tar)
     {
+        GamePlayerDeck gamePlayerDeck = tar[0].player.GetComponent<GamePlayerDeck>();
+        gamePlayerDeck.maxSelectableCardCount = gamePlayerDeck.cardOnHands.Count; // 패의 갯수 만큼 maxSelectableCardCount 설정
         yield return null;
     }
     public IEnumerator E28_E(Card card,List<TargetObject> tar)

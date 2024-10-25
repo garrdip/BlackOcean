@@ -34,7 +34,7 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
     void Start()
     {
         GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-        textExplanation.text = $"카드를 <color=red>{gamePlayerDeck.maxSelectableCardCount}</color>장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )";
+        textExplanation.text = $"카드를 <color=green>{gamePlayerDeck.maxSelectableCardCount}</color> 장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )";
         buttonSelectSubmit.onClick.AddListener(OnClickDeckSelectSubmit);
     }
 

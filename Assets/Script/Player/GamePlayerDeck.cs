@@ -448,7 +448,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
             case "E22": case "E22_E":
             case "E25": case "E25_E":
             case "E26": case "E26_E":
-            case "E28": case "E28_E":
             case "E32": case "E32_E":
             case "E37": case "E37_E":
             case "E40": case "E40_E":
@@ -456,6 +455,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
             case "E52": case "E52_E":
                 TargetPopUpShowByCard(card, DeckAction.ACTION_DECK_SELECT);
                 break;
+            case "E28": case "E28_E":
+                TargetRemoveAllCardOnHand();
+                TargetPopUpShowByCard(card, DeckAction.ACTION_DECK_SELECT);
+            break;
             case "E44": case "E44_E":
                 foreach(TargetObject targetObject in M_TurnManager.instance.spawnedPlayerList){
                     GamePlayerDeck gamePlayerDeck = targetObject.player.GetComponent<GamePlayerDeck>();
@@ -945,6 +948,15 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void TargetCardOnHandRemoveToForgotenDeck(CardOnHand cardOnHand)
     {
         M_CardManager.instance.CardOnHandThrowAwaySequenceToForgotenDeck(cardOnHand);
+    }
+
+    // 플레이어의 패를 모두 버린 덱으로 보내는 트위닝 수행 후 제거 커맨드 호출
+    [TargetRpc]
+    public void TargetRemoveAllCardOnHand()
+    {
+        foreach(CardOnHand cardOnHand in cardOnHands){
+            M_CardManager.instance.CardOnHandAllThrowAwaySequence(cardOnHand, this);
+        }
     }
 
     // PopUpAction과 카드 종류에 따라 필요한 팝업 호출
