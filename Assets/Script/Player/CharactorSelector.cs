@@ -40,13 +40,8 @@ public class CharactorSelector : MonoBehaviour
         PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player; // 클릭한 캐릭터의 GamePlayer 인스턴스
         GamePlayer localPlayer = playerInterface.currentGamePlayer; // 로컬 플레이어의 GamePlayer 인스턴스
-        if(IsServerAuthorityPlayer() && !IsOpenedPopUpExist() && !targetPlayer.isSelectable){
-            playerInterface.currentGamePlayerNetId = targetPlayer.netId; // 선택한 플레이어를 현재 제어할 플레이어로 변경
-        }
-        if(IsBattleRoomType() && !IsOpenedPopUpExist()){
-            if(targetPlayer.GetComponent<GamePlayerDeck>().cardOnHands.Count == 0 && targetPlayer.GetComponent<GamePlayerDeck>().trashDeck.Count == 0)
-                targetPlayer.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand();
-            M_CardManager.instance.SetCurrentGamePlayerDeck(targetPlayer.GetComponent<GamePlayerDeck>());
+        if(IsServerAuthorityPlayer() && IsBattleRoomType() && !IsOpenedPopUpExist() && !targetPlayer.isSelectable){ 
+            playerInterface.currentGamePlayerNetId = targetPlayer.netId; // // 클라이언트 나간 경우 서버권한 유저는 다른 플레이어 클릭해서 선택한 플레이어를 제어
         }else if(M_MapManager.instance.currentRoom.roomType == RoomType.CAMP && targetPlayer.isSelectable){
             CampPopUp campPopUp = PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>();
             switch(campPopUp.campAction){

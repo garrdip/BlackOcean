@@ -142,10 +142,28 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public TargetObject GetCurrentPlayerTargetObject(GamePlayer gamePlayer)
     {
         if(NetworkServer.activeHost){
-            return NetworkServer.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkServer.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
+            // spawnedPlayerSyncList(타겟오브젝트 리스트)에서 현재 플레이어의 참조값을 가진 타겟오브젝트의 netId 조회
+            uint targetObjectNetId = M_TurnManager.instance.spawnedPlayerSyncList.Find(gemePlayerNetId => {
+                if(gemePlayerNetId != 0){
+                    return NetworkServer.spawned[gemePlayerNetId].GetComponent<TargetObject>().player == gamePlayer;
+                }
+                return false;
+            });
+            if(targetObjectNetId != 0){
+                return NetworkServer.spawned[targetObjectNetId].GetComponent<TargetObject>(); // 조회된 netId로 타겟오브젝트 반환
+            }
         }else{
-            return NetworkClient.spawned[M_TurnManager.instance.spawnedPlayerSyncList.Find(netId => NetworkClient.spawned[netId].GetComponent<TargetObject>().player == gamePlayer)].GetComponent<TargetObject>();
+            uint targetObjectNetId = M_TurnManager.instance.spawnedPlayerSyncList.Find(gemePlayerNetId => {
+                if(gemePlayerNetId != 0){
+                    return NetworkClient.spawned[gemePlayerNetId].GetComponent<TargetObject>().player == gamePlayer;
+                }
+                return false;
+            });
+            if(targetObjectNetId != 0){
+                return NetworkClient.spawned[targetObjectNetId].GetComponent<TargetObject>();
+            }
         }
+        return null;
     }
 
     // 현재 페이즈가 PLAYER_ACTIVE 상태인지 체크

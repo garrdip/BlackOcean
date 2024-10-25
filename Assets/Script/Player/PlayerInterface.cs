@@ -298,6 +298,10 @@ public class PlayerInterface : NetworkBehaviour
 
             // 현재 선택한 플레이어의 PrefareDeck, TrashDeck, ForgottenDeck 카운트 텍스트 설정
             GamePlayerDeck currentGamePlayerDeck = NetworkServer.spawned[newVal].GetComponent<GamePlayerDeck>();
+
+            // 카드 매니저의 현재 플레이어 참조값 선택한 플레이어로 설정
+            M_CardManager.instance.SetCurrentGamePlayerDeck(currentGamePlayerDeck);
+            
             GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
             GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
             GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);

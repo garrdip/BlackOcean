@@ -456,7 +456,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 TargetPopUpShowByCard(card, DeckAction.ACTION_DECK_SELECT);
                 break;
             case "E28": case "E28_E":
-                TargetRemoveAllCardOnHand();
+                TargetRemoveAllCardOnHands();
                 TargetPopUpShowByCard(card, DeckAction.ACTION_DECK_SELECT);
             break;
             case "E44": case "E44_E":
@@ -529,7 +529,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [Server]
     private void SendDeckFromTo(SyncList<Card> from, SyncList<Card> to, Card selectCard)
     {
-        foreach(Card card in from){
+        for(int i=from.Count-1; i>=0; i--){
+            Card card = from[i];
             if(card.guid.Equals(selectCard.guid)){
                 from.Remove(card);
                 to.Add(card);
@@ -545,21 +546,24 @@ public partial class GamePlayerDeck : NetworkBehaviour
             switch (deckListType)
             {
                 case DeckListType.PREFARE_DECK:
-                    foreach(Card card in prefareDeck){
+                    for(int i=prefareDeck.Count-1; i>=0; i--){
+                        Card card = prefareDeck[i];
                         if(card.guid.Equals(selectCard.guid)){
                             prefareDeck.Remove(card);
                         }
                     }
                     break;
                 case DeckListType.TRASH_DECK:
-                    foreach(Card card in trashDeck){
+                    for(int i=trashDeck.Count-1; i>=0; i--){
+                        Card card = trashDeck[i];
                         if(card.guid.Equals(selectCard.guid)){
                             trashDeck.Remove(card);
                         }
                     }
                     break;
                 case DeckListType.FORGOTTEN_DECK:
-                    foreach(Card card in forgottenDeck){
+                    for(int i=forgottenDeck.Count-1; i>=0; i--){
+                        Card card = forgottenDeck[i];
                         if(card.guid.Equals(selectCard.guid)){
                             forgottenDeck.Remove(card);
                         }
@@ -590,21 +594,24 @@ public partial class GamePlayerDeck : NetworkBehaviour
         switch (deckListType)
         {
             case DeckListType.PREFARE_DECK:
-                foreach(Card card in prefareDeck){
+                for(int i=prefareDeck.Count-1; i>=0; i--){
+                    Card card = prefareDeck[i];
                     if(card.guid.Equals(selectCard.guid)){
                         prefareDeck.Remove(card);
                     }
                 }
                 break;
             case DeckListType.TRASH_DECK:
-                foreach(Card card in trashDeck){
+                for(int i=trashDeck.Count-1; i>=0; i--){
+                    Card card = trashDeck[i];
                     if(card.guid.Equals(selectCard.guid)){
                         trashDeck.Remove(card);
                     }
                 }
                 break;
             case DeckListType.FORGOTTEN_DECK:
-                foreach(Card card in forgottenDeck){
+                for(int i=forgottenDeck.Count-1; i>=0; i--){
+                    Card card = forgottenDeck[i];
                     if(card.guid.Equals(selectCard.guid)){
                         forgottenDeck.Remove(card);
                     }
@@ -952,7 +959,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     // 플레이어의 패를 모두 버린 덱으로 보내는 트위닝 수행 후 제거 커맨드 호출
     [TargetRpc]
-    public void TargetRemoveAllCardOnHand()
+    public void TargetRemoveAllCardOnHands()
     {
         foreach(CardOnHand cardOnHand in cardOnHands){
             M_CardManager.instance.CardOnHandAllThrowAwaySequence(cardOnHand, this);
@@ -991,6 +998,21 @@ public partial class GamePlayerDeck : NetworkBehaviour
         Vector3 startPosition = Vector3.zero;
         Vector3 endPosition = Vector3.zero;
         switch(from){
+            case DeckListType.NONE:
+                startPosition = GameUIManager.instance.CardOnHandsPanel.transform.position;
+                switch (to)
+                {
+                    case DeckListType.PREFARE_DECK:
+                        endPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
+                        break;
+                    case DeckListType.TRASH_DECK:
+                        endPosition = GameUIManager.instance.buttonTrashDeck.transform.position;
+                        break;
+                    case DeckListType.FORGOTTEN_DECK:
+                        endPosition = GameUIManager.instance.buttonForgottenDeck.transform.position;
+                        break;
+                }
+                break;
             case DeckListType.PREFARE_DECK:
                 startPosition = GameUIManager.instance.buttonPrefareDeck.transform.position;
                 switch (to)
