@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class TargetIndicator : MonoBehaviour
 {
-    public uint netId;
+    public uint netId; // 타겟오브젝트의 netId
     public GameObject targetOn;
     public GameObject targetOnLight;
     public GameObject targetMove;

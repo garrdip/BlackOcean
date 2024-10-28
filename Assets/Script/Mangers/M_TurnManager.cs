@@ -1853,6 +1853,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 gamePlayer.selectOrder = index;
                 gamePlayer.OnChangedSelectOrder(index, index);
                 gamePlayer.objectOwner.selectOrder = index;
+                targetIndicators[index].GetComponent<TargetIndicator>().netId = GetCurrentPlayerTargetObject(gamePlayer).netId; 
             }
         }else{
             if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
@@ -1860,6 +1861,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 gamePlayer.selectOrder = index;
                 gamePlayer.OnChangedSelectOrder(index, index);
                 gamePlayer.objectOwner.selectOrder = index;
+                targetIndicators[index].GetComponent<TargetIndicator>().netId = GetCurrentPlayerTargetObject(gamePlayer).netId; 
             }
         }
     }
@@ -1898,13 +1900,13 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, targetObjectPosition[index] + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
                     TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
                     targetIndicator.netId = 0;
-                    M_TurnManager.instance.targetIndicators.Add(targetIndicatorObject);
+                    targetIndicators.Add(targetIndicatorObject);
                 }else{
                     TargetObject targetObject = isServer ? NetworkServer.spawned[newVal].GetComponent<TargetObject>() :  NetworkClient.spawned[newVal].GetComponent<TargetObject>();
                     GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, targetObject.transform.position + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
                     TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
                     targetIndicator.netId = newVal;
-                    M_TurnManager.instance.targetIndicators.Add(targetIndicatorObject);
+                    targetIndicators.Add(targetIndicatorObject);
                 }
                 break;
             case SyncList<uint>.Operation.OP_INSERT:
