@@ -378,8 +378,24 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
             }
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
-            if(cardOnHand.card.baseCard.cardNumber.Contains("G57"))currentIchi++;
             cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
+            SpawnCardOnHandPostProcess(cardOnHand);
+        }
+    }
+
+    // 카드 생성 후 처리 프로세스 
+    [Server]
+    public void SpawnCardOnHandPostProcess(CardOnHand cardOnHand)
+    {
+        switch(cardOnHand.card.baseCard.cardNumber){
+            case "G57": case "G57_E":
+                currentIchi++;
+                break;
+            case "E53": case "E53_E":
+                if(cardOnHand.card.baseCard.cardType == CardType.ATTACK){
+                    CmdSpawnCardOnHand(1);
+                }
+                break;
         }
     }
 

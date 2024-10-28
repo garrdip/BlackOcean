@@ -84,7 +84,7 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.8f);
 		GeneralSingleAttack(tar[0],tar[1],5);
         StartCoroutine(tar[1].monster.OnHitAnimation());
-        tar[1].GainBuff(BuffType.BOONGGUI,1,true,false,true,false,tar[0],card);
+        tar[1].GainBuff(BuffType.BOONGGUI,1,false,false,false,false,tar[0],card);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -674,7 +674,7 @@ public partial class CardData : SingletonD<CardData>
     {
         tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 1;
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
-		ErisAnimation(tar[0],"Attack1");
+		ErisAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.8f);
         for(int i=0; i<6; i++){
             yield return new WaitForSeconds(0.1f);
@@ -804,6 +804,7 @@ public partial class CardData : SingletonD<CardData>
         StartCoroutine(tar[1].monster.OnHitAnimation());
         tar[1].GainBuff(BuffType.BOONGGUI,1,true,false,true,false,tar[1],card);
         yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E41_E(Card card,List<TargetObject> tar)
     {
@@ -860,163 +861,292 @@ public partial class CardData : SingletonD<CardData>
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
         MovePosition(tar[0],tar[1]);
+        tar[1].GainBuff(BuffType.BYEOLMURI,1,false,false,false,false,tar[0],card);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E45_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E45(card, tar);
     }
 
     // 헤일로
     public IEnumerator E46(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        GamePlayerDeck gamePlayerDeck = tar[0].player.GetComponent<GamePlayerDeck>();
+        List<TargetObject> targets = new List<TargetObject>();
+        targets.Add(tar[0]);
+        targets.AddRange(M_TurnManager.instance.spawnedMonsterList);
+        M_DimmingManager.instance.StartDimming(targets);
+        ErisAnimation(tar[0],"Attack2");
+        yield return new WaitForSeconds(0.8f);
+        int dmamage = 1;
+        foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
+            GeneralSingleAttack(tar[0], enemy, dmamage);
+            StartCoroutine(enemy.monster.OnHitAnimation());
+        }
+        gamePlayerDeck.deck.Add(card); 
+        // TODO : 이 이름의 카드의 피해 1 증가합니다
+		yield return new WaitForSeconds(0.5f);
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E46_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E46(card, tar);
     }
 
     // 별무리의 가르침
     public IEnumerator E47(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 5;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1);
+        if(tar[0].playerHP <= (tar[0].playerMaxHP / 2)){
+            tar[0].GainBuff(BuffType.BYEOLMURI,1,true,false,true,false,tar[0],card);
+        }
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E47_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E47(card, tar);
     }
 
     // 그랜디오소
     public IEnumerator E48(Card card,List<TargetObject> tar)
     {
         tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 2;
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 8;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        // TODO :  이 카드가 뽑을덱 에서 버린덱 으로 가면 피해는 N배가 증가합니다.
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E48_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E48(card, tar);
     }
 
     // 봉제 인형
     public IEnumerator E49(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        int value = tar[0].playerMaxHP - tar[0].playerHP;
+        foreach(TargetObject targetObjectPlayer in M_TurnManager.instance.spawnedPlayerList){
+            if(targetObjectPlayer.netId != tar[0].netId){
+                GeneralGetDefense(tar[0],targetObjectPlayer,value,card);  // 잃은 체력 만큼 자신을 제외한 아군 전체 방어 부여
+            }
+        }
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E49_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E49(card, tar);
     }
 
     // 웃는 인형의 단말마
     public IEnumerator E50(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        tar[0].GainBuff(BuffType.DEATHTHROES, 1, false, false, false, false, tar[0], card);
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E50_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E50(card, tar);
     }
 
     // 아프나요?
     public IEnumerator E51(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 2;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 8;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        // TODO : 이 카드는 파괴으 권능 효과를 N + 1배 더 받습니다.
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E51_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E51(card, tar);
     }
 
     // 중력파
     public IEnumerator E52(Card card,List<TargetObject> tar)
     {
         tar[0].player.GetComponent<GamePlayerDeck>().maxSelectableCardCount = 1;
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack2");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 1;
+        for(int i=0; i<5; i++){
+            GeneralSingleAttack(tar[0], tar[1], damage);
+            StartCoroutine(tar[1].monster.OnHitAnimation());
+            yield return new WaitForSeconds(0.5f);
+        }
+        // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 무작위 적 한명에게 피해 1을 9번 줍니다.
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E52_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E52(card, tar);
     }
 
     // 파멸에게 바치는 공물
     public IEnumerator E53(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1); // 패 1장 뽑아서 생성.
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E53_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E53(card, tar);
     }
 
     // 산개 성단
     public IEnumerator E54(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 5;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        // TODO : 이번 턴에 쓴 공격 카드 개수 만큼 반복합니다.
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E54_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E54(card, tar);
     }
 
     // 파편 분배
     public IEnumerator E55(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 5;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        int shieldValue = 2;
+        GeneralGetDefense(tar[0],tar[0],shieldValue,card);
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E55_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E55(card, tar);
     }
 
     // 은하의 선율
     public IEnumerator E56(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 10;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        int shieldValue = 3;
+        GeneralGetDefense(tar[0],tar[0],shieldValue,card);
+        // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 방어 15 를 얻습니다.
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E56_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E56(card, tar);
     }
 
     // 거친 파도 처럼
     public IEnumerator E57(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 14;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        int shieldValue = 5;
+        GeneralGetDefense(tar[0],tar[0],shieldValue,card);
+        // TODO : 자신이 소유한 은하수 카드당 비용이 감소합니다.
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E57_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E57(card, tar);
     }
 
     // 별로 빚어진 인형
     public IEnumerator E58(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        tar[0].GainBuff(BuffType.BYEOLMURI, 3, false, false, false, false, tar[0], card);
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E58_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E58(card, tar);
     }
 
     // 이분법
     public IEnumerator E59(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		ErisAnimation(tar[0],"Buff0");
+        yield return new WaitForSeconds(0.8f);
+        tar[0].GainBuff(BuffType.DICHOTOMY, 1, false, false, false, false, tar[0], card);
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     public IEnumerator E59_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E59(card,tar);
     }
 
     // 찢어줄게요
     public IEnumerator E60(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
+		ErisAnimation(tar[0],"Attack1");
+		yield return new WaitForSeconds(0.8f);
+        int damage = 8;
+        GeneralSingleAttack(tar[0], tar[1], damage);
+        StartCoroutine(tar[1].monster.OnHitAnimation());
+        // TODO :  체력이 절반 이하라면 2번 반복하며 ??? 상태라면 3번 반복 합니다.
+        yield return new WaitForSeconds(0.5f);
+        M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     public IEnumerator E60_E(Card card,List<TargetObject> tar)
     {
-        yield return null;
+        yield return E60(card, tar);
     }       
 }

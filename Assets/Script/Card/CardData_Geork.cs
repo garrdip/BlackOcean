@@ -305,7 +305,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false);
         yield return new WaitForSeconds(0.5f);
-        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 2개 추가
+        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1);
         yield return new WaitForSeconds(1f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
@@ -324,7 +324,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
-        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(3); // 카드 사용한 유저의 드로우 카드 Synclist에 카드 3개 추가
+        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(3);
         tar[0].player.GetComponent<GamePlayerDeck>().currentIchi += 2;
         yield return new WaitForSeconds(1f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
