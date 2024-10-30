@@ -305,7 +305,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false);
         yield return new WaitForSeconds(0.5f);
-        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1);
+        tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1);
         yield return new WaitForSeconds(1f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
@@ -324,7 +324,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
-        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(3);
+        tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(3);
         tar[0].player.GetComponent<GamePlayerDeck>().currentIchi += 2;
         yield return new WaitForSeconds(1f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -525,7 +525,7 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 		GeneralSingleAttack(tar[0],tar[1],8);
 		StartCoroutine(tar[1].monster.OnHitAnimation());
-		tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1); 
+		tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1); 
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
@@ -1079,7 +1079,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Buff0");
 		yield return new WaitForSeconds(0.5f);
 		GeneralGetDefense(tar[0],tar[0],7,card);
-		tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1);
+		tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
 	}
@@ -1219,7 +1219,7 @@ public partial class CardData : SingletonD<CardData>
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		GeorkAnimation(tar[0],"Buff0");
 		yield return new WaitForSeconds(0.5f);
-		tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(2); // 패 2개 생성
+		tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(2); // 패 2개 생성
 		tar[0].player.GetComponent<GamePlayerDeck>().maxRemoveCardCount = 2; // 제거용 카드 슬롯 2개로 설정
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
@@ -1451,7 +1451,7 @@ public partial class CardData : SingletonD<CardData>
 		GeneralSingleAttack(tar[0],tar[1],5);
 		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
-			tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1);
+			tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1);
 
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -1499,7 +1499,7 @@ public partial class CardData : SingletonD<CardData>
 	public IEnumerator G66_Buff_Effect(TargetObject tar, int index,Card card)
 	{
 		if(card.baseCard.cardType == CardType.BLESS)
-			tar.player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(tar.GetBuffValue(BuffType.MELODYOFHERO));
+			tar.player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(tar.GetBuffValue(BuffType.MELODYOFHERO));
 		yield return null;
 	}
 	public IEnumerator G66_E(Card card,List<TargetObject> tar)

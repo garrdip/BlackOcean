@@ -33,8 +33,6 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
 
     void Start()
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
-        textExplanation.text = $"카드를 <color=green>{gamePlayerDeck.maxSelectableCardCount}</color> 장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )";
         buttonSelectSubmit.onClick.AddListener(OnClickDeckSelectSubmit);
     }
 
@@ -116,9 +114,10 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
 
     public void OnDeckSelectPopUpShow(DeckListType type, string cardNumber)
     {
+        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        textExplanation.text = $"카드를 <color=green>{gamePlayerDeck.maxSelectableCardCount}</color> 장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )";
         requestCardNumber = cardNumber;
         canvasGroup.DOFade(1.0f, 0.5f);
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
         switch(type){
             case DeckListType.PREFARE_DECK:
                 textTitle.text = Const.PREFARE_DECK;

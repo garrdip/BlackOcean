@@ -131,7 +131,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
 		yield return new WaitForSeconds(0.8f);
-		tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(2);
+		tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(2);
         tar[0].DamageToPlayer(6);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -263,9 +263,16 @@ public partial class CardData : SingletonD<CardData>
             GeneralSingleAttack(tar[0], enemy, 3);
             StartCoroutine(enemy.monster.OnHitAnimation());
         }
-        // TODO : 이 카드가 버린덱 으로 가면 적 전체에게 피해 6을 줍니다.
         yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+    }
+    // 이 카드가 버린덱 으로 가면 적 전체에게 피해 6을 줍니다.
+    public void E13_CallBack(TargetObject playerTargetObject)
+    {
+        foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
+            GeneralSingleAttack(playerTargetObject, enemy, 6);
+            StartCoroutine(enemy.monster.OnHitAnimation());
+        }
     }
     public IEnumerator E13_E(Card card,List<TargetObject> tar)
     {
@@ -280,9 +287,15 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.8f);
         GeneralSingleAttack(tar[0], tar[1], 20);
         StartCoroutine(tar[1].monster.OnHitAnimation());
-        // TODO : 이 카드가 버린덱 으로 가면 무작위 적 한명에게 피해 10 를 줍니다.
 		yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+    }
+    // 이 카드가 버린덱 으로 가면 무작위 적 한명에게 피해 10 를 줍니다.
+    public void E14_CallBack(TargetObject playerTargetObject)
+    {
+        TargetObject randomTarget = M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0, M_TurnManager.instance.spawnedMonsterList.Count)];
+        GeneralSingleAttack(playerTargetObject, randomTarget, 10);
+        StartCoroutine(randomTarget.monster.OnHitAnimation());
     }
     public IEnumerator E14_E(Card card,List<TargetObject> tar)
     {
@@ -480,9 +493,16 @@ public partial class CardData : SingletonD<CardData>
         int damage = 12;
         GeneralSingleAttack(tar[0], tar[1], damage);
         StartCoroutine(tar[1].monster.OnHitAnimation());
-        // TODO :  이 카드가 뽑을덱 에서 버린덱 으로 가면 적 전체에게 피해 !8 를 줍니다.
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+    }
+    // 이 카드가 뽑을덱 에서 버린덱 으로 가면 적 전체에게 피해 8 를 줍니다.
+    public void E26_CallBack(TargetObject playerTargetObject)
+    {
+        foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
+            GeneralSingleAttack(playerTargetObject, enemy, 8);
+            StartCoroutine(enemy.monster.OnHitAnimation());
+        }
     }
     public IEnumerator E26_E(Card card,List<TargetObject> tar)
     {
@@ -544,9 +564,15 @@ public partial class CardData : SingletonD<CardData>
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
         tar[0].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "E10")), 2);
-        // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 E10 카드를 생성해 패에 1장 넣습니다. 
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+    }
+    // 이 카드가 뽑을덱 에서 버린덱 으로 가면 E10 카드를 생성해 패에 1장 넣습니다.
+    public void E30_CallBack(TargetObject playerTargetObject)
+    {
+        Card e10Card = new Card(CardData.instance.cards.Find(card => card.cardNumber == "E10"));
+        GamePlayerDeck gamePlayerDeck = playerTargetObject.player.GetComponent<GamePlayerDeck>();
+        gamePlayerDeck.GenerateCardOnHand(e10Card, 1);
     }
     public IEnumerator E30_E(Card card,List<TargetObject> tar)
     {
@@ -560,9 +586,13 @@ public partial class CardData : SingletonD<CardData>
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
         tar[0].player.GetComponent<GamePlayerDeck>().currentIchi++;
-        // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 이치 2 를 얻습니다.
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+    }
+    // 이 카드가 뽑을덱 에서 버린덱 으로 가면 이치 2 를 얻습니다.
+    public void E31_CallBack(TargetObject playerTargetObject)
+    {
+        playerTargetObject.player.GetComponent<GamePlayerDeck>().currentIchi += 2;
     }
     public IEnumerator E31_E(Card card,List<TargetObject> tar)
     {
@@ -579,9 +609,15 @@ public partial class CardData : SingletonD<CardData>
         int damage = 8;
         GeneralSingleAttack(tar[0], tar[1], damage);
         StartCoroutine(tar[1].monster.OnHitAnimation());
-        // TODO :  이 카드가 뽑을덱 에서 버린덱 으로 가면 무작위 적 한명에게 피해 20을 줍니다
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+    }
+    // 이 카드가 뽑을덱 에서 버린덱 으로 가면 무작위 적 한명에게 피해 20을 줍니다
+    public void E32_CallBack(TargetObject playerTargetObject)
+    {
+        TargetObject randomTarget = M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0, M_TurnManager.instance.spawnedMonsterList.Count)];
+        GeneralSingleAttack(playerTargetObject, randomTarget, 20);
+        StartCoroutine(randomTarget.monster.OnHitAnimation());
     }
     public IEnumerator E32_E(Card card,List<TargetObject> tar)
     {
@@ -682,9 +718,17 @@ public partial class CardData : SingletonD<CardData>
             GeneralSingleAttack(tar[0], tar[1], damage);
             StartCoroutine(tar[1].monster.OnHitAnimation());
         }
-        // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 간다면 무작위 적 한명에게 피해 $2$7 줍니다.
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+    }
+    // 이 카드가 뽑을덱 에서 버린덱 으로 간다면 무작위 적 한명에게 피해 $2$7 줍니다.
+    public void E37_CallBack(TargetObject playerTargetObject)
+    {
+        TargetObject randomTarget = M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0, M_TurnManager.instance.spawnedMonsterList.Count)];
+        for(int i=0; i<7; i++){
+            GeneralSingleAttack(playerTargetObject, randomTarget, 2);
+            StartCoroutine(randomTarget.monster.OnHitAnimation());
+        }
     }
     public IEnumerator E37_E(Card card,List<TargetObject> tar)
     {
@@ -784,9 +828,15 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.8f);
         int value = 8;
         GeneralGetDefense(tar[0],tar[0],value,card);
-        // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 아군 전체에게 방어 8을 부여합니다.
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+    }
+    // 이 카드가 뽑을덱 에서 버린덱 으로 가면 아군 전체에게 방어 8을 부여합니다.
+    public void E40_CallBack(TargetObject playerTargetObject, Card card)
+    {
+        foreach(TargetObject targetObject in M_TurnManager.instance.spawnedPlayerList){
+            GeneralGetDefense(playerTargetObject,targetObject,8,card);
+        }
     }
     public IEnumerator E40_E(Card card,List<TargetObject> tar)
     {
@@ -904,7 +954,7 @@ public partial class CardData : SingletonD<CardData>
         int damage = 5;
         GeneralSingleAttack(tar[0], tar[1], damage);
         StartCoroutine(tar[1].monster.OnHitAnimation());
-        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1);
+        tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1);
         if(tar[0].playerHP <= (tar[0].playerMaxHP / 2)){
             tar[0].GainBuff(BuffType.BYEOLMURI,1,true,false,true,false,tar[0],card);
         }
@@ -980,7 +1030,7 @@ public partial class CardData : SingletonD<CardData>
         int damage = 8;
         GeneralSingleAttack(tar[0], tar[1], damage);
         StartCoroutine(tar[1].monster.OnHitAnimation());
-        // TODO : 이 카드는 파괴으 권능 효과를 N + 1배 더 받습니다.
+        // TODO : 이 카드는 파괴의 권능 효과를 N + 1배 더 받습니다.
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -1002,8 +1052,16 @@ public partial class CardData : SingletonD<CardData>
             StartCoroutine(tar[1].monster.OnHitAnimation());
             yield return new WaitForSeconds(0.5f);
         }
-        // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 무작위 적 한명에게 피해 1을 9번 줍니다.
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+    }
+    // 이 카드가 뽑을덱 에서 버린덱 으로 가면 무작위 적 한명에게 피해 1을 9번 줍니다.
+    public void E52_CallBack(TargetObject playerTargetObject)
+    {
+        TargetObject randomTarget = M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0, M_TurnManager.instance.spawnedMonsterList.Count)];
+        for(int i=0; i<9; i++){
+            GeneralSingleAttack(playerTargetObject, randomTarget, 1);
+            StartCoroutine(randomTarget.monster.OnHitAnimation());
+        }
     }
     public IEnumerator E52_E(Card card,List<TargetObject> tar)
     {
@@ -1016,7 +1074,12 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1); // 패 1장 뽑아서 생성.
+        // 카드를 한장 뽑습니다.
+        tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1, (spawnedCardOnHand) => {
+            if(spawnedCardOnHand.baseCard.cardType == CardType.ATTACK){
+                tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1); // 뽑은 카드가 공격 카드일 경우 한번 더 반복합니다.
+            }
+        });
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -1073,9 +1136,14 @@ public partial class CardData : SingletonD<CardData>
         StartCoroutine(tar[1].monster.OnHitAnimation());
         int shieldValue = 3;
         GeneralGetDefense(tar[0],tar[0],shieldValue,card);
-        // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 방어 15 를 얻습니다.
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+    }
+    // 이 카드가 뽑을덱 에서 버린덱 으로 가면 방어 15 를 얻습니다.
+    public void E56_CallBack(TargetObject playerTargetObject, Card card)
+    {
+        TargetObject randomTarget = M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0, M_TurnManager.instance.spawnedMonsterList.Count)];
+        GeneralGetDefense(playerTargetObject,playerTargetObject,15,card);
     }
     public IEnumerator E56_E(Card card,List<TargetObject> tar)
     {

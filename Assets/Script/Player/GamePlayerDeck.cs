@@ -351,7 +351,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     [Server]
-    public void CmdSpawnCardOnHand(int cardCount)
+    public void ServerSpawnCardOnHand(int cardCount, System.Action<Card> cardSpawnCallback = null)
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         if(prefareDeck.Count == 0 && trashDeck.Count == 0)
@@ -378,24 +378,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 cardOnHand.parent = cardPocket.GetComponent<CardPocket>(); // 소환된 CardOnHand를 CardPocket의 자식오브젝트로 설정
             }
             NetworkServer.Spawn(cardOnHandObject, connectionToClient);
+            if(cardOnHand.card.baseCard.cardNumber.Contains("G57"))currentIchi++;
             cardOnHands.Add(cardOnHand); // 카드가 생성되면 자신의 권한을 가진 카드 오브젝트들 syncList에 추가
-            SpawnCardOnHandPostProcess(cardOnHand);
-        }
-    }
-
-    // 카드 생성 후 처리 프로세스 
-    [Server]
-    public void SpawnCardOnHandPostProcess(CardOnHand cardOnHand)
-    {
-        switch(cardOnHand.card.baseCard.cardNumber){
-            case "G57": case "G57_E":
-                currentIchi++;
-                break;
-            case "E53": case "E53_E":
-                if(cardOnHand.card.baseCard.cardType == CardType.ATTACK){
-                    CmdSpawnCardOnHand(1);
-                }
-                break;
+            if(cardSpawnCallback != null){
+                cardSpawnCallback(cardOnHand.card);
+            }
         }
     }
 
@@ -495,6 +482,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                     case DeckListType.TRASH_DECK:
                         foreach(Card card in cards){
                             SendDeckFromTo(prefareDeck, trashDeck, card);
+                            ServerCallBackFromPrefareDeckToTrashDeck(card);
                         }
                         break;
                     case DeckListType.FORGOTTEN_DECK:
@@ -648,6 +636,48 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
         NetworkServer.Spawn(cardOnHandObject, connectionToClient);
         cardOnHands.Add(cardOnHand);
+    }
+
+    // 뽑을덱에서 버린덱으로 가는 경우 카드 추가 기능 발현
+    [Server]
+    public void ServerCallBackFromPrefareDeckToTrashDeck(Card card)
+    {
+        TargetObject playerTargtObject = M_TurnManager.instance.GetPlayer(this);
+        switch(card.baseCard.cardNumber){
+            case "E13": case "E13_E":
+                CardData.instance.E13_CallBack(playerTargtObject);
+                break;
+            case "E14": case "E14_E":
+                CardData.instance.E14_CallBack(playerTargtObject);
+                break;
+            case "E26": case "E26_E":
+                CardData.instance.E26_CallBack(playerTargtObject);
+                break;
+            case "E30": case "E30_E":
+                CardData.instance.E30_CallBack(playerTargtObject);
+                break;
+            case "E31": case "E31_E":
+                CardData.instance.E31_CallBack(playerTargtObject);
+                break;
+            case "E32": case "E32_E":
+                CardData.instance.E32_CallBack(playerTargtObject);
+                break;
+            case "E37": case "E37_E":
+                CardData.instance.E37_CallBack(playerTargtObject);
+                break;
+            case "E40": case "E40_E":
+                CardData.instance.E40_CallBack(playerTargtObject, card);
+                break;
+            case "E48": case "E48_E":
+                // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 피해는 N배가 증가합니다.
+                break;
+            case "E52": case "E52_E":
+                CardData.instance.E52_CallBack(playerTargtObject);
+                break;
+            case "E56": case "E56_E":
+                CardData.instance.E56_CallBack(playerTargtObject, card);
+                break;
+        }
     }
 
     // ---------------------------------------------------------------------- Command Method ----------------------------------------------------------------//

@@ -301,7 +301,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
         M_EffectManager.instance.RpcEffectBodyZoomOut(tar[0].transform.position, 21);
-        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(2);
+        tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(2);
         tar[0].player.GetComponent<GamePlayerDeck>().currentIchi ++;
         yield return new WaitForSeconds(1f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -378,7 +378,7 @@ public partial class CardData : SingletonD<CardData>
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
         {
             M_EffectManager.instance.RpcEffectBodyZoomOut(target.transform.position, 21);
-            target.player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(2);
+            target.player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(2);
             target.player.GetComponent<GamePlayerDeck>().currentIchi ++;
         }
         
@@ -393,7 +393,7 @@ public partial class CardData : SingletonD<CardData>
     {
         yield return tempWait;
         GamePlayerDeck gamePlayerDeck = tar[0].player.GetComponent<GamePlayerDeck>();
-        gamePlayerDeck.CmdSpawnCardOnHand((int)(gamePlayerDeck.trashDeck.Count/7));
+        gamePlayerDeck.ServerSpawnCardOnHand((int)(gamePlayerDeck.trashDeck.Count/7));
         
     }
     public IEnumerator H11_E(Card card,List<TargetObject> tar)
@@ -1415,7 +1415,7 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(1f);
         M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position, 104);
         GeneralSingleDamage(tar[1],tar[1].GetBuffValue(BuffType.FLOWERPOWDER));
-        tar[0].player.GetComponent<GamePlayerDeck>().CmdSpawnCardOnHand(1);
+        tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1);
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
