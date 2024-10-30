@@ -74,7 +74,7 @@ public class GamePlayer : NetworkBehaviour
             TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(targetPlayer);
             if(targetObject.player != null){
                 if(recoveryLimitCount > 0){
-                    targetObject.playerHP += recoveryValue;
+                    targetObject.ChangePlayerHP(targetObject.playerHP + recoveryValue);
                     recoveryLimitCount--;
                     RpcHpRecovery(targetPlayerNetId);
                 }else{

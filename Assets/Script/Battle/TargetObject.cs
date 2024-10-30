@@ -785,6 +785,19 @@ public class TargetObject : NetworkBehaviour
         M_TurnManager.instance.ProcessMonsterDeath(this);
     }
 
+    // 플레이어 타겟오브젝트 Hp값 변경(음수값 방지, 최대체력 초과 방지)
+    [Server]
+    public void ChangePlayerHP(int newHp)
+    {
+        if(newHp > playerMaxHP){
+            playerHP = playerMaxHP;
+        }else if(newHp < 0){
+            playerHP = 0;
+        }else{
+            playerHP = newHp;
+        }
+    }
+
     // --------------------------------------------------------- Rpc Method -----------------------------------------------------------//
     
     [ClientRpc]
