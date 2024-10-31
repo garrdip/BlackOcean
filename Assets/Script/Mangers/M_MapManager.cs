@@ -620,6 +620,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             int reduceActionCost = (cost > 0) ? cost : actionCost; // 비용값이 설정된 경우 그 비용값 만큼 감소, 아닐 경우 기본 비용값 만큼 감소
             if(reduceActionCost <= currentActionCost){
                 currentActionCost = Mathf.Max(0, currentActionCost - reduceActionCost);
+                if(currentActionCost == 0 && mapBoss == null){
+                    GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
+                }
             }
         }
     }
@@ -658,18 +661,22 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         if(mapBoss != null){ // 보스가 출현한 경우
             if(hexagonMapRoom.roomType == RoomType.BOSS){ // 목적지가 보스방일 경우 -> 보스전
+                M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
                 ChangeBattleScene(hexagonMapRoom);
             }else{
                 if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION){ // 목적지가 완료된 방 또는 시작지점인 경우
                     if(hexagonMapRoom.mapBoss == null){ 
                         MoveWithoutBattle(); // 목적지에 보스가 없을 경우 -> 이동만 수행
                     }else{ 
+                        M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
                         ChangeBattleScene(hexagonMapRoom); // 목적지에 보스가 있을 경우 -> 보스전
                     }
                 }else{ // 목적지가 완료되지 않은 방인 경우
                     if(hexagonMapRoom.mapBoss != null){ 
+                        M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
                         ChangeBattleScene(hexagonMapRoom); // 목적지에 보스가 있을 경우 -> 보스전
                     }else{ 
+                        M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
                         ChangeBattleScene(hexagonMapRoom); // 목적지에 보스가 없을 경우 -> 전투 혹은 이벤트 시작
                     }
                 }
@@ -678,11 +685,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION){
                 MoveWithoutBattle(); // 목적지가 완료된 방 또는 시작지점인 경우 -> 이동만 수행
             }else{
+                M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
                 ChangeBattleScene(hexagonMapRoom); // 목적지가 완료되지 않은 방의 경우 -> 전투 혹은 이벤트 시작
             }
-        }
-        foreach(PlayerInterface player in FindObjectsOfType<PlayerInterface>()){
-            player.SetIsReadyStateDefault();
         }
     }
 
@@ -737,25 +742,19 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     private void ChangeBattleScene(HexagonMapRoom hexagonMapRoom)
     {
         GameUIManager.instance.DoScreenChangeIn(() => {
-            // 카메라 위치 리셋
-            //Camera.main.orthographic = true;
-            Camera.main.transform.position = new Vector3(0f, 0f, -10f);
+            Camera.main.orthographicSize = GameUIManager.battelSceneCameraSize;
 
             // UI 활성화 상태 변경
             MapScene.SetActive(false);
             BattleScene.SetActive(true);
             BackgroundLight.GetComponent<MeshRenderer>().sortingLayerName = "BackLayer"; // 배경 플레어 정렬 오더 변경
 
-            // 임시 테스트용 UI
-            // GameUIManager.instance.TestUI.gameObject.SetActive(true);
-
             RemoveAllExistLineRenderer(); // 라인 랜더러 비활성화
             ChangeAllMapPlayerDestinationState(false); // 맵 위치 화살표 비활성화
-            if(isServer){
-                M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
-            }
             StartCoroutine(CheckTargetObject());
             StartCoroutine(M_TurnManager.instance.ProcessMonsterDeathCoroutine()); // 몬스터 사망처리 코루틴 시작
+
+            GameUIManager.instance.DoScreenChangeOut();
         });
     }
     
@@ -771,7 +770,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 break;
             }
         }
-        GameUIManager.instance.DoScreenChangeOut();
     }
 
     // 전투 없이 이동 수행 : MapPlayerDestination 오브젝트 삭제 + 라인렌더러 삭제
@@ -798,11 +796,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         MapUI.instance.textCurrentActionCost.text = $"{newValue.ToString()}턴";
         GameUIManager.instance.textCurrentActionCost.text = $"{newValue.ToString()}턴";
         MapUI.instance.turnGageBar.fillAmount = ((float)newValue / (float)maxActionCost);
-        if(isServer){
-            if(newValue == 0 && mapBoss == null){
-                GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
-            }
-        }
     }
 
     public void OnChangedMaxActionCost(int oldValue, int newValue)

@@ -14,6 +14,9 @@ public class GameUIManager : SingletonD<GameUIManager>
     public GameObject RootGameObject;
     public GameObject TestUI;
 
+    [Header("카메라 사이즈값")]
+    public static float battelSceneCameraSize = 10.8f; // 전투씬에서 카메라 크기값
+    public static float mapSceneCameraSize = 6.0f; // 맵씬에서 카메라 크기값
 
     [Header("화면 전환 UI")]
     public Image screenTransition;
@@ -232,7 +235,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     // 스크린 Fade In 시퀀스 
     private void DoScreenFadeIn(System.Action callback = null)
     {
-        screenFade.DOFade(1f, 0.5f).OnComplete(() => {
+        screenFade.DOFade(1f, 1.0f).OnComplete(() => {
             if(callback != null){
                 callback();
             }
@@ -242,7 +245,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     // 스크린 Fade Out 시퀀스
     private void DoScreenFadeOut()
     {
-        screenFade.DOFade(0f, 0.5f);
+        screenFade.DOFade(0f, 1.0f);
     }
 
     // 스크린 Block Transition In 시퀀스

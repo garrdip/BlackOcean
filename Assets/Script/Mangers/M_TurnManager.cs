@@ -55,8 +55,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [SerializedDictionary("게임플레이어", "보상카드선택유무")]
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
 
-    private static float battelSceneCameraSize = 10.8f; // 전투씬에서 카메라 크기값
-    private static float mapSceneCameraSize = 6.0f; // 맵씬에서 카메라 크기값
     public List<GameObject> rewardObjects = new List<GameObject>(); // 보상목록 오브젝트 리스트
     public List<GameObject> rewardCardObjects = new List<GameObject>(); // 보상카드 오브젝트 리스트
     
@@ -787,7 +785,11 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public void NoneBattleEnd()
     {
-        EachPlayerNoneBattleEnd();
+        ClearTargetObject(); // 타겟오브젝트 정리
+        M_MapManager.instance.ClearPlayerVoteHexagonMapRooms(); // 방 투표 목록 비움
+        M_MapManager.instance.SetRoomStateComplete(); // 방 완료상태로 변경
+        M_MapManager.instance.DecreaseTotalActionCost(); // 행동비용 감소
+        M_MapManager.instance.ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
         StopCoroutine(ProcessMonsterDeathCoroutine());
         foreach(PlayerInterface player in FindObjectsOfType<PlayerInterface>()){
             player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 false 되돌림 (여러군데서 사용 예정)
@@ -801,6 +803,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             gamePlayer.GetComponent<GamePlayerDeck>().rewards.Clear();
             gamePlayer.GetComponent<GamePlayerDeck>().rewardCards.Clear();
         }
+        EachPlayerNoneBattleEnd();
     }
 
     [Server]
@@ -1316,28 +1319,25 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public void GenerateBattleObject(HexagonMapRoom hexagonMapRoom)
     {
-        if(isServer)
-        {
-            GeneratePlayerUnit();
-            if(hexagonMapRoom.roomType == RoomType.BOSS){ // 보스 몬스터 생성
-                GenerateBossMonster();
-                RpcCardPrefareForBattle();
-                RpcStartBossBattleEvent();
-            }else if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE){ // 일반 or 엘리트 몬스터 생성
-                GenerateMonster(hexagonMapRoom);
-                RpcCardPrefareForBattle();
-                RpcStartBattleEvent(hexagonMapRoom.roomType);
-            }else{ // NPC 생성
-                GnenrateNPCByRoomTpye(hexagonMapRoom.roomType);
-                RpcStartNoneBattleEvent(hexagonMapRoom.roomType);
-            }
-            // 전투 시작 이치 초기화 및 어빌리티 카드 생성
-            foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
-            {
-                if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.SpawnAbilityCardRPC();
-            }
-            StartCoroutine(WaitingForPlayer(hexagonMapRoom));
+        GeneratePlayerUnit();
+        if(hexagonMapRoom.roomType == RoomType.BOSS){ // 보스 몬스터 생성
+            GenerateBossMonster();
+            RpcCardPrefareForBattle();
+            RpcStartBossBattleEvent();
+        }else if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE){ // 일반 or 엘리트 몬스터 생성
+            GenerateMonster(hexagonMapRoom);
+            RpcCardPrefareForBattle();
+            RpcStartBattleEvent(hexagonMapRoom.roomType);
+        }else{ // NPC 생성
+            GnenrateNPCByRoomTpye(hexagonMapRoom.roomType);
+            RpcStartNoneBattleEvent(hexagonMapRoom.roomType);
         }
+        // 전투 시작 이치 초기화 및 어빌리티 카드 생성
+        foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
+        {
+            if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.SpawnAbilityCardRPC();
+        }
+        StartCoroutine(WaitingForPlayer(hexagonMapRoom));
     }
 
     IEnumerator WaitingForPlayer(HexagonMapRoom hexagonMapRoom)
@@ -1413,7 +1413,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         AudioClip stageStartAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("stage_start"));
         M_SoundManager.instance.PlaySFX(stageStartAudio, stageStartAudio.length);
-        Camera.main.orthographicSize = battelSceneCameraSize;
         M_MessageManager.instance
             .MakeToast()
             .Position(ToastPosition.Top)
@@ -1431,7 +1430,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         AudioClip stageStartAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("stage_start"));
         M_SoundManager.instance.PlaySFX(stageStartAudio, stageStartAudio.length);
-        Camera.main.orthographicSize = battelSceneCameraSize;
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().character; // 로컬 플레이어가 선택한 캐릭터 조회
         switch(roomType)
         {
@@ -1514,7 +1512,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [ClientRpc]
     public void RpcStartNoneBattleEvent(RoomType roomType)
     {
-        Camera.main.orthographicSize = battelSceneCameraSize;
         switch(roomType)
         {
             case RoomType.EVENT_POSITIIVE:
@@ -1735,31 +1732,14 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         string audioName = M_MapManager.instance.mapBoss == null ? "Stage_1_Map" : "Stage_1_Map_Boss_Spawn";
         AudioClip audioClip_map = M_SoundManager.instance.bgmClips[BGM_TYPE.Map].Find((audioClip) => audioClip.name.Equals(audioName));
         M_SoundManager.instance.PlayBGM(audioClip_map, MusicTransition.CrossFade, 2f);
-        if(isServer){
-            ClearTargetObject(); // 타겟오브젝트 정리
-            M_MapManager.instance.ClearPlayerVoteHexagonMapRooms(); // 방 투표 목록 비움
-            M_MapManager.instance.SetRoomStateComplete(); // 방 완료상태로 변경
-            M_MapManager.instance.DecreaseTotalActionCost(); // 행동비용 감소
-            M_MapManager.instance.ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
-            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
-            foreach(PlayerInterface player in users){
-                player.SetIsReadyStateDefault();
-            }
-        }
         GameUIManager.instance.DoScreenChangeIn(() => {
             // 카메라 위치 리셋
-            Vector3 currLoc = M_MapManager.instance.currentRoom.transform.position;
-            Camera.main.transform.position = currLoc + new Vector3(0,0,-8);
-            //Camera.main.orthographic = false; 
-            Camera.main.orthographicSize = mapSceneCameraSize;
+            Camera.main.orthographicSize = GameUIManager.mapSceneCameraSize;
 
             // UI 활성화 상태 변경
             M_MapManager.instance.MapScene.SetActive(true);
             M_MapManager.instance.BattleScene.SetActive(false);
             M_MapManager.instance.BackgroundLight.GetComponent<MeshRenderer>().sortingLayerName = "Default"; // 배경 플레어 정렬 오더 변경
-
-            // 임시 테스트용 UI
-            //GameUIManager.instance.TestUI.gameObject.SetActive(false);
             
             // Dim배경 상태 변경
             MapUI.instance.ChangeMapDimBackground(false);
