@@ -1142,8 +1142,7 @@ public partial class CardData : SingletonD<CardData>
     // 이 카드가 뽑을덱 에서 버린덱 으로 가면 방어 15 를 얻습니다.
     public void E56_CallBack(TargetObject playerTargetObject, Card card)
     {
-        TargetObject randomTarget = M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0, M_TurnManager.instance.spawnedMonsterList.Count)];
-        GeneralGetDefense(playerTargetObject,playerTargetObject,15,card);
+        GeneralGetDefense(playerTargetObject, playerTargetObject, 15, card);
     }
     public IEnumerator E56_E(Card card,List<TargetObject> tar)
     {
