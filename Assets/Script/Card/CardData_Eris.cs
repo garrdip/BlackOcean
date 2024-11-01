@@ -1204,11 +1204,28 @@ public partial class CardData : SingletonD<CardData>
     {
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		ErisAnimation(tar[0],"Attack1");
-		yield return new WaitForSeconds(0.8f);
         int damage = 8;
-        GeneralSingleAttack(tar[0], tar[1], damage);
-        StartCoroutine(tar[1].monster.OnHitAnimation());
-        // TODO :  체력이 절반 이하라면 2번 반복하며 ??? 상태라면 3번 반복 합니다.
+        switch(tar[0].erisMode){
+            case ErisMode.NORMAL:
+                yield return new WaitForSeconds(0.25f);
+                GeneralSingleAttack(tar[0], tar[1], damage);
+                StartCoroutine(tar[1].monster.OnHitAnimation());
+                break;
+            case ErisMode.ANGER:
+                for(int i=0; i<2; i++){
+                    yield return new WaitForSeconds(0.25f);
+                    GeneralSingleAttack(tar[0], tar[1], damage);
+                    StartCoroutine(tar[1].monster.OnHitAnimation());
+                }
+                break;
+            case ErisMode.MAD:
+                for(int i=0; i<3; i++){
+                    yield return new WaitForSeconds(0.25f);
+                    GeneralSingleAttack(tar[0], tar[1], damage);
+                    StartCoroutine(tar[1].monster.OnHitAnimation());
+                }
+                break;
+        }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
