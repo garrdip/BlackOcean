@@ -39,7 +39,7 @@ public class GamePlayer : NetworkBehaviour
     [SyncVar]
     public Character character;
 
-    [SyncVar(hook = nameof(OnChangeMapPlayerNetId))]
+    [SyncVar]
     public uint mapPlayerNetId;
 
     public ParticleSystem recoverParticle; // 체력 회복 파티클 이펙트
@@ -116,7 +116,7 @@ public class GamePlayer : NetworkBehaviour
     public void CheckAllPlayersIsDead()
     {
         int gamePlayerCount = M_TurnManager.instance.playerOrder.FindAll((netId) => netId != 0).Count; // 현재 게임에 참가한 플레이어 수
-        int deadPlayerCount = M_TurnManager.instance.playerOrder.FindAll((netId) => netId != 0 && IsPlayerHpZero(netId)).Count; // HP가 0인 플레이어 수
+        int deadPlayerCount = M_TurnManager.instance.playerOrder.FindAll((netId) => netId != 0 && IsPlayerHpZero(netId) && !IsEris(netId)).Count; // HP가 0, 에리스가 아닌 플레이어 수
         if(deadPlayerCount == gamePlayerCount){
             RpcGameOver();
         }
@@ -128,6 +128,16 @@ public class GamePlayer : NetworkBehaviour
     {
         if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
            return networkIdentity.GetComponent<GamePlayer>().HP <= 0;
+        }
+        return false;
+    }
+
+    // 에리스 캐릭터인 경우 true, 아니면 false 반환
+    [Server]
+    private bool IsEris(uint netId)
+    {
+        if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
+           return networkIdentity.GetComponent<GamePlayer>().character == Character.ERIS;
         }
         return false;
     }
@@ -211,14 +221,6 @@ public class GamePlayer : NetworkBehaviour
     {
         if(onChangePlayerOrder != null){
             onChangePlayerOrder.Invoke(newVal);
-        }
-    }
-
-    public void OnChangeMapPlayerNetId(uint oldVal, uint newVal)
-    {
-        int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == GetComponent<NetworkIdentity>().netId); // PlayerOrder SyncList에서 각 플레이어들의 인덱스값 조회
-        if(index != -1){
-            M_MapManager.instance.InitMapPlayer(GetComponent<NetworkIdentity>().netId, index); // 조회한 인덱스 값으로 맵플레이어 오더 초기 설정
         }
     }
 }

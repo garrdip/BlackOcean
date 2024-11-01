@@ -873,23 +873,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     }
 
     // ------------------------------------------------------------ Normal Method -------------------------------------------------------------- //
-    
-    public void InitMapPlayer(uint gamePlayerNetId, int index)
-    {
-        if(isServer){
-            if(NetworkServer.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
-                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
-                MapPlayer mapPlayer = NetworkServer.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
-                mapPlayer.InitMapPlayerView(index);
-            }
-        }else{
-            if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
-                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
-                MapPlayer mapPlayer = NetworkClient.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
-                mapPlayer.InitMapPlayerView(index);
-            }
-        }
-    }
 
     // 가중치 랜덤 수행으로 방 타입 결정하여 반환
     private RoomType GetRoomType()

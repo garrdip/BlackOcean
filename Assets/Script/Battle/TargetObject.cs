@@ -791,7 +791,7 @@ public class TargetObject : NetworkBehaviour
     {
         if(newHp > playerMaxHP){
             playerHP = playerMaxHP;
-        }else if(newHp < 0){
+        }else if(newHp <= 0){
             playerHP = 0;
         }else{
             playerHP = newHp;

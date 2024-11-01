@@ -1833,7 +1833,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 gamePlayer.selectOrder = index;
                 gamePlayer.OnChangedSelectOrder(index, index);
                 gamePlayer.objectOwner.selectOrder = index;
-                targetIndicators[index].GetComponent<TargetIndicator>().netId = GetCurrentPlayerTargetObject(gamePlayer).netId; 
             }
         }else{
             if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
@@ -1841,8 +1840,15 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 gamePlayer.selectOrder = index;
                 gamePlayer.OnChangedSelectOrder(index, index);
                 gamePlayer.objectOwner.selectOrder = index;
-                targetIndicators[index].GetComponent<TargetIndicator>().netId = GetCurrentPlayerTargetObject(gamePlayer).netId; 
             }
+        }
+    }
+
+    // Synclist에서 오더 인덱스 변경 이벤트 수신하여 타겟 인디케이터에 할당된 netId값 갱신
+    public void SetTargetIndicatorOrder(uint targetObjectNetId, int index)
+    {
+        if(targetIndicators.Count > 0){
+            targetIndicators[index].GetComponent<TargetIndicator>().netId = targetObjectNetId;
         }
     }
 
@@ -1864,6 +1870,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 break;
             case SyncList<uint>.Operation.OP_SET:
                 SetGamePlayerOrder(newVal, index);
+                SetTargetIndicatorOrder(newVal, index);
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
                 
