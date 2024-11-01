@@ -18,7 +18,15 @@ public class SpawnedMonster : NetworkBehaviour
     public int MAXHP;
 
     [SyncVar (hook = nameof(OnChangedHpValue))]
-    public int HP;
+    public int _HP;
+    public int HP{
+        get{
+            return _HP;
+        }
+        set{
+            SetMonsterHP(value);
+        }
+    }
 
     [SyncVar (hook = nameof(OnChanedNextAction))]
     public MonsterAction nextAction;
@@ -176,6 +184,12 @@ public class SpawnedMonster : NetworkBehaviour
     }
 
     // ------------------------------------------------------------------ Server Method ------------------------------------------------------------------------//
+
+    [Server]
+    private void SetMonsterHP(int newHp)
+    {
+        _HP = Mathf.Clamp(newHp, 0, MAXHP); 
+    }
 
     [Server]
     public void SetNextAction()
