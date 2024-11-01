@@ -10,10 +10,10 @@ using Mirror;
 */
 public partial class CardData : SingletonD<CardData>
 {
-    private void ErisAnimation(TargetObject tar, string normal)    
+    private void ErisAnimation(TargetObject tar, string animationName)    
 	{
         // TODO : 변신상태, 반피상태에 따른 분기처리
-        M_TurnManager.instance.StartAnimation(tar, 0, normal, false);
+        M_TurnManager.instance.StartAnimation(tar, 0, tar.GetErisMode() + animationName, false);
 	}
 
     // 권능 : 찌르기
@@ -198,13 +198,13 @@ public partial class CardData : SingletonD<CardData>
         int newHP = tar[0].playerHP + hpRecoveryValue;
         if (newHP > tar[0].playerMaxHP){
             int hpDifference = newHP - tar[0].playerMaxHP;
-            tar[0].ChangePlayerHP(tar[0].playerMaxHP);
+            tar[0].playerMaxHP = tar[0].playerMaxHP;
             foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
                 GeneralSingleAttack(tar[0], enemy, hpDifference);
                 StartCoroutine(enemy.monster.OnHitAnimation());
             }
         }else{
-            tar[0].ChangePlayerHP(newHP);
+            tar[0].playerHP = newHP;
         }
         // TODO : 파괴의 권능 효과를 받지 않습니다.
         yield return new WaitForSeconds(0.5f);
@@ -241,7 +241,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].ChangePlayerHP((int)tar[0].playerHP / 2);
+        tar[0].playerHP = (int)tar[0].playerHP / 2;
         yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -368,7 +368,7 @@ public partial class CardData : SingletonD<CardData>
         tar[0].defense = 0;
         // TODO : 방어 제거 이펙트
         yield return new WaitForSeconds(0.25f);
-        tar[0].ChangePlayerHP(tar[0].playerHP + deffence);
+        tar[0].playerHP += deffence;
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -789,7 +789,7 @@ public partial class CardData : SingletonD<CardData>
         mergedList.AddRange(cardsFromTrashDeck);
         int recoveryValue = mergedList.Count; 
         foreach(TargetObject targetObject in M_TurnManager.instance.spawnedPlayerList){
-            targetObject.ChangePlayerHP(targetObject.playerHP + recoveryValue);
+            targetObject.playerHP += recoveryValue;
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));

@@ -69,10 +69,18 @@ public class TargetObject : NetworkBehaviour
     // -------------------------------   플레이어용 Syncvar 변수들   ------------------------------------//
 
     [SyncVar]
-    public GamePlayer player; // Player 의 경우
+    public GamePlayer player;
 
     [SyncVar (hook = nameof(OnChangedPlayerHP))]
-    public int playerHP;
+    public int _playerHP;
+    public int playerHP{
+        get{
+            return _playerHP;
+        }
+        set{
+            SetPlayerHP(value);
+        }
+    }
     
     [SyncVar]
     public int playerMaxHP;
@@ -106,7 +114,7 @@ public class TargetObject : NetworkBehaviour
     // -------------------------------   몬스터용 Syncvar 변수들   ------------------------------------//
     
     [SyncVar]
-    public SpawnedMonster monster; // Monster 의 경우
+    public SpawnedMonster monster;
     
     // -------------------------------   전투용 Syncvar 변수들   ------------------------------------//
 
@@ -787,15 +795,10 @@ public class TargetObject : NetworkBehaviour
 
     // 플레이어 타겟오브젝트 Hp값 변경(음수값 방지, 최대체력 초과 방지)
     [Server]
-    public void ChangePlayerHP(int newHp)
+    private void SetPlayerHP(int newHp)
     {
-        if(newHp > playerMaxHP){
-            playerHP = playerMaxHP;
-        }else if(newHp <= 0){
-            playerHP = 0;
-        }else{
-            playerHP = newHp;
-        }
+        _playerHP = Mathf.Clamp(newHp, 0, playerMaxHP); // 플레이어 Hp값을 최소 0, 최대 MaxHp 사이로 값 제한
+        player.HP = _playerHP; // 타겟오브젝트의 체력 값과 GamePlayer의 체력 값 동기화
     }
 
     // --------------------------------------------------------- Rpc Method -----------------------------------------------------------//
@@ -884,9 +887,6 @@ public class TargetObject : NetworkBehaviour
 
     void OnChangedPlayerHP(int oldVal, int newVal)
     {
-        if(isServer && player != null){
-            player.HP = newVal; // 타겟오브젝트의 체력 값과 GamePlayer의 체력 값 동기화
-        }
         if(oldVal > 0){
             M_EffectManager.instance.DisPlayeDamage(this, (oldVal - newVal)); // 데미지 or 회복 표시 이펙트 생성
             if(newVal > 0){
