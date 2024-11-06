@@ -663,7 +663,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 CardData.instance.E32_CallBack(playerTargtObject);
                 break;
             case "E37": case "E37_E":
-                CardData.instance.E37_CallBack(playerTargtObject);
+                StartCoroutine(CardData.instance.E37_CallBack(playerTargtObject));
                 break;
             case "E40": case "E40_E":
                 CardData.instance.E40_CallBack(playerTargtObject, card);
@@ -672,7 +672,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 피해는 N배가 증가합니다.
                 break;
             case "E52": case "E52_E":
-                CardData.instance.E52_CallBack(playerTargtObject);
+                StartCoroutine(CardData.instance.E52_CallBack(playerTargtObject));
                 break;
             case "E56": case "E56_E":
                 CardData.instance.E56_CallBack(playerTargtObject, card);

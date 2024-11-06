@@ -713,21 +713,22 @@ public partial class CardData : SingletonD<CardData>
 		ErisAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.8f);
         for(int i=0; i<6; i++){
-            yield return new WaitForSeconds(0.1f);
             int damage = 1;
             GeneralSingleAttack(tar[0], tar[1], damage);
             StartCoroutine(tar[1].monster.OnHitAnimation());
+            yield return new WaitForSeconds(0.15f);
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
-    // 이 카드가 뽑을덱 에서 버린덱 으로 간다면 무작위 적 한명에게 피해 $2$7 줍니다.
-    public void E37_CallBack(TargetObject playerTargetObject)
+    // 이 카드가 뽑을덱 에서 버린덱 으로 간다면 무작위 적 한명에게 피해 2를 7번 줍니다.
+    public IEnumerator E37_CallBack(TargetObject playerTargetObject)
     {
         TargetObject randomTarget = M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0, M_TurnManager.instance.spawnedMonsterList.Count)];
         for(int i=0; i<7; i++){
             GeneralSingleAttack(playerTargetObject, randomTarget, 2);
             StartCoroutine(randomTarget.monster.OnHitAnimation());
+            yield return new WaitForSeconds(0.15f);
         }
     }
     public IEnumerator E37_E(Card card,List<TargetObject> tar)
@@ -1050,17 +1051,19 @@ public partial class CardData : SingletonD<CardData>
         for(int i=0; i<5; i++){
             GeneralSingleAttack(tar[0], tar[1], damage);
             StartCoroutine(tar[1].monster.OnHitAnimation());
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.15f);
         }
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
     // 이 카드가 뽑을덱 에서 버린덱 으로 가면 무작위 적 한명에게 피해 1을 9번 줍니다.
-    public void E52_CallBack(TargetObject playerTargetObject)
+    public IEnumerator E52_CallBack(TargetObject playerTargetObject)
     {
+        yield return new WaitForSeconds(0.5f);
         TargetObject randomTarget = M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0, M_TurnManager.instance.spawnedMonsterList.Count)];
         for(int i=0; i<9; i++){
             GeneralSingleAttack(playerTargetObject, randomTarget, 1);
             StartCoroutine(randomTarget.monster.OnHitAnimation());
+            yield return new WaitForSeconds(0.15f);
         }
     }
     public IEnumerator E52_E(Card card,List<TargetObject> tar)
