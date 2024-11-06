@@ -634,22 +634,32 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                 int parseValue;
                 if(int.TryParse(splitString[i], out parseValue)){
                     int result = parseValue + tar.GetBuffValue(BuffType.ICHI_ATTACK) + totalFlower;
-                    splitString[i] = "<color=green>" + result.ToString() + "</color>";
+                    splitString[i] = "<color=green>" + result.ToString() + "</color>" + CardData.instance.GetPrepositionalParticle(parseValue);
                 }else{
-                    // TODO : splitString[i]가 정수로 변경 불가능한 문자열인 경우 처리
+                    splitString[i] = "<color=green>" + splitString[i] + "</color>";
                 }
             }
             if(splitString[i].ToCharArray()[0] == '#') // #방어도
             {
                 splitString[i] = splitString[i].Remove(0,1);
-                int result = int.Parse(splitString[i]) + tar.GetBuffValue(BuffType.ICHI_DEFENSE);
-                splitString[i] = "<color=green>" + result.ToString() + "</color>";
+                int parseValue;
+                if(int.TryParse(splitString[i], out parseValue)){
+                    int result = parseValue + tar.GetBuffValue(BuffType.ICHI_DEFENSE);
+                    splitString[i] = "<color=green>" + result.ToString() + "</color>" + CardData.instance.GetPrepositionalParticle(parseValue);
+                }else{
+                    splitString[i] = "<color=green>" + splitString[i] + "</color>";
+                }
             }
             if(splitString[i].ToCharArray()[0] == '^') // ^체력
             {
                 splitString[i] = splitString[i].Remove(0,1);
-                int result = int.Parse(splitString[i]);
-                splitString[i] = "<#FF7F00>" + result.ToString() + "</color>";
+                int parseValue;
+                if(int.TryParse(splitString[i], out parseValue)){
+                    int result = parseValue;
+                    splitString[i] = "<#FF7F00>" + result.ToString() + "</color>" + CardData.instance.GetPrepositionalParticle(parseValue);
+                }else{
+                    splitString[i] = "<#FF7F00>" + splitString[i] + "</color>";
+                }
             }
             if(splitString[i].ToCharArray()[0] == '&') // &크기
             {

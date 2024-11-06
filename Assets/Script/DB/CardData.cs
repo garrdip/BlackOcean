@@ -173,13 +173,34 @@ public partial class CardData : SingletonD<CardData>
     public string ReplaceDescription(string str)
     {
         string patternDamage = @"!(\S+)"; // !피해량
-        str = Regex.Replace(str, patternDamage, match => $"<color=green>{match.Groups[1].Value}</color>");
+        str = Regex.Replace(str, patternDamage, match => { 
+            int value;
+            if(int.TryParse(match.Groups[1].Value, out value)){
+                return$"<color=green>{match.Groups[1].Value}</color>{GetPrepositionalParticle(value)}"; 
+            }else{
+                return$"<color=green>{match.Groups[1].Value}</color>";
+            }
+        });
 
         string patternDeffence = @"(?<!<)#(\d+)"; // #방어도
-        str = Regex.Replace(str, patternDeffence, match => $"<color=green>{match.Groups[1].Value}</color>");
+        str = Regex.Replace(str, patternDeffence, match => { 
+            int value;
+            if(int.TryParse(match.Groups[1].Value, out value)){
+                return$"<color=green>{match.Groups[1].Value}</color>{GetPrepositionalParticle(value)}"; 
+            }else{
+                return$"<color=green>{match.Groups[1].Value}</color>";
+            }
+        });
 
         string patternHp = @"\^(\d+)"; // ^체력
-        str = Regex.Replace(str, patternHp, match => $"<#FF7F00>{match.Groups[1].Value}</color>");
+        str = Regex.Replace(str, patternHp, match => { 
+            int value;
+            if(int.TryParse(match.Groups[1].Value, out value)){
+                return$"<#FF7F00>{match.Groups[1].Value}</color>{GetPrepositionalParticle(value)}"; 
+            }else{
+                return$"<#FF7F00>{match.Groups[1].Value}</color>";
+            }
+        });
 
         string patternBulk = @"&(\d+)"; // &크기
         str = Regex.Replace(str, patternBulk, match => $"<color=purple>{match.Groups[1].Value}</color>");
