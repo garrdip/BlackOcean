@@ -174,7 +174,6 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void CheckAllPlayerRewarded(GamePlayer gamePlayer)
     {
         if(!M_TurnManager.instance.playerRewardedDic.ContainsValue(false) && gamePlayer.isOwned){ // 소유한 모든 플레이어 보상받았으면 종료
-            PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
             NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true; 
             gamePlayer.GetComponent<GamePlayerDeck>().CmdClearRewardCards();
         }

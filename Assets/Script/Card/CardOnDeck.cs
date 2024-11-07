@@ -231,6 +231,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         BattleResultPopUp battleResultPopUp = PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>();
         battleResultPopUp.ChangeRewardLayoutState(index, false);
         cardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(card.guid, Reward_Type.Card);
+        cardOwner.GetComponent<GamePlayerDeck>().CmdAddDeck(card);
         GameObject rewardObject = M_TurnManager.instance.rewardObjects.Find((rewardObject) => rewardObject.GetComponent<RewardListItem>().reward.guid == card.guid);
         M_TurnManager.instance.RemoveRewardListItem(rewardObject);
     }
@@ -253,6 +254,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
         gamePlayerDeck.CmdPurchaseShopCard(card.guid);
+        gamePlayerDeck.CmdAddDeck(card);
     }
 
     // CardOnDeck SoldOut 상태로 변경 및 컴포넌트들 알파값 0.5 변경
@@ -287,29 +289,26 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             // 애니매이션용 카드 오브젝트 복사본 생성
             GameObject cardOnHandChoosed = CreateCardOnHandChoosed(card);
                 
-            // 턴 매니저에 저장된 현재 참가한 플레이어들의 타겟오브젝트 리스트에서 로컬플레이어의 타겟오브젝트 조회
-            TargetObject currentPlayer = M_TurnManager.instance.GetCurrentPlayerTargetObject(cardOwner);
-
             // 이동 위치는 현재 플레이어 타겟오브젝트 위치
-            Vector3 targetPosition = currentPlayer.avatar.GetComponent<PolygonCollider2D>().bounds.center;
-            float height = 2f;
-            float duration = 1f;
-            Vector3 startPos = cardOnHandChoosed.transform.position;
-            Vector3 midPos = (startPos + targetPosition) / 2f;
-            midPos.y += height;
-            Vector3[] path = new Vector3[] { startPos, midPos, targetPosition };
-
-            // 플레이어 댁 데이터에 해당 카드 추가
-            cardOwner.GetComponent<GamePlayerDeck>().CmdAddDeck(card);
-            
-            // DOTween을 사용하여 포물선 이동 애니메이션 생성
-            cardOnHandChoosed.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.5f);
-            cardOnHandChoosed.transform.DOPath(path, duration, PathType.CatmullRom)
-                .SetEase(Ease.OutQuint)
-                .OnComplete(() => {
-                    cardOnHandChoosed.GetComponent<CardOnHandChoosed>().isTweening = false;
-                    Destroy(cardOnHandChoosed);
-                });
+            int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == cardOwner.netId);
+            if(index != -1){
+                Vector3 targetPosition = M_TurnManager.instance.targetObjectPosition[index];
+                float height = 2f;
+                float duration = 1f;
+                Vector3 startPos = cardOnHandChoosed.transform.position;
+                Vector3 midPos = (startPos + targetPosition) / 2f;
+                midPos.y += height;
+                Vector3[] path = new Vector3[] { startPos, midPos, targetPosition };
+                
+                // DOTween을 사용하여 포물선 이동 애니메이션 생성
+                cardOnHandChoosed.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), 0.5f);
+                cardOnHandChoosed.transform.DOPath(path, duration, PathType.CatmullRom)
+                    .SetEase(Ease.OutQuint)
+                    .OnComplete(() => {
+                        cardOnHandChoosed.GetComponent<CardOnHandChoosed>().isTweening = false;
+                        Destroy(cardOnHandChoosed);
+                    });
+            }
         }
     }
 
@@ -402,6 +401,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 RequsetCardReward();
                 ChangeCardOnDeckRewardedState(M_TurnManager.instance.rewardCardObjects);
                 CardOnDeckClickAnimation();
+                PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
                 AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));
                 M_SoundManager.instance.PlaySFX(rewardCardAudio, rewardCardAudio.length);
             }

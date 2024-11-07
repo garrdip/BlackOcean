@@ -66,6 +66,7 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
             gamePlayer.GetComponent<GamePlayerDeck>().CmdRewardClear();
             M_TurnManager.instance.playerRewardedDic[gamePlayer] = true;
             M_TurnManager.instance.CheckAllPlayerRewarded(gamePlayer);
+            PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
         }
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
