@@ -80,6 +80,15 @@ TagManager:
   - name: HexagonMapRoom
     uniqueID: 1918249161
     locked: 0
+  - name: HexagonMapRoomCap
+    uniqueID: 2326488207
+    locked: 0
+  - name: HexagonMapRoomIcon
+    uniqueID: 636843529
+    locked: 0
+  - name: HexagonMapRoomLine
+    uniqueID: 3798246211
+    locked: 0
   - name: HexagonMapRegion
     uniqueID: 1761947709
     locked: 0

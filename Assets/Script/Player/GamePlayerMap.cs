@@ -59,10 +59,6 @@ public class GamePlayerMap : NetworkBehaviour
     [Client]
     public void DisplayFindPath(HexagonMapRoom endAt, Vector3 position, NetworkIdentity networkIdentity)
     {
-        // 기존 경로 표시 그리드 비활성화
-        foreach(HexagonMapRoom hexagonMapRoom in M_MapManager.instance.findPaths){
-            hexagonMapRoom.mapTileGrid.SetActive(false);
-        }
         M_MapManager.instance.findPaths.Clear();
 
         // 시작지점은 CurretnRoom 또는 StartPosition
@@ -73,7 +69,6 @@ public class GamePlayerMap : NetworkBehaviour
         if(findPath.Count > 0){
             for(int i=0; i<findPath.Count; i++){
                 M_MapManager.instance.findPaths.Add(findPath[i]);
-                findPath[i].mapTileGrid.SetActive(true);
             }
         }
     }

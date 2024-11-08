@@ -88,9 +88,17 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Header("거리 측정을 위한 경로 표시 오브젝트 목록")]
     public List<HexagonMapRoom> findPaths = new List<HexagonMapRoom>();
 
-    [Header("맵 타입 아이콘 목록")]
-    [SerializedDictionary("MapTypeIcon", "Sprite")]
-    public SerializedDictionary<MapTypeIcon, Sprite> mapTypeIcons = new SerializedDictionary<MapTypeIcon, Sprite>();
+    [Header("MapTileBase 스프라이트 목록")]
+    [SerializedDictionary("MapTileBase", "Sprite")]
+    public SerializedDictionary<MapTileBase, Sprite> mapTileBases = new SerializedDictionary<MapTileBase, Sprite>();
+
+    [Header("MapTileCap 스프라이트 목록")]
+    [SerializedDictionary("MapTileBase", "Sprite")]
+    public SerializedDictionary<MapTileCap, Sprite> mapTileCaps = new SerializedDictionary<MapTileCap, Sprite>();
+
+    [Header("MapTileIcon 스프라이트 목록")]
+    [SerializedDictionary("MapTileBase", "Sprite")]
+    public SerializedDictionary<MapTileIcon, Sprite> mapTileIcons = new SerializedDictionary<MapTileIcon, Sprite>();
 
     [Header("맵 스테이지 아이콘 목록")]
     [SerializedDictionary("MapStage", "Sprite")]
@@ -163,7 +171,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                             HexagonMapRoom mapRoom = hexagonMapRooms.Find(room => room.position == position);
                             if(mapRoom != null){
                                 mapRoom.isActive = true;
-                                mapRoom.roomType = RoomType.COMPLETE;
                             }
                         }
                     }
@@ -890,7 +897,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     // 그리드 Axial좌표계 -> 인게임 좌표계 반환(중심점 동적 설정 Version)
     public Vector3 GetPosition(int x, int y, Vector3 centerPosition)
     {
-        float yOffset = 0.6f;
+        float yOffset = 0.65f;
         float length = 1 / Mathf.Tan(Mathf.PI / 3);
         Vector3 retVal = new Vector3(0, 0, 0);
         retVal.x = centerPosition.x + (1.5f * x * length);
@@ -901,7 +908,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     // 그리드 Axial좌표계 -> 인게임 좌표계 반환(중심점 0,0,0 Version)
     public Vector3 GetPosition(int x, int y)
     {
-        float yOffset = 0.6f;
+        float yOffset = 0.65f;
         float length = 1 / Mathf.Tan(Mathf.PI / 3);
         Vector3 retVal = new Vector3(0, 0, 0);
         retVal.x = 1.5f * x * length;
@@ -1264,10 +1271,51 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     }
 }
 
-public enum MapTypeIcon {
-    Normal_Monster,
-    Elite_Monster,
-    Card_Shop
+public enum MapTileBase {
+    NORMAL_MONSTER,
+    ELITE_MONSTER,
+    CARD_SHOP,
+    ITEM_SHOP,
+    CAMP,
+    EVENT,
+    COMPLETE,
+    CURRENT
+}
+
+public enum MapTileCap {
+    NORMAL_MONSTER,
+    NORMAL_MONSTER_L,
+    ELITE_MONSTER,
+    ELITE_MONSTER_L,
+    CARD_SHOP,
+    CARD_SHOP_L,
+    ITEM_SHOP,
+    ITEM_SHOP_L,
+    CAMP,
+    CAMP_L,
+    EVENT,
+    EVENT_L,
+    COMPLETE,
+    CURRENT,
+}
+
+public enum MapTileIcon {
+    NORMAL_MONSTER,
+    NORMAL_MONSTER_L,
+    ELITE_MONSTER,
+    ELITE_MONSTER_L,
+    CARD_SHOP,
+    CARD_SHOP_L,
+    ITEM_SHOP,
+    ITEM_SHOP_L,
+    CAMP,
+    CAMP_L,
+    EVENT,
+    EVENT_L,
+    COMPLETE,
+    COMPLETE_L,
+    CURRENT,
+    CURRENT_L,
 }
 
 public enum MapStage {
