@@ -24,7 +24,7 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeMapBoss))]
     public MapBoss mapBoss;
 
-    [SyncVar (hook = nameof(OnChangedIsRegion))]
+    [SyncVar]
     public bool isRegion = false; // 거점지역 구분값
 
     [SyncVar]
@@ -61,43 +61,45 @@ public class HexagonMapRoom : NetworkBehaviour
     private float originValue;
     private const float expandDuration = 0.5f;
 
-    [Header("맵 타일 스프라이트 랜더러")]
+    [Header("맵 UI")]
+    public GameObject hexagonMapRoomUI;
+
+    [Header("맵 타일 스프라이트 랜더러(기본 상태)")]
     public SpriteRenderer mapTileBaseRenderer;
     public SpriteRenderer mapTileCapRenderer;
     public SpriteRenderer mapTilCapLightRenderer;
     public SpriteRenderer mapTileIconRenderer;
     public SpriteRenderer mapTileIocnLightRenderer;
+
+    [Header("맵 타일 스프라이트 랜더러(선택 상태)")]
     public SpriteRenderer mapTileCapSelectRenderer;
     public SpriteRenderer mapTileCapSelectLightRenderer;
     public SpriteRenderer mapTileIconSelectRenderer;
     public SpriteRenderer mapTileIconSelectLightRenderer;
 
-    [Header("맵 UI")]
-    public GameObject hexagonMapRoomUI;
+    [Header("선택한 방의 정보창 스프라이트 랜더러")]
+    public SpriteRenderer mapRoomInfoBase;
+    public SpriteRenderer mapRoomInfoBaseLight;
+    public SpriteRenderer mapRoomInfoIcon;
+    public SpriteRenderer mapRoomInfoIconLight;
 
-    [Header("턴 정보 레이아웃")]
-    public List<GameObject> mapVoteIcons = new List<GameObject>();
-    public GameObject TurnLayout;
-    public Canvas TurnLayoutCanvas;
-    public TextMeshProUGUI textMyRequireCost;
-
-    [Header("위험도 정보 레이아웃")]
-    public GameObject DangerLayout;
-    public Canvas DangerLayoutCanvas;
-    public TextMeshProUGUI textHazardTitle;
-    public TextMeshProUGUI textHazardCount;
+    [Header("로컬 플레이어의 방 선택 정보 창")]
+    public GameObject myVoteLayout;
+    public TextMeshPro textHazardState;
+    public TextMeshPro textHazardValue;
     public SpriteRenderer hazardArrow;
+    public TextMeshPro textMyRequireCost;
+    public List<GameObject> mapVoteIconsMine = new List<GameObject>(); // 로컬 플레이어 선택한 맵 투표 아이콘
 
+    [Header("다른 플레이어의 방 선택 정보 창")]
+    public GameObject anotherVoteLayout;
+    public TextMeshPro textAnotherRequireCost;
+    public List<GameObject> mapVoteIconsAnother = new List<GameObject>(); // 다른 플레이어가 선택한 맵 투표 아이콘
 
-    [Header("로컬 플레이어가 선택한 맵 인디케이터 레이아웃")]
-    public GameObject PlayerChoiceLayout;
-
-
-    [Header("다른 플레이어가 선택한 맵 인디케이터 레이아웃")]
-    public List<GameObject> mapVoteIconsAnother = new List<GameObject>();
-    public GameObject AnotherPlayerChoiceLayout;
-    public Canvas AnotherPlayerChoiceLayoutCanvas;
-    public TextMeshProUGUI textAnotherRequireCost;
+    [Header("방 투표 아이콘")]
+    public Sprite voteIconMinePick;
+    public Sprite voteIconAnother;
+    public Sprite voteIconAnotherPick;
 
 
     void Start()
@@ -107,7 +109,6 @@ public class HexagonMapRoom : NetworkBehaviour
         transform.localRotation = Quaternion.Euler(0, 0f, 0f);
         mapTileSortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
         mapTileSelectSortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
-        SetCanvasSortOrder();
         expandValue = mapTileBase.transform.localPosition.y + 0.2f;
         originValue = mapTileBase.transform.localPosition.y;
     }
@@ -117,6 +118,25 @@ public class HexagonMapRoom : NetworkBehaviour
         base.OnStartClient();
         mapTileBase.SetActive(isActive);
         votePlyers.Callback += OnUpdateVotePlayers;
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        mapRoomInfoBaseLight.DOKill();
+        mapRoomInfoIconLight.DOKill();
+        mapTileBaseSelect.transform.DOKill();
+        mapTileBase.transform.DOKill();
+        hexagonMapRoomUI.transform.DOKill();
+    }
+
+    private void OnDestroy()
+    {
+        mapRoomInfoBaseLight.DOKill();
+        mapRoomInfoIconLight.DOKill();
+        mapTileBaseSelect.transform.DOKill();
+        mapTileBase.transform.DOKill();
+        hexagonMapRoomUI.transform.DOKill();
     }
 
     private void OnMouseDown()
@@ -156,39 +176,6 @@ public class HexagonMapRoom : NetworkBehaviour
  
     // ------------------------------------------------------------ Syncvar Hook --------------------------------------------------------------- //
 
-    void OnUpdateVotePlayers(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
-    {
-        ChangeHexagonMapRoomLayoutState();
-        switch (op)
-        {
-            case SyncList<uint>.Operation.OP_ADD:
-                // votePlayer에 추가될 때 추가된 플레이어의 order값에 맞는 위치의 아이콘 활성화
-                int addOrder = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == newVal);
-                if(addOrder != -1){
-                    mapVoteIcons[addOrder].SetActive(true);
-                    mapVoteIconsAnother[addOrder].SetActive(true);
-                }
-                break;
-            case SyncList<uint>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<uint>.Operation.OP_REMOVEAT:
-                // votePlayer에 제거될 때 추가된 플레이어의 order값에 맞는 위치의 아이콘 비활성화
-                int removeOrder = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == oldVal);
-                if(removeOrder != -1){
-                    mapVoteIcons[removeOrder].SetActive(false);
-                    mapVoteIconsAnother[removeOrder].SetActive(false);
-                }
-                break;
-            case SyncList<uint>.Operation.OP_SET:
-                
-                break;
-            case SyncList<uint>.Operation.OP_CLEAR:
-                
-                break;
-        }
-    }
-
     void OnChangedRoomType(RoomType oldVal, RoomType newVal)
     {
         switch(newVal)
@@ -200,9 +187,7 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CURRENT];
                 mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CURRENT];
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CURRENT];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CURRENT];
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CURRENT];
-                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CURRENT];
                 break;
             case RoomType.MONSTER :
                 mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.NORMAL_MONSTER];
@@ -211,9 +196,13 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.NORMAL_MONSTER];
                 mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.NORMAL_MONSTER_L];
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.NORMAL_MONSTER];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.NORMAL_MONSTER];
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.NORMAL_MONSTER_L];
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.NORMAL_MONSTER];
                 mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.NORMAL_MONSTER_L];
+                mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.NORMAL_MONSTER];
+                mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.NORMAL_MONSTER_L];
+                mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.NORMAL_MONSTER];
+                mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.NORMAL_MONSTER_L];
                 break;
             case RoomType.ELITE :
                 mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.ELITE_MONSTER];
@@ -222,9 +211,13 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ELITE_MONSTER];
                 mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ELITE_MONSTER_L];
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ELITE_MONSTER];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ELITE_MONSTER];
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ELITE_MONSTER_L];
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ELITE_MONSTER];
                 mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ELITE_MONSTER_L];
+                mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.ELITE_MONSTER];
+                mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.ELITE_MONSTER_L];
+                mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.ELITE_MONSTER];
+                mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.ELITE_MONSTER_L];
                 break;
             case RoomType.EVENT_POSITIIVE :
                 mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.EVENT];
@@ -233,9 +226,13 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT];
                 mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT_L];
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT];
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT_L];
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT];
                 mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT_L];
+                mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.EVENT];
+                mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.EVENT_L];
+                mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.EVENT];
+                mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.EVENT_L];
                 break;
             case RoomType.EVENT_NEGATIVE :
                 mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.EVENT];
@@ -244,9 +241,13 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT];
                 mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT_L];
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT];
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT_L];
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT];
                 mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT_L];
+                mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.EVENT];
+                mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.EVENT_L];
+                mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.EVENT];
+                mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.EVENT_L];
                 break;
             case RoomType.CAMP :
                 mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.CAMP];
@@ -255,9 +256,13 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CAMP];
                 mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CAMP_L];
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CAMP];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CAMP];
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CAMP_L];
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CAMP];
                 mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CAMP_L];
+                mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.CAMP];
+                mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.CAMP_L];
+                mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.CAMP];
+                mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.CAMP_L];
                 break;
             case RoomType.ITEM_NPC :
                 mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.ITEM_SHOP];
@@ -266,9 +271,13 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ITEM_SHOP];
                 mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ITEM_SHOP_L];
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ITEM_SHOP];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ITEM_SHOP];
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ITEM_SHOP_L];
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ITEM_SHOP];
                 mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ITEM_SHOP_L];
+                mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.ITEM_SHOP];
+                mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.ITEM_SHOP_L];
+                mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.ITEM_SHOP];
+                mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.ITEM_SHOP_L];
                 break;
             case RoomType.CARD_NPC :
                 mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.CARD_SHOP];
@@ -277,9 +286,13 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CARD_SHOP];
                 mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CARD_SHOP_L];
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CARD_SHOP];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CARD_SHOP];
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CARD_SHOP_L];
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CARD_SHOP];
                 mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CARD_SHOP_L];
+                mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.CARD_SHOP];
+                mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.CARD_SHOP_L];
+                mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.CARD_SHOP];
+                mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.CARD_SHOP_L];
                 break;
             case RoomType.COMPLETE :
                 mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.COMPLETE];
@@ -288,8 +301,8 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.COMPLETE];
                 mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.COMPLETE_L];
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.COMPLETE];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.COMPLETE];
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.COMPLETE];
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.COMPLETE];
                 mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.COMPLETE_L];
                 break;
             case RoomType.RUINS :
@@ -299,9 +312,7 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileIocnLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileCapSelectRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTileIconSelectRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileCapSelectLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTileIconSelectLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 break;
             case RoomType.BOSS :
                 mapTileBaseRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
@@ -310,9 +321,7 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileIocnLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileCapSelectRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTileIconSelectRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileCapSelectLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTileIconSelectLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 break;
         }
     }
@@ -320,12 +329,6 @@ public class HexagonMapRoom : NetworkBehaviour
     void OnChangedCoordinate(Vector2Int oldValue, Vector2Int newValue)
     {
         //textCoordinate.text = newValue.ToString();
-    }
-
-    // HexagonMapRoom이 isRegion인 경우 비활성화 상태
-    void OnChangedIsRegion(bool oldValue, bool newValue)
-    {
-        
     }
 
     // 활성화 상태 변수값에 따라 방활성화 상태 변경
@@ -338,7 +341,6 @@ public class HexagonMapRoom : NetworkBehaviour
     void OnChangedIsSelected(bool oldValue, bool newValue)
     {
         ChangeMapExpandedState(newValue);
-        ChangeMapVoteIconState();
         ChangeMapHazardValue();
         ChangeMapBossExpandedPosition(newValue);
     }
@@ -355,6 +357,93 @@ public class HexagonMapRoom : NetworkBehaviour
         }
     }
 
+    void OnUpdateVotePlayers(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
+    {
+        ChangeHexagonMapRoomLayoutState();
+        switch (op)
+        {
+            case SyncList<uint>.Operation.OP_ADD:
+                // votePlayer에 추가될 때 추가된 플레이어의 order값에 맞는 위치의 아이콘 설정
+                int addOrder = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == newVal);
+                if(addOrder != -1){
+                    if(newVal == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId){
+                        mapVoteIconsMine[addOrder].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
+                        mapVoteIconsAnother[addOrder].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
+                    }else{
+                        mapVoteIconsMine[addOrder].GetComponent<SpriteRenderer>().sprite = voteIconAnotherPick;
+                        mapVoteIconsAnother[addOrder].GetComponent<SpriteRenderer>().sprite = voteIconAnotherPick;
+                    }
+                }
+                break;
+            case SyncList<uint>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<uint>.Operation.OP_REMOVEAT:
+                // votePlayer에 제거될 때 제거된 플레이어의 order값에 맞는 위치의 아이콘 설정
+                int removeOrder = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == oldVal);
+                if(removeOrder != -1){
+                    mapVoteIconsMine[removeOrder].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
+                    mapVoteIconsAnother[removeOrder].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
+                }
+                break;
+            case SyncList<uint>.Operation.OP_SET:
+                
+                break;
+            case SyncList<uint>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
+    void OnUpdatedPlayerOrder(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
+    {
+        switch (op)
+        {
+            case SyncList<uint>.Operation.OP_ADD:
+            
+                break;
+            case SyncList<uint>.Operation.OP_INSERT:
+                
+                break;
+            case SyncList<uint>.Operation.OP_REMOVEAT:
+
+                break;
+            case SyncList<uint>.Operation.OP_SET:
+                // PlayerOrder 변경 수신 시 맵 투표 아이콘의 Order값 동기화
+                if(votePlyers.Contains(newVal)){
+                    if(votePlyers.Count <= 1){
+                        for(int i=0; i<mapVoteIconsMine.Count; i++){
+                            if(i == index){
+                                mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
+                                mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconAnotherPick;
+                            }else{
+                                mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
+                                mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
+                            }
+                        }
+                    }else{
+                        for(int i=0; i<M_TurnManager.instance.playerOrder.Count; i++){
+                            uint netId = M_TurnManager.instance.playerOrder[i];
+                            if(netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId){
+                                mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
+                                mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
+                            }else if(netId == 0){
+                                mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
+                                mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
+                            }else{
+                                mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconAnotherPick;
+                                mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconAnotherPick;
+                            }
+                        }
+                    }
+                }
+                break;
+            case SyncList<uint>.Operation.OP_CLEAR:
+                
+                break;
+        }
+    }
+
     // ------------------------------------------------------------ Normal Method --------------------------------------------------------------- //
 
 
@@ -365,53 +454,38 @@ public class HexagonMapRoom : NetworkBehaviour
         mapTileBase.SetActive(isActive);
     }
 
-    // 선택한 HexaonMapRoom의 UI 컴포넌트들의 활성화 상태 변경(본인이 선택한 경우와 다른 플레이어가 선택한 경우 구분)
-    public void ChangeHexagonRoomUIByOwner(bool isActive)
-    {
-        AnotherPlayerChoiceLayout.SetActive(!isActive);
-        TurnLayout.SetActive(isActive);
-        DangerLayout.SetActive(isActive);
-        PlayerChoiceLayout.SetActive(isActive);
-    }
-
-    private void SetCanvasSortOrder()
-    {
-        TurnLayoutCanvas.sortingLayerName = "MapPlayerPiece";
-        TurnLayoutCanvas.sortingOrder = 1000;
-        DangerLayoutCanvas.sortingLayerName = "MapPlayerPiece";
-        DangerLayoutCanvas.sortingOrder = 1000;
-        AnotherPlayerChoiceLayoutCanvas.sortingLayerName = "MapPlayerPiece";
-        AnotherPlayerChoiceLayoutCanvas.sortingOrder = 1000;
-    }
-
     // 방 레이아웃 상태 변경
     private void ChangeHexagonMapRoomLayoutState()
     {
         if(votePlyers.Count > 1){
             int idx = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
             if(idx != -1){
-                PlayerChoiceLayout.SetActive(true);
-                AnotherPlayerChoiceLayout.SetActive(false);
-                TurnLayout.SetActive(true);
-                DangerLayout.SetActive(true);
+                myVoteLayout.SetActive(true);
+                anotherVoteLayout.SetActive(false);
+                ChangeMapRoomInfoState(true);
+                mapTileIconSelectRenderer.gameObject.SetActive(false);
+                mapTileIconSelectLightRenderer.gameObject.SetActive(false);
             }else{
-                PlayerChoiceLayout.SetActive(false);
-                AnotherPlayerChoiceLayout.SetActive(true);
-                TurnLayout.SetActive(false);
-                DangerLayout.SetActive(false);
+                myVoteLayout.SetActive(false);
+                anotherVoteLayout.SetActive(true);
+                ChangeMapRoomInfoState(false);
+                mapTileIconSelectRenderer.gameObject.SetActive(true);
+                mapTileIconSelectLightRenderer.gameObject.SetActive(true);
             }
         }else{
             int idx = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
             if(idx != -1){
-                PlayerChoiceLayout.SetActive(true);
-                AnotherPlayerChoiceLayout.SetActive(false);
-                TurnLayout.SetActive(true);
-                DangerLayout.SetActive(true);
+                myVoteLayout.SetActive(true);
+                anotherVoteLayout.SetActive(false);
+                ChangeMapRoomInfoState(true);
+                mapTileIconSelectRenderer.gameObject.SetActive(false);
+                mapTileIconSelectLightRenderer.gameObject.SetActive(false);
             }else{
-                PlayerChoiceLayout.SetActive(false);
-                AnotherPlayerChoiceLayout.SetActive(true);
-                TurnLayout.SetActive(false);
-                DangerLayout.SetActive(false);
+                myVoteLayout.SetActive(false);
+                anotherVoteLayout.SetActive(true);
+                ChangeMapRoomInfoState(false);
+                mapTileIconSelectRenderer.gameObject.SetActive(true);
+                mapTileIconSelectLightRenderer.gameObject.SetActive(true);
             }
         }
     }
@@ -432,6 +506,7 @@ public class HexagonMapRoom : NetworkBehaviour
             );
             hexagonMapRoomUI.SetActive(true);
             ChangeSelectRoomRegionIndicatorMask(coordinate, SpriteMaskInteraction.None);
+            M_TurnManager.instance.playerOrder.Callback += OnUpdatedPlayerOrder; // 방 선택 상태가 되면 오더 변경 이벤트 등록
         }else{
             mapTileBaseSelect.SetActive(false);
             mapTileBaseSelect.transform.DOLocalMoveY(originValue, expandDuration);
@@ -445,6 +520,7 @@ public class HexagonMapRoom : NetworkBehaviour
             );  
             hexagonMapRoomUI.SetActive(false);
             ChangeSelectRoomRegionIndicatorMask(coordinate, SpriteMaskInteraction.VisibleOutsideMask);
+            M_TurnManager.instance.playerOrder.Callback -= OnUpdatedPlayerOrder; // 방 해제 상태가 되면 오더 변경 이벤트 해제
         }
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("ingame_menu_stage_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
@@ -454,32 +530,16 @@ public class HexagonMapRoom : NetworkBehaviour
     private void ChangeMapHazardValue()
     {
         int hazardValue = hazard - M_MapManager.instance.currentRoom.hazard; // 현재 위치한 방과 다음 목적지로 선택한 방의 위험도 차이값
-        textHazardCount.text = Mathf.Abs(hazardValue).ToString();
+        textHazardValue.text = Mathf.Abs(hazardValue).ToString();
         if(hazardValue == 0){
             hazardArrow.gameObject.SetActive(false);
-            textHazardTitle.text = "위험도 동일";
+            textHazardState.text = "위험도 동일";
             hazardArrow.color = Color.white;
         }else{
             hazardArrow.gameObject.SetActive(true);
-            textHazardTitle.text = hazardValue > 0 ? "위험도 증가" : "위험도 감소" ;
+            textHazardState.text = hazardValue > 0 ? "위험도 증가" : "위험도 감소" ;
             hazardArrow.flipY = hazardValue > 0 ? false : true;
             hazardArrow.color =  hazardValue > 0 ? Color.red : ProjectD.ColorUtils.HexToColor("#0080ff");
-        }
-    }
-
-    // 방 투표 상태 아이콘 변경
-    private void ChangeMapVoteIconState()
-    {
-        int index = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId); // 해당방에 로컬플레이어가 투표했는지 확인
-        int order = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.selectOrder;
-        if(index != -1){
-            mapVoteIcons[order].transform.GetChild(0).gameObject.SetActive(true);
-            mapVoteIcons[order].transform.GetChild(1).gameObject.SetActive(true);
-        }else{
-            mapVoteIcons[order].transform.GetChild(0).gameObject.SetActive(true);
-            mapVoteIcons[order].transform.GetChild(1).gameObject.SetActive(true);
-            mapVoteIconsAnother[order].transform.GetChild(0).gameObject.SetActive(true);
-            mapVoteIconsAnother[order].transform.GetChild(1).gameObject.SetActive(true);
         }
     }
 
@@ -505,6 +565,25 @@ public class HexagonMapRoom : NetworkBehaviour
                     spriteRenderer.maskInteraction = spriteMaskInteraction;
                 }
             }
+        }
+    }
+
+    private void ChangeMapRoomInfoState(bool isActive)
+    {
+        if(isActive){
+            if(DOTween.IsTweening(mapRoomInfoBaseLight)){
+                mapRoomInfoBaseLight.DOKill();
+            }
+            if(DOTween.IsTweening(mapRoomInfoIconLight)){
+                mapRoomInfoIconLight.DOKill();
+            }
+            mapRoomInfoBaseLight.color = new Color(mapRoomInfoBaseLight.color.r, mapRoomInfoBaseLight.color.g, mapRoomInfoBaseLight.color.b, 0f);
+            mapRoomInfoIconLight.color = new Color(mapRoomInfoIconLight.color.r, mapRoomInfoIconLight.color.g, mapRoomInfoIconLight.color.b, 0f);
+            mapRoomInfoBaseLight.DOFade(1f, 0.25f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+            mapRoomInfoIconLight.DOFade(1f, 0.25f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+        }else{
+            mapRoomInfoBaseLight.DOKill();
+            mapRoomInfoIconLight.DOKill();
         }
     }
 }

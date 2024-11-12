@@ -100,6 +100,14 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [SerializedDictionary("MapTileBase", "Sprite")]
     public SerializedDictionary<MapTileIcon, Sprite> mapTileIcons = new SerializedDictionary<MapTileIcon, Sprite>();
 
+    [Header("MapRoomInfoBase 스프라이트 목록")]
+    [SerializedDictionary("MapRoomInfoBase", "Sprite")]
+    public SerializedDictionary<MapRoomInfoBase, Sprite> mapRoomInfoBases = new SerializedDictionary<MapRoomInfoBase, Sprite>();
+
+    [Header("MapRoomInfoIcon 스프라이트 목록")]
+    [SerializedDictionary("MapRoomInfoIcon", "Sprite")]
+    public SerializedDictionary<MapRoomInfoIcon, Sprite> mapRoomInfoIcons = new SerializedDictionary<MapRoomInfoIcon, Sprite>();
+
     [Header("맵 스테이지 아이콘 목록")]
     [SerializedDictionary("MapStage", "Sprite")]
     public SerializedDictionary<MapStage, Sprite> stageIcons = new SerializedDictionary<MapStage, Sprite>();
@@ -1316,6 +1324,36 @@ public enum MapTileIcon {
     COMPLETE_L,
     CURRENT,
     CURRENT_L,
+}
+
+public enum MapRoomInfoBase {
+    NORMAL_MONSTER,
+    NORMAL_MONSTER_L,
+    ELITE_MONSTER,
+    ELITE_MONSTER_L,
+    CARD_SHOP,
+    CARD_SHOP_L,
+    ITEM_SHOP,
+    ITEM_SHOP_L,
+    CAMP,
+    CAMP_L,
+    EVENT,
+    EVENT_L
+}
+
+public enum MapRoomInfoIcon {
+    NORMAL_MONSTER,
+    NORMAL_MONSTER_L,
+    ELITE_MONSTER,
+    ELITE_MONSTER_L,
+    CARD_SHOP,
+    CARD_SHOP_L,
+    ITEM_SHOP,
+    ITEM_SHOP_L,
+    CAMP,
+    CAMP_L,
+    EVENT,
+    EVENT_L
 }
 
 public enum MapStage {

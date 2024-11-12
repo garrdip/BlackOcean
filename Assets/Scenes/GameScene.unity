@@ -32028,6 +32028,58 @@ MonoBehaviour:
       Value: {fileID: 21300000, guid: cb3eb9dc44eedb04b99444dc9a15ce83, type: 3}
     - Key: 15
       Value: {fileID: 21300000, guid: 5a3325eebe6ed924f843b09a9335d9b6, type: 3}
+  mapRoomInfoBases:
+    _serializedList:
+    - Key: 0
+      Value: {fileID: 21300000, guid: 3513bdcb43481be46bbf4584420e4c07, type: 3}
+    - Key: 1
+      Value: {fileID: 21300000, guid: 42e88b8701defbb4fa32a6d0fd6cd1b9, type: 3}
+    - Key: 2
+      Value: {fileID: 21300000, guid: 0be9baa8842a1b146b8cabc0b15d2fb1, type: 3}
+    - Key: 3
+      Value: {fileID: 21300000, guid: 304d2aa2fbb89134eac2eda2d4fa2bd1, type: 3}
+    - Key: 4
+      Value: {fileID: 21300000, guid: d4aaa1b46977c114098c301165e1d545, type: 3}
+    - Key: 5
+      Value: {fileID: 21300000, guid: 97b0352b1fa2e80458e46f036acb844a, type: 3}
+    - Key: 6
+      Value: {fileID: 21300000, guid: 44968e6bf475c034fac801850c669bed, type: 3}
+    - Key: 7
+      Value: {fileID: 21300000, guid: c2f1d91cf9da6944db61373ffa03c43d, type: 3}
+    - Key: 8
+      Value: {fileID: 21300000, guid: 7e444b04dc16534458eb238b3a602c22, type: 3}
+    - Key: 9
+      Value: {fileID: 21300000, guid: 07fc2018db0f6ef4a9abeb3deaaec42f, type: 3}
+    - Key: 10
+      Value: {fileID: 21300000, guid: 0128962180a8a7141bde871fafccf9bd, type: 3}
+    - Key: 11
+      Value: {fileID: 21300000, guid: 00b3ebdc696f4f5429cec091e7cd7059, type: 3}
+  mapRoomInfoIcons:
+    _serializedList:
+    - Key: 0
+      Value: {fileID: 21300000, guid: 17f6ab08a478efc40af0192ff1c15fb1, type: 3}
+    - Key: 1
+      Value: {fileID: 21300000, guid: a7c4b3261ba851845961d97c7bc9c702, type: 3}
+    - Key: 2
+      Value: {fileID: 21300000, guid: 3d3a64d145760304595540a031a3d118, type: 3}
+    - Key: 3
+      Value: {fileID: 21300000, guid: 060b78b115a37da4bb1c91210b4e20cc, type: 3}
+    - Key: 4
+      Value: {fileID: 21300000, guid: bfaf517b537b61a48903fc394d38a9e5, type: 3}
+    - Key: 5
+      Value: {fileID: 21300000, guid: 3787ad046ae080d4781db6d1f41e4bf4, type: 3}
+    - Key: 6
+      Value: {fileID: 21300000, guid: 6c48b41ddd1c68f4e93fba9d8f729bdb, type: 3}
+    - Key: 7
+      Value: {fileID: 21300000, guid: fd373554d758f87478244fd3c126f0f7, type: 3}
+    - Key: 8
+      Value: {fileID: 21300000, guid: bdcbf98203c4ab346a82e8a9e434832f, type: 3}
+    - Key: 9
+      Value: {fileID: 21300000, guid: 410af2ee481a85a459020f0e15d6e51d, type: 3}
+    - Key: 10
+      Value: {fileID: 21300000, guid: 4d560b058cd8dd4408101638e0861f60, type: 3}
+    - Key: 11
+      Value: {fileID: 21300000, guid: a7af953a9eb63df4bb150930d8d2ce95, type: 3}
   stageIcons:
     _serializedList:
     - Key: 0
