@@ -1191,6 +1191,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         SpriteRenderer sprite = startPathLineRenderer.GetComponent<SpriteRenderer>();
         sprite.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
         path.netId = netId;
+        path.hexagonMapRoom = findPath[0];
         float startAngle = GetAngleFromCoordinate(startAt.coordinate, findPath[0].coordinate); // 선의 회전값 계산
         path.rotationZ = startAngle;
         SetPathLineScaleByAngle(startAngle, startPathLineRenderer);
@@ -1206,6 +1207,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             SpriteRenderer spriteRenderer = pathLineRenderer.GetComponent<SpriteRenderer>();
             spriteRenderer.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
             pathLineRendererComponent.netId = netId;
+            pathLineRendererComponent.hexagonMapRoom = findPath[i];
+            findPath[i].mapTilePathLine.SetActive(true);
             float angle = GetAngleFromCoordinate(findPath[i].coordinate, findPath[i + 1].coordinate); // 선의 회전값 계산
             pathLineRendererComponent.rotationZ = angle;
             SetPathLineScaleByAngle(angle, pathLineRenderer);
@@ -1251,6 +1254,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     {
         for(int i=pathLineRenderers.Count-1; i>=0; i--){
             if(pathLineRenderers[i].GetComponent<PathLineRenderer>().netId == netId){
+                pathLineRenderers[i].GetComponent<PathLineRenderer>().hexagonMapRoom.mapTilePathLine.SetActive(false);
                 Destroy(pathLineRenderers[i]);
                 pathLineRenderers.RemoveAt(i);
             }
@@ -1261,6 +1265,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     public void RemoveAllExistLineRenderer()
     {
         for(int i=pathLineRenderers.Count-1; i>=0; i--){
+            pathLineRenderers[i].GetComponent<PathLineRenderer>().hexagonMapRoom.mapTilePathLine.SetActive(false);
             Destroy(pathLineRenderers[i]);
             pathLineRenderers.RemoveAt(i);
         }

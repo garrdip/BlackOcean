@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PathLineRenderer : MonoBehaviour
 {
+    public HexagonMapRoom hexagonMapRoom;
     public uint netId;
     public float rotationZ;
 

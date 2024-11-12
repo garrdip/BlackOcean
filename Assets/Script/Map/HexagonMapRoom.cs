@@ -55,6 +55,7 @@ public class HexagonMapRoom : NetworkBehaviour
     public GameObject mapTileLineLight;
     public SortingGroup mapTileSelectSortingGroup; // 선택된 맵 타일 정렬그룹
     public GameObject mapTileBaseSelect; // 선택된 상태 맵 타일 베이스 오브젝트
+    public GameObject mapTilePathLine; // 경로 표시 맵 타일 라인 오브젝트
     public GameObject mapTileMask; // 맵 타일 마스크
     public GameObject originMapTile; // 원본 위치의 맵 타일 오브젝트(라인 렌더러 위치를 위한 용도)
     private float expandValue;
@@ -100,6 +101,8 @@ public class HexagonMapRoom : NetworkBehaviour
     public Sprite voteIconMinePick;
     public Sprite voteIconAnother;
     public Sprite voteIconAnotherPick;
+
+
 
 
     void Start()
@@ -153,10 +156,6 @@ public class HexagonMapRoom : NetworkBehaviour
         // 거점지역 정보 팝업 활성화
         if(isRegion && region != null){
             MapUI.instance.RegionPopUpShow(region);
-        }
-        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId != 0){
-            GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
-            gamePlayerMap.DisplayFindPath(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
         }
         mapTileLineLight.SetActive(true);
         mapTileIconLight.SetActive(true);
