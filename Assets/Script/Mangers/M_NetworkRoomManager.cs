@@ -10,7 +10,7 @@ using AYellowpaper.SerializedCollections;
 public class M_NetworkRoomManager : NetworkRoomManager
 {
     private const int maxConnectionCount = 3;
-    public delegate void OnClientDisconnected(GamePlayer gamePlayer);
+    public delegate void OnClientDisconnected(PlayerInterface playerInterface, GamePlayer gamePlayer);
     public OnClientDisconnected onClientDisconnected;
     public Color[] colors = new Color[]{ Color.red, Color.green, Color.blue };
 
@@ -112,7 +112,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
                         networkIdentity.AssignClientAuthority(NetworkClient.connection.identity.connectionToClient);
                     }
                 }
-                OnClientDisconnectFromServer(disconnectedGamePlayer); // 클라 연결 해제 델리게이트 구독한 컴포넌트에 이벤트 전송
+                OnClientDisconnectFromServer(disconnectedPlayer, disconnectedGamePlayer); // 클라 연결 해제 델리게이트 구독한 컴포넌트에 이벤트 전송
             }else{
                 // 게임씬 로딩중 클라이언트 나간경우 서버연결해제 및 스팀룸 연결해제하고 메인화면으로 이동
                 UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
@@ -138,10 +138,10 @@ public class M_NetworkRoomManager : NetworkRoomManager
     }
 
     // 클라연결 끊어지면 컴포넌트들에 델리게이트 이벤트 전송
-    private void OnClientDisconnectFromServer(GamePlayer gamePlayer)
+    private void OnClientDisconnectFromServer(PlayerInterface playerInterface, GamePlayer gamePlayer)
     {
         if(onClientDisconnected != null){
-            onClientDisconnected.Invoke(gamePlayer);
+            onClientDisconnected.Invoke(playerInterface, gamePlayer);
         }
     }
 

@@ -147,10 +147,10 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             OnChangePlayerVoteHexagonMapRoom(SyncDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_ADD, kvp.Key, kvp.Value);
     }
     
-    private void OnClientDisconnected(GamePlayer gamePlayer)
+    private void OnClientDisconnected(PlayerInterface playerInterface, GamePlayer gamePlayer)
     {
-        NetworkIdentity networkIdentity = gamePlayer.netIdentity;
-        RemoveAllExistLineRenderer(); // 경로 제거
+        NetworkIdentity networkIdentity = gamePlayer.netIdentity; // 연결 해제된 플레이어의 NetworkIdentity
+        RemoveExistLineRenderer(playerInterface.netId);  // 연결 해제된 플레이어의 맵 검색 경로 제거
         if(playerVoteHexagonMapRoom.TryGetValue(networkIdentity, out HexagonMapRoom hexagonMapRoom)){
             hexagonMapRoom.isSelected = false; // 나간 플레이어가 선택했던 방 선택상태 해제
             hexagonMapRoom.votePlyers.Remove(networkIdentity.netId); // 나간 플레이어가 선택했던 방의 투표자 Synclist에서 해당 플레이어 데이터 제거
@@ -1185,36 +1185,33 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     // netId에 해당하는 유저의 경로 랜더링
     public void RenderVisualizePath(HexagonMapRoom startAt, List<HexagonMapRoom> findPath, uint netId, MapPlayerDestination currentMapPlayerDestination)
     {
-        // 현재 플레이어 위치 시작지점으로 경로 추가
-        GameObject startPathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity, MapPathLines.transform);
-        PathLineRenderer path = startPathLineRenderer.GetComponent<PathLineRenderer>();
-        SpriteRenderer sprite = startPathLineRenderer.GetComponent<SpriteRenderer>();
-        sprite.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
-        path.netId = netId;
-        path.hexagonMapRoom = findPath[0];
         float startAngle = GetAngleFromCoordinate(startAt.coordinate, findPath[0].coordinate); // 선의 회전값 계산
-        path.rotationZ = startAngle;
+
+        // 현재 플레이어 위치 시작지점으로 경로 추가
+        GameObject startPathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.Euler(0f, 0f, startAngle), MapPathLines.transform);
+        PathLineRenderer startPath = startPathLineRenderer.GetComponent<PathLineRenderer>();
+        startPath.netId = netId;
+        startPath.hexagonMapRoom = findPath[0];
         SetPathLineScaleByAngle(startAngle, startPathLineRenderer);
         Vector3 startPosition = ((startAt.originMapTile.transform.position) + (findPath[0].originMapTile.transform.position)) / 2f; // 선의 중심 위치 계산
         startPathLineRenderer.transform.position = startPosition;
         pathLineRenderers.Add(startPathLineRenderer);
+        startPath.startPoint.SetActive(true);
+        startPath.startPointLight.SetActive(true);
 
         // 검색된 경로 추가
         for(int i=0; i<findPath.Count-1; i++)
         {
-            GameObject pathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.identity, MapPathLines.transform);
-            PathLineRenderer pathLineRendererComponent = pathLineRenderer.GetComponent<PathLineRenderer>();
-            SpriteRenderer spriteRenderer = pathLineRenderer.GetComponent<SpriteRenderer>();
-            spriteRenderer.color = currentMapPlayerDestination.GetComponent<SpriteRenderer>().color;
-            pathLineRendererComponent.netId = netId;
-            pathLineRendererComponent.hexagonMapRoom = findPath[i];
-            findPath[i].mapTilePathLine.SetActive(true);
             float angle = GetAngleFromCoordinate(findPath[i].coordinate, findPath[i + 1].coordinate); // 선의 회전값 계산
-            pathLineRendererComponent.rotationZ = angle;
+            GameObject pathLineRenderer = Instantiate(pathLineRendererPrefab, Vector3.zero, Quaternion.Euler(0f, 0f, angle), MapPathLines.transform);
+            PathLineRenderer searchPath = pathLineRenderer.GetComponent<PathLineRenderer>();
+            searchPath.netId = netId;
+            searchPath.hexagonMapRoom = findPath[i];
             SetPathLineScaleByAngle(angle, pathLineRenderer);
             Vector3 pathPosition = ((findPath[i].originMapTile.transform.position) + (findPath[i + 1].originMapTile.transform.position)) / 2f; // 선의 중심 위치 계산
             pathLineRenderer.transform.position = pathPosition;
             pathLineRenderers.Add(pathLineRenderer);
+            findPath[i].mapTilePathLine.SetActive(true);
         }
     }
 
@@ -1222,9 +1219,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     private void SetPathLineScaleByAngle(float angle, GameObject pathLineRenderer)
     {
         if(angle == 90f || angle == -90f){
-            pathLineRenderer.transform.localScale = new Vector3(0.09f, 0.5f, 1f);
-        }else{
-            pathLineRenderer.transform.localScale = new Vector3(0.135f, 0.5f, 1f);
+            pathLineRenderer.transform.localScale = new Vector3(0.73f, 1f, 1f);
         }
         pathLineRenderers.Add(pathLineRenderer);
     }
@@ -1236,15 +1231,15 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         if (offset == new Vector2Int(0, -1))
             return 90f;  // 북
         else if (offset == new Vector2Int(-1, 0))
-            return -19f; // 11시
+            return -200f; // 11시
         else if (offset == new Vector2Int(-1, 1))
-            return 19f;  // 7시
+            return 200.5f;  // 7시
         else if (offset == new Vector2Int(0, 1))
             return -90f; // 남
         else if (offset == new Vector2Int(1, 0))
-            return -19f; // 5시
+            return -20.5f; // 5시
         else if (offset == new Vector2Int(1, -1))
-            return 19f;  // 1시
+            return 20.5f;  // 1시
         else
             return 0f;
     }

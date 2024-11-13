@@ -578,8 +578,8 @@ public class HexagonMapRoom : NetworkBehaviour
             }
             mapRoomInfoBaseLight.color = new Color(mapRoomInfoBaseLight.color.r, mapRoomInfoBaseLight.color.g, mapRoomInfoBaseLight.color.b, 0f);
             mapRoomInfoIconLight.color = new Color(mapRoomInfoIconLight.color.r, mapRoomInfoIconLight.color.g, mapRoomInfoIconLight.color.b, 0f);
-            mapRoomInfoBaseLight.DOFade(1f, 0.25f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
-            mapRoomInfoIconLight.DOFade(1f, 0.25f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+            mapRoomInfoBaseLight.DOFade(1f, 1f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+            mapRoomInfoIconLight.DOFade(1f, 1f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
         }else{
             mapRoomInfoBaseLight.DOKill();
             mapRoomInfoIconLight.DOKill();

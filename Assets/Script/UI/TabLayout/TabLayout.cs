@@ -64,7 +64,7 @@ public class TabLayout : MonoBehaviour
     }
 
     // 클라이언트 연결 해제 이벤트 수신
-    public void OnClientDisconnected(GamePlayer gamePlayer)
+    public void OnClientDisconnected(PlayerInterface playerInterface, GamePlayer gamePlayer)
     {
         SetTabButtonByOwnedPlayersCount();
     }

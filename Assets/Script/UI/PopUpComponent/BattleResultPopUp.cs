@@ -73,7 +73,7 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     }
 
     // 클라이언트 연결 해제 이벤트 수신
-    private void OnClientDisconnected(GamePlayer gamePlayer)
+    private void OnClientDisconnected(PlayerInterface playerInterface, GamePlayer gamePlayer)
     {
         // 연결해제된 클라이언트의 보상이 남아있을 경우
         // 1. 보상 팝업이 활성화 상태의 경우 : 보상을 이어받을수 있도록, 나간 클라이언트의 데이터를 조회해서 다시 세팅
