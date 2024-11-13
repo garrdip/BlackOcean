@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+[RequireComponent(typeof(TextMeshProUGUI))]
 public class TextUpdater : MonoBehaviour
 {
     public TextMeshProUGUI thisText;
+    
     void Start()
     {
         thisText = GetComponent<TextMeshProUGUI>();       

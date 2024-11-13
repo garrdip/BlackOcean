@@ -690,7 +690,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  outlineMaterial: {fileID: 2100000, guid: 34af879114d36034990672863353da6b, type: 2}
+  outlineMaterial: {fileID: 2100000, guid: c056e638f27ff484fb1367ad288e5a1a, type: 2}
 --- !u!1 &80791755
 GameObject:
   m_ObjectHideFlags: 0
@@ -5909,7 +5909,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  outlineMaterial: {fileID: 2100000, guid: 34af879114d36034990672863353da6b, type: 2}
+  outlineMaterial: {fileID: 2100000, guid: c056e638f27ff484fb1367ad288e5a1a, type: 2}
 --- !u!1 &746488845
 GameObject:
   m_ObjectHideFlags: 0
@@ -7673,7 +7673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  outlineMaterial: {fileID: 2100000, guid: 34af879114d36034990672863353da6b, type: 2}
+  outlineMaterial: {fileID: 2100000, guid: c056e638f27ff484fb1367ad288e5a1a, type: 2}
 --- !u!1 &822710233
 GameObject:
   m_ObjectHideFlags: 0
@@ -18198,7 +18198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  outlineMaterial: {fileID: 2100000, guid: 34af879114d36034990672863353da6b, type: 2}
+  outlineMaterial: {fileID: 2100000, guid: c056e638f27ff484fb1367ad288e5a1a, type: 2}
 --- !u!1 &1650021983
 GameObject:
   m_ObjectHideFlags: 0
@@ -22628,7 +22628,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  outlineMaterial: {fileID: 2100000, guid: 34af879114d36034990672863353da6b, type: 2}
+  outlineMaterial: {fileID: 2100000, guid: c056e638f27ff484fb1367ad288e5a1a, type: 2}
 --- !u!1 &2126883165
 GameObject:
   m_ObjectHideFlags: 0
