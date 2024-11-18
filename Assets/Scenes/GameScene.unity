@@ -31946,54 +31946,9 @@ MonoBehaviour:
   pathLineRendererPrefab: {fileID: 2595531754514205303, guid: 486f7d039ff94024db23ca542324cd1e, type: 3}
   pathLineRenderers: []
   findPaths: []
-  mapTileBases:
-    _serializedList:
-    - Key: 0
-      Value: {fileID: 21300000, guid: 4c8493105433d1443b1c844bbd9431a0, type: 3}
-    - Key: 1
-      Value: {fileID: 21300000, guid: 4c8493105433d1443b1c844bbd9431a0, type: 3}
-    - Key: 2
-      Value: {fileID: 21300000, guid: 6e2e87e55a1d763409b01fdffdb3ff56, type: 3}
-    - Key: 3
-      Value: {fileID: 21300000, guid: 8c510b172cd930742bd584750fcda11c, type: 3}
-    - Key: 4
-      Value: {fileID: 21300000, guid: 67c4b811513a036479e36c70d0ab08f9, type: 3}
-    - Key: 5
-      Value: {fileID: 21300000, guid: b7109cef3852c2b45bd1b0304589e916, type: 3}
-    - Key: 6
-      Value: {fileID: 21300000, guid: fad85195c5396dc4cb7bf438fbe471a9, type: 3}
-    - Key: 7
-      Value: {fileID: 21300000, guid: 0409bc60594c3a14c93294b30e9b601f, type: 3}
-  mapTileCaps:
-    _serializedList:
-    - Key: 0
-      Value: {fileID: 21300000, guid: 376f07b054d236c4cb9266c9b17564b9, type: 3}
-    - Key: 1
-      Value: {fileID: 21300000, guid: 5e84ee45ac1aefa418845df55e059a08, type: 3}
-    - Key: 2
-      Value: {fileID: 21300000, guid: 376f07b054d236c4cb9266c9b17564b9, type: 3}
-    - Key: 3
-      Value: {fileID: 21300000, guid: 5e84ee45ac1aefa418845df55e059a08, type: 3}
-    - Key: 4
-      Value: {fileID: 21300000, guid: bde2c7902ee2f7747aecdbfd4c049091, type: 3}
-    - Key: 5
-      Value: {fileID: 21300000, guid: 056bb9e63075d0b4ab6a7efe55199509, type: 3}
-    - Key: 6
-      Value: {fileID: 21300000, guid: ae61669db2c93304db3eb1c8b1247b04, type: 3}
-    - Key: 7
-      Value: {fileID: 21300000, guid: 450b82b7e63d63b4ca1d0cdabbdef967, type: 3}
-    - Key: 8
-      Value: {fileID: 21300000, guid: ddd75fea67e8ac1458810e6c20544012, type: 3}
-    - Key: 9
-      Value: {fileID: 21300000, guid: 02b829280fa7f6043819fa79aa4e77f0, type: 3}
-    - Key: 10
-      Value: {fileID: 21300000, guid: ef67c292c0746ce4886be1c26f34a78c, type: 3}
-    - Key: 11
-      Value: {fileID: 21300000, guid: 4b9c05787a2eedc429cea14d36fa1247, type: 3}
-    - Key: 12
-      Value: {fileID: 21300000, guid: daaad46a523d0134796dfd789b69b4a5, type: 3}
-    - Key: 13
-      Value: {fileID: 21300000, guid: 6c2bb5fafe7498e4cbf047c29a4eb460, type: 3}
+  mapTileBaseAtlas: {fileID: 4343727234628468602, guid: 592e87c85e4b873449ec60e6a216842a, type: 2}
+  mapTileCapAtlas: {fileID: 4343727234628468602, guid: edf99e8e562c5f54d8d016ea8daa0155, type: 2}
+  mapTileIconAtlas: {fileID: 4343727234628468602, guid: 0cbd91c0212b3c44597746546b01860c, type: 2}
   mapTileIcons:
     _serializedList:
     - Key: 0

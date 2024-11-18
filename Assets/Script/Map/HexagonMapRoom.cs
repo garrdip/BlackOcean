@@ -42,37 +42,29 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar]
     public int hazard; // 위험도
 
+    [Header("A* 알고리즘 비용 변수")]
     public int GCost; // 시작 노드 ~ 검사할 노드까지의 비용
     public int HCost; // 검사할 노드 ~ 목적지 노드까지의 추정 비용
     public int FCost => GCost + HCost; // 최종 비용
 
-    [Header("맵 타일")]
-    // 맵 타일의 경우 정렬그룹으로 관리되기 때문에, 특정 부품들만 Blur 화면 위로 올릴수 없기 때문에, 선택된 상태의 정렬값을 가진 오브젝트그룹을 따로 두고 활성화/비활성화 하는 방식으로 함
-    public SortingGroup mapTileSortingGroup; // 맵 타일 정렬그룹
-    public GameObject mapTileBase; // 맵 타일 베이스 오브젝트
-    public GameObject mapTileCapLight;
-    public GameObject mapTileIconLight;
-    public GameObject mapTileLineLight;
-    public SortingGroup mapTileSelectSortingGroup; // 선택된 맵 타일 정렬그룹
-    public GameObject mapTileBaseSelect; // 선택된 상태 맵 타일 베이스 오브젝트
-    public GameObject mapTilePathLine; // 경로 표시 맵 타일 라인 오브젝트
+    [Header("맵 타일 공통 컴포넌트")]
     public GameObject mapTileMask; // 맵 타일 마스크
     public GameObject originMapTile; // 원본 위치의 맵 타일 오브젝트(라인 렌더러 위치를 위한 용도)
+    public GameObject hexagonMapRoomUI; // 맵 타일 UI
     private float expandValue;
     private float originValue;
     private const float expandDuration = 0.5f;
 
-    [Header("맵 UI")]
-    public GameObject hexagonMapRoomUI;
-
     [Header("맵 타일 스프라이트 랜더러(기본 상태)")]
-    public SpriteRenderer mapTileBaseRenderer;
-    public SpriteRenderer mapTileCapRenderer;
-    public SpriteRenderer mapTilCapLightRenderer;
-    public SpriteRenderer mapTileIconRenderer;
-    public SpriteRenderer mapTileIocnLightRenderer;
+    public GameObject mapTileBase; // 맵 타일 베이스 오브젝트
+    public SpriteRenderer mapTileBaseRenderer; // 맵 타일 베이스 스프라이트 랜더러
 
     [Header("맵 타일 스프라이트 랜더러(선택 상태)")]
+    public GameObject mapTileSelect; // 선택된 상태 맵 타일 베이스 오브젝트
+    public SortingGroup mapTileSelectSortingGroup; // 선택된 맵 타일 정렬그룹
+    public GameObject mapTilePathLine; // 경로 표시 맵 타일 라인 오브젝트
+    public SortingGroup mapTilePathLineSortingGroup; // 경로 표시 맵 타일 라인 오브젝트 정렬그룹
+    public SpriteRenderer mapTileBaseSelectRenderer;
     public SpriteRenderer mapTileCapSelectRenderer;
     public SpriteRenderer mapTileCapSelectLightRenderer;
     public SpriteRenderer mapTileIconSelectRenderer;
@@ -104,14 +96,14 @@ public class HexagonMapRoom : NetworkBehaviour
 
 
 
-
     void Start()
     {
         transform.SetParent(M_MapManager.instance.MapRooms.transform);
         transform.localPosition = new Vector3(transform.position.x, transform.position.y, 0f);
         transform.localRotation = Quaternion.Euler(0, 0f, 0f);
-        mapTileSortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
+        mapTileBaseRenderer.sortingOrder = -(int)(transform.position.y * 10f);
         mapTileSelectSortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
+        mapTilePathLineSortingGroup.sortingOrder = -(int)(transform.position.y * 10f);
         expandValue = mapTileBase.transform.localPosition.y + 0.2f;
         originValue = mapTileBase.transform.localPosition.y;
     }
@@ -128,7 +120,7 @@ public class HexagonMapRoom : NetworkBehaviour
         base.OnStopClient();
         mapRoomInfoBaseLight.DOKill();
         mapRoomInfoIconLight.DOKill();
-        mapTileBaseSelect.transform.DOKill();
+        mapTileSelect.transform.DOKill();
         mapTileBase.transform.DOKill();
         hexagonMapRoomUI.transform.DOKill();
     }
@@ -137,7 +129,7 @@ public class HexagonMapRoom : NetworkBehaviour
     {
         mapRoomInfoBaseLight.DOKill();
         mapRoomInfoIconLight.DOKill();
-        mapTileBaseSelect.transform.DOKill();
+        mapTileSelect.transform.DOKill();
         mapTileBase.transform.DOKill();
         hexagonMapRoomUI.transform.DOKill();
     }
@@ -157,9 +149,7 @@ public class HexagonMapRoom : NetworkBehaviour
         if(isRegion && region != null){
             MapUI.instance.RegionPopUpShow(region);
         }
-        mapTileLineLight.SetActive(true);
-        mapTileIconLight.SetActive(true);
-        mapTileCapLight.SetActive(true);
+        ChangeMapTileByMouseOver(true, roomType);
     }
 
     private void OnMouseExit()
@@ -168,9 +158,7 @@ public class HexagonMapRoom : NetworkBehaviour
         if(isRegion && region != null){
             MapUI.instance.RegionPopUpHide();
         }
-        mapTileLineLight.SetActive(false);
-        mapTileIconLight.SetActive(false);
-        mapTileCapLight.SetActive(false);
+        ChangeMapTileByMouseOver(false, roomType);
     }
  
     // ------------------------------------------------------------ Syncvar Hook --------------------------------------------------------------- //
@@ -180,145 +168,110 @@ public class HexagonMapRoom : NetworkBehaviour
         switch(newVal)
         {
             case RoomType.START_LOCATION :
-                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.CURRENT];
-                mapTileCapRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CURRENT];
-                mapTilCapLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CURRENT];
-                mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CURRENT];
-                mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CURRENT];
-                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CURRENT];
-                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CURRENT];
+                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Current);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Current_Default);
+                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Current);
+                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Current);
                 break;
             case RoomType.MONSTER :
-                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.NORMAL_MONSTER];
-                mapTileCapRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.NORMAL_MONSTER];
-                mapTilCapLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.NORMAL_MONSTER_L];
-                mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.NORMAL_MONSTER];
-                mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.NORMAL_MONSTER_L];
-                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.NORMAL_MONSTER];
-                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.NORMAL_MONSTER_L];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.NORMAL_MONSTER];
-                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.NORMAL_MONSTER_L];
+                mapTileBaseRenderer.sprite =  M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_NormalMonster);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_NormalMonster_Default);
+                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Monster);
+                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Monster_Light);
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_NormalMonster);
+                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_MormalMonster_Light);
                 mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.NORMAL_MONSTER];
                 mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.NORMAL_MONSTER_L];
                 mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.NORMAL_MONSTER];
                 mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.NORMAL_MONSTER_L];
                 break;
             case RoomType.ELITE :
-                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.ELITE_MONSTER];
-                mapTileCapRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ELITE_MONSTER];
-                mapTilCapLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ELITE_MONSTER_L];
-                mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ELITE_MONSTER];
-                mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ELITE_MONSTER_L];
-                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ELITE_MONSTER];
-                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ELITE_MONSTER_L];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ELITE_MONSTER];
-                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ELITE_MONSTER_L];
+                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_EliteMonster);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_EliteMonster_Default);
+                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Monster);
+                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Monster);
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_EliteMonster);
+                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_EliteMonster_Light);
                 mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.ELITE_MONSTER];
                 mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.ELITE_MONSTER_L];
                 mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.ELITE_MONSTER];
                 mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.ELITE_MONSTER_L];
                 break;
             case RoomType.EVENT_POSITIIVE :
-                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.EVENT];
-                mapTileCapRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT];
-                mapTilCapLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT_L];
-                mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT];
-                mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT_L];
-                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT];
-                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT_L];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT];
-                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT_L];
+                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Event);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Event_Default);
+                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Event);
+                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Event_Light);
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_Event);
+                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_Event_Light);
                 mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.EVENT];
                 mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.EVENT_L];
                 mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.EVENT];
                 mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.EVENT_L];
                 break;
             case RoomType.EVENT_NEGATIVE :
-                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.EVENT];
-                mapTileCapRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT];
-                mapTilCapLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT_L];
-                mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT];
-                mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT_L];
-                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT];
-                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.EVENT_L];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT];
-                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.EVENT_L];
+                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Event);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Event_Default);
+                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Event);
+                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Event_Light);
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_Event);
+                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_Event_Light);
                 mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.EVENT];
                 mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.EVENT_L];
                 mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.EVENT];
                 mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.EVENT_L];
                 break;
             case RoomType.CAMP :
-                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.CAMP];
-                mapTileCapRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CAMP];
-                mapTilCapLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CAMP_L];
-                mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CAMP];
-                mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CAMP_L];
-                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CAMP];
-                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CAMP_L];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CAMP];
-                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CAMP_L];
+                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Camp);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Camp_Default);
+                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Camp);
+                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Camp_Light);
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_Camp);
+                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_Camp_Light);
                 mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.CAMP];
                 mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.CAMP_L];
                 mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.CAMP];
                 mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.CAMP_L];
                 break;
             case RoomType.ITEM_NPC :
-                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.ITEM_SHOP];
-                mapTileCapRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ITEM_SHOP];
-                mapTilCapLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ITEM_SHOP_L];
-                mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ITEM_SHOP];
-                mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ITEM_SHOP_L];
-                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ITEM_SHOP];
-                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.ITEM_SHOP_L];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ITEM_SHOP];
-                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.ITEM_SHOP_L];
+                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_ItemShop);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_ItemShop_Default);
+                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_ItemShop);
+                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_ItemShop_Light);
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_ItemShop);
+                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_ItemShop_Light);
                 mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.ITEM_SHOP];
                 mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.ITEM_SHOP_L];
                 mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.ITEM_SHOP];
                 mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.ITEM_SHOP_L];
                 break;
             case RoomType.CARD_NPC :
-                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.CARD_SHOP];
-                mapTileCapRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CARD_SHOP];
-                mapTilCapLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CARD_SHOP_L];
-                mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CARD_SHOP];
-                mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CARD_SHOP_L];
-                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CARD_SHOP];
-                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.CARD_SHOP_L];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CARD_SHOP];
-                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.CARD_SHOP_L];
+                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_CardShop);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_CardShop_Default);
+                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_CardShop);
+                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_CardShop_Light);
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_CardShop);
+                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_CardShop_Light);
                 mapRoomInfoBase.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.CARD_SHOP];
                 mapRoomInfoBaseLight.sprite = M_MapManager.instance.mapRoomInfoBases[MapRoomInfoBase.CARD_SHOP_L];
                 mapRoomInfoIcon.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.CARD_SHOP];
                 mapRoomInfoIconLight.sprite = M_MapManager.instance.mapRoomInfoIcons[MapRoomInfoIcon.CARD_SHOP_L];
                 break;
             case RoomType.COMPLETE :
-                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBases[MapTileBase.COMPLETE];
-                mapTileCapRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.COMPLETE];
-                mapTilCapLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.COMPLETE];
-                mapTileIconRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.COMPLETE];
-                mapTileIocnLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.COMPLETE_L];
-                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.COMPLETE];
-                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCaps[MapTileCap.COMPLETE];
-                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.COMPLETE];
-                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIcons[MapTileIcon.COMPLETE_L];
+                mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Complete);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Complete_Default);
+                mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Complete);
+                mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Complete);
+                mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_Complete);
+                mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_Complete_Light);
                 break;
             case RoomType.RUINS :
                 mapTileBaseRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTileCapRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTilCapLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTileIconRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTileIocnLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileCapSelectRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileCapSelectLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 break;
             case RoomType.BOSS :
                 mapTileBaseRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTileCapRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTilCapLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTileIconRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
-                mapTileIocnLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileCapSelectRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileCapSelectLightRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 break;
@@ -493,22 +446,22 @@ public class HexagonMapRoom : NetworkBehaviour
     private void ChangeMapExpandedState(bool isSelected)
     {
         if(isSelected){
-            mapTileBaseSelect.SetActive(true);
-            mapTileBaseSelect.transform.DOLocalMoveY(expandValue, expandDuration);
+            mapTileSelect.SetActive(true);
+            mapTileSelect.transform.DOLocalMoveY(expandValue, expandDuration);
             mapTileBase.transform.DOLocalMoveY(expandValue, expandDuration);
             hexagonMapRoomUI.transform.DOLocalMoveY(expandValue, expandDuration);
             mapTileMask.GetComponent<SpriteMask>().enabled = true;
             mapTileMask.transform.localPosition = new Vector3(
                 mapTileMask.transform.localPosition.x,
-                expandValue + 0.05f,
+                expandValue + 0.02f,
                 mapTileMask.transform.localPosition.z
             );
             hexagonMapRoomUI.SetActive(true);
             ChangeSelectRoomRegionIndicatorMask(coordinate, SpriteMaskInteraction.None);
             M_TurnManager.instance.playerOrder.Callback += OnUpdatedPlayerOrder; // 방 선택 상태가 되면 오더 변경 이벤트 등록
         }else{
-            mapTileBaseSelect.SetActive(false);
-            mapTileBaseSelect.transform.DOLocalMoveY(originValue, expandDuration);
+            mapTileSelect.SetActive(false);
+            mapTileSelect.transform.DOLocalMoveY(originValue, expandDuration);
             mapTileBase.transform.DOLocalMoveY(originValue, expandDuration);
             hexagonMapRoomUI.transform.DOLocalMoveY(originValue, expandDuration);
             mapTileMask.GetComponent<SpriteMask>().enabled = false;
@@ -583,6 +536,46 @@ public class HexagonMapRoom : NetworkBehaviour
         }else{
             mapRoomInfoBaseLight.DOKill();
             mapRoomInfoIconLight.DOKill();
+        }
+    }
+
+    private void ChangeMapTileByMouseOver(bool isMouseOver, RoomType roomType)
+    {
+        switch(roomType)
+        {
+            case RoomType.START_LOCATION :
+                mapTileBaseRenderer.sprite = isMouseOver ? M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Current_Light) : M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Current);
+                break;
+            case RoomType.MONSTER :
+                mapTileBaseRenderer.sprite = isMouseOver ? M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_NormalMonster_Light) : M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_NormalMonster);
+                break;
+            case RoomType.ELITE :
+                mapTileBaseRenderer.sprite = isMouseOver ? M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_EliteMonster_Light) : M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_EliteMonster);
+                break;
+            case RoomType.EVENT_POSITIIVE :
+                mapTileBaseRenderer.sprite = isMouseOver ? M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Event_Light) : M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Event);
+                break;
+            case RoomType.EVENT_NEGATIVE :
+                mapTileBaseRenderer.sprite = isMouseOver ? M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Event_Light) : M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Event);
+                break;
+            case RoomType.CAMP :
+                mapTileBaseRenderer.sprite = isMouseOver ? M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Camp_Light) : M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Camp);
+                break;
+            case RoomType.ITEM_NPC :
+                mapTileBaseRenderer.sprite = isMouseOver ? M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_ItemShop_Light) : M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_ItemShop);
+                break;
+            case RoomType.CARD_NPC :
+                mapTileBaseRenderer.sprite = isMouseOver ? M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_CardShop_Light) : M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_CardShop);
+                break;
+            case RoomType.COMPLETE :
+                mapTileBaseRenderer.sprite = isMouseOver ? M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Complete_Light) : M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Complete);
+                break;
+            case RoomType.RUINS :
+                mapTileBaseRenderer.color = isMouseOver ? ProjectD.ColorUtils.HexToColor("#E700FF") : Color.white;
+                break;
+            case RoomType.BOSS :
+                mapTileBaseRenderer.color = isMouseOver ? ProjectD.ColorUtils.HexToColor("#E700FF") : Color.white;
+                break;
         }
     }
 }

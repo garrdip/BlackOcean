@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.U2D;
 using Mirror;
 using Spine.Unity;
 using ProjectD;
 using AYellowpaper.SerializedCollections;
-using DG.Tweening;
+
 
 public class M_MapManager : NetworkSingletonD<M_MapManager>
 {  
@@ -88,17 +88,14 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     [Header("거리 측정을 위한 경로 표시 오브젝트 목록")]
     public List<HexagonMapRoom> findPaths = new List<HexagonMapRoom>();
 
-    [Header("MapTileBase 스프라이트 목록")]
-    [SerializedDictionary("MapTileBase", "Sprite")]
-    public SerializedDictionary<MapTileBase, Sprite> mapTileBases = new SerializedDictionary<MapTileBase, Sprite>();
+    [Header("MapTileBase 스프라이트 아틀라스")]
+    public SpriteAtlas mapTileBaseAtlas;
 
-    [Header("MapTileCap 스프라이트 목록")]
-    [SerializedDictionary("MapTileBase", "Sprite")]
-    public SerializedDictionary<MapTileCap, Sprite> mapTileCaps = new SerializedDictionary<MapTileCap, Sprite>();
+    [Header("MapTileCap 스프라이트 아틀라스")]
+    public SpriteAtlas mapTileCapAtlas;
 
-    [Header("MapTileIcon 스프라이트 목록")]
-    [SerializedDictionary("MapTileBase", "Sprite")]
-    public SerializedDictionary<MapTileIcon, Sprite> mapTileIcons = new SerializedDictionary<MapTileIcon, Sprite>();
+    [Header("MapTileIcon 스프라이트 아틀라스")]
+    public SpriteAtlas mapTileIconAtlas;
 
     [Header("MapRoomInfoBase 스프라이트 목록")]
     [SerializedDictionary("MapRoomInfoBase", "Sprite")]
@@ -121,7 +118,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         new Vector2Int(1, -1) // 1시
     };
 
-    private const int maxHexagonGridRange = 12;
+    private const int maxHexagonGridRange = 15;
 
     private void Awake()
     {
@@ -1277,53 +1274,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             }
         }
     }
-}
-
-public enum MapTileBase {
-    NORMAL_MONSTER,
-    ELITE_MONSTER,
-    CARD_SHOP,
-    ITEM_SHOP,
-    CAMP,
-    EVENT,
-    COMPLETE,
-    CURRENT
-}
-
-public enum MapTileCap {
-    NORMAL_MONSTER,
-    NORMAL_MONSTER_L,
-    ELITE_MONSTER,
-    ELITE_MONSTER_L,
-    CARD_SHOP,
-    CARD_SHOP_L,
-    ITEM_SHOP,
-    ITEM_SHOP_L,
-    CAMP,
-    CAMP_L,
-    EVENT,
-    EVENT_L,
-    COMPLETE,
-    CURRENT,
-}
-
-public enum MapTileIcon {
-    NORMAL_MONSTER,
-    NORMAL_MONSTER_L,
-    ELITE_MONSTER,
-    ELITE_MONSTER_L,
-    CARD_SHOP,
-    CARD_SHOP_L,
-    ITEM_SHOP,
-    ITEM_SHOP_L,
-    CAMP,
-    CAMP_L,
-    EVENT,
-    EVENT_L,
-    COMPLETE,
-    COMPLETE_L,
-    CURRENT,
-    CURRENT_L,
 }
 
 public enum MapRoomInfoBase {

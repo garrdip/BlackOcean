@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: MapTileCapAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 376f07b054d236c4cb9266c9b17564b9, type: 3}
+    - {fileID: 2800000, guid: 5e84ee45ac1aefa418845df55e059a08, type: 3}
+    - {fileID: 2800000, guid: bde2c7902ee2f7747aecdbfd4c049091, type: 3}
+    - {fileID: 2800000, guid: 056bb9e63075d0b4ab6a7efe55199509, type: 3}
+    - {fileID: 2800000, guid: ae61669db2c93304db3eb1c8b1247b04, type: 3}
+    - {fileID: 2800000, guid: 450b82b7e63d63b4ca1d0cdabbdef967, type: 3}
+    - {fileID: 2800000, guid: ddd75fea67e8ac1458810e6c20544012, type: 3}
+    - {fileID: 2800000, guid: 02b829280fa7f6043819fa79aa4e77f0, type: 3}
+    - {fileID: 2800000, guid: ef67c292c0746ce4886be1c26f34a78c, type: 3}
+    - {fileID: 2800000, guid: 4b9c05787a2eedc429cea14d36fa1247, type: 3}
+    - {fileID: 2800000, guid: daaad46a523d0134796dfd789b69b4a5, type: 3}
+    - {fileID: 2800000, guid: 6c2bb5fafe7498e4cbf047c29a4eb460, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: bde2c7902ee2f7747aecdbfd4c049091, type: 3}
+  - {fileID: 21300000, guid: 376f07b054d236c4cb9266c9b17564b9, type: 3}
+  - {fileID: 21300000, guid: ef67c292c0746ce4886be1c26f34a78c, type: 3}
+  - {fileID: 21300000, guid: 5e84ee45ac1aefa418845df55e059a08, type: 3}
+  - {fileID: 21300000, guid: 056bb9e63075d0b4ab6a7efe55199509, type: 3}
+  - {fileID: 21300000, guid: 450b82b7e63d63b4ca1d0cdabbdef967, type: 3}
+  - {fileID: 21300000, guid: 02b829280fa7f6043819fa79aa4e77f0, type: 3}
+  - {fileID: 21300000, guid: 4b9c05787a2eedc429cea14d36fa1247, type: 3}
+  - {fileID: 21300000, guid: daaad46a523d0134796dfd789b69b4a5, type: 3}
+  - {fileID: 21300000, guid: ddd75fea67e8ac1458810e6c20544012, type: 3}
+  - {fileID: 21300000, guid: 6c2bb5fafe7498e4cbf047c29a4eb460, type: 3}
+  - {fileID: 21300000, guid: ae61669db2c93304db3eb1c8b1247b04, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - M_C_CardShop
+  - M_C_Monster
+  - M_C_Event
+  - M_C_Monster_Light
+  - M_C_CardShop_Light
+  - M_C_ItenShop_Light
+  - M_C_Camp_Light
+  - M_C_Event_Light
+  - M_C_Complete
+  - M_C_Camp
+  - M_C_Current
+  - M_C_ItemShop
+  m_RenderDataMap: {}
+  m_Tag: MapTileCapAtlas
+  m_IsVariant: 0
