@@ -175,7 +175,7 @@ public class HexagonMapRoom : NetworkBehaviour
                 break;
             case RoomType.MONSTER :
                 mapTileBaseRenderer.sprite =  M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_NormalMonster);
-                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_NormalMonster_Default);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Monster_Default);
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Monster);
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Monster_Light);
                 mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_NormalMonster);
@@ -187,7 +187,7 @@ public class HexagonMapRoom : NetworkBehaviour
                 break;
             case RoomType.ELITE :
                 mapTileBaseRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_EliteMonster);
-                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_EliteMonster_Default);
+                mapTileBaseSelectRenderer.sprite = M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Monster_Default);
                 mapTileCapSelectRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Monster);
                 mapTileCapSelectLightRenderer.sprite = M_MapManager.instance.mapTileCapAtlas.GetSprite(Const.M_C_Monster);
                 mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_EliteMonster);

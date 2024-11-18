@@ -68,12 +68,10 @@ public static class Const
 
     
     // MapTileBase 스프라이트 아틀라스
+    public const string M_B_Monster_Default = "M_B_Monster_Default";
     public const string M_B_NormalMonster = "M_B_NormalMonster";
-    public const string M_B_NormalMonster_Default = "M_B_NormalMonster_Default";
     public const string M_B_NormalMonster_Light = "M_B_NormalMonster_Light";
-
     public const string M_B_EliteMonster = "M_B_EliteMonster";
-    public const string M_B_EliteMonster_Default = "M_B_EliteMonster_Default";
     public const string M_B_EliteMonster_Light = "M_B_EliteMonster_Light";
 
     public const string M_B_CardShop = "M_B_CardShop";
