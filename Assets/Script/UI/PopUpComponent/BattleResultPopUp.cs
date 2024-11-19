@@ -37,7 +37,7 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         }
         for(int i=0; i<skipButtons.Count; i++){
             int buttonIndex = i;
-            skipButtons[i].onClick.AddListener(() => SkipRewardCard(buttonIndex));
+            skipButtons[i].onClick.AddListener(() => SkipReward(buttonIndex));
         }
     }
 
@@ -53,8 +53,8 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         ChangeTab(index);
     }
 
-    // 보상카드 스킵
-    private void SkipRewardCard(int index)
+    // 전투 보상 스킵
+    private void SkipReward(int index)
     {
         skipButtons[index].interactable = false;
         skipButtons[index].image.color = new Color32(255, 255, 255, 255);
