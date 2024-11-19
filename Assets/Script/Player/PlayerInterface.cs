@@ -246,6 +246,9 @@ public class PlayerInterface : NetworkBehaviour
             }
             foreach(PlayerInterface player in users)player.SetCompleteRewardStateDefault();
             M_TurnManager.instance.NoneBattleEnd();
+        }
+        if(isOwned){
+            PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
         }   
     }
     

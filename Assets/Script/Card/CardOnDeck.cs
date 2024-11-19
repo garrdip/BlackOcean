@@ -401,7 +401,6 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 RequsetCardReward();
                 ChangeCardOnDeckRewardedState(M_TurnManager.instance.rewardCardObjects);
                 CardOnDeckClickAnimation();
-                PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
                 AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));
                 M_SoundManager.instance.PlaySFX(rewardCardAudio, rewardCardAudio.length);
             }
