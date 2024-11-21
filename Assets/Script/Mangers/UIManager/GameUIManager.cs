@@ -5,8 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using Mirror;
-using ProjectD;
-
+using Gpm.Ui;
 
 public class GameUIManager : SingletonD<GameUIManager>
 {
@@ -59,7 +58,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     public TextMeshProUGUI maxIchiText;
 
     [Header("카드 큐 UI")]
-    public HorizontalLayoutGroup cardQueueLayout;
+    public InfiniteScroll infiniteScroll;
     public ScrollRect cardQueueScrollRect;
     public GameObject cardQueuePopUp;
     public TextMeshProUGUI textCardQueueName;

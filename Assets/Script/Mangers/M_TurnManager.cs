@@ -5,7 +5,7 @@ using Mirror;
 using ProjectD;
 using Spine.Unity;
 using Spine.Unity.Examples;
-using DG.Tweening;
+using Gpm.Ui;
 using AYellowpaper.SerializedCollections;
 using System.Linq;
 
@@ -36,11 +36,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     // 카드 큐 데이터 저장할 Synclist
     public readonly SyncList<CardQueue> cardQueueList = new SyncList<CardQueue>();
 
-    [Header("카드 큐 프리팹")]
-    public GameObject cardQueueItemPrefab;
+    [Header("카드 큐")]
     public int currentCardQueueIndex; // 현재 카드 큐 인덱스
     private const int currentCardQueueInitalValue = -1; // 현재 카드 큐 인덱스 초기값 (리스트 인덱스와 맞추기 위해 초기값 -1)
-    public List<GameObject> cardQueueItems = new List<GameObject>();
     public enum INDEX_OPERATION {
         INCREASE,
         DECREASE
@@ -1081,6 +1079,9 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             var monster = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == selectedMonsterGroup.monsters[i].name), position, Quaternion.identity).GetComponent<SpawnedMonster>();
             monster.monster = selectedMonsterGroup.monsters[i];
             monster.index = selectedMonsterGroup.monsters.Count - i;
+            monster.MAXHP = selectedMonsterGroup.monsters[i].MAXHP; 
+            monster.HP = selectedMonsterGroup.monsters[i].MAXHP;
+            monster.monsterName = selectedMonsterGroup.monsters[i].name;
             NetworkServer.Spawn(monster.gameObject);
             
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), position, Quaternion.identity);
@@ -1120,7 +1121,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         if(randomNumber == 0){
             // RyuJinSol 생성
             var campRyuJinSol = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_RyuJinSol"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
-            campRyuJinSol.monster = MonsterData.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_RyuJinSol"));
+            Monster monster = MonsterData.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_RyuJinSol"));
+            campRyuJinSol.MAXHP = monster.MAXHP;
+            campRyuJinSol.HP = monster.MAXHP;
+            campRyuJinSol.monsterName = monster.name;
             NetworkServer.Spawn(campRyuJinSol.gameObject);
 
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
@@ -1133,7 +1137,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }else{
             // Sophia 생성
             var campSophia = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_Sophia"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
-            campSophia.monster = MonsterData.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_Sophia"));
+            Monster monster = MonsterData.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_Sophia"));
+            campSophia.MAXHP = monster.MAXHP;
+            campSophia.HP = monster.MAXHP;
+            campSophia.monsterName = monster.name;
             NetworkServer.Spawn(campSophia.gameObject);
 
             var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
@@ -1160,7 +1167,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
 
         var itemShopNPC = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "NPC_ShadowMan"), new Vector3(11,-3,0), Quaternion.identity).GetComponent<SpawnedMonster>();
-        itemShopNPC.monster = MonsterData.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_ShadowMan"));
+        Monster monster = MonsterData.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_ShadowMan"));
+        itemShopNPC.MAXHP = monster.MAXHP;
+        itemShopNPC.HP = monster.MAXHP;
+        itemShopNPC.monsterName = monster.name;
         NetworkServer.Spawn(itemShopNPC.gameObject);
 
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
@@ -1200,7 +1210,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 }
             }
         }
-        cardNPC.monster = MonsterData.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_Mercurius"));
+        Monster monster = MonsterData.instance.monsterDataList.Find(monster => monster.name.Equals("NPC_Mercurius"));
+        mercurius.MAXHP = monster.MAXHP;
+        mercurius.HP = monster.MAXHP;
+        mercurius.monsterName = monster.name;
         NetworkServer.Spawn(cardNPC.gameObject);
 
         var avatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"), new Vector3(11,-3,0), Quaternion.identity);
@@ -1221,7 +1234,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         switch(randomNumber){
             case 0:
                 var bossMoMos = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "Boss_Momos"),targetObjectPosition[4],Quaternion.identity).GetComponent<SpawnedMonster>();
-                bossMoMos.monster = MonsterData.instance.monsterDataList.Find(x => x.name == "Boss_Momos");
+                Monster momosData = MonsterData.instance.monsterDataList.Find(x => x.name == "Boss_Momos");
+                bossMoMos.MAXHP = momosData.MAXHP;
+                bossMoMos.HP = momosData.MAXHP;
+                bossMoMos.monsterName = momosData.name;
                 NetworkServer.Spawn(bossMoMos.gameObject);
                 var bossMoMosAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
                 bossMoMosAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
@@ -1233,7 +1249,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 break;
             case 1:
                 var bossApates = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "Boss_Apates"),targetObjectPosition[4],Quaternion.identity).GetComponent<SpawnedMonster>();
-                bossApates.monster = MonsterData.instance.monsterDataList.Find(x => x.name == "Boss_Apates");
+                Monster apatesData = MonsterData.instance.monsterDataList.Find(x => x.name == "Boss_Apates");
+                bossApates.MAXHP = apatesData.MAXHP;
+                bossApates.HP = apatesData.MAXHP;
+                bossApates.monsterName = apatesData.name;
                 NetworkServer.Spawn(bossApates.gameObject);
                 var bossApatesAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
                 bossApatesAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
@@ -1245,7 +1264,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 break;
             case 2:
                 var bossGeras = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "Boss_Geras"),targetObjectPosition[4],Quaternion.identity).GetComponent<SpawnedMonster>();
-                bossGeras.monster = MonsterData.instance.monsterDataList.Find(x => x.name == "Boss_Geras");
+                Monster gerasData = MonsterData.instance.monsterDataList.Find(x => x.name == "Boss_Geras");
+                bossGeras.MAXHP = gerasData.MAXHP;
+                bossGeras.HP = gerasData.MAXHP;
+                bossGeras.monsterName = gerasData.name;
                 NetworkServer.Spawn(bossGeras.gameObject);
                 var bossGerasAvatar = Instantiate(netManager.spawnPrefabs.Find(prefab => prefab.name == "TargetObject"),targetObjectPosition[4],Quaternion.identity);
                 bossGerasAvatar.GetComponent<TargetObject>().objectType = ProjectD.ObjectType.ENEMY;
@@ -1945,37 +1967,28 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         switch (op)
         {
             case SyncList<CardQueue>.Operation.OP_ADD:
-                GameObject cardQueueItemObject = Instantiate(cardQueueItemPrefab, Vector3.zero, Quaternion.identity, GameUIManager.instance.cardQueueLayout.transform);
-                CardQueueItem cardQueueItem = cardQueueItemObject.GetComponent<CardQueueItem>();
-                cardQueueItem.cardQueue = newVal;
-                cardQueueItems.Add(cardQueueItemObject);
-                GameUIManager.instance.CardQueueScrollToEnd();
+                GameUIManager.instance.infiniteScroll.InsertData(newVal);
+                int lastIndex = GameUIManager.instance.infiniteScroll.GetItemCount() - 1;
+                GameUIManager.instance.infiniteScroll.MoveTo(lastIndex, InfiniteScroll.MoveToType.MOVE_TO_CENTER, 0.5f);
                 break;
             case SyncList<CardQueue>.Operation.OP_INSERT:
                 
                 break;
             case SyncList<CardQueue>.Operation.OP_REMOVEAT:
-                Destroy(cardQueueItems[index]);
-                cardQueueItems.RemoveAt(index);
+                GameUIManager.instance.infiniteScroll.RemoveData(index);
                 break;
             case SyncList<CardQueue>.Operation.OP_SET:
-                foreach(GameObject gameObject in cardQueueItems){
-                    CardQueueItem item = gameObject.GetComponent<CardQueueItem>();
-                    item.bigCardQueue.gameObject.SetActive(false);
-                    item.smallCardQueue.gameObject.SetActive(true);
+                for(int i=0; i<GameUIManager.instance.infiniteScroll.GetDataList().Count; i++){
+                    InfiniteScrollData infiniteScrollData = GameUIManager.instance.infiniteScroll.GetDataList()[i];
+                    CardQueue cardQueue = (CardQueue)infiniteScrollData;
+                    cardQueue.isCurrent = (i == index) ? true : false;
                 }
-                CardQueueItem currentCardQueue = cardQueueItems[index].GetComponent<CardQueueItem>();
-                currentCardQueue.bigCardQueue.gameObject.SetActive(true);
-                currentCardQueue.smallCardQueue.gameObject.SetActive(false);
-                currentCardQueue.transform.DOScale(1.5f, 0.25f).OnComplete(() => {
-                    currentCardQueue.transform.DOScale(1f, 0.25f);
-                });
+                foreach(CardQueueItem cardQueueItem in FindObjectsByType<CardQueueItem>(FindObjectsSortMode.None)){
+                    cardQueueItem?.onCurrentCardQueueUpdated.Invoke(index);
+                }
                 break;
             case SyncList<CardQueue>.Operation.OP_CLEAR:
-                foreach(GameObject cardQueueObject in cardQueueItems){
-                    Destroy(cardQueueObject);
-                }
-                cardQueueItems.Clear();
+                GameUIManager.instance.infiniteScroll.Clear();
                 break;
         }
     }

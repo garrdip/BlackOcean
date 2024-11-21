@@ -1,12 +1,13 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Gpm.Ui;
 
-
-public class CardQueueItem : MonoBehaviour
+public class CardQueueItem : InfiniteScrollItem
 {
+    public Action<int> onCurrentCardQueueUpdated;
     public CardQueue cardQueue;
     public CanvasGroup canvasGroup;
 
@@ -23,17 +24,43 @@ public class CardQueueItem : MonoBehaviour
     public Image bigCardQueueIllust;
 
 
+    void Awake()
+    {
+        onCurrentCardQueueUpdated += OnCurrentCardQueueUpdated;
+    }
+
     void Start()
     {
         canvasGroup.alpha = 0f;
         canvasGroup.DOFade(1f, 0.5f);
-        InitCardQueueItemIllust(cardQueue.card.baseCard);
     }
 
     private void OnDestroy()
     {
         transform.DOKill();
         canvasGroup.DOKill();
+        bigCardQueue.transform.DOKill();
+    }
+
+    // 해당 InfiniteScrollItem이 재사용 되어 InfiniteScrollData가 변경될 경우 호출(초기 생성 및 스크롤 이동 시)
+    public override void UpdateData(InfiniteScrollData scrollData)
+    {
+        base.UpdateData(scrollData);
+
+        cardQueue = (CardQueue)scrollData;
+        InitCardQueueItemIllust(cardQueue.card.baseCard);
+        bigCardQueue.gameObject.SetActive(cardQueue.isCurrent);
+        smallCardQueue.gameObject.SetActive(!cardQueue.isCurrent);
+    }
+
+    // CardQueue SyncList에서 현재 수행되고 있는 카드큐의 인덱스 값을 전달받는 이벤트(현재 카드큐 인덱스 변경 시)
+    public void OnCurrentCardQueueUpdated(int currentCardQueueIndex)
+    {
+        bigCardQueue.gameObject.SetActive(currentCardQueueIndex == GetItemIndex());
+        smallCardQueue.gameObject.SetActive(currentCardQueueIndex != GetItemIndex());
+        bigCardQueue.transform.DOScale(1.5f, 0.25f).OnComplete(() => {
+            bigCardQueue.transform.DOScale(1f, 0.25f);
+        });
     }
 
     // 카드 큐 일러스트 이미지에 사용된 카드의 일러스트 세팅

@@ -9,6 +9,7 @@ using Spine.Unity;
 
 public class SpawnedMonster : NetworkBehaviour
 {
+    [SyncVar]
     public string monsterName;
 
     [SyncVar]
@@ -40,7 +41,7 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangedNextTarget))]
     public ActionTarget nextTarget = ActionTarget.UNDEFINED;
     
-    [SyncVar (hook = nameof(OnChangedMonsterData))]
+    [SyncVar]
     public Monster monster;
 
     [SyncVar (hook = nameof(OnChangeParent))]
@@ -345,18 +346,6 @@ public class SpawnedMonster : NetworkBehaviour
     }
 
     // ------------------------------------------------------------------ SyncVar Hook ------------------------------------------------------------------------//
-
-    public void OnChangedMonsterData(Monster oldVal , Monster newVal)
-    {
-        monsterName = newVal.name;
-        MAXHP = newVal.MAXHP;
-        HP = newVal.MAXHP;
-        //SyncVar Data는 서버에서 관리
-        if(isServer)
-        {
-            HP = newVal.MAXHP;
-        }
-    }
 
     public virtual void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
     {
