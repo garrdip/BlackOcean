@@ -37,6 +37,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public readonly SyncList<CardQueue> cardQueueList = new SyncList<CardQueue>();
 
     [Header("카드 큐")]
+    public System.Action<int> onCurrentCardQueueUpdated; // 현재 카드 큐 변경 이벤트
     public int currentCardQueueIndex; // 현재 카드 큐 인덱스
     private const int currentCardQueueInitalValue = -1; // 현재 카드 큐 인덱스 초기값 (리스트 인덱스와 맞추기 위해 초기값 -1)
     public enum INDEX_OPERATION {
@@ -1983,9 +1984,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     CardQueue cardQueue = (CardQueue)infiniteScrollData;
                     cardQueue.isCurrent = (i == index) ? true : false;
                 }
-                foreach(CardQueueItem cardQueueItem in FindObjectsByType<CardQueueItem>(FindObjectsSortMode.None)){
-                    cardQueueItem?.onCurrentCardQueueUpdated.Invoke(index);
-                }
+                onCurrentCardQueueUpdated.Invoke(index);
                 break;
             case SyncList<CardQueue>.Operation.OP_CLEAR:
                 GameUIManager.instance.infiniteScroll.Clear();

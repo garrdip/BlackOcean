@@ -7,7 +7,6 @@ using Gpm.Ui;
 
 public class CardQueueItem : InfiniteScrollItem
 {
-    public Action<int> onCurrentCardQueueUpdated;
     public CardQueue cardQueue;
     public CanvasGroup canvasGroup;
 
@@ -26,7 +25,7 @@ public class CardQueueItem : InfiniteScrollItem
 
     void Awake()
     {
-        onCurrentCardQueueUpdated += OnCurrentCardQueueUpdated;
+        M_TurnManager.instance.onCurrentCardQueueUpdated += OnCurrentCardQueueUpdated;
     }
 
     void Start()
@@ -53,7 +52,7 @@ public class CardQueueItem : InfiniteScrollItem
         smallCardQueue.gameObject.SetActive(!cardQueue.isCurrent);
     }
 
-    // CardQueue SyncList에서 현재 수행되고 있는 카드큐의 인덱스 값을 전달받는 이벤트(현재 카드큐 인덱스 변경 시)
+    // 현재 카드 큐 인덱스 변경 이벤트 수신
     public void OnCurrentCardQueueUpdated(int currentCardQueueIndex)
     {
         bigCardQueue.gameObject.SetActive(currentCardQueueIndex == GetItemIndex());
