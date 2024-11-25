@@ -19,7 +19,7 @@ public class GamePlayerItem : NetworkBehaviour
 
     public void ART_OnStartBattleEvent_Invoke()
     {
-        ART_OnStartBattleEvent.Invoke(M_TurnManager.instance.spawnedPlayerList.Find(tar => tar.player == GetComponent<GamePlayer>()));
+        ART_OnStartBattleEvent?.Invoke(M_TurnManager.instance.spawnedPlayerList.Find(tar => tar.player == GetComponent<GamePlayer>()));
     }
 
     void OnArtifactUpdated(SyncList<Item>.Operation op, int index, Item oldArtifact, Item newArtifact)

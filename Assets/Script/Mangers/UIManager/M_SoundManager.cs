@@ -579,9 +579,7 @@ public class M_SoundManager : MonoBehaviour {
             if (sfxPool[i].Time <= 0.0001f || HasPossiblyFinished (sfxPool[i])) {
                 sfxPool[i].Source.Stop ();
                 // 콜백함수 실행
-                if (sfxPool[i].Callback != null) {
-                    sfxPool[i].Callback.Invoke ();
-                }
+                sfxPool[i].Callback?.Invoke ();
 
                 // 클립 제거 후
                 Destroy (sfxPool[i].gameObject);
@@ -1002,9 +1000,7 @@ public class M_SoundManager : MonoBehaviour {
             if (voicePool[i].Time <= 0.0001f || HasVoicePossiblyFinished (voicePool[i])) {
                 voicePool[i].Source.Stop ();
                 // 콜백함수 실행
-                if (voicePool[i].Callback != null) {
-                    voicePool[i].Callback.Invoke ();
-                }
+                voicePool[i].Callback?.Invoke ();
 
                 // 클립 제거 후
                 Destroy (voicePool[i].gameObject);

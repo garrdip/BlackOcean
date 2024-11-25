@@ -94,11 +94,10 @@ public class RoomPlayer : NetworkRoomPlayer
             ReadyButtonOnRoom readyButtonOnRoom = RoomUI.instance.readyButton.GetComponent<ReadyButtonOnRoom>();
             readyButtonOnRoom.SetReadyButtonViewByReadyState(newVal);
         }
-        if(isServer)
+        if(isServer){
             M_LobbyMananger.instance.RoomPlayerReadyCheck();
-        if(onChangeReadyState != null){
-            onChangeReadyState.Invoke(newVal);
-        }
+        } 
+        onChangeReadyState?.Invoke(newVal);
     }
 
     public void OnChangedCharacter(Character oldVal, Character newVal)
@@ -106,9 +105,7 @@ public class RoomPlayer : NetworkRoomPlayer
         if(isServer){
             M_LobbyMananger.instance.RoomPlayerReadyCheck();
         }
-        if(onSelectCompleteCharacter != null){
-            onSelectCompleteCharacter.Invoke(newVal);
-        }
+        onSelectCompleteCharacter?.Invoke(newVal);
     }
 
     void OnChangedSteamID(ulong oldVal,  ulong newVal)

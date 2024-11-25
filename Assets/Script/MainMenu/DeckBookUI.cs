@@ -32,9 +32,7 @@ public class DeckBookUI : SingletonD<DeckBookUI>
     public void HandleCloseDeckBook()
     {
         dekcBookMenu.SetActive(false);
-        if(onChangeDeckBookOpenState != null){
-            onChangeDeckBookOpenState.Invoke(false);
-        }
+        onChangeDeckBookOpenState?.Invoke(false);
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
@@ -42,9 +40,7 @@ public class DeckBookUI : SingletonD<DeckBookUI>
     public void HandleOpenDeckBook()
     {
         dekcBookMenu.SetActive(true);
-        if(onChangeDeckBookOpenState != null){
-            onChangeDeckBookOpenState.Invoke(true);
-        }
+        onChangeDeckBookOpenState?.Invoke(true);
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }

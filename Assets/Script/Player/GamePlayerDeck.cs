@@ -1131,7 +1131,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void PreviousCardTypeChanged(CardType oldVal, CardType newVal)
     {
         foreach(CardOnHand cardOnHand in cardOnHands)
-            if(!cardOnHand.isMoving)cardOnHand.CardInfoChangedEvent.Invoke();
+            if(!cardOnHand.isMoving)cardOnHand.CardInfoChangedEvent?.Invoke();
     }
 
     IEnumerator CardOnHandDrawSequenceFromTrashDeckCoroutine(CardOnHand cardOnHand, int index)

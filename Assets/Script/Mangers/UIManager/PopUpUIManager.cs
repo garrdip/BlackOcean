@@ -145,9 +145,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isDeckListPopUpOpen = true;
         deckListPopUp.gameObject.SetActive(true);
-        if(onChangeDeckListPopUpShow != null){
-            onChangeDeckListPopUpShow.Invoke(DeckListType.PREFARE_DECK);
-        }
+        onChangeDeckListPopUpShow?.Invoke(DeckListType.PREFARE_DECK);
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_1"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
@@ -157,9 +155,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isDeckListPopUpOpen = true;
         deckListPopUp.gameObject.SetActive(true);
-        if(onChangeDeckListPopUpShow != null){
-            onChangeDeckListPopUpShow.Invoke(DeckListType.TRASH_DECK);
-        }
+        onChangeDeckListPopUpShow?.Invoke(DeckListType.TRASH_DECK);
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_3"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
@@ -169,9 +165,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isDeckListPopUpOpen = true;
         deckListPopUp.gameObject.SetActive(true);
-        if(onChangeDeckListPopUpShow != null){
-            onChangeDeckListPopUpShow.Invoke(DeckListType.FORGOTTEN_DECK);
-        }
+        onChangeDeckListPopUpShow?.Invoke(DeckListType.FORGOTTEN_DECK);
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_2"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
@@ -180,9 +174,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public void HandleHideDeckListPopUp()
     {
         isDeckListPopUpOpen = false;
-        if(onChangeDeckListPopUpHide != null){
-            onChangeDeckListPopUpHide.Invoke();
-        }
+        onChangeDeckListPopUpHide?.Invoke();
     }
 
     // CardOnHand 제거 팝업 활성화
@@ -190,18 +182,14 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isCardOnHandRemovePopUpOpen = true;
         cardOnHandRemovePopUp.gameObject.SetActive(true);
-        if(onChangeCardOnHandRemovePopUpShow != null){
-            onChangeCardOnHandRemovePopUpShow.Invoke();
-        }
+        onChangeCardOnHandRemovePopUpShow?.Invoke();
     }
 
     // CardOnHand 제거 팝업 비활성화
     public void HandleHideCardOnHandRemovePopUp()
     {
         isCardOnHandRemovePopUpOpen = false;
-        if(onChangeCardOnHandRemovePopUpHide != null){
-            onChangeCardOnHandRemovePopUpHide.Invoke();
-        }
+        onChangeCardOnHandRemovePopUpHide?.Invoke();
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
@@ -211,18 +199,14 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isBattleResultPopUpOpen = true;
         battleResultPopUp.SetActive(true);
-        if(onChangeBattleResultPopUpShow != null){
-            onChangeBattleResultPopUpShow.Invoke();
-        }
+        onChangeBattleResultPopUpShow?.Invoke();
     }
 
     // 전투보상 카드선택 팝업창 비활성화
     public void HandleHideBattleResultPopUp()
     {
         isBattleResultPopUpOpen = false;
-        if(onChangeBattleResultPopUpHide != null){
-            onChangeBattleResultPopUpHide.Invoke();
-        } 
+        onChangeBattleResultPopUpHide?.Invoke(); 
     }
 
     // 덱 드로우 팝업창 활성화
@@ -230,18 +214,14 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isDeckDrawPopUpOpen = true;
         deckDrawPopUp.SetActive(true);
-        if(onChangeDeckDrawPopUpShow != null){
-            onChangeDeckDrawPopUpShow.Invoke();
-        }
+        onChangeDeckDrawPopUpShow?.Invoke();
     }
 
     // 덱 드로우 팝업창 비활성화
     public void HandleHideDeckDrawPopUp()
     {
         isDeckDrawPopUpOpen = false;
-        if(onChangeDeckDrawPopUpHide != null){
-            onChangeDeckDrawPopUpHide.Invoke();
-        }
+        onChangeDeckDrawPopUpHide?.Invoke();
     }
 
     // 카드 상점 팝업 활성화/비활성화
@@ -250,13 +230,9 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         isMercuriusPopUpOpen = isPopUp;
         if(isPopUp){
             mercuriusPopUp.SetActive(true);
-            if(onMercuriusPopUpShow != null){
-                onMercuriusPopUpShow.Invoke(); 
-            }  
+            onMercuriusPopUpShow?.Invoke();  
         }else{
-            if(onMercuriusPopUpHide != null){
-                onMercuriusPopUpHide.Invoke();
-            }
+            onMercuriusPopUpHide?.Invoke();
         }
     }
 
@@ -265,18 +241,14 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isCampPopUpOpen = true;
         campPopUp.SetActive(true);
-        if(onCampPopUpShow != null){
-            onCampPopUpShow.Invoke(campAction); 
-        }  
+        onCampPopUpShow?.Invoke(campAction);   
     }
 
     // 전초기지 팝업 비활성화
     public void HandleCampPopUpHide()
     {
         isCampPopUpOpen = false;
-        if(onCampPopUpHide != null){
-            onCampPopUpHide.Invoke();
-        }
+        onCampPopUpHide?.Invoke();
     }
 
     // 아이템 상점 팝업 활성화/비활성화
@@ -285,13 +257,9 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         isItemShopPopUpOpen = isPopUp;
         if(isPopUp){
             itemShopPopUp.SetActive(true);
-            if(onItemShopPopUpShow != null){
-                onItemShopPopUpShow.Invoke(); 
-            }  
+            onItemShopPopUpShow?.Invoke();  
         }else{
-            if(onItemShopPopUpHide != null){
-                onItemShopPopUpHide.Invoke();
-            }
+            onItemShopPopUpHide?.Invoke();
         }
     }
 
@@ -301,13 +269,9 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         isCardEnhancePopUpOpen = isOpen;
         if(isOpen){
             cardEnhancePopUp.SetActive(true);
-            if(onCardEnhancePopUpShow != null){
-                onCardEnhancePopUpShow.Invoke();  
-            }    
+            onCardEnhancePopUpShow?.Invoke();     
         }else{
-            if(onCardEnhancePopUpHide != null){
-                onCardEnhancePopUpHide.Invoke();
-            } 
+            onCardEnhancePopUpHide?.Invoke(); 
         }
     }
 
@@ -317,13 +281,9 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         isCardRemovePopUpOpen = isOpen;
         if(isOpen){
             cardRemovePopUp.SetActive(true);
-            if(onCardRemovePopUpShow != null){
-                onCardRemovePopUpShow.Invoke();  
-            }    
+            onCardRemovePopUpShow?.Invoke();     
         }else{
-            if(onCardRemovePopUpHide != null){
-                onCardRemovePopUpHide.Invoke();
-            } 
+            onCardRemovePopUpHide?.Invoke(); 
         }
     }
 
@@ -332,17 +292,13 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isDeckSelectPopUpOpen = true;
         deckSelectPopUp.SetActive(true);
-        if(onDeckSelectPopUpShow != null){
-            onDeckSelectPopUpShow.Invoke(deckListType, cardNumber);  
-        } 
+        onDeckSelectPopUpShow?.Invoke(deckListType, cardNumber);   
     }
 
     public void HandleHideDeckSelectPopUp()
     {
         isDeckSelectPopUpOpen = false;
-        if(onDeckSelectPopUpHide != null){
-            onDeckSelectPopUpHide.Invoke();
-        } 
+        onDeckSelectPopUpHide?.Invoke(); 
     }
 
     // 한 화면에서 2개의 덱에서 카드 선택해야하는 팝업 활성화/비활성화 (ex. E44 - 공허를 만지는 자)
@@ -350,17 +306,13 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     {
         isDeckMultipleSelectPopUpOpen = true;
         deckMultipleSelectPopUp.SetActive(true);
-        if(onDeckMultipleSelectPopUpShow != null){
-            onDeckMultipleSelectPopUpShow.Invoke();  
-        } 
+        onDeckMultipleSelectPopUpShow?.Invoke();   
     }
 
     public void HandleHideDeckMultipleSelectPopUp()
     {
         isDeckMultipleSelectPopUpOpen = false;
-        if(onDeckMultipleSelectPopUpHide != null){
-            onDeckMultipleSelectPopUpHide.Invoke();
-        } 
+        onDeckMultipleSelectPopUpHide?.Invoke();
     }
 
     // 게임오버 팝업 활성화

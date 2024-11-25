@@ -1984,7 +1984,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     CardQueue cardQueue = (CardQueue)infiniteScrollData;
                     cardQueue.isCurrent = (i == index) ? true : false;
                 }
-                onCurrentCardQueueUpdated.Invoke(index);
+                onCurrentCardQueueUpdated?.Invoke(index);
                 break;
             case SyncList<CardQueue>.Operation.OP_CLEAR:
                 GameUIManager.instance.infiniteScroll.Clear();

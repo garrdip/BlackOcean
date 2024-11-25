@@ -828,7 +828,7 @@ public class TargetObject : NetworkBehaviour
         if(newBuff != null)
             if((newBuff.type == BuffType.ICHI_ATTACK || newBuff.type == BuffType.ICHI_DEFENSE) && objectType == ObjectType.PLAYER)
                 foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
-                    cardOnHand.CardInfoChangedEvent.Invoke();
+                    cardOnHand.CardInfoChangedEvent?.Invoke();
         switch (op)
         {
             case SyncList<Buff>.Operation.OP_ADD:

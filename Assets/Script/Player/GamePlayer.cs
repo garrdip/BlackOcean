@@ -200,9 +200,7 @@ public class GamePlayer : NetworkBehaviour
 
     public void OnChangePlayerGold(int oldVal, int newVal)
     {
-        if(onChangeGold != null){
-            onChangeGold.Invoke(newVal);
-        }
+        onChangeGold?.Invoke(newVal);
     }
 
     public void OnChangHpValue(int oldVal, int newVal)
@@ -219,8 +217,6 @@ public class GamePlayer : NetworkBehaviour
 
     public void OnChangedSelectOrder(int oldVal,int newVal)
     {
-        if(onChangePlayerOrder != null){
-            onChangePlayerOrder.Invoke(newVal);
-        }
+        onChangePlayerOrder?.Invoke(newVal);
     }
 }

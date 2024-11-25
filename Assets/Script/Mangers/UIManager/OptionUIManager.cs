@@ -96,9 +96,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
 
     public void HandShowOptionPopUp(bool isActive)
     {
-        if(onChangeOptionPopUpShow != null){
-            onChangeOptionPopUpShow.Invoke(isActive);
-        }
+        onChangeOptionPopUpShow?.Invoke(isActive);
         isOptionPopUpActive = isActive;
     }
 

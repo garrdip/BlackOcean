@@ -140,9 +140,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
     // 클라연결 끊어지면 컴포넌트들에 델리게이트 이벤트 전송
     private void OnClientDisconnectFromServer(PlayerInterface playerInterface, GamePlayer gamePlayer)
     {
-        if(onClientDisconnected != null){
-            onClientDisconnected.Invoke(playerInterface, gamePlayer);
-        }
+        onClientDisconnected?.Invoke(playerInterface, gamePlayer);
     }
 
     // MapPlayerPiece와 MapPlayerDestination에 SyncVar 참조변수로 있는 playerIntefaceNetId값을 서버의 NetId로 변경

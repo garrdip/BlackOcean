@@ -258,9 +258,7 @@ public class PlayerInterface : NetworkBehaviour
             ReadyButtonOnMap readyButtonOnMap = MapUI.instance.readyButton.GetComponent<ReadyButtonOnMap>();
             readyButtonOnMap.SetReadyButtonViewByReadyState(newVal);
         }
-        if(onChangeReady != null){
-            onChangeReady.Invoke(newVal);
-        }
+        onChangeReady?.Invoke(newVal);
         if(isServer)
         {
             PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
