@@ -5038,8 +5038,7 @@ MonoBehaviour:
   monsterName: 
   index: 0
   MAXHP: 0
-  HP: 0
-  sheild: 0
+  _HP: 0
   nextAction:
     actionName: 
     actionNumber: 0
@@ -5051,7 +5050,7 @@ MonoBehaviour:
   currentBehaviorSequence: 0
   nextTargetObject: {fileID: 0}
   nextTarget: 0
-  monsterData:
+  monster:
     name: 
     MAXHP: 0
     behavior: []
@@ -5059,13 +5058,15 @@ MonoBehaviour:
   parent: {fileID: 0}
   turn: 0
   isActive: 0
-  effectDataAssets:
-  - {fileID: 11400000, guid: 5e49972cb86847e41972806a2256fc1f, type: 2}
   skeletonAnimation: {fileID: 0}
   meshRenderer: {fileID: 7778458032851223039}
   originMaterial: {fileID: 2100000, guid: 27dafcf95357eb44e863235180142244, type: 2}
   dissolveMaterial: {fileID: 2100000, guid: e92257f0a48f78744bdd9bf91fdc9a4e, type: 2}
   dissolveParticle: {fileID: 990911096363295499}
+  effectDataAssets:
+  - {fileID: 11400000, guid: 5e49972cb86847e41972806a2256fc1f, type: 2}
+  effectParticles:
+  - {fileID: 8977316153704399556, guid: 30f3e32d81e2c7743a724fb8d9a18238, type: 3}
 --- !u!114 &485147089649538514
 MonoBehaviour:
   m_ObjectHideFlags: 0

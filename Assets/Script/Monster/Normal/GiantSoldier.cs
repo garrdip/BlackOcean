@@ -57,7 +57,8 @@ public class GiantSoldier : SpawnedMonster
                         break;
                     case 3 :
                         DoAnimation("Attact0");
-                        yield return new WaitForSeconds(1f);
+                        yield return new WaitForSeconds(0.7f);
+                        RpcGroundAttackEffect(0);
                         GeneralAttack();
                         yield return new WaitForSeconds(0.667f);
                         currentLevel = 0;
@@ -77,6 +78,19 @@ public class GiantSoldier : SpawnedMonster
         base.OnStartClient();
         Debug.Log("위치 조정!");
         parent.nextActionIndicator.GetComponent<Transform>().position += new Vector3(0,1,0);
+    }
+
+    [ClientRpc]
+    public void RpcGroundAttackEffect(int index)
+    {
+        Camera.main.GetComponent<Shake>().Shaking();
+        Vector3 position = parent.transform.position + new Vector3(-2.75f, 0f, 0f);
+        ParticleSystem mainParticleSystem = Instantiate(effectParticles[index], position, Quaternion.identity);
+        mainParticleSystem.GetComponent<ParticleSystemRenderer>().sortingOrder = GetComponent<MeshRenderer>().sortingOrder - 1;
+        ParticleSystem sidParticle = mainParticleSystem.transform.GetChild(0).GetComponent<ParticleSystem>();
+        sidParticle.GetComponent<ParticleSystemRenderer>().sortingOrder = GetComponent<MeshRenderer>().sortingOrder - 1;
+        ParticleSystem stoneParticle = mainParticleSystem.transform.GetChild(2).GetComponent<ParticleSystem>();
+        stoneParticle.GetComponent<ParticleSystemRenderer>().sortingOrder = GetComponent<MeshRenderer>().sortingOrder - 2;
     }
 
     [ClientRpc]
