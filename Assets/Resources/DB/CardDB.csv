@@ -149,8 +149,8 @@ G5_H,GEORK,6 나의 이름,적 한명에게 @압도 3 @쇠락 2 을 부여합니
 G5_H_E,GEORK,강화 6 나의 이름,적 한명에게 @압도 3 @쇠락 2 을 부여합니다.,HERO,1,Y,ENEMY,5,,
 G6,GEORK,7 흔들리는 신념,흔들리는 신념 카드는 존재하지 않습니다.,CURSE,1,Y,ENEMY,5,,
 G6_E,GEORK,강화 7 흔들리는 신념,흔들리는 신념 카드는 존재하지 않습니다.,CURSE,1,Y,ENEMY,5,,
-G6_H,GEORK,7 굳건한 신념,흔들리는 신념 카드는 존재하지 않습니다.,HERO,1,Y,ENEMY,5,,
-G6_H_E,GEORK,강화 7 굳건한 신념,흔들리는 신념 카드는 존재하지 않습니다.,HERO,1,Y,ENEMY,5,,
+G6_H,GEORK,7 굳건한 신념,굳건한 신념 카드는 존재하지 않습니다.,HERO,1,Y,ENEMY,5,,
+G6_H_E,GEORK,강화 7 굳건한 신념,굳건한 신념 카드는 존재하지 않습니다.,HERO,1,Y,ENEMY,5,,
 G7,GEORK,8 축복이자 저주,@고행길 턴 종료 시 피해 2 를 받습니다. 사용 시 카드 한 장을 뽑습니다.,CURSE,1,N,NONE,5,YOUNGWON,CHALNA
 G7_E,GEORK,강화 8 축복이자 저주,@고행길 턴 종료 시 피해 2 를 받습니다. 사용 시 카드 한 장을 뽑습니다.,CURSE,1,N,NONE,5,YOUNGWON,CHALNA
 G7_H,GEORK,8 저주조차 아름답다,@이치 2 를 얻고 카드 3장을 뽑습니다.,HERO,0,N,NONE,5,CHALNA,

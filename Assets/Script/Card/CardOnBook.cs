@@ -54,12 +54,18 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        cardBackground.color = Color.green;
+        cardBackground.color = Color.gray;
+        cardImageFrame.color = Color.gray;
+        cardGradeFrame.color = Color.gray;
+        cardEmblem.color = Color.gray;
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
         cardBackground.color = Color.white;
+        cardImageFrame.color = Color.white;
+        cardGradeFrame.color = Color.white;
+        cardEmblem.color = Color.white;
     }
     
     public void OnPointerClick(PointerEventData eventData)

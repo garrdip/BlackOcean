@@ -73,7 +73,9 @@ public class DeckBookTab : MonoBehaviour
         switch(index){
             case 0:
                 foreach(CardBase cardBase in GetCardsByCharacter(Character.GEORK)){
-                    cardsByCharacter.Add(cardBase);
+                    if(!cardBase.cardNumber.Contains("G6")){ // 흔들리는 신념, 굳건한 신념 카드 제외
+                        cardsByCharacter.Add(cardBase);
+                    }
                 }
                 break;
             case 1:
