@@ -42,6 +42,7 @@ public class LobbyPlayer : NetworkBehaviour
     public GameObject profileLineLight;
     public RawImage steamAvatar;
     public TextMeshProUGUI steamDisplayName;
+    public TextMeshProUGUI textSteamId;
 
     [Header("OutIconLayout")]
     public GameObject outIconLayout;
@@ -261,6 +262,7 @@ public class LobbyPlayer : NetworkBehaviour
     {
         var cSteamId = new CSteamID(newVal);
         steamDisplayName.text = SteamFriends.GetFriendPersonaName(cSteamId);
+        textSteamId.text = cSteamId.ToString();
         int imageId = SteamFriends.GetLargeFriendAvatar(cSteamId);
         if(imageId == -1) return;
         steamAvatar.texture = M_SteamManager.instance.GetSteamImageAsTextureByImageId(imageId);
@@ -271,6 +273,9 @@ public class LobbyPlayer : NetworkBehaviour
     // 로비플레이어 초기 뷰 컴포넌트 설정(부모 오브젝트 설정 및 트랜스폼 값 설정)
     private void InitLobbyPlayerView(bool isOwned)
     {
+        var cSteamId = new CSteamID(steamID);
+        steamDisplayName.text = SteamFriends.GetFriendPersonaName(cSteamId);
+        textSteamId.text = cSteamId.ToString();
         SetLobbyPlayerFadeEffect((int)roomPlayer.order);
         OnChangeSelectCharacter(roomPlayer.character); // 룸플레이어의 캐릭터 값으로 초기 설정
         SetOrderTextByPlayerOrder(roomPlayer.order); // 룸플레이어의 오더값으로 초기 설정
