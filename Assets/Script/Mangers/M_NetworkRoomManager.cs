@@ -61,6 +61,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
             }
         }
         roomPlayer.GetComponent<RoomPlayer>().color = colors[NetworkServer.connections.Count - 1];
+        roomPlayer.GetComponent<RoomPlayer>().steamID = (ulong)SteamMatchmaking.GetLobbyMemberByIndex(M_SteamManager.enteredLobby, NetworkServer.connections.Count - 1);
         NetworkServer.Spawn(roomPlayer, conn);
 
         // RoomPlayer 정보를 참조하는 LobbyPlayer 오브젝트 생성 

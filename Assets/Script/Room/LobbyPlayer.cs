@@ -260,12 +260,7 @@ public class LobbyPlayer : NetworkBehaviour
     // SteamID를 이용하여 플레이어 아이디와  프로필사진 데이터를 조회하여 뷰요소에 설정
     private void OnChangedSteamID(ulong oldVal,  ulong newVal)
     {
-        var cSteamId = new CSteamID(newVal);
-        steamDisplayName.text = SteamFriends.GetFriendPersonaName(cSteamId);
-        textSteamId.text = cSteamId.ToString();
-        int imageId = SteamFriends.GetLargeFriendAvatar(cSteamId);
-        if(imageId == -1) return;
-        steamAvatar.texture = M_SteamManager.instance.GetSteamImageAsTextureByImageId(imageId);
+        SetLobbyPlayerSteamData(newVal);
     }
 
     // ----------------------------------------------------------------- View Update Method --------------------------------------------------------------------------------//
@@ -273,15 +268,25 @@ public class LobbyPlayer : NetworkBehaviour
     // 로비플레이어 초기 뷰 컴포넌트 설정(부모 오브젝트 설정 및 트랜스폼 값 설정)
     private void InitLobbyPlayerView(bool isOwned)
     {
-        var cSteamId = new CSteamID(steamID);
-        steamDisplayName.text = SteamFriends.GetFriendPersonaName(cSteamId);
-        textSteamId.text = cSteamId.ToString();
+        SetLobbyPlayerSteamData(steamID);
         SetLobbyPlayerFadeEffect((int)roomPlayer.order);
         OnChangeSelectCharacter(roomPlayer.character); // 룸플레이어의 캐릭터 값으로 초기 설정
         SetOrderTextByPlayerOrder(roomPlayer.order); // 룸플레이어의 오더값으로 초기 설정
         ChangeClassLayoutFade(); // 캐릭터 클래스 레이아웃 Fade 애니매이션
         SetCapAndOutIconByPermission(); // 로비플레이어 상단 좌측의 방장표시 및 강퇴 아이콘을 권한에 따라 설정
         RoomUI.instance.ChangeSwapButtonsIconState(); // 스왑버튼 아이콘 상태 변경
+    }
+
+    // 스팀 데이터 조회해서 뷰에 세팅
+    private void SetLobbyPlayerSteamData(ulong steamId)
+    {
+        var cSteamId = new CSteamID(steamId);
+        steamDisplayName.text = SteamFriends.GetFriendPersonaName(cSteamId);
+        textSteamId.text = cSteamId.ToString();
+        int imageId = SteamFriends.GetLargeFriendAvatar(cSteamId);
+        if(imageId != -1){
+            steamAvatar.texture = M_SteamManager.instance.GetSteamImageAsTextureByImageId(imageId);
+        }
     }
 
     // 룸플레이어 캐릭터 선택 변경 이벤트 수신
