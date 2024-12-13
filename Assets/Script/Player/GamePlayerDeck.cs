@@ -122,7 +122,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
             GameUIManager.instance.textPrefareDeckCount.text = prefareDeck.Count.ToString();
             GameUIManager.instance.textTrashDeckCount.text = trashDeck.Count.ToString();
             GameUIManager.instance.textForgottenDeckCount.text = forgottenDeck.Count.ToString();
-        }  
+        } 
+        // 플레이어별 뽑을덱, 버린덱, 잊혀진덱 팝업 오브젝트 생성 및 Synclist Callback 이벤트 등록 (팝업의 활성화 여부와 상관없이 덱 리스트 정보 동기화 목적) 
+        prefareDeck.Callback += PopUpUIManager.instance.CreatePrefareDeckListPopUp(netId).OnPrefareDeckUpdated;
+        trashDeck.Callback += PopUpUIManager.instance.CreateTrashDeckListPopUp(netId).OnTrashDeckUpdated;
+        forgottenDeck.Callback += PopUpUIManager.instance.CreateForgottenDeckListPopUp(netId).OnForgottenDeckUpdated;
     }
 
     // 화살표 주인 카드 참조값 설정

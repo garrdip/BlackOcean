@@ -9,11 +9,25 @@ using DG.Tweening;
 
 public class PopUpUIManager : SingletonD<PopUpUIManager>
 {
-    // DeckListPopUp Delegate
-    public delegate void OnChangeDeckListPopUpShow(DeckListType type);
-    public OnChangeDeckListPopUpShow onChangeDeckListPopUpShow;
-    public delegate void OnChangeDeckListPopUpHide();
-    public OnChangeDeckListPopUpHide onChangeDeckListPopUpHide;
+    // prefareDeck PopUp Delegate
+    public delegate void OnChangePrefareDeckPopUpShow();
+    public OnChangePrefareDeckPopUpShow onChangePrefareDeckPopUpShow;
+    public delegate void OnChangePrefareDeckPopUpHide();
+    public OnChangePrefareDeckPopUpHide onChangePrefareDeckPopUpHide;
+    
+    
+    // trashDeck PopUp Delegate
+    public delegate void OnChangeTrashDeckPopUpShow();
+    public OnChangeTrashDeckPopUpShow onChangeTrashDeckPopUpShow;
+    public delegate void OnChangeTrashDeckPopUpHide();
+    public OnChangeTrashDeckPopUpHide onChangeTrashDeckPopUpHide;
+    
+    
+    // forgottenDeck PopUp Delegate
+    public delegate void OnChangeForgottenDeckPopUpShow();
+    public OnChangeForgottenDeckPopUpShow onChangeForgottenDeckPopUpShow;
+    public delegate void OnChangeForgottenDeckPopUpHide();
+    public OnChangeForgottenDeckPopUpHide onChangeForgottenDeckPopUpHide;
 
     
     // CardOnHandRemovePopUp Delegate
@@ -84,25 +98,43 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     public delegate void OnDeckMultipleSelectPopUpHide();
     public OnDeckMultipleSelectPopUpHide onDeckMultipleSelectPopUpHide;
 
+    [Header("CardOnDeck 오브젝트의 마우스 오버 상태값")]
+    public bool isMouseOnCardOnDeck = false;
 
     [Header("팝업 활성화 상태값")]
-    public bool isDeckListPopUpOpen = false;
-    public bool isDeckDrawPopUpOpen = false;
+    public bool isPrefareDeckListPopUpOpen = false;
+    public bool isTrashDeckListPopUpOpen = false;
+    public bool isForgottenDeckListPopUpOpen = false;
     public bool isCardOnHandRemovePopUpOpen = false;
     public bool isBattleResultPopUpOpen = false;
+    public bool isGameoverPopUpOpen = false;
+    public bool isDeckDrawPopUpOpen = false;
+    public bool isCardEnhancePopUpOpen = false;
+    public bool isCardRemovePopUpOpen = false;
     public bool isMercuriusPopUpOpen = false;
     public bool isCampPopUpOpen = false;
     public bool isItemShopPopUpOpen = false;
-    public bool isCardEnhancePopUpOpen = false;
-    public bool isCardRemovePopUpOpen = false;
-    public bool isGameoverPopUpOpen = false;
     public bool isDeckSelectPopUpOpen = false;
     public bool isDeckMultipleSelectPopUpOpen = false;
+
+    [Header("뽑을 덱 정보 팝업")]
+    public List<PrefareDeckListPopUp> prefarDeckPopUps = new List<PrefareDeckListPopUp>();
+    public GameObject prefarDeckPopUpParent;
+    public GameObject prefareDeckPopUpPrefab;
+
+    [Header("버린린 덱 정보 팝업")]
+    public List<TrashDeckListPopUp> trashDeckPopUps = new List<TrashDeckListPopUp>();
+    public GameObject trashDeckPopUpParent;
+    public GameObject trashDeckPopUpPrefab;
+
+    [Header("잊혀진 덱 정보 팝업")]
+    public List<ForgottenDeckListPopUp> forgottenDeckPopUps = new List<ForgottenDeckListPopUp>();
+    public GameObject forgottenDeckPopUpParent;
+    public GameObject forgottenDeckPopUpPrefab;
 
     [Header("팝업 UI 오브젝트")]
     public List<GameObject> popUpList = new List<GameObject>();
     public GameObject cardOnHandRemovePopUp; // 패 제거 팝업
-    public GameObject deckListPopUp; // 덱 목록 팝업
     public GameObject battleResultPopUp; // 전투 보상 팝업
     public GameObject gameOverPopUp; // 게임 오버 팝업
     public GameObject deckDrawPopUp; // 덱 드로우 팝업
@@ -140,201 +172,288 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         networkRoomManager.persistentComponents.Add(gameObject.name, gameObject); // DDOL 관리 컴포넌트에 등록
     }
 
-    // PrefareDeck 정보 팝업 활성화(씬 버튼에 이벤트 등록)
-    public void HandleShowPrefareDeckListPopUp()
-    {
-        isDeckListPopUpOpen = true;
-        deckListPopUp.gameObject.SetActive(true);
-        onChangeDeckListPopUpShow?.Invoke(DeckListType.PREFARE_DECK);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_1"));
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-    }
-
-    // TrashDeck 정보 팝업 활성화(씬 버튼에 이벤트 등록)
-    public void HandleShowTrashDeckListPopUp()
-    {
-        isDeckListPopUpOpen = true;
-        deckListPopUp.gameObject.SetActive(true);
-        onChangeDeckListPopUpShow?.Invoke(DeckListType.TRASH_DECK);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_3"));
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-    }
-
-    // ForgottenDeck 정보 팝업 활성화(씬 버튼에 이벤트 등록)
-    public void HandShowForgottenDeckListPopUp()
-    {
-        isDeckListPopUpOpen = true;
-        deckListPopUp.gameObject.SetActive(true);
-        onChangeDeckListPopUpShow?.Invoke(DeckListType.FORGOTTEN_DECK);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_2"));
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-    }
-
-    // 덱 정보 팝업 비활성화
-    public void HandleHideDeckListPopUp()
-    {
-        isDeckListPopUpOpen = false;
-        onChangeDeckListPopUpHide?.Invoke();
-    }
-
-    // CardOnHand 제거 팝업 활성화
-    public void HandleShowCardOnHandRemovePopUp()
-    {
-        isCardOnHandRemovePopUpOpen = true;
-        cardOnHandRemovePopUp.gameObject.SetActive(true);
-        onChangeCardOnHandRemovePopUpShow?.Invoke();
-    }
-
-    // CardOnHand 제거 팝업 비활성화
-    public void HandleHideCardOnHandRemovePopUp()
-    {
-        isCardOnHandRemovePopUpOpen = false;
-        onChangeCardOnHandRemovePopUpHide?.Invoke();
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-    }
-
-    // 전투보상 카드선택 팝업창 활성화
-    public void HandleShowBattleResultPopUp()
-    {
-        isBattleResultPopUpOpen = true;
-        battleResultPopUp.SetActive(true);
-        onChangeBattleResultPopUpShow?.Invoke();
-    }
-
-    // 전투보상 카드선택 팝업창 비활성화
-    public void HandleHideBattleResultPopUp()
-    {
-        isBattleResultPopUpOpen = false;
-        onChangeBattleResultPopUpHide?.Invoke(); 
-    }
-
-    // 덱 드로우 팝업창 활성화
-    public void HandleShowDeckDrawPopUp()
-    {
-        isDeckDrawPopUpOpen = true;
-        deckDrawPopUp.SetActive(true);
-        onChangeDeckDrawPopUpShow?.Invoke();
-    }
-
-    // 덱 드로우 팝업창 비활성화
-    public void HandleHideDeckDrawPopUp()
-    {
-        isDeckDrawPopUpOpen = false;
-        onChangeDeckDrawPopUpHide?.Invoke();
-    }
-
-    // 카드 상점 팝업 활성화/비활성화
-    public void HandleMercuriusPopUp(bool isPopUp)
-    {
-        isMercuriusPopUpOpen = isPopUp;
-        if(isPopUp){
-            mercuriusPopUp.SetActive(true);
-            onMercuriusPopUpShow?.Invoke();  
-        }else{
-            onMercuriusPopUpHide?.Invoke();
+    #region 뽑을 덱 정보 팝업
+        // PrefareDeck 정보 팝업 생성
+        public PrefareDeckListPopUp CreatePrefareDeckListPopUp(uint netId)
+        {
+            GameObject prefareDeckPopUpObject = Instantiate(PopUpUIManager.instance.prefareDeckPopUpPrefab, Vector3.zero, Quaternion.identity, PopUpUIManager.instance.prefarDeckPopUpParent.transform);
+            prefareDeckPopUpObject.transform.localPosition = Vector3.zero;
+            prefareDeckPopUpObject.transform.localScale = Vector3.one;
+            PrefareDeckListPopUp prefareDeckListPopUp = prefareDeckPopUpObject.GetComponent<PrefareDeckListPopUp>();
+            prefareDeckListPopUp.netId = netId;
+            PopUpUIManager.instance.prefarDeckPopUps.Add(prefareDeckListPopUp);
+            PopUpUIManager.instance.popUpList.Add(prefareDeckPopUpObject);
+            return prefareDeckListPopUp;
         }
-    }
 
-    // 전초기지 팝업 활성화
-    public void HandleCampPopUpShow(CampAction campAction)
-    {
-        isCampPopUpOpen = true;
-        campPopUp.SetActive(true);
-        onCampPopUpShow?.Invoke(campAction);   
-    }
-
-    // 전초기지 팝업 비활성화
-    public void HandleCampPopUpHide()
-    {
-        isCampPopUpOpen = false;
-        onCampPopUpHide?.Invoke();
-    }
-
-    // 아이템 상점 팝업 활성화/비활성화
-    public void HandleItemShopPopUp(bool isPopUp)
-    {
-        isItemShopPopUpOpen = isPopUp;
-        if(isPopUp){
-            itemShopPopUp.SetActive(true);
-            onItemShopPopUpShow?.Invoke();  
-        }else{
-            onItemShopPopUpHide?.Invoke();
+        // PrefareDeck 정보 팝업 활성화
+        public void HandleShowPrefareDeckListPopUp(uint netId)
+        {
+            isPrefareDeckListPopUpOpen = true;
+            foreach(PrefareDeckListPopUp prefareDeckListPopUp in prefarDeckPopUps){
+                prefareDeckListPopUp.gameObject.SetActive(prefareDeckListPopUp.netId == netId);
+            }
+            onChangePrefareDeckPopUpShow?.Invoke();
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_1"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
-    }
 
-    // 카드 상점 카드 강화 팝업 활성화/비활성화
-    public void HandleCardEnhancePopUp(bool isOpen)
-    {
-        isCardEnhancePopUpOpen = isOpen;
-        if(isOpen){
-            cardEnhancePopUp.SetActive(true);
-            onCardEnhancePopUpShow?.Invoke();     
-        }else{
-            onCardEnhancePopUpHide?.Invoke(); 
+        // PrefareDeck 정보 팝업 비활성화
+        public void HandleHidePrefareDeckListPopUp()
+        {
+            isPrefareDeckListPopUpOpen = false;
+            onChangePrefareDeckPopUpHide?.Invoke();
         }
-    }
+    #endregion
 
-    // 카드 상점 카드 제거 팝업 활성화/비활성화
-    public void HandleCardRemovePopUp(bool isOpen)
-    {
-        isCardRemovePopUpOpen = isOpen;
-        if(isOpen){
-            cardRemovePopUp.SetActive(true);
-            onCardRemovePopUpShow?.Invoke();     
-        }else{
-            onCardRemovePopUpHide?.Invoke(); 
+    #region 버린 덱 정보 팝업
+        // TrashDeck 정보 팝업 생성
+        public TrashDeckListPopUp CreateTrashDeckListPopUp(uint netId)
+        {
+            GameObject trashDeckPopUpObject = Instantiate(PopUpUIManager.instance.trashDeckPopUpPrefab, Vector3.zero, Quaternion.identity, PopUpUIManager.instance.trashDeckPopUpParent.transform);
+            trashDeckPopUpObject.transform.localPosition = Vector3.zero;
+            trashDeckPopUpObject.transform.localScale = Vector3.one;
+            TrashDeckListPopUp trashDeckListPopUp = trashDeckPopUpObject.GetComponent<TrashDeckListPopUp>();
+            trashDeckListPopUp.netId = netId;
+            PopUpUIManager.instance.trashDeckPopUps.Add(trashDeckListPopUp);
+            PopUpUIManager.instance.popUpList.Add(trashDeckPopUpObject);
+            return trashDeckListPopUp;
         }
-    }
 
-    // 뽑을덱, 버린덱, 잊혀진덱의 카드 선택 팝업 활성화/비활성화
-    public void HandleShowDeckSelectPopUp(DeckListType deckListType, string cardNumber)
-    {
-        isDeckSelectPopUpOpen = true;
-        deckSelectPopUp.SetActive(true);
-        onDeckSelectPopUpShow?.Invoke(deckListType, cardNumber);   
-    }
+        // TrashDeck 정보 팝업 활성화
+        public void HandleShowTrashDeckListPopUp(uint netId)
+        {
+            isTrashDeckListPopUpOpen = true;
+            foreach(TrashDeckListPopUp trashDeckListPopUp in trashDeckPopUps){
+                trashDeckListPopUp.gameObject.SetActive(trashDeckListPopUp.netId == netId);
+            }
+            onChangeTrashDeckPopUpShow?.Invoke();
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_3"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+        }
 
-    public void HandleHideDeckSelectPopUp()
-    {
-        isDeckSelectPopUpOpen = false;
-        onDeckSelectPopUpHide?.Invoke(); 
-    }
+        // TrashDeck 정보 팝업 비활성화
+        public void HandleHideTrashDeckListPopUp()
+        {
+            isTrashDeckListPopUpOpen = false;
+            onChangeTrashDeckPopUpHide?.Invoke();
+        }
+    #endregion
 
-    // 한 화면에서 2개의 덱에서 카드 선택해야하는 팝업 활성화/비활성화 (ex. E44 - 공허를 만지는 자)
-    public void HandleShowDeckMultipleSelectPopUp()
-    {
-        isDeckMultipleSelectPopUpOpen = true;
-        deckMultipleSelectPopUp.SetActive(true);
-        onDeckMultipleSelectPopUpShow?.Invoke();   
-    }
+    #region 잊혀진 덱 정보 팝업
+        // ForgottenDeck 정보 팝업 생성
+        public ForgottenDeckListPopUp CreateForgottenDeckListPopUp(uint netId)
+        {
+            GameObject forgottenDeckPopUpObject = Instantiate(PopUpUIManager.instance.forgottenDeckPopUpPrefab, Vector3.zero, Quaternion.identity, PopUpUIManager.instance.forgottenDeckPopUpParent.transform);
+            forgottenDeckPopUpObject.transform.localPosition = Vector3.zero;
+            forgottenDeckPopUpObject.transform.localScale = Vector3.one;
+            ForgottenDeckListPopUp forgottenDeckListPopUp = forgottenDeckPopUpObject.GetComponent<ForgottenDeckListPopUp>();
+            forgottenDeckListPopUp.netId = netId;
+            PopUpUIManager.instance.forgottenDeckPopUps.Add(forgottenDeckListPopUp);
+            PopUpUIManager.instance.popUpList.Add(forgottenDeckPopUpObject);
+            return forgottenDeckListPopUp;
+        }
 
-    public void HandleHideDeckMultipleSelectPopUp()
-    {
-        isDeckMultipleSelectPopUpOpen = false;
-        onDeckMultipleSelectPopUpHide?.Invoke();
-    }
+        // ForgottenDeck 정보 팝업 활성화
+        public void HandShowForgottenDeckListPopUp(uint netId)
+        {
+            isForgottenDeckListPopUpOpen = true;
+            foreach(ForgottenDeckListPopUp forgottenDeckListPopUp in forgottenDeckPopUps){
+                forgottenDeckListPopUp.gameObject.SetActive(forgottenDeckListPopUp.netId == netId);
+            }
+            onChangeForgottenDeckPopUpShow?.Invoke();
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_2"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+        }
 
-    // 게임오버 팝업 활성화
-    public void HandleShowGameOverPopUp()
-    {
-        isGameoverPopUpOpen = true;
-        gameOverPopUp.SetActive(true);
-        gameOverPopUp.GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
-    }
+        // ForgottenDeck 정보 팝업 비활성화
+        public void HandleHideForgottenDeckListPopUp()
+        {
+            isForgottenDeckListPopUpOpen = false;
+            onChangeForgottenDeckPopUpHide?.Invoke();
+        }
+    #endregion
 
-    // 게임오버 팝업 비활성화
-    public void HandleHideGameOverPopUp()
-    {
-        isGameoverPopUpOpen = false;
-        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        gameOverPopUp.GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).OnComplete(() => {
-            gameOverPopUp.SetActive(false);
-            UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
-            networkRoomManager.StopClient();
-            M_SteamManager.LeaveLobby();
-        });
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-    }
+    #region CardOnHand 제거 팝업 
+        // CardOnHand 제거 팝업 활성화
+        public void HandleShowCardOnHandRemovePopUp()
+        {
+            isCardOnHandRemovePopUpOpen = true;
+            cardOnHandRemovePopUp.gameObject.SetActive(true);
+            onChangeCardOnHandRemovePopUpShow?.Invoke();
+        }
+
+        // CardOnHand 제거 팝업 비활성화
+        public void HandleHideCardOnHandRemovePopUp()
+        {
+            isCardOnHandRemovePopUpOpen = false;
+            onChangeCardOnHandRemovePopUpHide?.Invoke();
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+        }
+    #endregion
+
+    #region 전투보상 팝업
+        // 전투보상 카드선택 팝업창 활성화
+        public void HandleShowBattleResultPopUp()
+        {
+            isBattleResultPopUpOpen = true;
+            battleResultPopUp.SetActive(true);
+            onChangeBattleResultPopUpShow?.Invoke();
+        }
+
+        // 전투보상 카드선택 팝업창 비활성화
+        public void HandleHideBattleResultPopUp()
+        {
+            isBattleResultPopUpOpen = false;
+            onChangeBattleResultPopUpHide?.Invoke(); 
+        }
+    #endregion
+
+    #region 덱 드로우 팝업
+        // 덱 드로우 팝업창 활성화
+        public void HandleShowDeckDrawPopUp()
+        {
+            isDeckDrawPopUpOpen = true;
+            deckDrawPopUp.SetActive(true);
+            onChangeDeckDrawPopUpShow?.Invoke();
+        }
+
+        // 덱 드로우 팝업창 비활성화
+        public void HandleHideDeckDrawPopUp()
+        {
+            isDeckDrawPopUpOpen = false;
+            onChangeDeckDrawPopUpHide?.Invoke();
+        }
+    #endregion
+
+    #region 카드 상점 팝업
+        // 카드 상점 팝업 활성화/비활성화
+        public void HandleMercuriusPopUp(bool isPopUp)
+        {
+            isMercuriusPopUpOpen = isPopUp;
+            if(isPopUp){
+                mercuriusPopUp.SetActive(true);
+                onMercuriusPopUpShow?.Invoke();  
+            }else{
+                onMercuriusPopUpHide?.Invoke();
+            }
+        }
+    #endregion
+
+    #region 카드 상점 카드 강화 팝업
+        // 카드 상점 카드 강화 팝업 활성화/비활성화
+        public void HandleCardEnhancePopUp(bool isOpen)
+        {
+            isCardEnhancePopUpOpen = isOpen;
+            if(isOpen){
+                cardEnhancePopUp.SetActive(true);
+                onCardEnhancePopUpShow?.Invoke();     
+            }else{
+                onCardEnhancePopUpHide?.Invoke(); 
+            }
+        }
+    #endregion
+
+    #region 카드 상점 카드 제거 팝업
+        // 카드 상점 카드 제거 팝업 활성화/비활성화
+        public void HandleCardRemovePopUp(bool isOpen)
+        {
+            isCardRemovePopUpOpen = isOpen;
+            if(isOpen){
+                cardRemovePopUp.SetActive(true);
+                onCardRemovePopUpShow?.Invoke();     
+            }else{
+                onCardRemovePopUpHide?.Invoke(); 
+            }
+        }
+    #endregion
+
+    #region 전초기지지 팝업
+        // 전초기지 팝업 활성화
+        public void HandleCampPopUpShow(CampAction campAction)
+        {
+            isCampPopUpOpen = true;
+            campPopUp.SetActive(true);
+            onCampPopUpShow?.Invoke(campAction);   
+        }
+
+        // 전초기지 팝업 비활성화
+        public void HandleCampPopUpHide()
+        {
+            isCampPopUpOpen = false;
+            onCampPopUpHide?.Invoke();
+        }
+    #endregion
+
+    #region 아이템 상점 팝업
+        // 아이템 상점 팝업 활성화/비활성화
+        public void HandleItemShopPopUp(bool isPopUp)
+        {
+            isItemShopPopUpOpen = isPopUp;
+            if(isPopUp){
+                itemShopPopUp.SetActive(true);
+                onItemShopPopUpShow?.Invoke();  
+            }else{
+                onItemShopPopUpHide?.Invoke();
+            }
+        }
+    #endregion
+
+    #region 덱 선택 팝업
+        // 뽑을덱, 버린덱, 잊혀진덱의 카드 선택 팝업 활성화/비활성화
+        public void HandleShowDeckSelectPopUp(DeckListType deckListType, string cardNumber)
+        {
+            isDeckSelectPopUpOpen = true;
+            deckSelectPopUp.SetActive(true);
+            onDeckSelectPopUpShow?.Invoke(deckListType, cardNumber);   
+        }
+
+        public void HandleHideDeckSelectPopUp()
+        {
+            isDeckSelectPopUpOpen = false;
+            onDeckSelectPopUpHide?.Invoke(); 
+        }
+    #endregion
+
+    #region 덱 멀티 선택 팝업
+        // 한 화면에서 2개의 덱에서 카드 선택해야하는 팝업 활성화/비활성화 (ex. E44 - 공허를 만지는 자)
+        public void HandleShowDeckMultipleSelectPopUp()
+        {
+            isDeckMultipleSelectPopUpOpen = true;
+            deckMultipleSelectPopUp.SetActive(true);
+            onDeckMultipleSelectPopUpShow?.Invoke();   
+        }
+
+        public void HandleHideDeckMultipleSelectPopUp()
+        {
+            isDeckMultipleSelectPopUpOpen = false;
+            onDeckMultipleSelectPopUpHide?.Invoke();
+        }
+    #endregion
+
+    #region 게임오버 팝업
+        // 게임오버 팝업 활성화
+        public void HandleShowGameOverPopUp()
+        {
+            isGameoverPopUpOpen = true;
+            gameOverPopUp.SetActive(true);
+            gameOverPopUp.GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
+        }
+
+        // 게임오버 팝업 비활성화
+        public void HandleHideGameOverPopUp()
+        {
+            isGameoverPopUpOpen = false;
+            M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            gameOverPopUp.GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).OnComplete(() => {
+                gameOverPopUp.SetActive(false);
+                UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
+                networkRoomManager.StopClient();
+                M_SteamManager.LeaveLobby();
+            });
+            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+            M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+        }
+    #endregion
 }

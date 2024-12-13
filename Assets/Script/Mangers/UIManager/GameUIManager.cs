@@ -84,6 +84,15 @@ public class GameUIManager : SingletonD<GameUIManager>
         ConfigScreenChangeMode(screenTransitionMode);
         screenTransition.material =  new Material(screenTransition.material); // 머티리얼 인스턴스 복사본을 생성하여 이미지의 머티리얼값에 할당(원본대신 복사본을 사용해 프로퍼티값 변경)
         scrollSpeed = 500f;
+        buttonPrefareDeck.onClick.AddListener(() => {
+            PopUpUIManager.instance.HandleShowPrefareDeckListPopUp(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+        });
+        buttonTrashDeck.onClick.AddListener(() => {
+            PopUpUIManager.instance.HandleShowTrashDeckListPopUp(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+        });
+        buttonForgottenDeck.onClick.AddListener(() => {
+            PopUpUIManager.instance.HandShowForgottenDeckListPopUp(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+        });
     }
 
     void Update()

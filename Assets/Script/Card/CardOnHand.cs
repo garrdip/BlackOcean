@@ -425,10 +425,12 @@ public class CardOnHand : NetworkBehaviour
     {
         // 팝업 활성화 상태에서 CardOnHand 제어가 안되야 하는 팝업 체크
         return 
-            PopUpUIManager.instance.deckListPopUp.activeSelf || 
-            PopUpUIManager.instance.battleResultPopUp.activeSelf || 
-            PopUpUIManager.instance.deckSelectPopUp.activeSelf || 
-            PopUpUIManager.instance.deckMultipleSelectPopUp.activeSelf || 
+            PopUpUIManager.instance.isPrefareDeckListPopUpOpen || 
+            PopUpUIManager.instance.isTrashDeckListPopUpOpen || 
+            PopUpUIManager.instance.isForgottenDeckListPopUpOpen || 
+            PopUpUIManager.instance.isBattleResultPopUpOpen || 
+            PopUpUIManager.instance.isDeckSelectPopUpOpen || 
+            PopUpUIManager.instance.isDeckMultipleSelectPopUpOpen || 
             OptionUIManager.instance.optionPopUp.activeSelf;
     }
 

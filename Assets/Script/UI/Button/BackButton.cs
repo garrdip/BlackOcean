@@ -65,13 +65,6 @@ public class BackButton : MonoBehaviour
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
-    public void OnPointerClickBackButtonOnDeckListPopUp()
-    {
-        PopUpUIManager.instance.HandleHideDeckListPopUp();
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-    }
-
     public void OnPointerClickBackButtonOnCardEnhancePopUp()
     {
         PopUpUIManager.instance.HandleCardEnhancePopUp(false);
