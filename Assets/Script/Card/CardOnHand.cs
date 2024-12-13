@@ -249,7 +249,7 @@ public class CardOnHand : NetworkBehaviour
     void OnMouseEnter()
     {
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
-            if(!isUsed && !isMoving && !isChoosed && !IsArrowActive() && !IsCardControllablePopUpActive() && isExitComplete){
+            if(!isUsed && !isMoving && !isChoosed && !IsArrowActive() && !IsCardControllableByPopUpActive() && isExitComplete){
                 isMouseOver = true;
                 transform.GetComponent<SortingGroup>().sortingOrder =  M_CardManager.instance.maxSortOrder;
                 cardOnHandCanvas.sortingOrder =  M_CardManager.instance.maxSortOrder;
@@ -267,7 +267,7 @@ public class CardOnHand : NetworkBehaviour
     void OnMouseExit()
     {
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
-            if(!isUsed && !isMoving && !IsArrowActive() && !IsCardControllablePopUpActive()){
+            if(!isUsed && !isMoving && !IsArrowActive() && !IsCardControllableByPopUpActive()){
                 isMouseOver = false;
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
                 StartCoroutine(MouseExitDelay());
@@ -292,7 +292,7 @@ public class CardOnHand : NetworkBehaviour
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
             if(!isUsed && !isMoving && !IsArrowActive()){
                 // 일반적인 경우에 마우스 왼쪽 버튼 클릭 시
-                if(!IsCardControllablePopUpActive()){
+                if(!IsCardControllableByPopUpActive()){
                     isDrag = true;
                     arrowSpawnedCardPosition = transform.position; // 드래그 시작전 마우스 클릭 시점에 카드의 절대 위치값 저장(이 시점의 카드 위치는 중앙 하단). 화살표 소환 시 카드를 다시 중앙 하단으로 이동시키기 위함.
                 }
@@ -319,7 +319,7 @@ public class CardOnHand : NetworkBehaviour
     void OnMouseDrag()
     {
         if(!isUsed &&isOwned && M_TurnManager.instance.IsActivePhase()){
-            if(isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
+            if(isDrag && !IsCardControllableByPopUpActive() && !IsCardOnHandRemovePopUpActive()){
                 DragCardOnHand(this);
                 MovePositionArrowSpawnedCardOnHand(this);
             }
@@ -330,7 +330,7 @@ public class CardOnHand : NetworkBehaviour
     void OnMouseUp()
     {
         if(isOwned && M_TurnManager.instance.IsActivePhase()){
-            if(isDrag && !IsCardControllablePopUpActive() && !IsCardOnHandRemovePopUpActive()){
+            if(isDrag && !IsCardControllableByPopUpActive() && !IsCardOnHandRemovePopUpActive()){
                 // Targetable 카드가 아닌 경우 마우스 뗄 때 위치가 화면 중앙을 넘어갈 경우 액션 수행
                 if(!card.baseCard.isTargetable && (Input.mousePosition.y > Screen.height / 2)){
                     int totalCost = 0;
@@ -421,17 +421,12 @@ public class CardOnHand : NetworkBehaviour
     }
 
     // 팝업 활성화 상태일 때 카드 제어가 가능한 팝업의 활성화 여부 확인 함수
-    private bool IsCardControllablePopUpActive()
+    private bool IsCardControllableByPopUpActive()
     {
-        // 팝업 활성화 상태에서 CardOnHand 제어가 안되야 하는 팝업 체크
-        return 
-            PopUpUIManager.instance.isPrefareDeckListPopUpOpen || 
-            PopUpUIManager.instance.isTrashDeckListPopUpOpen || 
-            PopUpUIManager.instance.isForgottenDeckListPopUpOpen || 
-            PopUpUIManager.instance.isBattleResultPopUpOpen || 
-            PopUpUIManager.instance.isDeckSelectPopUpOpen || 
-            PopUpUIManager.instance.isDeckMultipleSelectPopUpOpen || 
-            OptionUIManager.instance.optionPopUp.activeSelf;
+        int index = PopUpUIManager.instance.popUpList.FindIndex((popUp) => popUp.activeSelf);
+        bool isOpenPopUpExist = (index != -1) ? true : false; // 활성화 되어있는 팝업이 존재하는지 유무
+        bool isOpenOptionMenu = OptionUIManager.instance.optionPopUp.activeSelf; // 옵션메뉴창 활성화 되어있는지 유무
+        return isOpenPopUpExist || isOpenOptionMenu;
     }
 
     // CardOnHandRemove PopUp 활성화 여부 확인 함수
