@@ -55,7 +55,7 @@ public class CharactorSelector : MonoBehaviour
                     break;
             }
         }
-        M_TurnManager.instance.SetPlayerSelectable(false);
+        TargetIndicatorController.instance.SetPlayerSelectable(false);
         skeletonRendererCustomMaterials.enabled = false;
     }
 

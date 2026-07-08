@@ -68,7 +68,7 @@ public class CampPopUp : SingletonD<CampPopUp>
                 M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
             }
         }
-        M_TurnManager.instance.SetPlayerSelectable(true);
+        TargetIndicatorController.instance.SetPlayerSelectable(true);
     }
 
     // 전초기지 팝업 비활성화 콜백
@@ -89,7 +89,7 @@ public class CampPopUp : SingletonD<CampPopUp>
                 M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "BackLayer");
             }
         }
-        M_TurnManager.instance.SetPlayerSelectable(false);
+        TargetIndicatorController.instance.SetPlayerSelectable(false);
         targetPlayerNetId = 0;
     }
 }

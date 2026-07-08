@@ -257,7 +257,7 @@ public class CardOnHand : NetworkBehaviour
                 AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_mouseover_3"));
                 M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
                 CmdChangeMouseOverdState(true);
-                M_TurnManager.instance.CandidatedTargetIndicatorByCard(card.baseCard.validTarget);
+                TargetIndicatorController.instance.CandidatedTargetIndicatorByCard(card.baseCard.validTarget);
             }
             TextDetector.instance.StartTextDetect();
         }
@@ -272,7 +272,7 @@ public class CardOnHand : NetworkBehaviour
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, false);
                 StartCoroutine(MouseExitDelay());
                 CmdChangeMouseOverdState(false);
-                M_TurnManager.instance.DisableTargetIndicator();
+                TargetIndicatorController.instance.DisableTargetIndicator();
             }
             TextDetector.instance.StopTextDetect();
         }
@@ -357,7 +357,7 @@ public class CardOnHand : NetworkBehaviour
                     GamePlayerDeck gamePlayerDeck = NetworkClient.connection.identity.gameObject.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
                     CmdEnQueueCardData(gamePlayerDeck);
                     M_CardManager.instance.CardOnHandThrowAwaySequence(this);
-                    M_TurnManager.instance.DisableTargetIndicator();
+                    TargetIndicatorController.instance.DisableTargetIndicator();
                 }
                 else
                 {
@@ -385,10 +385,10 @@ public class CardOnHand : NetworkBehaviour
         float screenPositionY = Screen.height / 3;
         Vector3 cardOnHandPosition = Camera.main.WorldToScreenPoint(cardOnHand.transform.position);
         if(cardOnHandPosition.y > screenPositionY && !hasOverPoint){
-            M_TurnManager.instance.EnableTargetIndiCatorByArrow(cardOnHand.card.baseCard.validTarget, true, null);
+            TargetIndicatorController.instance.EnableTargetIndiCatorByArrow(cardOnHand.card.baseCard.validTarget, true, null);
             hasOverPoint = true; 
         }else if(cardOnHandPosition.y <= screenPositionY && hasOverPoint){
-            M_TurnManager.instance.EnableTargetIndiCatorByArrow(cardOnHand.card.baseCard.validTarget, false, null);
+            TargetIndicatorController.instance.EnableTargetIndiCatorByArrow(cardOnHand.card.baseCard.validTarget, false, null);
             hasOverPoint = false; 
         }
     }

@@ -130,14 +130,14 @@ public class SpawnedMonster : NetworkBehaviour
     void OnMouseEnter()
     {
         if(!M_CardManager.instance.isArrowActive && !M_CardManager.instance.IsDragCardExist()){
-            M_TurnManager.instance.EnalbleTargetIndicatorByMonster(nextTarget, parent.netId);
+            TargetIndicatorController.instance.EnalbleTargetIndicatorByMonster(nextTarget, parent.netId);
         }
     }
 
     void OnMouseExit()
     {
         if(!M_CardManager.instance.isArrowActive && !M_CardManager.instance.IsDragCardExist()){
-            M_TurnManager.instance.DisableTargetIndicator();
+            TargetIndicatorController.instance.DisableTargetIndicator();
         }
     }
 

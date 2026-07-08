@@ -45,12 +45,6 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         DECREASE
     }
 
-    [Header("타겟 인디케이터")]
-    public GameObject targetIndicatorContainer;
-    public GameObject targetIndicatorPrefab; // 타겟 인디케이터 프리팹
-    public List<GameObject> targetIndicators = new List<GameObject>(); // 카드 액션 및 몬스터의 액션 타겟 표시 오브젝트 리스트
-    public List<GameObject> targetIndicatorCadidates = new List<GameObject>(); // 타겟 인디케이터 후보군 리스트
-    
     [SerializedDictionary("게임플레이어", "보상카드선택유무")]
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
 
@@ -432,7 +426,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         ClearTargetObjectList(spawnedMonsterList);
         ClearTargetObjectList(spawnedPlayerList);
-        ClreatTargetIndicators();
+        TargetIndicatorController.instance.ClearTargetIndicators();
         spawnedPlayerSyncList.Clear();
         spawnedMonsterSyncList.Clear();
     }
@@ -781,7 +775,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 break;
             case SyncList<uint>.Operation.OP_SET:
                 SetGamePlayerOrder(newVal, index);
-                SetTargetIndicatorOrder(newVal, index);
+                TargetIndicatorController.instance.SetTargetIndicatorOrder(newVal, index);
                 break;
             case SyncList<uint>.Operation.OP_CLEAR:
                 
@@ -795,18 +789,12 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             case SyncList<uint>.Operation.OP_ADD:
                 if(newVal == 0){
-                    GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, targetObjectPosition[index] + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
-                    TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
-                    targetIndicator.netId = 0;
-                    targetIndicators.Add(targetIndicatorObject);
+                    TargetIndicatorController.instance.CreateIndicator(0, targetObjectPosition[index]);
                 }else{
                     TargetObject targetObject = isServer ? NetLookup.Server<TargetObject>(newVal) :  NetLookup.Client<TargetObject>(newVal);
                     // SyncList 델타가 스폰 메시지보다 먼저 도착한 경우 타겟오브젝트가 아직 없을 수 있으므로 슬롯 위치로 폴백
                     Vector3 indicatorPosition = targetObject != null ? targetObject.transform.position : targetObjectPosition[index];
-                    GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, indicatorPosition + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
-                    TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
-                    targetIndicator.netId = newVal;
-                    targetIndicators.Add(targetIndicatorObject);
+                    TargetIndicatorController.instance.CreateIndicator(newVal, indicatorPosition);
                 }
                 break;
             case SyncList<uint>.Operation.OP_INSERT:
@@ -832,10 +820,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 TargetObject targetObject = isServer ? NetLookup.Server<TargetObject>(newVal) :  NetLookup.Client<TargetObject>(newVal);
                 // SyncList 델타가 스폰 메시지보다 먼저 도착한 경우 타겟오브젝트가 아직 없을 수 있음 — 인디케이터는 생성하고 위치는 이후 갱신에 맡긴다
                 Vector3 monsterIndicatorPosition = targetObject != null ? targetObject.transform.position : Vector3.zero;
-                GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, monsterIndicatorPosition + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
-                TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
-                targetIndicator.netId = newVal;
-                M_TurnManager.instance.targetIndicators.Add(targetIndicatorObject);
+                TargetIndicatorController.instance.CreateIndicator(newVal, monsterIndicatorPosition);
                 break;
             case SyncList<uint>.Operation.OP_INSERT:
                 

@@ -213,7 +213,7 @@ public class CardCtrlArrow : NetworkBehaviour
             M_CardManager.instance.ChangeCardOnHandShiftState(arrowOwnedCardOnHand, false);
             Cursor.visible = true;
             arrowOwnedCardOnHand = null;
-            M_TurnManager.instance.DisableTargetIndicator();
+            TargetIndicatorController.instance.DisableTargetIndicator();
         }
     }
 
@@ -258,7 +258,7 @@ public class CardCtrlArrow : NetworkBehaviour
         M_CardManager.instance.CardOnHandThrowAwaySequence(arrowOwnedCardOnHand); // 화살표 주인 카드 제거
         Cursor.visible = true;
         arrowOwnedCardOnHand = null;
-        M_TurnManager.instance.DisableTargetIndicator();
+        TargetIndicatorController.instance.DisableTargetIndicator();
     }
 
     // 타겟 유형에 따라 화살표 리소스 설정
@@ -347,7 +347,7 @@ public class CardCtrlArrow : NetworkBehaviour
         if(arrowOwnedCardOnHand.card.baseCard.isTargetable){
             TargetObject targetObject = target.transform.parent.GetComponent<TargetObject>();
             SetArrowNodesByValidTarget(isEnter, targetObject);
-            M_TurnManager.instance.EnableTargetIndiCatorByArrow(arrowOwnedCardOnHand.card.baseCard.validTarget, isEnter, targetObject);
+            TargetIndicatorController.instance.EnableTargetIndiCatorByArrow(arrowOwnedCardOnHand.card.baseCard.validTarget, isEnter, targetObject);
         }
     }
 

@@ -24,7 +24,17 @@
 
 **검증**: 컴파일 0건 + 에디터 리플렉션 검증 — 이동 메서드 40개 전부 타입에 존재, Mirror 위버 UserCode_ 14개 정상 생성(RPC 위빙 확인).
 
-**다음 단계(P1-3 2단계, 미착수)**: partial 경계가 확정됐으므로, RPC/SyncVar 없는 그룹(TargetIndicator 뷰 로직)부터 실제 별도 컴포넌트로 추출 → 이후 Spawner/Reward를 서비스 클래스로. 각 단계 사이 멀티 플레이 테스트 필수.
+### ✅ P1-3 2단계 — TargetIndicatorController 실제 컴포넌트 추출 (4회차)
+
+RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicator 그룹을 M_TurnManager에서 완전히 분리해 **독립 컴포넌트 `TargetIndicatorController`(279줄, `InstanceD` 싱글톤)** 로 추출. M_TurnManager 코어는 839줄로 축소 (원본 대비 -58%).
+
+- **이동**: 인스펙터 필드 4개(프리팹/컨테이너/인디케이터 리스트 2개) + 메서드 7개. 내부 오타 메서드명 `ClreatTargetIndicators` → `ClearTargetIndicators` 교정.
+- **신규 `CreateIndicator(netId, position)`**: M_TurnManager의 SyncList 콜백 3곳에 중복돼 있던 인디케이터 생성 코드를 한 메서드로 통합.
+- **호출자 갱신**: CardOnHand, CardCtrlArrow, SpawnedMonster, CampPopUp, CharactorSelector 등 6개 파일 18곳 → `TargetIndicatorController.instance.X()`.
+- **씬 배선**: GameScene의 M_TurnManager 오브젝트에 컴포넌트 부착, 코드 변경 전 캡처해 둔 프리팹(`TargetIndicator.prefab`)·컨테이너(`Game/TargetIndicatorContainer`) 참조를 에디터 스크립트로 복원 후 씬 저장. 저장된 YAML에서 GUID 일치 검증 완료.
+- 검증: 컴파일 0건, 씬 직렬화 확인. **플레이 검증 필요 포인트**: 카드 마우스오버 시 타겟 후보 표시, 화살표 타겟팅, 몬스터 마우스오버 시 액션 타겟 표시, 오더 스왑 시 인디케이터 갱신.
+
+**다음 단계(P1-3 3단계, 미착수)**: Spawner/Reward 그룹의 서비스 클래스 추출(서버 전용 로직이라 [Server] 위임 구조 필요), P1-4 순환 참조 정리와 병행.
 
 ---
 
