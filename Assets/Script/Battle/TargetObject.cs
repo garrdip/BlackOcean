@@ -367,8 +367,10 @@ public class TargetObject : NetworkBehaviour
     }
 
     [Command(requiresAuthority=false)]
-    private void DrawGoHengCard()
+    private void DrawGoHengCard(NetworkConnectionToClient sender = null)
     {
+        // 고행은 이 타겟오브젝트의 소유 플레이어만 발동 가능
+        if(sender != null && (player == null || player.connectionToClient != sender))return;
         if(M_TurnManager.instance.phase != BattleTurn.PLAYER_ACTIVE)return;
         if(usingGOHENG || usedGOHENG.Count == 3)return;
         usingGOHENG = true;

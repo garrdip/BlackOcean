@@ -198,15 +198,19 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     // 맵플레이어 스왑 수행
     [Command (requiresAuthority = false)]
-    public void CmdSwapMapPlayer(int oldIndex, int newIndex)
+    public void CmdSwapMapPlayer(int oldIndex, int newIndex, NetworkConnectionToClient sender = null)
     {
+        if(!IsValidPlayerSlotIndex(oldIndex) || !IsValidPlayerSlotIndex(newIndex)) return;
+        if(!IsSenderInvolvedInSwap(sender, oldIndex, newIndex)) return;
         M_TurnManager.instance.SwapPlayerOrder(oldIndex, newIndex);
     }
 
     // 스왑 요청을 받은 맵플레이어의 SyncVar 변수에 인덱스 저장 + 요청받은 맵플레이어만 수락,거절 UI 활성화되도록 TargetRpc 전송
     [Command (requiresAuthority = false)]
-    public void CmdRequestSwap(int oldIndex, int newIndex)
+    public void CmdRequestSwap(int oldIndex, int newIndex, NetworkConnectionToClient sender = null)
     {
+        if(!IsValidPlayerSlotIndex(oldIndex) || !IsValidPlayerSlotIndex(newIndex)) return;
+        if(!IsSenderInvolvedInSwap(sender, oldIndex, newIndex)) return;
         uint targetNetId = M_TurnManager.instance.playerOrder[newIndex];
         if(targetNetId != 0 && NetworkServer.spawned.TryGetValue(targetNetId, out NetworkIdentity networkIdentity)){
             GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
@@ -219,6 +223,28 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         }
     }
 
+
+    // 플레이어 슬롯(0~2)만 스왑 대상 — 몬스터 슬롯 조작 및 범위 밖 인덱스 방어
+    private bool IsValidPlayerSlotIndex(int index)
+    {
+        return index >= 0 && index <= 2 && index < M_TurnManager.instance.playerOrder.Count;
+    }
+
+    // 스왑 요청자가 스왑 당사자(두 슬롯 중 하나의 GamePlayer 소유자)인지 검증
+    private bool IsSenderInvolvedInSwap(NetworkConnectionToClient sender, int oldIndex, int newIndex)
+    {
+        if(sender == null) return true; // 서버 내부 호출
+
+        bool OwnsSlot(int index)
+        {
+            uint slotNetId = M_TurnManager.instance.playerOrder[index];
+            return slotNetId != 0 && NetworkServer.spawned.TryGetValue(slotNetId, out NetworkIdentity identity) && identity.connectionToClient == sender;
+        }
+
+        if(OwnsSlot(oldIndex) || OwnsSlot(newIndex)) return true;
+        Debug.LogWarning($"[M_MapManager] 스왑 거부 — 요청자가 스왑 당사자가 아닙니다. sender: {sender}, oldIndex: {oldIndex}, newIndex: {newIndex}");
+        return false;
+    }
 
     // ------------------------------------------------------------ Server Method -------------------------------------------------------------- //
 
@@ -591,7 +617,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 // MapRoom이 비활성화면 투표데이터 제거 및 라인렌더러 제거
                 hexagonMapRoom.votePlyers.Remove(networkIdentity.netId);
                 playerVoteHexagonMapRoom.Remove(networkIdentity);
-                GamePlayerMap gamePlayerMap = NetworkServer.spawned[networkIdentity.netId].GetComponent<GamePlayerMap>();
+                GamePlayerMap gamePlayerMap = NetLookup.Server<GamePlayerMap>(networkIdentity.netId);
                 gamePlayerMap.RpcHidePath(gamePlayerMap.GetComponent<GamePlayer>().objectOwner.netId);
             }
         }
@@ -739,7 +765,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     private HexagonMapRoom FindNeighboursForClient(int index, HexagonMapRoom currentHexagonRoom)
     {
         foreach (uint netId in hexagonMapRoomNetIds){
-            HexagonMapRoom mapRoom = NetworkClient.spawned[netId].GetComponent<HexagonMapRoom>();
+            HexagonMapRoom mapRoom = NetLookup.Client<HexagonMapRoom>(netId);
             if(mapRoom.coordinate == currentHexagonRoom.coordinate + offSets[index]){
                 return mapRoom;
             }
@@ -862,19 +888,19 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         switch (op)
         {
             case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_ADD:
-                GamePlayer addGamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
+                GamePlayer addGamePlayer = NetLookup.Client<GamePlayer>(key.netId);
                 RemoveMapInfoPopUpItem(addGamePlayer);
                 CreateMapInfoPopUpItem(addGamePlayer, item);
                 ChangeDimmingByPlayerVote(key, true);
                 break;
             case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_SET:
-                GamePlayer setGamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
+                GamePlayer setGamePlayer = NetLookup.Client<GamePlayer>(key.netId);
                 RemoveMapInfoPopUpItem(setGamePlayer);
                 CreateMapInfoPopUpItem(setGamePlayer, item);
                 ChangeDimmingByPlayerVote(key, true);
                 break;
             case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_REMOVE:
-                GamePlayer removeGamePlayer = NetworkClient.spawned[key.netId].GetComponent<GamePlayer>();
+                GamePlayer removeGamePlayer = NetLookup.Client<GamePlayer>(key.netId);
                 RemoveMapInfoPopUpItem(removeGamePlayer);
                 ChangeDimmingByPlayerVote(key, false);
                 break;

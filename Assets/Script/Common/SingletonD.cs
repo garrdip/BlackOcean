@@ -13,7 +13,7 @@ public class SingletonD<T> : MonoBehaviour where T : MonoBehaviour
         {
             if (Instance == null)
             {
-                Instance = FindObjectOfType<T>();
+                Instance = FindFirstObjectByType<T>();
 
                 if (Instance == null)
                 {

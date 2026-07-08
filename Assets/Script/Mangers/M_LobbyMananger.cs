@@ -26,8 +26,10 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
 
     // 로비플레이어들 오더 관리용 Synclist의 요소를 인덱스에 맞게 스왑 수행
     [Command (requiresAuthority = false)]
-    public void CmdSwapLobbyPlayer(int oldIndex, int newIndex)
+    public void CmdSwapLobbyPlayer(int oldIndex, int newIndex, NetworkConnectionToClient sender = null)
     {
+        if(!IsValidSlotIndex(oldIndex) || !IsValidSlotIndex(newIndex)) return;
+        if(!IsSenderInvolvedInSwap(sender, oldIndex, newIndex)) return;
         uint temp = lobbyPlayers[oldIndex];
         lobbyPlayers[oldIndex] = lobbyPlayers[newIndex];
         lobbyPlayers[newIndex] = temp;
@@ -35,8 +37,10 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
 
     // 스왑 요청을 받은 로비플레이어의 SyncVar 변수에 인덱스 저장 + 요청받은 로비플레이어만 수락,거절 UI 활성화되도록 TargetRpc 전송
     [Command (requiresAuthority = false)]
-    public void CmdRequestSwap(int oldIndex, int newIndex)
+    public void CmdRequestSwap(int oldIndex, int newIndex, NetworkConnectionToClient sender = null)
     {
+        if(!IsValidSlotIndex(oldIndex) || !IsValidSlotIndex(newIndex)) return;
+        if(!IsSenderInvolvedInSwap(sender, oldIndex, newIndex)) return;
         uint targetNetId = lobbyPlayers[newIndex];
         if(targetNetId != 0 && NetworkServer.spawned.TryGetValue(targetNetId, out NetworkIdentity networkIdentity)){
             LobbyPlayer targetLobbyPlayer = networkIdentity.GetComponent<LobbyPlayer>();
@@ -44,6 +48,27 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
             targetLobbyPlayer.oldIndex = oldIndex; // 요청한 로비플레이어의 인덱스
             targetLobbyPlayer.newIndex = newIndex; // 요청한 로비플레이어의 교환상대 인덱스
         }
+    }
+
+    private bool IsValidSlotIndex(int index)
+    {
+        return index >= 0 && index < lobbyPlayers.Count;
+    }
+
+    // 스왑 요청자가 스왑 당사자(두 슬롯 중 하나의 소유자)인지 검증 — 임의 클라이언트가 남의 오더를 조작하지 못하도록 방어
+    private bool IsSenderInvolvedInSwap(NetworkConnectionToClient sender, int oldIndex, int newIndex)
+    {
+        if(sender == null) return true; // 서버 내부 호출
+
+        bool OwnsSlot(int index)
+        {
+            uint slotNetId = lobbyPlayers[index];
+            return slotNetId != 0 && NetworkServer.spawned.TryGetValue(slotNetId, out NetworkIdentity identity) && identity.connectionToClient == sender;
+        }
+
+        if(OwnsSlot(oldIndex) || OwnsSlot(newIndex)) return true;
+        Debug.LogWarning($"[M_LobbyMananger] 스왑 거부 — 요청자가 스왑 당사자가 아닙니다. sender: {sender}, oldIndex: {oldIndex}, newIndex: {newIndex}");
+        return false;
     }
 
     // ----------------------------------------------------------------- Server Method --------------------------------------------------------------------------------//
@@ -92,7 +117,7 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
     public void RoomPlayerReadyCheck()
     {
         int num = 0;
-        RoomPlayer[] players = FindObjectsOfType<RoomPlayer>();
+        RoomPlayer[] players = FindObjectsByType<RoomPlayer>(FindObjectsSortMode.None);
         for(int i = 0 ;i < players.Length ; i++)
         {
             if(players[i].isReady) num++;

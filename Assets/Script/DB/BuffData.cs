@@ -25,22 +25,20 @@ public class BuffData : SingletonD<BuffData>
     // 버프 DB 로드
     public void LoadBuffDataFromDB()
     {
-        TextAsset DBtext = Resources.Load<TextAsset>("DB/BuffDB");
-        using (StringReader DB = new StringReader(DBtext.text))
-        {          
-            while(true)
+        foreach(CsvTable.Row row in CsvTable.LoadFromResources("DB/BuffDB").rows)
+        {
+            try
             {
-                string value = DB.ReadLine();
-                if( value == null ) break; // 마지막 데이터의 경우 null을 반환
-                
-                string[] values = value.Trim().Split(",");
-                if(values[0] == "enum") continue; // 첫줄 데이터 스킵   
-
                 BuffInformation buffInformation = new BuffInformation(){
-                    name = values[1],
-                    description = values[2]
+                    name = row.Get("name"),
+                    description = row.Get("description")
                 };
-                buffDB.Add((BuffType)Enum.Parse<BuffType>(values[0]), buffInformation);
+                buffDB.Add(row.GetEnum<BuffType>("enum"), buffInformation);
+            }
+            catch (Exception e)
+            {
+                // 한 버프의 오류(enum 오타 등)가 전체 로드를 중단시키지 않도록 개별 처리
+                Debug.LogError($"[BuffData] BuffDB 로드 실패: {row[0]} ({row.lineNumber}행) — {e.Message}");
             }
         }
     }

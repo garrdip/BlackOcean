@@ -142,22 +142,24 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             // spawnedPlayerSyncList(타겟오브젝트 리스트)에서 현재 플레이어의 참조값을 가진 타겟오브젝트의 netId 조회
             uint targetObjectNetId = M_TurnManager.instance.spawnedPlayerSyncList.Find(gemePlayerNetId => {
                 if(gemePlayerNetId != 0){
-                    return NetworkServer.spawned[gemePlayerNetId].GetComponent<TargetObject>().player == gamePlayer;
+                    TargetObject spawnedTarget = NetLookup.Server<TargetObject>(gemePlayerNetId);
+                    return spawnedTarget != null && spawnedTarget.player == gamePlayer;
                 }
                 return false;
             });
             if(targetObjectNetId != 0){
-                return NetworkServer.spawned[targetObjectNetId].GetComponent<TargetObject>(); // 조회된 netId로 타겟오브젝트 반환
+                return NetLookup.Server<TargetObject>(targetObjectNetId); // 조회된 netId로 타겟오브젝트 반환
             }
         }else{
             uint targetObjectNetId = M_TurnManager.instance.spawnedPlayerSyncList.Find(gemePlayerNetId => {
                 if(gemePlayerNetId != 0){
-                    return NetworkClient.spawned[gemePlayerNetId].GetComponent<TargetObject>().player == gamePlayer;
+                    TargetObject spawnedTarget = NetLookup.Client<TargetObject>(gemePlayerNetId);
+                    return spawnedTarget != null && spawnedTarget.player == gamePlayer;
                 }
                 return false;
             });
             if(targetObjectNetId != 0){
-                return NetworkClient.spawned[targetObjectNetId].GetComponent<TargetObject>();
+                return NetLookup.Client<TargetObject>(targetObjectNetId);
             }
         }
         return null;
@@ -481,13 +483,13 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         if(M_TurnManager.instance.phase == BattleTurn.PLAYER_ACTIVE) // 노병의 지혜
         {
             if(NetworkServer.spawned.ContainsKey(playerOrder[oldIndex]))
-            if(NetworkServer.spawned[playerOrder[oldIndex]].GetComponent<GamePlayerTarget>().GetTargetObject().HasBuff(BuffType.WISDOMOFOLDSOLDIER))
+            if(NetLookup.Server<GamePlayerTarget>(playerOrder[oldIndex]).GetTargetObject().HasBuff(BuffType.WISDOMOFOLDSOLDIER))
                 foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
-                    CardData.instance.GeneralGetDefense(NetworkServer.spawned[playerOrder[oldIndex]].GetComponent<GamePlayerTarget>().GetTargetObject(),target,5,null);
+                    CardData.instance.GeneralGetDefense(NetLookup.Server<GamePlayerTarget>(playerOrder[oldIndex]).GetTargetObject(),target,5,null);
             if(NetworkServer.spawned.ContainsKey(playerOrder[newIndex]))
-            if(NetworkServer.spawned[playerOrder[newIndex]].GetComponent<GamePlayerTarget>().GetTargetObject().HasBuff(BuffType.WISDOMOFOLDSOLDIER))
+            if(NetLookup.Server<GamePlayerTarget>(playerOrder[newIndex]).GetTargetObject().HasBuff(BuffType.WISDOMOFOLDSOLDIER))
                 foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
-                    CardData.instance.GeneralGetDefense(NetworkServer.spawned[playerOrder[newIndex]].GetComponent<GamePlayerTarget>().GetTargetObject(),target,5,null);          
+                    CardData.instance.GeneralGetDefense(NetLookup.Server<GamePlayerTarget>(playerOrder[newIndex]).GetTargetObject(),target,5,null);          
         }
         uint temp = playerOrder[oldIndex];
         playerOrder[oldIndex] = playerOrder[newIndex];
@@ -549,7 +551,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     void PlayerCardThrowAwaySetDefault()
     {
-        foreach(PlayerInterface pi in FindObjectsOfType<PlayerInterface>())
+        foreach(PlayerInterface pi in FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None))
             pi.SetDefaultStateofCardThrowDone();
     }
 
@@ -728,7 +730,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {   
         // 전투 종료시 플레이어들의 캐릭터별 보상카드 랜덤추출하여 각 플레이어들에게 전달
         foreach(NetworkConnectionToClient conn in NetworkServer.connections.Values){
-            PlayerInterface playerInterface = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>();
+            PlayerInterface playerInterface = NetLookup.Server<PlayerInterface>(conn.identity.netId);
             PlayerInterfaceServer playerInterfaceServer = playerInterface.GetComponent<PlayerInterfaceServer>();
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
@@ -789,7 +791,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         M_MapManager.instance.DecreaseTotalActionCost(); // 행동비용 감소
         M_MapManager.instance.ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
         StopCoroutine(ProcessMonsterDeathCoroutine());
-        foreach(PlayerInterface player in FindObjectsOfType<PlayerInterface>()){
+        foreach(PlayerInterface player in FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None)){
             player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 false 되돌림 (여러군데서 사용 예정)
             player.SetEndTurnActiveStateDefault(); // 앤드 턴 상태 모두 확인후 다시 false 되돌림
             player.SetCompleteRewardStateDefault();
@@ -797,7 +799,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         foreach(HexagonMapRoom hexagonMapRoom in M_MapManager.instance.hexagonMapRooms){
             hexagonMapRoom.isSelected = false; // 맵 선택상태 모두 false 초기화
         }
-        foreach(GamePlayer gamePlayer in FindObjectsOfType<GamePlayer>()){
+        foreach(GamePlayer gamePlayer in FindObjectsByType<GamePlayer>(FindObjectsSortMode.None)){
             gamePlayer.GetComponent<GamePlayerDeck>().rewards.Clear();
             gamePlayer.GetComponent<GamePlayerDeck>().rewardCards.Clear();
         }
@@ -1355,7 +1357,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             RpcStartNoneBattleEvent(hexagonMapRoom.roomType);
         }
         // 전투 시작 이치 초기화 및 어빌리티 카드 생성
-        foreach(GamePlayerDeck gamePlayerDeck in FindObjectsOfType<GamePlayerDeck>())
+        foreach(GamePlayerDeck gamePlayerDeck in FindObjectsByType<GamePlayerDeck>(FindObjectsSortMode.None))
         {
             if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.SpawnAbilityCardRPC();
         }
@@ -1370,7 +1372,7 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             cnt = 0;
             yield return new WaitForSeconds(0.1f);
-            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
+            PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
             foreach(PlayerInterface user in users)
                 if(user.isTargetObjectInitDone) cnt++;
             if(cnt != netManager.roomSlots.Count) continue;
@@ -1777,47 +1779,57 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
             Debug.Log("ERROR : Next Target Error");
         }
         List<TargetObject> retVal = new List<TargetObject>();
+        // playerOrder의 netId가 스폰 목록에서 사라진 타이밍(사망/접속해제)에는 해당 타겟을 건너뛴다
+        void AddIfSpawned(uint netId)
+        {
+            GamePlayerTarget gamePlayerTarget = NetLookup.Server<GamePlayerTarget>(netId);
+            TargetObject targetObject = gamePlayerTarget != null ? gamePlayerTarget.GetTargetObject() : null;
+            if(targetObject != null) retVal.Add(targetObject);
+        }
         switch(target)
         {
             case ActionTarget.FRONT :
-                if(M_TurnManager.instance.playerOrder[2] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[2]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[2] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[2]);
                 else retVal.AddRange(spawnedPlayerList);
                 break;
             case ActionTarget.MIDDLE :
-                if(M_TurnManager.instance.playerOrder[1] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[1]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[1] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[1]);
                 else retVal.AddRange(spawnedPlayerList);
                 break;
             case ActionTarget.BACK :
-                if(M_TurnManager.instance.playerOrder[0] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[0]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[0] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[0]);
                 else retVal.AddRange(spawnedPlayerList);
                 break;
             case ActionTarget.FRONT_BACK :
-                if(M_TurnManager.instance.playerOrder[2] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[2]].GetComponent<GamePlayerTarget>().GetTargetObject());
-                if(M_TurnManager.instance.playerOrder[0] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[0]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[2] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[2]);
+                if(M_TurnManager.instance.playerOrder[0] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[0]);
                 if(retVal.Count == 0)
                     retVal.AddRange(spawnedPlayerList);
                 break;
             case ActionTarget.FRONT_MIDDLE :
-                if(M_TurnManager.instance.playerOrder[2] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[2]].GetComponent<GamePlayerTarget>().GetTargetObject());
-                if(M_TurnManager.instance.playerOrder[1] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[1]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[2] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[2]);
+                if(M_TurnManager.instance.playerOrder[1] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[1]);
                 if(retVal.Count == 0)
                     retVal.AddRange(spawnedPlayerList);
                 break;
             case ActionTarget.MIDDLE_BACK :
-                if(M_TurnManager.instance.playerOrder[1] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[1]].GetComponent<GamePlayerTarget>().GetTargetObject());
-                if(M_TurnManager.instance.playerOrder[0] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[0]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[1] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[1]);
+                if(M_TurnManager.instance.playerOrder[0] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[0]);
                 if(retVal.Count == 0)
                     retVal.AddRange(spawnedPlayerList);
                 break;
             case ActionTarget.WHOLE :
-                if(M_TurnManager.instance.playerOrder[0] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[0]].GetComponent<GamePlayerTarget>().GetTargetObject());
-                if(M_TurnManager.instance.playerOrder[2] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[2]].GetComponent<GamePlayerTarget>().GetTargetObject());
-                if(M_TurnManager.instance.playerOrder[1] != 0) retVal.Add(NetworkServer.spawned[M_TurnManager.instance.playerOrder[1]].GetComponent<GamePlayerTarget>().GetTargetObject());
+                if(M_TurnManager.instance.playerOrder[0] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[0]);
+                if(M_TurnManager.instance.playerOrder[2] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[2]);
+                if(M_TurnManager.instance.playerOrder[1] != 0) AddIfSpawned(M_TurnManager.instance.playerOrder[1]);
                 if(retVal.Count == 0)
                     retVal.AddRange(spawnedPlayerList);
                 break;
         }
-       
+
+        // 지정 타겟이 전부 무효(스폰 해제 등)면 전체 플레이어로 폴백
+        if(retVal.Count == 0)
+            retVal.AddRange(spawnedPlayerList);
 
         return retVal.ToArray();
     }
@@ -1911,8 +1923,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     targetIndicator.netId = 0;
                     targetIndicators.Add(targetIndicatorObject);
                 }else{
-                    TargetObject targetObject = isServer ? NetworkServer.spawned[newVal].GetComponent<TargetObject>() :  NetworkClient.spawned[newVal].GetComponent<TargetObject>();
-                    GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, targetObject.transform.position + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
+                    TargetObject targetObject = isServer ? NetLookup.Server<TargetObject>(newVal) :  NetLookup.Client<TargetObject>(newVal);
+                    // SyncList 델타가 스폰 메시지보다 먼저 도착한 경우 타겟오브젝트가 아직 없을 수 있으므로 슬롯 위치로 폴백
+                    Vector3 indicatorPosition = targetObject != null ? targetObject.transform.position : targetObjectPosition[index];
+                    GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, indicatorPosition + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
                     TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
                     targetIndicator.netId = newVal;
                     targetIndicators.Add(targetIndicatorObject);
@@ -1938,8 +1952,10 @@ public class M_TurnManager : NetworkSingletonD<M_TurnManager>
         switch (op)
         {
             case SyncList<uint>.Operation.OP_ADD:
-                TargetObject targetObject = isServer ? NetworkServer.spawned[newVal].GetComponent<TargetObject>() :  NetworkClient.spawned[newVal].GetComponent<TargetObject>();
-                GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, targetObject.transform.position + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
+                TargetObject targetObject = isServer ? NetLookup.Server<TargetObject>(newVal) :  NetLookup.Client<TargetObject>(newVal);
+                // SyncList 델타가 스폰 메시지보다 먼저 도착한 경우 타겟오브젝트가 아직 없을 수 있음 — 인디케이터는 생성하고 위치는 이후 갱신에 맡긴다
+                Vector3 monsterIndicatorPosition = targetObject != null ? targetObject.transform.position : Vector3.zero;
+                GameObject targetIndicatorObject = Instantiate(M_TurnManager.instance.targetIndicatorPrefab, monsterIndicatorPosition + new Vector3(0f, 3f, 0f), Quaternion.identity, M_TurnManager.instance.targetIndicatorContainer.transform);
                 TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
                 targetIndicator.netId = newVal;
                 M_TurnManager.instance.targetIndicators.Add(targetIndicatorObject);

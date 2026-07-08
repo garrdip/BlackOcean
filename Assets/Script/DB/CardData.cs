@@ -55,39 +55,39 @@ public partial class CardData : SingletonD<CardData>
     //Version 3
     public void LoadCardDataFromDB()
     {
-        TextAsset DBtext = Resources.Load<TextAsset>("DB/CardDB");
-        using (StringReader DB = new StringReader(DBtext.text))
-        {          
-            while(true)
+        CsvTable cardTable = CsvTable.LoadFromResources("DB/CardDB");
+        List<string> failedCards = new List<string>(); // 로드 실패한 카드 집계 (한 카드의 오류가 전체 로드를 중단시키지 않도록)
+        int characteristicStart = cardTable.GetColumnIndex("Characteristic"); // 특성은 이 컬럼부터 가변 길이
+        foreach(CsvTable.Row row in cardTable.rows)
+        {
+            CardBase card = new CardBase();
+            try
             {
-                string value = DB.ReadLine();
-                if( value == null ) break; // 마지막 데이터의 경우 null을 반환
-                CardBase card = new CardBase();
-                
-                string[] values = value.Trim().Split(",");
-                if(values[0] == "CardNo") continue; // 첫줄 데이터 스킵   
-
-
-                card.cardNumber = values[0]; //카드 번호 사실상 메소드이름
-                card.character = (Character)Enum.Parse<Character>(values[1]);//케릭터
-                card.name = values[2];//카드이름
-                //Debug.Log(values[2]);
-                card.isTargetable = (values[6] == "Y") ? true : false;
-                card.cardType = (CardType)Enum.Parse<CardType>(values[4]);
-                card.description = values[3];
-                card.cost = int.Parse(values[5]);
-                card.validTarget = (ValidTarget)Enum.Parse<ValidTarget>(values[7]);
-                card.maxExperience = int.Parse(values[8]);
-                for(int i = 9; i < values.Length; i++)
+                card.cardNumber = row.Get("CardNo"); //카드 번호 사실상 메소드이름
+                card.character = row.GetEnum<Character>("Character");//케릭터
+                card.name = row.Get("Name");//카드이름
+                card.description = row.Get("Description");
+                card.cardType = row.GetEnum<CardType>("TYPE");
+                card.cost = row.GetInt("Cost");
+                card.isTargetable = row.Get("Targetable") == "Y";
+                card.validTarget = row.GetEnum<ValidTarget>("ValidTarget");
+                card.maxExperience = row.GetInt("MaxExp");
+                for(int i = characteristicStart; i < row.Count; i++)
                 {
-                    if(values[i] == "")break;
-                    card.cardCharacteristics.Add((CardCharacteristic)Enum.Parse<CardCharacteristic>(values[i]));
+                    if(row[i] == "")break;
+                    card.cardCharacteristics.Add((CardCharacteristic)Enum.Parse<CardCharacteristic>(row[i]));
                 }
-                ExecuteCard temp = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard),this,values[0]); // valuse[0] : 메소드 이름
+                ExecuteCard temp = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard),this,card.cardNumber); // 카드번호 = 메소드 이름
                 cards.Add(card);
                 CardMethods.Add(card.cardNumber,temp); // cardNumber
             }
+            catch (Exception e)
+            {
+                failedCards.Add($"{row[0]} ({row.lineNumber}행) — {e.GetType().Name}: {e.Message}");
+            }
         }
+        if(failedCards.Count > 0)
+            Debug.LogError($"[CardData] CardDB 로드 실패 {failedCards.Count}건. CSV의 CardNo와 CardData_* 파일의 메서드명이 일치하는지 확인하세요.\n{string.Join("\n", failedCards)}");
         // 게오르크 저주 메소드 추가
         curseEffect.Add("G0",G0_Effect);
         curseEffect.Add("G1",G1_Effect);
@@ -97,32 +97,26 @@ public partial class CardData : SingletonD<CardData>
         curseEffect.Add("G5",G5_Effect);
         curseEffect.Add("G6",G6_Effect);
         curseEffect.Add("G7",G7_Effect);
-        DBtext = Resources.Load<TextAsset>("DB/Description");
-        using (StringReader DB = new StringReader(DBtext.text))
-        {          
-            while(true)
+        foreach(CsvTable.Row row in CsvTable.LoadFromResources("DB/Description").rows)
+        {
+            try
             {
-                string value = DB.ReadLine();
-                if( value == null ) break; // 마지막 데이터의 경우 null을 반환
-                
-                string[] values = value.Trim().Split(",");
-                if(values[0] == "info") continue; // 첫줄 데이터 스킵   
-
-                infomationDB.Add(values[0],new InfomationDB(values[1],values[2]));
+                infomationDB.Add(row.Get("info"), new InfomationDB(row.Get("name"), row.Get("description")));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[CardData] Description 로드 실패: {row[0]} ({row.lineNumber}행) — {e.Message}");
             }
         }
-        DBtext = Resources.Load<TextAsset>("DB/CardCharacteristic");
-        using (StringReader DB = new StringReader(DBtext.text))
-        {          
-            while(true)
+        foreach(CsvTable.Row row in CsvTable.LoadFromResources("DB/CardCharacteristic").rows)
+        {
+            try
             {
-                string value = DB.ReadLine();
-                if( value == null ) break; // 마지막 데이터의 경우 null을 반환
-                
-                string[] values = value.Trim().Split(",");
-                if(values[0] == "enum") continue; // 첫줄 데이터 스킵   
-
-                cardCharacteristicToString.Add((CardCharacteristic)Enum.Parse<CardCharacteristic>(values[0]),values[1]);
+                cardCharacteristicToString.Add(row.GetEnum<CardCharacteristic>("enum"), row.Get("name"));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[CardData] CardCharacteristic 로드 실패: {row[0]} ({row.lineNumber}행) — {e.Message}");
             }
         }
 
@@ -239,16 +233,28 @@ public partial class CardData : SingletonD<CardData>
         yield return StartCoroutine(RunCardCoroutine(card,targets));
     }
 
+    // CardMethods 안전 조회 — 키가 없으면 에러 로그 후 null 반환 (KeyNotFoundException 크래시 방지)
+    private ExecuteCard GetCardMethod(string cardNumber)
+    {
+        if(CardMethods.TryGetValue(cardNumber, out ExecuteCard method))
+            return method;
+        Debug.LogError($"[CardData] CardMethods에 '{cardNumber}'가 없습니다. CardDB.csv의 CardNo와 카드 메서드명을 확인하세요.");
+        return null;
+    }
+
     private IEnumerator RunCardCoroutine(Card card,List<TargetObject> targets)
     {
         if(card.experience >= card.baseCard.maxExperience)
         {
-            yield return CardMethods[card.baseCard.cardNumber+"_E"](card,targets);
+            // 강화(_E) 메서드가 누락된 경우 기본 메서드로 폴백
+            ExecuteCard enhanced = GetCardMethod(card.baseCard.cardNumber+"_E") ?? GetCardMethod(card.baseCard.cardNumber);
+            if(enhanced != null) yield return enhanced(card,targets);
             card.experience = 0;
         }
         else
         {
-            yield return CardMethods[card.baseCard.cardNumber](card,targets);
+            ExecuteCard method = GetCardMethod(card.baseCard.cardNumber);
+            if(method != null) yield return method(card,targets);
             card.experience++;
         }
         isCardOperating = false;
@@ -257,20 +263,27 @@ public partial class CardData : SingletonD<CardData>
     {
         if(card.experience >= card.baseCard.maxExperience)
         {
-            yield return CardMethods[card.baseCard.cardNumber+"_E"](card,targets);
+            ExecuteCard enhanced = GetCardMethod(card.baseCard.cardNumber+"_E") ?? GetCardMethod(card.baseCard.cardNumber);
+            if(enhanced != null) yield return enhanced(card,targets);
             card.experience = 0;
         }
         else
         {
-            yield return CardMethods[card.baseCard.cardNumber](card,targets);
+            ExecuteCard method = GetCardMethod(card.baseCard.cardNumber);
+            if(method != null) yield return method(card,targets);
             card.experience++;
         }
     }
 
     public IEnumerator CurseCardEffect(Card card, TargetObject tar)
     {
-        return CardData.instance.curseEffect[card.baseCard.cardNumber](tar);
+        if(CardData.instance.curseEffect.TryGetValue(card.baseCard.cardNumber, out CurssEffect effect))
+            return effect(tar);
+        Debug.LogError($"[CardData] curseEffect에 '{card.baseCard.cardNumber}'가 없습니다.");
+        return EmptyEffect();
     }
+
+    private IEnumerator EmptyEffect() { yield break; }
 
     // 카드 특성 확인
     public bool CheckCardCharacteristic(Card card, CardCharacteristic character)

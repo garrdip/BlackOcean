@@ -180,7 +180,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     public void HandleCardQueuePopUp(CardQueue cardQueue, bool isOpen)
     {
         if(isOpen){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.spawned[cardQueue.cardOwnerNetId].GetComponent<NetworkIdentity>().GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = NetLookup.Client<GamePlayerDeck>(cardQueue.cardOwnerNetId);
             string playerName = gamePlayerDeck.GetComponent<GamePlayer>().objectOwner.steamPersonaName;
             textCardOwnerName.text = playerName;
             Card card = cardQueue.card;

@@ -14,7 +14,7 @@ public class SaveTest : MonoBehaviour
 
     void SaveGameHandler()
     {
-        GamePlayer[] gamePlayers = FindObjectsOfType<GamePlayer>();
+        GamePlayer[] gamePlayers = FindObjectsByType<GamePlayer>(FindObjectsSortMode.None);
         M_SaveManager.instance.SaveGameDataToFile(gamePlayers);
     }
 }

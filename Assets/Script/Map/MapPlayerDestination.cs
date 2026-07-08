@@ -70,7 +70,7 @@ public class MapPlayerDestination : NetworkBehaviour
     // PlayerInterface참조값에서 selectOrder값에 따라 해당 플레이어 소유의 표시 색상 변경
     public void OnChangePlayerInterfaceNetId(uint oldValue, uint newValue)
     {
-        PlayerInterface playerInterface = NetworkClient.spawned[newValue].GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface = NetLookup.Client<PlayerInterface>(newValue);
         spriteRenderer.color = playerInterface.color;
     }
 

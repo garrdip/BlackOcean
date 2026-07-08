@@ -10,7 +10,7 @@ public class GamePlayerTarget : NetworkBehaviour
 
     public TargetObject GetTargetObject()
     {
-        return NetworkClient.spawned[targetObject].GetComponent<TargetObject>();
+        return NetLookup.Client<TargetObject>(targetObject);
     }
 
     void OnNetIdUpdate(uint oldVal, uint newVal)

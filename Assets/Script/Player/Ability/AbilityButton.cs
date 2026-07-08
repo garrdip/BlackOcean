@@ -39,7 +39,7 @@ public class AbilityButton : NetworkBehaviour
         if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayer>().character == ProjectD.Character.HONGDANHYANG)
             NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().abilityCtrlArrow.InitCardCtrlArrow(this);
         else
-            NetworkClient.spawned[NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>().UsingGoHeng();
+            NetLookup.Client<TargetObject>(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject).UsingGoHeng();
     }
 
     void OnMouseEnter()

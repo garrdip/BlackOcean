@@ -687,13 +687,13 @@ public partial class CardData : SingletonD<CardData>
         // 전열과 후열에 별무리 1 부여
         uint frontPlayerNetId = M_TurnManager.instance.playerOrder[2];
         if(frontPlayerNetId != 0){
-            GamePlayer frontPlayer = NetworkServer.spawned[frontPlayerNetId].GetComponent<GamePlayer>();
+            GamePlayer frontPlayer = NetLookup.Server<GamePlayer>(frontPlayerNetId);
             TargetObject frontTargetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(frontPlayer);
             frontTargetObject.GainBuff(BuffType.BYEOLMURI,1,false,false,false,false,frontTargetObject,card);
         }
         uint backPlayerNetId = M_TurnManager.instance.playerOrder[0];
         if(backPlayerNetId != 0){
-            GamePlayer backPlayer = NetworkServer.spawned[backPlayerNetId].GetComponent<GamePlayer>();
+            GamePlayer backPlayer = NetLookup.Server<GamePlayer>(backPlayerNetId);
             TargetObject backTargetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(backPlayer);
             backTargetObject.GainBuff(BuffType.BYEOLMURI,1,false,false,false,false,backTargetObject,card);
         }

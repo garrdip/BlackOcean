@@ -146,7 +146,7 @@ public class M_SoundManager : MonoBehaviour {
             }
 
             //C# 2.0 Null 병합연산자
-            return Instance ?? FindObjectOfType<M_SoundManager> ();
+            return Instance ?? FindFirstObjectByType<M_SoundManager>();
         }
     }
 
@@ -951,7 +951,7 @@ public class M_SoundManager : MonoBehaviour {
     /// </summary>
     public void PauseAllSFX () {
         // SoundEffect 다 돌기
-        foreach (SoundEffect sfx in FindObjectsOfType<SoundEffect> ()) {
+        foreach (SoundEffect sfx in FindObjectsByType<SoundEffect>(FindObjectsSortMode.None)) {
             if (sfx.Source.isPlaying) sfx.Source.Pause ();
         }
     }
@@ -960,7 +960,7 @@ public class M_SoundManager : MonoBehaviour {
     /// 모든 효과음을 다시재생
     /// </summary>
     public void ResumeAllSFX () {
-        foreach (SoundEffect sfx in FindObjectsOfType<SoundEffect> ()) {
+        foreach (SoundEffect sfx in FindObjectsByType<SoundEffect>(FindObjectsSortMode.None)) {
             if (!sfx.Source.isPlaying) sfx.Source.UnPause ();
         }
     }
@@ -969,7 +969,7 @@ public class M_SoundManager : MonoBehaviour {
     /// 모든 효과음을 중지
     /// </summary>
     public void StopAllSFX () {
-        foreach (SoundEffect sfx in FindObjectsOfType<SoundEffect> ()) {
+        foreach (SoundEffect sfx in FindObjectsByType<SoundEffect>(FindObjectsSortMode.None)) {
             if (sfx.Source) {
                 sfx.Source.Stop ();
                 Destroy (sfx.gameObject);
@@ -1126,7 +1126,7 @@ public class M_SoundManager : MonoBehaviour {
             volume = Mathf.Clamp01 (volume);
             currentVoiceVol = _voiceVolume = volume;
 
-            foreach (VoiceEffect voiceEffect in FindObjectsOfType<VoiceEffect> ()) {
+            foreach (VoiceEffect voiceEffect in FindObjectsByType<VoiceEffect>(FindObjectsSortMode.None)) {
                 voiceEffect.Source.volume = _voiceVolume * voiceEffect.OriginalVolume;
                 voiceEffect.Source.mute = !_voiceOn;
             }
@@ -1154,7 +1154,7 @@ public class M_SoundManager : MonoBehaviour {
     /// </summary>
     public void PauseAllVoice () {
         // VoiceEffect 다 돌기
-        foreach (VoiceEffect voiceEffect in FindObjectsOfType<VoiceEffect> ()) {
+        foreach (VoiceEffect voiceEffect in FindObjectsByType<VoiceEffect>(FindObjectsSortMode.None)) {
             if (voiceEffect.Source.isPlaying) voiceEffect.Source.Pause ();
         }
     }
@@ -1163,7 +1163,7 @@ public class M_SoundManager : MonoBehaviour {
     /// 모든 음성을 다시재생
     /// </summary>
     public void ResumeAllVoice () {
-        foreach (VoiceEffect voiceEffect in FindObjectsOfType<VoiceEffect> ()) {
+        foreach (VoiceEffect voiceEffect in FindObjectsByType<VoiceEffect>(FindObjectsSortMode.None)) {
             if (!voiceEffect.Source.isPlaying) voiceEffect.Source.UnPause ();
         }
     }
@@ -1172,7 +1172,7 @@ public class M_SoundManager : MonoBehaviour {
     /// 모든 음성을 중지
     /// </summary>
     public void StopAllVoice () {
-        foreach (VoiceEffect voiceEffect in FindObjectsOfType<VoiceEffect> ()) {
+        foreach (VoiceEffect voiceEffect in FindObjectsByType<VoiceEffect>(FindObjectsSortMode.None)) {
             if (voiceEffect.Source) {
                 voiceEffect.Source.Stop ();
                 Destroy (voiceEffect.gameObject);
@@ -1209,7 +1209,7 @@ public class M_SoundManager : MonoBehaviour {
     private void ToggleSFXMute (bool flag) {
         sfxOn = _soundFxOn = flag;
 
-        foreach (SoundEffect sfx in FindObjectsOfType<SoundEffect> ()) {
+        foreach (SoundEffect sfx in FindObjectsByType<SoundEffect>(FindObjectsSortMode.None)) {
             sfx.Source.mute = !sfxOn;
         }
     }
@@ -1221,7 +1221,7 @@ public class M_SoundManager : MonoBehaviour {
     private void ToggleVoiceMute (bool flag) {
         voiceOn = _voiceOn = flag;
 
-        foreach (VoiceEffect voiceEffect in FindObjectsOfType<VoiceEffect> ()) {
+        foreach (VoiceEffect voiceEffect in FindObjectsByType<VoiceEffect>(FindObjectsSortMode.None)) {
             voiceEffect.Source.mute = !voiceOn;
         }
     }
@@ -1256,7 +1256,7 @@ public class M_SoundManager : MonoBehaviour {
             volume = Mathf.Clamp01 (volume);
             currentSfxVol = _soundFxVolume = volume;
 
-            foreach (SoundEffect sfx in FindObjectsOfType<SoundEffect> ()) {
+            foreach (SoundEffect sfx in FindObjectsByType<SoundEffect>(FindObjectsSortMode.None)) {
                 sfx.Source.volume = _soundFxVolume * sfx.OriginalVolume;
                 sfx.Source.mute = !_soundFxOn;
             }

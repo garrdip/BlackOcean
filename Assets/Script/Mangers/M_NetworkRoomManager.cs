@@ -43,7 +43,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
     public override GameObject OnRoomServerCreateRoomPlayer(NetworkConnectionToClient conn)
     {
         NetworkRoomManager netManger = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        RoomPlayer[] roomPlayers = FindObjectsOfType<RoomPlayer>();
+        RoomPlayer[] roomPlayers = FindObjectsByType<RoomPlayer>(FindObjectsSortMode.None);
         GameObject roomPlayer = Instantiate(roomPlayerPrefab.gameObject);
         if(roomPlayers.Length == 0){
             roomPlayer.GetComponent<RoomPlayer>().order = PlayOrder.FIRST;
@@ -97,9 +97,9 @@ public class M_NetworkRoomManager : NetworkRoomManager
     private void AssignAuthorityFromDisconnectClientToServer(NetworkConnectionToClient conn)
     {
         if(Utils.IsSceneActive(GameplayScene)){
-            PlayerInterface serverPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>(); // 서버 플레이어
-            PlayerInterface disconnectedPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>(); // 방 나간 플레이어
-            if(NetworkServer.spawned.TryGetValue(disconnectedPlayer.currentGamePlayerNetId, out NetworkIdentity identity)){
+            PlayerInterface serverPlayer = NetLookup.Server<PlayerInterface>(NetworkClient.connection.identity.netId); // 서버 플레이어
+            PlayerInterface disconnectedPlayer = NetLookup.Server<PlayerInterface>(conn.identity.netId); // 방 나간 플레이어
+            if(serverPlayer != null && disconnectedPlayer != null && NetworkServer.spawned.TryGetValue(disconnectedPlayer.currentGamePlayerNetId, out NetworkIdentity identity)){
                 GamePlayer disconnectedGamePlayer = identity.GetComponent<GamePlayer>(); // 방 나간 플레이어의 GamePlayer 컴포넌트
                 disconnectedGamePlayer.objectOwner = serverPlayer; // 방 나간 플레이어의 GamePlayer 오브젝트의 부모 오브젝트를 서버 플레이어의 PlayerInterface로 변경
                 serverPlayer.ownedPlayers.Add(disconnectedGamePlayer); // 서버플레이어의 ownedPlayers SyncList에 방 나간 플레이어 추가
@@ -128,13 +128,15 @@ public class M_NetworkRoomManager : NetworkRoomManager
     private void BroadCastToClientDisconnected(NetworkConnectionToClient conn)
     {
         if(Utils.IsSceneActive(RoomScene)){
-            RoomPlayer oldRoomPlayer = NetworkServer.spawned[conn.identity.netId].GetComponent<RoomPlayer>();
-            RoomPlayer newRoomPlayer = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<RoomPlayer>();
-            M_MessageManager.instance.RpcOtherPlayerDisconnectedInRoomScene(oldRoomPlayer.steamPersonaName, newRoomPlayer.steamPersonaName);
+            RoomPlayer oldRoomPlayer = NetLookup.Server<RoomPlayer>(conn.identity.netId);
+            RoomPlayer newRoomPlayer = NetLookup.Server<RoomPlayer>(NetworkClient.connection.identity.netId);
+            if(oldRoomPlayer != null && newRoomPlayer != null)
+                M_MessageManager.instance.RpcOtherPlayerDisconnectedInRoomScene(oldRoomPlayer.steamPersonaName, newRoomPlayer.steamPersonaName);
         }else if(Utils.IsSceneActive(GameplayScene)){
-            PlayerInterface oldPlayerInterface = NetworkServer.spawned[conn.identity.netId].GetComponent<PlayerInterface>();
-            PlayerInterface newPlayerInterface = NetworkServer.spawned[NetworkClient.connection.identity.netId].GetComponent<PlayerInterface>();
-            M_MessageManager.instance.RpcOtherPlayerDisconnectedInGameScene(oldPlayerInterface.steamPersonaName, newPlayerInterface.steamPersonaName);
+            PlayerInterface oldPlayerInterface = NetLookup.Server<PlayerInterface>(conn.identity.netId);
+            PlayerInterface newPlayerInterface = NetLookup.Server<PlayerInterface>(NetworkClient.connection.identity.netId);
+            if(oldPlayerInterface != null && newPlayerInterface != null)
+                M_MessageManager.instance.RpcOtherPlayerDisconnectedInGameScene(oldPlayerInterface.steamPersonaName, newPlayerInterface.steamPersonaName);
         }
     }
 

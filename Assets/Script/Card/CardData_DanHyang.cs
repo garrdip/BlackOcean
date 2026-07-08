@@ -50,13 +50,13 @@ public partial class CardData : SingletonD<CardData>
     {
         if(tar.objectType == ObjectType.PLAYER)
         {
-            tar.defense += tar.GetBuffValue(BuffType.FLOWERPOWDER,NetworkServer.spawned[tar.buffs[index].user].GetComponent<TargetObject>());
+            tar.defense += tar.GetBuffValue(BuffType.FLOWERPOWDER,NetLookup.Server<TargetObject>(tar.buffs[index].user));
             tar.GainBuff(BuffType.FLOWERPOWDER,-1,false,false,false,true,tar,null);
         }
         else
         {
-            GeneralSingleDamage(tar,tar.GetBuffValue(BuffType.FLOWERPOWDER,NetworkServer.spawned[tar.buffs[index].user].GetComponent<TargetObject>()));
-            tar.GainBuff(BuffType.FLOWERPOWDER,-1,true,false,false,true,NetworkServer.spawned[tar.buffs[index].user].GetComponent<TargetObject>(),null);
+            GeneralSingleDamage(tar,tar.GetBuffValue(BuffType.FLOWERPOWDER,NetLookup.Server<TargetObject>(tar.buffs[index].user)));
+            tar.GainBuff(BuffType.FLOWERPOWDER,-1,true,false,false,true,NetLookup.Server<TargetObject>(tar.buffs[index].user),null);
             StartCoroutine(tar.monster.OnHitAnimation());
         }
         yield return null;

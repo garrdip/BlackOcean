@@ -85,11 +85,13 @@ public class GamePlayer : NetworkBehaviour
     }
 
     [Command]
-    public void CmdAddGoldValue(uint localPlayerNetId, uint targetPlayerNetId, int giveGold)
+    public void CmdAddGoldValue(uint targetPlayerNetId, int giveGold)
     {
+        if(giveGold <= 0) return; // 음수/0 전달 방어 (역방향 갈취 방지)
         if(NetworkServer.spawned.TryGetValue(targetPlayerNetId, out NetworkIdentity networkIdentity)){
             GamePlayer targetPlayer = networkIdentity.GetComponent<GamePlayer>();
-            if(targetPlayerNetId == localPlayerNetId){
+            // 자기 자신의 netId는 클라가 보낸 값 대신 서버가 아는 이 오브젝트의 netId를 사용 (위장 방지)
+            if(targetPlayerNetId == netId){
                 TargetErrorMessage(Const.ERR_DENIED_GIVE_GOLD_LOCAL_PLAYER);
             }else{
                 int resultGold = gold - giveGold;

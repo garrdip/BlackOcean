@@ -501,7 +501,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                     bool isCardTypeImmortal = CardData.instance.CheckCardCharacteristic(cardOnHand.card, ProjectD.CardCharacteristic.YOUNGWON);
                     if(cardOnHand.card.baseCard.cardType == CardType.CURSE) // 게오르크 고행길 효과
                     {
-                        CMDCurseCardEffect(cardOnHand.card,NetworkClient.spawned[gamePlayerDeck.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>());
+                        CMDCurseCardEffect(cardOnHand.card,NetLookup.Client<TargetObject>(gamePlayerDeck.GetComponent<GamePlayerTarget>().targetObject));
                     }
                     if(!isCardTypeImmortal){
                         CardOnHandAllThrowAwaySequence(cardOnHand, gamePlayerDeck);
@@ -515,6 +515,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     [Command(requiresAuthority = false)]
     void CMDCurseCardEffect(Card card, TargetObject tar)
     {
+        if(card == null || card.baseCard == null || tar == null) return; // 잘못된 요청으로 서버 저주 큐가 오염되지 않도록 방어
         curseCardQueue.Add((card,tar));
     }
 
@@ -619,9 +620,9 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         TargetObject tar = null;
         if(!NetworkClient.spawned.ContainsKey(NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject))return str;
         if(isServer)
-            tar = NetworkServer.spawned[NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
+            tar = NetLookup.Server<TargetObject>(NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject);
         else
-            tar = NetworkClient.spawned[NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject].GetComponent<TargetObject>();
+            tar = NetLookup.Client<TargetObject>(NetworkClient.connection.identity.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject);
         int totalFlower = 0;
         string[] splitString = str.Trim().Split(" ");
         for(int i = 0 ;i < splitString.Length ; i++)

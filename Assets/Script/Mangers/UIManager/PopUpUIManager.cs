@@ -81,9 +81,9 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
     
     // CardRemove PopUp Delegate
     public delegate void OnCardRemovePopUpShow();
-    public OnCardEnhancePopUpShow onCardRemovePopUpShow;
+    public OnCardRemovePopUpShow onCardRemovePopUpShow;
     public delegate void OnCardRemovePopUpHide();
-    public OnCardEnhancePopUpHide onCardRemovePopUpHide;
+    public OnCardRemovePopUpHide onCardRemovePopUpHide;
 
 
     // DeckSelect PopUp Delegate

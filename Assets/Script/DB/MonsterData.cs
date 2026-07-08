@@ -17,77 +17,77 @@ public class MonsterData : SingletonD<MonsterData>
         LoadMonsterGroupDataFromDB();
     }
 
+    // MonsterDB는 헤더 이후 (ActionName,ActionValue,ActionTarget) 3컬럼이 반복되는 위치 기반 구조.
+    // 첫 컬럼이 비어있는 행은 직전 몬스터의 추가 행동 리스트다.
     void LoadMonsterDataFromDB()
     {
         Monster monsterData = new Monster();
-        TextAsset DBtext = Resources.Load<TextAsset>("DB/MonsterDB");
-        using (StringReader DB = new StringReader(DBtext.text))
+        foreach(CsvTable.Row row in CsvTable.LoadFromResources("DB/MonsterDB").rows)
         {
-            while(true)
+            try
             {
-                string value = DB.ReadLine();
-                if( value == null ) break; // 마지막 라인
-                string[] values = value.Trim().Split(",");
-                
-                if(values[0] == "Monster_Name") continue; // 첫번째 라인 스킵
-                if(values[0].Length != 0) // 새로운 몬스터 데이터 시작
+                if(row[0].Length != 0) // 새로운 몬스터 데이터 시작
                 {
                     monsterData = new Monster();
                     monsterDataList.Add(monsterData);
-                    
+
                     //CSV 파일내의 데이터를 클래스 데이터로 저장
-                    monsterData.name = values[0];
-                    monsterData.MAXHP = int.Parse(values[1]);
+                    monsterData.name = row[0];
+                    monsterData.MAXHP = int.Parse(row[1]);
                 }
 
                 // 몬스터 이름이 없을경우 스킬 LIST만 추가
-                if(values[2] == "Buff")
+                if(row[2] == "Buff")
                 {
-                    //Buff newBuff = new Buff(GetEnumData<BuffType>(values[3]),(int.Parse(values[4])),false,true,false,null);
+                    //Buff newBuff = new Buff(GetEnumData<BuffType>(row[3]),(int.Parse(row[4])),false,true,false,null);
                     //monsterData.buffList.Add(newBuff);
                 }
                 else
                 {
                     MonsterActionList monsterActionList = new MonsterActionList();
                     monsterData.behavior.Add(monsterActionList);
-                    monsterActionList.frequency = int.Parse(values[2]);
-                    for(int i = 1 ; i < values.Length/3 ; i++ ) // 순차적 액션 저장
+                    monsterActionList.frequency = int.Parse(row[2]);
+                    for(int i = 1 ; i < row.Count/3 ; i++ ) // 순차적 액션 저장
                     {
-                        if(values[i*3].Length == 0)break;
+                        if(row[i*3].Length == 0)break;
                         MonsterAction monsterActions = new MonsterAction();
-                        monsterActions.actionName = values[i*3];
+                        monsterActions.actionName = row[i*3];
                         monsterActions.actionNumber = i-1;
-                        monsterActions.actionValue = int.Parse(values[i*3+1]);
-                        monsterActions.actionTarget = (values[i*3+2] == "") ? ActionTarget.NONE : GetEnumData<ActionTarget>(values[i*3+2]);
+                        monsterActions.actionValue = int.Parse(row[i*3+1]);
+                        monsterActions.actionTarget = (row[i*3+2] == "") ? ActionTarget.NONE : GetEnumData<ActionTarget>(row[i*3+2]);
                         monsterActionList.ActionList.Add(monsterActions);
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[MonsterData] MonsterDB 로드 실패: {row[0]} ({row.lineNumber}행) — {e.Message}");
             }
         }
     }
 
     void LoadMonsterGroupDataFromDB()
     {
-        TextAsset DBtext = Resources.Load<TextAsset>("DB/MonsterGroupDB");
-        using (StringReader DB = new StringReader(DBtext.text))
+        foreach(CsvTable.Row row in CsvTable.LoadFromResources("DB/MonsterGroupDB").rows)
         {
-            while(true)
+            try
             {
-                string value = DB.ReadLine();
-                if( value == null ) break;
-                string[] values = value.Trim().Split(",");
-
-                if(values[0] == "Group_Name") continue;
                 MonsterGroup monsterGroup = new MonsterGroup();
-                monsterGroup.groupName = values[0];
-                monsterGroup.minHazard = int.Parse(values[1]);
-                monsterGroup.maxHazard = int.Parse(values[2]);
-                for(int i = 3 ; i < values.Length ; i++)
+                monsterGroup.groupName = row.Get("Group_Name");
+                monsterGroup.minHazard = row.GetInt("Minimum_Hazard");
+                monsterGroup.maxHazard = row.GetInt("Maximum_Hazard");
+                for(int i = 3 ; i < row.Count ; i++)
                 {
-                    if(values[i] != "")
-                        monsterGroup.monsters.Add(monsterDataList.Find(monster => monster.name == values[i]));
+                    if(row[i] == "") continue;
+                    Monster monster = monsterDataList.Find(m => m.name == row[i]);
+                    if(monster != null) monsterGroup.monsters.Add(monster);
+                    else Debug.LogError($"[MonsterData] MonsterGroupDB {row.lineNumber}행 — MonsterDB에 없는 몬스터 이름: '{row[i]}'");
                 }
                 monsterGroups.Add(monsterGroup);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[MonsterData] MonsterGroupDB 로드 실패: {row[0]} ({row.lineNumber}행) — {e.Message}");
             }
         }
     }

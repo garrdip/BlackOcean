@@ -14,7 +14,7 @@ public class NetworkSingletonD<T> : NetworkBehaviour where T : NetworkBehaviour
         {
             if (Instance == null)
             {
-                Instance = FindObjectOfType<T>();
+                Instance = FindFirstObjectByType<T>();
             }
 
             return Instance;

@@ -25,7 +25,7 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
 
     public void CheckWorkDone()
     {
-        PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
+        PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
         foreach(PlayerInterface user in users)
             if(!user.workDone)return;
         if(users.Length == NetworkServer.connections.Count)
@@ -37,7 +37,7 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
 
     public void CheckWorkDoneClear()
     {
-        PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
+        PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
         foreach(PlayerInterface user in users)
             if(user.workDone) return;
         if(users.Length == NetworkServer.connections.Count)
@@ -86,7 +86,7 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
 
     void GenetateGamePlayerDeck()
     {
-        PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
+        PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
         foreach(PlayerInterface user in users)
         {
             user.GenerateGamePlayerDeck();
@@ -95,7 +95,7 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
 
     void UploadAvatar()
     {
-        PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
+        PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
         foreach(PlayerInterface user in users)
         {
             user.UploadAvatar();

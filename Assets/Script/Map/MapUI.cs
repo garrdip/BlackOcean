@@ -165,7 +165,7 @@ public class MapUI : InstanceD<MapUI>
             }else{
                 if(NetworkClient.spawned.TryGetValue(M_TurnManager.instance.playerOrder[swapTargetIndex], out NetworkIdentity networkIdentity)){
                     GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
-                    MapPlayer mapPlayer = NetworkClient.spawned[gamePlayer.mapPlayerNetId].GetComponent<MapPlayer>();
+                    MapPlayer mapPlayer = NetLookup.Client<MapPlayer>(gamePlayer.mapPlayerNetId);
                     if(mapPlayer.isOwned){
                         M_MapManager.instance.CmdSwapMapPlayer(myIndex, swapTargetIndex); // 스왑 타겟이 본인 소유면 요청없이 스왑
                     }else{

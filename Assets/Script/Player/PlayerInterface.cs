@@ -12,7 +12,7 @@ public class PlayerInterface : NetworkBehaviour
     public OnChangeReady onChangeReady;
 
     public GamePlayer currentGamePlayer {
-        get { return isServer ? NetworkServer.spawned[currentGamePlayerNetId].GetComponent<GamePlayer>() : NetworkClient.spawned[currentGamePlayerNetId].GetComponent<GamePlayer>(); }
+        get { return isServer ? NetLookup.Server<GamePlayer>(currentGamePlayerNetId) : NetLookup.Client<GamePlayer>(currentGamePlayerNetId); }
     }
 
     public readonly SyncList<GamePlayer> ownedPlayers = new SyncList<GamePlayer>();
@@ -86,7 +86,7 @@ public class PlayerInterface : NetworkBehaviour
         while(!workDone)
         {
             yield return new WaitForSeconds(0.01f);
-            GamePlayer[] gamePlayers = FindObjectsOfType<GamePlayer>();
+            GamePlayer[] gamePlayers = FindObjectsByType<GamePlayer>(FindObjectsSortMode.None);
             foreach(GamePlayer gamePlayer in gamePlayers)
                 if(gamePlayer.isOwned)
                 {
@@ -132,7 +132,7 @@ public class PlayerInterface : NetworkBehaviour
     {
         if(isLocalPlayer)
         {
-            foreach(GamePlayer gamePlayer in FindObjectsOfType<GamePlayer>())
+            foreach(GamePlayer gamePlayer in FindObjectsByType<GamePlayer>(FindObjectsSortMode.None))
             {
                 if(gamePlayer.isOwned){
                     currentGamePlayerNetId = gamePlayer.netId;
@@ -218,7 +218,7 @@ public class PlayerInterface : NetworkBehaviour
         }
         if(isServer)
         {
-            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
+            PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
             foreach(PlayerInterface user in users)
             {
                 if(!user.endTurnActive && user.currentGamePlayer.HP > 0)return;
@@ -239,7 +239,7 @@ public class PlayerInterface : NetworkBehaviour
     {
         if(isServer)
         {
-            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
+            PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
             foreach(PlayerInterface player in users)
             {
                 if(!player.isRewardDone) return;
@@ -261,7 +261,7 @@ public class PlayerInterface : NetworkBehaviour
         onChangeReady?.Invoke(newVal);
         if(isServer)
         {
-            PlayerInterface[] users = FindObjectsOfType<PlayerInterface>();
+            PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
             foreach(PlayerInterface player in users){
                 if(!player.isReady) return;
             }
@@ -286,10 +286,10 @@ public class PlayerInterface : NetworkBehaviour
     {
         if(isServer && oldVal != 0 && newVal != 0){
             // 이전에 선택한 플레이어 카드포켓
-            CardPocket prevCardPocket = NetworkServer.spawned[oldVal].GetComponent<GamePlayerDeck>().cardPocket;
+            CardPocket prevCardPocket = NetLookup.Server<GamePlayerDeck>(oldVal).cardPocket;
             
             // 현재 선택한 플레이어 카드포켓
-            CardPocket currentCardPocket = NetworkServer.spawned[newVal].GetComponent<GamePlayerDeck>().cardPocket ;
+            CardPocket currentCardPocket = NetLookup.Server<GamePlayerDeck>(newVal).cardPocket ;
 
             // 위치 스왑
             Sequence sequence = DOTween.Sequence();
@@ -297,7 +297,7 @@ public class PlayerInterface : NetworkBehaviour
             sequence.Join(currentCardPocket.transform.DOMoveY(-8f, 0.5f));
 
             // 현재 선택한 플레이어의 PrefareDeck, TrashDeck, ForgottenDeck 카운트 텍스트 설정
-            GamePlayerDeck currentGamePlayerDeck = NetworkServer.spawned[newVal].GetComponent<GamePlayerDeck>();
+            GamePlayerDeck currentGamePlayerDeck = NetLookup.Server<GamePlayerDeck>(newVal);
             
             GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
             GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
@@ -336,7 +336,7 @@ public class PlayerInterface : NetworkBehaviour
     {
         if(isServer)
         {
-            foreach(PlayerInterface pi in FindObjectsOfType<PlayerInterface>())
+            foreach(PlayerInterface pi in FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None))
             {
                 if(!pi.cardThrowAwayDone)
                     return;

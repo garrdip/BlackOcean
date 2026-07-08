@@ -23,38 +23,30 @@ public partial class ItemData : SingletonD<ItemData>
     //Version 4
     public void LoadArtifactData()
     {
-        TextAsset DBtext = Resources.Load<TextAsset>("DB/ArtifactDB");
-        using (StringReader DB = new StringReader(DBtext.text))
-        {          
-            while(true)
-            {
-                string value = DB.ReadLine();
-                if( value == null ) break; // 마지막 데이터의 경우 null을 반환
-                string[] values = value.Trim().Split(",");
-                if(values[0] == "Name") continue; // 첫줄 데이터 스킵   
-                Item newItem = new Item(values[0],values[1],(ItemGrade)Enum.Parse<ItemGrade>(values[2]),(ItemEffectTime)Enum.Parse<ItemEffectTime>(values[3]));
-                ItemEventHanddler temp = (ItemEventHanddler)Delegate.CreateDelegate(typeof(ItemEventHanddler),this,values[1]);
-                artifacts.Add(newItem);
-                itemEffects.Add(values[1],temp);
-            }
-        }
+        LoadItemTable("DB/ArtifactDB", artifacts);
     }
 
     public void LoadLegacyData()
     {
-        TextAsset DBtext = Resources.Load<TextAsset>("DB/LegacyDB");
-        using (StringReader DB = new StringReader(DBtext.text))
-        {          
-            while(true)
+        LoadItemTable("DB/LegacyDB", legacies);
+    }
+
+    // Artifact/Legacy 공통 로더 — 한 아이템의 오류(메서드명 오타 등)가 전체 로드를 중단시키지 않도록 행 단위로 격리
+    private void LoadItemTable(string resourcePath, List<Item> destination)
+    {
+        foreach(CsvTable.Row row in CsvTable.LoadFromResources(resourcePath).rows)
+        {
+            try
             {
-                string value = DB.ReadLine();
-                if( value == null ) break; // 마지막 데이터의 경우 null을 반환
-                string[] values = value.Trim().Split(",");
-                if(values[0] == "Name") continue; // 첫줄 데이터 스킵   
-                Item newItem = new Item(values[0],values[1],(ItemGrade)Enum.Parse<ItemGrade>(values[2]),(ItemEffectTime)Enum.Parse<ItemEffectTime>(values[3]));
-                ItemEventHanddler temp = (ItemEventHanddler)Delegate.CreateDelegate(typeof(ItemEventHanddler),this,values[1]);
-                legacies.Add(newItem);
-                itemEffects.Add(values[1],temp);       
+                string methodName = row.Get("Number");
+                Item newItem = new Item(row.Get("Name"), methodName, row.GetEnum<ItemGrade>("Garde"), row.GetEnum<ItemEffectTime>("EffectTime"));
+                ItemEventHanddler temp = (ItemEventHanddler)Delegate.CreateDelegate(typeof(ItemEventHanddler), this, methodName);
+                destination.Add(newItem);
+                itemEffects.Add(methodName, temp);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[ItemData] {resourcePath} 로드 실패: {row[0]} ({row.lineNumber}행) — {e.GetType().Name}: {e.Message}");
             }
         }
     }

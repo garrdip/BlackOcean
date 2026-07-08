@@ -126,8 +126,8 @@ public class PlayerOrder : NetworkBehaviour
     // 카드포켓 위치 스왑
     private void SwapCardPocket(uint originNetId, uint targetNetId)
     {
-        CardPocket originCardPocket = NetworkClient.spawned[originNetId].GetComponent<GamePlayerDeck>().cardPocket;
-        CardPocket targetCardPocket = NetworkClient.spawned[targetNetId].GetComponent<GamePlayerDeck>().cardPocket ;
+        CardPocket originCardPocket = NetLookup.Client<GamePlayerDeck>(originNetId).cardPocket;
+        CardPocket targetCardPocket = NetLookup.Client<GamePlayerDeck>(targetNetId).cardPocket ;
 
         // 위치 스왑
         Sequence sequence = DOTween.Sequence();
@@ -135,7 +135,7 @@ public class PlayerOrder : NetworkBehaviour
         sequence.Join(targetCardPocket.transform.DOMoveY(-8f, 0.5f));
 
         // 현재 선택한 플레이어의 PrefareDeck, TrashDeck, ForgottenDeck 카운트 텍스트 설정
-        GamePlayerDeck currentGamePlayerDeck = NetworkClient.spawned[targetNetId].GetComponent<GamePlayerDeck>();
+        GamePlayerDeck currentGamePlayerDeck = NetLookup.Client<GamePlayerDeck>(targetNetId);
         GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
         GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
         GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);

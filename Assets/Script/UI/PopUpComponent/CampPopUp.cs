@@ -48,7 +48,7 @@ public class CampPopUp : SingletonD<CampPopUp>
                 .Show();
         }else{
             GamePlayer localPlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
-            localPlayer.CmdAddGoldValue(localPlayer.netId, targetPlayerNetId, int.Parse(inputFieldGold.text));
+            localPlayer.CmdAddGoldValue(targetPlayerNetId, int.Parse(inputFieldGold.text));
             inputFieldGold.text = string.Empty;
             inputFieldGold.ActivateInputField();
         }

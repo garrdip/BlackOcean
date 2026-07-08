@@ -37,7 +37,7 @@ public class MapPlayerPiece: NetworkBehaviour
     // PlayerInterface참조값에서 selectOrder값에 따라 해당 플레이어 소유의 MapPlayerPiece 색상 변경
     public void OnChangePlayerInterfaceNetId(uint oldValue, uint newValue)
     {
-        PlayerInterface playerInterface = NetworkClient.spawned[newValue].GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface = NetLookup.Client<PlayerInterface>(newValue);
         spriteRenderer.color = playerInterface.color;
     }
 
@@ -51,7 +51,7 @@ public class MapPlayerPiece: NetworkBehaviour
     private void SetPositionOffsetByOrder(Vector3 position)
     {
         Vector3 offset = new Vector3(0f, 0f, 0f);
-        PlayerInterface playerInterface = NetworkClient.spawned[playerIntefaceNetId].GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface = NetLookup.Client<PlayerInterface>(playerIntefaceNetId);
         switch(playerInterface.selectOrder){
             case 0:
                 offset += new Vector3(-0.2f, -0.5f, 0f);
