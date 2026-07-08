@@ -59,6 +59,32 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 8회차 완료 작업 (P1-5)
+
+### ✅ P1-5a — Card.experience 동기화 버그 수정
+
+계획 수립 때 지적된 잠재 버그를 수정. `CardOnHand.card`는 클래스 타입 SyncVar라 **같은 참조의 내부 필드 변경(experience++, costAddition±)은 클라이언트에 전파되지 않았다** — 서버 판정은 정상이지만 클라 UI의 경험치 핍·비용 표시가 어긋나는 버그.
+
+- `M_TurnManager.CardQueue.cs` 카드 실행 완료 지점에서 `cardOnHand.card = new Card(cardOnHand.card)` 재할당으로 SyncVar 전파 강제 — 경험치와 특성(숙련/중력) 비용 가감이 함께 동기화됨.
+- **덤으로 발견·수정**: `Card(Card)` 복사 생성자가 5개 필드(isReturnable/isSoldout/cardPrice/stackCount/isChargedCard)를 누락하고 있었음 — 전체 필드 복사로 보강, cardCharacteristics도 참조 공유 대신 리스트 복사로 교정.
+
+### ✅ P1-5b — GamePlayerDeck 책임별 partial 분리 (1,497줄 → 코어 402줄, -73%)
+
+M_TurnManager과 같은 방식(코드 원문 그대로 이동, 네트워크 계약 보존)으로 분리:
+
+| 파일 | 내용 | 규모 |
+|---|---|---|
+| `GamePlayerDeck.cs` (코어) | SyncVar/SyncList 필드, 초기화, 코스트 계산, 카드 큐 예측, 드로우 충전 | 402줄 |
+| `.DeckOps.cs` | 덱 간 카드 이동/추가/제거/강화 (Command 12 + TargetRpc 4 포함) | 481줄 |
+| `.SyncCallbacks.cs` | SyncVar 훅 4개 + SyncList 콜백 9개 | 363줄 |
+| `.Draw.cs` | 드로우/핸드/어빌리티 카드 스폰 | 199줄 |
+| `.RewardShop.cs` | 보상/상점 커맨드 | 52줄 |
+| (기존) `_IchiPart.cs` | 이치(코스트) 파트 | 유지 |
+
+**검증**: 컴파일 0건 + 리플렉션 검증(메서드 누락 0, Mirror UserCode_ 위빙 28개 정상, 오버로드 2쌍 보존).
+
+---
+
 ## 7회차 완료 작업 (P1-9)
 
 ### ✅ P1-9 — 사운드 클립 조회 안전화 (125곳)
@@ -192,7 +218,7 @@ TMP 예제 스크립트 2개가 Unity 6 내장 TMP의 `uvs0` 타입 변경(`Vect
 | 4 | ~~P1-7: CSV 파서 공통화~~ | ✅ 완료 (2회차) | 런타임 파싱 검증까지 완료 |
 | 5 | P1-3: M_TurnManager God Class 분해 (8책임) | 🔶 1단계 완료 (3회차) | partial 분리 완료. 2단계(실제 컴포넌트 추출)는 단계별 플레이 테스트와 병행 |
 | 6 | P1-4: 매니저 순환 참조 디커플링 | ⬜ 미착수 | P1-3과 병행 |
-| 7 | P1-5: GamePlayerDeck 분해 + `Card.experience` 동기화 버그 수정 | ⬜ 미착수 | experience는 실행부 안전화만 됨, 동기화 자체는 미해결 |
+| 7 | ~~P1-5: GamePlayerDeck 분해 + `Card.experience` 동기화 버그~~ | ✅ 완료 (8회차) | 동기화 버그 수정 + partial 분리(코어 -73%). 컴포넌트 추출은 선택적 후속 |
 | 8 | P1-8: 카드 효과 3파일 중복 제거 (공통 실행기, `_E` 래퍼 190개) | ⬜ 미착수 | `_E` 폴백 도입으로 위험은 낮아짐 |
 | 9 | ~~P1-9: 사운드 클립 조회 안전화~~ | ✅ 완료 (7회차) | 125곳 헬퍼 전환. SoundId enum 완전 도입은 선택적 후속 |
 | 10 | P1-10/11: TargetObject 분리, 몬스터 공통 시퀀스 상향 | ⬜ 미착수 | |

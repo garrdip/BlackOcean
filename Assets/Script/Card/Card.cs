@@ -34,6 +34,7 @@ public class Card
         costAddition = 0;
     }
 
+    // 전체 필드 복사 생성자 — SyncVar 재동기화용 복사본 생성에 사용되므로 필드 추가 시 반드시 여기도 갱신할 것
     public Card (Card card)
     {
         baseCard = card.baseCard;
@@ -41,8 +42,13 @@ public class Card
         isEnhanced = card.isEnhanced;
         costAddition = card.costAddition;
         experience = card.experience;
-        cardCharacteristics = card.cardCharacteristics;
+        cardCharacteristics = new List<CardCharacteristic>(card.cardCharacteristics);
         tempEnhanced = card.tempEnhanced;
+        isReturnable = card.isReturnable;
+        isSoldout = card.isSoldout;
+        cardPrice = card.cardPrice;
+        stackCount = card.stackCount;
+        isChargedCard = card.isChargedCard;
     }
 
     // 카드 클래스 깊은복사

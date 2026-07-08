@@ -66,6 +66,10 @@ public partial class M_TurnManager
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.JOONGREUK))
                             cardOnHand.card.costAddition ++;
 
+                        // 서버에서 변경된 카드 상태(경험치, 특성에 의한 비용 가감)를 클라이언트에 동기화
+                        // — 클래스 타입 SyncVar는 같은 참조의 내부 필드 변경으로는 전파되지 않으므로 복사본으로 재할당한다
+                        cardOnHand.card = new Card(cardOnHand.card);
+
                         if(cardOnHand.card.isReturnable){
                             gpd.ReturnToCardOnHand(cardOnHand);
                             cardQueueList.RemoveAt(cardQueueList.Count - 1);
