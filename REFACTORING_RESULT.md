@@ -6,6 +6,28 @@
 
 ---
 
+## 3회차 완료 작업 (P1-3 1단계)
+
+### ✅ P1-3 1단계 — M_TurnManager 책임별 partial class 분리
+
+2,010줄 단일 파일을 책임 단위 7개 파일로 분리. **같은 클래스를 유지하는 partial 분리라 Mirror 네트워크 계약(RPC 해시, SyncVar, 위빙)이 완전히 보존됨** — 코드 원문을 그대로 이동했고 로직 변경 0건.
+
+| 파일 | 내용 | 규모 |
+|---|---|---|
+| `M_TurnManager.cs` (코어) | SyncVar/SyncList 필드, 턴 상태머신(OnChangedPhase, BattleStandby, MonsterActive 등), 조회 헬퍼, SyncList 콜백 | 854줄 |
+| `M_TurnManager.TargetIndicator.cs` | 타겟 인디케이터 뷰 로직 7개 메서드 | 277줄 |
+| `M_TurnManager.Spawner.cs` | 플레이어/몬스터/보스/NPC 스폰 팩토리 8개 | 286줄 |
+| `M_TurnManager.Presentation.cs` | 전투 연출 RPC (BGM/보이스/토스트/애니) 7개 | 250줄 |
+| `M_TurnManager.Reward.cs` | 전투 보상·종료 처리 9개 | 200줄 |
+| `M_TurnManager.CardQueue.cs` | 카드 큐 파이프라인 4개 | 151줄 |
+| `M_TurnManager.IronDemon.cs` | 철귀 전용 연출/이동 5개 | 120줄 |
+
+**검증**: 컴파일 0건 + 에디터 리플렉션 검증 — 이동 메서드 40개 전부 타입에 존재, Mirror 위버 UserCode_ 14개 정상 생성(RPC 위빙 확인).
+
+**다음 단계(P1-3 2단계, 미착수)**: partial 경계가 확정됐으므로, RPC/SyncVar 없는 그룹(TargetIndicator 뷰 로직)부터 실제 별도 컴포넌트로 추출 → 이후 Spawner/Reward를 서비스 클래스로. 각 단계 사이 멀티 플레이 테스트 필수.
+
+---
+
 ## 2회차 완료 작업 (P1-6, P1-7)
 
 ### ✅ P1-6 — Command 권한 검증 (치트/오작동 방어)
@@ -123,7 +145,7 @@ TMP 예제 스크립트 2개가 Unity 6 내장 TMP의 `uvs0` 타입 변경(`Vect
 | 2 | .mat 82건 등 재직렬화 커밋 | ⬜ 대기 | 무해한 포맷 업그레이드. 리팩토링 커밋과 분리 권장 |
 | 3 | ~~P1-6: Command 권한 검증~~ | ✅ 완료 (2회차) | |
 | 4 | ~~P1-7: CSV 파서 공통화~~ | ✅ 완료 (2회차) | 런타임 파싱 검증까지 완료 |
-| 5 | P1-3: M_TurnManager God Class 분해 (8책임) | ⬜ 미착수 | 주 단위. 플레이 테스트 가능 상태에서 진행해야 안전 |
+| 5 | P1-3: M_TurnManager God Class 분해 (8책임) | 🔶 1단계 완료 (3회차) | partial 분리 완료. 2단계(실제 컴포넌트 추출)는 단계별 플레이 테스트와 병행 |
 | 6 | P1-4: 매니저 순환 참조 디커플링 | ⬜ 미착수 | P1-3과 병행 |
 | 7 | P1-5: GamePlayerDeck 분해 + `Card.experience` 동기화 버그 수정 | ⬜ 미착수 | experience는 실행부 안전화만 됨, 동기화 자체는 미해결 |
 | 8 | P1-8: 카드 효과 3파일 중복 제거 (공통 실행기, `_E` 래퍼 190개) | ⬜ 미착수 | `_E` 폴백 도입으로 위험은 낮아짐 |
