@@ -474,7 +474,7 @@ public class HexagonMapRoom : NetworkBehaviour
             ChangeSelectRoomRegionIndicatorMask(coordinate, SpriteMaskInteraction.VisibleOutsideMask);
             M_TurnManager.instance.playerOrder.Callback -= OnUpdatedPlayerOrder; // 방 해제 상태가 되면 오더 변경 이벤트 해제
         }
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("ingame_menu_stage_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "ingame_menu_stage_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 

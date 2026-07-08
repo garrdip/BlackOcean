@@ -58,12 +58,12 @@ public partial class M_TurnManager
     {
         if(target.player != null){
             if(target.player.objectOwner.isLocalPlayer){
-                AudioClip abilitySound = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][55]; // 이리 오거라
+                AudioClip abilitySound = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.HongDanHyang, 55); // 이리 오거라
                 M_SoundManager.instance.PlayVoice(abilitySound, abilitySound.length);
             }else{
                 List<AudioClip> clips = new List<AudioClip>();
-                AudioClip abilitySound1 = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][53]; // 도와 주거라
-                AudioClip abilitySound2 = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][56]; // 저리 가주거라
+                AudioClip abilitySound1 = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.HongDanHyang, 53); // 도와 주거라
+                AudioClip abilitySound2 = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.HongDanHyang, 56); // 저리 가주거라
                 clips.Add(abilitySound1);
                 clips.Add(abilitySound2);
                 AudioClip abilitySound = clips[Random.Range(0, clips.Count)];
@@ -71,9 +71,9 @@ public partial class M_TurnManager
             }
         }else{
             List<AudioClip> clips = new List<AudioClip>();
-            AudioClip abilitySound1 = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][52]; // 부탁하마
-            AudioClip abilitySound2 = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][54]; // 융융아 가거라
-            AudioClip abilitySound3 = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][57]; // 물어 뜯어 주거라
+            AudioClip abilitySound1 = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.HongDanHyang, 52); // 부탁하마
+            AudioClip abilitySound2 = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.HongDanHyang, 54); // 융융아 가거라
+            AudioClip abilitySound3 = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.HongDanHyang, 57); // 물어 뜯어 주거라
             clips.Add(abilitySound1);
             clips.Add(abilitySound2);
             clips.Add(abilitySound3);

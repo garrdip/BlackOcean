@@ -48,7 +48,7 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
 
     public void HandleChangeTab(int index)
     {
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         ChangeTab(index);
     }
@@ -68,7 +68,7 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
             RewardService.instance.CheckAllPlayerRewarded(gamePlayer);
             PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
         }
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 

@@ -194,7 +194,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
                 prefareDeckListPopUp.gameObject.SetActive(prefareDeckListPopUp.netId == netId);
             }
             onChangePrefareDeckPopUpShow?.Invoke();
-            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_1"));
+            AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "combat_card_deckbook_1");
             M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
 
@@ -228,7 +228,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
                 trashDeckListPopUp.gameObject.SetActive(trashDeckListPopUp.netId == netId);
             }
             onChangeTrashDeckPopUpShow?.Invoke();
-            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_3"));
+            AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "combat_card_deckbook_3");
             M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
 
@@ -262,7 +262,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
                 forgottenDeckListPopUp.gameObject.SetActive(forgottenDeckListPopUp.netId == netId);
             }
             onChangeForgottenDeckPopUpShow?.Invoke();
-            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_deckbook_2"));
+            AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "combat_card_deckbook_2");
             M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
 
@@ -288,7 +288,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         {
             isCardOnHandRemovePopUpOpen = false;
             onChangeCardOnHandRemovePopUpHide?.Invoke();
-            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+            AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
             M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
     #endregion
@@ -452,7 +452,7 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
                 networkRoomManager.StopClient();
                 M_SteamManager.LeaveLobby();
             });
-            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+            AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
             M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
     #endregion

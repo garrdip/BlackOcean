@@ -11,7 +11,7 @@ public class Boss_Momos : SpawnedMonster
         base.OnStartClient();
 
         // 모모스 BGM 재생
-        AudioClip momosBGM = M_SoundManager.instance.bgmClips[BGM_TYPE.Boss].Find((audioClip) => audioClip.name.Equals("Boss_Momos"));
+        AudioClip momosBGM = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Boss, "Boss_Momos");
         M_SoundManager.instance.PlayBGM(momosBGM, MusicTransition.Swift, 1.5f);
 
         // 플레이어별 모모스 조우 대화 오디오클립 조회
@@ -21,17 +21,17 @@ public class Boss_Momos : SpawnedMonster
             AudioClip momosVoice = null;
             switch(character){
                 case Character.HONGDANHYANG:
-                    momosVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Momos][11];
-                    playerVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.HongDanHyang][157];
+                    momosVoice = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.Momos, 11);
+                    playerVoice = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.HongDanHyang, 157);
                     break;
                 case Character.GEORK:
-                    momosVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Momos][12];
-                    playerVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Geork][166];
+                    momosVoice = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.Momos, 12);
+                    playerVoice = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.Geork, 166);
                     break;
                 case Character.ERIS:
                     int index = Random.Range(0, 1);
-                    momosVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Momos][index == 0 ? 13 : 14];
-                    playerVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.Eris][index == 0 ? 217 : 218];
+                    momosVoice = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.Momos, index == 0 ? 13 : 14);
+                    playerVoice = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.Eris, index == 0 ? 217 : 218);
                     // TODO : 에리스 공허상태인 경우 대화 분기 처리 
                     break;
             }
@@ -138,7 +138,7 @@ public class Boss_Momos : SpawnedMonster
         base.OnChangedHpValue(oldHpValue, newHpValue);
         if(newHpValue <= 0){
             int index = Random.Range(0, 1) == 0 ? 45 : 46; // Moon_46, Moon_47중 랜덤재생
-            AudioClip momosDeadVoice = M_SoundManager.instance.voiceClips[VOICE_TYPE.MoonGirl][index];
+            AudioClip momosDeadVoice = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.MoonGirl, index);
             M_SoundManager.instance.PlayVoice(momosDeadVoice, momosDeadVoice.length); // 모모스 사망시 달의소녀 나레이션 재생
         }
     }

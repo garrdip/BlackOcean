@@ -61,28 +61,28 @@ public class BackButton : MonoBehaviour
     public void OnPointerClickBackButtonOnRoom()
     {
         RoomUI.instance.HandleBackToMainScene();
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void OnPointerClickBackButtonOnCardEnhancePopUp()
     {
         PopUpUIManager.instance.HandleCardEnhancePopUp(false);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void OnPointerClickBackButtonOnCardRemovePopUp()
     {
         PopUpUIManager.instance.HandleCardRemovePopUp(false);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     public void OnPointerClickBackButtonOnCampPopUp()
     {
         PopUpUIManager.instance.HandleCampPopUpHide();
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 }

@@ -22,7 +22,7 @@ public partial class M_EffectManager
             danhyangCardEffects[Card_Effect.Effect_Eatter],
             "EffEatter",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][8],
+            M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, 8),
             "Effect")
         );
     }
@@ -35,7 +35,7 @@ public partial class M_EffectManager
             danhyangCardEffects[Card_Effect.Effect_Scratch],
             "01EffScratch",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][4],
+            M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, 4),
             "Effect")
         );
     }
@@ -49,7 +49,7 @@ public partial class M_EffectManager
             danhyangCardEffects[Card_Effect.Effect_Scratch],
             "01EffScratch",
             position,
-            M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][4],
+            M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, 4),
             "Effect")
         );
         // 딜레이 후 좌우 Flip된 손톱 공격 이펙트 생성
@@ -58,7 +58,7 @@ public partial class M_EffectManager
                 danhyangCardEffects[Card_Effect.Effect_Scratch],
                 "01EffScratch",
                 position,
-                M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][4],
+                M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, 4),
                 "Effect",
                 Quaternion.Euler(0f, 180f, 0f))
             );
@@ -85,7 +85,7 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectFlowerShield(Vector3 position, int index)
     {
-        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, index);
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_Shield],
             "Eff6_Shield",
@@ -99,7 +99,7 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectCutLeafAttack(Vector3 position, int index)
     {
-        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, index);
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_CutLeaf],
             "Eff1_CutLeaf",
@@ -112,7 +112,7 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectBodyTurnZoomIn(Vector3 position, int index)
     {
-        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, index);
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BodyTurnZoomIn],
             "Eff0_BodyZoomIn",
@@ -126,7 +126,7 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectBackTurnBottomLeaf(Vector3 position, int index)
     {
-        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, index);
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BackTurnBottom],
             "Eff2_TurnBottom",
@@ -142,7 +142,7 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectTurnBottomLeaf(Vector3 position, int index)
     {
-        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, index);
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_TurnBottom],
             "Eff2_TurnBottom",
@@ -156,7 +156,7 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectUpLight(Vector3 position, int index)
     {
-        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, index);
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_UpLight],
             "Eff3_UpLight",
@@ -170,7 +170,7 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectBackFallingLeaf(Vector3 position, int index)
     {
-        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, index);
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BackFallingLeaf],
             "Eff4_FallingLeaf",
@@ -184,7 +184,7 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectFallingLeaf(Vector3 position, int index)
     {
-        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, index);
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_FallingLeaf],
             "Eff4_FallingLeaf",
@@ -198,7 +198,7 @@ public partial class M_EffectManager
     [ClientRpc]
     public void RpcEffectBodyZoomOut(Vector3 position, int index)
     {
-        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.sfxClips[SFX_TYPE.Card_Danhyang][index];
+        AudioClip audioClip = index == -1 ? null : M_SoundManager.instance.GetSFXClipAt(SFX_TYPE.Card_Danhyang, index);
         StartCoroutine(StartEffect(
             danhyangCardEffects[Card_Effect.Effect_BodyZoomOut],
             "Eff5_BodyZoomOut",

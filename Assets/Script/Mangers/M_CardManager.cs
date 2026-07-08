@@ -227,7 +227,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                         sequence.Kill();
                         cardOnHand.transform.DOKill();
                         if(cardOnHand.isOwned){
-                            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));
+                            AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "combat_card_draw");
                             M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
                         }
                     });
@@ -296,7 +296,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                     gamePlayerDeck.CmdChangeCardOnHandIsAddtionDraw(cardOnHand, false);
                     sequence.Kill();
                     if(cardOnHand.isOwned){
-                        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));
+                        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "combat_card_draw");
                         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
                     }
                 })
@@ -324,7 +324,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                     cardOnHand.isMoving = false;
                     sequence.Kill();
                     if(cardOnHand.isOwned){
-                        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_draw"));
+                        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "combat_card_draw");
                         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
                     }
                 }));      
@@ -426,7 +426,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             cardOnHand.isMoving = true;
             cardOnHand.isUsed = true;
             if(cardOnHand.isOwned){
-                AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_card_discard"));
+                AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "combat_card_discard");
                 M_SoundManager.instance.PlaySFX(audioClip, audioClip.length, 0.5f);
             }
         });

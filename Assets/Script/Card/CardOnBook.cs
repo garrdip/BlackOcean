@@ -42,7 +42,7 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         transform.DOScale(originScale * 1.2f, 0.3f);
         GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
         TextDetector.instance.StartTextDetect(graphicRaycaster);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_mouseover_1"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "event_cardstore_mouseover_1");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 

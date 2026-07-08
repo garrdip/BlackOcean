@@ -189,7 +189,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             }
             GraphicRaycaster graphicRaycaster = textCardDescription.GetComponentInParent<GraphicRaycaster>();
             TextDetector.instance.StartTextDetect(graphicRaycaster);
-            AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_mouseover_2"));
+            AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "event_cardstore_mouseover_2");
             M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }
     }
@@ -401,7 +401,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 RequsetCardReward();
                 ChangeCardOnDeckRewardedState(RewardService.instance.rewardCardObjects);
                 CardOnDeckClickAnimation();
-                AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));
+                AudioClip rewardCardAudio = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "combat_game_win_reward");
                 M_SoundManager.instance.PlaySFX(rewardCardAudio, rewardCardAudio.length);
             }
         }
@@ -415,7 +415,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 RequestCardPurchase();
                 ChangeCardOnDeckSoldOutState();
                 CardOnDeckClickAnimation();
-                AudioClip shopCardPurchaseAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
+                AudioClip shopCardPurchaseAudio = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "event_cardstore_purchase");
                 M_SoundManager.instance.PlaySFX(shopCardPurchaseAudio, shopCardPurchaseAudio.length);
             }
         }

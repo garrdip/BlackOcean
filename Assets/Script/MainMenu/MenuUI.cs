@@ -34,7 +34,7 @@ public class MenuUI : MonoBehaviour
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         M_NetworkRoomManager.maxConnections = 1; // 방 최대 인원 1명으로 설정
         M_NetworkRoomManager.StartHost(); // 호스트로 시작
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }   
 
@@ -42,7 +42,7 @@ public class MenuUI : MonoBehaviour
     {
         menuCanvas.SetActive(false);
         multiplayCanvas.SetActive(true);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
@@ -62,14 +62,14 @@ public class MenuUI : MonoBehaviour
 
     public void HandleSettings()
     {
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         OptionUIManager.instance.HandShowOptionPopUp(true);
     }
 
     public void HandleQuit()
     {
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         Application.Quit();
     }

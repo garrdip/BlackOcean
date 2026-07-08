@@ -17,7 +17,7 @@ public class CharacterSelectUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         hoverImage.gameObject.SetActive(true);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("choose_character_mouseover"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "choose_character_mouseover");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 

@@ -254,7 +254,7 @@ public class CardOnHand : NetworkBehaviour
                 transform.GetComponent<SortingGroup>().sortingOrder =  M_CardManager.instance.maxSortOrder;
                 cardOnHandCanvas.sortingOrder =  M_CardManager.instance.maxSortOrder;
                 M_CardManager.instance.ChangeCardOnHandShiftState(this, true);
-                AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_mouseover_3"));
+                AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "event_cardstore_mouseover_3");
                 M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
                 CmdChangeMouseOverdState(true);
                 TargetIndicatorController.instance.CandidatedTargetIndicatorByCard(card.baseCard.validTarget);

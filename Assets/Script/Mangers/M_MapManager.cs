@@ -861,11 +861,11 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 .TextColor(Color.white)
                 .Text("맵에 보스가 출현 했습니다.")
                 .Show();
-            AudioClip audioClip_map = M_SoundManager.instance.bgmClips[BGM_TYPE.Map].Find((audioClip) => audioClip.name.Equals("Stage_1_Map_Boss_Spawn"));
+            AudioClip audioClip_map = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Map, "Stage_1_Map_Boss_Spawn");
             M_SoundManager.instance.PlayBGM(audioClip_map, MusicTransition.CrossFade, 2f); // 맵 보스 배경음 재생
             List<AudioClip> clips = new List<AudioClip>();
             for(int i=37; i<43; i++){
-                AudioClip audioClip = M_SoundManager.instance.voiceClips[VOICE_TYPE.MoonGirl][i];
+                AudioClip audioClip = M_SoundManager.instance.GetVoiceClipAt(VOICE_TYPE.MoonGirl, i);
                 clips.Add(audioClip);
             }
             AudioClip mapBossVoice = clips[Random.Range(0, clips.Count)];

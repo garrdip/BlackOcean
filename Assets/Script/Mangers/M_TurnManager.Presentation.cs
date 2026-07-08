@@ -58,7 +58,7 @@ public partial class M_TurnManager
     [ClientRpc]
     public void RpcStartBossBattleEvent()
     {
-        AudioClip stageStartAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("stage_start"));
+        AudioClip stageStartAudio = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "stage_start");
         M_SoundManager.instance.PlaySFX(stageStartAudio, stageStartAudio.length);
         M_MessageManager.instance
             .MakeToast()
@@ -76,7 +76,7 @@ public partial class M_TurnManager
     [ClientRpc]
     public void RpcStartBattleEvent(RoomType roomType)
     {
-        AudioClip stageStartAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("stage_start"));
+        AudioClip stageStartAudio = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "stage_start");
         M_SoundManager.instance.PlaySFX(stageStartAudio, stageStartAudio.length);
         Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().character; // 로컬 플레이어가 선택한 캐릭터 조회
         switch(roomType)
@@ -95,7 +95,7 @@ public partial class M_TurnManager
                 
                 // BGM 재생     
                 string audioName = Random.Range(0, 2) == 0 ? "Monster_Battle_N_1" : "Monster_Battle_N_2";
-                AudioClip audioClip_monster_n = M_SoundManager.instance.bgmClips[BGM_TYPE.Battle].Find((audioClip) => audioClip.name.Equals(audioName));
+                AudioClip audioClip_monster_n = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Battle, audioName);
                 M_SoundManager.instance.PlayBGM(audioClip_monster_n, MusicTransition.Swift, 1.5f);
 
                 // 캐릭터별 일반 몬스터 전투 음성대화 재생
@@ -131,7 +131,7 @@ public partial class M_TurnManager
                     .Show();
                
                 // BGM 재생            
-                AudioClip audioClip_monster_e = M_SoundManager.instance.bgmClips[BGM_TYPE.Battle].Find((audioClip) => audioClip.name.Equals("Monster_Battle_E"));
+                AudioClip audioClip_monster_e = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Battle, "Monster_Battle_E");
                 M_SoundManager.instance.PlayBGM(audioClip_monster_e, MusicTransition.Swift, 1.5f);
 
                 // 캐릭터별 엘리트 몬스터 전투 음성대화 재생
@@ -173,7 +173,7 @@ public partial class M_TurnManager
                     .TextColor(Color.white)
                     .Text("긍정적 이벤트")
                     .Show();
-                AudioClip audioClip_event_positive = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Positive_Event"));
+                AudioClip audioClip_event_positive = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Positive_Event");
                 M_SoundManager.instance.PlayBGM(audioClip_event_positive, MusicTransition.Swift, 1.5f);
                 PlayEventConversation(true);
                 break;
@@ -187,7 +187,7 @@ public partial class M_TurnManager
                     .TextColor(Color.white)
                     .Text("부정적 이벤트")
                     .Show();
-                AudioClip audioClip_event_negative = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Negative_Event"));
+                AudioClip audioClip_event_negative = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Negative_Event");
                 M_SoundManager.instance.PlayBGM(audioClip_event_negative, MusicTransition.Swift, 1.5f);
                 PlayEventConversation(false);
                 break;
@@ -202,7 +202,7 @@ public partial class M_TurnManager
                     .Text("전초기지")
                     .Show();
                 // 전초기지 배경음 재생
-                AudioClip audioClip_base_camp = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Base_Camp"));
+                AudioClip audioClip_base_camp = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Base_Camp");
                 M_SoundManager.instance.PlayBGM(audioClip_base_camp, MusicTransition.Swift, 1.5f);
                 break;
             case RoomType.CARD_NPC:
@@ -216,7 +216,7 @@ public partial class M_TurnManager
                     .Text("카드 상점")
                     .Show();
                 // 카드 상점 배경음 재생                    
-                AudioClip audioClip_card_hop = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Card_Shop"));
+                AudioClip audioClip_card_hop = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Card_Shop");
                 M_SoundManager.instance.PlayBGM(audioClip_card_hop, MusicTransition.Swift, 1.5f);
                 break;
             case RoomType.ITEM_NPC:
@@ -230,7 +230,7 @@ public partial class M_TurnManager
                     .Text("아이템 상점")
                     .Show();                
                 // 아이템 상점 배경음 재생
-                AudioClip audioClip_item_hop = M_SoundManager.instance.bgmClips[BGM_TYPE.Event].Find((audioClip) => audioClip.name.Equals("Item_Shop"));
+                AudioClip audioClip_item_hop = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Item_Shop");
                 M_SoundManager.instance.PlayBGM(audioClip_item_hop, MusicTransition.Swift, 1.5f);            
                 break;
         }

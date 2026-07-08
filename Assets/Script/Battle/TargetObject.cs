@@ -912,11 +912,11 @@ public class TargetObject : NetworkBehaviour
             int value = newVal - oldVal;
             if(oldVal > newVal){
                 M_EffectManager.instance.DisplayDefence(this, false, value);
-                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_down"));
+                AudioClip buffSound = M_SoundManager.instance.GetSFXClip(SFX_TYPE.Common, "common_shield_down");
                 M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
             }else{
                 M_EffectManager.instance.DisplayDefence(this, true, value);
-                AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_up"));
+                AudioClip buffSound = M_SoundManager.instance.GetSFXClip(SFX_TYPE.Common, "common_shield_up");
                 M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
             }
         }else{

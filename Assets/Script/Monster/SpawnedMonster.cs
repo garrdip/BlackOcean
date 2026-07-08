@@ -305,7 +305,7 @@ public class SpawnedMonster : NetworkBehaviour
     public void RpcBreadkShield()
     {
         // 실드 파괴음
-        AudioClip buffSound = M_SoundManager.instance.sfxClips[SFX_TYPE.Common].Find((audioClip) => audioClip.name.Equals("common_shield_down"));
+        AudioClip buffSound = M_SoundManager.instance.GetSFXClip(SFX_TYPE.Common, "common_shield_down");
         M_SoundManager.instance.PlaySFX(buffSound, buffSound.length);
     }
 
@@ -322,7 +322,7 @@ public class SpawnedMonster : NetworkBehaviour
     [ClientRpc]
     public void RpcStartSkillEffect(int effectIndex, string animationName, Vector3 position, SFX_TYPE sfx_type, int audioClipIndex, string layer)
     {
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[sfx_type][audioClipIndex];
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClipAt(sfx_type, audioClipIndex);
         StartCoroutine(StartEffect(
             effectDataAssets[effectIndex],
             animationName,

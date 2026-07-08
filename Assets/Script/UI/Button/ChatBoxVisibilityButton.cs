@@ -28,7 +28,7 @@ public class ChatBoxVisibilityButton : MonoBehaviour, IPointerEnterHandler, IPoi
 
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         M_MessageManager.instance.ChangeChatBoxVisibileState();
         if(M_MessageManager.instance.isChatBoxVisible){

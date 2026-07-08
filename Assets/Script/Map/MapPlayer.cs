@@ -282,7 +282,7 @@ public class MapPlayer : NetworkBehaviour, IPointerEnterHandler, IPointerExitHan
         ChangeMapPlayerViewByOrder(order);
         MapUI.instance.ChangeSwapButtonsIconState();
         MapUI.instance.ChangeSwapButtonsState(order);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("choose_position"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "choose_position");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 

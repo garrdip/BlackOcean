@@ -82,7 +82,7 @@ public class NPC_Mercurius : SpawnedMonster
     // Todd 초기 음성 재생
     private void PlayToddVoice(System.Action callback = null)
     {
-        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("thoth")); // Todd 음성 리스트 추출
+        List<AudioClip> clips = M_SoundManager.instance.GetVoiceClips(VOICE_TYPE.Todd).FindAll((audioClip) => audioClip.name.Contains("thoth")); // Todd 음성 리스트 추출
         AudioClip firstVoice = clips[0];
         AudioClip secondVoice = clips[1];
         M_SoundManager.instance.PlayVoice(firstVoice, firstVoice.length, false, () => {
@@ -122,7 +122,7 @@ public class NPC_Mercurius : SpawnedMonster
     private IEnumerator PlayMinionsVoice()
     {
         yield return new WaitForSeconds(10f);
-        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Todd].FindAll((audioClip) => audioClip.name.Contains("minons"));
+        List<AudioClip> clips = M_SoundManager.instance.GetVoiceClips(VOICE_TYPE.Todd).FindAll((audioClip) => audioClip.name.Contains("minons"));
         while(gameObject.activeSelf){
             int randomIndex = Random.Range(0, clips.Count);
             AudioClip clipToPlay = clips[randomIndex];

@@ -162,7 +162,7 @@ public class NPC_Sophia : SpawnedMonster
     // Sofia 음성 리스트 추출해서 랜덤재생
     private void PlayNPCVoice(System.Action callback = null)
     {
-        List<AudioClip> clips = M_SoundManager.instance.voiceClips[VOICE_TYPE.Sofia]; // Sofia 오디오 클립 조회
+        List<AudioClip> clips = M_SoundManager.instance.GetVoiceClips(VOICE_TYPE.Sofia); // Sofia 오디오 클립 조회
         int randomIndex = Random.Range(0, clips.Count);
         AudioClip clipToPlay = clips[randomIndex];
         M_SoundManager.instance.PlayVoice(clipToPlay, clipToPlay.length, false, () => {

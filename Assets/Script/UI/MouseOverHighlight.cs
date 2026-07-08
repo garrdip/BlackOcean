@@ -19,7 +19,7 @@ public class MouseOverHighlight : MonoBehaviour, IPointerEnterHandler, IPointerE
     public void OnPointerEnter(PointerEventData eventData)
     {
         textMeshPro.fontMaterial = outlineMaterial;
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseover"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseover");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 

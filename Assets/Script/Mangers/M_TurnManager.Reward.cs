@@ -87,7 +87,7 @@ public partial class M_TurnManager
     public void ReturnToMap()
     {
         string audioName = M_MapManager.instance.mapBoss == null ? "Stage_1_Map" : "Stage_1_Map_Boss_Spawn";
-        AudioClip audioClip_map = M_SoundManager.instance.bgmClips[BGM_TYPE.Map].Find((audioClip) => audioClip.name.Equals(audioName));
+        AudioClip audioClip_map = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Map, audioName);
         M_SoundManager.instance.PlayBGM(audioClip_map, MusicTransition.CrossFade, 2f);
         GameUIManager.instance.DoScreenChangeIn(() => {
             // 카메라 위치 리셋

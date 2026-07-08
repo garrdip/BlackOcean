@@ -278,11 +278,11 @@ public class M_SoundManager : MonoBehaviour {
     {
         switch(next.name){
             case "MenuScene":
-                AudioClip mainTitleClip = bgmClips[BGM_TYPE.MainTitle].Find((audioClip) => audioClip.name.Equals("MainTitle"));
+                AudioClip mainTitleClip = GetBGMClip(BGM_TYPE.MainTitle, "MainTitle");
                 PlayBGM(mainTitleClip, MusicTransition.Swift);
                 break;
             case "GameScene":
-                AudioClip mapClip = bgmClips[BGM_TYPE.Map].Find((audioClip) => audioClip.name.Equals("Stage_1_Map"));
+                AudioClip mapClip = GetBGMClip(BGM_TYPE.Map, "Stage_1_Map");
                 PlayBGM(mapClip, MusicTransition.CrossFade, 2f);
                 break;
         }
@@ -293,10 +293,58 @@ public class M_SoundManager : MonoBehaviour {
     {
         List<AudioClip> clips = new List<AudioClip>();
         for(int i=startIndex; i<(startIndex + count); i++){
-            AudioClip audioClip = M_SoundManager.instance.voiceClips[voice_Type][i];
-            clips.Add(audioClip);
+            AudioClip audioClip = GetVoiceClipAt(voice_Type, i);
+            if(audioClip != null) clips.Add(audioClip);
         }
         return clips;
+    }
+
+    // ---------------------------------------- 클립 안전 조회 헬퍼 ----------------------------------------
+    // 클립 이름 오타/인덱스 범위 초과 시 크래시 대신 에러 로그 + null 반환.
+    // 재생 함수들(PlayAudioClipBGM/SFX/Voice)은 null 클립을 무시하므로 재생 경로는 안전하다.
+
+    public AudioClip GetBGMClip(BGM_TYPE type, string clipName)
+    {
+        if (bgmClips.TryGetValue(type, out List<AudioClip> clips)) {
+            AudioClip clip = clips.Find((audioClip) => audioClip.name.Equals(clipName));
+            if (clip != null) return clip;
+        }
+        Debug.LogError($"[M_SoundManager] BGM 클립을 찾을 수 없습니다: {type}/{clipName}");
+        return null;
+    }
+
+    public AudioClip GetSFXClip(SFX_TYPE type, string clipName)
+    {
+        if (sfxClips.TryGetValue(type, out List<AudioClip> clips)) {
+            AudioClip clip = clips.Find((audioClip) => audioClip.name.Equals(clipName));
+            if (clip != null) return clip;
+        }
+        Debug.LogError($"[M_SoundManager] SFX 클립을 찾을 수 없습니다: {type}/{clipName}");
+        return null;
+    }
+
+    public AudioClip GetSFXClipAt(SFX_TYPE type, int index)
+    {
+        if (sfxClips.TryGetValue(type, out List<AudioClip> clips) && index >= 0 && index < clips.Count)
+            return clips[index];
+        Debug.LogError($"[M_SoundManager] SFX 클립 인덱스가 범위를 벗어났습니다: {type}[{index}]");
+        return null;
+    }
+
+    public AudioClip GetVoiceClipAt(VOICE_TYPE type, int index)
+    {
+        if (voiceClips.TryGetValue(type, out List<AudioClip> clips) && index >= 0 && index < clips.Count)
+            return clips[index];
+        Debug.LogError($"[M_SoundManager] 음성 클립 인덱스가 범위를 벗어났습니다: {type}[{index}]");
+        return null;
+    }
+
+    public List<AudioClip> GetVoiceClips(VOICE_TYPE type)
+    {
+        if (voiceClips.TryGetValue(type, out List<AudioClip> clips))
+            return clips;
+        Debug.LogError($"[M_SoundManager] 음성 클립 목록이 없습니다: {type}");
+        return new List<AudioClip>();
     }
 
     /// <summary>

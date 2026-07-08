@@ -103,14 +103,14 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     private void HandleClickBackButton()
     {
         HandShowOptionPopUp(false);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     private void HandleClickOkButton()
     {
         HandShowOptionPopUp(false);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
@@ -128,7 +128,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         if(isOn){
             bgmVolumeSlider.value = 0f;
         }
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
@@ -146,7 +146,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         if(isOn){
             voiceVolumeSlider.value = 0f;
         }
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
@@ -165,7 +165,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         if(isOn){
             sfxVolumeSlider.value = 0f;
         }
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
@@ -174,7 +174,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         string selectLanguage = select.options[select.value].text;
         PlayerPrefs.SetString(currentLanguage, selectLanguage);
         Debug.Log("언어 변경 : " + selectLanguage);
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 

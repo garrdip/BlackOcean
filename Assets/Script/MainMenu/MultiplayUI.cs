@@ -37,7 +37,7 @@ public class MultiplayUI : InstanceD<MultiplayUI>
     
     void HandleRefreshRoom()
     {
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         M_SteamManager.instance.GetLobbyList();
     }
@@ -61,13 +61,13 @@ public class MultiplayUI : InstanceD<MultiplayUI>
 
     void HandleCloseWindow()
     {
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
     void HandleCreateRoom()
     {
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         shadowMaker.SetActive(true);
         createLobbyIcon.transform.DOLocalMove(new Vector3(0,targetLocation,0),0.5f).OnComplete(() =>OnCompleteMoveIcon());
@@ -75,7 +75,7 @@ public class MultiplayUI : InstanceD<MultiplayUI>
 
     void HandleBackToLobbyList()
     {
-        AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
+        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         if(popUpUI.activeSelf) // 방생성 PopUp UI가 있을경우 PopUp UI만 Disable
         {
