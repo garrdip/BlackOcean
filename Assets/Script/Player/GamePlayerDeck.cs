@@ -367,6 +367,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
         for(int i=0; i<cardCount; i++){
             ReChargePrefareDeck();
+            if(prefareDeck.Count == 0){
+                // 뽑을덱·버린덱이 모두 빈 극단 상황 — 그대로 인덱싱하면 예외로 Mirror가 연결을 끊으므로 남은 드로우를 건너뛴다
+                Debug.LogWarning($"[GamePlayerDeck] 뽑을덱과 버린덱이 모두 비어 드로우를 중단합니다. (요청 {cardCount}장 중 {i}장 드로우됨)");
+                break;
+            }
             GameObject cardOnHandObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
                 cardSpawnPosition,
@@ -418,6 +423,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
     {
         for(int i=0; i<cardCount; i++){
             ReChargePrefareDeck();
+            if(prefareDeck.Count == 0){
+                Debug.LogWarning($"[GamePlayerDeck] 뽑을덱과 버린덱이 모두 비어 추가 드로우를 중단합니다. (요청 {cardCount}장 중 {i}장 드로우됨)");
+                break;
+            }
             int randomIndex = Random.Range(0, prefareDeck.Count);
             addtionDrawCards.Add(prefareDeck[randomIndex]);
             prefareDeck.RemoveAt(randomIndex);
@@ -425,10 +434,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
     }
 
     // CardOnHand 생성 시 뽑을 덱이 비어있는 경우 버린 덱에서 뽑을 덱으로 충전
+    // 주의: 버린덱까지 비어 있으면 충전되지 않으므로, 호출부는 호출 후 prefareDeck.Count == 0 검사 필수
     [Server]
     public void ReChargePrefareDeck()
     {
-        // TODO : 버린댁과 뽑을댁 모두 비엇을떄 예외처리 필요
         if(prefareDeck.Count == 0){
             while(trashDeck.Count != 0){
                 Card card = trashDeck[0];
@@ -760,6 +769,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
         for(int i=0; i<currentDeckCount; i++){
             ReChargePrefareDeck();
+            if(prefareDeck.Count == 0){
+                // 뽑을덱·버린덱이 모두 빈 극단 상황 — 그대로 인덱싱하면 예외로 Mirror가 호스트 연결을 끊어 이후 드로우가 영구 중단되므로 남은 드로우를 건너뛴다
+                Debug.LogWarning($"[GamePlayerDeck] 뽑을덱과 버린덱이 모두 비어 드로우를 중단합니다. (요청 {currentDeckCount}장 중 {i}장 드로우됨)");
+                break;
+            }
             GameObject cardOnHandObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
                 cardSpawnPosition,
