@@ -59,6 +59,20 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 12회차 완료 작업 (P1-4 1회차)
+
+### ✅ P1-4a — PlayerRegistry 도입 + 흐름 전이 판정을 M_TurnManager로 집중
+
+순환 참조의 한 축(PlayerInterface → TurnManager/MapManager 흐름 제어)과 SyncVar 훅 내 전수 스캔 위험(분석 2-4항)을 함께 해소.
+
+- **신규 `PlayerRegistry`**: PlayerInterface가 스폰/파괴 시 자기 등록/해제하는 정적 목록. `FindObjectsByType<PlayerInterface>` 전수 스캔 11곳 전부 대체 (성능 + 씬 전환 타이밍 취약성 제거). 파괴 누락 항목 자동 정리.
+- **집계 판정 이동**: PlayerInterface의 SyncVar 훅 3개(턴종료/보상완료/레디)에 흩어져 있던 "전원 상태 체크 → 페이즈 전이/방 진입" 서버 로직을 M_TurnManager의 `CheckAllPlayersEndTurn/RewardDone/ReadyForMapMove`로 이동. 훅은 로컬 UI 갱신 + 알림 한 줄만 담당 — 전이 로직이 상태머신 소유자 한 곳에 모임.
+- **NRE 수정**: 턴종료 집계의 `user.currentGamePlayer.HP` — currentGamePlayer가 null일 수 있는 타이밍(스폰 직후/해제 직후) 가드 추가.
+- 검증: 컴파일 0건. **플레이 검증 포인트**: 전원 턴 종료 → 페이즈 전환, 전원 보상 수령 → 맵 복귀, 전원 레디 → 투표 방 이동, 게임씬 진입 로딩(로딩 매니저가 레지스트리 사용).
+- 남은 P1-4b(후속): M_TurnManager ⇄ M_MapManager 상호 호출 정리(이벤트화) — 필요성 낮아지면 보류 가능.
+
+---
+
 ## 11회차 완료 작업 (P1-10 일부)
 
 ### ✅ P1-10a — TargetObject 책임별 partial 분리 (929줄 → 코어 347줄, -63%) + OnDestroy 크래시 수정

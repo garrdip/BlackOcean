@@ -1,0 +1,85 @@
+# 다음 세션 체크리스트
+
+> 작성일: 2026-07-08 퇴근 시점
+> 상세 이력: `REFACTORING_RESULT.md` (회차별 완료 내역) / `REFACTORING_PLAN.md` (전체 계획)
+
+---
+
+## ⚠️ 현재 상태: 커밋되지 않은 변경 있음
+
+**P1-4 1회차(PlayerRegistry) 변경분이 작업 트리에 남아 있다** — 테스트 통과 확인 후 커밋해야 함.
+변경 파일: `PlayerRegistry.cs`(신규), `PlayerInterface.cs`, `M_TurnManager.cs`, `M_TurnManager.Reward.cs`, `M_LoadingManager.cs`
+(컴파일 0건 확인 완료, 플레이 검증만 남음)
+
+---
+
+## 1. 내일 가장 먼저: P1-4a 플레이 테스트
+
+흐름 전이 판정이 PlayerInterface 훅 → M_TurnManager로 이동했고, 플레이어 전수 스캔이 PlayerRegistry로 바뀌었다. **게임 흐름의 관문 전부**가 검증 대상:
+
+- [ ] 게임 시작 로딩 완료 (로딩 매니저가 레지스트리 사용으로 전환됨 — 여기 걸리면 게임 진입 자체가 안 됨)
+- [ ] 맵에서 전원 레디 → 투표된 방으로 이동
+- [ ] 보스방/유적방: 현재 위치한 방이어도 재진입되는지
+- [ ] 전투에서 전원 턴 종료 → 몬스터 턴 전환
+- [ ] 전투 승리 → 전원 보상 수령 → 맵 복귀
+- [ ] (멀티 가능하면) 클라 한 명이 늦게 레디/늦게 보상 수령하는 상황
+- [ ] 콘솔 관찰: `[NetLookup]` / `[M_SoundManager]` / `[CardData]` 에러 로그 — 뜨면 버그가 아니라 **기존에 조용히 실패하던 데이터 누락을 발견한 것**이니 기록해 둘 것
+
+**테스트 통과 시**: 커밋 (메시지 예: "PlayerRegistry 도입 및 흐름 전이 판정을 M_TurnManager로 집중 (P1-4 1회차)") → 푸시
+
+**문제 발견 시**: 커밋하지 말고 콘솔 로그 확보 → 세션에서 원인 분석 요청
+
+---
+
+## 2. 최근 회차에서 함께 확인하면 좋은 것 (이미 커밋됨)
+
+- [ ] 카드 경험치 핍이 **클라이언트 화면에서도** 올라가는지 (8회차 동기화 수정 — 호스트 아닌 쪽에서 확인)
+- [ ] 강화(_E) 발동: 효과가 기본과 동일한 카드 + 실제 강화 로직 있는 카드 (10회차 래퍼 191개 제거)
+- [ ] 몬스터 피격 모션(움찔) 정상 (9회차 통합 — 특히 병사류 "Defence0" / 해피·새디 "3Defence")
+- [ ] 몬스터 사망/전투 정리 반복 (11회차 OnDestroy 가드)
+
+---
+
+## 3. 다음 진행사항 (우선순위순)
+
+### 남은 P2 항목 (계획서 기준)
+
+| # | 항목 | 규모 | 비고 |
+|---|---|---|---|
+| 1 | **P2-16 죽은 코드 정리** | 소~중 | `HexagonMapRoom.ChangeHexagonMapRoomLayoutState`(if/else 동일 분기 — 로직 버그 흔적, **의도 확인 필요**), 미구현 카드 스텁, 빈 SyncList 콜백 case, 주석 코드 |
+| 2 | **P2-15 매 프레임 폴링/캐싱 정리** | 중 | GameUIManager.Update 스크롤 재계산, M_SoundManager OnUpdate 믹서 폴링, localPlayer.GetComponent 체인 캐싱, HexagonMapRoom SpriteRenderer 캐싱 |
+| 3 | **P2-12 밸런스 매직넘버 데이터화** | 중 | 초기 스탯(PlayerInterface.GenerateGamePlayer의 HP 50/골드 100), 이치 3, 보상골드 10, 상점가 1(TODO 임시), NPC 좌표 등 → CSV 또는 ScriptableObject |
+| 4 | **P2-17 IL2CPP 빌드 검증** | 소 | Standalone 스크립팅 백엔드 설정 + 실빌드로 Steamworks.NET 동작 확인. **스팀 친구 배포용 빌드 만들 때 겸사겸사** |
+| 5 | TMP `Examples & Extras` 폴더 삭제 | 소 | 예제 미사용 확인 후 삭제 — 잔여 CS0618 경고 전부 소멸 |
+
+### 심화 후속 (필요 시)
+
+- **P1-4b**: M_TurnManager ⇄ M_MapManager 상호 호출 이벤트화 — 현재 큰 불편 없으면 보류 가능
+- **P1-8b**: 카드 실행 골격(디밍→애니→대기→효과)의 데이터 주도 실행기 — 카드 컨텐츠 제작 방식을 바꾸는 설계 작업. **새 카드를 대량 추가하기 전에** 하는 것이 이득
+- **몬스터 DoAction 데이터화(ScriptableObject)**: 새 몬스터를 대량 추가하기 전에
+- **TargetObject 플레이어/몬스터 클래스 완전 분리**: 4번째 캐릭터 추가 등 필요 시점에
+
+### 리팩토링 이후 (컨텐츠 재개 준비 완료 상태)
+
+P0~P1이 전부 처리되어 **카드/몬스터 컨텐츠 추가 작업을 재개해도 안전한 상태**다:
+- CSV 오타 → 크래시 대신 원인 명시 로그
+- 강화 카드는 효과가 다를 때만 `_E` 메서드 작성
+- 미구현 카드 스텁(G6 계열 등)과 Eris TODO 13곳이 컨텐츠 작업 목록
+
+---
+
+## 진행 요약 (원격 반영 완료된 커밋)
+
+| 커밋 | 내용 |
+|---|---|
+| e142ad71 | Unity 6 마이그레이션 재직렬화 + TMP 수정 |
+| 32e8e9d3 | 리팩토링 1·2회차 (P0 크래시 방어, Command 검증, CsvTable) |
+| b180dfbd | 카드 드로우 빈 덱 버그 수정 |
+| 99a13892 | FizzySteamworks 트랜스포트 복원 (스팀 멀티) |
+| b1e6538b / cc151653 / a2b67832 / 92147fe0 | M_TurnManager 분해 (partial → TargetIndicator/BattleSpawner/RewardService) |
+| b4745b21 | 사운드 클립 조회 안전화 125곳 |
+| 2f418187 | Card.experience 동기화 버그 + GamePlayerDeck 분리 |
+| da132b88 | 몬스터 피격 애니 복붙 통합 |
+| cc26e917 | 카드 _E 래퍼 191개 제거 |
+| 165959ac | TargetObject 분리 + OnDestroy 수정 |
+| (미커밋) | **P1-4a PlayerRegistry — 테스트 후 커밋할 것** |

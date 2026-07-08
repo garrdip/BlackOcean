@@ -25,10 +25,10 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
 
     public void CheckWorkDone()
     {
-        PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
+        IReadOnlyList<PlayerInterface> users = PlayerRegistry.All;
         foreach(PlayerInterface user in users)
             if(!user.workDone)return;
-        if(users.Length == NetworkServer.connections.Count)
+        if(users.Count == NetworkServer.connections.Count)
         {
             foreach(PlayerInterface user in users)
                 user.ClearWorkDone();
@@ -37,10 +37,10 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
 
     public void CheckWorkDoneClear()
     {
-        PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
+        IReadOnlyList<PlayerInterface> users = PlayerRegistry.All;
         foreach(PlayerInterface user in users)
             if(user.workDone) return;
-        if(users.Length == NetworkServer.connections.Count)
+        if(users.Count == NetworkServer.connections.Count)
             state++;
     }
 
@@ -86,7 +86,7 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
 
     void GenetateGamePlayerDeck()
     {
-        PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
+        IReadOnlyList<PlayerInterface> users = PlayerRegistry.All;
         foreach(PlayerInterface user in users)
         {
             user.GenerateGamePlayerDeck();
@@ -95,7 +95,7 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
 
     void UploadAvatar()
     {
-        PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
+        IReadOnlyList<PlayerInterface> users = PlayerRegistry.All;
         foreach(PlayerInterface user in users)
         {
             user.UploadAvatar();

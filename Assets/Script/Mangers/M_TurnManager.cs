@@ -235,7 +235,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     void PlayerCardThrowAwaySetDefault()
     {
-        foreach(PlayerInterface pi in FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None))
+        foreach(PlayerInterface pi in PlayerRegistry.All)
             pi.SetDefaultStateofCardThrowDone();
     }
 
@@ -405,6 +405,62 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             user.player.objectOwner.SetEndTurnActiveStateDefault();
             user.usingGOHENG = false; // 고행 사용 초기화
+        }
+    }
+
+    // ---------------- 전원 상태 집계 판정 (PlayerInterface SyncVar 훅에서 알림 수신) ----------------
+    // 흐름 전이 판정을 상태머신 소유자인 이곳에 모으고, 씬 전수 스캔 대신 PlayerRegistry를 사용한다.
+
+    // 모든 플레이어가 턴 종료했으면 다음 페이즈로 전이
+    [Server]
+    public void CheckAllPlayersEndTurn()
+    {
+        foreach(PlayerInterface user in PlayerRegistry.All)
+        {
+            GamePlayer gamePlayer = user.currentGamePlayer; // 스폰 타이밍에 따라 null 가능
+            if(!user.endTurnActive && gamePlayer != null && gamePlayer.HP > 0)return;
+        }
+        switch(phase)
+        {
+            case BattleTurn.PLAYER_ACTIVE :
+                phase = BattleTurn.PLAYER_ACTIVE_DONE;
+                break;
+            case BattleTurn.NONE_BATTLE_SCENE :
+                phase = BattleTurn.NONE_BATTLE_END;
+                break;
+        }
+    }
+
+    // 모든 플레이어가 보상을 받았으면 비전투 종료 처리
+    [Server]
+    public void CheckAllPlayersRewardDone()
+    {
+        foreach(PlayerInterface player in PlayerRegistry.All)
+        {
+            if(!player.isRewardDone) return;
+        }
+        foreach(PlayerInterface player in PlayerRegistry.All) player.SetCompleteRewardStateDefault();
+        NoneBattleEnd();
+    }
+
+    // 모든 플레이어가 레디 상태면 투표 결과 방으로 이동
+    [Server]
+    public void CheckAllPlayersReadyForMapMove()
+    {
+        foreach(PlayerInterface player in PlayerRegistry.All)
+        {
+            if(!player.isReady) return;
+        }
+        // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
+        HexagonMapRoom hexagonMapRoom = M_MapManager.instance.GetVoteHexagonMapRoomResult();
+        if(hexagonMapRoom != null){
+            if(hexagonMapRoom == M_MapManager.instance.currentRoom){
+                if(hexagonMapRoom.roomType == RoomType.BOSS || hexagonMapRoom.roomType == RoomType.RUINS){
+                    EnterTheRoom(hexagonMapRoom); // 보스방은 현재 위치한 방이어도 방 진입
+                }
+            }else{
+                EnterTheRoom(hexagonMapRoom);
+            }
         }
     }
 
@@ -602,7 +658,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             cnt = 0;
             yield return new WaitForSeconds(0.1f);
-            PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
+            IReadOnlyList<PlayerInterface> users = PlayerRegistry.All;
             foreach(PlayerInterface user in users)
                 if(user.isTargetObjectInitDone) cnt++;
             if(cnt != netManager.roomSlots.Count) continue;

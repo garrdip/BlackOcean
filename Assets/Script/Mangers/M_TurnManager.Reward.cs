@@ -28,7 +28,7 @@ public partial class M_TurnManager
         M_MapManager.instance.DecreaseTotalActionCost(); // 행동비용 감소
         M_MapManager.instance.ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
         StopCoroutine(ProcessMonsterDeathCoroutine());
-        foreach(PlayerInterface player in FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None)){
+        foreach(PlayerInterface player in PlayerRegistry.All){
             player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 false 되돌림 (여러군데서 사용 예정)
             player.SetEndTurnActiveStateDefault(); // 앤드 턴 상태 모두 확인후 다시 false 되돌림
             player.SetCompleteRewardStateDefault();

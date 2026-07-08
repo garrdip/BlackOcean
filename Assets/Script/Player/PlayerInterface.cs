@@ -72,6 +72,21 @@ public class PlayerInterface : NetworkBehaviour
         }
     }
 
+    public override void OnStartServer()
+    {
+        PlayerRegistry.Register(this);
+    }
+
+    public override void OnStartClient()
+    {
+        PlayerRegistry.Register(this);
+    }
+
+    void OnDestroy()
+    {
+        PlayerRegistry.Unregister(this);
+    }
+
     public override void OnStartLocalPlayer()
     {
         if(isLocalPlayer)
@@ -210,6 +225,8 @@ public class PlayerInterface : NetworkBehaviour
 
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
     
+    // 훅은 로컬 UI 갱신 + 서버에 "상태 변경됨" 알림만 담당하고,
+    // 전원 상태 집계와 흐름 전이는 상태머신 소유자인 M_TurnManager가 판정한다 (순환 참조 축소).
     public void OnEndTurnStateChanged(bool oldVal, bool newVal)
     {
         if(isLocalPlayer){
@@ -217,41 +234,18 @@ public class PlayerInterface : NetworkBehaviour
             endTurnButton.SetEndTurnButtonActiveState(newVal);
         }
         if(isServer)
-        {
-            PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
-            foreach(PlayerInterface user in users)
-            {
-                if(!user.endTurnActive && user.currentGamePlayer.HP > 0)return;
-            }
-            switch(M_TurnManager.instance.phase)
-            {
-                case BattleTurn.PLAYER_ACTIVE :
-                    M_TurnManager.instance.phase = BattleTurn.PLAYER_ACTIVE_DONE;
-                    break;
-                case BattleTurn.NONE_BATTLE_SCENE :
-                    M_TurnManager.instance.phase = BattleTurn.NONE_BATTLE_END;
-                    break;
-            }
-        }
+            M_TurnManager.instance.CheckAllPlayersEndTurn();
     }
-    
+
     public void OnCompleteReward(bool oldVal, bool newVal)
     {
         if(isServer)
-        {
-            PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
-            foreach(PlayerInterface player in users)
-            {
-                if(!player.isRewardDone) return;
-            }
-            foreach(PlayerInterface player in users)player.SetCompleteRewardStateDefault();
-            M_TurnManager.instance.NoneBattleEnd();
-        }
+            M_TurnManager.instance.CheckAllPlayersRewardDone();
         if(isOwned){
             PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
-        }   
+        }
     }
-    
+
     public void OnReadyStateChanged(bool oldVal, bool newVal)
     {
         if(isLocalPlayer){
@@ -260,25 +254,7 @@ public class PlayerInterface : NetworkBehaviour
         }
         onChangeReady?.Invoke(newVal);
         if(isServer)
-        {
-            PlayerInterface[] users = FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None);
-            foreach(PlayerInterface player in users){
-                if(!player.isReady) return;
-            }
-            // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
-            HexagonMapRoom hexagonMapRoom = M_MapManager.instance.GetVoteHexagonMapRoomResult();
-            if(hexagonMapRoom != null){
-                if(hexagonMapRoom == M_MapManager.instance.currentRoom){
-                    if(hexagonMapRoom.roomType == RoomType.BOSS || hexagonMapRoom.roomType == RoomType.RUINS){
-                        M_TurnManager.instance.EnterTheRoom(hexagonMapRoom); // 보스방은 현재 위치한 방이어도 방 진입
-                    }else{
-                        return;
-                    }
-                }else{
-                    M_TurnManager.instance.EnterTheRoom(hexagonMapRoom);
-                }
-            }
-        }    
+            M_TurnManager.instance.CheckAllPlayersReadyForMapMove();
     }
 
 
@@ -336,7 +312,7 @@ public class PlayerInterface : NetworkBehaviour
     {
         if(isServer)
         {
-            foreach(PlayerInterface pi in FindObjectsByType<PlayerInterface>(FindObjectsSortMode.None))
+            foreach(PlayerInterface pi in PlayerRegistry.All)
             {
                 if(!pi.cardThrowAwayDone)
                     return;
