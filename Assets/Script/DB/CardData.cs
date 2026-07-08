@@ -77,7 +77,7 @@ public partial class CardData : SingletonD<CardData>
                     if(row[i] == "")break;
                     card.cardCharacteristics.Add((CardCharacteristic)Enum.Parse<CardCharacteristic>(row[i]));
                 }
-                ExecuteCard temp = (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard),this,card.cardNumber); // 카드번호 = 메소드 이름
+                ExecuteCard temp = CreateCardDelegate(card.cardNumber); // 카드번호 = 메소드 이름. 강화 카드는 _E 메서드 생략 시 기본 메서드로 바인딩
                 cards.Add(card);
                 CardMethods.Add(card.cardNumber,temp); // cardNumber
             }
@@ -231,6 +231,22 @@ public partial class CardData : SingletonD<CardData>
     public IEnumerator RunCard(Card card,List<TargetObject> targets)
     {
         yield return StartCoroutine(RunCardCoroutine(card,targets));
+    }
+
+    // 카드번호 → 실행 메서드 바인딩.
+    // 규약: 강화(_E) 카드의 효과가 기본 카드와 동일하면 _E 메서드를 생략할 수 있다 — 이 경우 기본 메서드로 바인딩된다.
+    private ExecuteCard CreateCardDelegate(string methodName)
+    {
+        try
+        {
+            return (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard), this, methodName);
+        }
+        catch (Exception)
+        {
+            if (methodName.EndsWith("_E"))
+                return (ExecuteCard)Delegate.CreateDelegate(typeof(ExecuteCard), this, methodName.Substring(0, methodName.Length - 2));
+            throw;
+        }
     }
 
     // CardMethods 안전 조회 — 키가 없으면 에러 로그 후 null 반환 (KeyNotFoundException 크래시 방지)

@@ -72,10 +72,6 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션
         
     }
-    public IEnumerator HA_E(Card card,List<TargetObject> tar)
-    {
-        yield return HA(card,tar);
-    }
 
     public IEnumerator HWAHAP(TargetObject tar)
     {
@@ -164,11 +160,6 @@ public partial class CardData : SingletonD<CardData>
         
     }
 
-    public IEnumerator H1_E(Card card,List<TargetObject> tar)
-    {
-        yield return H1(card,tar);
-    }
-
 
     // 막아라 Complete
     public IEnumerator H2(Card card,List<TargetObject> tar)
@@ -193,10 +184,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
         
-    }
-    public IEnumerator H2_E(Card card,List<TargetObject> tar)
-    {
-        yield return H2(card,tar);
     }
 
     // 방패가 되어라
@@ -223,10 +210,6 @@ public partial class CardData : SingletonD<CardData>
         
     }
 
-    public IEnumerator H3_E(Card card,List<TargetObject> tar)
-    {
-        yield return H3(card,tar);
-    }
 
     // 철의 방패
     public IEnumerator H4(Card card,List<TargetObject> tar)
@@ -254,10 +237,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
         
     }
-    public IEnumerator H4_E(Card card,List<TargetObject> tar)
-    {
-        yield return H4(card,tar);
-    }
 
     // 새싹 Testing
     public IEnumerator H5(Card card,List<TargetObject> tar)
@@ -266,10 +245,6 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         tar[1].player.GetComponent<GamePlayerDeck>().maxIchi ++;
         yield return new WaitForSeconds(1f);
-    }
-    public IEnumerator H5_E(Card card,List<TargetObject> tar)
-    {
-        yield return H5(card,tar);
     }
 
     //따뜻함
@@ -283,10 +258,6 @@ public partial class CardData : SingletonD<CardData>
             target.player.GetComponent<GamePlayerDeck>().maxIchi ++;
         
         
-    }
-    public IEnumerator H6_E(Card card,List<TargetObject> tar)
-    {
-        yield return H6(card,tar);
     }
 
     //어버이의 축복 : 
@@ -305,10 +276,6 @@ public partial class CardData : SingletonD<CardData>
         tar[0].player.GetComponent<GamePlayerDeck>().currentIchi ++;
         yield return new WaitForSeconds(1f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-    }
-    public IEnumerator H7_E(Card card,List<TargetObject> tar)
-    {
-        yield return H7(card,tar);
     }
 
     // 씹어먹기
@@ -344,10 +311,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
     }
-    public IEnumerator H8_E(Card card,List<TargetObject> tar)
-    {
-        yield return H8(card,tar);
-    }
 
     //너희와 함께하리
     public IEnumerator H9(Card card,List<TargetObject> tar)
@@ -366,10 +329,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
         
     }
-    public IEnumerator H9_E(Card card,List<TargetObject> tar)
-    {
-        yield return H9(card,tar);
-    }
 
     // 철의 꽃밭
     public IEnumerator H10(Card card,List<TargetObject> tar)
@@ -383,10 +342,6 @@ public partial class CardData : SingletonD<CardData>
         }
         
     }
-    public IEnumerator H10_E(Card card,List<TargetObject> tar)
-    {
-        yield return H10(card,tar);
-    }
 
     // 비료
     public IEnumerator H11(Card card,List<TargetObject> tar)
@@ -395,10 +350,6 @@ public partial class CardData : SingletonD<CardData>
         GamePlayerDeck gamePlayerDeck = tar[0].player.GetComponent<GamePlayerDeck>();
         gamePlayerDeck.ServerSpawnCardOnHand((int)(gamePlayerDeck.trashDeck.Count/7));
         
-    }
-    public IEnumerator H11_E(Card card,List<TargetObject> tar)
-    {
-       yield return H11(card,tar);
     }
 
 
@@ -434,10 +385,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
     }
-    public IEnumerator H12_E(Card card, List<TargetObject> tar)
-    {
-        yield return H12(card,tar);
-    }
 
     // 차오르는 복수심
     public IEnumerator H13(Card card, List<TargetObject> tar)
@@ -460,10 +407,6 @@ public partial class CardData : SingletonD<CardData>
         
 
     }
-    public IEnumerator H13_E(Card card, List<TargetObject> tar)
-    {
-        yield return H13(card,tar);
-    }
 
     // 피해라 
 	public IEnumerator H14(Card card, List<TargetObject> tar)
@@ -477,10 +420,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
     }
-    public IEnumerator H14_E(Card card, List<TargetObject> tar)
-    {
-        yield return H14(card,tar);
-    }
 
     // 부탁하마
     public IEnumerator H15(Card card, List<TargetObject> tar)
@@ -492,10 +431,6 @@ public partial class CardData : SingletonD<CardData>
         MovePosition(false,tar[0]);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
-    }
-    public IEnumerator H15_E(Card card, List<TargetObject> tar)
-    {
-        yield return H15(card,tar);
     }
 
     // 그을린 꽃의 기적
@@ -529,10 +464,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
         
     }
-    public IEnumerator H16_E(Card card, List<TargetObject> tar)
-    {
-        yield return H16(card,tar);
-    }
 
     // 기적의 무게
     public IEnumerator H17(Card card, List<TargetObject> tar)
@@ -545,10 +476,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
     
-    public IEnumerator H17_E(Card card, List<TargetObject> tar)
-    {
-        yield return H17(card,tar);
-    }
 
     public void H17_CallBack(GamePlayerDeck gpd,List<CardOnHand> cards)
     {
@@ -576,10 +503,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(1.33f);
         
     }
-    public IEnumerator H18_E(Card card, List<TargetObject> tar)
-    {
-        yield return H18(card,tar);
-    }
 
     // 맡기거라
     public IEnumerator H19(Card card, List<TargetObject> tar)
@@ -592,10 +515,6 @@ public partial class CardData : SingletonD<CardData>
         MovePosition(tar[0],tar[1]);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
-    }
-    public IEnumerator H19_E(Card card, List<TargetObject> tar)
-    {
-        yield return H19(card,tar);
     }
 
     // 철로 만든 괴물
@@ -636,10 +555,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
         
-    }
-    public IEnumerator H20_E(Card card, List<TargetObject> tar)
-    {
-        yield return H20(card,tar);
     }
 
     // 철의 분노
@@ -683,10 +598,6 @@ public partial class CardData : SingletonD<CardData>
         }
     }
 
-    public IEnumerator H21_E(Card card, List<TargetObject> tar)
-    {
-        yield return H21(card,tar);
-    }
 
     //손톱 다듬기 // ToDo : 생성카드는 생성 느낌 줘야함
     public IEnumerator H22(Card card, List<TargetObject> tar)
@@ -701,10 +612,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
-    }
-    public IEnumerator H22_E(Card card, List<TargetObject> tar)
-    {
-        yield return H22(card,tar);
     }
 
     //아버지의 화신
@@ -727,10 +634,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(allEnemy);
         
     }
-    public IEnumerator H23_E(Card card, List<TargetObject> tar)
-    {
-        yield return H23(card,tar);
-    }
 
     // 칼날 손질
     public IEnumerator H24(Card card, List<TargetObject> tar)
@@ -748,10 +651,6 @@ public partial class CardData : SingletonD<CardData>
         tar.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H1")),1);
         yield return null;
     }
-    public IEnumerator H24_E(Card card, List<TargetObject> tar)
-    {
-        yield return H24(card,tar);
-    }
 
     // 입맛 다시기
     public IEnumerator H25(Card card, List<TargetObject> tar)
@@ -764,10 +663,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
-    }
-    public IEnumerator H25_E(Card card, List<TargetObject> tar)
-    {
-        yield return H25(card,tar);
     }
 
     //재조물 (카드 버리기)
@@ -792,10 +687,6 @@ public partial class CardData : SingletonD<CardData>
         if(targetObject.GetBuffValue(BuffType.FURYOFIRON) != 0)FuryOfIronEffect(targetObject);
     }
 
-    public IEnumerator H26_E(Card card, List<TargetObject> tar)
-    {
-        yield return H26(card,tar);
-    }
 
     // 화가 나는구나
     public IEnumerator H27(Card card, List<TargetObject> tar)
@@ -807,10 +698,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
-    }
-    public IEnumerator H27_E(Card card, List<TargetObject> tar)
-    {
-        yield return H27(card,tar);
     }
 
     // 성장기
@@ -829,10 +716,6 @@ public partial class CardData : SingletonD<CardData>
     {
         tar.GainBuff(BuffType.IRONDEMON,2,false,false,false,false,tar,null);
         yield return null;
-    }
-    public IEnumerator H28_E(Card card, List<TargetObject> tar)
-    {
-        yield return H28(card,tar);
     }
 
     // 용철 폭발
@@ -854,10 +737,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         
     }
-    public IEnumerator H29_E(Card card, List<TargetObject> tar)
-    {
-        yield return H29(card,tar);
-    }
 
     // 아버지의 자비
     public IEnumerator H30(Card card, List<TargetObject> tar)
@@ -877,10 +756,6 @@ public partial class CardData : SingletonD<CardData>
         }
         yield return new WaitForSeconds(0.5f);
         
-    }
-    public IEnumerator H30_E(Card card, List<TargetObject> tar)
-    {
-        yield return H30(card,tar);
     }
 
     // 무게감 (H0랑 같음)
@@ -905,10 +780,6 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.AnimIronDemon("Idle",tar[0]); // 아이들 모션 
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
-    }
-    public IEnumerator H31_E(Card card, List<TargetObject> tar)
-    {
-        yield return H31(card,tar);
     }
 
     // 포식자
@@ -961,10 +832,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
     }
-    public IEnumerator H33_E(Card card, List<TargetObject> tar)
-    {
-        yield return H33(card,tar);
-    }
 
     // 꽃과 철의 분노
     public IEnumerator H34(Card card, List<TargetObject> tar)
@@ -992,10 +859,6 @@ public partial class CardData : SingletonD<CardData>
         }
     }
 
-    public IEnumerator H34_E(Card card, List<TargetObject> tar)
-    {
-        yield return H34(card,tar);
-    }
 
     // 휩쓸기
     public IEnumerator H35(Card card, List<TargetObject> tar)
@@ -1020,10 +883,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(allEnemy);
         
     }
-    public IEnumerator H35_E(Card card, List<TargetObject> tar)
-    {
-        yield return H35(card,tar);
-    }
 
     // 어머니를 지켜라
     public IEnumerator H36(Card card, List<TargetObject> tar)
@@ -1038,10 +897,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
     }
-    public IEnumerator H36_E(Card card, List<TargetObject> tar)
-    {
-        yield return H36(card,tar);
-    }
 
     // 식후 명령
     public IEnumerator H37(Card card, List<TargetObject> tar)
@@ -1053,10 +908,6 @@ public partial class CardData : SingletonD<CardData>
         yield return HWAHAP(tar[0]);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
         
-    }
-    public IEnumerator H37_E(Card card, List<TargetObject> tar)
-    {
-        yield return H37(card,tar);
     }
 
     //철의 장막
@@ -1074,10 +925,6 @@ public partial class CardData : SingletonD<CardData>
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
-    }
-    public IEnumerator H38_E(Card card, List<TargetObject> tar)
-    {
-        yield return H38(card,tar);
     }
 
     // 추적자
@@ -1103,10 +950,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
     }
-    public IEnumerator H39_E(Card card, List<TargetObject> tar)
-    {
-        yield return H39(card,tar);
-    }
 
     // 신중한 명령
     public IEnumerator H40(Card card, List<TargetObject> tar)
@@ -1115,10 +958,6 @@ public partial class CardData : SingletonD<CardData>
             M_EffectManager.instance.RpcEffectUpLight(tar[0].transform.position, 78);
             yield return HWAHAP(tar[0]);
         }
-    }
-    public IEnumerator H40_E(Card card, List<TargetObject> tar)
-    {
-        yield return H40(card,tar);
     }
 
     //집중 포화
@@ -1143,10 +982,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
-    public IEnumerator H41_E(Card card, List<TargetObject> tar)
-    {
-        yield return H41(card,tar);
-    }
 
 
     // 가루 뿌리기
@@ -1164,10 +999,6 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[1].buffTrunBeginEffect.Keys.Contains<int>(index))tar[1].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
-    }
-    public IEnumerator H42_E(Card card, List<TargetObject> tar)
-    {
-        yield return H42(card,tar);
     }
 
     // 축포
@@ -1206,10 +1037,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(allEnemy);
     }
-    public IEnumerator H43_E(Card card, List<TargetObject> tar)
-    {
-        yield return H43(card,tar);
-    }
 
     //이른 봉우리
     public IEnumerator H44(Card card, List<TargetObject> tar)
@@ -1232,10 +1059,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
     }
-    public IEnumerator H44_E(Card card, List<TargetObject> tar)
-    {
-        yield return H44(card,tar);
-    }
 
     // 뿌리내리기
     public IEnumerator H45(Card card, List<TargetObject> tar)
@@ -1248,10 +1071,6 @@ public partial class CardData : SingletonD<CardData>
         GeneralSingleAttack(tar[0],tar[1],7);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
-    }
-    public IEnumerator H45_E(Card card, List<TargetObject> tar)
-    {
-        yield return H45(card,tar);
     }
 
     //꽃가루 폭발
@@ -1266,10 +1085,6 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[1].buffTrunBeginEffect.Keys.Contains<int>(index))tar[1].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
-    }
-    public IEnumerator H46_E(Card card, List<TargetObject> tar)
-    {
-        yield return H46(card,tar);
     }
 
     //환절기
@@ -1300,10 +1115,6 @@ public partial class CardData : SingletonD<CardData>
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
-    }
-    public IEnumerator H47_E(Card card, List<TargetObject> tar)
-    {
-        yield return H47(card,tar);
     }
 
     // 향기로운 꽃 // Todo : 버프형으로 변경
@@ -1336,10 +1147,6 @@ public partial class CardData : SingletonD<CardData>
         }
         yield return null;
     }
-    public IEnumerator H48_E(Card card, List<TargetObject> tar)
-    {
-        yield return H48(card,tar);
-    }
 
     // 꽃사슬갑옷
     public IEnumerator H49(Card card, List<TargetObject> tar)
@@ -1355,10 +1162,6 @@ public partial class CardData : SingletonD<CardData>
         if(!tar[0].buffTurnEndEffect.Keys.Contains<int>(index))tar[0].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-    }
-    public IEnumerator H49_E(Card card, List<TargetObject> tar)
-    {
-        yield return H49(card,tar);
     }
 
     //기다림의 미학
@@ -1386,10 +1189,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
-    public IEnumerator H50_E(Card card, List<TargetObject> tar)
-    {
-        yield return H50(card,tar);
-    }
 
     // 꽃 줍기
     public IEnumerator H51(Card card, List<TargetObject> tar)
@@ -1401,10 +1200,6 @@ public partial class CardData : SingletonD<CardData>
             tar[1].player.GetComponent<GamePlayerDeck>().prefareDeck.Add(new Card(CardData.instance.cards.Find(card => card.cardNumber == "H52")));
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-    }
-    public IEnumerator H51_E(Card card, List<TargetObject> tar)
-    {
-        yield return H51(card,tar);
     }
 
     // 꽃 잎
@@ -1419,10 +1214,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
-    public IEnumerator H52_E(Card card, List<TargetObject> tar)
-    {
-        yield return H52(card,tar);
-    }
 
     // 독기에 죽어라
     public IEnumerator H53(Card card, List<TargetObject> tar)
@@ -1434,10 +1225,6 @@ public partial class CardData : SingletonD<CardData>
         GeneralSingleDamage(tar[1],tar[1].GetBuffValue(BuffType.FLOWERPOWDER)*3);
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-    }
-    public IEnumerator H53_E(Card card, List<TargetObject> tar)
-    {
-        yield return H53(card,tar);
     }
 
     //개화
@@ -1460,10 +1247,6 @@ public partial class CardData : SingletonD<CardData>
         }
         yield return new WaitForSeconds(1.25f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedMonsterList.Concat<TargetObject>(M_TurnManager.instance.spawnedPlayerList).ToList<TargetObject>());
-    }
-    public IEnumerator H54_E(Card card, List<TargetObject> tar)
-    {
-        yield return H54(card,tar);
     }
 
     //동방의 신비
@@ -1500,10 +1283,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(1.25f);
         M_DimmingManager.instance.StopDimming(allEnemy);
     }
-    public IEnumerator H55_E(Card card, List<TargetObject> tar)
-    {
-        yield return H55(card,tar);
-    }
 
     // 꽃의 향
     public IEnumerator H56(Card card, List<TargetObject> tar)
@@ -1516,10 +1295,6 @@ public partial class CardData : SingletonD<CardData>
         tar[1].buffs.Remove(tar[1].buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
         yield return new WaitForSeconds(1.25f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-    }
-    public IEnumerator H56_E(Card card, List<TargetObject> tar)
-    {
-        yield return H56(card,tar);
     }
 
     // 철에 피는 꽃
@@ -1540,10 +1315,6 @@ public partial class CardData : SingletonD<CardData>
         M_EffectManager.instance.RpcEffectBackTurnBottomLeaf(tar[0].ironDemonLocation.transform.position, 119);
         yield return new WaitForSeconds(1.25f);
         M_DimmingManager.instance.StopDimming(allTarget);
-    }
-    public IEnumerator H57_E(Card card, List<TargetObject> tar)
-    {
-        yield return H57(card,tar);
     }
 
     //어버이의 후예들 
@@ -1594,10 +1365,6 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
-    public IEnumerator H58_E(Card card, List<TargetObject> tar)
-    {
-        yield return H58(card,tar);
-    }
 
     // 제국의 최전선
     public IEnumerator H59(Card card, List<TargetObject> tar)
@@ -1622,10 +1389,6 @@ public partial class CardData : SingletonD<CardData>
         }
         M_DimmingManager.instance.StopDimming(targets);
     }
-    public IEnumerator H59_E(Card card, List<TargetObject> tar)
-    {
-        yield return H59(card,tar);
-    }
 
     // 홍씨 가문의 명예
     public IEnumerator H60(Card card, List<TargetObject> tar)
@@ -1638,10 +1401,6 @@ public partial class CardData : SingletonD<CardData>
         M_EffectManager.instance.RpcEffectBodyZoomOut(tar[0].player.transform.position, 122);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
-    }
-    public IEnumerator H60_E(Card card, List<TargetObject> tar)
-    {
-        yield return H60(card,tar);
     }
     
 
