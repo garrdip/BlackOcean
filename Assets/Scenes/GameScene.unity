@@ -36050,6 +36050,7 @@ GameObject:
   - component: {fileID: 3946356632764995063}
   - component: {fileID: 3946356632764995060}
   - component: {fileID: 3946356632764995064}
+  - component: {fileID: 3946356632764995065}
   m_Layer: 0
   m_Name: M_TurnManager
   m_TagString: Untagged
@@ -36105,6 +36106,18 @@ MonoBehaviour:
   targetIndicatorPrefab: {fileID: 6244867506359388237, guid: 781c100031b01f9419584bb62d1860e5, type: 3}
   targetIndicators: []
   targetIndicatorCadidates: []
+--- !u!114 &3946356632764995065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3946356632764995061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9e7bb7f8f6e41a3f983b8845e1ceeb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleSpawner
 --- !u!114 &4275611704552383611
 MonoBehaviour:
   m_ObjectHideFlags: 0

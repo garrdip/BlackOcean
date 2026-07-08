@@ -34,7 +34,16 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 - **씬 배선**: GameScene의 M_TurnManager 오브젝트에 컴포넌트 부착, 코드 변경 전 캡처해 둔 프리팹(`TargetIndicator.prefab`)·컨테이너(`Game/TargetIndicatorContainer`) 참조를 에디터 스크립트로 복원 후 씬 저장. 저장된 YAML에서 GUID 일치 검증 완료.
 - 검증: 컴파일 0건, 씬 직렬화 확인. **플레이 검증 필요 포인트**: 카드 마우스오버 시 타겟 후보 표시, 화살표 타겟팅, 몬스터 마우스오버 시 액션 타겟 표시, 오더 스왑 시 인디케이터 갱신.
 
-**다음 단계(P1-3 3단계, 미착수)**: Spawner/Reward 그룹의 서비스 클래스 추출(서버 전용 로직이라 [Server] 위임 구조 필요), P1-4 순환 참조 정리와 병행.
+### ✅ P1-3 3단계 — BattleSpawner 추출 + 스폰 중복 통합 (5회차)
+
+스폰 팩토리 7개 메서드를 독립 컴포넌트 **`BattleSpawner`(InstanceD 싱글톤, 184줄)** 로 추출. `GenerateBattleObject`는 RPC 연출 4종과 대기 코루틴을 호출하는 오케스트레이터라 M_TurnManager partial에 유지(34줄로 축소, 기존 286줄).
+
+- **[Server] 어트리뷰트 대체**: NetworkBehaviour가 아니므로 각 공개 메서드에 `if(!NetworkServer.active) return;` 수동 가드.
+- **복붙 블록 통합**: 보스 3종(Momos/Apates/Geras) 스폰 3중 복붙 블록과 NPC 4종(RyuJinSol/Sophia/ShadowMan/Mercurius) 스폰 코드를 `SpawnMonsterWithAvatar(name, position, objectType, addToSyncList)` 공통 경로 하나로 통합 — 약 130줄 감소. 프리팹/MonsterDB 누락 시 크래시 대신 에러 로그.
+- **씬 배선**: GameScene의 M_TurnManager 오브젝트에 부착 (MenuScene이 미저장 상태라 GameScene을 Additive로 열어 GameScene만 저장). 직렬화 확인 완료. BattleSpawner는 인스펙터 필드가 없어 InstanceD 폴백(자동 생성)으로도 동작 가능.
+- 검증: 컴파일 0건. **플레이 검증 포인트**: 일반/엘리트/보스 전투 진입 스폰, 전초기지·카드상점·아이템상점 방 진입, NPC 표시.
+
+**다음 단계(P1-3 4단계, 미착수)**: Reward 그룹 추출(RPC 2종은 partial에 유지), 이후 P1-4 순환 참조 정리.
 
 ---
 
