@@ -232,8 +232,8 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         battleResultPopUp.ChangeRewardLayoutState(index, false);
         cardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(card.guid, Reward_Type.Card);
         cardOwner.GetComponent<GamePlayerDeck>().CmdAddDeck(card);
-        GameObject rewardObject = M_TurnManager.instance.rewardObjects.Find((rewardObject) => rewardObject.GetComponent<RewardListItem>().reward.guid == card.guid);
-        M_TurnManager.instance.RemoveRewardListItem(rewardObject);
+        GameObject rewardObject = RewardService.instance.rewardObjects.Find((rewardObject) => rewardObject.GetComponent<RewardListItem>().reward.guid == card.guid);
+        RewardService.instance.RemoveRewardListItem(rewardObject);
     }
 
     // 보상카드중 선택한 카드의 탭에 있는 카드들은 모두 선택불가 및 알파값 0.5 설정
@@ -399,7 +399,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(PopUpUIManager.instance.isBattleResultPopUpOpen){
             if(cardOwner != null){
                 RequsetCardReward();
-                ChangeCardOnDeckRewardedState(M_TurnManager.instance.rewardCardObjects);
+                ChangeCardOnDeckRewardedState(RewardService.instance.rewardCardObjects);
                 CardOnDeckClickAnimation();
                 AudioClip rewardCardAudio = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("combat_game_win_reward"));
                 M_SoundManager.instance.PlaySFX(rewardCardAudio, rewardCardAudio.length);

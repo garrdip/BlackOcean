@@ -64,8 +64,8 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         GamePlayer gamePlayer = players[idx];
         if(gamePlayer != null){
             gamePlayer.GetComponent<GamePlayerDeck>().CmdRewardClear();
-            M_TurnManager.instance.playerRewardedDic[gamePlayer] = true;
-            M_TurnManager.instance.CheckAllPlayerRewarded(gamePlayer);
+            RewardService.instance.playerRewardedDic[gamePlayer] = true;
+            RewardService.instance.CheckAllPlayerRewarded(gamePlayer);
             PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
         }
         AudioClip audioClip = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("main_menu_mouseclick"));
@@ -82,11 +82,11 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         if(gamePlayerDeck.rewards.Count > 0){
             if(gameObject.activeSelf){
                 // 기존의 보상 오브젝트 제거
-                List<GameObject> disconnectPlayerRewards = M_TurnManager.instance.rewardObjects.FindAll(rewardObject => rewardObject.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
+                List<GameObject> disconnectPlayerRewards = RewardService.instance.rewardObjects.FindAll(rewardObject => rewardObject.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
                 foreach (GameObject rewardToRemove in disconnectPlayerRewards){
                     Destroy(rewardToRemove);
                 }
-                M_TurnManager.instance.rewardObjects.RemoveAll(rewardObject => rewardObject.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
+                RewardService.instance.rewardObjects.RemoveAll(rewardObject => rewardObject.GetComponent<RewardListItem>().reward.netId == gamePlayer.netId);
 
                 // 연결해제된 클라이언트의 보상데이터를 다시 조회하여 보상 오브젝트 세팅
                 foreach(Reward reward in gamePlayerDeck.rewards){
@@ -97,14 +97,14 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
                     rewardListItem.rewardOwner = gamePlayer;
                     rewardListItem.transform.SetParent(rewardLayoutGroups[orderIndex].transform);
                     rewardListItem.transform.localScale = new Vector3(1, 1, 1);
-                    M_TurnManager.instance.rewardObjects.Add(rewardListItemObject);
+                    RewardService.instance.rewardObjects.Add(rewardListItemObject);
                 }
-                M_TurnManager.instance.playerRewardedDic.Add(gamePlayer, false);
+                RewardService.instance.playerRewardedDic.Add(gamePlayer, false);
                 int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);
                 tabButtons[index].gameObject.SetActive(true);
             }else{
-                M_TurnManager.instance.ClearRewardCardAndPlayer();
-                M_TurnManager.instance.ClearRewardListItem();
+                RewardService.instance.ClearRewardCardAndPlayer();
+                RewardService.instance.ClearRewardListItem();
                 M_TurnManager.instance.NoneBattleEnd();
             } 
         }
@@ -194,9 +194,9 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     // BattleResultPopUp 비활성화 콜백
     public void OnChangeBattleResultPopUpHide()
     {
-        M_TurnManager.instance.ClearRewardListItem();
-        M_TurnManager.instance.ClearRewardCardAndPlayer();
-        M_TurnManager.instance.playerRewardedDic.Clear();
+        RewardService.instance.ClearRewardListItem();
+        RewardService.instance.ClearRewardCardAndPlayer();
+        RewardService.instance.playerRewardedDic.Clear();
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
             gameObject.SetActive(false);
         });

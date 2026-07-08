@@ -45,12 +45,6 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         DECREASE
     }
 
-    [SerializedDictionary("게임플레이어", "보상카드선택유무")]
-    public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
-
-    public List<GameObject> rewardObjects = new List<GameObject>(); // 보상목록 오브젝트 리스트
-    public List<GameObject> rewardCardObjects = new List<GameObject>(); // 보상카드 오브젝트 리스트
-    
     public Vector3[] targetObjectPosition = {
         new Vector3(-15,-3,0),
         new Vector3(-11,-3,0),

@@ -1009,8 +1009,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public void TargetPlayerRewarded(NetworkConnectionToClient target)
     {
         GamePlayer gamePlayer = GetComponent<GamePlayer>();
-        if(!M_TurnManager.instance.playerRewardedDic.ContainsKey(gamePlayer)){ // 키 중복 방지
-            M_TurnManager.instance.playerRewardedDic.Add(gamePlayer, false);
+        if(!RewardService.instance.playerRewardedDic.ContainsKey(gamePlayer)){ // 키 중복 방지
+            RewardService.instance.playerRewardedDic.Add(gamePlayer, false);
         }
     }
 
@@ -1383,7 +1383,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                 rewardListItem.rewardOwner = gamePlayer;
                 rewardListItem.transform.SetParent(battleResultPopUp.rewardLayoutGroups[orderIndex].transform);
                 rewardListItem.transform.localScale = new Vector3(1, 1, 1);
-                M_TurnManager.instance.rewardObjects.Add(rewardListItemObject);
+                RewardService.instance.rewardObjects.Add(rewardListItemObject);
                 break;
             case SyncList<Reward>.Operation.OP_INSERT:
                 
@@ -1391,8 +1391,8 @@ public partial class GamePlayerDeck : NetworkBehaviour
             case SyncList<Reward>.Operation.OP_REMOVEAT:
                 if(isOwned && rewards.Count <= 0){
                     // 더 보상받을 데이터 없는 경우 보상완료상태 세팅
-                    M_TurnManager.instance.playerRewardedDic[GetComponent<GamePlayer>()] = true;
-                    M_TurnManager.instance.CheckAllPlayerRewarded(GetComponent<GamePlayer>());
+                    RewardService.instance.playerRewardedDic[GetComponent<GamePlayer>()] = true;
+                    RewardService.instance.CheckAllPlayerRewarded(GetComponent<GamePlayer>());
                 }
                 break;
             case SyncList<Reward>.Operation.OP_SET:
@@ -1428,7 +1428,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
                         battleResultPopUp.tabButtons[orderIndex].gameObject.SetActive(isOwned);
                     }
                 }
-                M_TurnManager.instance.rewardCardObjects.Add(cardOnDeck);
+                RewardService.instance.rewardCardObjects.Add(cardOnDeck);
                 break;
             case SyncList<Card>.Operation.OP_INSERT:
                 

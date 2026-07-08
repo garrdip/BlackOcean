@@ -61,13 +61,13 @@ public class RewardListItem : MonoBehaviour
                 break;
             case Reward_Type.Item:  // TODO : 선택한 유물 보상 데이터를 플레이어 데이터에 추가
                 rewardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(reward.guid, Reward_Type.Item);
-                M_TurnManager.instance.RemoveRewardListItem(rewardObject);
+                RewardService.instance.RemoveRewardListItem(rewardObject);
                 AudioClip itemSound = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
                 M_SoundManager.instance.PlaySFX(itemSound, itemSound.length);
                 break;
             case Reward_Type.Gold: // TODO : 선택한 골드 보상 데이터를 플레이어 데이터에 추가
                 rewardOwner.GetComponent<GamePlayerDeck>().CmdRewardRemove(reward.guid, Reward_Type.Gold);
-                M_TurnManager.instance.RemoveRewardListItem(rewardObject);
+                RewardService.instance.RemoveRewardListItem(rewardObject);
                 AudioClip coinSound = M_SoundManager.instance.sfxClips[SFX_TYPE.MainUI].Find((audioClip) => audioClip.name.Equals("event_cardstore_purchase"));
                 M_SoundManager.instance.PlaySFX(coinSound, coinSound.length);
                 break;

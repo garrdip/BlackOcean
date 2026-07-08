@@ -43,7 +43,19 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 - **씬 배선**: GameScene의 M_TurnManager 오브젝트에 부착 (MenuScene이 미저장 상태라 GameScene을 Additive로 열어 GameScene만 저장). 직렬화 확인 완료. BattleSpawner는 인스펙터 필드가 없어 InstanceD 폴백(자동 생성)으로도 동작 가능.
 - 검증: 컴파일 0건. **플레이 검증 포인트**: 일반/엘리트/보스 전투 진입 스폰, 전초기지·카드상점·아이템상점 방 진입, NPC 표시.
 
-**다음 단계(P1-3 4단계, 미착수)**: Reward 그룹 추출(RPC 2종은 partial에 유지), 이후 P1-4 순환 참조 정리.
+### ✅ P1-3 4단계 — RewardService 추출 (6회차)
+
+보상 시스템을 독립 컴포넌트 **`RewardService`(InstanceD 싱글톤, 103줄)** 로 추출.
+
+- **이동**: 보상 상태 필드 3개(playerRewardedDic/rewardObjects/rewardCardObjects) + 보상 UI 정리 메서드 4개 + `BattleEnd`의 서버 보상 분배 루프(→ `DistributeBattleRewards()`, NetworkServer.active 가드 + playerInterface null 가드 추가).
+- **M_TurnManager에 유지**: `BattleEnd`(5줄 오케스트레이터로 축소)/`NoneBattleEnd`(흐름 제어), ClientRpc 2종, `ReturnToMap`(연출).
+- **호출자 갱신**: BattleResultPopUp, RewardListItem, GamePlayerDeck, CardOnDeck 4개 파일 23곳 → `RewardService.instance.X`.
+- **씬 배선**: GameScene M_TurnManager 오브젝트에 부착 (인스펙터 참조 필요 없음 — 전부 런타임 데이터).
+- 검증: 컴파일 0건. **플레이 검증 포인트**: 전투 승리 → 보상 팝업 → 카드/골드 보상 수령 → 전원 수령 후 맵 복귀.
+
+**현재 M_TurnManager 구성**: 코어 833줄 + partial 4개(Reward 108 / CardQueue 151 / IronDemon 120 / Presentation 250 / Spawner 33) + 추출된 컴포넌트 3개(TargetIndicatorController 279 / BattleSpawner 177 / RewardService 103). 원본 2,010줄 단일 God Class → 코어 833줄 (-59%).
+
+**다음 단계(P1-3 5단계, 미착수)**: CardQueue/IronDemon/Presentation은 RPC·SyncList 의존이 커서 partial 유지가 적절. P1-3은 여기서 실질 완료로 보고, 다음은 P1-4(순환 참조 정리) 또는 P1-9(사운드 ID화) 권장.
 
 ---
 
