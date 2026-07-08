@@ -48,15 +48,7 @@ public class SpearManB : SpawnedMonster
     [Server]
     public override IEnumerator OnHitAnimation()
     {
-        OnHitAnimationRPC();
-        yield return new WaitForSeconds(0.833f);
-        ReturnToIdleAnimation();
-    }
-
-    [ClientRpc]
-    public void OnHitAnimationRPC()
-    {
-        parent.anim.state.SetAnimation(1,"Defense0",false);
+        return PlayHitAnimationSequence("Defense0", 0.833f);
     }
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)

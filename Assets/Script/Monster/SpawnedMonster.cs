@@ -271,6 +271,21 @@ public class SpawnedMonster : NetworkBehaviour
         yield return null;
     }
 
+    // 피격 애니메이션 공통 시퀀스 — 서브클래스들이 복붙하던 골격을 통합.
+    // 애니메이션 이름(스파인 에셋별로 Defense0/Defence0/3Defence 등 상이)과 대기시간만 몬스터별로 다르다.
+    protected IEnumerator PlayHitAnimationSequence(string hitAnimationName, float duration)
+    {
+        RpcPlayHitAnimation(hitAnimationName);
+        yield return new WaitForSeconds(duration);
+        ReturnToIdleAnimation();
+    }
+
+    [ClientRpc]
+    protected void RpcPlayHitAnimation(string hitAnimationName)
+    {
+        parent.anim.state.SetAnimation(1, hitAnimationName, false);
+    }
+
     [Server]
     public virtual void OnBreakedShield()
     {

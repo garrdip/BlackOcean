@@ -59,6 +59,17 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 9회차 완료 작업 (P1-11 일부)
+
+### ✅ P1-11a — 몬스터 피격 애니메이션 복붙 통합 (12개 파일, -81줄)
+
+- `SpawnedMonster` 베이스에 `PlayHitAnimationSequence(애니이름, 대기시간)` + `RpcPlayHitAnimation` 공통 경로 추가.
+- 서브클래스 12개의 복붙된 `OnHitAnimation`+`OnHitAnimationRPC` 쌍을 한 줄 위임으로 축약. **분석 정정**: RPC 본문이 "13개 동일 복붙"이 아니라 스파인 애니메이션 이름이 3종(Defense0/Defence0/3Defence)으로 달랐음 — 파라미터화로 해결.
+- Boss_Momos는 피격 음성 재생이 결합된 고유 구현이라 의도적으로 유지.
+- **보류(의도적)**: ① OnStartClient 인디케이터 오프셋 8곳 — 20종 중 8종에만 적용된 조건부 동작이라 베이스 승격 시 나머지 12종의 표시 위치가 바뀜. ② DoAction 스위치 골격 — 데이터 주도(ScriptableObject) 전환이 정답이며 별도 설계 작업으로 분리.
+
+---
+
 ## 8회차 완료 작업 (P1-5)
 
 ### ✅ P1-5a — Card.experience 동기화 버그 수정
