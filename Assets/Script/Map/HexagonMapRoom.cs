@@ -94,7 +94,21 @@ public class HexagonMapRoom : NetworkBehaviour
     public Sprite voteIconAnother;
     public Sprite voteIconAnotherPick;
 
+    // 반복 조회되는 컴포넌트 캐시 (Awake에서 1회 조회)
+    private readonly List<SpriteRenderer> voteIconRenderersMine = new List<SpriteRenderer>();
+    private readonly List<SpriteRenderer> voteIconRenderersAnother = new List<SpriteRenderer>();
+    private SpriteMask mapTileSpriteMask;
 
+    void Awake()
+    {
+        foreach(GameObject voteIcon in mapVoteIconsMine){
+            voteIconRenderersMine.Add(voteIcon.GetComponent<SpriteRenderer>());
+        }
+        foreach(GameObject voteIcon in mapVoteIconsAnother){
+            voteIconRenderersAnother.Add(voteIcon.GetComponent<SpriteRenderer>());
+        }
+        mapTileSpriteMask = mapTileMask.GetComponent<SpriteMask>();
+    }
 
     void Start()
     {
@@ -139,7 +153,7 @@ public class HexagonMapRoom : NetworkBehaviour
         if(PlayerRegistry.Local.currentGamePlayerNetId != 0){
             GamePlayerMap gamePlayerMap = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerMap>();
             // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(서버 요청)
-            gamePlayerMap.CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
+            gamePlayerMap.CmdChangeMapPlayerDestinationPosition(this, transform.position, NetworkClient.localPlayer);
         }
     }
 
@@ -319,11 +333,11 @@ public class HexagonMapRoom : NetworkBehaviour
                 int addOrder = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == newVal);
                 if(addOrder != -1){
                     if(newVal == PlayerRegistry.Local.currentGamePlayerNetId){
-                        mapVoteIconsMine[addOrder].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
-                        mapVoteIconsAnother[addOrder].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
+                        voteIconRenderersMine[addOrder].sprite = voteIconMinePick;
+                        voteIconRenderersAnother[addOrder].sprite = voteIconMinePick;
                     }else{
-                        mapVoteIconsMine[addOrder].GetComponent<SpriteRenderer>().sprite = voteIconAnotherPick;
-                        mapVoteIconsAnother[addOrder].GetComponent<SpriteRenderer>().sprite = voteIconAnotherPick;
+                        voteIconRenderersMine[addOrder].sprite = voteIconAnotherPick;
+                        voteIconRenderersAnother[addOrder].sprite = voteIconAnotherPick;
                     }
                 }
                 break;
@@ -331,8 +345,8 @@ public class HexagonMapRoom : NetworkBehaviour
                 // votePlayer에 제거될 때 제거된 플레이어의 order값에 맞는 위치의 아이콘 설정
                 int removeOrder = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == oldVal);
                 if(removeOrder != -1){
-                    mapVoteIconsMine[removeOrder].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
-                    mapVoteIconsAnother[removeOrder].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
+                    voteIconRenderersMine[removeOrder].sprite = voteIconAnother;
+                    voteIconRenderersAnother[removeOrder].sprite = voteIconAnother;
                 }
                 break;
         }
@@ -348,25 +362,25 @@ public class HexagonMapRoom : NetworkBehaviour
                     if(votePlyers.Count <= 1){
                         for(int i=0; i<mapVoteIconsMine.Count; i++){
                             if(i == index){
-                                mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
-                                mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconAnotherPick;
+                                voteIconRenderersMine[i].sprite = voteIconMinePick;
+                                voteIconRenderersAnother[i].sprite = voteIconAnotherPick;
                             }else{
-                                mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
-                                mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
+                                voteIconRenderersMine[i].sprite = voteIconAnother;
+                                voteIconRenderersAnother[i].sprite = voteIconAnother;
                             }
                         }
                     }else{
                         for(int i=0; i<M_TurnManager.instance.playerOrder.Count; i++){
                             uint netId = M_TurnManager.instance.playerOrder[i];
                             if(netId == PlayerRegistry.Local.currentGamePlayerNetId){
-                                mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
-                                mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
+                                voteIconRenderersMine[i].sprite = voteIconMinePick;
+                                voteIconRenderersAnother[i].sprite = voteIconMinePick;
                             }else if(netId == 0){
-                                mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
-                                mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
+                                voteIconRenderersMine[i].sprite = voteIconAnother;
+                                voteIconRenderersAnother[i].sprite = voteIconAnother;
                             }else{
-                                mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconAnotherPick;
-                                mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconAnotherPick;
+                                voteIconRenderersMine[i].sprite = voteIconAnotherPick;
+                                voteIconRenderersAnother[i].sprite = voteIconAnotherPick;
                             }
                         }
                     }
@@ -403,7 +417,7 @@ public class HexagonMapRoom : NetworkBehaviour
             mapTileSelect.transform.DOLocalMoveY(expandValue, expandDuration);
             mapTileBase.transform.DOLocalMoveY(expandValue, expandDuration);
             hexagonMapRoomUI.transform.DOLocalMoveY(expandValue, expandDuration);
-            mapTileMask.GetComponent<SpriteMask>().enabled = true;
+            mapTileSpriteMask.enabled = true;
             mapTileMask.transform.localPosition = new Vector3(
                 mapTileMask.transform.localPosition.x,
                 expandValue + 0.02f,
@@ -417,7 +431,7 @@ public class HexagonMapRoom : NetworkBehaviour
             mapTileSelect.transform.DOLocalMoveY(originValue, expandDuration);
             mapTileBase.transform.DOLocalMoveY(originValue, expandDuration);
             hexagonMapRoomUI.transform.DOLocalMoveY(originValue, expandDuration);
-            mapTileMask.GetComponent<SpriteMask>().enabled = false;
+            mapTileSpriteMask.enabled = false;
             mapTileMask.transform.localPosition = new Vector3(
                 mapTileMask.transform.localPosition.x,
                 originValue,

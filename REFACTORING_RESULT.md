@@ -59,6 +59,19 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 16회차 완료 작업 (P2-15 3회차 — P2-15 완결)
+
+### ✅ P2-15c — LobbyPlayer·HexagonMapRoom GetComponent 반복 캐싱
+
+- **LobbyPlayer (49곳 → 2곳)**: 자기 자신·클래스 레이아웃 3종의 CanvasGroup/RectTransform 반복 조회를 Awake 1회 조회 캐시 필드 9개로 전환. `characterSelectCompleteImage.GetComponent<RectTransform>()`는 Image의 내장 `rectTransform` 프로퍼티로. `GetComponent<NetworkIdentity>().netId` 3곳은 NetworkBehaviour 내장 `netId`로. CmdSwapAccept/Reject의 "TryGetValue로 얻은 NetworkIdentity → GetComponent<LobbyPlayer> → 도로 GetComponent<NetworkIdentity>" 왕복 3곳을 이미 손에 든 identity의 `connectionToClient` 직접 사용으로 정리. 남은 2곳은 Start의 버튼 리스너 등록(1회성)뿐.
+- **HexagonMapRoom (26곳 → 3곳)**: SyncList 콜백마다 반복되던 투표 아이콘 `GetComponent<SpriteRenderer>` 17곳을 Awake에서 구축한 렌더러 리스트 2개로 전환 (아이콘 리스트와 인덱스 정합 유지). `mapTileMask` SpriteMask 2곳 캐시. `GetComponent<Transform>().position` → `transform.position`, `NetworkClient.localPlayer.GetComponent<NetworkIdentity>()` → localPlayer 자체가 NetworkIdentity이므로 직접 전달. 남은 3곳은 동적 대상 조회(1회성 지역변수 포함)라 캐싱 부적합.
+- 검증: 컴파일 0건 + 리플렉션(캐시 필드 존재, LobbyPlayer UserCode_ 6개 = Cmd 3 + TargetRpc 3 위빙 정상).
+- **플레이 검증 포인트**: 로비 — 캐릭터 선택/해제 애니메이션, 오더 스왑 요청·수락·거절, 강퇴 아이콘, 클라 이탈 시 로비플레이어 제거. 맵 — 방 투표 아이콘 표시/갱신, 방 선택 확장 연출(마스크).
+
+**P2-15 완결**: a(로컬 조회 캐싱 79곳) + b(사운드 폴링 제거) + c(GetComponent 캐싱). 계획서의 P2-15 항목 전부 처리.
+
+---
+
 ## 15회차 완료 작업 (P2-15 2회차)
 
 ### ✅ P2-15b — M_SoundManager 매 프레임 볼륨 폴링 제거

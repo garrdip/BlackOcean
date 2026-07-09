@@ -70,6 +70,17 @@ public class LobbyPlayer : NetworkBehaviour
     private const float upPositionY = 60f;
     private const float downPositionY = -30f;
 
+    // 반복 조회되는 컴포넌트 캐시 (Awake에서 1회 조회)
+    private CanvasGroup canvasGroup;
+    private RectTransform rectTransform;
+    private RectTransform classIconLayoutRect;
+    private CanvasGroup classDanhyangCanvasGroup;
+    private CanvasGroup classErisCanvasGroup;
+    private CanvasGroup classGeorkCanvasGroup;
+    private RectTransform classDanhyangRect;
+    private RectTransform classErisRect;
+    private RectTransform classGeorkRect;
+
     [SyncVar]
     public RoomPlayer roomPlayer;
 
@@ -86,6 +97,19 @@ public class LobbyPlayer : NetworkBehaviour
     public bool isHostLobbyPlayer;
 
     protected Callback<AvatarImageLoaded_t> avatarImageLoaded;
+
+    void Awake()
+    {
+        canvasGroup = GetComponent<CanvasGroup>();
+        rectTransform = GetComponent<RectTransform>();
+        classIconLayoutRect = classIconLayout.GetComponent<RectTransform>();
+        classDanhyangCanvasGroup = classDanhyang.GetComponent<CanvasGroup>();
+        classErisCanvasGroup = classEris.GetComponent<CanvasGroup>();
+        classGeorkCanvasGroup = classGeork.GetComponent<CanvasGroup>();
+        classDanhyangRect = classDanhyang.GetComponent<RectTransform>();
+        classErisRect = classEris.GetComponent<RectTransform>();
+        classGeorkRect = classGeork.GetComponent<RectTransform>();
+    }
 
     void Start()
     {
@@ -108,13 +132,13 @@ public class LobbyPlayer : NetworkBehaviour
     {
         base.OnStartAuthority();
         CmdSetSteamId((ulong)SteamUser.GetSteamID());// 로컬유저의 스팀아이디를 조회하여 다른 클라이언트들에 공유
-        M_LobbyMananger.instance.ownedLobbyPlayer = GetComponent<NetworkIdentity>().netId; // 로비매니저에 로컬플레이어 소유의 로비플레이어 오브젝트 참조값 설정
+        M_LobbyMananger.instance.ownedLobbyPlayer = netId; // 로비매니저에 로컬플레이어 소유의 로비플레이어 오브젝트 참조값 설정
     }
 
     public override void OnStopServer()
     {
         base.OnStopServer();
-        M_LobbyMananger.instance.RemoveLobbyPlayer(GetComponent<NetworkIdentity>().netId); // 로비플레이어가 서버에서 사라질 때 리스트에서 제거
+        M_LobbyMananger.instance.RemoveLobbyPlayer(netId); // 로비플레이어가 서버에서 사라질 때 리스트에서 제거
     }
 
     public override void OnStopClient()
@@ -127,16 +151,16 @@ public class LobbyPlayer : NetworkBehaviour
     // 로비플레이어 오브젝트 파괴시 수행중인 트위닝 제거
     void OnDestroy()
     {
-        GetComponent<CanvasGroup>().DOKill(); // 로비플레이어 캔버스그룹 트위닝 제거
-        GetComponent<RectTransform>().DOKill(); // 로비플레이어 트랜스폼 트위닝 제거
-        classIconLayout.GetComponent<RectTransform>().DOKill(); // 캐릭터 클래스 트랜스폼 아이콘 트위닝 제거
-        classDanhyang.GetComponent<CanvasGroup>().DOKill();
-        classEris.GetComponent<CanvasGroup>().DOKill();
-        classGeork.GetComponent<CanvasGroup>().DOKill();
-        classDanhyang.GetComponent<RectTransform>().DOKill();
-        classEris.GetComponent<RectTransform>().DOKill();
-        classGeork.GetComponent<RectTransform>().DOKill();
-        characterSelectCompleteImage.GetComponent<RectTransform>().DOKill();
+        canvasGroup.DOKill(); // 로비플레이어 캔버스그룹 트위닝 제거
+        rectTransform.DOKill(); // 로비플레이어 트랜스폼 트위닝 제거
+        classIconLayoutRect.DOKill(); // 캐릭터 클래스 트랜스폼 아이콘 트위닝 제거
+        classDanhyangCanvasGroup.DOKill();
+        classErisCanvasGroup.DOKill();
+        classGeorkCanvasGroup.DOKill();
+        classDanhyangRect.DOKill();
+        classErisRect.DOKill();
+        classGeorkRect.DOKill();
+        characterSelectCompleteImage.rectTransform.DOKill();
         characterSelectCompleteImage.DOKill();
         sequence.Kill(); // FadeIn, FadeOut, Up, Down 트위닝 시퀀스 제거
         RoomUI.instance.KillTweenSwapButtons(); // 로비플레이어의 SetLobbyPlayerFadeEffect 함수에서 작동시킨 스왑버튼 트위닝 제거
@@ -199,12 +223,10 @@ public class LobbyPlayer : NetworkBehaviour
             M_LobbyMananger.instance.CmdSwapLobbyPlayer(oldIndex, newIndex);
             
             // 스왑요청 송신지에게 메시지 전달
-            LobbyPlayer ownedlobbyPlayer = ownedNetIdentity.GetComponent<LobbyPlayer>();
-            TargetResponseSwapAccept(ownedlobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+            TargetResponseSwapAccept(ownedNetIdentity.connectionToClient);
 
             // 스왑요청 수신자에게 메시지 전달
-            LobbyPlayer targetLobbyPlayer = targetNetworkIdentity.GetComponent<LobbyPlayer>();
-            TargetResponseSwapAccept(targetLobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+            TargetResponseSwapAccept(targetNetworkIdentity.connectionToClient);
         }
     }
 
@@ -215,8 +237,7 @@ public class LobbyPlayer : NetworkBehaviour
         // 교환요청자에게 요청이 거절되었음을 알리는 TargetRpc 이벤트 전달
         uint targetNetID = M_LobbyMananger.instance.lobbyPlayers[targetIndex];
         if(targetNetID != 0 && NetworkServer.spawned.TryGetValue(targetNetID, out NetworkIdentity networkIdentity)){
-            LobbyPlayer lobbyPlayer = networkIdentity.GetComponent<LobbyPlayer>();
-            TargetResponseSwapReject(lobbyPlayer.GetComponent<NetworkIdentity>().connectionToClient);
+            TargetResponseSwapReject(networkIdentity.connectionToClient);
         }
     }
 
@@ -321,13 +342,13 @@ public class LobbyPlayer : NetworkBehaviour
                     break;
             }
             classIcon.gameObject.SetActive(true);
-            characterSelectCompleteImage.GetComponent<RectTransform>().localPosition = new Vector3(0f, 500f, 0f);
-            characterSelectCompleteImage.GetComponent<RectTransform>().DOLocalMoveY(-41f, 0.7f).SetEase(Ease.InOutExpo);
+            characterSelectCompleteImage.rectTransform.localPosition = new Vector3(0f, 500f, 0f);
+            characterSelectCompleteImage.rectTransform.DOLocalMoveY(-41f, 0.7f).SetEase(Ease.InOutExpo);
             characterSelectCompleteImage.color = new Color(255f, 255f, 255f, 0);
             characterSelectCompleteImage.DOFade(1f, 0.7f);
             characterSelectCompleteImage.gameObject.SetActive(true);
-            classIconLayout.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -50f);
-            classIconLayout.GetComponent<RectTransform>().DOAnchorPosY(0f, 0.5f);
+            classIconLayoutRect.anchoredPosition = new Vector2(0f, -50f);
+            classIconLayoutRect.DOAnchorPosY(0f, 0.5f);
             AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "choose_character");
             M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         }else{
@@ -341,10 +362,10 @@ public class LobbyPlayer : NetworkBehaviour
     // 로비플레이어 페이드 인,아웃 애니매이션 설정
     private void SetLobbyPlayerFadeEffect(int index)
     {
-        RoomUI.instance.ChangeSwapButtonsState(GetComponent<NetworkIdentity>().netId, index);
+        RoomUI.instance.ChangeSwapButtonsState(netId, index);
         SetLobbyPlayerParent(index);
-        GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
-        GetComponent<RectTransform>().DOLocalMoveY(downPositionY, 0.5f);
+        canvasGroup.DOFade(1.0f, 0.5f);
+        rectTransform.DOLocalMoveY(downPositionY, 0.5f);
         selectorBaseLayout.SetActive(isOwned);
         selectorBaseMyLine.SetActive(isOwned);
         classLayout.SetActive(isOwned);
@@ -402,10 +423,10 @@ public class LobbyPlayer : NetworkBehaviour
     // 로비플레이어 뷰 컴포넌트 변경사항 업데이트
     public void ChangeLobbyPlayerViewByOrder(int index)
     {
-        Tween fadeInTween = GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).OnComplete(() => { SetLobbyPlayerParent(index); });
-        Tween upTween = GetComponent<RectTransform>().DOLocalMoveY(upPositionY, 0.5f).OnComplete(() => { SetOrderTextByPlayerOrder((PlayOrder)index); });
-        Tween downTween = GetComponent<RectTransform>().DOLocalMoveY(downPositionY, 0.5f);
-        Tween fadeOutTween = GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
+        Tween fadeInTween = canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => { SetLobbyPlayerParent(index); });
+        Tween upTween = rectTransform.DOLocalMoveY(upPositionY, 0.5f).OnComplete(() => { SetOrderTextByPlayerOrder((PlayOrder)index); });
+        Tween downTween = rectTransform.DOLocalMoveY(downPositionY, 0.5f);
+        Tween fadeOutTween = canvasGroup.DOFade(1.0f, 0.5f);
         sequence = DOTween.Sequence();
         sequence.Append(fadeInTween);
         sequence.Join(upTween);
@@ -444,26 +465,26 @@ public class LobbyPlayer : NetworkBehaviour
     // 캐릭터 클래스 레이아웃 Fade 애니매이션
     private void ChangeClassLayoutFade()
     {
-        classDanhyang.GetComponent<CanvasGroup>().DOKill();
-        classEris.GetComponent<CanvasGroup>().DOKill();
-        classGeork.GetComponent<CanvasGroup>().DOKill();
-        classDanhyang.GetComponent<RectTransform>().DOKill();
-        classEris.GetComponent<RectTransform>().DOKill();
-        classGeork.GetComponent<RectTransform>().DOKill();
+        classDanhyangCanvasGroup.DOKill();
+        classErisCanvasGroup.DOKill();
+        classGeorkCanvasGroup.DOKill();
+        classDanhyangRect.DOKill();
+        classErisRect.DOKill();
+        classGeorkRect.DOKill();
 
-        classDanhyang.GetComponent<RectTransform>().anchoredPosition = new Vector2(classDanhyang.GetComponent<RectTransform>().anchoredPosition.x, 50f);
-        classEris.GetComponent<RectTransform>().anchoredPosition = new Vector2(classEris.GetComponent<RectTransform>().anchoredPosition .x, 50f);
-        classGeork.GetComponent<RectTransform>().anchoredPosition = new Vector2(classGeork.GetComponent<RectTransform>().anchoredPosition .x, 50f);
-        classDanhyang.GetComponent<RectTransform>().DOAnchorPosY(0f, 1f);
-        classEris.GetComponent<RectTransform>().DOAnchorPosY(0f, 1f);
-        classGeork.GetComponent<RectTransform>().DOAnchorPosY(0f, 1f);
+        classDanhyangRect.anchoredPosition = new Vector2(classDanhyangRect.anchoredPosition.x, 50f);
+        classErisRect.anchoredPosition = new Vector2(classErisRect.anchoredPosition .x, 50f);
+        classGeorkRect.anchoredPosition = new Vector2(classGeorkRect.anchoredPosition .x, 50f);
+        classDanhyangRect.DOAnchorPosY(0f, 1f);
+        classErisRect.DOAnchorPosY(0f, 1f);
+        classGeorkRect.DOAnchorPosY(0f, 1f);
 
-        classDanhyang.GetComponent<CanvasGroup>().alpha = 0f;
-        classEris.GetComponent<CanvasGroup>().alpha = 0f;
-        classGeork.GetComponent<CanvasGroup>().alpha = 0f;
-        classDanhyang.GetComponent<CanvasGroup>().DOFade(1f, 1f);
-        classEris.GetComponent<CanvasGroup>().DOFade(1f, 1f);
-        classGeork.GetComponent<CanvasGroup>().DOFade(1f, 1f);
+        classDanhyangCanvasGroup.alpha = 0f;
+        classErisCanvasGroup.alpha = 0f;
+        classGeorkCanvasGroup.alpha = 0f;
+        classDanhyangCanvasGroup.DOFade(1f, 1f);
+        classErisCanvasGroup.DOFade(1f, 1f);
+        classGeorkCanvasGroup.DOFade(1f, 1f);
     }
 
 }
