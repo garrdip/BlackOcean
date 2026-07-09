@@ -59,6 +59,16 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 20회차 진행 (P2-17 — 빌드 검증, 부분 완료)
+
+### 🔶 P2-17 — 스탠드얼론 빌드 검증: Mono 스모크 빌드 성공, IL2CPP는 모듈 설치 필요
+
+- ✅ **Linux Mono 스모크 빌드 성공** (Unity 6000.3.7f1, 씬 3개 전부 포함, 총 1.1GB, 빌드 에러 0건) — 리팩토링 19회차 이후 플레이어 빌드 파이프라인(에셋 참조/코드 스트리핑/Resources 포함)이 통과함을 확인. 산출물에 Steamworks.NET DLL + `libsteam_api.so` 포함 확인.
+- ⛔ **IL2CPP 검증은 에디터 모듈 미설치로 블로킹**: 현재 에디터에는 Linux Mono 변형만 설치됨 (Windows 지원 모듈 없음, Linux IL2CPP 변형 없음). Standalone 백엔드 설정은 Mono2x (계획서 지적대로 미명시 상태였음 — IL2CPP 전환은 모듈 설치 후에).
+- **남은 사용자 작업** (스팀 친구 배포 빌드 만들 때): ① Unity Hub → 6000.3.7f1 → 모듈 추가 → **Windows Build Support (IL2CPP)** (스팀 배포 대상) 및/또는 Linux IL2CPP ② Player Settings → Standalone → Scripting Backend를 IL2CPP로 ③ 빌드 후 Steam 실행 상태에서 Steamworks 초기화(SteamFailUI 미출현) 확인. 이 단계는 세션에서 요청 시 함께 진행 가능.
+
+---
+
 ## 19회차 완료 작업 (P3 — M_SoundManager 슬림화)
 
 ### ✅ SoundEffect/VoiceEffect 동일 복붙 2클래스 → 공통 베이스 통합 (-110줄)
