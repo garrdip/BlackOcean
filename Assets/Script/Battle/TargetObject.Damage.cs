@@ -15,9 +15,16 @@ using System.Linq;
 public partial class TargetObject
 {
 
+    private int tempestosoHpLost; // 템페스토소 — 이번 전투에서 잃은 체력 누적(10마다 드로우)
+
     // ----------------------------------------------           Damage 관련 함수        ---------------------------------------------------//
     public void DamageToPlayer(int damage)
     {
+        // 웃는 인형의 단말마: 받는 (일반)피해 +1배. 고정피해(StaticDamage)는 증폭하지 않는다.
+        if(HasBuff(BuffType.DEATHTHROES))
+        {
+            damage *= 2;
+        }
         if(GetBuffValue(BuffType.BOONGGUI, null) > 0)
         {
             damage = (int)(damage * 1.5);
@@ -35,6 +42,7 @@ public partial class TargetObject
         {
             int remind = damage - defense;
             defense = 0;
+            int hpBefore = playerHP;
             playerHP -= remind;
             if(playerHP <= 0){
                 if(player.character == Character.ERIS && erisMode != ErisMode.MAD)
@@ -46,6 +54,7 @@ public partial class TargetObject
                     playerHP = 0;
             }
             player.HP = playerHP;
+            AccumulateTempestosoHpLost(hpBefore - playerHP);
         }
     }
 
@@ -60,6 +69,7 @@ public partial class TargetObject
         {
             int remind = damage - defense;
             defense = 0;
+            int hpBefore = playerHP;
             playerHP -= remind;
             if(playerHP <= 0){
                 if(player.character == Character.ERIS && erisMode != ErisMode.MAD)
@@ -70,6 +80,36 @@ public partial class TargetObject
                 else
                     playerHP = 0;
             }
+            player.HP = playerHP;
+            AccumulateTempestosoHpLost(hpBefore - playerHP);
+        }
+    }
+
+
+    // 템페스토소: 이번 전투에서 체력을 10 잃을 때마다 카드 1장 드로우
+    private void AccumulateTempestosoHpLost(int lost)
+    {
+        if(!isServer || lost <= 0 || !HasBuff(BuffType.TEMPESTOSO)) return;
+        tempestosoHpLost += lost;
+        while(tempestosoHpLost >= 10)
+        {
+            tempestosoHpLost -= 10;
+            player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1);
+        }
+    }
+
+
+    // 체력 회복 공통 경로 — 허물 강화(ENHANCESKIN) 보유 시 이번 턴 회복이 방어로 전환된다
+    public void HealPlayer(int value)
+    {
+        if(value <= 0) return;
+        if(HasBuff(BuffType.ENHANCESKIN))
+        {
+            defense += value;
+        }
+        else
+        {
+            playerHP = Mathf.Min(playerHP + value, playerMaxHP);
             player.HP = playerHP;
         }
     }
@@ -85,6 +125,9 @@ public partial class TargetObject
         // 개화꽃 적용
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
             damage += GetBuffValue(BuffType.FLOWER,target);
+        // 월식: 시전 플레이어가 이번 턴에 넣은 피해만큼 방어 획득
+        if(from != null && from != this && from.objectType == ObjectType.PLAYER && from.HasBuff(BuffType.ECLIPSE))
+            from.defense += damage;
         // 방어력 적용
         if(defense >= damage)
         {

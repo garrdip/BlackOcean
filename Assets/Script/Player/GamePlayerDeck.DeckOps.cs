@@ -258,6 +258,13 @@ public partial class GamePlayerDeck
                 CardData.instance.E56_CallBack(playerTargtObject, card);
                 break;
         }
+
+        // 종말의 징조(SIGNOFEND): 카드가 뽑을덱→버린덱으로 갈 때마다 적 전체에게 피해 2
+        if(playerTargtObject != null && playerTargtObject.HasBuff(BuffType.SIGNOFEND))
+        {
+            foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
+                enemy.DamageToMonster(2, playerTargtObject);
+        }
     }
 
 

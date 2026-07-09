@@ -158,13 +158,13 @@ public partial class CardData : SingletonD<CardData>
         int newHP = tar[0].playerHP + hpRecoveryValue;
         if (newHP > tar[0].playerMaxHP){
             int hpDifference = newHP - tar[0].playerMaxHP;
-            tar[0].playerHP = tar[0].playerMaxHP; // 최대치까지는 회복하고 초과분만 피해로 전환
+            tar[0].HealPlayer(tar[0].playerMaxHP - tar[0].playerHP); // 최대치까지는 회복하고 초과분만 피해로 전환
             foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
                 GeneralSingleAttack(tar[0], enemy, hpDifference);
                 StartCoroutine(enemy.monster.OnHitAnimation());
             }
         }else{
-            tar[0].playerHP = newHP;
+            tar[0].HealPlayer(hpRecoveryValue);
         }
         // TODO : 파괴의 권능 효과를 받지 않습니다.
         yield return new WaitForSeconds(0.5f);
@@ -300,7 +300,7 @@ public partial class CardData : SingletonD<CardData>
         tar[0].defense = 0;
         // TODO : 방어 제거 이펙트
         yield return new WaitForSeconds(0.25f);
-        tar[0].playerHP += deffence;
+        tar[0].HealPlayer(deffence);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -324,7 +324,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].GainBuff(BuffType.TEMPESTOSO, 0, false, false, false, false, tar[0], card);  // TODO : 템페스토소 버프 처리
+        tar[0].GainBuff(BuffType.TEMPESTOSO, 1, false, true, false, false, tar[0], card); // 전투 지속 — 발동은 TargetObject.Damage의 잃은 체력 누적에서
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -335,7 +335,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].GainBuff(BuffType.ECLIPSE, 0, false, false, false, false, tar[0], card); // TODO : 월식 버프 처리
+        tar[0].GainBuff(BuffType.ECLIPSE, 1, false, false, true, false, tar[0], card); // 이번 턴(턴 경계 감쇠) — 발동은 DamageToMonster에서
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -436,7 +436,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].GainBuff(BuffType.SIGNOFEND, 1, false, false, false, false, tar[0], card);
+        tar[0].GainBuff(BuffType.SIGNOFEND, 1, false, true, false, false, tar[0], card); // 전투 지속 — 발동은 뽑을덱→버린덱 콜백에서
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -503,7 +503,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].GainBuff(BuffType.ENDOFDISTORTION,1,false,false,false,false,tar[0],card);
+        tar[0].GainBuff(BuffType.ENDOFDISTORTION,1,false,true,false,false,tar[0],card); // 전투 지속 — 발동은 GeneralGetDefense에서
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -531,7 +531,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].GainBuff(BuffType.ENHANCESKIN,1,false,false,false,false,tar[0],card);
+        tar[0].GainBuff(BuffType.ENHANCESKIN,1,false,false,true,false,tar[0],card); // 이번 턴(턴 경계 감쇠) — 발동은 HealPlayer에서
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -643,7 +643,7 @@ public partial class CardData : SingletonD<CardData>
         mergedList.AddRange(cardsFromTrashDeck);
         int recoveryValue = mergedList.Count; 
         foreach(TargetObject targetObject in M_TurnManager.instance.spawnedPlayerList){
-            targetObject.playerHP += recoveryValue;
+            targetObject.HealPlayer(recoveryValue);
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -818,7 +818,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].GainBuff(BuffType.DEATHTHROES, 1, false, false, false, false, tar[0], card);
+        tar[0].GainBuff(BuffType.DEATHTHROES, 1, false, true, false, false, tar[0], card); // 전투 지속 — 받는 피해 2배는 DamageToPlayer에서. TODO: 파괴의권능 +1배는 파괴의권능 시스템 도입 시
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -966,9 +966,18 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].GainBuff(BuffType.DICHOTOMY, 1, false, false, false, false, tar[0], card);
+        int dichotomyIndex = tar[0].GainBuff(BuffType.DICHOTOMY, 1, false, true, false, false, tar[0], card);
+        tar[0].buffTrunBeginEffect.Add(dichotomyIndex, E59_TurnBeginEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+    }
+
+    // 이분법: 턴 시작 시 체력 2 소모 + 뒤틀리는 생명(E10) 1장을 패에 생성
+    public IEnumerator E59_TurnBeginEffect(TargetObject target, int index, Card card)
+    {
+        target.StaticDamageToPlayer(2);
+        target.player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(c => c.cardNumber == "E10")), 1);
+        yield return null;
     }
 
     // 찢어줄게요

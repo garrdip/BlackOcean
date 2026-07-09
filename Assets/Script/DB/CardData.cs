@@ -362,12 +362,20 @@ public partial class CardData : SingletonD<CardData>
         if(from.player.character == Character.ERIS && from == tar) // 에리스의 경우 피가 닳아있을경우 체력을 채움
         {
             int remind = from.playerMaxHP - from.playerHP;
-            if(remind >= value)
-                from.playerHP += value;
-            else
+            int healAmount = Mathf.Min(remind, value);
+            int defensePart = value - healAmount;
+            if(healAmount > 0)
+                from.HealPlayer(healAmount); // 허물 강화(ENHANCESKIN) 보유 시 회복분이 방어로 전환됨
+            if(defensePart > 0)
             {
-                from.playerHP = from.playerMaxHP;
-                from.defense += value - remind;
+                // 뒤틀림의 끝: 체력이 가득 찬 상태에서 자신의 카드로 얻을 방어를 적 전체 피해로 전환
+                if(card != null && from.HasBuff(BuffType.ENDOFDISTORTION))
+                {
+                    foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
+                        enemy.DamageToMonster(defensePart, from);
+                }
+                else
+                    from.defense += defensePart;
             }
         }
         else
