@@ -16,7 +16,7 @@ public class Boss_Geras : SpawnedMonster
 
         // 플레이어별 게라스 조우 대화 오디오클립 조회
         if(NetworkClient.localPlayer != null){
-            Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+            Character character = PlayerRegistry.Local.currentGamePlayer.character;
             AudioClip playerVoice = null;
             AudioClip gerasVoice = null;
             switch(character){

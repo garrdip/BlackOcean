@@ -51,7 +51,7 @@ public partial class M_TurnManager
     public void RpcShowBattleResultPopUp()
     {
         // 전투 종료 음성 재생
-        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+        Character character = PlayerRegistry.Local.currentGamePlayer.character;
         switch(character){
             case Character.HONGDANHYANG:
                 List<AudioClip> battleWinVoicesDanhyang = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 68, 3);

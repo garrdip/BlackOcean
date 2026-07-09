@@ -136,7 +136,7 @@ public class NPC_ShadowMan : SpawnedMonster
     {
         if(NetworkClient.localPlayer != null){
             AudioClip meetItemNpcVoice = null;
-            Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+            Character character = PlayerRegistry.Local.currentGamePlayer.character;
             switch(character){
                 case Character.HONGDANHYANG:
                     List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 80, 3);

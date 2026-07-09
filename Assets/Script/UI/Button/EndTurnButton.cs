@@ -32,7 +32,7 @@ public class EndTurnButton : ButtonBase
     {
         AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "stage_ready");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface = PlayerRegistry.Local;
         playerInterface.endTurnActive = !playerInterface.endTurnActive;
         playerInterface.OnEndTurnStateChanged(playerInterface.endTurnActive,  playerInterface.endTurnActive);
     }

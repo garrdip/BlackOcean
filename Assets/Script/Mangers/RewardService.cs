@@ -71,7 +71,7 @@ public class RewardService : InstanceD<RewardService>
     public void CheckAllPlayerRewarded(GamePlayer gamePlayer)
     {
         if(!playerRewardedDic.ContainsValue(false) && gamePlayer.isOwned){ // 소유한 모든 플레이어 보상받았으면 종료
-            NetworkClient.localPlayer.GetComponent<PlayerInterface>().isRewardDone = true;
+            PlayerRegistry.Local.isRewardDone = true;
             gamePlayer.GetComponent<GamePlayerDeck>().CmdClearRewardCards();
         }
     }

@@ -172,7 +172,7 @@ public class CardOnHandChoosed : MonoBehaviour
         
         if(card.baseCard.cardCharacteristics.Exists( x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
         {
-            if(card.baseCard.cardType == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().previousCardType)
+            if(card.baseCard.cardType == PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>().previousCardType)
             {
                 textCardCost.text = "<b><color=green>" +((card.baseCard.cost + card.costAddition - 1) <= 0 ? "0" : (card.baseCard.cost + card.costAddition - 1).ToString()) + "</color></b>";
             }

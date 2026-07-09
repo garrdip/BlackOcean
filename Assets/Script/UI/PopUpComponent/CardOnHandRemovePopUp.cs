@@ -31,7 +31,7 @@ public class CardOnHandRemovePopUp : SingletonD<CardOnHandRemovePopUp>
         GameUIManager.instance.buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
         M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
         
-        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface = PlayerRegistry.Local;
         GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
         int choosedCardCount = 0;
         for(int i=0; i<gamePlayerDeck.choosedCardOnHands.Length; i++){
@@ -77,7 +77,7 @@ public class CardOnHandRemovePopUp : SingletonD<CardOnHandRemovePopUp>
     // 현재 플레이어의 패 제거 팝업에 사용되는 순환용 인덱스 0 으로 초기화
     private void ResetCycleIndex()
     {
-        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface = PlayerRegistry.Local;
         GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
         gamePlayerDeck.currentIndex = 0;
     }

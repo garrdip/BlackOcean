@@ -71,7 +71,7 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerClick(PointerEventData eventData)
     {
         if(!SceneManager.GetActiveScene().name.Equals("MenuScene")){
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            PlayerInterface playerInterface = PlayerRegistry.Local;
             GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
             Card card = new Card(cardBase);
             if(playerInterface.currentGamePlayer.character == card.baseCard.character){

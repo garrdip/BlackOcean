@@ -82,7 +82,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         DontDestroyOnLoad(gameObject);
         M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
-        playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>(); // PlayerInterface 참조값 캐싱
+        playerInterface = PlayerRegistry.Local; // PlayerInterface 참조값 캐싱
         InitCardConfigValue();
     }
 
@@ -341,7 +341,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             float duration = 0.5f;
             bool isChalna = CardData.instance.CheckCardCharacteristic(cardOnHand.card, CardCharacteristic.CHALNA);
             Vector3 position = isChalna ? GameUIManager.instance.ForgottenDeck.GetComponent<RectTransform>().position : GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
 
             // Dotween 애니매이션 시퀀스 생성
             Sequence sequence = DOTween.Sequence();
@@ -381,7 +381,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             cardOnHand.isUsed = true;
             float duration = 0.5f;
             Vector3 position = GameUIManager.instance.ForgottenDeck.GetComponent<RectTransform>().position;
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
 
             // Dotween 애니매이션 시퀀스 생성
             Sequence sequence = DOTween.Sequence();
@@ -456,7 +456,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     {
         // 로컬 플레이어의 카드 정렬 순서 변경
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
             foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
                 cardOnHand.GetComponent<SortingGroup>().sortingLayerName = layerName;
                 cardOnHand.cardOnHandCanvas.sortingLayerName = layerName;
@@ -468,7 +468,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void ChangeCardOnHandShiftState(CardOnHand mouseOveredCardOnHand, bool isShifted)
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
             foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
                 if(cardOnHand != mouseOveredCardOnHand){
                     cardOnHand.isShifted = isShifted;
@@ -481,7 +481,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void RemoveAllCurrentPlayerArrow()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            PlayerInterface playerInterface = PlayerRegistry.Local;
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 gamePlayerDeck.cardCtrlArrow.RemoveCardCtrlArrow();
@@ -493,7 +493,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void RemoveAllCurrentPlayerCardOnHands()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            PlayerInterface playerInterface = PlayerRegistry.Local;
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
@@ -523,7 +523,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            PlayerInterface playerInterface = PlayerRegistry.Local;
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 gamePlayerDeck.CmdDestroyAllCardOnHandWithOutTrashDeck();
@@ -535,7 +535,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void RemoveAllCurrentPlayerPrefareDeckAndTrashDeck()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            PlayerInterface playerInterface = PlayerRegistry.Local;
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 gamePlayerDeck.CmdClearPrefareDeckAndTrashDeck();
@@ -547,7 +547,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void ChangeCurrentPlayerCardOnHandState(bool state)
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+            GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
             foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
                 ResetCardAllState(cardOnHand, state);
             }
@@ -558,7 +558,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void PrefareCardWithSuffle()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            foreach(GamePlayer gamePlayer in NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers){
+            foreach(GamePlayer gamePlayer in PlayerRegistry.Local.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 gamePlayerDeck.CmdAddPrefareDeckWithShuffle();
             }
@@ -580,7 +580,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void ChangeAbilityButtonActiveState(bool isActive)
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            foreach(GamePlayer gamePlayer in NetworkClient.localPlayer.GetComponent<PlayerInterface>().ownedPlayers){
+            foreach(GamePlayer gamePlayer in PlayerRegistry.Local.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 if(gamePlayerDeck.abilityButton != null){
                     gamePlayerDeck.abilityButton.gameObject.SetActive(isActive);
@@ -703,7 +703,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     // 현재 패 중 드래그중인 카드가 있는지 조회
     public bool IsDragCardExist()
     {
-        int index = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindIndex((cardonHand) => cardonHand.isDrag);
+        int index = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>().cardOnHands.FindIndex((cardonHand) => cardonHand.isDrag);
         if(index != -1){
             return true;
         }

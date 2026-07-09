@@ -682,7 +682,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     public void EachPlayerCardDraw()
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            PlayerInterface playerInterface = PlayerRegistry.Local;
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
                 foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands) // 영원 카드의 경우도 변경된 정보 제공

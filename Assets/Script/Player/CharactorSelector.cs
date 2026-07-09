@@ -37,7 +37,7 @@ public class CharactorSelector : MonoBehaviour
 
     void OnMouseDown()
     {
-        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface = PlayerRegistry.Local;
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player; // 클릭한 캐릭터의 GamePlayer 인스턴스
         GamePlayer localPlayer = playerInterface.currentGamePlayer; // 로컬 플레이어의 GamePlayer 인스턴스
         if(IsServerAuthorityPlayer() && IsBattleRoomType() && !IsOpenedPopUpExist() && !targetPlayer.isSelectable){ 
@@ -72,7 +72,7 @@ public class CharactorSelector : MonoBehaviour
     // 이벤트 호출하려는 플레이어 오브젝트가 현재 유저가 선택 가능한 플레이어인지 확인하는 함수
     private bool IsServerAuthorityPlayer()
     {
-        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface = PlayerRegistry.Local;
         GamePlayer gamePlayer = transform.parent.GetComponent<TargetObject>().player;
         if(
             playerInterface.isServer // 서버 권한인 경우

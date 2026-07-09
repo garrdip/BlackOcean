@@ -371,7 +371,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
     IEnumerator ReturnToCardOnHandCoroutine(CardOnHand cardOnHand)
     {
         if(cardOnHand != null){
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            PlayerInterface playerInterface = PlayerRegistry.Local;
             while(true)
             {
                 if(playerInterface.destroyCards.FindIndex(x => x == cardOnHand) != -1)

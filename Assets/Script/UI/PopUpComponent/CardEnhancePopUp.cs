@@ -56,7 +56,7 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>, IPointerClickHandl
     // 카드 강화 승인
     private void HandleClickCardEnhnaceOk()
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
         if(gamePlayerDeck != null){
             gamePlayerDeck.CmdEnhanceDeck(selectCardGuid); // 카드 강화 커맨드 전송
             StartCardEnhanceAnimation();
@@ -210,7 +210,7 @@ public class CardEnhancePopUp : SingletonD<CardEnhancePopUp>, IPointerClickHandl
     {
         CreateEnhanceableCards();
         canvasGroup.DOFade(1.0f, 0.5f);
-        tabLayout.ShowTab(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayer>().selectOrder);
+        tabLayout.ShowTab(PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayer>().selectOrder);
     }
 
     // CardEnhancePopUp 비활성화 콜백

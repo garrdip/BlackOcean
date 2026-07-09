@@ -59,6 +59,18 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 14회차 완료 작업 (P2-15 1회차)
+
+### ✅ P2-15a — 로컬 PlayerInterface 조회 캐싱 (79곳) + 스크롤 버튼 SetActive 상태 가드
+
+- **`PlayerRegistry.Local` 도입**: `NetworkClient.localPlayer.GetComponent<PlayerInterface>()` 매 호출 재조회(41개 파일 79곳 — 계획서 추정 28곳보다 훨씬 많았음)를 캐시 접근자로 전체 전환. `PlayerInterface.OnStartLocalPlayer`에서 설정, `Unregister`(OnDestroy)에서 해제, 캐시가 비어 있으면(씬 전환 직후 등) localPlayer에서 1회 재조회하는 **자가 복구 게터**라 타이밍 회귀 위험 없음. RoomPlayer 조회나 localPlayer null 가드 등 다른 패턴 13곳은 의도적으로 유지.
+- **GameUIManager 스크롤 버튼**: 매 프레임 무조건 `SetActive` 4~6회 호출하던 것을 상태 비교 후 변경 시에만 호출로 교정 (가시성 판정 로직은 동일).
+- 검증: 컴파일 0건 + 에디터 리플렉션 검증(Local/SetLocal 존재, 비플레이 상태 Local 접근 시 예외 없이 null 반환).
+- **플레이 검증 포인트**: 로컬 플레이어 UI 전반 — 덱 3종 버튼 팝업, 턴 종료 버튼, 카드 사용/타겟팅, 맵 방 클릭·투표, NPC 상호작용. 특히 **룸→게임씬 전환 직후**와 맵↔전투 왕복 후에도 정상인지 (Local 캐시 수명 검증).
+- 남은 P2-15(후속): M_SoundManager OnUpdate 믹서 폴링 이벤트화, LobbyPlayer(49회)·HexagonMapRoom(26회) GetComponent 반복 캐싱.
+
+---
+
 ## 13회차 완료 작업 (P2-16 죽은 코드 정리)
 
 ### ✅ P2-16 — 죽은 코드 정리 (-224줄, 로직 변경 0건)

@@ -49,7 +49,7 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>, IPointerClickHandler
     // 카드 제거 승인
     private void HandleClickCardRemoveOk()
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
         if(gamePlayerDeck != null){
             gamePlayerDeck.CmdRemoveDeck(selectCardGuid); // 카드 제거 커맨드 전송
             StartCardRemoveAnimation();
@@ -143,7 +143,7 @@ public class CardRemovePopUp : SingletonD<CardRemovePopUp>, IPointerClickHandler
     {
         CreateRemoveableCards();
         canvasGroup.DOFade(1.0f, 0.5f);
-        tabLayout.ShowTab(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayer>().selectOrder);
+        tabLayout.ShowTab(PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayer>().selectOrder);
     }
 
     // CardRemovePopUp 비활성화 콜백

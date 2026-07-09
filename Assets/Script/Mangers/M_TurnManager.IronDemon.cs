@@ -86,7 +86,7 @@ public partial class M_TurnManager
     int CalcOffset(TargetObject tar)
     {
         int retVal = 0;
-        if(tar.player == (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer)) retVal = 0;
+        if(tar.player == (PlayerRegistry.Local.currentGamePlayer)) retVal = 0;
         else
         {
             int addval = 0;
@@ -94,7 +94,7 @@ public partial class M_TurnManager
                 if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
                     if(tar.player == networkIdentity.GetComponent<GamePlayer>())
                         break;
-                    if(tar.player == (NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer))
+                    if(tar.player == (PlayerRegistry.Local.currentGamePlayer))
                         continue;
                     else
                         addval++;

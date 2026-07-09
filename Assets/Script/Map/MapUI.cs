@@ -178,7 +178,7 @@ public class MapUI : InstanceD<MapUI>
 
     public void OnChangeReadyState()
     {
-        NetworkClient.localPlayer.GetComponent<PlayerInterface>().isReady = !NetworkClient.localPlayer.GetComponent<PlayerInterface>().isReady;
+        PlayerRegistry.Local.isReady = !PlayerRegistry.Local.isReady;
     }
 
 

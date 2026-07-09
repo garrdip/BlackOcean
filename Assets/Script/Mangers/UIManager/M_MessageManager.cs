@@ -150,7 +150,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
                 string playerName = SteamFriends.GetFriendPersonaName((CSteamID)roomPlayer.steamID);
                 CmdSendChatMessage(color, playerName, message);
             }else if(Utils.IsSceneActive(networkRoomManager.GameplayScene)){
-                PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+                PlayerInterface playerInterface = PlayerRegistry.Local;
                 Color color = playerInterface.color;
                 string playerName = SteamFriends.GetFriendPersonaName((CSteamID)playerInterface.steamID);
                 CmdSendChatMessage(color, playerName, message);

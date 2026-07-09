@@ -73,7 +73,7 @@ public class TabLayout : MonoBehaviour
     public void SetTabButtonByOwnedPlayersCount()
     {
         HideAllTabButtons();
-        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface = PlayerRegistry.Local;
         if(playerInterface.ownedPlayers.Count > 1){ // 제어할 플레이어가 2명 이상이면
             for(int i=0; i<playerInterface.ownedPlayers.Count; i++){
                 GamePlayer gamePlayer = playerInterface.ownedPlayers[i];
@@ -107,7 +107,7 @@ public class TabLayout : MonoBehaviour
         uint netId = M_TurnManager.instance.playerOrder[index];
         if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
             GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
-            NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId = gamePlayer.netId; // 선택된 탭에 해당하는 gamePlayer를 currentGamePlayer로 설정
+            PlayerRegistry.Local.currentGamePlayerNetId = gamePlayer.netId; // 선택된 탭에 해당하는 gamePlayer를 currentGamePlayer로 설정
         }
         currentIndex = index;
         tabFrames[index].SetActive(true);

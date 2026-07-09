@@ -1086,7 +1086,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     // 로컬 플레이어가 투표한 방인 경우 맵 화면 딤처리 상태 변경
     public void ChangeDimmingByPlayerVote(NetworkIdentity votePlayerNetIdentity, bool isActive)
     {
-        bool isLocalPlayerVote = (votePlayerNetIdentity == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.netIdentity);
+        bool isLocalPlayerVote = (votePlayerNetIdentity == PlayerRegistry.Local.currentGamePlayer.netIdentity);
         if(isLocalPlayerVote){
             MapUI.instance.ChangeMapDimBackground(isActive);
         }

@@ -89,6 +89,7 @@ public class PlayerInterface : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
+        PlayerRegistry.SetLocal(this);
         if(isLocalPlayer)
         {
             GenerateGamePlayer();

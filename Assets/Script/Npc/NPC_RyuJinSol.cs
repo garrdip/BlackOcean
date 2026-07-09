@@ -179,7 +179,7 @@ public class NPC_RyuJinSol : SpawnedMonster
         // 전초기지 방문시 캐릭터들 음성 재생
         if(NetworkClient.localPlayer != null){
             AudioClip baseCampVoice = null;
-            Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+            Character character = PlayerRegistry.Local.currentGamePlayer.character;
             switch(character){
                 case Character.HONGDANHYANG:
                     List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 83, 3);

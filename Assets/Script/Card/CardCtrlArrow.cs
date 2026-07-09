@@ -137,7 +137,7 @@ public class CardCtrlArrow : NetworkBehaviour
     {
         if(Input.GetMouseButtonUp(0) && currentTarget != null){
             if(NetworkClient.connection != null && NetworkClient.active){
-                GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+                GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
                 if(gamePlayerDeck.isOwned && arrowOwnedCardOnHand != null){
                     if(arrowOwnedCardOnHand.isUsed == false)
                     {

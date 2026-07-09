@@ -94,7 +94,7 @@ public class PlayerOrder : NetworkBehaviour
     {
         lastCardBaseLingLight.SetActive(true);
         if(!isCardPeekLocked){
-            uint originNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
+            uint originNetId = PlayerRegistry.Local.currentGamePlayerNetId;
             topSeeLight.SetActive(true);
             SwapCardPocket(originNetId, gamePlayerNetId);
         }
@@ -104,7 +104,7 @@ public class PlayerOrder : NetworkBehaviour
     {
         lastCardBaseLingLight.SetActive(false);
         if(!isCardPeekLocked){
-            uint originNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
+            uint originNetId = PlayerRegistry.Local.currentGamePlayerNetId;
             topSeeLight.SetActive(false);
             SwapCardPocket(gamePlayerNetId, originNetId);
         }
@@ -112,7 +112,7 @@ public class PlayerOrder : NetworkBehaviour
 
     public void OnPointerClickCardPeekButton()
     {
-        uint originNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
+        uint originNetId = PlayerRegistry.Local.currentGamePlayerNetId;
         isCardPeekLocked = !isCardPeekLocked;
         if(isCardPeekLocked){
             topSeeLight.GetComponent<SpriteRenderer>().color = Color.red;

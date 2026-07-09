@@ -40,7 +40,7 @@ public class TargetIndicatorController : InstanceD<TargetIndicatorController>
         switch(validTarget){
             case ValidTarget.NONE:
                 // 플레이어 본인 타겟 활성화
-                GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
+                GamePlayer gamePlayer = PlayerRegistry.Local.currentGamePlayer;
                 foreach(GameObject targetIndicatorObject in targetIndicators){
                     TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();
                     if(targetIndicator.netId == M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer).netId){
@@ -135,7 +135,7 @@ public class TargetIndicatorController : InstanceD<TargetIndicatorController>
         switch(validTarget){
             case ValidTarget.NONE:
                 // 플레이어 본인 타겟 후보로 설정
-                GamePlayer gamePlayer = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer;
+                GamePlayer gamePlayer = PlayerRegistry.Local.currentGamePlayer;
                 TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
                 foreach(GameObject targetIndicatorObject in targetIndicators){
                     TargetIndicator targetIndicator = targetIndicatorObject.GetComponent<TargetIndicator>();

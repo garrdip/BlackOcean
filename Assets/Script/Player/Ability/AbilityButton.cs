@@ -36,10 +36,10 @@ public class AbilityButton : NetworkBehaviour
 
     void OnMouseDown()
     {
-        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayer>().character == ProjectD.Character.HONGDANHYANG)
-            NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().abilityCtrlArrow.InitCardCtrlArrow(this);
+        if(PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayer>().character == ProjectD.Character.HONGDANHYANG)
+            PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>().abilityCtrlArrow.InitCardCtrlArrow(this);
         else
-            NetLookup.Client<TargetObject>(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject).UsingGoHeng();
+            NetLookup.Client<TargetObject>(PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerTarget>().targetObject).UsingGoHeng();
     }
 
     void OnMouseEnter()
@@ -49,7 +49,7 @@ public class AbilityButton : NetworkBehaviour
 
     void OnMouseExit()
     {
-        if(!NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>().abilityCtrlArrow.isInitialized){
+        if(!PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>().abilityCtrlArrow.isInitialized){
             SetAbilityButtonActive(false);
         }
     }

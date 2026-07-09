@@ -85,13 +85,13 @@ public class GameUIManager : SingletonD<GameUIManager>
         screenTransition.material =  new Material(screenTransition.material); // 머티리얼 인스턴스 복사본을 생성하여 이미지의 머티리얼값에 할당(원본대신 복사본을 사용해 프로퍼티값 변경)
         scrollSpeed = 500f;
         buttonPrefareDeck.onClick.AddListener(() => {
-            PopUpUIManager.instance.HandleShowPrefareDeckListPopUp(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+            PopUpUIManager.instance.HandleShowPrefareDeckListPopUp(PlayerRegistry.Local.currentGamePlayerNetId);
         });
         buttonTrashDeck.onClick.AddListener(() => {
-            PopUpUIManager.instance.HandleShowTrashDeckListPopUp(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+            PopUpUIManager.instance.HandleShowTrashDeckListPopUp(PlayerRegistry.Local.currentGamePlayerNetId);
         });
         buttonForgottenDeck.onClick.AddListener(() => {
-            PopUpUIManager.instance.HandShowForgottenDeckListPopUp(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+            PopUpUIManager.instance.HandShowForgottenDeckListPopUp(PlayerRegistry.Local.currentGamePlayerNetId);
         });
     }
 
@@ -120,26 +120,27 @@ public class GameUIManager : SingletonD<GameUIManager>
         }
     }
 
-    // 스크롤 뷰 내부 컨텐츠요소의 길이에 따라 스크롤 버튼의 활성화 상태 변경
+    // 스크롤 뷰 내부 컨텐츠요소의 길이에 따라 스크롤 버튼의 활성화 상태 변경 (상태가 바뀔 때만 SetActive 호출)
     private void UpdateCardQueueScrollButtonVisibility()
     {
         if(cardQueueScrollRect != null){
             float contentWidth = cardQueueScrollRect.content.rect.width;
             float viewportWidth = cardQueueScrollRect.viewport.rect.width;
+            bool leftVisible;
+            bool rightVisible;
             if(contentWidth <= viewportWidth){
-                leftScrollButton.gameObject.SetActive(false);
-                rightScrollButton.gameObject.SetActive(false);
+                leftVisible = false;
+                rightVisible = false;
             }else{
-                if(cardQueueScrollRect.horizontalNormalizedPosition <= 0.01f){
-                    leftScrollButton.gameObject.SetActive(false);
-                    rightScrollButton.gameObject.SetActive(true);
-                }else if(cardQueueScrollRect.horizontalNormalizedPosition >= 0.99f){
-                    leftScrollButton.gameObject.SetActive(true);
-                    rightScrollButton.gameObject.SetActive(false);
-                }else{
-                    leftScrollButton.gameObject.SetActive(true);
-                    rightScrollButton.gameObject.SetActive(true);
-                }
+                float scrollPosition = cardQueueScrollRect.horizontalNormalizedPosition;
+                leftVisible = scrollPosition > 0.01f;
+                rightVisible = scrollPosition < 0.99f;
+            }
+            if(leftScrollButton.gameObject.activeSelf != leftVisible){
+                leftScrollButton.gameObject.SetActive(leftVisible);
+            }
+            if(rightScrollButton.gameObject.activeSelf != rightVisible){
+                rightScrollButton.gameObject.SetActive(rightVisible);
             }
         }
     }

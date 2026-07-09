@@ -64,7 +64,7 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
 
     public void ChangeCardOnDeckSelectState(GameObject selectCardObject, bool isSelect)
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
         CardOnDeck cardOnDeck = selectCardObject.GetComponent<CardOnDeck>();
         if(isSelect){
             if(selectCardObjectList.Count < gamePlayerDeck.maxSelectableCardCount){
@@ -105,7 +105,7 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
     // DeckSelectPopUp 확인 버튼 클릭
     public void OnClickDeckSelectSubmit()
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>(); 
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>(); 
         gamePlayerDeck.CmdCheckRequestCard(requestCardNumber, selectCards);
         PopUpUIManager.instance.HandleHideDeckSelectPopUp();
     }
@@ -114,7 +114,7 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
 
     public void OnDeckSelectPopUpShow(DeckListType type, string cardNumber)
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
         textExplanation.text = $"카드를 <color=green>{gamePlayerDeck.maxSelectableCardCount}</color> 장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )";
         requestCardNumber = cardNumber;
         canvasGroup.DOFade(1.0f, 0.5f);
@@ -145,7 +145,7 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
 
     public void OnDeckSelectPopUpHide()
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
         gamePlayerDeck.CmdResetMaxCardSelectableCount(); // 카드 선택 가능 갯수 초기화
         ClearDeckList();
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {

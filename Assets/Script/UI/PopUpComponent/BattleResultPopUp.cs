@@ -58,7 +58,7 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     {
         skipButtons[index].interactable = false;
         skipButtons[index].image.color = new Color32(255, 255, 255, 255);
-        PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface = PlayerRegistry.Local;
         List<GamePlayer> players = new List<GamePlayer>(playerInterface.ownedPlayers);
         int idx = players.Count == 1 ? 0 : index;
         GamePlayer gamePlayer = players[idx];

@@ -103,7 +103,7 @@ public partial class GamePlayerDeck
     // 뽑을 덱 리스트 콜백
     void OnPrefareDeckUpdated(SyncList<Card>.Operation op, int index, Card oldPrefareDeck, Card newPrefareDeck)
     {
-        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
+        uint currentGamePlayerNetId = PlayerRegistry.Local.currentGamePlayerNetId;
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:
@@ -148,7 +148,7 @@ public partial class GamePlayerDeck
     // 버린 덱 리스트 콜백
     void OnTrashDeckUpdated(SyncList<Card>.Operation op, int index, Card oldTrashDeck, Card newTrashDeck)
     {
-        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
+        uint currentGamePlayerNetId = PlayerRegistry.Local.currentGamePlayerNetId;
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:
@@ -184,7 +184,7 @@ public partial class GamePlayerDeck
     // 잊혀진 덱 리스트 콜백
     void OnForgottenDeckUpdated(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
     {
-        uint currentGamePlayerNetId = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId;
+        uint currentGamePlayerNetId = PlayerRegistry.Local.currentGamePlayerNetId;
         switch (op)
         {
             case SyncList<Card>.Operation.OP_ADD:

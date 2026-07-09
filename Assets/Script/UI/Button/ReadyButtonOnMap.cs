@@ -50,7 +50,7 @@ public class ReadyButtonOnMap : ButtonBase, IPointerEnterHandler, IPointerExitHa
     // 레디 상태 제어 
     public void HandleRadeyState()
     {
-        PlayerInterface playerInterface =  NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+        PlayerInterface playerInterface =  PlayerRegistry.Local;
         playerInterface.isReady = !playerInterface.isReady;
         SetReadyButtonViewByReadyState(playerInterface.isReady);
         MapUI.instance.ChangeSwapButtonsIconState();

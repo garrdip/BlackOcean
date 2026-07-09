@@ -8,6 +8,27 @@ using System.Collections.Generic;
 public static class PlayerRegistry
 {
     static readonly List<PlayerInterface> players = new List<PlayerInterface>();
+    static PlayerInterface local;
+
+    /// <summary>
+    /// 로컬 플레이어의 PlayerInterface 캐시.
+    /// NetworkClient.localPlayer.GetComponent&lt;PlayerInterface&gt;() 매 호출 재조회를 대체한다.
+    /// 캐시가 비어 있으면(씬 전환 직후 등) localPlayer에서 1회 재조회해 자가 복구한다.
+    /// </summary>
+    public static PlayerInterface Local
+    {
+        get
+        {
+            if (local == null && Mirror.NetworkClient.localPlayer != null)
+                local = Mirror.NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            return local;
+        }
+    }
+
+    public static void SetLocal(PlayerInterface player)
+    {
+        local = player;
+    }
 
     public static IReadOnlyList<PlayerInterface> All
     {
@@ -27,5 +48,7 @@ public static class PlayerRegistry
     public static void Unregister(PlayerInterface player)
     {
         players.Remove(player);
+        if (local == player)
+            local = null;
     }
 }

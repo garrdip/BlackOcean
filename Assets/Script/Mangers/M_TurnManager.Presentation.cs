@@ -18,7 +18,7 @@ public partial class M_TurnManager
     public void PlayEventConversation(bool isPositive)
     {
         AudioClip eventVoice = null;
-        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+        Character character = PlayerRegistry.Local.currentGamePlayer.character;
         switch(character){
             case Character.HONGDANHYANG:
                 List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, isPositive ? 86 : 92, 3);
@@ -78,7 +78,7 @@ public partial class M_TurnManager
     {
         AudioClip stageStartAudio = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "stage_start");
         M_SoundManager.instance.PlaySFX(stageStartAudio, stageStartAudio.length);
-        Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().character; // 로컬 플레이어가 선택한 캐릭터 조회
+        Character character = PlayerRegistry.Local.character; // 로컬 플레이어가 선택한 캐릭터 조회
         switch(roomType)
         {
             case RoomType.MONSTER:

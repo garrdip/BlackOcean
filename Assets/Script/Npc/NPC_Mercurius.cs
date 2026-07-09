@@ -99,7 +99,7 @@ public class NPC_Mercurius : SpawnedMonster
     {
         if(NetworkClient.localPlayer != null){
             AudioClip meetCardNpcVoice = null;
-            Character character = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.character;
+            Character character = PlayerRegistry.Local.currentGamePlayer.character;
             switch(character){
                 case Character.HONGDANHYANG:
                     List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 77, 3);

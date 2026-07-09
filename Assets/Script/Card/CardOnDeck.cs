@@ -252,7 +252,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     // 선택한 카드 구매 커맨드 전송
     private void RequestCardPurchase()
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
         gamePlayerDeck.CmdPurchaseShopCard(card.guid);
         gamePlayerDeck.CmdAddDeck(card);
     }
@@ -427,7 +427,7 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(PopUpUIManager.instance.isDeckDrawPopUpOpen){ 
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
-            PlayerInterface playerInterface = NetworkClient.localPlayer.GetComponent<PlayerInterface>();
+            PlayerInterface playerInterface = PlayerRegistry.Local;
             GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
             PopUpUIManager.instance.HandleHideDeckDrawPopUp();
             DeckDrawPopUp deckDrawPopUp = PopUpUIManager.instance.deckDrawPopUp.GetComponent<DeckDrawPopUp>();

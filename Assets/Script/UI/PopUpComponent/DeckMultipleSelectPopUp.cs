@@ -41,7 +41,7 @@ public class DeckMultipleSelectPopUp : SingletonD<DeckMultipleSelectPopUp>
 
     public void OnClickDeckSelectSubmit()
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
         if(selectCardFromForgottenDeck != null){
             gamePlayerDeck.CmdCheckRequestCard(selectCardFromForgottenDeck.card, DeckListType.FORGOTTEN_DECK);
         }
@@ -111,7 +111,7 @@ public class DeckMultipleSelectPopUp : SingletonD<DeckMultipleSelectPopUp>
     public void OnDeckMultipleSelectPopUpShow()
     {
         canvasGroup.DOFade(1.0f, 0.5f);
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
         ClearDeckList();
         AddDeckList(gamePlayerDeck.forgottenDeck, forgottenDecks, forgottenDeckGrid.transform, DeckListType.FORGOTTEN_DECK);
         AddDeckList(gamePlayerDeck.trashDeck, trashDecks, trashDeckGrid.transform, DeckListType.TRASH_DECK);
@@ -119,7 +119,7 @@ public class DeckMultipleSelectPopUp : SingletonD<DeckMultipleSelectPopUp>
 
     public void OnDeckMultipleSelectPopUpHide()
     {
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
         gamePlayerDeck.CmdResetMaxCardSelectableCount(); // 카드 선택 가능 갯수 초기화
         ClearDeckList();
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {

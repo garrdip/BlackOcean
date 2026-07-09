@@ -25,7 +25,7 @@ public class DeckDrawPopUp : MonoBehaviour
     public void OnChangeDeckDrawPopUpShow()
     {
         canvasGroup.DOFade(1.0f, 0.5f);
-        GamePlayerDeck gamePlayerDeck = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerDeck>();
+        GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
         for(int i=0; i<gamePlayerDeck.addtionDrawCards.Count; i++){
             // 추가 드로우 카드 슬롯 오브젝트 생성
             GameObject cardPosition = Instantiate(

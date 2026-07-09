@@ -136,8 +136,8 @@ public class HexagonMapRoom : NetworkBehaviour
 
     private void OnMouseDown()
     {
-        if(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId != 0){
-            GamePlayerMap gamePlayerMap = NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayer.GetComponent<GamePlayerMap>();
+        if(PlayerRegistry.Local.currentGamePlayerNetId != 0){
+            GamePlayerMap gamePlayerMap = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerMap>();
             // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(서버 요청)
             gamePlayerMap.CmdChangeMapPlayerDestinationPosition(this, GetComponent<Transform>().position, NetworkClient.localPlayer.GetComponent<NetworkIdentity>());
         }
@@ -318,7 +318,7 @@ public class HexagonMapRoom : NetworkBehaviour
                 // votePlayer에 추가될 때 추가된 플레이어의 order값에 맞는 위치의 아이콘 설정
                 int addOrder = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == newVal);
                 if(addOrder != -1){
-                    if(newVal == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId){
+                    if(newVal == PlayerRegistry.Local.currentGamePlayerNetId){
                         mapVoteIconsMine[addOrder].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
                         mapVoteIconsAnother[addOrder].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
                     }else{
@@ -358,7 +358,7 @@ public class HexagonMapRoom : NetworkBehaviour
                     }else{
                         for(int i=0; i<M_TurnManager.instance.playerOrder.Count; i++){
                             uint netId = M_TurnManager.instance.playerOrder[i];
-                            if(netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId){
+                            if(netId == PlayerRegistry.Local.currentGamePlayerNetId){
                                 mapVoteIconsMine[i].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
                                 mapVoteIconsAnother[i].GetComponent<SpriteRenderer>().sprite = voteIconMinePick;
                             }else if(netId == 0){
@@ -387,7 +387,7 @@ public class HexagonMapRoom : NetworkBehaviour
     // 방 레이아웃 상태 변경 — 내가 투표한 방이면 내 투표 레이아웃, 아니면 타인 투표 레이아웃
     private void ChangeHexagonMapRoomLayoutState()
     {
-        bool isMyVote = votePlyers.Contains(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+        bool isMyVote = votePlyers.Contains(PlayerRegistry.Local.currentGamePlayerNetId);
         myVoteLayout.SetActive(isMyVote);
         anotherVoteLayout.SetActive(!isMyVote);
         ChangeMapRoomInfoState(isMyVote);
