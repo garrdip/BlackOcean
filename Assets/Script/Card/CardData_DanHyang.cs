@@ -800,8 +800,10 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.4f); // 타격지점까지 시간
         StartCoroutine(tar[1].monster.OnHitAnimation()); // 실제 피격 애니메이션
         GeneralSingleAttack(tar[0],tar[1],8); // 실제 데미지 적용시점
-        if(tar[1].monster.HP <= 0)tar[0].player.GetComponent<GamePlayerDeck>().AdditionalSizeOfIromDemon ++;
-        tar[0].GainBuff(BuffType.IRONDEMON,1,false,false,false,false,tar[0],card);
+        if(tar[1].monster.HP <= 0){ // 처치 시에만 크기 증가 (영구분 + 현재 전투분)
+            tar[0].player.GetComponent<GamePlayerDeck>().AdditionalSizeOfIromDemon ++;
+            tar[0].GainBuff(BuffType.IRONDEMON,1,false,false,false,false,tar[0],card);
+        }
         yield return new WaitForSeconds(0.6f); // 공격모션 끝남
         
         yield return MoveIronDemonCoroutine(tar[0],preLocation); // 철귀 복귀

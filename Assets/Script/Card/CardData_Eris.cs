@@ -158,7 +158,7 @@ public partial class CardData : SingletonD<CardData>
         int newHP = tar[0].playerHP + hpRecoveryValue;
         if (newHP > tar[0].playerMaxHP){
             int hpDifference = newHP - tar[0].playerMaxHP;
-            tar[0].playerMaxHP = tar[0].playerMaxHP;
+            tar[0].playerHP = tar[0].playerMaxHP; // 최대치까지는 회복하고 초과분만 피해로 전환
             foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
                 GeneralSingleAttack(tar[0], enemy, hpDifference);
                 StartCoroutine(enemy.monster.OnHitAnimation());
@@ -977,26 +977,19 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		ErisAnimation(tar[0],"Attack1");
         int damage = 8;
-        switch(tar[0].erisMode){
-            case ErisMode.NORMAL:
-                yield return new WaitForSeconds(0.25f);
-                GeneralSingleAttack(tar[0], tar[1], damage);
-                StartCoroutine(tar[1].monster.OnHitAnimation());
-                break;
-            case ErisMode.ANGER:
-                for(int i=0; i<2; i++){
-                    yield return new WaitForSeconds(0.25f);
-                    GeneralSingleAttack(tar[0], tar[1], damage);
-                    StartCoroutine(tar[1].monster.OnHitAnimation());
-                }
-                break;
-            case ErisMode.MAD:
-                for(int i=0; i<3; i++){
-                    yield return new WaitForSeconds(0.25f);
-                    GeneralSingleAttack(tar[0], tar[1], damage);
-                    StartCoroutine(tar[1].monster.OnHitAnimation());
-                }
-                break;
+        // 반복 조건: 변신(MAD) 3회 > 체력 절반 이하 2회 > 기본 1회
+        // (종전에는 '절반 이하' 조건이 실플레이에서 설정되지 않는 ErisMode.ANGER에 묶여 있어 발동 불가였음)
+        int repeatCount;
+        if(tar[0].erisMode == ErisMode.MAD)
+            repeatCount = 3;
+        else if(tar[0].playerHP <= tar[0].playerMaxHP / 2)
+            repeatCount = 2;
+        else
+            repeatCount = 1;
+        for(int i=0; i<repeatCount; i++){
+            yield return new WaitForSeconds(0.25f);
+            GeneralSingleAttack(tar[0], tar[1], damage);
+            StartCoroutine(tar[1].monster.OnHitAnimation());
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));

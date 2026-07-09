@@ -247,7 +247,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
     public int GetTotalCostOfCardOnHand(CardOnHand cardOnHand)
     {
         int totalCost;
-        totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition + (GetComponent<GamePlayerTarget>().GetTargetObject().buffs.FindIndex(x => x.type == BuffType.GOHANG3_DEBUFF) == -1 ? 0 : 1);
+        // 고행 III(G2) 디버프의 비용 +1은 "이 카드를 제외한" 모든 카드에 적용 — G2 자신은 제외
+        bool isGohang3Card = cardOnHand.card.baseCard.cardNumber == "G2" || cardOnHand.card.baseCard.cardNumber == "G2_E";
+        totalCost = cardOnHand.card.baseCard.cost + cardOnHand.card.costAddition + (!isGohang3Card && GetComponent<GamePlayerTarget>().GetTargetObject().buffs.FindIndex(x => x.type == BuffType.GOHANG3_DEBUFF) != -1 ? 1 : 0);
 
         if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO)) // 은하수 카드 코스트 계산
         {

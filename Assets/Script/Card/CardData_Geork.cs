@@ -384,6 +384,7 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Buff0");
 		yield return new WaitForSeconds(0.5f);
 		tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck.Add(new Card(CardData.instance.cards.Find(card => card.cardNumber == "G3")));
+		tar[0].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "G3")), 1);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
@@ -434,8 +435,9 @@ public partial class CardData : SingletonD<CardData>
 	}
 	public IEnumerator G19_Buff_Effect(TargetObject tar, int index,Card card)
 	{
-		foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
-			GeneralSingleDamage(enemy,3);
+		if(card.baseCard.cardType == CardType.CURSE)
+			foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList)
+				enemy.StaticDamageToMonster(3);
 		yield return null;
 	}
 
@@ -644,12 +646,8 @@ public partial class CardData : SingletonD<CardData>
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		GeorkAnimation(tar[0],"Attack2");
 		yield return new WaitForSeconds(0.5f);
-		// 소유중인 저주카드 카운트
+		// 패에 있는 저주카드만 카운트 (설명: "내 패에 있는 @이치의저주 카드 당")
 		int addDamage = 0;
-		foreach(Card item in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
-			if(item.baseCard.cardType == CardType.CURSE)addDamage += 8;
-		foreach(Card item in tar[0].player.GetComponent<GamePlayerDeck>().trashDeck)
-			if(item.baseCard.cardType == CardType.CURSE)addDamage += 8;
 		foreach(CardOnHand item in tar[0].player.GetComponent<GamePlayerDeck>().cardOnHands)
 			if(item.card.baseCard.cardType == CardType.CURSE)addDamage += 8;
 
