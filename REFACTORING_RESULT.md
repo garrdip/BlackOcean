@@ -59,6 +59,23 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 18회차 완료 작업 (TMP 예제 폴더 삭제)
+
+### ✅ TMP `Examples & Extras` 폴더 삭제 (에셋 250파일 제거, 잔여 CS0618 경고 소멸)
+
+계획서에 "예제 미사용 확인 후 삭제"로 남아 있던 항목. **확인 결과 미사용이 아니었다** — GUID 전수 스캔(예제 에셋 130개 GUID ↔ 폴더 밖 전체 씬/프리팹/머티리얼)에서 게임이 실제 사용 중인 예제 에셋 3개 발견:
+
+- **`Anton SDF.asset` — 프로젝트 기본 TMP 폰트였음** (TMP Settings의 m_defaultFontAsset + 씬 2개·핵심 프리팹 9개가 참조). 계속 재직렬화되던 미스터리 파일의 정체.
+- `Fruit Jelly (B&W).jpg` / `Floor Cement.jpg` — Orb.mat, CardEnhancedOutline.mat이 사용하는 텍스처.
+
+**조치**: 사용 중인 3개 + Anton SDF의 소스 폰트 `Anton.ttf`를 `AssetDatabase.MoveAsset`으로 **GUID 보존 이동** (Anton은 기존 프로젝트 폰트들이 있는 `TextMesh Pro/Resources/Fonts & Materials/`로 — Resources 상대 경로도 동일하게 유지, 텍스처는 신규 `Assets/Material/Texture/`) 후 폴더 삭제. 참조하던 씬/프리팹은 GUID가 그대로라 수정 불필요.
+
+**검증**: 컴파일 0건, 삭제된 GUID 126개에 대한 전체 에셋 재스캔 — **깨진 참조 0건**. TMP 예제 스크립트가 사라져 잔여 CS0618 경고 전부 소멸 (2회차 때 수정했던 VertexZoom.cs 등 예제 스크립트도 함께 제거됨).
+
+**플레이 검증 포인트**: 게임 전반의 텍스트 렌더링 (기본 폰트가 Anton SDF — 메뉴/로비/전투 UI 텍스트), 카드 강화 아웃라인·오브 UI 머티리얼 표시.
+
+---
+
 ## 17회차 완료 작업 (P2-12)
 
 ### ✅ P2-12 — 밸런스 매직넘버 데이터화 (BalanceDB.csv 도입)
