@@ -128,10 +128,10 @@ public class PlayerInterface : NetworkBehaviour
         gamePlayer.objectOwner = this;
         gamePlayer.character = character;
         gamePlayer.selectOrder = selectOrder;
-        gamePlayer.HP = 50;
-        gamePlayer.MaxHP = 50;
-        gamePlayer.recoveryValue = 15;
-        gamePlayer.gold = 100;
+        gamePlayer.HP = BalanceData.Get("PLAYER_INIT_HP", 50);
+        gamePlayer.MaxHP = gamePlayer.HP;
+        gamePlayer.recoveryValue = BalanceData.Get("PLAYER_INIT_RECOVERY", 15);
+        gamePlayer.gold = BalanceData.Get("PLAYER_INIT_GOLD", 100);
         NetworkServer.Spawn(gamePlayerObject, connectionToClient);
 
         // 게임씬에서 플레이어 오더 및 정보들을 보여주는 PlayerOrder 오브젝트 생성

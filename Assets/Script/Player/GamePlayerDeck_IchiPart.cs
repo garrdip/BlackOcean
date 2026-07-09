@@ -24,15 +24,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [Server]
     public void SetInitialIchi()
     {
-        if(GetComponent<GamePlayer>().character == Character.ERIS){
-            currentIchi = 2;
-            maxIchi = 2;
-            limitiChi = 6;
-        }else{
-            currentIchi = 3;
-            maxIchi = 3;
-            limitiChi = 6;
-        }
+        int initialIchi = GetComponent<GamePlayer>().character == Character.ERIS
+            ? BalanceData.Get("ICHI_INIT_ERIS", 2)
+            : BalanceData.Get("ICHI_INIT_DEFAULT", 3);
+        currentIchi = initialIchi;
+        maxIchi = initialIchi;
+        limitiChi = BalanceData.Get("ICHI_LIMIT", 6);
     }
 
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//

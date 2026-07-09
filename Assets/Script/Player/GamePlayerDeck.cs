@@ -171,13 +171,13 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [Server]
     public void SetInitialValue()
     {
+        SetInitialIchi();
+        currentDeckCount = BalanceData.Get("DRAW_COUNT_PER_TURN", 5);
+        maxShopCardCount = BalanceData.Get("SHOP_CARD_MAX", 6);
+        maxRewardCardCount = BalanceData.Get("REWARD_CARD_MAX", 3);
+        maxRemoveCardCount = BalanceData.Get("REMOVE_CARD_MAX", 3);
         if(M_SaveManager.instance.isSaveGame)
         {
-            SetInitialIchi();
-            currentDeckCount = 5;
-            maxShopCardCount = 6;
-            maxRewardCardCount = 3;
-            maxRemoveCardCount= 3;
             foreach(SaveDataPlayer saveDataPlayer in M_SaveManager.instance.loadData.players)
             {
                 if(saveDataPlayer == null)break;
@@ -193,11 +193,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         }
         else
         {
-            SetInitialIchi();
-            currentDeckCount = 5;
-            maxShopCardCount = 6;
-            maxRewardCardCount = 3;
-            maxRemoveCardCount = 3;
             Character character = GetComponent<GamePlayer>().character;
             switch(character){
                 case Character.GEORK:

@@ -8,6 +8,8 @@ using ProjectD;
 // 전투 진입 오케스트레이션(RPC 연출 포함)은 M_TurnManager.GenerateBattleObject가 담당.
 public class BattleSpawner : InstanceD<BattleSpawner>
 {
+    static readonly Vector3 npcSpawnPosition = new Vector3(11, -3, 0); // NPC 공통 스폰 위치 (전투 슬롯 4번과 동일 지점)
+
     public void GeneratePlayerUnit()
     {
         if(!NetworkServer.active) return;
@@ -88,7 +90,7 @@ public class BattleSpawner : InstanceD<BattleSpawner>
         if(!NetworkServer.active) return;
         // RyuJinSol 또는 Sophia 중 랜덤 생성
         string npcName = Random.Range(0, 2) == 0 ? "NPC_RyuJinSol" : "NPC_Sophia";
-        SpawnMonsterWithAvatar(npcName, new Vector3(11,-3,0), ObjectType.NPC, false);
+        SpawnMonsterWithAvatar(npcName, npcSpawnPosition, ObjectType.NPC, false);
 
         // 각 플레이어별 체력 회복 횟수 제한을 1로 설정
         M_TurnManager turnManager = M_TurnManager.instance;
@@ -104,7 +106,7 @@ public class BattleSpawner : InstanceD<BattleSpawner>
     public void GenerateItemNPC()
     {
         if(!NetworkServer.active) return;
-        SpawnMonsterWithAvatar("NPC_ShadowMan", new Vector3(11,-3,0), ObjectType.NPC, false);
+        SpawnMonsterWithAvatar("NPC_ShadowMan", npcSpawnPosition, ObjectType.NPC, false);
     }
 
     // 카드상점 NPC 생성
@@ -123,14 +125,14 @@ public class BattleSpawner : InstanceD<BattleSpawner>
                         int randomIndex = Random.Range(0, cardsByCharacter.Count);
                         Card shopCard = cardsByCharacter[randomIndex].CardDeepCopy(false);
                         shopCard.guid = System.Guid.NewGuid().ToString();
-                        shopCard.cardPrice = 1; // TODO : 카드 가격 설정. 임시로 가격 1원 설정
+                        shopCard.cardPrice = BalanceData.Get("SHOP_CARD_PRICE", 1); // 가격표 확정 시 BalanceDB에서 갱신
                         cardsByCharacter.RemoveAt(randomIndex);
                         gamePlayerDeck.shopCards.Add(shopCard); // 각 플레이어의 shopCards synclist에 상점카드 데이터 추가
                     }
                 }
             }
         }
-        SpawnMonsterWithAvatar("NPC_Mercurius", new Vector3(11,-3,0), ObjectType.NPC, false);
+        SpawnMonsterWithAvatar("NPC_Mercurius", npcSpawnPosition, ObjectType.NPC, false);
     }
 
     public void GenerateBossMonster()
