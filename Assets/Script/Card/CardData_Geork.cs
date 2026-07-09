@@ -186,18 +186,18 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Buff1");
 		yield return new WaitForSeconds(0.5f);
 		tar[0].GainBuff(BuffType.ICHI_DEFENSE,2,false,false,false,false,tar[0],card);
-		GeneralGetDefense(tar[0],tar[0],6,card);
+		GeneralGetDefense(tar[0],tar[0],18,card);
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
 	}
 	public IEnumerator G5(Card card,List<TargetObject> tar)
 	{
-		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
+		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		GeorkAnimation(tar[0],"Buff0");
 		yield return new WaitForSeconds(0.5f);
-		GeneralGetDefense(tar[0],tar[0],6,card);
+		tar[1].GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar[0],card);
 		yield return new WaitForSeconds(0.5f);
-		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
+		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 	public IEnumerator G5_Effect(TargetObject tar)
 	{
@@ -803,10 +803,6 @@ public partial class CardData : SingletonD<CardData>
 		}
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
-	public IEnumerator G41_E(Card card,List<TargetObject> tar)
-	{
-		yield return null;
-	}
 
 	// 눈먼 공격
 	public IEnumerator G42(Card card,List<TargetObject> tar)
@@ -923,10 +919,6 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
 	}
-	public IEnumerator G49_E(Card card,List<TargetObject> tar)
-	{
-		yield return null;
-	}
 
 	// 게오르크라는 이름
 	public IEnumerator G50(Card card,List<TargetObject> tar)
@@ -960,11 +952,11 @@ public partial class CardData : SingletonD<CardData>
 		yield return new WaitForSeconds(0.5f);
 		int addDamage = 6;
 		foreach(Card item in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
-			if(item.baseCard.cardType == CardType.CURSE || item.baseCard.cardType == CardType.HERO)addDamage += 8;
+			if(item.baseCard.cardType == CardType.CURSE || item.baseCard.cardType == CardType.HERO)addDamage += 3;
 		foreach(Card item in tar[0].player.GetComponent<GamePlayerDeck>().trashDeck)
-			if(item.baseCard.cardType == CardType.CURSE || item.baseCard.cardType == CardType.HERO)addDamage += 8;
+			if(item.baseCard.cardType == CardType.CURSE || item.baseCard.cardType == CardType.HERO)addDamage += 3;
 		foreach(CardOnHand item in tar[0].player.GetComponent<GamePlayerDeck>().cardOnHands)
-			if(item.card.baseCard.cardType == CardType.CURSE || item.card.baseCard.cardType == CardType.HERO)addDamage += 8;
+			if(item.card.baseCard.cardType == CardType.CURSE || item.card.baseCard.cardType == CardType.HERO)addDamage += 3;
 
 		GeneralGetDefense(tar[0],tar[0],addDamage,card);
 
@@ -982,10 +974,6 @@ public partial class CardData : SingletonD<CardData>
 		tar[0].player.GetComponent<GamePlayerDeck>().maxRemoveCardCount = 2; // 제거용 카드 슬롯 2개로 설정
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
-	}
-	public IEnumerator G53_E(Card card,List<TargetObject> tar)
-	{
-		yield return null;
 	}
 
 	//고통 수집
@@ -1074,7 +1062,7 @@ public partial class CardData : SingletonD<CardData>
 			{
 				if(target != tar[1])
 				{
-					tar[0].GainBuff(BuffType.APDO,3,true,false,false,true,tar[0],card);
+					target.GainBuff(BuffType.APDO,3,true,false,false,true,tar[0],card);
 				}
 			}
 		}
@@ -1101,10 +1089,10 @@ public partial class CardData : SingletonD<CardData>
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
 		if(tar[0].isTransformed){
-			GeneralSingleAttack(tar[0],tar[1],2);
+			GeneralSingleAttack(tar[0],tar[1],60);
 			StartCoroutine(tar[1].monster.OnHitAnimation());
 		}else{
-			GeneralSingleAttack(tar[0],tar[1],60);
+			GeneralSingleAttack(tar[0],tar[1],2);
 			StartCoroutine(tar[1].monster.OnHitAnimation());
 		}
 		yield return new WaitForSeconds(0.5f);

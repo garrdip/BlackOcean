@@ -12,6 +12,12 @@ public partial class CardData : SingletonD<CardData>
         owner.ironDemonLocation = target;
     }
 
+    // H58(어버이의 후예들) 대상 판별 — H0/H1 계열(강화 포함)만. Contains 부분일치는 H10~H19까지 오발동하므로 정확 일치로 판별한다.
+    static bool IsIronToothCard(string cardNumber)
+    {
+        return cardNumber == "H0" || cardNumber == "H0_E" || cardNumber == "H1" || cardNumber == "H1_E";
+    }
+
     private IEnumerator MoveIronDemonCoroutine(TargetObject owner, TargetObject tar)
     {
         if(tar != owner.ironDemonLocation)
@@ -765,7 +771,6 @@ public partial class CardData : SingletonD<CardData>
         yield return tempWait; // 임시 딜레이
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         preLocation = tar[0].ironDemonLocation;
-        tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
         M_TurnManager.instance.AnimIronDemon("Attack0",tar[0]); // 철귀 공격 모션 시작
@@ -789,7 +794,6 @@ public partial class CardData : SingletonD<CardData>
         yield return tempWait; // 임시 딜레이
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         preLocation = tar[0].ironDemonLocation;
-        tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
         M_TurnManager.instance.AnimIronDemon("Attack1",tar[0]); // 철귀 공격 모션 시작
@@ -806,10 +810,6 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
         
     }
-    public IEnumerator H32_E(Card card, List<TargetObject> tar)
-    {
-        yield return null;
-    }
 
     // 갑옷 약탈
     public IEnumerator H33(Card card, List<TargetObject> tar)
@@ -819,7 +819,6 @@ public partial class CardData : SingletonD<CardData>
         yield return tempWait; // 임시 딜레이
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         preLocation = tar[0].ironDemonLocation;
-        tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
         yield return GeneralIronDemonAttack(tar[0], tar[1], 10); // 철귀 공격
@@ -839,7 +838,7 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(1f);
         M_EffectManager.instance.RpcEffectUpLight(tar[0].transform.position, 78);
-        int index = tar[0].GainBuff(BuffType.FURYOFFLOWER, -1, false, true, false, false, tar[0],card);
+        int index = tar[0].GainBuff(BuffType.FURYOFFLOWER, 0, false, true, false, false, tar[0],card); // 초기값 -1이면 4장째에 발동하는 오프바이원 — 0이어야 3장 주기
         tar[0].buffCardUseEffect.Add(index,H34_CardUseEffect);
         yield return new WaitForSeconds(0.3f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -915,12 +914,12 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(M_TurnManager.instance.spawnedPlayerList);
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
-        foreach(TargetObject target in M_TurnManager.instance.spawnedMonsterList)
+        foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
         {
             if(target != tar[0]){
                 GeneralGetDefense(tar[0],target,8,card);
                 M_EffectManager.instance.RpcEffectFlowerShield(target.transform.position, 82);
-            }  
+            }
         }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(M_TurnManager.instance.spawnedPlayerList);
@@ -934,7 +933,6 @@ public partial class CardData : SingletonD<CardData>
         yield return tempWait; // 임시 딜레이
         M_TurnManager.instance.StartAnimation(tar[0],0,"Attack1",false); // 단향이 공격 모션 
         preLocation = tar[0].ironDemonLocation;
-        tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth ++;
         yield return MoveIronDemonCoroutine(tar[0],tar[1]); // 철귀 적으로 이동
 
         for(int i = 0 ;i < 2 ; i ++)
@@ -1067,7 +1065,7 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         M_EffectManager.instance.RpcEffectCutLeafAttack(tar[1].transform.position, 97);
         if(tar[1].GetBuffValue(BuffType.FLOWERPOWDER) >= 1)GeneralSingleAttack(tar[0],tar[1],14);
-        GeneralSingleAttack(tar[0],tar[1],7);
+        else GeneralSingleAttack(tar[0],tar[1],7);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -1323,14 +1321,13 @@ public partial class CardData : SingletonD<CardData>
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         List<TargetObject> targetObjects = new List<TargetObject>();
         targetObjects.Add(tar[0]);
-        int number = 0;
         yield return new WaitForSeconds(0.5f);
 
         List<Card> removableDeck = new List<Card>();
 
         foreach(Card targetCard in tar[0].player.GetComponent<GamePlayerDeck>().trashDeck)
         {
-            if(targetCard.baseCard.cardNumber.Contains("H0") || targetCard.baseCard.cardNumber.Contains("H1") )
+            if(IsIronToothCard(targetCard.baseCard.cardNumber))
             {
                 removableDeck.Add(targetCard);
                 targetObjects.Add(M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0,M_TurnManager.instance.spawnedMonsterList.Count)]);
@@ -1343,13 +1340,11 @@ public partial class CardData : SingletonD<CardData>
             tar[0].player.GetComponent<GamePlayerDeck>().trashDeck.Remove(removalbleCard);
             tar[0].player.GetComponent<GamePlayerDeck>().forgottenDeck.Add(removalbleCard);
         }
-        Debug.Log(tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck.Count);
+        removableDeck.Clear(); // 버린덱 분량이 아래 뽑을덱 처리에서 잊혀진덱에 중복 추가되지 않도록 초기화
         foreach(Card targetCard in tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck)
         {
-            Debug.Log(number++);
-            if(targetCard.baseCard.cardNumber.Contains("H0") || targetCard.baseCard.cardNumber.Contains("H1") )
+            if(IsIronToothCard(targetCard.baseCard.cardNumber))
             {
-                Debug.Log("Find!");
                 removableDeck.Add(targetCard);
                 targetObjects.Add(M_TurnManager.instance.spawnedMonsterList[UnityEngine.Random.Range(0,M_TurnManager.instance.spawnedMonsterList.Count)]);
                 yield return ExecuteCardCoroutine(targetCard,targetObjects);

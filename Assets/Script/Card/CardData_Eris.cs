@@ -66,7 +66,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		ErisAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.8f);
-		GeneralSingleAttack(tar[0],tar[1],5);
+		GeneralSingleAttack(tar[0],tar[1],3);
         StartCoroutine(tar[1].monster.OnHitAnimation());
         tar[1].GainBuff(BuffType.BOONGGUI,1,false,false,false,false,tar[0],card);
 		yield return new WaitForSeconds(0.5f);
@@ -447,7 +447,8 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].player.GetComponent<GamePlayerDeck>().GenerateCardOnHand(new Card(CardData.instance.cards.Find(card => card.cardNumber == "E10")), 2);
+        for(int i = 0; i < 2; i++)
+            tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck.Add(new Card(CardData.instance.cards.Find(c => c.cardNumber == "E10")));
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -736,6 +737,7 @@ public partial class CardData : SingletonD<CardData>
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
         MovePosition(tar[0],tar[1]);
+        tar[0].GainBuff(BuffType.BYEOLMURI,1,false,false,false,false,tar[0],card);
         tar[1].GainBuff(BuffType.BYEOLMURI,1,false,false,false,false,tar[0],card);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
@@ -899,7 +901,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		ErisAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.8f);
-        int damage = 5;
+        int damage = 10;
         GeneralSingleAttack(tar[0], tar[1], damage);
         StartCoroutine(tar[1].monster.OnHitAnimation());
         int shieldValue = 2;
@@ -914,9 +916,12 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		ErisAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.8f);
-        int damage = 10;
-        GeneralSingleAttack(tar[0], tar[1], damage);
-        StartCoroutine(tar[1].monster.OnHitAnimation());
+        for(int i = 0; i < 2; i++)
+        {
+            GeneralSingleAttack(tar[0], tar[1], 3);
+            StartCoroutine(tar[1].monster.OnHitAnimation());
+            yield return new WaitForSeconds(0.2f);
+        }
         int shieldValue = 3;
         GeneralGetDefense(tar[0],tar[0],shieldValue,card);
         yield return new WaitForSeconds(0.5f);
