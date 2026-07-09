@@ -1489,204 +1489,80 @@ public struct BackgroundMusic {
 }
 
 /// <summary>
-/// 효과음 구조와 설정
+/// 효과음/음성 공용 재생 단위.
+/// 런타임에 AddComponent로만 생성된다(씬/프리팹 직렬화 없음) — 종전의 SoundEffect/VoiceEffect
+/// 동일 복붙 2클래스를 공통 베이스로 통합. 풀 구분을 위해 파생 타입은 유지한다.
 /// </summary>
-[System.Serializable]
-public class SoundEffect : MonoBehaviour {
+public abstract class AudioEffect : MonoBehaviour {
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private float originalVolume;
     [SerializeField] private float duration;
-    [SerializeField] private float playbackPosition;
     [SerializeField] private float time;
     [SerializeField] private Action callback;
     [SerializeField] private bool singleton;
 
-    /// <summary>
-    /// 효과음 이름 속성
-    /// </summary>
-    /// <value>이름</value>
+    /// <summary>클립 이름</summary>
     public string Name {
         get { return audioSource.clip.name; }
     }
 
-    /// <summary>
-    /// 효과음 길이 속성 (초 단위)
-    /// </summary>
-    /// <value>길이</value>
+    /// <summary>클립 길이 (초 단위)</summary>
     public float Length {
         get { return audioSource.clip.length; }
     }
 
-    /// <summary>
-    /// 효과음 재생된 시간 속성 (초 단위)
-    /// </summary>
-    /// <value>재생된 시간</value>
+    /// <summary>재생된 시간 (초 단위)</summary>
     public float PlaybackPosition {
         get { return audioSource.time; }
     }
 
-    /// <summary>
-    /// 효과음 클립 속성
-    /// </summary>
-    /// <value>오디오 클립</value>
+    /// <summary>오디오 소스</summary>
     public AudioSource Source {
         get { return audioSource; }
         set { audioSource = value; }
     }
 
-    /// <summary>
-    /// 효과음 원본 볼륨 속성
-    /// </summary>
-    /// <value>원본 사운드 크기</value>
+    /// <summary>원본 사운드 크기</summary>
     public float OriginalVolume {
         get { return originalVolume; }
         set { originalVolume = value; }
     }
 
-    /// <summary>
-    /// 효과음 총 재생시간 속성 (초단위)
-    /// </summary>
-    /// <value>총 재생시간</value>
+    /// <summary>총 재생시간 (초 단위)</summary>
     public float Duration {
         get { return duration; }
         set { duration = value; }
     }
 
-    /// <summary>
-    /// 효과음 남은 재생시간 속성 (초단위)
-    /// </summary>
-    /// <value>남은 재생시간</value>
+    /// <summary>남은 재생시간 (초 단위)</summary>
     public float Time {
         get { return time; }
         set { time = value; }
     }
 
-    /// <summary>
-    /// 효과음 정규화된 재생진행도 속성 (정규화 0~1)
-    /// </summary>
-    /// <value>정규화된 재생진행도</value>
+    /// <summary>정규화된 재생진행도 (0~1)</summary>
     public float NormalisedTime {
         get { return Time / Duration; }
     }
 
-    /// <summary>
-    /// 효과음 완료 시 콜백 액션 속성
-    /// </summary>
-    /// <value>콜백 액션</value>
+    /// <summary>재생 완료 시 콜백 액션</summary>
     public Action Callback {
         get { return callback; }
         set { callback = value; }
     }
 
-    /// <summary>
-    /// 효과음 반복 시 싱글톤 여부, 반복할 경우에 true 아니면 false
-    /// </summary>
-    /// <value><c>true</c> 반복 시; 그 외, <c>false</c>.</value>
+    /// <summary>반복 재생 시 싱글톤 여부</summary>
     public bool Singleton {
         get { return singleton; }
         set { singleton = value; }
     }
 }
 
-/// <summary>
-/// 음성 구조와 설정
-/// </summary>
-[System.Serializable]
-public class VoiceEffect : MonoBehaviour {
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private float originalVolume;
-    [SerializeField] private float duration;
-    [SerializeField] private float playbackPosition;
-    [SerializeField] private float time;
-    [SerializeField] private Action callback;
-    [SerializeField] private bool singleton;
+/// <summary>효과음 재생 단위 (SFX 풀 구분용 타입)</summary>
+public class SoundEffect : AudioEffect { }
 
-    /// <summary>
-    /// 음성 이름 속성
-    /// </summary>
-    /// <value>이름</value>
-    public string Name {
-        get { return audioSource.clip.name; }
-    }
-
-    /// <summary>
-    /// 음성 길이 속성 (초 단위)
-    /// </summary>
-    /// <value>길이</value>
-    public float Length {
-        get { return audioSource.clip.length; }
-    }
-
-    /// <summary>
-    /// 음성 재생된 시간 속성 (초 단위)
-    /// </summary>
-    /// <value>재생된 시간</value>
-    public float PlaybackPosition {
-        get { return audioSource.time; }
-    }
-
-    /// <summary>
-    /// 음성 클립 속성
-    /// </summary>
-    /// <value>오디오 클립</value>
-    public AudioSource Source {
-        get { return audioSource; }
-        set { audioSource = value; }
-    }
-
-    /// <summary>
-    /// 음성 원본 볼륨 속성
-    /// </summary>
-    /// <value>원본 사운드 크기</value>
-    public float OriginalVolume {
-        get { return originalVolume; }
-        set { originalVolume = value; }
-    }
-
-    /// <summary>
-    /// 음성 총 재생시간 속성 (초단위)
-    /// </summary>
-    /// <value>총 재생시간</value>
-    public float Duration {
-        get { return duration; }
-        set { duration = value; }
-    }
-
-    /// <summary>
-    /// 음성 남은 재생시간 속성 (초단위)
-    /// </summary>
-    /// <value>남은 재생시간</value>
-    public float Time {
-        get { return time; }
-        set { time = value; }
-    }
-
-    /// <summary>
-    /// 음성 정규화된 재생진행도 속성 (정규화 0~1)
-    /// </summary>
-    /// <value>정규화된 재생진행도</value>
-    public float NormalisedTime {
-        get { return Time / Duration; }
-    }
-
-    /// <summary>
-    /// 음성 완료 시 콜백 액션 속성
-    /// </summary>
-    /// <value>콜백 액션</value>
-    public Action Callback {
-        get { return callback; }
-        set { callback = value; }
-    }
-
-    /// <summary>
-    /// 음성 반복 시 싱글톤 여부, 반복할 경우에 true 아니면 false
-    /// </summary>
-    /// <value><c>true</c> 반복 시; 그 외, <c>false</c>.</value>
-    public bool Singleton {
-        get { return singleton; }
-        set { singleton = value; }
-    }
-}
+/// <summary>음성 재생 단위 (음성 풀 구분용 타입)</summary>
+public class VoiceEffect : AudioEffect { }
 
 public enum SOUND_TYPE {
     BGM,

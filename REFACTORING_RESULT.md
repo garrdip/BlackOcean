@@ -59,6 +59,20 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 19회차 완료 작업 (P3 — M_SoundManager 슬림화)
+
+### ✅ SoundEffect/VoiceEffect 동일 복붙 2클래스 → 공통 베이스 통합 (-110줄)
+
+- 문자 그대로 동일했던 95줄짜리 두 MonoBehaviour를 **`AudioEffect` 추상 베이스**로 통합, SoundEffect/VoiceEffect는 풀 구분용 빈 파생 타입으로 유지 (`FindObjectsByType<SoundEffect>` 등 기존 조회 경로 보존).
+- 두 클래스 모두에 있던 **미사용 필드 `playbackPosition` 제거** (프로퍼티는 `audioSource.time`을 직접 읽고 있었음).
+- 안전 근거: 두 클래스는 런타임 `AddComponent`로만 생성(TempSFX/TempVoice 오브젝트) — 씬/프리팹 직렬화 참조가 없어 상속 구조 변경이 데이터에 영향 없음. 외부 스크립트 사용처 0건 확인.
+- 검증: 컴파일 0건 + 리플렉션(상속 구조, 기존 프로퍼티 API 10종 전부 유지).
+- **플레이 검증 포인트**: 효과음/음성 재생 전반 (풀 재사용 — 같은 효과음 연속 재생, 음성 재생 완료 후 정리).
+
+**리팩토링 계획 잔여**: P2-17 IL2CPP 빌드 검증(스팀 배포 빌드 제작 시 함께)만 남음. 코드 항목은 전부 완료.
+
+---
+
 ## 18회차 완료 작업 (TMP 예제 폴더 삭제)
 
 ### ✅ TMP `Examples & Extras` 폴더 삭제 (에셋 250파일 제거, 잔여 CS0618 경고 소멸)
