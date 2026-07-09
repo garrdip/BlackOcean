@@ -141,11 +141,4 @@ public partial class TargetObject
     }
 
 
-    // --------------------------------------------------------- Rpc Method -----------------------------------------------------------//
-    
-    [ClientRpc]
-    public void SetIronDemonParent(Transform p)
-    {
-        ironDemon.transform.parent = p;
-    }
 }

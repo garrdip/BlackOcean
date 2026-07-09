@@ -327,9 +327,6 @@ public class HexagonMapRoom : NetworkBehaviour
                     }
                 }
                 break;
-            case SyncList<uint>.Operation.OP_INSERT:
-                
-                break;
             case SyncList<uint>.Operation.OP_REMOVEAT:
                 // votePlayer에 제거될 때 제거된 플레이어의 order값에 맞는 위치의 아이콘 설정
                 int removeOrder = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == oldVal);
@@ -338,12 +335,6 @@ public class HexagonMapRoom : NetworkBehaviour
                     mapVoteIconsAnother[removeOrder].GetComponent<SpriteRenderer>().sprite = voteIconAnother;
                 }
                 break;
-            case SyncList<uint>.Operation.OP_SET:
-                
-                break;
-            case SyncList<uint>.Operation.OP_CLEAR:
-                
-                break;
         }
     }
 
@@ -351,15 +342,6 @@ public class HexagonMapRoom : NetworkBehaviour
     {
         switch (op)
         {
-            case SyncList<uint>.Operation.OP_ADD:
-            
-                break;
-            case SyncList<uint>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<uint>.Operation.OP_REMOVEAT:
-
-                break;
             case SyncList<uint>.Operation.OP_SET:
                 // PlayerOrder 변경 수신 시 맵 투표 아이콘의 Order값 동기화
                 if(votePlyers.Contains(newVal)){
@@ -390,9 +372,6 @@ public class HexagonMapRoom : NetworkBehaviour
                     }
                 }
                 break;
-            case SyncList<uint>.Operation.OP_CLEAR:
-                
-                break;
         }
     }
 
@@ -402,44 +381,18 @@ public class HexagonMapRoom : NetworkBehaviour
     // HexagonMapRoom의 컨테이너 레이아웃 오브젝트 활성화 상태 변경
     void ChangeHexagonRoomActive(bool isActive)
     {
-        float alpha = isActive ? 1f : 0f;
         mapTileBase.SetActive(isActive);
     }
 
-    // 방 레이아웃 상태 변경
+    // 방 레이아웃 상태 변경 — 내가 투표한 방이면 내 투표 레이아웃, 아니면 타인 투표 레이아웃
     private void ChangeHexagonMapRoomLayoutState()
     {
-        if(votePlyers.Count > 1){
-            int idx = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
-            if(idx != -1){
-                myVoteLayout.SetActive(true);
-                anotherVoteLayout.SetActive(false);
-                ChangeMapRoomInfoState(true);
-                mapTileIconSelectRenderer.gameObject.SetActive(false);
-                mapTileIconSelectLightRenderer.gameObject.SetActive(false);
-            }else{
-                myVoteLayout.SetActive(false);
-                anotherVoteLayout.SetActive(true);
-                ChangeMapRoomInfoState(false);
-                mapTileIconSelectRenderer.gameObject.SetActive(true);
-                mapTileIconSelectLightRenderer.gameObject.SetActive(true);
-            }
-        }else{
-            int idx = votePlyers.FindIndex((netId) => netId == NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
-            if(idx != -1){
-                myVoteLayout.SetActive(true);
-                anotherVoteLayout.SetActive(false);
-                ChangeMapRoomInfoState(true);
-                mapTileIconSelectRenderer.gameObject.SetActive(false);
-                mapTileIconSelectLightRenderer.gameObject.SetActive(false);
-            }else{
-                myVoteLayout.SetActive(false);
-                anotherVoteLayout.SetActive(true);
-                ChangeMapRoomInfoState(false);
-                mapTileIconSelectRenderer.gameObject.SetActive(true);
-                mapTileIconSelectLightRenderer.gameObject.SetActive(true);
-            }
-        }
+        bool isMyVote = votePlyers.Contains(NetworkClient.localPlayer.GetComponent<PlayerInterface>().currentGamePlayerNetId);
+        myVoteLayout.SetActive(isMyVote);
+        anotherVoteLayout.SetActive(!isMyVote);
+        ChangeMapRoomInfoState(isMyVote);
+        mapTileIconSelectRenderer.gameObject.SetActive(!isMyVote);
+        mapTileIconSelectLightRenderer.gameObject.SetActive(!isMyVote);
     }
 
     // 방 선택 상태에 따라 Expand 상태 변경

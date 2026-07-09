@@ -201,8 +201,6 @@ public partial class TargetObject
             case SyncList<Buff>.Operation.OP_SET:
                 buffIndicator.SetBuff(newBuff, index, this);
                 break;
-            case SyncList<Buff>.Operation.OP_CLEAR:
-                break;
         }
     }
 }

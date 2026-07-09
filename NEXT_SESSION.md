@@ -1,14 +1,14 @@
 # 다음 세션 체크리스트
 
-> 작성일: 2026-07-08 퇴근 시점
+> 갱신일: 2026-07-09 (13회차 P2-16 완료 시점)
 > 상세 이력: `REFACTORING_RESULT.md` (회차별 완료 내역) / `REFACTORING_PLAN.md` (전체 계획)
 
 ---
 
-## ⚠️ 현재 상태: P1-4a 커밋됨(419a7b8c), 플레이 검증은 미완료
+## ⚠️ 현재 상태
 
-P1-4 1회차(PlayerRegistry) 변경분은 **컴파일 검증까지만 마치고 커밋·푸시된 상태**다.
-플레이 테스트에서 문제가 발견되면 이 커밋(419a7b8c)을 기준으로 원인 분석하거나 revert하면 된다.
+- **P1-4a(PlayerRegistry)**: 커밋됨(419a7b8c), **플레이 검증 미완료**. 문제 발견 시 이 커밋 기준으로 분석/revert.
+- **13회차 P2-16(죽은 코드 정리)**: 작업 트리에 **미커밋 상태**. 전부 동작 보존 삭제(-224줄) — 빈 SyncList case 36블록, HexagonMapRoom 동일 분기 축약, 미사용 메서드 2개(`GeneralApDo`, 미사용 ClientRpc `SetIronDemonParent`), 주석 죽은 코드 3줄. 컴파일 0건 + 리플렉션 검증(위빙 정상) 완료. **플레이 테스트 통과 후 커밋할 것.**
 
 ---
 
@@ -24,7 +24,12 @@ P1-4 1회차(PlayerRegistry) 변경분은 **컴파일 검증까지만 마치고 
 - [ ] (멀티 가능하면) 클라 한 명이 늦게 레디/늦게 보상 수령하는 상황
 - [ ] 콘솔 관찰: `[NetLookup]` / `[M_SoundManager]` / `[CardData]` 에러 로그 — 뜨면 버그가 아니라 **기존에 조용히 실패하던 데이터 누락을 발견한 것**이니 기록해 둘 것
 
-**테스트 통과 시**: 커밋 (메시지 예: "PlayerRegistry 도입 및 흐름 전이 판정을 M_TurnManager로 집중 (P1-4 1회차)") → 푸시
+13회차(P2-16) 변경 확인 포인트 (위 테스트와 겸사겸사):
+
+- [ ] 맵에서 방 투표 시 내 투표/타인 투표 레이아웃·아이콘 표시 (HexagonMapRoom 분기 축약 지점)
+- [ ] 뽑을덱/버린덱/잊혀진덱 카운트 UI, 로비 오더 스왑 (빈 SyncList case 삭제 — 회귀 위험 극히 낮음)
+
+**테스트 통과 시**: 13회차분 커밋 (메시지 예: "빈 SyncList case·미사용 메서드 등 죽은 코드 정리 (P2-16)") → 푸시
 
 **문제 발견 시**: 커밋하지 말고 콘솔 로그 확보 → 세션에서 원인 분석 요청
 
@@ -45,7 +50,7 @@ P1-4 1회차(PlayerRegistry) 변경분은 **컴파일 검증까지만 마치고 
 
 | # | 항목 | 규모 | 비고 |
 |---|---|---|---|
-| 1 | **P2-16 죽은 코드 정리** | 소~중 | `HexagonMapRoom.ChangeHexagonMapRoomLayoutState`(if/else 동일 분기 — 로직 버그 흔적, **의도 확인 필요**), 미구현 카드 스텁, 빈 SyncList 콜백 case, 주석 코드 |
+| 1 | ~~P2-16 죽은 코드 정리~~ | ✅ 완료 (13회차) | 동일 분기는 검증 후 축약. G6 스텁은 실카드(CSV 존재)라 유지 — 컨텐츠 작업 목록. 커밋은 플레이 테스트 후 |
 | 2 | **P2-15 매 프레임 폴링/캐싱 정리** | 중 | GameUIManager.Update 스크롤 재계산, M_SoundManager OnUpdate 믹서 폴링, localPlayer.GetComponent 체인 캐싱, HexagonMapRoom SpriteRenderer 캐싱 |
 | 3 | **P2-12 밸런스 매직넘버 데이터화** | 중 | 초기 스탯(PlayerInterface.GenerateGamePlayer의 HP 50/골드 100), 이치 3, 보상골드 10, 상점가 1(TODO 임시), NPC 좌표 등 → CSV 또는 ScriptableObject |
 | 4 | **P2-17 IL2CPP 빌드 검증** | 소 | Standalone 스크립팅 백엔드 설정 + 실빌드로 Steamworks.NET 동작 확인. **스팀 친구 배포용 빌드 만들 때 겸사겸사** |

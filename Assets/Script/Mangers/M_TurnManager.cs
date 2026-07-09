@@ -590,7 +590,6 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             monsterOrderList.Add(spawnedMonsterList[i]);
         }
-        //phase = BattleTurn.MONSTER_PREEFFECT;
     }
 
     [Server]
@@ -814,21 +813,9 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     {
         switch (op)
         {
-            case SyncList<uint>.Operation.OP_ADD:
-            
-                break;
-            case SyncList<uint>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<uint>.Operation.OP_REMOVEAT:
-
-                break;
             case SyncList<uint>.Operation.OP_SET:
                 SetGamePlayerOrder(newVal, index);
                 TargetIndicatorController.instance.SetTargetIndicatorOrder(newVal, index);
-                break;
-            case SyncList<uint>.Operation.OP_CLEAR:
-                
                 break;
         }
     }
@@ -847,18 +834,6 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     TargetIndicatorController.instance.CreateIndicator(newVal, indicatorPosition);
                 }
                 break;
-            case SyncList<uint>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<uint>.Operation.OP_REMOVEAT:
-
-                break;
-            case SyncList<uint>.Operation.OP_SET:
-                
-                break;
-            case SyncList<uint>.Operation.OP_CLEAR:
-                
-                break;
         }
     }
 
@@ -871,18 +846,6 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 // SyncList 델타가 스폰 메시지보다 먼저 도착한 경우 타겟오브젝트가 아직 없을 수 있음 — 인디케이터는 생성하고 위치는 이후 갱신에 맡긴다
                 Vector3 monsterIndicatorPosition = targetObject != null ? targetObject.transform.position : Vector3.zero;
                 TargetIndicatorController.instance.CreateIndicator(newVal, monsterIndicatorPosition);
-                break;
-            case SyncList<uint>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<uint>.Operation.OP_REMOVEAT:
-
-                break;
-            case SyncList<uint>.Operation.OP_SET:
-                
-                break;
-            case SyncList<uint>.Operation.OP_CLEAR:
-                
                 break;
         }
     }

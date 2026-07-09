@@ -10,7 +10,6 @@ public partial class CardData : SingletonD<CardData>
     void MoveIronDemonLocation(TargetObject owner, TargetObject target)
     {
         owner.ironDemonLocation = target;
-        //owner.SetIronDemonParent(target.transform);
     }
 
     private IEnumerator MoveIronDemonCoroutine(TargetObject owner, TargetObject tar)

@@ -140,21 +140,9 @@ public class M_LobbyMananger : NetworkSingletonD<M_LobbyMananger>
     {
         switch (op)
         {
-            case SyncList<uint>.Operation.OP_ADD:
-                
-                break;
-            case SyncList<uint>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<uint>.Operation.OP_REMOVEAT:
-
-                break;
             case SyncList<uint>.Operation.OP_SET: // SyncList 스왑 이벤트 수신
                 SetLobbyPlayerSwap(newVal, index);
                 RoomUI.instance.ChangeSwapButtonsState(newVal, index);
-                break;
-            case SyncList<uint>.Operation.OP_CLEAR:
-                
                 break;
         }
     }

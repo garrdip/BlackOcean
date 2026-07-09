@@ -59,6 +59,21 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 13회차 완료 작업 (P2-16 죽은 코드 정리)
+
+### ✅ P2-16 — 죽은 코드 정리 (-224줄, 로직 변경 0건)
+
+전부 동작 보존 삭제. 컴파일 0건 + 에디터 리플렉션 검증(새 어셈블리 로드·Mirror 위빙 정상: M_TurnManager UserCode_ 14 / GamePlayerDeck 28 — 이전 회차 기록과 동일).
+
+- **HexagonMapRoom.ChangeHexagonMapRoomLayoutState**: 계획서에서 "로직 버그 흔적, 의도 확인 필요"로 지적된 if/else 동일 분기 — 양쪽 본문이 문자 그대로 동일함을 확인하고 조건 제거, 34줄 → 8줄 단일 경로로 축약 (동작 동일). 인접한 `ChangeHexagonRoomActive`의 미사용 지역변수 `alpha`도 제거.
+- **빈 SyncList 콜백 case 36블록 삭제** (7개 파일): GamePlayerDeck.SyncCallbacks 29 / M_LobbyMananger 4 / M_TurnManager 3콜백 / HexagonMapRoom·M_MapManager·M_TurnManager.CardQueue·TargetObject.Buff 각 1. 스택 라벨(fallthrough) 오삭제 방지를 위해 "라벨+빈 본문+break" run 전체만 제거하는 스크립트로 처리.
+- **완전 미사용 메서드 2개 삭제**: `CardData.GeneralApDo`(호출부 0곳), `TargetObject.SetIronDemonParent`(미사용 `[ClientRpc]` — 호출부가 주석 1곳뿐. RPC 1개 제거라 TargetObject UserCode_ 수는 감소하나 전 클라이언트가 같은 빌드를 쓰므로 무해). 함께 콜백까지 통째로 빈 껍데기가 된 `GamePlayerDeck.OnAddtionCardUpdated`도 등록부와 함께 삭제.
+- **주석 처리된 죽은 코드 3줄 삭제**: `M_TurnManager.MonsterSetOrder`의 `//phase = MONSTER_PREEFFECT`(계획서의 "의도 불명 상태 전이"), CardData_DanHyang의 `//SetIronDemonParent` 호출, GeneralApDo 내부 주석.
+- **의도적으로 유지한 것(오탐 정정)**: ① **G6 계열 스텁 5개** — 계획서는 "존재하지 않는 카드 빈 메서드"로 분류했으나 CardDB.csv 150~153행에 실카드 4장이 존재하고 `curseEffect["G6"]` 등록 + DeckBookTab 제외 처리까지 있는 **미구현 컨텐츠 자리**라 삭제 불가. ② 카드 파일 주석 ~230줄 — 대부분 카드명·TODO 문서 주석이고 실제 죽은 코드 주석은 위 3줄뿐이었음(계획서의 67/88/77 집계는 전체 주석 라인 수). ③ `G2_Effect`의 주석 처리된 GainBuff — 등록된 저주 효과의 미완 구현 기록이라 컨텐츠 작업 목록으로 유지.
+- **플레이 검증 포인트**: 맵 방 투표 시 내/타인 투표 레이아웃 표시(HexagonMapRoom 단순화 지점), 덱/버린덱/잊혀진덱 카운트 UI, 로비 오더 스왑 — 나머지는 순수 삭제라 회귀 위험 극히 낮음.
+
+---
+
 ## 12회차 완료 작업 (P1-4 1회차)
 
 ### ✅ P1-4a — PlayerRegistry 도입 + 흐름 전이 판정을 M_TurnManager로 집중
@@ -260,20 +275,20 @@ TMP 예제 스크립트 2개가 Unity 6 내장 TMP의 `uvs0` 타입 변경(`Vect
 
 | # | 항목 | 상태 | 비고 |
 |---|---|---|---|
-| 1 | **멀티플레이 스모크 테스트** | ⬜ 필요 | 1·2회차 변경 검증. MenuScene→Room→Game 전투 1회 + 오더 스왑 + 골드 전달 + 클라 강제 이탈 시나리오 |
+| 1 | **P1-4a 플레이 테스트** | ⬜ 필요 | 12회차(PlayerRegistry) + 13회차(P2-16) 변경 검증. `NEXT_SESSION.md` 체크리스트 참고 |
 | 2 | .mat 82건 등 재직렬화 커밋 | ⬜ 대기 | 무해한 포맷 업그레이드. 리팩토링 커밋과 분리 권장 |
 | 3 | ~~P1-6: Command 권한 검증~~ | ✅ 완료 (2회차) | |
 | 4 | ~~P1-7: CSV 파서 공통화~~ | ✅ 완료 (2회차) | 런타임 파싱 검증까지 완료 |
-| 5 | P1-3: M_TurnManager God Class 분해 (8책임) | 🔶 1단계 완료 (3회차) | partial 분리 완료. 2단계(실제 컴포넌트 추출)는 단계별 플레이 테스트와 병행 |
-| 6 | P1-4: 매니저 순환 참조 디커플링 | ⬜ 미착수 | P1-3과 병행 |
+| 5 | ~~P1-3: M_TurnManager God Class 분해~~ | ✅ 실질 완료 (3~6회차) | 코어 -59% + 컴포넌트 3개 추출. CardQueue/IronDemon/Presentation은 RPC 의존이 커서 partial 유지가 적절 |
+| 6 | P1-4: 매니저 순환 참조 디커플링 | 🔶 P1-4a 완료 (12회차) | P1-4b(TurnManager⇄MapManager 이벤트화)는 필요성 낮아 보류 가능 |
 | 7 | ~~P1-5: GamePlayerDeck 분해 + `Card.experience` 동기화 버그~~ | ✅ 완료 (8회차) | 동기화 버그 수정 + partial 분리(코어 -73%). 컴포넌트 추출은 선택적 후속 |
-| 8 | P1-8: 카드 효과 3파일 중복 제거 (공통 실행기, `_E` 래퍼 190개) | ⬜ 미착수 | `_E` 폴백 도입으로 위험은 낮아짐 |
+| 8 | P1-8: 카드 효과 3파일 중복 제거 | 🔶 P1-8a 완료 (10회차) | `_E` 래퍼 191개 제거. P1-8b(데이터 주도 실행기)는 카드 대량 추가 전 별도 설계 작업 |
 | 9 | ~~P1-9: 사운드 클립 조회 안전화~~ | ✅ 완료 (7회차) | 125곳 헬퍼 전환. SoundId enum 완전 도입은 선택적 후속 |
-| 10 | P1-10/11: TargetObject 분리, 몬스터 공통 시퀀스 상향 | ⬜ 미착수 | |
-| 11 | P2 잔여: 밸런스 데이터화, 폴링/캐싱 정리, 죽은 코드 정리, IL2CPP 빌드 검증 | ⬜ 미착수 | TMP `Examples & Extras` 폴더 삭제도 여기서 (미사용 확인 후) |
+| 10 | ~~P1-10/11: TargetObject 분리, 몬스터 공통 시퀀스 상향~~ | ✅ 실질 완료 (9·11회차) | 클래스 완전 분리·DoAction 데이터화는 컨텐츠 확장 시점에 |
+| 11 | P2 잔여: 밸런스 데이터화(P2-12), 폴링/캐싱 정리(P2-15), IL2CPP 빌드 검증(P2-17) | 🔶 P2-16 완료 (13회차) | TMP `Examples & Extras` 폴더 삭제도 여기서 (미사용 확인 후) |
 
 ## 다음 회차 권장 진행
 
-1. **스모크 테스트** — 1·2회차 변경을 실제 멀티 환경에서 확인. 관찰 포인트: 클라 강제 이탈 시 `NetLookup` 경고 로그, 로비/맵 오더 스왑 정상 동작(권한 검증 추가됨), 골드 전달, 카드 로드 에러 로그 유무.
-2. 이상 없으면 리팩토링분 커밋 → .mat 재직렬화 별도 커밋.
-3. P1-3(M_TurnManager 분해) 착수 — 가장 큰 덩어리. `TargetIndicatorController`(뷰 로직 ~210줄)와 `BattleSpawner`(스폰 팩토리 ~210줄)처럼 경계가 명확한 것부터 떼어내는 순서 권장.
+1. **플레이 테스트** — `NEXT_SESSION.md` 체크리스트(P1-4a 흐름 관문 전부 + 13회차 맵 투표 레이아웃) 수행.
+2. 이상 없으면 13회차(P2-16)분 커밋.
+3. 다음 코드 작업: **P2-15 매 프레임 폴링/캐싱 정리** (GameUIManager.Update, M_SoundManager 믹서 폴링, localPlayer.GetComponent 체인 캐싱) → P2-12 밸런스 데이터화 순.

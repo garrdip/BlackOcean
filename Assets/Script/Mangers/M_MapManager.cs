@@ -904,9 +904,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 RemoveMapInfoPopUpItem(removeGamePlayer);
                 ChangeDimmingByPlayerVote(key, false);
                 break;
-            case SyncIDictionary<NetworkIdentity, HexagonMapRoom>.Operation.OP_CLEAR:
-                
-                break;
         }
     }
 

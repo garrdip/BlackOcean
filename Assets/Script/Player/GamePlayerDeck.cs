@@ -114,7 +114,6 @@ public partial class GamePlayerDeck : NetworkBehaviour
         forgottenDeck.Callback += OnForgottenDeckUpdated;
         rewards.Callback += OnRewardUpdated;
         rewardCards.Callback += OnRewardCardUpdated;
-        addtionDrawCards.Callback += OnAddtionCardUpdated;
         shopCards.Callback += OnShopCardUpdated;
         if(isOwned){
             GameUIManager.instance.currentIchiText.text = currentIchi.ToString(); // 현재 이치값 초기 뷰 세팅

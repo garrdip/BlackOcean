@@ -133,9 +133,6 @@ public partial class M_TurnManager
                 int lastIndex = GameUIManager.instance.infiniteScroll.GetItemCount() - 1;
                 GameUIManager.instance.infiniteScroll.MoveTo(lastIndex, InfiniteScroll.MoveToType.MOVE_TO_CENTER, 0.5f);
                 break;
-            case SyncList<CardQueue>.Operation.OP_INSERT:
-                
-                break;
             case SyncList<CardQueue>.Operation.OP_REMOVEAT:
                 GameUIManager.instance.infiniteScroll.RemoveData(index);
                 break;

@@ -60,11 +60,6 @@ public partial class GamePlayerDeck
     {
         switch (op)
         {
-            case SyncList<Card>.Operation.OP_ADD:
-
-                break;
-            case SyncList<Card>.Operation.OP_INSERT:
-                break;
             case SyncList<Card>.Operation.OP_REMOVEAT:
                 if(PopUpUIManager.instance.isCardRemovePopUpOpen){
                     CardRemovePopUp cardRemovePopUp = PopUpUIManager.instance.cardRemovePopUp.GetComponent<CardRemovePopUp>();
@@ -78,9 +73,6 @@ public partial class GamePlayerDeck
                     cardEnhancePopUp.ClearAllEnhanceableCards();
                     cardEnhancePopUp.CreateEnhanceableCards();
                 }
-                break;
-            case SyncList<Card>.Operation.OP_CLEAR:
-                
                 break;
         }
     }
@@ -102,18 +94,6 @@ public partial class GamePlayerDeck
                     }    
                 }
                 if(newCardOnHand.card.baseCard.cardType == CardType.CURSE)gainCurseCardCount++;
-                break;
-            case SyncList<CardOnHand>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<CardOnHand>.Operation.OP_REMOVEAT:
-
-                break;
-            case SyncList<CardOnHand>.Operation.OP_SET:
-                
-                break;
-            case SyncList<CardOnHand>.Operation.OP_CLEAR:
-                
                 break;
         }
         M_CardManager.instance.RefreshCardOnHandsSortingOrder(cardOnHands); // CardOnHand 리스트 값이 변경될 때 마다 CardOnHand의 정렬값 재설정
@@ -146,9 +126,6 @@ public partial class GamePlayerDeck
                     });
                 }
                 break;
-            case SyncList<Card>.Operation.OP_INSERT:
-                
-                break;
             case SyncList<Card>.Operation.OP_REMOVEAT:
                 if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
                     int count = prefareDeck.Count;
@@ -158,9 +135,6 @@ public partial class GamePlayerDeck
                         prefareDeckCountDelay--;
                     });
                 }
-                break;
-            case SyncList<Card>.Operation.OP_SET:
-                
                 break;
             case SyncList<Card>.Operation.OP_CLEAR:
                 if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){        
@@ -188,9 +162,6 @@ public partial class GamePlayerDeck
                     });
                 }
                 break;
-            case SyncList<Card>.Operation.OP_INSERT:
-                
-                break;
             case SyncList<Card>.Operation.OP_REMOVEAT:
                  if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId){
                     int count = trashDeck.Count;
@@ -200,9 +171,6 @@ public partial class GamePlayerDeck
                         trashDeckCountDelay--;
                     });
                 }
-                break;
-            case SyncList<Card>.Operation.OP_SET:
-                
                 break;
             case SyncList<Card>.Operation.OP_CLEAR:
                 if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
@@ -230,9 +198,6 @@ public partial class GamePlayerDeck
                     });
                 }
                 break;
-            case SyncList<Card>.Operation.OP_INSERT:
-                
-                break;
             case SyncList<Card>.Operation.OP_REMOVEAT:
                 if(isOwned && currentGamePlayerNetId == GetComponent<GamePlayer>().netId){
                     int count = forgottenDeck.Count;
@@ -242,9 +207,6 @@ public partial class GamePlayerDeck
                         forgottenDeckCountDelay--;
                     });
                 }
-                break;
-            case SyncList<Card>.Operation.OP_SET:
-                
                 break;
             case SyncList<Card>.Operation.OP_CLEAR:
                 if(GetComponent<GamePlayer>().netId == currentGamePlayerNetId){
@@ -272,21 +234,12 @@ public partial class GamePlayerDeck
                 rewardListItem.transform.localScale = new Vector3(1, 1, 1);
                 RewardService.instance.rewardObjects.Add(rewardListItemObject);
                 break;
-            case SyncList<Reward>.Operation.OP_INSERT:
-                
-                break;
             case SyncList<Reward>.Operation.OP_REMOVEAT:
                 if(isOwned && rewards.Count <= 0){
                     // 더 보상받을 데이터 없는 경우 보상완료상태 세팅
                     RewardService.instance.playerRewardedDic[GetComponent<GamePlayer>()] = true;
                     RewardService.instance.CheckAllPlayerRewarded(GetComponent<GamePlayer>());
                 }
-                break;
-            case SyncList<Reward>.Operation.OP_SET:
-                
-                break;
-            case SyncList<Reward>.Operation.OP_CLEAR:
-                
                 break;
         }
     }
@@ -318,42 +271,6 @@ public partial class GamePlayerDeck
                 }
                 RewardService.instance.rewardCardObjects.Add(cardOnDeck);
                 break;
-            case SyncList<Card>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<Card>.Operation.OP_REMOVEAT:
-
-                break;
-            case SyncList<Card>.Operation.OP_SET:
-                
-                break;
-            case SyncList<Card>.Operation.OP_CLEAR:
-                
-                break;
-        }
-    }
-
-
-    // 추가 드로우 카드 리스트 콜백
-    void OnAddtionCardUpdated(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
-    {
-        switch (op)
-        {
-            case SyncList<Card>.Operation.OP_ADD:
-
-                break;
-            case SyncList<Card>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<Card>.Operation.OP_REMOVEAT:
-
-                break;
-            case SyncList<Card>.Operation.OP_SET:
-                
-                break;
-            case SyncList<Card>.Operation.OP_CLEAR:
-                
-                break;
         }
     }
 
@@ -363,24 +280,12 @@ public partial class GamePlayerDeck
     {
         switch (op)
         {
-            case SyncList<Card>.Operation.OP_ADD:
-
-                break;
-            case SyncList<Card>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<Card>.Operation.OP_REMOVEAT:
-
-                break;
             case SyncList<Card>.Operation.OP_SET:
                 MercuriusPopUp mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
                 if(PopUpUIManager.instance.isMercuriusPopUpOpen){
                     mercuriusPopUp.RemoveShopCards();
                     mercuriusPopUp.CreateShopCards();
                 }
-                break;
-            case SyncList<Card>.Operation.OP_CLEAR:
-                
                 break;
         }
     }

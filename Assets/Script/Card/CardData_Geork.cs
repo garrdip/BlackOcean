@@ -17,19 +17,6 @@ public partial class CardData : SingletonD<CardData>
 {
 	public delegate void CardCallBack();
 	// 게오르크
-	private void GeneralApDo(TargetObject user,TargetObject tar, int value)    
-	{
-		if(user.buffs.Find(buff => buff.type == BuffType.THEREISNOJABI) != null) // 자비는 없다 보유시 압도스택 => 데미지(힘의이치영향X)    
-		{
-			GeneralSingleDamage(tar,3+tar.buffs.Find(buff => buff.type == BuffType.APDO && buff.user == user.player.netId).value);
-			tar.buffs.Remove(tar.buffs.Find(buff => buff.type == BuffType.APDO && buff.user == user.player.netId));
-		}
-		else    
-		{
-			//GeneralAddBuff(tar,BuffType.APDO,1,user);
-		}
-	}
-
 	private int GetAdditionalValueOfGisadoAction(List<TargetObject> tar)
 	{
 		return tar[0].buffs.FindIndex(buff => buff.type == BuffType.UGLYKNIGHT) == -1 ? 0 : 1;
