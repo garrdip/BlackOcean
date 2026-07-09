@@ -182,6 +182,16 @@ public class M_SoundManager : MonoBehaviour {
 
         musicSource = ConfigureAudioSource (musicSource);
 
+        // PlayerPrefs 로드값을 소스/믹서에 1회 명시 적용
+        // (종전에는 OnUpdate 폴링이 매 프레임 변경 감지로 적용했으나, 볼륨/음소거 변경 경로가
+        //  전부 즉시 적용형 세터·토글뿐이라 폴링을 제거하고 시작 시 여기서 직접 반영한다)
+        ToggleBGMMute (_musicOn);
+        ToggleSFXMute (_soundFxOn);
+        ToggleVoiceMute (_voiceOn);
+        SetBGMVolume (_musicVolume);
+        SetSFXVolume (_soundFxVolume);
+        SetVOICEVolume (_voiceVolume);
+
         // 씬 전환시에도 파괴되지 않도록 설정
         DontDestroyOnLoad (this.gameObject);
     }
@@ -209,52 +219,6 @@ public class M_SoundManager : MonoBehaviour {
         while (alive) {
             ManageSoundEffects();
             ManageVoiceEffects();
-
-            // 배경음 볼륨 바뀌었나 체크
-            if(IsMusicAltered ()){
-                //ToggleBGMMute (!musicOn);
-
-                if(!FloatEquals (currentMusicVol, _musicVolume)){
-                    currentMusicVol = _musicVolume;
-                }
-                if(_musicMixerGroup != null && !string.IsNullOrEmpty (_volumeOfMusicMixer)) {
-                    float vol;
-                    _musicMixerGroup.audioMixer.GetFloat (_volumeOfMusicMixer, out vol);
-                    vol = NormaliseVolume (vol);
-                    currentMusicVol = vol;
-                }
-                SetBGMVolume (currentMusicVol);
-            }
-
-            // 효과음 볼륨 바뀌었나 체크
-            if(IsSoundFxAltered ()){
-                //ToggleSFXMute (!sfxOn);
-                if(!FloatEquals (currentSfxVol, _soundFxVolume)){
-                    currentSfxVol = _soundFxVolume;
-                }
-                if(_soundFxMixerGroup != null && !string.IsNullOrEmpty (_volumeOfSFXMixer)){
-                    float vol;
-                    _soundFxMixerGroup.audioMixer.GetFloat (_volumeOfSFXMixer, out vol);
-                    vol = NormaliseVolume (vol);
-                    currentSfxVol = vol;
-                }
-                SetSFXVolume (currentSfxVol);
-            }
-
-            // 음성 볼륨 바뀌었나 체크
-            if (IsVoiceAltered ()) {
-                //ToggleVoiceMute (!voiceOn);
-                if(!FloatEquals (currentVoiceVol, _voiceVolume)){
-                    currentVoiceVol = _voiceVolume;
-                }
-                if(_voiceMixerGroup != null && !string.IsNullOrEmpty (_volumeOfVoiceMixer)){
-                    float vol;
-                    _voiceMixerGroup.audioMixer.GetFloat (_volumeOfVoiceMixer, out vol);
-                    vol = NormaliseVolume (vol);
-                    currentVoiceVol = vol;
-                }
-                SetVOICEVolume (currentVoiceVol);
-            }
 
             // 크로스 페이드일 경우
             if (crossfadeSource != null) {
@@ -371,24 +335,6 @@ public class M_SoundManager : MonoBehaviour {
 
 
     #region BGM
-    /// <summary>
-    /// 배경음 볼륨 상태가 변했는지 체크하는 함수
-    /// </summary>
-    private bool IsMusicAltered () {
-        bool flag = musicOn != _musicOn || musicOn != !musicSource.mute || !FloatEquals (currentMusicVol, _musicVolume);
-
-        // 믹서 그룹을 사용할 경우
-        if (_musicMixerGroup != null && !string.IsNullOrEmpty (_volumeOfMusicMixer.Trim ())) {
-            float vol;
-            _musicMixerGroup.audioMixer.GetFloat (_volumeOfMusicMixer, out vol);
-            vol = NormaliseVolume (vol);
-
-            return flag || !FloatEquals (currentMusicVol, vol);
-        }
-
-        return flag;
-    }
-
     /// <summary>
     /// 크로스 페이드 인 아웃 함수
     /// </summary>
@@ -642,24 +588,6 @@ public class M_SoundManager : MonoBehaviour {
     // 효과음 완전히 끝났는 지 체크용 함수
     bool HasPossiblyFinished (SoundEffect soundEffect) {
         return !soundEffect.Source.isPlaying && FloatEquals (soundEffect.PlaybackPosition, 0) && soundEffect.Time <= 0.09f;
-    }
-
-    /// <summary>
-    /// 효과음 볼륨 상태가 변했는지 체크하는 함수
-    /// </summary>
-    private bool IsSoundFxAltered () {
-        bool flag = _soundFxOn != sfxOn || !FloatEquals (currentSfxVol, _soundFxVolume);
-
-        // 믹서 그룹을 사용할 경우
-        if (_soundFxMixerGroup != null && !string.IsNullOrEmpty (_volumeOfSFXMixer.Trim ())) {
-            float vol;
-            _soundFxMixerGroup.audioMixer.GetFloat (_volumeOfSFXMixer, out vol);
-            vol = NormaliseVolume (vol);
-
-            return flag || !FloatEquals (currentSfxVol, vol);
-        }
-
-        return flag;
     }
 
     /// <summary>
@@ -1063,14 +991,6 @@ public class M_SoundManager : MonoBehaviour {
     // 완전히 끝났는 지 체크용 함수
     bool HasVoicePossiblyFinished (VoiceEffect voiceEffect) {
         return !voiceEffect.Source.isPlaying && FloatEquals (voiceEffect.PlaybackPosition, 0) && voiceEffect.Time <= 0.09f;
-    }
-
-    /// <summary>
-    /// 음성 볼륨 상태가 변했는지 체크하는 함수
-    /// </summary>
-    private bool IsVoiceAltered () {
-        bool flag = _voiceOn != voiceOn || !FloatEquals (currentVoiceVol, _voiceVolume);
-        return flag;
     }
 
     public int IndexOfVoicePool (string name, bool singleton = false) {

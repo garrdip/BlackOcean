@@ -59,6 +59,22 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 15회차 완료 작업 (P2-15 2회차)
+
+### ✅ P2-15b — M_SoundManager 매 프레임 볼륨 폴링 제거
+
+OnUpdate 코루틴이 매 프레임 수행하던 볼륨 변경 감지 폴링(`IsMusicAltered/IsSoundFxAltered/IsVoiceAltered` — 믹서 `GetFloat` 최대 3회 + `Trim()` 문자열 할당 3회/프레임)을 제거.
+
+- **제거 근거(전수 확인)**: 볼륨/음소거를 바꾸는 경로는 OptionUIManager 슬라이더·토글 → `MusicVolume/SoundVolume/VoiceVolume`·`IsMusicOn/IsSoundOn/IsVoiceOn` 프로퍼티 → `SetXVolume/ToggleXMute` 뿐이며, 이들은 전부 **즉시 적용형**(소스·이펙트·믹서 직접 반영). 외부에서 오디오 믹서를 `SetFloat`하는 코드는 프로젝트 전체에 없음 — 폴링이 감지할 "외부 변경"이 존재하지 않는다.
+- **유일한 폴링 의존이던 시작 시 PlayerPrefs 적용**: `Initialise()` 끝(musicSource 구성 후)에 `ToggleXMute + SetXVolume` 6종 명시 호출로 대체.
+- OnUpdate에는 실제로 매 프레임 필요한 것만 유지: 이펙트 풀 관리(ManageSound/VoiceEffects) + BGM 크로스페이드/페이드 전환.
+- 한계(정직한 기록): 에디터 인스펙터에서 런타임에 `_musicVolume` 필드를 직접 조작하는 디버깅은 이제 실시간 반영되지 않음 (옵션 UI 경로는 정상). `SetSFXVolume`의 `FindObjectsByType<SoundEffect>` 스캔은 슬라이더 변경 시에만 실행되므로 유지.
+- 검증: 컴파일 0건 + 리플렉션(감지 함수 3개 소멸, 적용 함수·OnUpdate 유지).
+- **플레이 검증 포인트**: ① **게임 시작 시 저장된 볼륨/음소거 설정 적용** (핵심 — 적용 경로가 바뀜) ② 옵션에서 BGM/SFX/음성 슬라이더 실시간 변경 ③ 음소거 토글 ④ 씬 전환 BGM 크로스페이드.
+- 남은 P2-15(후속): LobbyPlayer(49회)·HexagonMapRoom(26회) GetComponent 반복 캐싱.
+
+---
+
 ## 14회차 완료 작업 (P2-15 1회차)
 
 ### ✅ P2-15a — 로컬 PlayerInterface 조회 캐싱 (79곳) + 스크롤 버튼 SetActive 상태 가드
