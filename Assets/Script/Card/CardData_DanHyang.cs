@@ -131,9 +131,12 @@ public partial class CardData : SingletonD<CardData>
         
     }
     public IEnumerator H0_E(Card card,List<TargetObject> tar)
-    { 
-        // TODO : 화합 이펙트 적용
+    {
+        // 강화 효과: 사용 시점에 대상 위에 철귀가 있으면 화합 발동 (특성이 아닌 조건부라 파이프라인 자동 발동 없음 — 여기서 직접 호출)
+        bool ironDemonOnTarget = tar[0].ironDemonLocation == tar[1];
         yield return H0(card,tar);
+        if(ironDemonOnTarget && !tar[1].isDying)
+            yield return HWAHAP(tar[0]);
     }
 
 
@@ -1080,8 +1083,9 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         M_EffectManager.instance.RpcEffectFallingLeaf(tar[1].transform.position, 98);
         M_EffectManager.instance.RpcEffectBackFallingLeaf(tar[1].transform.position, -1);
+        // 2배 증가는 사용 즉시 (현재 수치만큼 추가 부여). 변환 훅은 타 꽃가루 카드와 동일하게 턴종료로 등록 — 종전 턴시작 등록은 이중 발동 소지 (기획 확정 2026-07-10)
         int index = tar[1].GainBuff(BuffType.FLOWERPOWDER,tar[1].GetBuffValue(BuffType.FLOWERPOWDER),false,false,false,true,tar[0],card);
-        if(!tar[1].buffTrunBeginEffect.Keys.Contains<int>(index))tar[1].buffTrunBeginEffect.Add(index,FlowerPowderEffect);
+        if(!tar[1].buffTurnEndEffect.Keys.Contains<int>(index))tar[1].buffTurnEndEffect.Add(index,FlowerPowderEffect);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -1307,8 +1311,10 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.5f);
         M_EffectManager.instance.RpcEffectFallingLeaf(tar[0].ironDemonLocation.transform.position, 117);
         M_EffectManager.instance.RpcEffectBackFallingLeaf(tar[0].ironDemonLocation.transform.position, -1);
-        tar[0].ironDemonLocation.GainBuff(BuffType.FLOWERPOWDER,3,false,false,false,true,tar[0],card);
-        tar[0].ironDemonLocation.GainBuff(BuffType.FLOWER,tar[0].ironDemonLocation.GetBuffValue(BuffType.FLOWERPOWDER),false,false,false,false,tar[0],card);
+        // 철귀 위치가 몬스터면 디버프로 부여 — 타 꽃가루 카드와 동일한 분기 (기획 확정 2026-07-10)
+        bool isMonsterTarget = tar[0].ironDemonLocation.objectType != ObjectType.PLAYER;
+        tar[0].ironDemonLocation.GainBuff(BuffType.FLOWERPOWDER,3,isMonsterTarget,false,false,true,tar[0],card);
+        tar[0].ironDemonLocation.GainBuff(BuffType.FLOWER,tar[0].ironDemonLocation.GetBuffValue(BuffType.FLOWERPOWDER),isMonsterTarget,false,false,false,tar[0],card);
         tar[0].ironDemonLocation.buffs.Remove(tar[0].ironDemonLocation.buffs.Find(buff => buff.type == BuffType.FLOWERPOWDER));
         yield return new WaitForSeconds(0.25f);
         M_EffectManager.instance.RpcEffectBackTurnBottomLeaf(tar[0].ironDemonLocation.transform.position, 119);

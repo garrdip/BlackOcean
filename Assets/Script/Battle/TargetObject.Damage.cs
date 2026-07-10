@@ -60,6 +60,25 @@ public partial class TargetObject
     }
 
 
+    // 고정 체력 손실 — 방어·증폭(단말마/붕괴/개화) 전부 무시하고 체력만 감소 ("체력을 잃습니다" 계열 카드용, 예: E7 돌로레)
+    // 사망/광기 변신 규칙과 템페스토소 누적은 일반 피해와 동일하게 적용
+    public void LosePlayerHP(int value)
+    {
+        if(value <= 0) return;
+        int hpBefore = playerHP;
+        playerHP -= value; // SetPlayerHP가 0~최대치 클램프 및 GamePlayer.HP 동기화 처리
+        if(playerHP <= 0)
+        {
+            if(player.character == Character.ERIS && erisMode != ErisMode.MAD)
+            {
+                playerHP = 1;
+                StartCoroutine(ErisTransform());
+            }
+        }
+        AccumulateTempestosoHpLost(hpBefore - playerHP);
+    }
+
+
     public void StaticDamageToPlayer(int damage)
     {
         if(defense >= damage)

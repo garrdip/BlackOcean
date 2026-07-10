@@ -12,7 +12,7 @@ public partial class CardData : SingletonD<CardData>
 {
     private void ErisAnimation(TargetObject tar, string animationName)    
 	{
-        // TODO : 변신상태, 반피상태에 따른 분기처리
+        // 변신 상태 분기: GetErisMode()가 광기(V)/분노(Ch) 프리픽스를 붙여 처리
         M_TurnManager.instance.StartAnimation(tar, 0, tar.GetErisMode() + animationName, false);
 	}
 
@@ -104,7 +104,7 @@ public partial class CardData : SingletonD<CardData>
 		ErisAnimation(tar[0],"Buff0");
 		yield return new WaitForSeconds(0.8f);
 		tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(2);
-        tar[0].DamageToPlayer(6);
+        tar[0].LosePlayerHP(6); // 고정 체력 손실 — 방어·증폭 무시 (기획 확정 2026-07-10)
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -282,7 +282,7 @@ public partial class CardData : SingletonD<CardData>
 		ErisAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.8f);
         tar[1].defense = 0;
-        // TODO : 방어 제거 이펙트
+        M_EffectManager.instance.RpcEffectEnergyExplosion(tar[1].transform.position); // 방어 파괴 연출
         yield return new WaitForSeconds(0.25f);
         GeneralSingleAttack(tar[0], tar[1], 5);
         StartCoroutine(tar[1].monster.OnHitAnimation());
@@ -298,7 +298,7 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(0.8f);
         int deffence = tar[0].defense;
         tar[0].defense = 0;
-        // TODO : 방어 제거 이펙트
+        M_EffectManager.instance.RpcEffectEnergyExplosion(tar[0].transform.position); // 방어 제거(회복 전환) 연출
         yield return new WaitForSeconds(0.25f);
         tar[0].HealPlayer(deffence);
         yield return new WaitForSeconds(0.5f);
@@ -312,7 +312,7 @@ public partial class CardData : SingletonD<CardData>
 		ErisAnimation(tar[0],"Buff1");
         yield return new WaitForSeconds(0.8f);
         int buffValue = 99;
-        tar[0].GainBuff(BuffType.BOONGGUI, buffValue, false, false, false, false, tar[0], card); // TODO : 어떤값인지 몰라서 3 ~ 6번 파라미터 bool값들 임시로 모두 false 처리함.
+        tar[0].GainBuff(BuffType.BOONGGUI, buffValue, false, false, false, false, tar[0], card); // 붕괴 부여 플래그는 E16 등 기존 관례와 동일 (전수 확인 완료)
         tar[1].GainBuff(BuffType.BOONGGUI, buffValue, false, false, false, false, tar[1], card);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -354,8 +354,10 @@ public partial class CardData : SingletonD<CardData>
 		ErisAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.8f);
         int damage = 4;
+        // 증폭(힘의이치·붕괴·개화·파괴의권능) 반영된 실제 준 피해만큼 방어 획득 — cardDamageDealt 델타로 계산 (기획 확정 2026-07-10)
+        int damageDealtBefore = tar[0].cardDamageDealt;
         GeneralSingleAttack(tar[0], tar[1], damage);
-        GeneralGetDefense(tar[0], tar[0], damage, card);
+        GeneralGetDefense(tar[0], tar[0], tar[0].cardDamageDealt - damageDealtBefore, card);
         StartCoroutine(tar[1].monster.OnHitAnimation());
         tar[0].GainBuff(BuffType.BYEOLMURI, 1, false, false, false, false, tar[0], card);
         yield return new WaitForSeconds(0.5f);
@@ -637,11 +639,11 @@ public partial class CardData : SingletonD<CardData>
         }
         gamePlayerDeck.TargetSendDeck(cardsFromTrashDeck, DeckListType.TRASH_DECK, DeckListType.FORGOTTEN_DECK);
 
-        // E10 카드를 잊혀진 덱으로 보낸 갯수 만큼 아군 전체 회복    
+        // 보낸 카드 1장당 '보낸 카드 개수'만큼 아군 전체 회복 — 총 회복량 = 개수² (기획 확정 2026-07-10: N = 잊혀진덱으로 보낸 카드 개수)
         List<Card> mergedList = new List<Card>(cardsFromCardOnHand);
         mergedList.AddRange(cardsFromPrefarDeck);
         mergedList.AddRange(cardsFromTrashDeck);
-        int recoveryValue = mergedList.Count; 
+        int recoveryValue = mergedList.Count * mergedList.Count;
         foreach(TargetObject targetObject in M_TurnManager.instance.spawnedPlayerList){
             targetObject.HealPlayer(recoveryValue);
         }
@@ -655,8 +657,10 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		ErisAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.8f);
+        // 사용 시점에 이미 붕괴를 보유한 적에게만 추가 피해 — 부여 '전' 판정 (기획 확정 2026-07-10)
+        bool hadBoonggui = tar[1].HasBuff(BuffType.BOONGGUI);
         tar[1].GainBuff(BuffType.BOONGGUI,1,true,false,true,false,tar[1],card);
-        if(tar[1].buffs.FindIndex(x => x.type == BuffType.BOONGGUI) != -1){
+        if(hadBoonggui){
             int damage = 10;
             GeneralSingleAttack(tar[0], tar[1], damage);
             StartCoroutine(tar[1].monster.OnHitAnimation());

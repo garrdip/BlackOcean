@@ -590,8 +590,9 @@ public partial class CardData : SingletonD<CardData>
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		GeorkAnimation(tar[0],"Attack0");
 		yield return new WaitForSeconds(0.5f);
-		int addDamage = tar[1].GetBuffValue(BuffType.APDO) * 4;
-		tar[1].buffs.Remove(tar[1].buffs.Find(buff => buff.type == BuffType.APDO));
+		// 자신이 부여한 압도만 계산·제거 (기획 확정 2026-07-10 — 타 플레이어의 압도는 건드리지 않음)
+		int addDamage = tar[1].GetBuffValue(BuffType.APDO, tar[0]) * 4;
+		tar[1].buffs.Remove(tar[1].buffs.Find(buff => buff.type == BuffType.APDO && buff.user == tar[0].netId));
 		GeneralSingleAttack(tar[0],tar[1],4 + addDamage);
 		StartCoroutine(tar[1].monster.OnHitAnimation());
 		yield return new WaitForSeconds(0.5f);
@@ -1039,13 +1040,19 @@ public partial class CardData : SingletonD<CardData>
 			StartCoroutine(tar[1].monster.OnHitAnimation());
 			yield return new WaitForSeconds(0.2f);
 		}
-		if(IsGISADO(tar)) card.isReturnable =true;
+		if(IsGISADO(tar))
+		{
+			card.isReturnable = true;
+			// 패 복귀 자체는 1회지만, 추하기에 기사답게(G30) 반복 시 기사도 성공 2회 취급 — 절대 강자(G38) 보유 시 발동 당 힘의이치 +1 (기획 확정 2026-07-10)
+			if(tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))
+				tar[0].GainBuff(BuffType.ICHI_ATTACK,1 + GetAdditionalValueOfGisadoAction(tar),false,false,false,false,tar[0],card);
+		}
 		else card.isReturnable = false;
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));	
 	}
 
-	//전리품 수집 //엘리트 처치시 스택 카운트 증가 구현 필요 // TODO
+	//전리품 수집 — 스택 증가는 엘리트/보스 처치 시 GamePlayerDeck.IncreaseLootCollectionStack에서
 	public IEnumerator G56(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
@@ -1190,7 +1197,12 @@ public partial class CardData : SingletonD<CardData>
 		GeneralSingleAttack(tar[0],tar[1],5);
 		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
-			tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1);
+		{
+			// 추하기에 기사답게(G30) 반복 포함 기사도 발동 횟수만큼 드로우, 절대 강자(G38) 보유 시 발동 당 힘의이치 +1 (기획 확정 2026-07-10)
+			int gisadoActionCount = 1 + GetAdditionalValueOfGisadoAction(tar);
+			tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(gisadoActionCount);
+			if(tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))tar[0].GainBuff(BuffType.ICHI_ATTACK,gisadoActionCount,false,false,false,false,tar[0],card);
+		}
 
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
@@ -1206,7 +1218,13 @@ public partial class CardData : SingletonD<CardData>
 		GeneralSingleAttack(tar[0],tar[1],12);
 		StartCoroutine(tar[1].monster.OnHitAnimation());
 		if(IsGISADO(tar))
-			tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck.Add(new Card(CardData.instance.cards.Find(card => card.cardNumber == "G65")));
+		{
+			// 추하기에 기사답게(G30) 반복 포함 기사도 발동 횟수만큼 덱에 생성, 절대 강자(G38) 보유 시 발동 당 힘의이치 +1 (기획 확정 2026-07-10)
+			int gisadoActionCount = 1 + GetAdditionalValueOfGisadoAction(tar);
+			for(int i = 0; i < gisadoActionCount; i++)
+				tar[0].player.GetComponent<GamePlayerDeck>().prefareDeck.Add(new Card(CardData.instance.cards.Find(c => c.cardNumber == "G65")));
+			if(tar[0].HasBuff(BuffType.ABSOLUTEDOMINATOR))tar[0].GainBuff(BuffType.ICHI_ATTACK,gisadoActionCount,false,false,false,false,tar[0],card);
+		}
 
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
