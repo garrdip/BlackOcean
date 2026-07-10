@@ -1,0 +1,15 @@
+using System.Collections;
+using Mirror;
+using ProjectD;
+
+// Stage3 엘리트 몬스터 (S3_EM2). 행동 패턴은 MonsterDB에 데이터가 추가되면 DoAction 오버라이드로 구현한다.
+public class S3_EMonster02 : SpawnedMonster
+{
+    public override MonsterGrade monsterGrade { get { return MonsterGrade.ELITE; } }
+
+    [Server]
+    public override IEnumerator OnHitAnimation()
+    {
+        return PlayHitAnimationSequence("Defense0", 0.667f);
+    }
+}

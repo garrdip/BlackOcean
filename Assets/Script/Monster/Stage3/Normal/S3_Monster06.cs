@@ -1,0 +1,12 @@
+using System.Collections;
+using Mirror;
+
+// Stage3 일반 몬스터 (S3_M06). 행동 패턴은 MonsterDB에 데이터가 추가되면 DoAction 오버라이드로 구현한다.
+public class S3_Monster06 : SpawnedMonster
+{
+    [Server]
+    public override IEnumerator OnHitAnimation()
+    {
+        return PlayHitAnimationSequence("Defense0", 0.667f);
+    }
+}
