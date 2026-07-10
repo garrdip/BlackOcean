@@ -249,12 +249,12 @@ public partial class CardData : SingletonD<CardData>
     // 권능 : 파괴
     public IEnumerator E15(Card card,List<TargetObject> tar)
     {
+        GamePlayerDeck gamePlayerDeck = tar[0].player.GetComponent<GamePlayerDeck>();
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,2));
 		ErisAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.8f);
-        GeneralSingleAttack(tar[0], tar[1], 3);
+        GeneralSingleAttack(tar[0], tar[1], 3 + gamePlayerDeck.numOfUsedAttackCardOnBattle * 2); // 이번 전투 동안 사용한 공격 카드 수만큼 2씩 증가
         StartCoroutine(tar[1].monster.OnHitAnimation());
-        // TODO : 이번 게임동안 사용한 공격 카드의 개수 만큼 2씩 증가합니다.
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -753,13 +753,13 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(targets);
         ErisAnimation(tar[0],"Attack2");
         yield return new WaitForSeconds(0.8f);
-        int dmamage = 1;
+        int dmamage = 1 + gamePlayerDeck.e46DamageBonus; // 이 이름의 카드 누적 피해 증가 반영
         foreach(TargetObject enemy in M_TurnManager.instance.spawnedMonsterList){
             GeneralSingleAttack(tar[0], enemy, dmamage);
             StartCoroutine(enemy.monster.OnHitAnimation());
         }
-        gamePlayerDeck.deck.Add(card); 
-        // TODO : 이 이름의 카드의 피해 1 증가합니다
+        gamePlayerDeck.deck.Add(card);
+        gamePlayerDeck.e46DamageBonus++; // 이 이름의 카드의 피해 1 증가 (전투 지속)
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -888,9 +888,16 @@ public partial class CardData : SingletonD<CardData>
 		ErisAnimation(tar[0],"Attack1");
 		yield return new WaitForSeconds(0.8f);
         int damage = 5;
+        int repeatCount = tar[0].player.GetComponent<GamePlayerDeck>().numOfUsedAttackCardOnTurn; // 이번 턴에 쓴 공격 카드 수 (이 카드 자신 제외 — 카운터는 실행 후 증가)
         GeneralSingleAttack(tar[0], tar[1], damage);
         StartCoroutine(tar[1].monster.OnHitAnimation());
-        // TODO : 이번 턴에 쓴 공격 카드 개수 만큼 반복합니다.
+        for(int i = 0; i < repeatCount; i++)
+        {
+            if(tar[1].isDying) break;
+            yield return new WaitForSeconds(0.2f);
+            GeneralSingleAttack(tar[0], tar[1], damage);
+            StartCoroutine(tar[1].monster.OnHitAnimation());
+        }
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }
@@ -944,7 +951,7 @@ public partial class CardData : SingletonD<CardData>
         StartCoroutine(tar[1].monster.OnHitAnimation());
         int shieldValue = 5;
         GeneralGetDefense(tar[0],tar[0],shieldValue,card);
-        // TODO : 자신이 소유한 은하수 카드당 비용이 감소합니다.
+        // 은하수 카드당 비용 감소는 GamePlayerDeck.GetTotalCostOfCardOnHand에서 상시 적용
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
     }

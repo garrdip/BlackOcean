@@ -70,6 +70,12 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     public int numOfUsedIronTeeth = 0;
 
+    public int numOfUsedAttackCardOnTurn = 0; // 이번 턴에 사용한 공격 카드 수 — E54 산개 성단 (턴 시작·전투 종료 시 리셋)
+
+    public int numOfUsedAttackCardOnBattle = 0; // 이번 전투 동안 사용한 공격 카드 수 — E15 권능:파괴 (전투 종료 시 리셋)
+
+    public int e46DamageBonus = 0; // 헤일로(E46) — '이 이름의 카드' 피해 누적 증가량 (전투 종료 시 리셋 — 게임 지속이면 밸런스 붕괴)
+
     [SyncVar(hook = nameof(OnChangedNumberOfUsedCard))]
     public int numOfUsedCard = 0;
 
@@ -265,6 +271,11 @@ public partial class GamePlayerDeck : NetworkBehaviour
         if(cardOnHand.card.baseCard.cardType != CardType.ATTACK && cardOnHand.card.baseCard.cardType != CardType.STRATEGY
             && GetComponent<GamePlayerTarget>().GetTargetObject().HasBuff(BuffType.BYEOLMURI))
             totalCost -= 2;
+        // 거친 파도처럼(E57): 자신이 소유한 은하수 카드당 비용 1 감소 (자신 포함 — deck은 게임 전체 덱)
+        if(cardOnHand.card.baseCard.cardNumber == "E57" || cardOnHand.card.baseCard.cardNumber == "E57_E")
+            foreach(Card deckCard in deck)
+                if(deckCard.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.EUNHASOO))
+                    totalCost -= 1;
         if(GetComponent<GamePlayerTarget>().GetTargetObject().buffs.FindIndex(x => x.type == BuffType.GOHANG3) != -1)totalCost = 1;
         return (totalCost < 0) ? 0 : totalCost;
     }

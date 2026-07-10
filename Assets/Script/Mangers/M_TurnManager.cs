@@ -341,6 +341,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             tar.defense = 0;
             tar.player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth = 0;
+            tar.player.GetComponent<GamePlayerDeck>().numOfUsedAttackCardOnTurn = 0; // E54용 턴 단위 공격 카드 카운터 리셋
             List<int> currentKeys = tar.buffTrunBeginEffect.Keys.ToList();
             foreach(int buffIndex in currentKeys)
             { 

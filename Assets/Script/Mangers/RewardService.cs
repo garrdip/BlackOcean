@@ -56,6 +56,13 @@ public class RewardService : InstanceD<RewardService>
                 //해방 카드를 위한 카드 카운팅 종료
                 gamePlayerDeck.numOfUsedCard = 0;
 
+                //공격 카드 카운팅 종료 — 턴 단위(E54)·전투 단위(E15) 모두 리셋
+                gamePlayerDeck.numOfUsedAttackCardOnTurn = 0;
+                gamePlayerDeck.numOfUsedAttackCardOnBattle = 0;
+
+                //헤일로(E46) 피해 누적 종료 — 전투 단위
+                gamePlayerDeck.e46DamageBonus = 0;
+
                 //저주카드 획득량 제거
                 gamePlayerDeck.gainCurseCardCount = 0;
 

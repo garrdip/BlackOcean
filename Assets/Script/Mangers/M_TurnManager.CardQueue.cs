@@ -100,6 +100,11 @@ public partial class M_TurnManager
                             gpd.destroyCardList.Add(cardOnHand);
                         }
                         gpd.numOfUsedCard++;
+                        if(cardOnHand.card.baseCard.cardType == CardType.ATTACK)
+                        {
+                            gpd.numOfUsedAttackCardOnTurn++; // E54 산개 성단 — 실행 후 증가라 해당 카드 자신은 미포함
+                            gpd.numOfUsedAttackCardOnBattle++; // E15 권능:파괴
+                        }
                         // 카드 사용후 효과 여기서 발동
 
                     }
