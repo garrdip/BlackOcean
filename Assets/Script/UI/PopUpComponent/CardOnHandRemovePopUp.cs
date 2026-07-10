@@ -26,17 +26,24 @@ public class CardOnHandRemovePopUp : SingletonD<CardOnHandRemovePopUp>
     // 패 제거 팝업 확인 버튼 클릭
     public void HandleCardOnHandRemoveOk()
     {
+        PlayerInterface playerInterface = PlayerRegistry.Local;
+        GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
+        int choosedCardCount = 0;
+        for(int i=0; i<gamePlayerDeck.choosedCardOnHands.Length; i++)
+            if(gamePlayerDeck.choosedCardOnHands[i] != null)choosedCardCount++;
+
+        // 전략 수정(G53): 2장(패가 그보다 적으면 전부)을 선택해야 확정 가능 — H26 등 자유 선택 카드는 비강제 (기획 확정 2026-07-10)
+        if(gamePlayerDeck.usedCardName == "G53"
+            && choosedCardCount < Mathf.Min(gamePlayerDeck.maxRemoveCardCount, gamePlayerDeck.cardOnHands.Count))
+            return;
+
         PopUpUIManager.instance.HandleHideCardOnHandRemovePopUp();
         GameUIManager.instance.buttonPrefareDeck.transform.SetParent(GameUIManager.instance.PrefareDeck.transform);
         GameUIManager.instance.buttonTrashDeck.transform.SetParent(GameUIManager.instance.TrashDeck.transform);
         M_CardManager.instance.ChangeCardOnHandSortingLayerByName("CardOnHand");
-        
-        PlayerInterface playerInterface = PlayerRegistry.Local;
-        GamePlayerDeck gamePlayerDeck = playerInterface.currentGamePlayer.GetComponent<GamePlayerDeck>();
-        int choosedCardCount = 0;
+
         for(int i=0; i<gamePlayerDeck.choosedCardOnHands.Length; i++){
             if(gamePlayerDeck.choosedCardOnHands[i] != null){
-                choosedCardCount++;
                 CardOnHand cardOnHand = gamePlayerDeck.choosedCardOnHands[i];
                 float duration = 0.5f;
                 cardOnHand.transform.DOScale(new Vector3(0.02f, 0.02f, 0f), duration);

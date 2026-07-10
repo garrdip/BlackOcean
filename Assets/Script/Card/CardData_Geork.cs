@@ -997,14 +997,15 @@ public partial class CardData : SingletonD<CardData>
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
 	}
 
-	//전략 수정 // 수정 필요 !!! TODO !!
+	//전략 수정 — 2장 드로우 후 패에서 2장을 골라 버린덱으로 (선택 강제는 CardOnHandRemovePopUp에서)
 	public IEnumerator G53(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		GeorkAnimation(tar[0],"Buff0");
 		yield return new WaitForSeconds(0.5f);
-		tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(2); // 패 2개 생성
+		tar[0].player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(2); // 카드 2장 드로우
 		tar[0].player.GetComponent<GamePlayerDeck>().maxRemoveCardCount = 2; // 제거용 카드 슬롯 2개로 설정
+		tar[0].player.GetComponent<GamePlayerDeck>().usedCardName = "G53"; // 제거 팝업의 강제 선택 분기용
 		yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));	
 	}

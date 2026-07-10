@@ -44,7 +44,14 @@
 
 - 33회차(E48·E51 수치 확정 구현) **플레이 테스트 통과 (2026-07-10)** → 커밋·푸시 완료. 에리스 카드 감사 전건 완료.
 
-**다음 후보 (기획 확정 필요)**: G53 "수정 필요" 의도 / G6 계열 스텁 4장 / 임시 확정값 검토(찬란한 고행 이름·광기 용어·HERO 수치). 컨텐츠 대량 추가 전 선행 작업 후보: P1-8b(카드 데이터 주도 실행기), 몬스터 DoAction 데이터화.
+- 34회차(G53 선택 강제 + 기획 확정 잔여분 정리) **플레이 테스트 통과 (2026-07-10)** → 커밋·푸시 완료.
+- **기획 확정 반영**: G6 계열은 데이터로만 유지(의도적 미사용) / HERO 보너스 = 영웅 카드당 3 (BalanceDB) / "찬란한 고행"·"광기" 용어는 기획 검토 계속 (아래 위치 참조).
+  - "찬란한 고행 I/II/III": CardDB.csv 128~137행 (G0_H~G2_H) — 영웅 변신 중 고행 카드의 표시 이름
+  - "광기": BuffDB.csv 34행 파괴의권능 설명 — 버프 툴팁에만 사용 (코드 상태명은 ErisMode.MAD)
+
+**카드 감사(CARD_AUDIT) 전 절 완결 — 컨텐츠 작업 목록 소진.**
+
+**다음 후보**: 신규 컨텐츠(카드/몬스터) 추가 재개 — 대량 추가 전 선행 작업 권장: P1-8b(카드 데이터 주도 실행기), 몬스터 DoAction 데이터화(ScriptableObject). / P2-17 IL2CPP 빌드 검증(스팀 배포 빌드 시).
 
 ※ **디버그 체력 999는 커밋에서 제외, 로컬에만 있음** — `Assets/Script/Common/DebugSettings.cs`(untracked) + `GamePlayer.cs`(uncommitted 수정). 디버그 끝나면 `USE_DEBUG_PLAYER_HP = false` 또는 두 파일 원복(`git checkout -- Assets/Script/Player/GamePlayer.cs` + DebugSettings.cs 삭제).
 
