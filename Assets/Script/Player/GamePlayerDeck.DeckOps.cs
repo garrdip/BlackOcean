@@ -519,4 +519,50 @@ public partial class GamePlayerDeck
             M_CardManager.instance.CardOnHandChargedSequence(cards[i], i, startPosition, endPosition);
         }
     }
+
+
+    // 영웅 변신(위대한 자): 이치의저주(GEORK CURSE, G0~G7 계열) ↔ 영웅(Gn_H) 카드 전환 — 전투 덱(패·뽑을덱·버린덱)만 대상, 총괄 덱은 유지
+    [Server]
+    public void ConvertCurseHeroCards(bool toHero)
+    {
+        for(int i = 0; i < prefareDeck.Count; i++)
+        {
+            Card converted = GetConvertedCurseHeroCard(prefareDeck[i], toHero);
+            if(converted != null)prefareDeck[i] = converted;
+        }
+        for(int i = 0; i < trashDeck.Count; i++)
+        {
+            Card converted = GetConvertedCurseHeroCard(trashDeck[i], toHero);
+            if(converted != null)trashDeck[i] = converted;
+        }
+        foreach(CardOnHand cardOnHand in cardOnHands)
+        {
+            Card converted = GetConvertedCurseHeroCard(cardOnHand.card, toHero);
+            if(converted != null)cardOnHand.card = converted; // SyncVar 재할당 — 클라이언트 카드 뷰 갱신은 훅이 처리
+        }
+    }
+
+
+    // 전환 대상이면 baseCard만 교체한 복사본을, 아니면 null 반환 (경험치·강화 상태·특성 보존)
+    private Card GetConvertedCurseHeroCard(Card card, bool toHero)
+    {
+        if(card == null || card.baseCard == null || card.baseCard.cardNumber == null)return null;
+        string cardNumber = card.baseCard.cardNumber;
+        string targetNumber;
+        if(toHero)
+        {
+            if(card.baseCard.cardType != CardType.CURSE || !cardNumber.StartsWith("G"))return null;
+            targetNumber = cardNumber.EndsWith("_E") ? cardNumber.Substring(0, cardNumber.Length - 2) + "_H_E" : cardNumber + "_H";
+        }
+        else
+        {
+            if(card.baseCard.cardType != CardType.HERO || !cardNumber.Contains("_H"))return null;
+            targetNumber = cardNumber.Replace("_H", "");
+        }
+        CardBase targetBase = CardData.instance.cards.Find(c => c.cardNumber == targetNumber);
+        if(targetBase == null)return null; // 대응 카드가 없으면 전환하지 않음
+        Card converted = new Card(card);
+        converted.baseCard = targetBase;
+        return converted;
+    }
 }

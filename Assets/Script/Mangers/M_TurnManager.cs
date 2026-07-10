@@ -624,9 +624,15 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
             // End Turn Card Effect
             List<int> currentKeys = tar.buffTurnEndEffect.Keys.ToList();
             foreach(int buffIndex in currentKeys)
-            { 
+            {
                 yield return tar.buffTurnEndEffect[buffIndex](tar,buffIndex,null);
-            }   
+            }
+            // 영웅 상태(게오르크 변신) 지속 턴 감소 — 0이 되면 해제 (버프 제거 시 등록된 훅도 함께 정리됨)
+            if(tar.isTransformed && tar.HasBuff(BuffType.HERO))
+            {
+                tar.GainBuff(BuffType.HERO, -1, false, false, false, false, tar, null);
+                if(!tar.HasBuff(BuffType.HERO))tar.RevertGeorkTransform();
+            }
         }
         yield return IronDemonPreEffect();
         phase = BattleTurn.PLAYER_END;

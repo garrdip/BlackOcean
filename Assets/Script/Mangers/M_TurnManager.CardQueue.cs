@@ -60,6 +60,7 @@ public partial class M_TurnManager
                         // 별무리 판정은 사용 '전' 보유 기준 — 이 카드가 부여하는 스택은 다음 카드부터 적용
                         bool hasByeolmuri = tar[0].HasBuff(BuffType.BYEOLMURI);
                         tar[0].cardDamageDealt = 0;
+                        tar[0].ApplyPowerOfDestruction(cardOnHand.card); // 파괴의권능(에리스 패시브) — 체력 소모 및 피해 배수 설정
 
                         yield return CardData.instance.RunCard(cardOnHand.card,tar);
 
@@ -67,6 +68,8 @@ public partial class M_TurnManager
                         if(cardOnHand.card.baseCard.cardType == CardType.ATTACK && tar[0].HasBuff(BuffType.REPEATMARK)
                             && !(cardOnHand.card.baseCard.isTargetable && tar[1] != null && tar[1].isDying))
                             yield return CardData.instance.RunCard(cardOnHand.card,tar);
+
+                        tar[0].destructionMultiplier = 1; // 파괴의권능 배수는 이 카드 실행(도돌이표 반복 포함)까지만 유효
 
                         // 별무리: 공격 = 준 피해 절반 방어 / 전략 = 사용 후 다시 패 / 그 외 = 비용 2 감소(지불 시 적용) — 사용 후 스택 1 제거
                         bool byeolmuriReturnToHand = false;

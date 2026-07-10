@@ -229,6 +229,10 @@ public class CardOnHand : NetworkBehaviour
     {
         // 철귀 이동카드는 경험치 오브젝트 초기화 제외
         if(!card.baseCard.cardNumber.Equals("HA")){
+            // 재초기화(카드 전환 등) 대비 기존 블록 제거
+            foreach(GameObject expBlock in expBlocks)
+                Destroy(expBlock);
+            expBlocks.Clear();
             // 최대 경험치 만큼 내부 블록 생성
             for(int i=0; i<card.baseCard.maxExperience; i++){
                 GameObject expBlock = Instantiate(expBlockPrefab);
@@ -501,6 +505,25 @@ public class CardOnHand : NetworkBehaviour
         if(newCard.baseCard.name == null)return;
         if(newCard.baseCard.name == "")return;
 
+        // 카드 자체가 다른 카드로 바뀐 경우(영웅 변신의 저주↔영웅 전환 등) 틀·일러스트·문장도 재설정
+        if(oldCard == null || oldCard.baseCard == null || oldCard.baseCard.cardNumber != newCard.baseCard.cardNumber)
+        {
+            // 유효한 카드에서 다른 카드로의 전환은 풀 화이트 연출과 함께 교체 (초기 동기화는 즉시 반영)
+            bool isSwapFromValidCard = oldCard != null && oldCard.baseCard != null && !string.IsNullOrEmpty(oldCard.baseCard.name);
+            if(isSwapFromValidCard && gameObject.activeInHierarchy)
+            {
+                StartCoroutine(CardConvertFlash(newCard));
+                return;
+            }
+            InitCardTemplateByCharacter(newCard);
+        }
+
+        ApplyCardTexts(newCard);
+    }
+
+    // 이름·설명·특성·비용 텍스트 갱신 (OnChangeCardData에서 분리 — 카드 전환 연출 중에는 흰 화면 상태에서 호출됨)
+    private void ApplyCardTexts(Card newCard)
+    {
         if(newCard.experience >= newCard.baseCard.maxExperience || newCard.isEnhanced || newCard.tempEnhanced)
         {
             textCardName.color = Color.green;
@@ -532,6 +555,33 @@ public class CardOnHand : NetworkBehaviour
             else
                 textCardCost.text = "<b><color=green>"+ totalCost.ToString() + "</color></b>";
         }
+    }
+
+    private Image cardConvertFlashOverlay; // 카드 전환 연출용 풀 화이트 오버레이 (런타임 생성 후 재사용)
+
+    // 카드 전환 연출: 카드가 완전히 하얘진 뒤 흰 상태에서 다른 카드로 교체, 서서히 원래 색으로 복귀
+    private IEnumerator CardConvertFlash(Card newCard)
+    {
+        if(cardConvertFlashOverlay == null)
+        {
+            GameObject overlayObject = new GameObject("CardConvertFlashOverlay", typeof(RectTransform), typeof(Image));
+            overlayObject.transform.SetParent(cardOnHandCanvas.transform, false);
+            RectTransform overlayRect = overlayObject.GetComponent<RectTransform>();
+            overlayRect.anchorMin = Vector2.zero;
+            overlayRect.anchorMax = Vector2.one;
+            overlayRect.offsetMin = Vector2.zero;
+            overlayRect.offsetMax = Vector2.zero;
+            cardConvertFlashOverlay = overlayObject.GetComponent<Image>();
+            cardConvertFlashOverlay.raycastTarget = false; // 카드 마우스 이벤트 방해 금지
+        }
+        cardConvertFlashOverlay.transform.SetAsLastSibling(); // 텍스트까지 카드 전체를 덮도록 캔버스 최상단으로
+        cardConvertFlashOverlay.gameObject.SetActive(true);
+        cardConvertFlashOverlay.color = new Color(1f, 1f, 1f, 0f);
+        yield return cardConvertFlashOverlay.DOFade(1f, 0.3f).WaitForCompletion();
+        InitCardTemplateByCharacter(newCard); // 완전히 하얀 상태에서 일러스트·틀·문장 교체
+        ApplyCardTexts(newCard);
+        yield return cardConvertFlashOverlay.DOFade(0f, 0.8f).WaitForCompletion();
+        cardConvertFlashOverlay.gameObject.SetActive(false);
     }
 
     void OnChangedCardInfo()

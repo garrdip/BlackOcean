@@ -166,7 +166,7 @@ public partial class CardData : SingletonD<CardData>
         }else{
             tar[0].HealPlayer(hpRecoveryValue);
         }
-        // TODO : 파괴의 권능 효과를 받지 않습니다.
+        // 파괴의권능 미적용은 TargetObject.ApplyPowerOfDestruction에서 E10/E10_E 제외로 처리
         yield return new WaitForSeconds(0.5f);
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }
@@ -818,7 +818,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].GainBuff(BuffType.DEATHTHROES, 1, false, true, false, false, tar[0], card); // 전투 지속 — 받는 피해 2배는 DamageToPlayer에서. TODO: 파괴의권능 +1배는 파괴의권능 시스템 도입 시
+        tar[0].GainBuff(BuffType.DEATHTHROES, 1, false, true, false, false, tar[0], card); // 전투 지속 — 받는 피해 2배는 DamageToPlayer, 파괴의권능 +1배는 ApplyPowerOfDestruction에서
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }

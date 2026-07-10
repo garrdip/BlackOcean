@@ -408,6 +408,40 @@ public partial class CardData : SingletonD<CardData>
 		yield return null;
 	}
 
+	// 영웅 상태(위대한 자 변신): 턴 시작 시 소유한 영웅 카드(패·뽑을덱·버린덱) 개수당 힘의이치 N(그 턴에만)과 방어 N 획득 — N은 BalanceDB HERO_BONUS_PER_CARD
+	public IEnumerator HERO_TurnBeginEffect(TargetObject tar, int index, Card card)
+	{
+		GamePlayerDeck gamePlayerDeck = tar.player.GetComponent<GamePlayerDeck>();
+		int heroCardCount = 0;
+		foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands)
+			if(cardOnHand.card.baseCard.cardType == CardType.HERO)heroCardCount++;
+		foreach(Card deckCard in gamePlayerDeck.prefareDeck)
+			if(deckCard.baseCard.cardType == CardType.HERO)heroCardCount++;
+		foreach(Card deckCard in gamePlayerDeck.trashDeck)
+			if(deckCard.baseCard.cardType == CardType.HERO)heroCardCount++;
+		if(heroCardCount > 0)
+		{
+			int bonus = heroCardCount * BalanceData.Get("HERO_BONUS_PER_CARD", 1);
+			tar.GainBuff(BuffType.ICHI_ATTACK, bonus, false, false, false, false, tar, null);
+			tar.heroIchiBonusGiven = bonus;
+			tar.GainDefense(bonus);
+		}
+		yield return null;
+	}
+
+	// 영웅 상태: 턴 시작에 받은 힘의이치 보너스를 턴 종료 시 회수 ("그 턴에만" — 다른 경로로 얻은 힘의이치는 건드리지 않음)
+	public IEnumerator HERO_TurnEndEffect(TargetObject tar, int index, Card card)
+	{
+		if(tar.heroIchiBonusGiven > 0)
+		{
+			int removeAmount = Mathf.Min(tar.GetBuffValue(BuffType.ICHI_ATTACK), tar.heroIchiBonusGiven);
+			if(removeAmount > 0)
+				tar.GainBuff(BuffType.ICHI_ATTACK, -removeAmount, false, false, false, false, tar, null);
+			tar.heroIchiBonusGiven = 0;
+		}
+		yield return null;
+	}
+
 
 	// 연격 준비
 	public IEnumerator G18(Card card,List<TargetObject> tar)

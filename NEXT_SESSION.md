@@ -34,6 +34,9 @@
 - 26회차(에리스 TODO 카드 4장 — E15·E46·E54·E57, 기획 확인으로 E15·E46은 전투 지속) **플레이 테스트 통과 (2026-07-10)** → 커밋·푸시 완료.
 - 27회차(카드 설명 미리보기 갱신 — 버프 소멸 시 원복 반영, 개화 합산 버그 수정) **플레이 테스트 통과 (2026-07-10)** → 커밋·푸시 완료.
 
+- 28회차(파괴의권능 시스템 — 에리스 패시브)·29회차(게오르크 영웅 변신 시스템 + 카드 전환 풀 화이트 연출) **플레이 테스트 전부 통과 (2026-07-10)** → 커밋·푸시 완료.
+- 기획 확정 대기: BuffDB "광기 상태시" 용어 / 영웅 고행 임시 이름 "찬란한 고행 I/II/III" (CardDB.csv G0_H~G2_H) / BalanceDB `HERO_DURATION_TURN`(3)·`HERO_BONUS_PER_CARD`(1) 수치 / E48·E51 "N배" 수치.
+
 ※ **디버그 체력 999는 커밋에서 제외, 로컬에만 있음** — `Assets/Script/Common/DebugSettings.cs`(untracked) + `GamePlayer.cs`(uncommitted 수정). 디버그 끝나면 `USE_DEBUG_PLAYER_HP = false` 또는 두 파일 원복(`git checkout -- Assets/Script/Player/GamePlayer.cs` + DebugSettings.cs 삭제).
 
 **다음 후보**: F절 의심 9건 기획 확인 / 파괴의권능 시스템 설계 (E51·E48 "N배" 수치 확정 포함) / 나머지 TODO 컨텐츠(G50·G51·G56·G66·H60, E17/E18 이펙트 등).

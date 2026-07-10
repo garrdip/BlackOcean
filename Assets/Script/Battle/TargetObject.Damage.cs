@@ -118,6 +118,9 @@ public partial class TargetObject
 
     public void DamageToMonster(int damage, TargetObject from)
     {
+        // 파괴의권능: 시전자(에리스)가 실행 중인 공격 카드의 피해 배수 (기본 1)
+        if(from != null && from != this && from.objectType == ObjectType.PLAYER)
+            damage *= from.destructionMultiplier;
         // 붕괴 적용
         if(GetBuffValue(BuffType.BOONGGUI,null) > 0)
         {

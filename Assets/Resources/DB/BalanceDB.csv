@@ -11,3 +11,5 @@ DRAW_COUNT_PER_TURN,5,매 턴 드로우 카드 수
 SHOP_CARD_MAX,6,상점에서 구매 가능한 카드 최대 수
 REWARD_CARD_MAX,3,전투 보상 선택지 카드 수
 REMOVE_CARD_MAX,3,패 제거 팝업 선택 가능 수
+HERO_DURATION_TURN,3,게오르크 영웅 변신 지속 턴 수 (변신한 턴 포함)
+HERO_BONUS_PER_CARD,1,영웅 상태 턴 시작 보너스 — 소유 영웅 카드당 힘의이치/방어 증가량 (BuffDB HERO 설명의 N)
