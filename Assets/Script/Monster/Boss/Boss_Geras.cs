@@ -6,6 +6,8 @@ using ProjectD;
 
 public class Boss_Geras : SpawnedMonster
 {
+    public override MonsterGrade monsterGrade { get { return MonsterGrade.BOSS; } }
+
     public override void OnStartClient()
     {
         base.OnStartClient();

@@ -7,6 +7,8 @@ using Mirror;
 
 public class Executioner : SpawnedMonster
 {
+    public override MonsterGrade monsterGrade { get { return MonsterGrade.ELITE; } }
+
     public override IEnumerator DoAction()
     {
         return base.DoAction();

@@ -6,6 +6,8 @@ using Mirror;
 
 public class Boss_Momos : SpawnedMonster
 {
+    public override MonsterGrade monsterGrade { get { return MonsterGrade.BOSS; } }
+
     public override void OnStartClient()
     {
         base.OnStartClient();

@@ -37,6 +37,10 @@
 - 28회차(파괴의권능 시스템 — 에리스 패시브)·29회차(게오르크 영웅 변신 시스템 + 카드 전환 풀 화이트 연출) **플레이 테스트 전부 통과 (2026-07-10)** → 커밋·푸시 완료.
 - 기획 확정 대기: BuffDB "광기 상태시" 용어 / 영웅 고행 임시 이름 "찬란한 고행 I/II/III" (CardDB.csv G0_H~G2_H) / BalanceDB `HERO_DURATION_TURN`(3)·`HERO_BONUS_PER_CARD`(1) 수치 / E48·E51 "N배" 수치.
 
+- 30회차(처치 카운터 인프라 + G56·H60·G66) **플레이 테스트 통과 (2026-07-10)** → 커밋·푸시 완료.
+
+**다음 후보**: 시각 이펙트 3건(E17·E18 방어 제거, H0_E 화합) / F절 의심 9건 기획 확인 / E48·E51 N 수치 확정 시 구현 / G6 계열 스텁 기획.
+
 ※ **디버그 체력 999는 커밋에서 제외, 로컬에만 있음** — `Assets/Script/Common/DebugSettings.cs`(untracked) + `GamePlayer.cs`(uncommitted 수정). 디버그 끝나면 `USE_DEBUG_PLAYER_HP = false` 또는 두 파일 원복(`git checkout -- Assets/Script/Player/GamePlayer.cs` + DebugSettings.cs 삭제).
 
 **다음 후보**: F절 의심 9건 기획 확인 / 파괴의권능 시스템 설계 (E51·E48 "N배" 수치 확정 포함) / 나머지 TODO 컨텐츠(G50·G51·G56·G66·H60, E17/E18 이펙트 등).

@@ -6,6 +6,8 @@ using Mirror;
 
 public class Saddy : SpawnedMonster
 {
+    public override MonsterGrade monsterGrade { get { return MonsterGrade.ELITE; } }
+
     public override IEnumerator DoAction()
     {
         switch(nextAction.actionName){

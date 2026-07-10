@@ -60,6 +60,7 @@ public class Card
         card.isEnhanced = isEnhanced;
         card.costAddition = costAddition;
         card.experience = experience;
+        card.stackCount = stackCount; // 전리품 수집(G56) 등 영구 스택 — 전투 경계를 넘어 보존
         tempEnhanced = false;
         if(!isEndBattle) // 전투 종료 후 남길 특성 여기서 넣어줘야함
         {

@@ -59,6 +59,20 @@ RPC/SyncVar가 전혀 없는 순수 클라이언트 뷰 로직인 TargetIndicato
 
 ---
 
+## 30회차 완료 작업 (처치 카운터 인프라 + G56·H60·G66)
+
+### ✅ 엘리트/보스 처치 집계 신설 — G절 TODO 3건 해소
+
+- **몬스터 등급**: `MonsterGrade` enum(NORMAL/ELITE/BOSS) + `SpawnedMonster.monsterGrade` 가상 프로퍼티, 엘리트 4종(Assassin/Executioner/Happy/Saddy)·보스 3종(Apates/Geras/Momos) 오버라이드.
+- **처치 카운터**: `M_TurnManager.eliteKillCountOnGame`/`bossKillCountOnGame` (게임 지속, 서버 전용) — `ProcessMonsterDeathCoroutine`의 사망 확정 지점에서 집계.
+- **G56 전리품 수집**: 엘리트/보스 처치 시 전 플레이어 소유 G56 카드 `stackCount` +1 (총괄 덱 포함 전 리스트). **`CardDeepCopy`가 stackCount를 복사하지 않아 "영구 증가"가 전투 경계에서 소실되던 잠재 버그 수정** (실인스턴스 리플렉션으로 보존 검증).
+- **H60 홍씨 가문의 명예**: 이치 1 + 이번 게임 보스 처치 수.
+- **G66 영웅의 선율**: 중첩 수만큼 중복 드로우되던 버그 수정 — 축복 카드 사용 시 1장만 (기존 TODO 주석의 기획 의도 반영).
+- **감사 문서 정정**: G50·G51은 이미 구현돼 있었음 (감사 기록이 낡음).
+- 검증: 컴파일 0건 + 리플렉션(등급 8종 실인스턴스 값, 카운터·메서드 존재, CardDeepCopy stackCount=7 보존).
+
+---
+
 ## 29회차 완료 작업 (게오르크 영웅 변신 시스템 구현)
 
 ### ✅ 위대한 자(GREATMAN)/영웅(HERO) — BuffDB 스펙 + 기획 확정(2026-07-10)으로 구현

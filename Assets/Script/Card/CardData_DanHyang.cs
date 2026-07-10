@@ -1392,8 +1392,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
         yield return new WaitForSeconds(0.5f);
-        tar[0].player.GetComponent<GamePlayerDeck>().currentIchi++;
-        // TODO : 이번 게임에서 잡은 보스 수 만큼 증가합니다.
+        tar[0].player.GetComponent<GamePlayerDeck>().currentIchi += 1 + M_TurnManager.instance.bossKillCountOnGame; // 이치 1 + 이번 게임에서 잡은 보스 수
         M_EffectManager.instance.RpcEffectBodyZoomOut(tar[0].player.transform.position, 122);
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));

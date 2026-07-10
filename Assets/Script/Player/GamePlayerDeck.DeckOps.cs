@@ -521,6 +521,29 @@ public partial class GamePlayerDeck
     }
 
 
+    // 전리품 수집(G56): 엘리트/보스 처치 시 소유한 모든 G56 카드의 스택 +1 — 피해 5씩 영구 증가 (총괄 덱 포함, 스택은 CardDeepCopy로 전투 경계 보존)
+    [Server]
+    public void IncreaseLootCollectionStack()
+    {
+        for(int i = 0; i < deck.Count; i++)
+            if(IsLootCollectionCard(deck[i])){ Card increased = new Card(deck[i]); increased.stackCount++; deck[i] = increased; }
+        for(int i = 0; i < prefareDeck.Count; i++)
+            if(IsLootCollectionCard(prefareDeck[i])){ Card increased = new Card(prefareDeck[i]); increased.stackCount++; prefareDeck[i] = increased; }
+        for(int i = 0; i < trashDeck.Count; i++)
+            if(IsLootCollectionCard(trashDeck[i])){ Card increased = new Card(trashDeck[i]); increased.stackCount++; trashDeck[i] = increased; }
+        for(int i = 0; i < forgottenDeck.Count; i++)
+            if(IsLootCollectionCard(forgottenDeck[i])){ Card increased = new Card(forgottenDeck[i]); increased.stackCount++; forgottenDeck[i] = increased; }
+        foreach(CardOnHand cardOnHand in cardOnHands)
+            if(IsLootCollectionCard(cardOnHand.card)){ Card increased = new Card(cardOnHand.card); increased.stackCount++; cardOnHand.card = increased; }
+    }
+
+
+    private bool IsLootCollectionCard(Card card)
+    {
+        return card != null && card.baseCard != null && (card.baseCard.cardNumber == "G56" || card.baseCard.cardNumber == "G56_E");
+    }
+
+
     // 영웅 변신(위대한 자): 이치의저주(GEORK CURSE, G0~G7 계열) ↔ 영웅(Gn_H) 카드 전환 — 전투 덱(패·뽑을덱·버린덱)만 대상, 총괄 덱은 유지
     [Server]
     public void ConvertCurseHeroCards(bool toHero)

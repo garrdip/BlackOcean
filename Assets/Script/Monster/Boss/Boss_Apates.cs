@@ -8,6 +8,8 @@ using Spine;
 
 public class Boss_Apates : SpawnedMonster
 {
+    public override MonsterGrade monsterGrade { get { return MonsterGrade.BOSS; } }
+
     private List<Skin> apatesSkins = new List<Skin>(); // 아파테스 스파인 스킨 목록
 
     public override void Start()

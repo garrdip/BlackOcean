@@ -27,6 +27,7 @@ namespace ProjectD
     public enum ItemGrade {NORMAL, RARE, UNIQUE, LEGEND}
     public enum ValidTarget { NONE, ENEMY, ENEMY_ALL, MEMBER, TEAM , ALL}
     public enum ErisMode {NORMAL, ANGER, MAD}
+    public enum MonsterGrade {NORMAL, ELITE, BOSS} // 처치 집계용 몬스터 등급 (G56 전리품 수집 / H60 홍씨 가문의 명예)
     public enum LOADING_STATE { ROOM_SCENE = 0, SCENE_LOADING, MAP_GENERATE, GAMEPLAYER_COMPONENT_GEN, UPLOAD_AVATAR, MAP_SCENE, LOADING_GAME_SCENE, GAME_SCENE }
 
     public enum MoveDirection {FORWARD, BACKWARD}

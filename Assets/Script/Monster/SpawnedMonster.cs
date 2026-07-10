@@ -9,6 +9,8 @@ using Spine.Unity;
 
 public class SpawnedMonster : NetworkBehaviour
 {
+    public virtual MonsterGrade monsterGrade { get { return MonsterGrade.NORMAL; } } // 처치 집계용 등급 — 엘리트/보스 서브클래스에서 오버라이드
+
     [SyncVar]
     public string monsterName;
 

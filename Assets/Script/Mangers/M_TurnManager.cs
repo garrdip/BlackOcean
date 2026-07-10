@@ -492,6 +492,10 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
+    public int eliteKillCountOnGame = 0; // 이번 게임 동안 처치한 엘리트 수 (서버 전용 — G56 전리품 수집)
+
+    public int bossKillCountOnGame = 0; // 이번 게임 동안 처치한 보스 수 (서버 전용 — H60 홍씨 가문의 명예)
+
     public void ProcessMonsterDeath(TargetObject tar)
     {
         if(!dyingMonsers.Exists(x => x == tar))dyingMonsers.Add(tar);
@@ -523,6 +527,14 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                             target.ironDemonLocation = target;
                             StartCoroutine(IronDemonReturnProcess(target));
                         }
+                }
+                // 엘리트/보스 처치 집계 (게임 지속) — G56 전리품 수집 스택 증가, H60 보스 수 가산용
+                if(monster.monster != null && monster.monster.monsterGrade != MonsterGrade.NORMAL)
+                {
+                    if(monster.monster.monsterGrade == MonsterGrade.ELITE)eliteKillCountOnGame++;
+                    else bossKillCountOnGame++;
+                    foreach(TargetObject target in spawnedPlayerList)
+                        target.player.GetComponent<GamePlayerDeck>().IncreaseLootCollectionStack();
                 }
                 // 실제 오브젝트 삭제 과정
                 spawnedMonsterList.Remove(monster);

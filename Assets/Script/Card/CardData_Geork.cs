@@ -1212,7 +1212,7 @@ public partial class CardData : SingletonD<CardData>
 		M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
 	}
 
-	// 영웅의 선율 ( 2번째 카드 사용시 1장만 드로우 되야함 TODO !)
+	// 영웅의 선율
 	public IEnumerator G66(Card card,List<TargetObject> tar)
 	{
 		M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
@@ -1230,7 +1230,7 @@ public partial class CardData : SingletonD<CardData>
 	public IEnumerator G66_Buff_Effect(TargetObject tar, int index,Card card)
 	{
 		if(card.baseCard.cardType == CardType.BLESS)
-			tar.player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(tar.GetBuffValue(BuffType.MELODYOFHERO));
+			tar.player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1); // 중첩 수와 무관하게 1장만 (설명: "카드 한 장을 뽑습니다")
 		yield return null;
 	}
 
