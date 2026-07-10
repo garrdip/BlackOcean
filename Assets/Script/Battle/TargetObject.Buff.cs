@@ -181,10 +181,11 @@ public partial class TargetObject
 
     public void OnChangedBuff(SyncList<Buff>.Operation op, int index, Buff oldBuff, Buff newBuff)
     {
-        if(newBuff != null)
-            if((newBuff.type == BuffType.ICHI_ATTACK || newBuff.type == BuffType.ICHI_DEFENSE) && objectType == ObjectType.PLAYER)
-                foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
-                    cardOnHand.CardInfoChangedEvent?.Invoke();
+        // 버프의 추가·중첩 변화·소멸 전부가 손패 미리보기에 영향(피해 !·$: 힘의이치 / 방어 #: 방어의이치 / 비용: 별무리 등)
+        // — 특정 타입·추가 연산만 거르지 않고 모든 변경에서 해당 플레이어의 손패 전체를 갱신한다 (제거 시 newBuff가 null이라 기존 필터로는 원복이 반영되지 않았음)
+        if(objectType == ObjectType.PLAYER && player != null)
+            foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
+                if(!cardOnHand.isMoving)cardOnHand.CardInfoChangedEvent?.Invoke();
         switch (op)
         {
             case SyncList<Buff>.Operation.OP_ADD:
