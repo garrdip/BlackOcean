@@ -368,7 +368,7 @@ public partial class CardData : SingletonD<CardData>
         M_DimmingManager.instance.StartDimming(tar.GetRange(0,1));
 		ErisAnimation(tar[0],"Buff0");
         yield return new WaitForSeconds(0.8f);
-        tar[0].GainBuff(BuffType.REPEATMARK, 1, false, false, false, false, tar[0], card);
+        tar[0].GainBuff(BuffType.REPEATMARK, 1, false, false, true, false, tar[0], card); // 이번 턴(턴 경계 감쇠) — 발동은 카드 큐 파이프라인에서
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,1));
     }

@@ -16,6 +16,7 @@ public partial class TargetObject
 {
 
     private int tempestosoHpLost; // 템페스토소 — 이번 전투에서 잃은 체력 누적(10마다 드로우)
+    public int cardDamageDealt; // 별무리 — 현재 실행 중인 카드가 넣은 피해 누적 (파이프라인이 카드 실행 전 리셋)
 
     // ----------------------------------------------           Damage 관련 함수        ---------------------------------------------------//
     public void DamageToPlayer(int damage)
@@ -126,8 +127,12 @@ public partial class TargetObject
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
             damage += GetBuffValue(BuffType.FLOWER,target);
         // 월식: 시전 플레이어가 이번 턴에 넣은 피해만큼 방어 획득
-        if(from != null && from != this && from.objectType == ObjectType.PLAYER && from.HasBuff(BuffType.ECLIPSE))
-            from.defense += damage;
+        if(from != null && from != this && from.objectType == ObjectType.PLAYER)
+        {
+            if(from.HasBuff(BuffType.ECLIPSE))
+                from.defense += damage;
+            from.cardDamageDealt += damage; // 별무리(공격 카드 강화)용 피해 누적
+        }
         // 방어력 적용
         if(defense >= damage)
         {

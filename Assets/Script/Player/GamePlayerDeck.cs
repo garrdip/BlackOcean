@@ -261,6 +261,10 @@ public partial class GamePlayerDeck : NetworkBehaviour
         
         if(cardOnHand.card.baseCard.cardCharacteristics.Exists(x => x == CardCharacteristic.HEBANG))
             totalCost -= numOfUsedCard;
+        // 별무리: 공격/전략 외 카드 비용 2 감소 (스택 소모는 카드 사용 시 파이프라인에서)
+        if(cardOnHand.card.baseCard.cardType != CardType.ATTACK && cardOnHand.card.baseCard.cardType != CardType.STRATEGY
+            && GetComponent<GamePlayerTarget>().GetTargetObject().HasBuff(BuffType.BYEOLMURI))
+            totalCost -= 2;
         if(GetComponent<GamePlayerTarget>().GetTargetObject().buffs.FindIndex(x => x.type == BuffType.GOHANG3) != -1)totalCost = 1;
         return (totalCost < 0) ? 0 : totalCost;
     }

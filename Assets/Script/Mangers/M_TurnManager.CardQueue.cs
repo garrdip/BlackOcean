@@ -56,8 +56,28 @@ public partial class M_TurnManager
                         {
                             yield return tar[0].buffCardUseEffect[index](tar[0],index,cardOnHand.card);
                         }
-                        
+
+                        // 별무리 판정은 사용 '전' 보유 기준 — 이 카드가 부여하는 스택은 다음 카드부터 적용
+                        bool hasByeolmuri = tar[0].HasBuff(BuffType.BYEOLMURI);
+                        tar[0].cardDamageDealt = 0;
+
                         yield return CardData.instance.RunCard(cardOnHand.card,tar);
+
+                        // 도돌이표: 이번 턴에 사용되는 공격 카드는 2번 사용 (대상이 첫 실행으로 사망하면 중단)
+                        if(cardOnHand.card.baseCard.cardType == CardType.ATTACK && tar[0].HasBuff(BuffType.REPEATMARK)
+                            && !(cardOnHand.card.baseCard.isTargetable && tar[1] != null && tar[1].isDying))
+                            yield return CardData.instance.RunCard(cardOnHand.card,tar);
+
+                        // 별무리: 공격 = 준 피해 절반 방어 / 전략 = 사용 후 다시 패 / 그 외 = 비용 2 감소(지불 시 적용) — 사용 후 스택 1 제거
+                        bool byeolmuriReturnToHand = false;
+                        if(hasByeolmuri)
+                        {
+                            if(cardOnHand.card.baseCard.cardType == CardType.ATTACK)
+                                tar[0].GainDefense(tar[0].cardDamageDealt / 2);
+                            else if(cardOnHand.card.baseCard.cardType == CardType.STRATEGY)
+                                byeolmuriReturnToHand = true;
+                            tar[0].GainBuff(BuffType.BYEOLMURI, -1, false, false, false, false, tar[0], null);
+                        }
 
                         if(CardData.instance.CheckCardCharacteristic(cardOnHand.card,CardCharacteristic.HWAHAP))
                             yield return CardData.instance.HWAHAP(tar[0]);
@@ -74,6 +94,8 @@ public partial class M_TurnManager
                             gpd.ReturnToCardOnHand(cardOnHand);
                             cardQueueList.RemoveAt(cardQueueList.Count - 1);
                             SerCurrentCardQueue(cardOnHand, gpd.netId, INDEX_OPERATION.DECREASE);
+                        }else if(byeolmuriReturnToHand){
+                            gpd.ReturnToCardOnHand(cardOnHand); // 별무리 전략 강화 — 카드는 사용 처리되고 패로 복귀 (큐 표시는 유지)
                         }else{
                             gpd.destroyCardList.Add(cardOnHand);
                         }
