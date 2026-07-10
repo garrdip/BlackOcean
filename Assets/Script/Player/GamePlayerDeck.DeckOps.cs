@@ -248,9 +248,6 @@ public partial class GamePlayerDeck
             case "E40": case "E40_E":
                 CardData.instance.E40_CallBack(playerTargtObject, card);
                 break;
-            case "E48": case "E48_E":
-                // TODO : 이 카드가 뽑을덱 에서 버린덱 으로 가면 피해는 N배가 증가합니다.
-                break;
             case "E52": case "E52_E":
                 StartCoroutine(CardData.instance.E52_CallBack(playerTargtObject));
                 break;
@@ -348,9 +345,12 @@ public partial class GamePlayerDeck
             case "E32": case "E32_E":
             case "E37": case "E37_E":
             case "E40": case "E40_E":
-            case "E48": case "E48_E":
             case "E52": case "E52_E":
                 ServerSendDeck(selectCards, DeckListType.PREFARE_DECK, DeckListType.TRASH_DECK); // 뽑을 덱에서 선택하여 버린 덱으로
+                break;
+            case "E48": case "E48_E":
+                ServerSendDeck(selectCards, DeckListType.PREFARE_DECK, DeckListType.TRASH_DECK);
+                CardData.instance.E48_SelectionCallBack(M_TurnManager.instance.GetPlayer(this), selectCards); // 보낸 카드 중 E48 개수만큼 추가 피해
                 break;
         }
     }

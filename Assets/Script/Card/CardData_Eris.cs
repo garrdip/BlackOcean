@@ -795,9 +795,22 @@ public partial class CardData : SingletonD<CardData>
         int damage = 8;
         GeneralSingleAttack(tar[0], tar[1], damage);
         StartCoroutine(tar[1].monster.OnHitAnimation());
-        // TODO :  이 카드가 뽑을덱 에서 버린덱 으로 가면 피해는 N배가 증가합니다.
+        tar[0].grandiosoTarget = tar[1]; // 선택 완료 시 추가 피해 대상 — E48_SelectionCallBack에서 사용
         yield return new WaitForSeconds(0.5f);
         M_DimmingManager.instance.StopDimming(tar.GetRange(0,2));
+    }
+
+    // 그랜디오소(E48) 선택 완료: 버린덱으로 보낸 2장 중 E48 개수만큼 피해 배수 증가 — 1장 포함 2배, 2장 모두 3배 (기획 확정 2026-07-10)
+    // 기본 8은 카드 실행 시 이미 들어갔으므로 추가분(8 × E48 개수)만 가산
+    public void E48_SelectionCallBack(TargetObject playerTargetObject, List<Card> selectCards)
+    {
+        if(playerTargetObject == null || playerTargetObject.grandiosoTarget == null)return;
+        TargetObject target = playerTargetObject.grandiosoTarget;
+        playerTargetObject.grandiosoTarget = null;
+        int e48Count = selectCards.FindAll(c => c.baseCard.cardNumber == "E48" || c.baseCard.cardNumber == "E48_E").Count;
+        if(e48Count <= 0 || target.isDying)return;
+        GeneralSingleAttack(playerTargetObject, target, 8 * e48Count);
+        StartCoroutine(target.monster.OnHitAnimation());
     }
 
     // 봉제 인형

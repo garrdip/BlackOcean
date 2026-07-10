@@ -131,6 +131,9 @@ public partial class TargetObject
     public int destructionMultiplier = 1; // 파괴의권능 — 현재 실행 중인 공격 카드의 피해 배수 (카드 큐 파이프라인이 설정·리셋, DamageToMonster에서 적용)
 
 
+    public TargetObject grandiosoTarget; // 그랜디오소(E48) — 카드 실행 후 열리는 선택 팝업 완료 시 추가 피해를 줄 대상
+
+
     // 파괴의권능 (에리스 상시 패시브 — BuffDB 정의가 스펙): 공격 카드 사용 시 체력 2 소모(이 효과로는 1 미만 불가),
     // 소모 후 체력이 절반 이하면 공격 카드 2배 피해, 광기(MAD) 상태면 3배. 단말마(DEATHTHROES) 보유 시 발동 배수 +1.
     // E10(뒤틀리는 생명) 계열은 효과를 받지 않음. 체력 소모는 피해가 아닌 코스트 — 방어/단말마 증폭을 타지 않는다.
@@ -147,6 +150,7 @@ public partial class TargetObject
         if(erisMode == ErisMode.MAD) destructionMultiplier = 3;
         else if(playerHP <= playerMaxHP / 2) destructionMultiplier = 2;
         if(destructionMultiplier > 1 && HasBuff(BuffType.DEATHTHROES)) destructionMultiplier += 1; // 단말마: 파괴의권능 +1배
+        if(destructionMultiplier > 1 && (card.baseCard.cardNumber == "E51" || card.baseCard.cardNumber == "E51_E")) destructionMultiplier *= 2; // 아프나요?: 파괴의권능 효과 2배 (기획 확정 2026-07-10 — 체력 소모는 2 유지)
     }
 
 
