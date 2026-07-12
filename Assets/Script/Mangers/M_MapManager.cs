@@ -659,7 +659,12 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             if(reduceActionCost <= currentActionCost){
                 currentActionCost = Mathf.Max(0, currentActionCost - reduceActionCost);
                 if(currentActionCost == 0 && mapBoss == null){
-                    GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
+                    // [3D 맵 리뉴얼 테스트] 3D 구체 맵 사용 시 보스를 3D 맵 타일 위에 출현
+                    if(SphereMapNetwork.instance != null){
+                        SphereMapNetwork.instance.SpawnBoss();
+                    }else{
+                        GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
+                    }
                 }
             }
         }
