@@ -61,6 +61,19 @@ namespace ProjectD
         [Tooltip("보스 말 이동 애니메이션 시간")]
         public float bossMoveDuration = 1.2f;
 
+        [Header("거점지역")]
+        [Tooltip("맵 생성 시 만들 거점지역 개수 (공간이 부족하면 더 적게 생성될 수 있음)")]
+        public int regionCount = 8;
+        [Tooltip("거점지역 크기(타일 수) 최소값")]
+        public int regionSizeMin = 8;
+        [Tooltip("거점지역 크기(타일 수) 최대값")]
+        public int regionSizeMax = 14;
+        [Tooltip("등급별 외곽선 색 (2D SetRegionWithColor와 동일값)")]
+        public Color regionNormalColor = new Color(1f, 0f, 0f);
+        public Color regionRareColor = new Color(0f, 1f, 0f);
+        public Color regionUniqueColor = new Color(0f, 0f, 1f);
+        public Color regionLegendColor = new Color(1f, 0.8f, 0f);
+
         [Header("상태 (읽기 전용)")]
         public int currentTileIndex = -1; // 현재 위치한 방
         public int destinationIndex = -1; // 내가 선택(투표)한 목적지
@@ -75,6 +88,10 @@ namespace ProjectD
         bool[] _activeRooms;
         int[] _hazards;
         Vector3[] _normals;
+        readonly List<List<int>> _regionTiles = new List<List<int>>();   // 거점지역별 타일 인덱스 묶음
+        readonly List<RegionGrade> _regionGrades = new List<RegionGrade>();
+        List<GoldbergSphereGeometry.Tile> _geoTiles; // 외곽선 메쉬 생성용 기하 캐시 (SetupNewMap에서 채움)
+        readonly List<GameObject> _regionBorders = new List<GameObject>(); // 지역별 외곽선 메쉬 오브젝트
 
         SphereMapView _view;
         readonly List<int> _currentPath = new List<int>();
@@ -164,6 +181,7 @@ namespace ProjectD
         {
             EnsureView();
             List<GoldbergSphereGeometry.Tile> tiles = GoldbergSphereGeometry.Generate(_view.subdivision);
+            _geoTiles = tiles; // 외곽선 메쉬 생성에 재사용
             _tileCount = tiles.Count;
             _isPentagon = new bool[_tileCount];
             _neighbors = new List<int>[_tileCount];
@@ -209,6 +227,9 @@ namespace ProjectD
                 _roomTypes[i] = (i == start) ? RoomType.START_LOCATION : GetRandomRoomType();
             }
 
+            // 거점지역: 시드 고정 상태이므로 모든 클라이언트가 같은 지역 배치를 얻는다
+            GenerateRegions(start);
+
             // 위험도: 시작 방 기준 BFS 홉 거리
             for (int i = 0; i < _tileCount; i++)
                 _hazards[i] = -1;
@@ -234,6 +255,7 @@ namespace ProjectD
             destinationIndex = -1;
             _currentPath.Clear();
             _hasState = true;
+            ClearRegionBorders(); // 이전 맵의 외곽선 제거 (ApplyStateToTiles에서 새로 생성)
             ApplyStateToTiles();
         }
 
@@ -255,6 +277,91 @@ namespace ProjectD
             {
                 if (!_isPentagon[next])
                     _activeRooms[next] = true;
+            }
+        }
+
+        // ------------------------------------------------------------ Region (거점지역) --------------------------------------------------------------- //
+
+        // 거점지역 생성: 랜덤 시드 타일에서 이웃으로 성장시킨 육각형 덩어리 (2D의 Region.tiles 대응).
+        // 지역끼리 최소 1타일 간격을 보장해 외곽선이 같은 홈을 공유하지 않게 한다.
+        // Random.InitState(seed) 이후 호출되므로 모든 클라이언트에서 결정적이다.
+        void GenerateRegions(int start)
+        {
+            _regionTiles.Clear();
+            _regionGrades.Clear();
+
+            var blocked = new bool[_tileCount];
+            for (int i = 0; i < _tileCount; i++)
+                blocked[i] = _isPentagon[i];
+            // 시작 방과 초기 시야(이웃)는 지역에 포함하지 않는다
+            blocked[start] = true;
+            foreach (int nb in _neighbors[start])
+                blocked[nb] = true;
+
+            int attempts = 0;
+            while (_regionTiles.Count < regionCount && attempts < 200)
+            {
+                attempts++;
+                int seedTile = Random.Range(0, _tileCount);
+                if (blocked[seedTile])
+                    continue;
+
+                int targetSize = Random.Range(regionSizeMin, regionSizeMax + 1);
+                var regionTiles = new List<int> { seedTile };
+                var frontier = new List<int>();
+                AddRegionFrontier(seedTile, blocked, regionTiles, frontier);
+                while (regionTiles.Count < targetSize && frontier.Count > 0)
+                {
+                    int pickIdx = Random.Range(0, frontier.Count);
+                    int pick = frontier[pickIdx];
+                    frontier.RemoveAt(pickIdx);
+                    regionTiles.Add(pick);
+                    AddRegionFrontier(pick, blocked, regionTiles, frontier);
+                }
+                if (regionTiles.Count < regionSizeMin)
+                {
+                    blocked[seedTile] = true; // 공간이 부족한 시드는 재시도 대상에서 제외
+                    continue;
+                }
+
+                foreach (int t in regionTiles)
+                {
+                    blocked[t] = true;
+                    foreach (int nb in _neighbors[t])
+                        blocked[nb] = true; // 지역 간 간격 확보
+                }
+                _regionTiles.Add(regionTiles);
+                _regionGrades.Add(GetRandomRegionGrade());
+            }
+        }
+
+        void AddRegionFrontier(int tileIndex, bool[] blocked, List<int> regionTiles, List<int> frontier)
+        {
+            foreach (int nb in _neighbors[tileIndex])
+            {
+                if (!blocked[nb] && !regionTiles.Contains(nb) && !frontier.Contains(nb))
+                    frontier.Add(nb);
+            }
+        }
+
+        // 2D Region.GetRegionGrade와 동일 분포 (각 25%)
+        RegionGrade GetRandomRegionGrade()
+        {
+            int value = Random.Range(0, 100);
+            if (value < 25) return RegionGrade.LEGEND;
+            if (value < 50) return RegionGrade.UNIQUE;
+            if (value < 75) return RegionGrade.RARE;
+            return RegionGrade.NORMAL;
+        }
+
+        Color GetRegionGradeColor(RegionGrade grade)
+        {
+            switch (grade)
+            {
+                case RegionGrade.RARE: return regionRareColor;
+                case RegionGrade.UNIQUE: return regionUniqueColor;
+                case RegionGrade.LEGEND: return regionLegendColor;
+                default: return regionNormalColor;
             }
         }
 
@@ -630,6 +737,65 @@ namespace ProjectD
             _view.RefreshColors();
             UpdateVoteMarkers();
             UpdateBossPiece();
+            EnsureRegionBorders();
+        }
+
+        // ------------------------------------------------------------ Region Border (거점지역 외곽선) --------------------------------------------------------------- //
+
+        // 거점지역 외곽선: 타일 사이 홈(spacing)에 정확히 끼워지는 상감 메쉬 (2D SetRegionWithColor의 RegionIndicator 대응).
+        // TileRoot 자식이라 구체 회전을 따라가고, 뷰 Rebuild 시 함께 파괴되므로 null 감지로 재생성한다.
+        void EnsureRegionBorders()
+        {
+            if (_regionBorders.Count > 0 && _regionBorders[0] != null)
+                return;
+            _regionBorders.Clear();
+            if (_geoTiles == null || _regionTiles.Count == 0 || _view == null)
+                return;
+            IReadOnlyList<SphereMapTile> tiles = _view.Tiles;
+            if (tiles.Count != _tileCount || tiles.Count == 0)
+                return;
+
+            for (int r = 0; r < _regionTiles.Count; r++)
+            {
+                Mesh mesh = GoldbergSphereGeometry.BuildRegionBorderMesh(_geoTiles, _regionTiles[r], _view.radius, _view.spacing);
+                if (mesh == null)
+                    continue;
+                var go = new GameObject("RegionBorder_" + r);
+                go.hideFlags = HideFlags.DontSave;
+                go.transform.SetParent(_view.TileRoot, false);
+                go.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var meshRenderer = go.AddComponent<MeshRenderer>();
+                meshRenderer.sharedMaterial = tiles[0].Renderer.sharedMaterial;
+                var mpb = new MaterialPropertyBlock();
+                mpb.SetColor("_Color", GetRegionGradeColor(_regionGrades[r]));
+                meshRenderer.SetPropertyBlock(mpb);
+                _regionBorders.Add(go);
+            }
+        }
+
+        void ClearRegionBorders()
+        {
+            foreach (GameObject border in _regionBorders)
+            {
+                if (border == null)
+                    continue;
+                var meshFilter = border.GetComponent<MeshFilter>();
+                if (meshFilter != null)
+                    DestroyObjectSafe(meshFilter.sharedMesh);
+                DestroyObjectSafe(border);
+            }
+            _regionBorders.Clear();
+        }
+
+        // ContextMenu(에디트 모드)에서도 호출될 수 있으므로 플레이 여부에 따라 파괴 방식 분기
+        static void DestroyObjectSafe(Object target)
+        {
+            if (target == null)
+                return;
+            if (Application.isPlaying)
+                Destroy(target);
+            else
+                DestroyImmediate(target);
         }
 
         /// <summary>색/아이콘만 갱신 (투표 표시 변경 등)</summary>

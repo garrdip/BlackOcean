@@ -18,6 +18,8 @@ namespace ProjectD
             public Vector3 normal;     // 타일 중심 방향 단위 법선
             public Vector3 centerUnit; // 플래튼된 면 중심 (단위 구 스케일)
             public Vector3[] ringUnit; // 플래튼된 꼭짓점 링 (단위 구 스케일)
+            public int[] ringTri;      // 링 꼭짓점의 원본 측지 삼각형 인덱스 (인접 타일 간 공유 꼭짓점 식별용)
+            public int[] edgeNeighbors; // 링 변 k(ringUnit[k]→ringUnit[k+1])와 맞닿은 이웃 타일 인덱스
             public readonly List<int> neighbors = new List<int>(); // 인접 타일 인덱스 (오각형 5개, 육각형 6개)
         }
 
@@ -169,6 +171,30 @@ namespace ProjectD
                 }
                 center /= m;
 
+                // 링 변 k(꼭짓점 k→k+1)와 맞닿은 이웃 타일: 연속한 두 삼각형(adj[k], adj[k+1])이
+                // 공유하는 v 이외의 측지 정점이 곧 그 변 건너편 타일이다
+                var edgeNb = new int[m];
+                for (int k = 0; k < m; k++)
+                {
+                    int triA = adj[k];
+                    int triB = adj[(k + 1) % m];
+                    edgeNb[k] = -1;
+                    for (int a = 0; a < 3 && edgeNb[k] < 0; a++)
+                    {
+                        int va = geoTris[triA * 3 + a];
+                        if (va == v)
+                            continue;
+                        for (int b = 0; b < 3; b++)
+                        {
+                            if (geoTris[triB * 3 + b] == va)
+                            {
+                                edgeNb[k] = va;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 tiles.Add(new Tile
                 {
                     index = v,
@@ -176,6 +202,8 @@ namespace ProjectD
                     normal = nrm,
                     centerUnit = center,
                     ringUnit = ring,
+                    ringTri = adj.ToArray(),
+                    edgeNeighbors = edgeNb,
                 });
             }
 
@@ -187,6 +215,43 @@ namespace ProjectD
             }
 
             return tiles;
+        }
+
+        /// <summary>
+        /// 수축(spacing 반영) 후의 타일 꼭짓점 링을 계산한다. (월드 스케일)
+        /// AppendTile(타일 매쉬)과 BuildRegionBorderMesh(거점지역 외곽선)가 같은 계산을 공유하므로
+        /// 두 메쉬의 변 꼭짓점이 정점 단위로 정확히 일치한다.
+        /// </summary>
+        public static Vector3[] GetShrunkRing(Tile tile, float radius, float spacing)
+        {
+            return GetShrunkRing(tile, radius, spacing, out _, out _);
+        }
+
+        static Vector3[] GetShrunkRing(Tile tile, float radius, float spacing, out Vector3 faceCenter, out float apothem)
+        {
+            int m = tile.ringUnit.Length;
+            Vector3 fc = tile.centerUnit * radius;
+
+            var outer = new Vector3[m];
+            for (int k = 0; k < m; k++)
+                outer[k] = tile.ringUnit[k] * radius;
+
+            // 아포템(중심-변 거리) 기준으로 spacing의 절반만큼 안쪽으로 수축 → 이웃 타일과 spacing만큼 간격
+            apothem = float.MaxValue;
+            for (int k = 0; k < m; k++)
+            {
+                Vector3 mid = (outer[k] + outer[(k + 1) % m]) * 0.5f;
+                apothem = Mathf.Min(apothem, (mid - fc).magnitude);
+            }
+            apothem = Mathf.Max(apothem, 1e-5f);
+            // 최소 5%는 유지: 0까지 수축하면 퇴화 매쉬가 되어 MeshCollider 쿠킹이 실패한다
+            float scale = Mathf.Clamp(1f - (spacing * 0.5f) / apothem, 0.05f, 1f);
+
+            var ring = new Vector3[m];
+            for (int k = 0; k < m; k++)
+                ring[k] = fc + (outer[k] - fc) * scale;
+            faceCenter = fc;
+            return ring;
         }
 
         /// <summary>
@@ -205,21 +270,7 @@ namespace ProjectD
             t1.Normalize();
             Vector3 t2 = Vector3.Cross(nrm, t1);
 
-            var outer = new Vector3[m];
-            for (int k = 0; k < m; k++)
-                outer[k] = tile.ringUnit[k] * radius;
-            Vector3 fc = tile.centerUnit * radius;
-
-            // 아포템(중심-변 거리) 기준으로 spacing의 절반만큼 안쪽으로 수축 → 이웃 타일과 spacing만큼 간격
-            float apothem = float.MaxValue;
-            for (int k = 0; k < m; k++)
-            {
-                Vector3 mid = (outer[k] + outer[(k + 1) % m]) * 0.5f;
-                apothem = Mathf.Min(apothem, (mid - fc).magnitude);
-            }
-            apothem = Mathf.Max(apothem, 1e-5f);
-            // 최소 5%는 유지: 0까지 수축하면 퇴화 매쉬가 되어 MeshCollider 쿠킹이 실패한다
-            float scale = Mathf.Clamp(1f - (spacing * 0.5f) / apothem, 0.05f, 1f);
+            Vector3[] shrunk = GetShrunkRing(tile, radius, spacing, out Vector3 fc, out float apothem);
 
             int baseIdx = vertices.Count;
             Vector3 inward = -nrm * thickness;
@@ -229,7 +280,7 @@ namespace ProjectD
             uvs.Add(new Vector2(0.5f, 0.5f));
             for (int k = 0; k < m; k++)
             {
-                Vector3 p = fc + (outer[k] - fc) * scale;
+                Vector3 p = shrunk[k];
                 vertices.Add(p);
                 Vector3 d = p - fc;
                 uvs.Add(new Vector2(Vector3.Dot(d, t1), Vector3.Dot(d, t2)) * (0.5f / apothem) + new Vector2(0.5f, 0.5f));
@@ -291,6 +342,129 @@ namespace ProjectD
             var mesh = new Mesh
             {
                 name = (tile.isPentagon ? "PentagonTile_" : "HexagonTile_") + tile.index,
+                hideFlags = HideFlags.DontSave
+            };
+            mesh.SetVertices(vertices);
+            mesh.SetUVs(0, uvs);
+            mesh.SetTriangles(triangles, 0);
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+            return mesh;
+        }
+
+        /// <summary>
+        /// 거점지역(타일 인덱스 묶음)의 외곽 경계를 타일 사이 홈(spacing)에 정확히 끼워지는 상감 메쉬로 생성한다.
+        /// - 경계 변(지역 안 타일 ↔ 밖 타일)마다: 양쪽 타일의 수축된 변 꼭짓점 4개를 잇는 사각형
+        /// - 경계가 꺾이는 꼭짓점(타일 3개 접합부)마다: 세 타일의 수축된 코너를 잇는 삼각형
+        /// 꼭짓점이 GetShrunkRing 기반이라 타일 매쉬 모서리와 정점 단위로 일치한다 (틈/겹침 없음).
+        /// 경계 변이 하나도 없으면 null을 반환한다. (구체 로컬 좌표 기준)
+        /// </summary>
+        public static Mesh BuildRegionBorderMesh(List<Tile> tiles, List<int> regionTiles, float radius, float spacing)
+        {
+            var region = new HashSet<int>(regionTiles);
+            var shrunkCache = new Dictionary<int, Vector3[]>();
+            Vector3[] GetRing(int index)
+            {
+                if (!shrunkCache.TryGetValue(index, out Vector3[] ring))
+                {
+                    ring = GetShrunkRing(tiles[index], radius, spacing);
+                    shrunkCache.Add(index, ring);
+                }
+                return ring;
+            }
+
+            int RingIndexOfTri(Tile tile, int tri)
+            {
+                for (int k = 0; k < tile.ringTri.Length; k++)
+                {
+                    if (tile.ringTri[k] == tri)
+                        return k;
+                }
+                return -1;
+            }
+
+            var vertices = new List<Vector3>();
+            var uvs = new List<Vector2>();
+            var triangles = new List<int>();
+
+            // 삼각형 하나 추가. 감김 순서를 구 바깥(outward)을 향하도록 맞춘다 (플랫 셰이딩을 위해 정점 분리)
+            void AddFace(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 outward)
+            {
+                if (Vector3.Dot(Vector3.Cross(p1 - p0, p2 - p0), outward) < 0f)
+                {
+                    Vector3 tmp = p1;
+                    p1 = p2;
+                    p2 = tmp;
+                }
+                int baseIdx = vertices.Count;
+                vertices.Add(p0); vertices.Add(p1); vertices.Add(p2);
+                uvs.Add(new Vector2(0.5f, 0.5f)); uvs.Add(new Vector2(0.5f, 0.5f)); uvs.Add(new Vector2(0.5f, 0.5f));
+                triangles.Add(baseIdx); triangles.Add(baseIdx + 1); triangles.Add(baseIdx + 2);
+            }
+
+            // 1) 경계 변: 지역 안/밖 타일의 수축된 변을 잇는 사각형 (비평면이라 삼각형 2개)
+            var cornerTris = new HashSet<int>(); // 경계가 지나는 접합부(측지 삼각형 인덱스)
+            foreach (int t in regionTiles)
+            {
+                Tile tile = tiles[t];
+                int m = tile.ringUnit.Length;
+                Vector3[] ringA = GetRing(t);
+                for (int k = 0; k < m; k++)
+                {
+                    int nb = tile.edgeNeighbors[k];
+                    if (nb < 0 || region.Contains(nb))
+                        continue;
+                    int k1 = (k + 1) % m;
+                    Tile nbTile = tiles[nb];
+                    Vector3[] ringB = GetRing(nb);
+                    int iP = RingIndexOfTri(nbTile, tile.ringTri[k]);
+                    int iQ = RingIndexOfTri(nbTile, tile.ringTri[k1]);
+                    if (iP < 0 || iQ < 0)
+                        continue;
+
+                    Vector3 outward = (tile.normal + nbTile.normal).normalized;
+                    AddFace(ringA[k], ringA[k1], ringB[iQ], outward);
+                    AddFace(ringA[k], ringB[iQ], ringB[iP], outward);
+                    cornerTris.Add(tile.ringTri[k]);
+                    cornerTris.Add(tile.ringTri[k1]);
+                }
+            }
+            if (triangles.Count == 0)
+                return null;
+
+            // 2) 접합부 채우기: 꼭짓점(측지 삼각형) 하나에는 타일 3개가 모이므로
+            //    각 타일의 수축된 코너 3개를 잇는 미니 삼각형으로 꺾임 구간의 구멍을 메운다
+            var triOwners = new Dictionary<int, List<int>>();
+            for (int t = 0; t < tiles.Count; t++)
+            {
+                int[] ringTri = tiles[t].ringTri;
+                for (int k = 0; k < ringTri.Length; k++)
+                {
+                    if (!cornerTris.Contains(ringTri[k]))
+                        continue;
+                    if (!triOwners.TryGetValue(ringTri[k], out List<int> owners))
+                    {
+                        owners = new List<int>(3);
+                        triOwners.Add(ringTri[k], owners);
+                    }
+                    owners.Add(t);
+                }
+            }
+            foreach (int tri in cornerTris)
+            {
+                List<int> owners = triOwners[tri];
+                if (owners.Count != 3)
+                    continue; // 이론상 항상 3개
+                Vector3 p0 = GetRing(owners[0])[RingIndexOfTri(tiles[owners[0]], tri)];
+                Vector3 p1 = GetRing(owners[1])[RingIndexOfTri(tiles[owners[1]], tri)];
+                Vector3 p2 = GetRing(owners[2])[RingIndexOfTri(tiles[owners[2]], tri)];
+                Vector3 outward = (tiles[owners[0]].normal + tiles[owners[1]].normal + tiles[owners[2]].normal).normalized;
+                AddFace(p0, p1, p2, outward);
+            }
+
+            var mesh = new Mesh
+            {
+                name = "RegionBorderMesh",
                 hideFlags = HideFlags.DontSave
             };
             mesh.SetVertices(vertices);
