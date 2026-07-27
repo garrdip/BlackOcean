@@ -145,17 +145,24 @@ public class M_SoundManager : MonoBehaviour {
                 return null;
             }
 
-            //C# 2.0 Null 병합연산자
-            return Instance ?? FindFirstObjectByType<M_SoundManager>();
+            // ?? 연산자는 Unity의 == 오버로드를 무시하므로 이미 파괴된 오브젝트를 그대로 반환한다.
+            // 파괴 여부까지 판정하려면 Unity 비교를 타는 명시적 null 체크를 써야 한다.
+            if (Instance != null) return Instance;
+            return FindFirstObjectByType<M_SoundManager>();
         }
     }
 
     void OnDestroy () {
         StopAllCoroutines ();
-        SaveAllPreferences ();
+        // 중복 인스턴스가 파괴될 때 저장하면 그 인스턴스의 인스펙터 기본값(볼륨 1, 음소거 해제)이
+        // 사용자 설정을 덮어쓴다. 실제 싱글톤일 때만 저장한다.
+        if (Instance == this) SaveAllPreferences ();
     }
 
-    void OnApplicationExit () {
+    // 종전에는 Unity 콜백이 아닌 OnApplicationExit로 되어 있어 한 번도 호출되지 않았다.
+    // 그 탓에 종료 시 설정 저장이 OnDestroy에만 의존했고, 빌드에서 설정이 유실됐다.
+    void OnApplicationQuit () {
+        SaveAllPreferences ();
         alive = false;
     }
 
@@ -321,8 +328,10 @@ public class M_SoundManager : MonoBehaviour {
         audioSource.spatialBlend = 0;   //2D
         audioSource.rolloffMode = AudioRolloffMode.Linear;
         audioSource.loop = true;
-        // PlayerPrefs에서 값 가져오기
-        audioSource.volume = LoadBGMVolume ();
+        // 저장값(LoadBGMVolume)이 아니라 현재 볼륨을 쓴다. 저장은 종료/팝업 닫기 시점에만
+        // 이뤄지므로, 세션 중 볼륨을 내린 뒤 크로스페이드용 소스가 생성되면 저장값을 읽어
+        // 볼륨이 되살아난다.
+        audioSource.volume = _musicVolume;
         audioSource.mute = !_musicOn;
         
 
@@ -1306,12 +1315,40 @@ public class M_SoundManager : MonoBehaviour {
         return PlayerPrefs.HasKey (VoiceMuteKey) ? ToBool (PlayerPrefs.GetInt (VoiceMuteKey)) : _voiceOn;
     }
 
+    // ---------------------------------------- 설정 기록 ----------------------------------------
+    // Store*는 PlayerPrefs 메모리에만 기록한다(디스크 flush 없음). 슬라이더 드래그처럼 매 프레임
+    // 호출되는 경로에서 PlayerPrefs.Save()를 돌리면 프레임이 튀기 때문이다.
+    // 실제 flush는 팝업을 닫을 때와 종료 시점의 Save*Preferences/SaveAllPreferences가 담당한다.
+
+    /// <summary>
+    /// 배경음 On/Off 여부와 사운드 크기를 PlayerPrefs 메모리에 기록하는 함수
+    /// </summary>
+    private void StoreBGMPreferences () {
+        PlayerPrefs.SetInt (BgMusicMuteKey, _musicOn ? 1 : 0);
+        PlayerPrefs.SetFloat (BgMusicVolKey, _musicVolume);
+    }
+
+    /// <summary>
+    /// 효과음 On/Off 여부와 사운드 크기를 PlayerPrefs 메모리에 기록하는 함수
+    /// </summary>
+    private void StoreSFXPreferences () {
+        PlayerPrefs.SetInt (SoundFxMuteKey, _soundFxOn ? 1 : 0);
+        PlayerPrefs.SetFloat (SoundFxVolKey, _soundFxVolume);
+    }
+
+    /// <summary>
+    /// 음성 On/Off 여부와 사운드 크기를 PlayerPrefs 메모리에 기록하는 함수
+    /// </summary>
+    private void StoreVOICEPreferences () {
+        PlayerPrefs.SetInt (VoiceMuteKey, _voiceOn ? 1 : 0);
+        PlayerPrefs.SetFloat (VoiceVolKey, _voiceVolume);
+    }
+
     /// <summary>
     /// 배경음 On/Off 여부와 사운드 크기를 PlayerPrefs에 저장하는 함수
     /// </summary>
     public void SaveBGMPreferences () {
-        PlayerPrefs.SetInt (BgMusicMuteKey, _musicOn ? 1 : 0);
-        PlayerPrefs.SetFloat (BgMusicVolKey, _musicVolume);
+        StoreBGMPreferences ();
         PlayerPrefs.Save ();
     }
 
@@ -1319,17 +1356,15 @@ public class M_SoundManager : MonoBehaviour {
     /// 효과음 On/Off 여부와 사운드 크기를 PlayerPrefs에 저장하는 함수
     /// </summary>
     public void SaveSFXPreferences () {
-        PlayerPrefs.SetInt (SoundFxMuteKey, _soundFxOn ? 1 : 0);
-        PlayerPrefs.SetFloat (SoundFxVolKey, _soundFxVolume);
+        StoreSFXPreferences ();
         PlayerPrefs.Save ();
     }
-    
+
     /// <summary>
     /// 음성 On/Off 여부와 사운드 크기를 PlayerPrefs에 저장하는 함수
     /// </summary>
     public void SaveVOICEPreferences () {
-        PlayerPrefs.SetInt (VoiceMuteKey, _voiceOn ? 1 : 0);
-        PlayerPrefs.SetFloat (VoiceVolKey, _voiceVolume);
+        StoreVOICEPreferences ();
         PlayerPrefs.Save ();
     }
 
@@ -1350,12 +1385,9 @@ public class M_SoundManager : MonoBehaviour {
     /// 모든 사운드 옵션을 PlayerPrefs에 저장하는 함수
     /// </summary>
     public void SaveAllPreferences () {
-        PlayerPrefs.SetFloat (SoundFxVolKey, _soundFxVolume);
-        PlayerPrefs.SetFloat (BgMusicVolKey, _musicVolume);
-        PlayerPrefs.SetFloat (VoiceVolKey, _voiceVolume);
-        PlayerPrefs.SetInt (SoundFxMuteKey, _soundFxOn ? 1 : 0);
-        PlayerPrefs.SetInt (BgMusicMuteKey, _musicOn ? 1 : 0);
-        PlayerPrefs.SetInt (VoiceMuteKey, _voiceOn ? 1 : 0);
+        StoreBGMPreferences ();
+        StoreSFXPreferences ();
+        StoreVOICEPreferences ();
         PlayerPrefs.Save ();
     }
 
@@ -1387,7 +1419,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <value>사운드 크기</value>
     public float MusicVolume {
         get { return _musicVolume; }
-        set { SetBGMVolume (value); }
+        set { SetBGMVolume (value); StoreBGMPreferences (); }
     }
 
     /// <summary>
@@ -1396,7 +1428,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <value>사운드 크기</value>
     public float SoundVolume {
         get { return _soundFxVolume; }
-        set { SetSFXVolume (value); }
+        set { SetSFXVolume (value); StoreSFXPreferences (); }
     }
 
     /// <summary>
@@ -1405,7 +1437,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <value>사운드 크기</value>
     public float VoiceVolume {
         get { return _voiceVolume; }
-        set { SetVOICEVolume (value); }
+        set { SetVOICEVolume (value); StoreVOICEPreferences (); }
     }
 
     /// <summary>
@@ -1414,7 +1446,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <value><c>true</c> - BGM On; <c>false</c> - BGM Off</value>
     public bool IsMusicOn {
         get { return _musicOn; }
-        set { ToggleBGMMute (value); }
+        set { ToggleBGMMute (value); StoreBGMPreferences (); }
     }
 
     /// <summary>
@@ -1423,7 +1455,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <value><c>true</c> - SFX On; <c>false</c> - SFX Off</value>
     public bool IsSoundOn {
         get { return _soundFxOn; }
-        set { ToggleSFXMute (value); }
+        set { ToggleSFXMute (value); StoreSFXPreferences (); }
     }
 
     /// <summary>
@@ -1432,7 +1464,7 @@ public class M_SoundManager : MonoBehaviour {
     /// <value><c>true</c> - SFX On; <c>false</c> - SFX Off</value>
     public bool IsVoiceOn {
         get { return _voiceOn; }
-        set { ToggleVoiceMute (value); }
+        set { ToggleVoiceMute (value); StoreVOICEPreferences (); }
     }
 
     /// <summary>

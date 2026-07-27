@@ -38,14 +38,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         backButton.onClick.AddListener(HandleClickBackButton);
         okButton.onClick.AddListener(HandleClickOkButton);
 
-        bgmVolumeSlider.value = M_SoundManager.instance.MusicVolume;
-        bgmToggle.isOn = !M_SoundManager.instance.IsMusicOn;
-        
-        voiceVolumeSlider.value = M_SoundManager.instance.VoiceVolume;
-        voiceToggle.isOn = !M_SoundManager.instance.IsVoiceOn;
-
-        sfxVolumeSlider.value = M_SoundManager.instance.SoundVolume;
-        sfxToggle.isOn = !M_SoundManager.instance.IsSoundOn;
+        SyncSoundOptionUI();
 
         bgmVolumeSlider.onValueChanged.AddListener(HandleBgmVolumeChange);
         bgmToggle.onValueChanged.AddListener(HandleBgmToggleChanage);
@@ -91,7 +84,35 @@ public class OptionUIManager : SingletonD<OptionUIManager>
 
     private void OnChangeOptionPopUpActive(bool isActive)
     {
+        // 팝업을 열 때마다 실제 사운드 상태로 UI를 다시 맞춘다.
+        // Start()에서 1회만 맞추면 이후 코드 경로가 볼륨을 바꿨을 때 UI와 실제 소리가 어긋난다.
+        if(isActive){
+            SyncSoundOptionUI();
+        }else{
+            // 닫을 때 PlayerPrefs를 디스크에 flush (변경 자체는 세터에서 이미 기록됨)
+            M_SoundManager sound = M_SoundManager.instance;
+            if(sound != null) sound.SaveAllPreferences();
+        }
         optionPopUp.SetActive(isActive);
+    }
+
+    /// <summary>
+    /// 사운드 매니저의 현재 값으로 슬라이더/토글을 갱신한다.
+    /// 갱신이 다시 onValueChanged로 되먹임되지 않도록 알림 없는 세터를 사용한다.
+    /// </summary>
+    private void SyncSoundOptionUI()
+    {
+        M_SoundManager sound = M_SoundManager.instance;
+        if(sound == null) return;
+
+        bgmVolumeSlider.SetValueWithoutNotify(sound.MusicVolume);
+        bgmToggle.SetIsOnWithoutNotify(!sound.IsMusicOn);
+
+        voiceVolumeSlider.SetValueWithoutNotify(sound.VoiceVolume);
+        voiceToggle.SetIsOnWithoutNotify(!sound.IsVoiceOn);
+
+        sfxVolumeSlider.SetValueWithoutNotify(sound.SoundVolume);
+        sfxToggle.SetIsOnWithoutNotify(!sound.IsSoundOn);
     }
 
     public void HandShowOptionPopUp(bool isActive)
