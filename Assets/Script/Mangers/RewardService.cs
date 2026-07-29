@@ -49,9 +49,8 @@ public class RewardService : InstanceD<RewardService>
                 gamePlayerDeck.prefareDeck.Clear();
                 gamePlayerDeck.forgottenDeck.Clear();
 
-                //코스트 리셋
-                gamePlayerDeck.maxIchi = 3;
-                gamePlayerDeck.currentIchi = 3;
+                //코스트 리셋 — 캐릭터 기본값(BalanceDB)으로 복귀. H5/H6의 최대 이치 증가는 해당 전투 한정 효과 (기획 확정 2026-07-29)
+                gamePlayerDeck.SetInitialIchi();
 
                 //해방 카드를 위한 카드 카운팅 종료
                 gamePlayerDeck.numOfUsedCard = 0;

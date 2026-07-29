@@ -118,7 +118,7 @@ public class GamePlayer : NetworkBehaviour
     public void CheckAllPlayersIsDead()
     {
         int gamePlayerCount = M_TurnManager.instance.playerOrder.FindAll((netId) => netId != 0).Count; // 현재 게임에 참가한 플레이어 수
-        int deadPlayerCount = M_TurnManager.instance.playerOrder.FindAll((netId) => netId != 0 && IsPlayerHpZero(netId) && !IsEris(netId)).Count; // HP가 0, 에리스가 아닌 플레이어 수
+        int deadPlayerCount = M_TurnManager.instance.playerOrder.FindAll((netId) => netId != 0 && IsPlayerHpZero(netId) && !CanErisRevive(netId)).Count; // HP가 0이고 광기 변신으로 사망을 회피할 수 없는 플레이어 수
         if(deadPlayerCount == gamePlayerCount){
             RpcGameOver();
         }
@@ -134,12 +134,15 @@ public class GamePlayer : NetworkBehaviour
         return false;
     }
 
-    // 에리스 캐릭터인 경우 true, 아니면 false 반환
+    // 에리스가 아직 광기 변신으로 사망을 회피할 수 있는 상태면 true — 광기(MAD) 상태에서 죽었거나 타겟오브젝트가 이미 소멸했으면 false (전멸 집계에 포함)
     [Server]
-    private bool IsEris(uint netId)
+    private bool CanErisRevive(uint netId)
     {
         if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-           return networkIdentity.GetComponent<GamePlayer>().character == Character.ERIS;
+            GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
+            if(gamePlayer.character != Character.ERIS) return false;
+            TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
+            return targetObject != null && targetObject.erisMode != ErisMode.MAD;
         }
         return false;
     }

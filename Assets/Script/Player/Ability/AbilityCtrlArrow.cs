@@ -101,6 +101,10 @@ public class AbilityCtrlArrow : NetworkBehaviour
     [Command]
     void CmdEnQueueCardData(GamePlayerDeck gamePlayerDeck, TargetObject tar)
     {
+        // 철귀이동(HA) 서버 검증 — 클라 버튼 가시성만으로는 게이트가 없으므로 여기서 반려 (횟수 제한은 기획상 무제한 유지)
+        if(gamePlayerDeck == null || tar == null) return;
+        if(gamePlayerDeck.connectionToClient != connectionToClient) return; // 본인 덱에 대해서만 명령 가능 (위장 방지)
+        if(M_TurnManager.instance.phase != BattleTurn.PLAYER_ACTIVE) return; // 플레이어 행동 페이즈에만 허용 (게오르크 고행과 동일 규칙)
         gamePlayerDeck.serverCardPredictQueue.Enqueue((gamePlayerDeck.abilityCard, tar));
     }
 

@@ -29,7 +29,12 @@ public class GamePlayerItem : NetworkBehaviour
             case SyncList<Item>.Operation.OP_ADD:
                 switch(newArtifact.effectTime){
                     case ItemEffectTime.STARTBATTLE :
-                        ART_OnStartBattleEvent += ItemData.instance.itemEffects[newArtifact.itemName];
+                        // itemEffects의 키는 아이템 번호(=효과 메서드명) — itemName으로 조회하면 KeyNotFoundException
+                        if(ItemData.instance.itemEffects.TryGetValue(newArtifact.itemNumber, out ItemEventHanddler effect)){
+                            ART_OnStartBattleEvent += effect;
+                        }else{
+                            Debug.LogError($"[GamePlayerItem] 아이템 효과 조회 실패: {newArtifact.itemName}({newArtifact.itemNumber})");
+                        }
                     break;
                 }
                 break;

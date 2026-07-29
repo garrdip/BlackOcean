@@ -42,11 +42,13 @@ public partial class TargetObject : NetworkBehaviour
     {
         get
         {
-            return buffs.Find(x => x.type == BuffType.IRONDEMON).value;
+            Buff ironDemonBuff = buffs.Find(x => x.type == BuffType.IRONDEMON); // 철귀 버프가 제거된 상태에서 접근 시 NRE 방지
+            return ironDemonBuff != null ? ironDemonBuff.value : 0;
         }
         set
         {
-            buffs.Find(x => x.type == BuffType.IRONDEMON).value = value;
+            Buff ironDemonBuff = buffs.Find(x => x.type == BuffType.IRONDEMON);
+            if(ironDemonBuff != null) ironDemonBuff.value = value;
         }
     }
     public bool usingGOHENG = false;
