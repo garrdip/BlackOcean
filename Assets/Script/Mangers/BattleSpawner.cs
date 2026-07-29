@@ -174,6 +174,10 @@ public class BattleSpawner : InstanceD<BattleSpawner>
         if(addToSyncList)
             turnManager.spawnedMonsterSyncList.Add(targetObject.netId);
         spawned.parent = targetObject; // monster 오브젝트의 부모오브젝트 참조값 설정
+
+        // MonsterDB 상시 버프 행 적용 (Guardian SUHOJA 등) — user는 자기 자신
+        foreach(Buff constantBuff in monsterData.buffList)
+            targetObject.GainBuff(constantBuff.type, constantBuff.value, constantBuff.isDebuff, constantBuff.isInfinity, false, false, targetObject, null);
         return spawned;
     }
 }

@@ -39,8 +39,12 @@ public class MonsterData : SingletonD<MonsterData>
                 // 몬스터 이름이 없을경우 스킬 LIST만 추가
                 if(row[2] == "Buff")
                 {
-                    //Buff newBuff = new Buff(GetEnumData<BuffType>(row[3]),(int.Parse(row[4])),false,true,false,null);
-                    //monsterData.buffList.Add(newBuff);
+                    // 상시 버프 행 — 스폰 시 BattleSpawner가 GainBuff로 적용. user는 스폰 시점에 자기 자신으로 설정
+                    Buff constantBuff = new Buff();
+                    constantBuff.type = GetEnumData<BuffType>(row[3]); // 잘못된 enum이면 throw → 아래 catch에서 행 단위 격리
+                    constantBuff.value = int.Parse(row[4]);
+                    constantBuff.isInfinity = true; // 턴 경과로 감소하지 않는 영구 버프
+                    monsterData.buffList.Add(constantBuff);
                 }
                 else
                 {

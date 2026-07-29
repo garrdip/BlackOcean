@@ -251,7 +251,7 @@ public partial class CardData : SingletonD<CardData>
     {
         yield return tempWait;
         M_TurnManager.instance.StartAnimation(tar[0],0,"Buff0",false); // 단향이 공격 모션 
-        tar[1].player.GetComponent<GamePlayerDeck>().maxIchi ++;
+        tar[1].player.GetComponent<GamePlayerDeck>().IncreaseMaxIchi(1); // ICHI_LIMIT(6) 클램프 포함
         yield return new WaitForSeconds(1f);
     }
 
@@ -263,7 +263,7 @@ public partial class CardData : SingletonD<CardData>
         yield return new WaitForSeconds(1f);
 
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
-            target.player.GetComponent<GamePlayerDeck>().maxIchi ++;
+            target.player.GetComponent<GamePlayerDeck>().IncreaseMaxIchi(1); // ICHI_LIMIT(6) 클램프 포함
         
         
     }

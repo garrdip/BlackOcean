@@ -23,7 +23,10 @@ public class BuffIndicatorController : MonoBehaviour
             Debug.Log("신규 버프 등록");
             GameObject newBuff = Instantiate(buffPrefab);
             newBuff.transform.SetParent(transform);
-            newBuff.GetComponent<SpriteRenderer>().sprite = BuffData.instance.buffIcons[buff.type];
+            if(BuffData.instance.buffIcons.TryGetValue(buff.type, out Sprite buffIcon)) // 아이콘 미등록 버프(SUHOJA 등)로 인한 KeyNotFoundException 방지
+                newBuff.GetComponent<SpriteRenderer>().sprite = buffIcon;
+            else
+                Debug.LogError($"[BuffIndicatorController] BuffData.buffIcons에 아이콘 미등록: {buff.type}");
             newBuff.GetComponent<BuffIndicator>().buff = buff;
 
             if(!buff.isInfinity)

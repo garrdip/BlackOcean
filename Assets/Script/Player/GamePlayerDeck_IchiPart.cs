@@ -32,6 +32,13 @@ public partial class GamePlayerDeck : NetworkBehaviour
         limitiChi = BalanceData.Get("ICHI_LIMIT", 6);
     }
 
+    // 최대 이치 증가 공통 경로 (H5/H6 등) — ICHI_LIMIT 상한 클램프
+    [Server]
+    public void IncreaseMaxIchi(int amount)
+    {
+        maxIchi = Mathf.Min(maxIchi + amount, limitiChi);
+    }
+
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
 
     void OnChangedCurrentIchi(int oldVal, int newVal)
