@@ -25,9 +25,9 @@ WRAPWINGS,날개 감싸기,이번 턴에 방어를 2배 얻습니다. 찰나
 CLOSEPOSE,빈틈없는 자세,이번턴에 공격할 때마다 방어 3을 얻습니다
 WISDOMOFOLDSOLDIER,노병의 지혜,이번 전투에서 위치가 바뀔 때 마다 바뀐 아군전체에게 방어 5 를 부여합니다. 이 카드는 사용후 버린 덱으로 갑니다.
 MELODYOFHERO,영웅의 선율,이번 전투에서 이치의 축복 카드 사용시 카드 한장을 뽑습니다. 이 카드는 사용후 버린 덱으로 갑니다.
-GOHANG2_DEBUFF,고행2,description is empty
-GOHANG3_DEBUFF,고행3,description is empty
-GOHANG3,고행,description is empty
+GOHANG2_DEBUFF,고행2,고행 II 를 사용할 때까지 남는 저주의 낙인입니다.
+GOHANG3_DEBUFF,고행3,고행 III 를 사용할 때까지 고행 III 를 제외한 모든 카드의 비용이 1 증가합니다.
+GOHANG3,고행,이번 턴에 사용하는 모든 카드의 비용이 1 이 됩니다.
 ERIS_NORMAL,꿈을 본 인형 기본,그녀는 체력 1일시 ??? 상태로 진입하며 (2 이상으로 돌아갈시 풀립니다.) 한 전투에 한번 자신의 현재 체력의 2배 이하의 공격을 받고 사망 시 체력 1로 살아남습니다.
 ERIS_2ND,꿈을 본 인형 진입전,description is empty
 ERIS_3RD,꿈을 본 인형 ???,description is empty

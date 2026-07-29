@@ -9,6 +9,7 @@ using UnityEngine;
 /// - 따옴표 필드("a,b" / 이중따옴표 "" 이스케이프)를 지원한다 — 설명 텍스트에 콤마가 들어가도 안전.
 /// - 인덱서(row[i])는 범위를 벗어나면 빈 문자열을 반환한다 — 반복 컬럼(MonsterDB 등) 위치 접근용.
 /// - 빈 줄은 건너뛴다. 행별 파싱 오류 처리는 호출부에서 try/catch로 격리할 것.
+/// - 모든 필드는 앞뒤 공백을 Trim한다 — 'BLESS ' 류의 데이터 오타가 enum 파싱을 깨뜨리지 않도록.
 /// </summary>
 public class CsvTable
 {
@@ -117,11 +118,11 @@ public class CsvTable
             else
             {
                 if (c == '"' && current.Length == 0) inQuotes = true;
-                else if (c == ',') { fields.Add(current.ToString()); current.Clear(); }
+                else if (c == ',') { fields.Add(current.ToString().Trim()); current.Clear(); }
                 else current.Append(c);
             }
         }
-        fields.Add(current.ToString());
+        fields.Add(current.ToString().Trim());
         return fields.ToArray();
     }
 }

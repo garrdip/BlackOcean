@@ -39,7 +39,7 @@ public partial class ItemData : SingletonD<ItemData>
             try
             {
                 string methodName = row.Get("Number");
-                Item newItem = new Item(row.Get("Name"), methodName, row.GetEnum<ItemGrade>("Garde"), row.GetEnum<ItemEffectTime>("EffectTime"));
+                Item newItem = new Item(row.Get("Name"), methodName, row.GetEnum<ItemGrade>("Grade"), row.GetEnum<ItemEffectTime>("EffectTime"));
                 ItemEventHanddler temp = (ItemEventHanddler)Delegate.CreateDelegate(typeof(ItemEventHanddler), this, methodName);
                 destination.Add(newItem);
                 itemEffects.Add(methodName, temp);

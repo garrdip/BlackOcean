@@ -41,9 +41,9 @@
 ## 🟠 P2 — 규칙·수치 정합성 (기획 수치와 코드 불일치)
 
 ### 6. `ICHI_LIMIT(6)` 상한 미적용
-- [ ] `GamePlayerDeck_IchiPart.cs` — `limitiChi` 선언만 있고 클램프 미적용 (참조 0건)
+- [x] `GamePlayerDeck_IchiPart.cs` — `IncreaseMaxIchi(amount)` 공통 경로 신설(`limitiChi` 클램프), H5/H6가 이를 사용하도록 변경
 - 수정 방향: 최대 이치 증가 지점(H5/H6 등)에서 `ICHI_LIMIT`로 클램프
-- 검증: 최대 이치를 6 초과로 올리는 시도 시 6에서 고정 확인
+- 검증: 최대 이치를 6 초과로 올리는 시도 시 6에서 고정 확인 (한 전투에서 H5/H6 반복 사용)
 
 ### 7. 에리스 「꿈을 본 인형」 DB 스펙 미구현 3항목 — ⚠ 기획 확정 선행
 - [ ] 기획 확정: DB 스펙대로 갈지, 현재 코드 동작을 스펙으로 삼을지 결정
@@ -69,14 +69,19 @@
 - ⚠ 기획 확정: 시작 행동비용 수치 결정 (현재 값이면 3칸 이동 만에 맵 보스 출현)
 
 ### 11. Saddy 행동 frequency 합 150 (100 초과)
-- [ ] `MonsterDB.csv` — Saddy 패턴 Frequency 합을 100으로 정규화
-- 증상: 가중치 룰렛이 의도와 다른 확률로 동작
-- 검증: Twins(Happy+Saddy) 전투에서 행동 분포 확인
+- [x] `MonsterDB.csv` — Saddy 패턴 Frequency 50/50/50 → 34/33/33 (등확률 의도 가정)
+- 증상: 룰렛이 0~99 롤이라 세 번째 패턴(방어 100)이 **한 번도 선택되지 않았음**
+- 검증: Twins(Happy+Saddy) 전투에서 세 행동(두번공격/힘버프/방어) 모두 등장 확인
 
 ### 12. Guardian·Saddy 상시 버프 행 파서 주석 처리
-- [ ] MonsterDB 파서의 상시 버프 행 처리 주석 해제 또는 재구현
+- [x] MonsterDB 파서의 상시 버프 행 재구현 (`MonsterData.cs` 파싱 + `BattleSpawner.cs` 스폰 시 `GainBuff` 적용)
+- [x] `BuffIndicatorController.cs` — 아이콘 미등록 버프의 `KeyNotFoundException` 방어 (에러 로그로 대체)
 - 증상: 두 몬스터의 상시 버프가 미작동
-- 검증: Guardian/Saddy 전투 진입 시 버프 아이콘 표시 확인
+- 검증: Guardian 전투 진입 시 버프 등록 확인 (아이콘 스프라이트는 미등록 → 빈 아이콘 + 에러 로그)
+- ⚠ 잔여 (기획·아트 필요):
+  - SUHOJA 아이콘이 `BuffData.buffIcons`(MenuScene)에 미등록 — 스프라이트 지정 필요
+  - SUHOJA 실제 효과 코드 미구현 + BuffDB.csv 행 없음 (#16과 연계)
+  - Saddy의 상시 버프 `E2`는 존재하지 않는 BuffType — 구 명명(E1=Happy, E2=Saddy 추정)의 잔재로 보이며 실제 어떤 버프인지 기획 확정 필요 (현재는 로드 시 행 단위 에러 로그 후 스킵)
 
 ### 13. G2(고행 III) 저주 사후효과 주석 처리로 무효과
 - [ ] `CardData_Geork.cs` — G2 사후효과("고행길") 주석 구간 확인
@@ -87,18 +92,22 @@
 ## 🟡 P3 — 데이터·CSV 오류 (코드 수정 없이 데이터만)
 
 ### 14. CSV 오타 일괄 수정
-- [ ] `BLESS ` 끝 공백 10건 (CardDB.csv)
-- [ ] `BYULMOORI ` enum 끝 공백 → 별무리 특성 툴팁 로드 실패 원인 (CardCharacteristic.csv)
-- [ ] `Garde` → `Grade` 오타
-- 검증: 별무리 카드 마우스오버 시 특성 툴팁 정상 표시
+- [x] `BLESS ` 끝 공백 10건 (CardDB.csv) — 해당 10장(에리스 축복)은 **로드 자체가 실패**하고 있었음
+- [x] `BYULMOORI ` enum 끝 공백 → 별무리 특성 툴팁 로드 실패 원인 (CardCharacteristic.csv)
+- [x] `Garde` → `Grade` 오타 (ArtifactDB/LegacyDB 헤더 + `ItemData.cs` 참조)
+- [x] (추가 발견) `GOOWON ` 끝 공백 14건 (CardDB — H3/H4 계열 로드 실패), `WHOLE ` 5건 (MonsterDB)
+- [x] (구조 개선) `CsvTable`이 모든 필드를 Trim — 같은 부류의 오타가 재발해도 파싱이 깨지지 않음
+- 검증: 별무리 카드 마우스오버 시 특성 툴팁 정상 표시 / 에리스 축복 카드(E20 등)·H3/H4가 카드풀에 등장
 
 ### 15. Description.csv 툴팁 누락 11종
-- [ ] `@크기`, `@고행길`, `@이치의저주`, `@파괴의권능` 등 핵심 용어 툴팁 추가
-- [ ] 조사 붙은 토큰 조회 실패 — 공백 split 구조 개선 (부분 일치 or 조사 분리 파싱)
-- 검증: 해당 용어 포함 카드 설명에서 툴팁 팝업 확인
+- [x] 신규 용어 9종 추가: `고정피해`/`고행길`/`영웅카드`/`이치의저주`/`이치의축복`/`철귀`/`크기`/`파괴의권능`/`전열`
+- [x] 조사 붙은 토큰(`@압도를`/`@크기의`/`@전열과`) — `CardData.ResolveInfoKey()` 최장 전방일치 정규화로 해결
+- 검증: 해당 용어 포함 카드(G0, G25, G44, H28, H57, H59, E50 등) 설명에서 툴팁 팝업 확인
+- 에디터 검증 완료: CardDB 398행 전체 @토큰 미해결 0건
 
 ### 16. BuffDB 설명 미작성 5건
-- [ ] `GOHANG2_DEBUFF`, `GOHANG3_DEBUFF`, `GOHANG3`, `ERIS_2ND`, `ERIS_3RD` 설명 작성 (ERIS_2ND/3RD는 #7 정리 결과에 따라 삭제 가능)
+- [x] `GOHANG2_DEBUFF`, `GOHANG3_DEBUFF`, `GOHANG3` 설명 작성 (코드 실제 동작 기준)
+- [ ] `ERIS_2ND`, `ERIS_3RD` — #7 기획 확정 결과에 따라 작성 or 삭제 (보류)
 
 ---
 
@@ -144,6 +153,31 @@
 - **#4** `TargetObject.cs` `sizeOfIronDemon` — IRONDEMON 버프 부재 시 getter 0 반환·setter 무시
 - **#5** `GamePlayerItem.cs` — `itemEffects` 조회 키 `itemName` → `itemNumber`(+`TryGetValue`, 실패 로그)
 - 부수 갱신: `GAME_DESIGN.md` 이치 표·홍단향 카드 항목에 전투 한정 기획 확정 반영
+
+### 회차 2 — 2026-07-29 · P2 #6, #11, #12 🔄 테스트 대기
+- **#6** `GamePlayerDeck_IchiPart.cs` — `IncreaseMaxIchi()` 신설(ICHI_LIMIT 클램프), `CardData_DanHyang.cs` H5/H6가 사용
+- **#11** `MonsterDB.csv` — Saddy frequency 50/50/50 → 34/33/33 (기존엔 세 번째 패턴 '방어'가 선택 불가였음)
+- **#12** `MonsterData.cs` 상시 버프 행 파싱 재구현 + `BattleSpawner.cs` 스폰 시 적용 + `BuffIndicatorController.cs` 아이콘 미등록 방어
+  - ⚠ 잔여: SUHOJA 아이콘/효과/BuffDB 미비, Saddy `E2` 버프 정체 불명 (항목 #12 잔여란 참고)
+- 컴파일 검증 완료 (error CS 0건)
+- **플레이 테스트 체크리스트**:
+  - [ ] 홍단향 H5를 한 전투에서 반복 사용 → 최대 이치 6에서 고정
+  - [ ] Twins(Happy+Saddy) 전투 → Saddy가 두번공격/힘버프/방어 세 가지 모두 사용
+  - [ ] Guardian 전투 진입 → 버프 슬롯 1개 등록 (아이콘 빈 상태 + `SUHOJA 아이콘 미등록` 에러 로그 1건 = 정상)
+  - [ ] 게임 로드 시 `MonsterDB 로드 실패 (31행)` 에러 1건 = Saddy E2 행 의도된 스킵 (정상)
+
+### 회차 3 — 2026-07-29 · P3 #14, #15, #16(부분) 🔄 테스트 대기
+- **#14** CSV 오타 일괄 수정 + `CsvTable` 필드 Trim 구조 개선, `ItemData.cs` `Garde`→`Grade`
+  - 추가 발견: `GOOWON ` 14건(H3/H4 계열 로드 실패 중이었음), `WHOLE ` 5건 — 함께 수정
+- **#15** `Description.csv` 9종 추가 + `CardData.ResolveInfoKey()` 조사 토큰 최장 전방일치
+- **#16** GOHANG 3종 설명 작성 (ERIS_2ND/3RD는 #7 대기)
+- 검증: 컴파일 0건 + 에디터 script-execute로 전 DB 파싱 검증 — CardDB 398행 enum 실패 0 / @토큰 미해결 0 / MonsterDB 실패 1(의도된 E2행) / Artifact·Legacy 0
+- **플레이 테스트 체크리스트**:
+  - [ ] 에리스 카드풀에 축복 카드(E20 템페스토소, E29, E33, E50, E59) 등장
+  - [ ] 홍단향 H3/H4(구원 특성) 카드 정상 로드·구원 툴팁 표시
+  - [ ] 별무리 카드 마우스오버 시 특성 툴팁 표시
+  - [ ] G0(고행길)·H28(크기)·E50(파괴의권능)·G44(압도를) 마우스오버 시 용어 툴팁 팝업
+  - [ ] 고행 II/III 드로우 시 버프 아이콘 마우스오버 → 새 설명문 표시
 
 ---
 

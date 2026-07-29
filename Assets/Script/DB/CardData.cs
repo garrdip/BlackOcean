@@ -136,7 +136,7 @@ public partial class CardData : SingletonD<CardData>
             if(values[i].ToCharArray()[0] == '@') // 특수 용어
             {
                 values[i] = values[i].Remove(0,1);
-                card.info.Add(new Infomation(values[i],colorCnt));
+                card.info.Add(new Infomation(ResolveInfoKey(values[i]),colorCnt)); // '압도를' 처럼 조사가 붙은 토큰도 툴팁 키로 정규화
                 values[i] = colorList[colorCnt] + values[i] + "</color>";
                 colorCnt++;
             }
@@ -160,6 +160,17 @@ public partial class CardData : SingletonD<CardData>
 
         }
         return string.Join(" ",values); // Concat 메서드를 사용하여 배열의 요소들을 하나로 합침
+    }
+
+    // '@압도를'·'@크기의' 처럼 조사가 붙은 특수 용어 토큰을 Description.csv 키로 정규화 (최장 전방일치)
+    private string ResolveInfoKey(string token)
+    {
+        if(infomationDB.ContainsKey(token)) return token;
+        string bestKey = token;
+        int bestLength = 0;
+        foreach(string key in infomationDB.Keys)
+            if(token.StartsWith(key) && key.Length > bestLength){ bestKey = key; bestLength = key.Length; }
+        return bestKey;
     }
 
     
