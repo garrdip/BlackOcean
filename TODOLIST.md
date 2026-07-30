@@ -114,7 +114,8 @@
 ## 🟢 P4 — 코드 품질·죽은 코드 정리
 
 ### 17. `BinaryFormatter` 세이브 교체
-- [ ] `M_SaveManager.cs` — deprecated `BinaryFormatter` → JSON(JsonUtility/Newtonsoft) 등으로 교체
+- [x] `M_SaveManager.cs` — deprecated `BinaryFormatter` → JsonUtility로 교체 (`save.dat` → `save.json`, 구 포맷 호환 없음)
+- [x] `SaveData.cs` — JsonUtility가 직렬화 못 하는 튜플 필드를 `Vector2Int`/`Vector3`로 교체, 빈 플레이어 슬롯 판별용 `isActive` 활용
 - 참고: 세이브 포맷이 바뀌므로 기존 `save.dat` 호환은 포기해도 무방 (개발용 스냅샷)
 
 ### 18. 로비 보안·선택 검증
@@ -122,14 +123,14 @@
 - [ ] `CharacterSelectUI.cs:29-37` — 캐릭터 중복 선택 방지 (⚠ 기획 확정: 중복 허용이 의도일 수도 있음)
 
 ### 19. 죽은 코드·누수 정리
-- [ ] 에리스에게도 HA 어빌리티 카드 스폰됨 (`PlayerInterfaceServer.cs:41-63` 근처) — 스폰 제외
-- [ ] 홍단향 어빌리티 카드 `destroyCardList` 무한 누적 — 정리 경로 추가
-- [ ] `CardType.WOUND` / `BattleTurn.PLAYER_ORDERSELECT` 데드 enum 제거 (⚠ SyncVar 직렬화·CSV 파싱 영향 확인 후)
-- [ ] `CARD_AUDIT.md` G61 항목 낡음 — 문서 갱신
+- [x] 에리스에게도 HA 어빌리티 카드 스폰됨 — 실제 지점은 `GamePlayerDeck.Draw.cs` `CmdSpawnAbilityCard`(세 캐릭터 모두 HA 스폰 중이었음), 홍단향/게오르크만 스폰하도록 수정
+- [x] 어빌리티 카드 `destroyCardList` 무한 누적 — `M_TurnManager.CardQueue.cs`에서 어빌리티 카드는 destroyCardList 제외 (클라 destroyCards 경로가 없어 영원히 회수 안 되던 구조)
+- [x] `CardType.WOUND` / `BattleTurn.PLAYER_ORDERSELECT` 데드 enum 제거 — 씬/프리팹 직렬화 값 모두 0(기본값), CSV는 이름 파싱이라 안전 확인
+- [x] `CARD_AUDIT.md` G61 항목 낡음 — 수정 완료 표기로 갱신 (코드는 이미 설명과 일치)
 
 ### 20. 잊혀진덱 회수 경로 검증
-- [ ] `GAME_DESIGN.md` §5-4 — 잊혀진덱 `Clear()`만 되고 회수 없음 → 원본이 총괄 덱에 남는지 실측 검증
-- 검증: 찰나 카드 사용 후 전투 종료 → 총괄 덱에 해당 카드 존재 확인 (문제 없으면 문서에 확인 완료 표기)
+- [x] 코드 검증 완료 — 전투용 3덱은 모두 `CmdAddPrefareDeckWithShuffle`의 깊은복사본이고 총괄 덱(`deck`)은 전투 중 불변. `Clear()`는 복사본 폐기일 뿐이라 찰나 카드 원본은 총괄 덱에 유지됨. `GAME_DESIGN.md` §5-4에 확인 완료 표기
+- 검증(플레이): 찰나 카드 사용 후 전투 종료 → 총괄 덱에 해당 카드 존재 확인
 
 ---
 
@@ -178,6 +179,18 @@
   - [ ] 별무리 카드 마우스오버 시 특성 툴팁 표시
   - [ ] G0(고행길)·H28(크기)·E50(파괴의권능)·G44(압도를) 마우스오버 시 용어 툴팁 팝업
   - [ ] 고행 II/III 드로우 시 버프 아이콘 마우스오버 → 새 설명문 표시
+
+### 회차 4 — 2026-07-30 · P4 #17, #19, #20 🔄 컴파일 검증·테스트 대기
+- **#17** `M_SaveManager.cs` — BinaryFormatter → JsonUtility (`save.json`), 파싱 실패 시 로드 중단 처리. `SaveData.cs` 튜플 → `Vector2Int`/`Vector3`, `isActive` 슬롯 플래그 도입. 소비처 갱신: `M_MapManager.cs`(.Item1→.x), `GamePlayer.cs`/`GamePlayerDeck.cs`(null break → isActive continue), `CreateLobby.cs`(로드 실패 시 일반 시작)
+- **#19** `GamePlayerDeck.Draw.cs` `CmdSpawnAbilityCard` — 에리스 HA 스폰 제외(홍단향/게오르크만). `M_TurnManager.CardQueue.cs` — 어빌리티 카드 destroyCardList 누적 차단. `ProjectD.cs` — `CardType.WOUND`/`BattleTurn.PLAYER_ORDERSELECT` 제거(직렬화 영향 없음 확인: GameScene `Phase: 0`, GamePlayer.prefab `previousCardType: 0`, CSV는 이름 파싱). `CARD_AUDIT.md` G61 수정 완료 표기
+- **#20** 잊혀진덱 회수 — 코드 검증으로 종결: 전투 3덱은 깊은복사본, 총괄 덱 불변 → 찰나 원본 유지. `GAME_DESIGN.md` §5-4 갱신(+ `CmdClearPrefareDeckAndTrashDeck` 중복 복원 주의 명시)
+- ⚠ 컴파일 검증 미완: Unity 에디터(MCP) 미실행 상태 — 에디터 켠 뒤 `assets-refresh`로 확인 필요
+- **플레이 테스트 체크리스트**:
+  - [ ] 로비명 `load`로 방 생성(세이브 없음 상태) → 일반 시작으로 진행 + "Save File does not exist" 로그
+  - [ ] 게임 진행 중 세이브(SaveTest) → `save.json` 생성 확인 → 재시작 후 로비명 `load` → HP/덱/맵(현재 방 위치·거점 포함) 복원 확인
+  - [ ] 에리스 플레이 시 전투 진입 → HA 어빌리티 카드 미생성(어빌리티 버튼도 기존대로 없음)
+  - [ ] 홍단향 철귀이동(HA) 반복 사용 → 이상 없이 계속 재사용 가능
+  - [ ] 찰나 카드 사용 → 전투 종료 → 총괄 덱(덱 목록 UI)에 해당 카드 존재
 
 ---
 

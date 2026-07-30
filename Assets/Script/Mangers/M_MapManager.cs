@@ -418,7 +418,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         
         foreach(SaveDataMapRoom saveDataMapRoom in saveData.map.hexagonMapRooms)
         {
-            Vector3 position = new Vector3(saveDataMapRoom.position.Item1,saveDataMapRoom.position.Item2,saveDataMapRoom.position.Item3);
+            Vector3 position = saveDataMapRoom.position;
             GameObject aroundRoomObject = Instantiate(
                 networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
                 position,
@@ -434,7 +434,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             aroundRoom.isRegion = saveDataMapRoom.isRegion;
             
             // 고유 좌표계 값 설정
-            aroundRoom.coordinate = new Vector2Int(saveDataMapRoom.coordinate.Item1,saveDataMapRoom.coordinate.Item2);
+            aroundRoom.coordinate = saveDataMapRoom.coordinate;
             NetworkServer.Spawn(aroundRoomObject);
 
             // 육각형 위치 및 오브젝트 클래스 리스트에 추가
@@ -529,7 +529,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             //각각의 타일의 위치를 정의하는 곳.
             foreach(SaveDataTile saveDataTile in saveDataRegion.tiles)
             {
-                Tile newTile = new Tile(new Vector3(saveDataTile.coordinate.Item1,saveDataTile.coordinate.Item2,0));                
+                Tile newTile = new Tile(new Vector3(saveDataTile.coordinate.x,saveDataTile.coordinate.y,0));
                 newRegion.tiles.Add(newTile);
             }
         }

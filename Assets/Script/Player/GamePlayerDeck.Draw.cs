@@ -176,19 +176,11 @@ public partial class GamePlayerDeck
     {
         Vector3 cardSpawnPosition = new Vector3(-100f, 0f, 0f);
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        Card abilityCardBase = new Card();
-        switch(GetComponent<GamePlayer>().character)
-        {
-            case Character.HONGDANHYANG :
-                abilityCardBase = new Card(CardData.instance.cards.Find(c => c.cardNumber.Equals("HA"))); 
-                break;
-            case Character.ERIS :
-                abilityCardBase = new Card(CardData.instance.cards.Find(c => c.cardNumber.Equals("HA"))); 
-                break;
-            case Character.GEORK :
-                abilityCardBase = new Card(CardData.instance.cards.Find(c => c.cardNumber.Equals("HA"))); 
-                break;
-        }
+        // 에리스는 어빌리티 버튼/화살표가 없으므로(광기 변신은 카드가 아님) HA 어빌리티 카드를 스폰하지 않는다
+        Character character = GetComponent<GamePlayer>().character;
+        if(character != Character.HONGDANHYANG && character != Character.GEORK) return;
+
+        Card abilityCardBase = new Card(CardData.instance.cards.Find(c => c.cardNumber.Equals("HA")));
         GameObject abilityCardObject = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("CardOnHand")),
                 cardSpawnPosition,

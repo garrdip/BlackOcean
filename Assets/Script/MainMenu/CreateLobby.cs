@@ -24,7 +24,7 @@ public class CreateLobby : MonoBehaviour
         if(StringUtils.RemoveZWSP(lobbyName.text) == "load")
         {
             M_SaveManager.instance.LoadGameDataFromFile();
-            M_SaveManager.instance.isSaveGame = true;
+            M_SaveManager.instance.isSaveGame = M_SaveManager.instance.loadData != null; // 파일 없음·파싱 실패 시 일반 시작으로 진행
         }
     }
     

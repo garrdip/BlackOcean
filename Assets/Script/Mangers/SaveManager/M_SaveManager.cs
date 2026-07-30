@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using Mirror;
 
@@ -11,13 +10,17 @@ public class M_SaveManager : NetworkSingletonD<M_SaveManager>
     public bool isSaveGame = false;
     public SaveData loadData;
 
+    // 세이브 파일 경로 — BinaryFormatter(save.dat)에서 JSON(save.json)으로 교체. 구 포맷과 호환되지 않음 (개발용 스냅샷이라 마이그레이션 없음)
+    static string FilePath => Application.persistentDataPath + "/save.json";
+
     public void SaveGameDataToFile(GamePlayer[] games)
     {
         SaveData data = new SaveData();
-        
+
         for(int i = 0 ;i < games.Length ; i ++)
         {
             data.players[i] = new SaveDataPlayer();
+            data.players[i].isActive = true;
             data.players[i].character = games[i].character;
             data.players[i].HP = games[i].HP;
             data.players[i].MaxHP = games[i].MaxHP;
@@ -28,7 +31,7 @@ public class M_SaveManager : NetworkSingletonD<M_SaveManager>
             }
         }
 
-        data.map.currentRoom = (M_MapManager.instance.currentRoom.coordinate.x,M_MapManager.instance.currentRoom.coordinate.y);
+        data.map.currentRoom = M_MapManager.instance.currentRoom.coordinate;
 
         foreach(HexagonMapRoom mapRoom in M_MapManager.instance.hexagonMapRooms)
             data.map.hexagonMapRooms.Add(new SaveDataMapRoom(mapRoom));
@@ -44,26 +47,23 @@ public class M_SaveManager : NetworkSingletonD<M_SaveManager>
             data.map.regions.Add(saveDataRegion);
         }
 
-        string filePath = Application.persistentDataPath + "/save.dat";
-        BinaryFormatter formatter = new BinaryFormatter();
-        FileStream stream = new FileStream(filePath, FileMode.Create);
-
-        formatter.Serialize(stream, data);
-        stream.Close();
-        Debug.Log(filePath +" Save Done");
+        File.WriteAllText(FilePath, JsonUtility.ToJson(data, true));
+        Debug.Log(FilePath + " Save Done");
     }
 
     public void LoadGameDataFromFile()
     {
-        string filePath = Application.persistentDataPath + "/save.dat";
-        if(File.Exists(filePath))
+        if(File.Exists(FilePath))
         {
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream stream = new FileStream(filePath, FileMode.Open);
-
-            loadData = formatter.Deserialize(stream) as SaveData;
-            stream.Close();
-
+            try
+            {
+                loadData = JsonUtility.FromJson<SaveData>(File.ReadAllText(FilePath));
+            }
+            catch(System.Exception e)
+            {
+                loadData = null;
+                Debug.LogError($"[M_SaveManager] 세이브 파일 파싱 실패: {FilePath}\n{e}");
+            }
         }
         else
         {
@@ -71,4 +71,3 @@ public class M_SaveManager : NetworkSingletonD<M_SaveManager>
         }
     }
 }
-

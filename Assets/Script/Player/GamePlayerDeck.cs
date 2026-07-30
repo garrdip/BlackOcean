@@ -186,7 +186,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         {
             foreach(SaveDataPlayer saveDataPlayer in M_SaveManager.instance.loadData.players)
             {
-                if(saveDataPlayer == null)break;
+                if(saveDataPlayer == null || !saveDataPlayer.isActive)continue; // JSON 역직렬화 시 빈 슬롯은 기본 인스턴스로 채워짐
                 if(saveDataPlayer.ownerSteamId == GetComponent<GamePlayer>().objectOwner.steamID)
                 {
                     foreach(Card card in saveDataPlayer.cards)

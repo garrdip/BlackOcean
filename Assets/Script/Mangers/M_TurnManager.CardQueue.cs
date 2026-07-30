@@ -99,7 +99,9 @@ public partial class M_TurnManager
                             SerCurrentCardQueue(cardOnHand, gpd.netId, INDEX_OPERATION.DECREASE);
                         }else if(byeolmuriReturnToHand){
                             gpd.ReturnToCardOnHand(cardOnHand); // 별무리 전략 강화 — 카드는 사용 처리되고 패로 복귀 (큐 표시는 유지)
-                        }else{
+                        }else if(cardOnHand != gpd.abilityCard){
+                            // 어빌리티 카드(HA)는 재사용 오브젝트라 버림 대상이 아님 — destroyCardList에 넣으면
+                            // 클라이언트 destroyCards 경로가 없어 영원히 회수되지 않고 사용할 때마다 누적된다
                             gpd.destroyCardList.Add(cardOnHand);
                         }
                         gpd.numOfUsedCard++;
