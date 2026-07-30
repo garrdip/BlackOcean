@@ -70,10 +70,14 @@ public class PlayerInterfaceServer : NetworkBehaviour
         gamePlayer.mapPlayerNetId = mapPlayer.netId;
 
         // MapPlayerPiece 오브젝트 생성
+        // [3D 맵 리뉴얼 테스트] 2D 맵 생성이 비활성화된 동안에는 currentRoom이 null이므로 원점에서 생성
         GamePlayerMap gamePlayerMap = gamePlayer.GetComponent<GamePlayerMap>();
+        Vector3 mapPlayerPieceSpawnPosition = M_MapManager.instance.currentRoom != null
+            ? M_MapManager.instance.currentRoom.position
+            : Vector3.zero;
         GameObject mapPlayerPieceObject = Instantiate(
             networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerPiece"),
-            M_MapManager.instance.currentRoom.position,
+            mapPlayerPieceSpawnPosition,
             Quaternion.identity
         );
         MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();

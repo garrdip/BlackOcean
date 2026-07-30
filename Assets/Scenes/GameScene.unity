@@ -8542,6 +8542,93 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 553044123}
   m_CullTransparentMesh: 1
+--- !u!1 &553773939
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 553773941}
+  - component: {fileID: 553773940}
+  - component: {fileID: 553773943}
+  - component: {fileID: 553773942}
+  m_Layer: 0
+  m_Name: SphereMapManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &553773940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553773939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b1c14bf53c07741acffc3a2d6ac05e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectD.Map3DToggle
+  sphereView: {fileID: 1539388188}
+  legacy2DObjects:
+  - {fileID: 6530405383496439408}
+  - {fileID: 4770237053509413331}
+  - {fileID: 1495258191}
+  startWith3D: 1
+--- !u!4 &553773941
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553773939}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &553773942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553773939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b3c4b2b103b3b94695e676f7597b39f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectD.SphereMapNetwork
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  system: {fileID: 1539388190}
+  mapSeed: 0
+  bossTileIndex: -1
+--- !u!114 &553773943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553773939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
+  sceneId: 3278881271
+  _assetId: 0
+  serverOnly: 0
+  visible: 0
+  hasSpawned: 0
 --- !u!1 &555468149
 GameObject:
   m_ObjectHideFlags: 0
@@ -10362,18 +10449,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10837ee7ec97f6d48b4db00e8ee75cba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  needItemCount: 0
-  itemPrefab: {fileID: -990507043462641631, guid: c594336229e16324b85b8ff78e4bb051, type: 3}
-  dynamicItemSize: 0
-  layout:
-    axis: 4
-    padding: {x: 0, y: 0}
-    space: {x: 0, y: 0}
-    topToBotton: 1
-    leftToRight: 1
-    values: []
-  padding: 0
-  space: 0
   onChangeValue:
     m_PersistentCalls:
       m_Calls: []
@@ -10386,6 +10461,18 @@ MonoBehaviour:
   onEndLine:
     m_PersistentCalls:
       m_Calls: []
+  needItemCount: 0
+  itemPrefab: {fileID: -990507043462641631, guid: c594336229e16324b85b8ff78e4bb051, type: 3}
+  dynamicItemSize: 0
+  layout:
+    axis: 4
+    padding: {x: 0, y: 0}
+    space: {x: 0, y: 0}
+    topToBotton: 1
+    leftToRight: 1
+    values: []
+  padding: 0
+  space: 0
 --- !u!1 &642702211
 GameObject:
   m_ObjectHideFlags: 0
@@ -24963,6 +25050,101 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1539388187
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1539388189}
+  - component: {fileID: 1539388188}
+  - component: {fileID: 1539388190}
+  m_Layer: 0
+  m_Name: SphereMapView3D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1539388188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539388187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18669e1adbc10ea4bbd474a450678329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectD.SphereMapView
+  subdivision: 8
+  radius: 5
+  spacing: 0.12
+  thickness: 0.15
+  tileMaterial: {fileID: 0}
+  hexagonColor: {r: 0.85, g: 0.85, b: 0.85, a: 1}
+  pentagonColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+  focusHeight: 0.6
+  focusDuration: 0.5
+  unfocusedDim: 0.75
+  rotateSpeed: 0.25
+  dragThreshold: 6
+  blockWhenPointerOverUI: 0
+  zoomSpeed: 0.15
+  zoomMin: 1
+  zoomMax: 3
+  createLight: 0
+--- !u!4 &1539388189
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539388187}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4770237053567765933}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1539388190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539388187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1b584cbdbe532c448ad07ae87c341e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectD.SphereMapSystem
+  iconAtlas: {fileID: 4343727234628468602, guid: 0cbd91c0212b3c44597746546b01860c, type: 2}
+  iconScale: 1
+  startColor: {r: 0.3, g: 0.65, b: 1, a: 1}
+  monsterColor: {r: 0.9, g: 0.45, b: 0.4, a: 1}
+  eliteColor: {r: 0.75, g: 0.3, b: 0.75, a: 1}
+  eventColor: {r: 0.45, g: 0.85, b: 0.5, a: 1}
+  campColor: {r: 0.95, g: 0.7, b: 0.35, a: 1}
+  itemShopColor: {r: 0.95, g: 0.9, b: 0.45, a: 1}
+  cardShopColor: {r: 0.45, g: 0.85, b: 0.9, a: 1}
+  completeColor: {r: 0.72, g: 0.72, b: 0.72, a: 1}
+  bossColor: {r: 0.91, g: 0, b: 1, a: 1}
+  ruinsColor: {r: 0.6, g: 0.25, b: 0.9, a: 1}
+  inactiveColor: {r: 0.28, g: 0.28, b: 0.32, a: 1}
+  pathColor: {r: 1, g: 0.98, b: 0.7, a: 1}
+  votedTint: 0.35
+  bossZoneRange: 2
+  bossVisualScale: 1
+  bossPlateColor: {r: 0.12, g: 0.1, b: 0.14, a: 1}
+  bossMoveDuration: 1.2
+  currentTileIndex: -1
+  destinationIndex: -1
 --- !u!1 &1546772037
 GameObject:
   m_ObjectHideFlags: 0
@@ -36034,6 +36216,8 @@ MonoBehaviour:
   preEffcetOperating: 0
   monsterShieldInitialize: 0
   dyingMonsers: []
+  eliteKillCountOnGame: 0
+  bossKillCountOnGame: 0
 --- !u!1 &3946356632764995061
 GameObject:
   m_ObjectHideFlags: 0
@@ -36331,6 +36515,7 @@ Transform:
   - {fileID: 4770237054533932396}
   - {fileID: 860366215}
   - {fileID: 2101351540019734366}
+  - {fileID: 1539388189}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4770237054533932394
@@ -63024,3 +63209,4 @@ SceneRoots:
   - {fileID: 743138902}
   - {fileID: 4197376}
   - {fileID: 1253688897}
+  - {fileID: 553773941}

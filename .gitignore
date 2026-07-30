@@ -73,3 +73,7 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Claude Code / Unity-MCP 관련 로컬 파일 (git 추적 제외)
+.mcp.json
+.claude/

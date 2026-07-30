@@ -463,6 +463,10 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                 EnterTheRoom(hexagonMapRoom);
             }
         }
+        // [3D 맵 리뉴얼 테스트] 2D 투표 결과가 없으면 3D 구체 맵 투표 결과로 이동
+        else if(SphereMapNetwork.instance != null){
+            SphereMapNetwork.instance.TryMoveByVotes();
+        }
     }
 
     [Server]
