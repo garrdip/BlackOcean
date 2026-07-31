@@ -68,6 +68,8 @@ namespace ProjectD
         public System.Action<SphereMapTile> OnTileClicked;
         /// <summary>빈 공간 클릭 시 호출. 지정하면 기본 동작(포커스 해제) 대신 이 콜백이 처리한다.</summary>
         public System.Action OnEmptySpaceClicked;
+        /// <summary>마우스가 올라간 타일이 바뀔 때 호출. 타일에서 벗어나면 null 전달. (SphereMapSystem이 거점지역 팝업에 사용)</summary>
+        public System.Action<SphereMapTile> OnTileHovered;
         /// <summary>Rebuild 완료 후 호출 (타일이 모두 새로 생성됨)</summary>
         public event System.Action OnRebuilt;
 
@@ -83,6 +85,7 @@ namespace ProjectD
         Vector3 _lastMousePos;
         bool _mouseHeld;
         bool _dragging;
+        int _hoveredIndex = -1;
         float _zoom = 1f;
         Vector3 _basePosition;
 
@@ -105,6 +108,12 @@ namespace ProjectD
             {
                 if (tile != null)
                     tile.transform.DOKill();
+            }
+            // 맵이 닫힐 때 호버 상태 해제 (거점지역 팝업이 남지 않도록)
+            if (_hoveredIndex != -1)
+            {
+                _hoveredIndex = -1;
+                OnTileHovered?.Invoke(null);
             }
         }
 
@@ -269,7 +278,38 @@ namespace ProjectD
                 _dragging = false;
             }
 
+            UpdateHover();
             HandleZoom();
+        }
+
+        // 마우스가 올라간 타일 추적 — 바뀔 때만 OnTileHovered 통지 (2D 맵의 OnMouseEnter/Exit 대응)
+        void UpdateHover()
+        {
+            if (OnTileHovered == null)
+                return;
+
+            SphereMapTile hoveredTile = null;
+            // 드래그 회전 중이거나 테스트 버튼 영역 위에서는 호버 없음 처리
+            if (!_dragging && !Map3DGuiArea.Contains(Input.mousePosition))
+            {
+                Camera cam = Camera.main;
+                if (cam != null)
+                {
+                    Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+                    if (Physics.Raycast(ray, out RaycastHit hit, 1000f))
+                    {
+                        var tile = hit.collider.GetComponent<SphereMapTile>();
+                        if (tile != null && tile.transform.IsChildOf(_tileRoot))
+                            hoveredTile = tile;
+                    }
+                }
+            }
+
+            int newIndex = hoveredTile != null ? hoveredTile.index : -1;
+            if (newIndex == _hoveredIndex)
+                return;
+            _hoveredIndex = newIndex;
+            OnTileHovered(hoveredTile);
         }
 
         // 구체 위에 마우스를 올린 채 스크롤하면 커서 지점을 중심으로 줌인/줌아웃

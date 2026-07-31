@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.U2D;
 using Mirror;
 using DG.Tweening;
+using TMPro;
 
 namespace ProjectD
 {
@@ -30,6 +31,10 @@ namespace ProjectD
         public SpriteAtlas iconAtlas;
         [Tooltip("아이콘 로컬 스케일")]
         [Min(0.01f)] public float iconScale = 1f;
+
+        [Header("방 정보 팝업 (2D hexagonMapRoomUI 대응)")]
+        [Tooltip("투표 정보 창 배율. 1이면 2D 맵과 같은 비율(타일 아이콘과 동일한 기준 스케일)이 된다")]
+        [Min(0.01f)] public float roomInfoScale = 1f;
 
         [Header("방 타입 색상")]
         public Color startColor = new Color(0.30f, 0.65f, 1.00f);
@@ -98,11 +103,16 @@ namespace ProjectD
         int _pendingMoveIndex = -1; // 전투 클리어 후 맵 복귀 시점에 적용할 보류 이동
         readonly List<int> _pendingPath = new List<int>(); // 보류 이동의 경로 (이동 확정 시점에 확정)
         readonly List<GameObject> _voteMarkers = new List<GameObject>(); // 플레이어별 투표 마커
-        Mesh _voteMarkerMesh;
         GameObject _bossPiece;      // 구체 위 보스 말 (육각 판 + 2D 보스 비주얼 복제)
         int _bossVisualTile = -1;   // 보스 말이 현재 표시된 타일 (뷰 재생성 후 접근 애니메이션 재현용)
         Mesh _bossPlateMesh;
         Tween _bossTween;
+        // 구체 위 장식(아이콘·방 정보 창·텍스트)이 쓰는 정렬 레이어. 2D 헥사 맵이 쓰던 것과 같은 레이어다.
+        // 기본값 "Default"는 프로젝트 정렬 레이어 목록의 맨 앞이라, URP 2D 렌더러가 그 배치를 가장 먼저 그린 뒤
+        // 뒤 배치를 처리하면서 타일 틈새(깊이가 비어 있는 픽셀)를 다시 칠해 장식이 틈새에서만 지워졌다.
+        const string SortingLayerIcon = "HexagonMapRoomIcon";
+        const string SortingLayerRoomUI = "HexagonMapRoomUI";
+        HexagonMapRoom _voteWindowTemplate; // 투표 정보 창을 복제해 올 2D 방 프리팹
 
         public bool HasState => _hasState;
 
@@ -113,6 +123,7 @@ namespace ProjectD
             EnsureView();
             _view.OnTileClicked = HandleTileClicked;
             _view.OnEmptySpaceClicked = HandleEmptySpaceClicked;
+            _view.OnTileHovered = HandleTileHovered;
             _view.OnRebuilt += HandleViewRebuilt;
             // 맵 복귀(전투 클리어 후) 시점에 보류된 이동을 반영 — 화면이 딤에 가려진 동안 적용되므로 자연스럽다
             if (_pendingMoveIndex >= 0)
@@ -124,12 +135,23 @@ namespace ProjectD
         void OnDisable()
         {
             _bossTween?.Kill();
+            foreach (GameObject marker in _voteMarkers)
+            {
+                if (marker != null)
+                {
+                    marker.transform.DOKill();
+                    foreach (SpriteRenderer sr in marker.GetComponentsInChildren<SpriteRenderer>(true))
+                        sr.DOKill();
+                }
+            }
             if (_view != null)
             {
                 _view.OnTileClicked = null;
                 _view.OnEmptySpaceClicked = null;
+                _view.OnTileHovered = null;
                 _view.OnRebuilt -= HandleViewRebuilt;
             }
+            HideRegionPopUp();
         }
 
         void EnsureView()
@@ -278,6 +300,42 @@ namespace ProjectD
                 if (!_isPentagon[next])
                     _activeRooms[next] = true;
             }
+        }
+
+        // ------------------------------------------------------------ Region PopUp (거점지역 정보 팝업) --------------------------------------------------------------- //
+
+        // 2D 맵의 HexagonMapRoom.OnMouseEnter/Exit 대응 — 거점지역 소속 타일에 호버하면 등급 팝업 표시
+        void HandleTileHovered(SphereMapTile tile)
+        {
+            if (MapUI.instance == null)
+                return;
+            if (tile != null && _hasState && !_isPentagon[tile.index])
+            {
+                int regionIndex = FindRegionIndex(tile.index);
+                if (regionIndex >= 0)
+                {
+                    MapUI.instance.RegionPopUpShow(_regionGrades[regionIndex]);
+                    return;
+                }
+            }
+            MapUI.instance.RegionPopUpHide();
+        }
+
+        void HideRegionPopUp()
+        {
+            if (MapUI.instance != null)
+                MapUI.instance.RegionPopUpHide();
+        }
+
+        // 타일이 속한 거점지역 인덱스 (-1 = 소속 없음). 지역 수가 적어(기본 8개) 선형 탐색로 충분
+        int FindRegionIndex(int tileIndex)
+        {
+            for (int i = 0; i < _regionTiles.Count; i++)
+            {
+                if (_regionTiles[i].Contains(tileIndex))
+                    return i;
+            }
+            return -1;
         }
 
         // ------------------------------------------------------------ Region (거점지역) --------------------------------------------------------------- //
@@ -713,6 +771,7 @@ namespace ProjectD
             return result; // 도달 불가 → 빈 리스트
         }
 
+
         // ------------------------------------------------------------ Visual --------------------------------------------------------------- //
 
         /// <summary>상태 배열을 뷰 타일에 반영하고 색/아이콘 갱신</summary>
@@ -1027,12 +1086,18 @@ namespace ProjectD
         // ------------------------------------------------------------ Vote Marker --------------------------------------------------------------- //
 
         // 투표한 플레이어의 색으로 작은 육각형 마커를 타일 위에 표시 (2D의 투표 아이콘 대응)
+        // 2D MapPlayerDestination과 동일하게 남은 이동 거리 숫자 + 업다운 바운스 연출 포함
         void UpdateVoteMarkers()
         {
             foreach (GameObject marker in _voteMarkers)
             {
                 if (marker != null)
+                {
+                    marker.transform.DOKill();
+                    foreach (SpriteRenderer sr in marker.GetComponentsInChildren<SpriteRenderer>(true))
+                        sr.DOKill(); // 방 정보 창 라이트 펄스(DOFade)는 트랜스폼이 아닌 렌더러 대상 트윈
                     Destroy(marker);
+                }
             }
             _voteMarkers.Clear();
 
@@ -1042,69 +1107,315 @@ namespace ProjectD
             if (tiles.Count != _tileCount)
                 return;
 
-            // 타일별 투표자 색 수집
-            var colorsByTile = new Dictionary<int, List<Color>>();
+            // 타일별 투표자 수집 (2D는 방마다 votePlyers 목록을 들고 있다)
+            var votersByTile = new Dictionary<int, List<uint>>();
             foreach (KeyValuePair<uint, int> vote in SphereMapNetwork.instance.votes)
             {
                 if (vote.Value < 0 || vote.Value >= _tileCount)
                     continue;
-                if (!colorsByTile.TryGetValue(vote.Value, out List<Color> colors))
+                if (!votersByTile.TryGetValue(vote.Value, out List<uint> voters))
                 {
-                    colors = new List<Color>();
-                    colorsByTile.Add(vote.Value, colors);
+                    voters = new List<uint>();
+                    votersByTile.Add(vote.Value, voters);
                 }
-                colors.Add(GetPlayerColor(vote.Key));
+                voters.Add(vote.Key);
             }
 
-            foreach (KeyValuePair<int, List<Color>> entry in colorsByTile)
+            foreach (KeyValuePair<int, List<uint>> entry in votersByTile)
             {
                 SphereMapTile tile = tiles[entry.Key];
-                // 접평면 기저 (마커를 가로로 나란히 배치)
-                Vector3 t1 = Vector3.Cross(tile.normal, Vector3.up);
-                if (t1.sqrMagnitude < 1e-6f)
-                    t1 = Vector3.Cross(tile.normal, Vector3.right);
-                t1.Normalize();
-                Vector3 t2 = Vector3.Cross(tile.normal, t1);
 
-                for (int i = 0; i < entry.Value.Count; i++)
-                {
-                    var go = new GameObject("VoteMarker");
-                    go.hideFlags = HideFlags.DontSave;
-                    go.transform.SetParent(tile.transform, false); // 타일이 상승하면 마커도 함께 이동
-                    float offset = (i - (entry.Value.Count - 1) * 0.5f) * 0.22f;
-                    go.transform.localPosition = tile.center + tile.normal * 0.08f + t1 * offset + t2 * 0.16f;
-                    go.transform.localRotation = Quaternion.FromToRotation(Vector3.up, tile.normal);
+                // 타일별 그룹 루트 — 투표 정보 창을 묶어 함께 바운스 (2D MapPlayerDestination.MoveBounce 대응)
+                var group = new GameObject("VoteMarkerGroup");
+                group.hideFlags = HideFlags.DontSave;
+                group.transform.SetParent(tile.transform, false); // 타일이 상승하면 정보 창도 함께 이동
 
-                    go.AddComponent<MeshFilter>().sharedMesh = GetVoteMarkerMesh();
-                    var meshRenderer = go.AddComponent<MeshRenderer>();
-                    meshRenderer.sharedMaterial = tile.Renderer.sharedMaterial;
-                    var mpb = new MaterialPropertyBlock();
-                    mpb.SetColor("_Color", entry.Value[i]);
-                    meshRenderer.SetPropertyBlock(mpb);
+                // 내가 이 타일에 투표했는지 (2D ChangeHexagonMapRoomLayoutState와 동일하게 레이아웃을 나눈다)
+                bool isMyVote = PlayerRegistry.Local != null && entry.Value.Contains(PlayerRegistry.Local.netId);
+                CreateVoteInfoWindow(group.transform, tile, entry.Key, isMyVote, entry.Value);
 
-                    _voteMarkers.Add(go);
-                }
+                // 법선 방향 업다운 바운스 무한 반복 (2D의 0.2f/0.3s 업다운과 동일 리듬)
+                group.transform.DOLocalMove(tile.normal * 0.12f, 0.3f)
+                    .SetEase(Ease.InOutSine)
+                    .SetLoops(-1, LoopType.Yoyo);
+
+                _voteMarkers.Add(group);
             }
+
+            UpdateVoteInfoPopUps();
         }
 
-        Mesh GetVoteMarkerMesh()
+        // 화면 우상단 방 정보창 갱신 — 2D의 playerVoteHexagonMapRoom 콜백(CreateMapInfoPopUpItem) 대응
+        void UpdateVoteInfoPopUps()
         {
-            if (_voteMarkerMesh == null)
+            if (!Application.isPlaying || MapUI.instance == null || M_MapManager.instance == null || SphereMapNetwork.instance == null)
+                return;
+            foreach (PlayerInterface player in PlayerRegistry.All)
             {
-                _voteMarkerMesh = FlatPolygonMeshGenerator.CreateHexagon(0.09f, 0.06f);
-                _voteMarkerMesh.hideFlags = HideFlags.DontSave;
+                GamePlayer gamePlayer = player.currentGamePlayer;
+                if (gamePlayer == null)
+                    continue;
+                M_MapManager.instance.RemoveMapInfoPopUpItem(gamePlayer);
+                if (SphereMapNetwork.instance.votes.TryGetValue(player.netId, out int votedTile)
+                    && votedTile >= 0 && votedTile < _tileCount)
+                    M_MapManager.instance.CreateMapInfoPopUpItem(gamePlayer, _roomTypes[votedTile]);
             }
-            return _voteMarkerMesh;
         }
 
-        Color GetPlayerColor(uint playerNetId)
+        // 현재 방에서 투표 타일까지의 이동 거리 (2D는 findPath.Count를 그대로 표기)
+        int ComputeVoteDistance(int tileIndex)
+        {
+            if (tileIndex == currentTileIndex)
+                return 0; // 제자리 보스전
+            if (IsBossExists())
+                return 1; // 보스 출현 시 1칸 이동만 허용됨
+            return FindPath(currentTileIndex, tileIndex).Count;
+        }
+
+        // ------------------------------------------------------------ Room Info Panel (방 정보 팝업) --------------------------------------------------------------- //
+
+        // 2D 방 프리팹(HexagonMapRoom)의 투표 정보 창을 통째로 복제해 타일 위에 세운다.
+        // 손으로 다시 배치하지 않고 원본을 그대로 쓰므로 배경 창(PopWindow)·핀·라인·위험도 화살표까지 2D와 동일하게 나온다.
+        // (2D MapBoss 비주얼을 복제하는 CreateBossPiece와 같은 방식)
+        void CreateVoteInfoWindow(Transform parent, SphereMapTile tile, int tileIndex, bool isMyVote, List<uint> voters)
+        {
+            HexagonMapRoom template = GetVoteWindowTemplate();
+            GameObject layoutTemplate = template == null ? null : (isMyVote ? template.myVoteLayout : template.anotherVoteLayout);
+            if (layoutTemplate == null)
+                return;
+
+            // 앵커: 타일 면 위에 서서 스프라이트 정면이 구 바깥을 향한다. 2D 레이아웃이 방 중심 기준으로 배치돼 있으므로
+            // 복제본의 로컬 위치(예: MyVoteLayout의 y=+1.26)를 그대로 두면 2D와 같은 간격이 유지된다.
+            var anchor = new GameObject("VoteInfoWindow");
+            anchor.hideFlags = HideFlags.DontSave;
+            anchor.transform.SetParent(parent, false);
+            anchor.transform.localPosition = tile.center + tile.normal * 0.12f;
+            Vector3 upHint = Mathf.Abs(Vector3.Dot(tile.normal, Vector3.up)) > 0.99f ? Vector3.forward : Vector3.up;
+            anchor.transform.localRotation = Quaternion.LookRotation(-tile.normal, upHint);
+            anchor.transform.localScale = Vector3.one * (iconScale * roomInfoScale);
+
+            GameObject layout = Instantiate(layoutTemplate, anchor.transform, false);
+            layout.name = "VoteLayout";
+            layout.hideFlags = HideFlags.DontSave;
+            layout.SetActive(true); // 프리팹에서는 꺼진 상태로 보관된다
+
+            // 복제본은 전부 Default 레이어라 타일 틈새에서 지워진다 — 맵 레이어로 옮기고 계층 순서대로 정렬값 부여
+            int order = 0;
+            foreach (Renderer renderer in layout.GetComponentsInChildren<Renderer>(true))
+                ApplyMapSortingLayer(renderer, SortingLayerRoomUI, order++);
+
+            PopulateVoteWindow(layout.transform, tileIndex, isMyVote, voters, template);
+        }
+
+        // 2D 방 프리팹 (보스 말과 같은 경로로 얻는다 — 플레이 중에만 유효)
+        HexagonMapRoom GetVoteWindowTemplate()
+        {
+            if (_voteWindowTemplate != null)
+                return _voteWindowTemplate;
+            var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            GameObject roomPrefab = networkRoomManager != null
+                ? networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom") : null;
+            if (roomPrefab != null)
+                _voteWindowTemplate = roomPrefab.GetComponent<HexagonMapRoom>();
+            return _voteWindowTemplate;
+        }
+
+        // 2D 방 타일 폭에 맞춰 축소 — 구체 타일(이웃 중심 간 거리)이 2D 방보다 훨씬 작다
+        // 복제한 2D 레이아웃에 현재 맵 데이터를 채운다 (2D의 ChangeMapHazardValue / OnUpdateVotePlayers 대응)
+        void PopulateVoteWindow(Transform layout, int tileIndex, bool isMyVote, List<uint> voters, HexagonMapRoom template)
+        {
+            // 이동 비용 — 2D는 findPath.Count를 그대로 표기
+            string distance = ComputeVoteDistance(tileIndex).ToString();
+            SetLayoutText(layout, "TextMyRequireCost", distance);
+            SetLayoutText(layout, "TextAnotherRequireCost", distance);
+
+            ApplyHazardIndicator(layout, tileIndex);
+            ApplyRoomInfoEmblem(layout, tileIndex, isMyVote);
+            ApplyVoteIcons(layout, voters, template);
+        }
+
+        // 위험도 증감 표시 — 2D ChangeMapHazardValue와 동일 (화살표 뒤집기 + 색상)
+        void ApplyHazardIndicator(Transform layout, int tileIndex)
+        {
+            Transform arrowTransform = layout.Find("HazardArrow");
+            SpriteRenderer arrow = arrowTransform != null ? arrowTransform.GetComponent<SpriteRenderer>() : null;
+            if (currentTileIndex < 0)
+            {
+                if (arrow != null)
+                    arrow.gameObject.SetActive(false);
+                return;
+            }
+
+            int hazardDiff = _hazards[tileIndex] - _hazards[currentTileIndex];
+            SetLayoutText(layout, "TextHazardValue", Mathf.Abs(hazardDiff).ToString());
+            if (hazardDiff == 0)
+            {
+                SetLayoutText(layout, "TextHazardState", "위험도 동일");
+                if (arrow != null)
+                {
+                    arrow.gameObject.SetActive(false);
+                    arrow.color = Color.white;
+                }
+                return;
+            }
+
+            SetLayoutText(layout, "TextHazardState", hazardDiff > 0 ? "위험도 증가" : "위험도 감소");
+            if (arrow != null)
+            {
+                arrow.gameObject.SetActive(true);
+                arrow.flipY = hazardDiff < 0;
+                arrow.color = hazardDiff > 0 ? Color.red : ProjectD.ColorUtils.HexToColor("#0080ff");
+            }
+        }
+
+        // 방 타입 문장(배경+아이콘) — 2D OnChangedRoomType의 매핑을 그대로 사용
+        void ApplyRoomInfoEmblem(Transform layout, int tileIndex, bool isMyVote)
+        {
+            Transform info = layout.Find("MapRoomInfo");
+            if (info == null || M_MapManager.instance == null)
+                return; // AnotherVoteLayout에는 문장이 없다 (2D와 동일)
+            if (!TryGetRoomInfoKeys(_roomTypes[tileIndex],
+                out MapRoomInfoBase baseKey, out MapRoomInfoBase baseLightKey,
+                out MapRoomInfoIcon iconKey, out MapRoomInfoIcon iconLightKey))
+                return; // 정보 창 스프라이트가 없는 방 타입 (2D와 동일하게 미표시)
+
+            M_MapManager.instance.mapRoomInfoBases.TryGetValue(baseKey, out Sprite baseSprite);
+            M_MapManager.instance.mapRoomInfoBases.TryGetValue(baseLightKey, out Sprite baseLightSprite);
+            M_MapManager.instance.mapRoomInfoIcons.TryGetValue(iconKey, out Sprite iconSprite);
+            M_MapManager.instance.mapRoomInfoIcons.TryGetValue(iconLightKey, out Sprite iconLightSprite);
+
+            SetLayoutSprite(info, "Base", baseSprite);
+            SpriteRenderer baseLight = SetLayoutSprite(info, "BaseLight", baseLightSprite);
+            SetLayoutSprite(info, "Icon", iconSprite);
+            SpriteRenderer iconLight = SetLayoutSprite(info, "IconLight", iconLightSprite);
+
+            // 내가 투표한 방에서만 라이트 펄스 (2D ChangeMapRoomInfoState 대응)
+            if (isMyVote)
+            {
+                PulseInfoLight(baseLight);
+                PulseInfoLight(iconLight);
+            }
+            else
+            {
+                SetSpriteAlpha(baseLight, 0f);
+                SetSpriteAlpha(iconLight, 0f);
+            }
+        }
+
+        // 플레이어 순번 자리마다 투표 아이콘 — 2D OnUpdateVotePlayers 대응
+        void ApplyVoteIcons(Transform layout, List<uint> voters, HexagonMapRoom template)
+        {
+            Transform icons = layout.Find("VoteIcons");
+            if (icons == null || template == null)
+                return;
+
+            for (int i = 0; i < icons.childCount; i++)
+            {
+                var renderer = icons.GetChild(i).GetComponent<SpriteRenderer>();
+                if (renderer != null)
+                    renderer.sprite = template.voteIconAnother; // 기본값: 미선택
+            }
+
+            if (M_TurnManager.instance == null)
+                return;
+            foreach (uint voterNetId in voters)
+            {
+                PlayerInterface voter = FindPlayer(voterNetId);
+                if (voter == null)
+                    continue;
+                int order = M_TurnManager.instance.playerOrder.FindIndex(netId => netId == voter.currentGamePlayerNetId);
+                if (order < 0 || order >= icons.childCount)
+                    continue;
+                var renderer = icons.GetChild(order).GetComponent<SpriteRenderer>();
+                if (renderer != null)
+                    renderer.sprite = voter == PlayerRegistry.Local ? template.voteIconMinePick : template.voteIconAnotherPick;
+            }
+        }
+
+        static PlayerInterface FindPlayer(uint netId)
         {
             foreach (PlayerInterface player in PlayerRegistry.All)
             {
-                if (player.netId == playerNetId)
-                    return player.color;
+                if (player.netId == netId)
+                    return player;
             }
-            return Color.white;
+            return null;
+        }
+
+        static void SetLayoutText(Transform layout, string childName, string value)
+        {
+            Transform child = layout.Find(childName);
+            if (child == null)
+                return;
+            var text = child.GetComponent<TextMeshPro>();
+            if (text != null)
+                text.text = value;
+        }
+
+        static SpriteRenderer SetLayoutSprite(Transform parent, string childName, Sprite sprite)
+        {
+            Transform child = parent.Find(childName);
+            if (child == null)
+                return null;
+            var renderer = child.GetComponent<SpriteRenderer>();
+            if (renderer != null && sprite != null)
+                renderer.sprite = sprite;
+            return renderer;
+        }
+
+        // 라이트 스프라이트 알파 0→1 왕복 펄스 (2D와 동일: 1초 Linear Yoyo 무한)
+        void PulseInfoLight(SpriteRenderer spriteRenderer)
+        {
+            if (spriteRenderer == null)
+                return;
+            SetSpriteAlpha(spriteRenderer, 0f);
+            spriteRenderer.DOFade(1f, 1f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+        }
+
+        void SetSpriteAlpha(SpriteRenderer spriteRenderer, float alpha)
+        {
+            if (spriteRenderer == null)
+                return;
+            Color color = spriteRenderer.color;
+            spriteRenderer.color = new Color(color.r, color.g, color.b, alpha);
+        }
+
+        // RoomType → 방 정보 창 스프라이트 키 (2D HexagonMapRoom.OnChangedRoomType의 매핑과 동일)
+        bool TryGetRoomInfoKeys(RoomType roomType,
+            out MapRoomInfoBase baseKey, out MapRoomInfoBase baseLightKey,
+            out MapRoomInfoIcon iconKey, out MapRoomInfoIcon iconLightKey)
+        {
+            switch (roomType)
+            {
+                case RoomType.MONSTER:
+                    baseKey = MapRoomInfoBase.NORMAL_MONSTER; baseLightKey = MapRoomInfoBase.NORMAL_MONSTER_L;
+                    iconKey = MapRoomInfoIcon.NORMAL_MONSTER; iconLightKey = MapRoomInfoIcon.NORMAL_MONSTER_L;
+                    return true;
+                case RoomType.ELITE:
+                    baseKey = MapRoomInfoBase.ELITE_MONSTER; baseLightKey = MapRoomInfoBase.ELITE_MONSTER_L;
+                    iconKey = MapRoomInfoIcon.ELITE_MONSTER; iconLightKey = MapRoomInfoIcon.ELITE_MONSTER_L;
+                    return true;
+                case RoomType.EVENT_POSITIIVE:
+                case RoomType.EVENT_NEGATIVE:
+                    baseKey = MapRoomInfoBase.EVENT; baseLightKey = MapRoomInfoBase.EVENT_L;
+                    iconKey = MapRoomInfoIcon.EVENT; iconLightKey = MapRoomInfoIcon.EVENT_L;
+                    return true;
+                case RoomType.CAMP:
+                    baseKey = MapRoomInfoBase.CAMP; baseLightKey = MapRoomInfoBase.CAMP_L;
+                    iconKey = MapRoomInfoIcon.CAMP; iconLightKey = MapRoomInfoIcon.CAMP_L;
+                    return true;
+                case RoomType.ITEM_NPC:
+                    baseKey = MapRoomInfoBase.ITEM_SHOP; baseLightKey = MapRoomInfoBase.ITEM_SHOP_L;
+                    iconKey = MapRoomInfoIcon.ITEM_SHOP; iconLightKey = MapRoomInfoIcon.ITEM_SHOP_L;
+                    return true;
+                case RoomType.CARD_NPC:
+                    baseKey = MapRoomInfoBase.CARD_SHOP; baseLightKey = MapRoomInfoBase.CARD_SHOP_L;
+                    iconKey = MapRoomInfoIcon.CARD_SHOP; iconLightKey = MapRoomInfoIcon.CARD_SHOP_L;
+                    return true;
+                default:
+                    baseKey = default; baseLightKey = default; iconKey = default; iconLightKey = default;
+                    return false;
+            }
         }
 
         void UpdateIcon(SphereMapTile tile, Sprite sprite)
@@ -1126,12 +1437,23 @@ namespace ProjectD
                 Vector3 upHint = Mathf.Abs(Vector3.Dot(tile.normal, Vector3.up)) > 0.99f ? Vector3.forward : Vector3.up;
                 go.transform.localRotation = Quaternion.LookRotation(-tile.normal, upHint);
                 tile.iconRenderer = go.AddComponent<SpriteRenderer>();
+                ApplyMapSortingLayer(tile.iconRenderer, SortingLayerIcon, 0);
             }
 
             tile.iconRenderer.gameObject.SetActive(true);
             if (tile.iconRenderer.sprite != sprite)
                 tile.iconRenderer.sprite = sprite;
             tile.iconRenderer.transform.localScale = Vector3.one * iconScale;
+        }
+
+        // 구체 위 장식을 맵 전용 정렬 레이어로 옮긴다. 레이어가 프로젝트에 없으면 정렬 순서만 적용한다.
+        static void ApplyMapSortingLayer(Renderer renderer, string layerName, int order)
+        {
+            if (renderer == null)
+                return;
+            if (SortingLayer.NameToID(layerName) != 0)
+                renderer.sortingLayerName = layerName;
+            renderer.sortingOrder = order;
         }
     }
 }

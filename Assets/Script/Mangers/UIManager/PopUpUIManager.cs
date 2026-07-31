@@ -445,11 +445,14 @@ public class PopUpUIManager : SingletonD<PopUpUIManager>
         public void HandleHideGameOverPopUp()
         {
             isGameoverPopUpOpen = false;
-            M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
             gameOverPopUp.GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).OnComplete(() => {
                 gameOverPopUp.SetActive(false);
+                // 호스트로 시작한 경우(싱글플레이 포함) StopClient만 하면 서버가 살아남아 mode가 ServerOnly로 남는다.
+                // 그 상태에서는 StartHost가 "이미 시작됨" 경고만 남기고 아무 일도 하지 않아 싱글플레이 버튼이 죽는다.
+                // RoomUI.HandleBackToMainScene / M_NetworkRoomManager의 메인 복귀와 동일하게 서버까지 내린다.
                 UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
-                networkRoomManager.StopClient();
+                NetworkServer.Shutdown();
+                NetworkClient.Disconnect();
                 M_SteamManager.LeaveLobby();
             });
             AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");

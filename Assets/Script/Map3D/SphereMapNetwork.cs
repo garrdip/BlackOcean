@@ -108,6 +108,13 @@ namespace ProjectD
         /// M_TurnManager.CheckAllPlayersReadyForMapMove에서 모든 플레이어가 레디일 때 호출된다.
         /// </summary>
         [Server]
+        static void ResetPlayersReady()
+        {
+            foreach (PlayerInterface player in PlayerRegistry.All)
+                player.isReady = false;
+        }
+
+        [Server]
         public bool TryMoveByVotes()
         {
             if (system == null || !system.HasState || votes.Count == 0)
@@ -149,13 +156,22 @@ namespace ProjectD
                 List<int> path = system.FindPath(system.currentTileIndex, chosen);
                 if (path.Count == 0)
                     return false;
-                // 행동 비용 확인 (2D EnterTheRoom과 동일)
-                if (path.Count > M_MapManager.instance.currentActionCost)
+                // 남은 행동 비용이 모자라면 갈 수 있는 데까지만 이동한다.
+                // (2D는 FindPath가 경로를 잘라 목적지 자체를 당기지만, 3D는 먼 방을 그대로 선택할 수 있게 두고
+                //  서버에서 잘라낸다 — 여기서 거부해버리면 전원 레디 상태로 멈춰버린다)
+                int affordable = Mathf.Max(0, M_MapManager.instance.currentActionCost);
+                if (affordable == 0)
                 {
-                    Debug.Log($"[3D맵] 행동 비용이 모자랍니다. 필요 : {path.Count} / 남은 비용 : {M_MapManager.instance.currentActionCost}");
+                    Debug.Log("[3D맵] 남은 행동 비용이 없어 이동할 수 없습니다.");
+                    ResetPlayersReady(); // 레디가 걸린 채 멈추지 않도록 해제
                     return false;
                 }
-                moveCost = path.Count;
+                if (path.Count > affordable)
+                {
+                    Debug.Log($"[3D맵] 행동 비용 부족 — 경로 중간까지만 이동합니다. 필요 : {path.Count} / 남은 비용 : {affordable}");
+                    chosen = path[affordable - 1]; // 경로상 갈 수 있는 마지막 방 (이미 클리어된 방이라 전투는 없다)
+                }
+                moveCost = Mathf.Min(path.Count, affordable);
             }
 
             RoomType destType = system.GetRoomTypeOf(chosen);
@@ -167,9 +183,7 @@ namespace ProjectD
             RpcMoveParty(chosen, !entersBattle); // 모든 클라이언트(호스트 포함)에 이동 전달
             votes.Clear();
 
-            // 다음 맵 선택을 위해 레디 상태 리셋
-            foreach (PlayerInterface player in PlayerRegistry.All)
-                player.isReady = false;
+            ResetPlayersReady(); // 다음 맵 선택을 위해 레디 상태 리셋
 
             M_MapManager.instance.DecreaseTotalActionCost(moveCost); // 이동 거리만큼 행동 비용 감소 (0이 되면 보스 출현)
 

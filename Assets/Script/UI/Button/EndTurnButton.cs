@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
+using ProjectD;
 using DG.Tweening;
 
 
@@ -30,11 +31,23 @@ public class EndTurnButton : ButtonBase
 
     public void OnPointerClick()
     {
+        if(!IsEndTurnAllowedPhase()) return; // 내 행동 차례가 아닐 때는 반응하지 않음
+
         AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "stage_ready");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
         PlayerInterface playerInterface = PlayerRegistry.Local;
         playerInterface.endTurnActive = !playerInterface.endTurnActive;
         playerInterface.OnEndTurnStateChanged(playerInterface.endTurnActive,  playerInterface.endTurnActive);
+    }
+
+    // 턴 종료를 누를 수 있는 페이즈인지 (M_TurnManager.CheckAllPlayersEndTurn이 실제로 처리하는 두 페이즈와 동일)
+    // 전투 중에는 PLAYER_ACTIVE에서만 허용한다. 드로우/몬스터 페이즈에 미리 눌러두면 내 차례가 오자마자
+    // 턴이 그대로 끝나버리기 때문. 비전투 방(NONE_BATTLE_SCENE)은 기존대로 진행용으로 사용한다.
+    private bool IsEndTurnAllowedPhase()
+    {
+        if(M_TurnManager.instance == null) return false;
+        BattleTurn phase = M_TurnManager.instance.phase;
+        return phase == BattleTurn.PLAYER_ACTIVE || phase == BattleTurn.NONE_BATTLE_SCENE;
     }
 
     public void OnPointerEnter()

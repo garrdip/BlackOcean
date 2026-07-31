@@ -191,7 +191,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         mapSight = 1; // 맵시야
         actionCost = 1; // 행동 비용
         maxActionCost = 30; // 행동비용 최대값
-        currentActionCost = 3; // 현재 남은 행동비용
+        // 남은 행동비용은 가득 찬 상태로 시작한다. (맵 UI의 턴 게이지가 currentActionCost / maxActionCost 비율이라
+        // 3으로 시작하면 게이지가 10%에서 시작하고, 방 하나 클리어하면 1만 남아 2칸 이동 자체가 불가능해진다)
+        currentActionCost = maxActionCost; // 현재 남은 행동비용
     }
 
     // ------------------------------------------------------------ Command Method -------------------------------------------------------------- //
@@ -1059,13 +1061,19 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     public void CreateMapInfoPopUpItem(GamePlayer gamePlayer, HexagonMapRoom hexagonMapRoom)
     {
+        CreateMapInfoPopUpItem(gamePlayer, hexagonMapRoom.roomType);
+    }
+
+    // RoomType만으로 정보창 생성 — HexagonMapRoom 객체가 없는 3D 구체 맵(SphereMapSystem)에서도 사용
+    public void CreateMapInfoPopUpItem(GamePlayer gamePlayer, RoomType roomType)
+    {
         GameObject mapInfoPopUpItemObject = Instantiate(MapUI.instance.mapInfoPopUpItemPrefab, Vector3.zero, Quaternion.identity);
         MapInfoPopUpItem mapInfoPopUpItem = mapInfoPopUpItemObject.GetComponent<MapInfoPopUpItem>();
         mapInfoPopUpItem.netId = gamePlayer.netId;
-        if(hexagonMapRoom.roomType == RoomType.EVENT_POSITIIVE || hexagonMapRoom.roomType == RoomType.EVENT_NEGATIVE){
+        if(roomType == RoomType.EVENT_POSITIIVE || roomType == RoomType.EVENT_NEGATIVE){
             mapInfoPopUpItem.textRoomType.text = "EVENT"; // 긍정적 or 부정적 이벤트인 경우 정보창에는 EVENT로만 표시
         }else{
-            mapInfoPopUpItem.textRoomType.text = hexagonMapRoom.roomType.ToString();
+            mapInfoPopUpItem.textRoomType.text = roomType.ToString();
         }
         MapUI.instance.mapInfoPopUps.Add(mapInfoPopUpItem);
         if(gamePlayer.isOwned){
