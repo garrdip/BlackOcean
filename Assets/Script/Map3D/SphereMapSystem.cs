@@ -11,7 +11,7 @@ namespace ProjectD
     /// 3D 구체 맵의 게임 로직 레이어.
     /// 기존 2D 맵 시스템과 같은 규칙을 이웃 그래프 기반으로 재현한다:
     /// - 방 타입 배정: M_MapManager.GetRoomType()과 동일한 확률 분포 (몬스터 40%, 나머지 각 10%)
-    /// - 위험도(hazard): 시작 방 기준 BFS 홉 거리
+    /// - 위험도(hazard): 시작 방에서 1칸 멀어질 때마다 +3, 1턴 지날 때마다 +1
     /// - 시야: 시작 방 + 이웃만 활성화, 이동할 때마다 주변 방 활성화
     /// - 경로 탐색: 방문 완료(COMPLETE)/시작 방만 통과 가능 (2D GetNeighbours 필터와 동일)
     /// - 오각형 12개: 이동 불가 지역
@@ -112,6 +112,9 @@ namespace ProjectD
         // 뒤 배치를 처리하면서 타일 틈새(깊이가 비어 있는 픽셀)를 다시 칠해 장식이 틈새에서만 지워졌다.
         const string SortingLayerIcon = "HexagonMapRoomIcon";
         const string SortingLayerRoomUI = "HexagonMapRoomUI";
+
+        /// <summary>시작 지점에서 1칸 멀어질 때마다 오르는 위험도</summary>
+        const int HazardPerTile = 3;
         HexagonMapRoom _voteWindowTemplate; // 투표 정보 창을 복제해 올 2D 방 프리팹
 
         public bool HasState => _hasState;
@@ -176,7 +179,7 @@ namespace ProjectD
             string info = "3D 맵 테스트  |  현재 방: " + currentTileIndex;
             if (destinationIndex >= 0)
             {
-                info += "  →  목적지 투표 완료 (" + _roomTypes[destinationIndex] + ", 위험도 " + _hazards[destinationIndex]
+                info += "  →  목적지 투표 완료 (" + _roomTypes[destinationIndex] + ", 위험도 " + GetHazardOf(destinationIndex)
                     + ", 거리 " + _currentPath.Count + ") — 모든 플레이어가 레디하면 이동합니다";
             }
             GUI.Label(new Rect(10f, 10f, 900f, 24f), info);
@@ -252,7 +255,8 @@ namespace ProjectD
             // 거점지역: 시드 고정 상태이므로 모든 클라이언트가 같은 지역 배치를 얻는다
             GenerateRegions(start);
 
-            // 위험도: 시작 방 기준 BFS 홉 거리
+            // 위험도(거리분): 시작 방 기준 BFS 홉 거리 1칸당 HazardPerTile 씩 증가.
+            // 여기에 경과 턴수가 더해진 값이 최종 위험도다 (GetHazardOf 참조).
             for (int i = 0; i < _tileCount; i++)
                 _hazards[i] = -1;
             var queue = new Queue<int>();
@@ -265,7 +269,7 @@ namespace ProjectD
                 {
                     if (_isPentagon[next] || _hazards[next] >= 0)
                         continue;
-                    _hazards[next] = _hazards[current] + 1;
+                    _hazards[next] = _hazards[current] + HazardPerTile;
                     queue.Enqueue(next);
                 }
             }
@@ -426,7 +430,20 @@ namespace ProjectD
         // ------------------------------------------------------------ State Query --------------------------------------------------------------- //
 
         public RoomType GetRoomTypeOf(int index) => _hasState ? _roomTypes[index] : RoomType.UNDEFINED;
-        public int GetHazardOf(int index) => _hasState ? _hazards[index] : 0;
+
+        /// <summary>방 위험도 = 시작 지점에서의 거리분(1칸당 HazardPerTile) + 게임 시작 후 경과 턴수</summary>
+        public int GetHazardOf(int index) => _hasState ? _hazards[index] + ElapsedTurnHazard : 0;
+
+        /// <summary>경과 턴수만큼 모든 방에 공통으로 더해지는 위험도. 남은 턴이 줄어든 만큼이 경과 턴수다.</summary>
+        static int ElapsedTurnHazard
+        {
+            get
+            {
+                if (!Application.isPlaying || M_MapManager.instance == null)
+                    return 0;
+                return Mathf.Max(0, M_MapManager.instance.maxActionCost - M_MapManager.instance.currentActionCost);
+            }
+        }
 
         /// <summary>투표/이동 목적지로 유효한지 검사 (서버 검증에도 사용)</summary>
         public bool IsValidDestination(int index)
@@ -789,7 +806,7 @@ namespace ProjectD
                 SphereMapTile tile = tiles[i];
                 tile.roomType = _roomTypes[i];
                 tile.isActiveRoom = _activeRooms[i];
-                tile.hazard = _hazards[i];
+                tile.hazard = GetHazardOf(i);
                 tile.highlight = _currentPath.Contains(i);
                 ApplyTileVisual(tile);
             }
@@ -1246,7 +1263,7 @@ namespace ProjectD
                 return;
             }
 
-            int hazardDiff = _hazards[tileIndex] - _hazards[currentTileIndex];
+            int hazardDiff = GetHazardOf(tileIndex) - GetHazardOf(currentTileIndex); // 경과 턴분은 서로 상쇄되어 거리 차이만 남는다
             SetLayoutText(layout, "TextHazardValue", Mathf.Abs(hazardDiff).ToString());
             if (hazardDiff == 0)
             {

@@ -136,42 +136,22 @@ namespace ProjectD
                 chosen = seen[Random.Range(0, seen.Count)];
 
             bool bossExists = M_MapManager.instance.mapBoss != null;
-            int moveCost;
-            if (chosen == system.currentTileIndex)
+            bool isBattleInPlace = chosen == system.currentTileIndex; // 이동이 아니므로 이동분 턴은 소모하지 않는다
+            if (isBattleInPlace)
             {
                 // 보스가 현재 방까지 도달한 경우의 제자리 보스전 (2D의 보스방 재진입 대응)
                 if (system.GetRoomTypeOf(chosen) != RoomType.BOSS)
                     return false;
-                moveCost = 0;
             }
             else if (bossExists)
             {
-                // 보스 출현 시 1칸 이동, 행동 비용 무시 (2D와 동일)
+                // 보스 출현 시 1칸 이동만 허용 (2D와 동일)
                 if (!system.IsValidDestination(chosen))
                     return false;
-                moveCost = 0;
             }
-            else
+            else if (system.FindPath(system.currentTileIndex, chosen).Count == 0)
             {
-                List<int> path = system.FindPath(system.currentTileIndex, chosen);
-                if (path.Count == 0)
-                    return false;
-                // 남은 행동 비용이 모자라면 갈 수 있는 데까지만 이동한다.
-                // (2D는 FindPath가 경로를 잘라 목적지 자체를 당기지만, 3D는 먼 방을 그대로 선택할 수 있게 두고
-                //  서버에서 잘라낸다 — 여기서 거부해버리면 전원 레디 상태로 멈춰버린다)
-                int affordable = Mathf.Max(0, M_MapManager.instance.currentActionCost);
-                if (affordable == 0)
-                {
-                    Debug.Log("[3D맵] 남은 행동 비용이 없어 이동할 수 없습니다.");
-                    ResetPlayersReady(); // 레디가 걸린 채 멈추지 않도록 해제
-                    return false;
-                }
-                if (path.Count > affordable)
-                {
-                    Debug.Log($"[3D맵] 행동 비용 부족 — 경로 중간까지만 이동합니다. 필요 : {path.Count} / 남은 비용 : {affordable}");
-                    chosen = path[affordable - 1]; // 경로상 갈 수 있는 마지막 방 (이미 클리어된 방이라 전투는 없다)
-                }
-                moveCost = Mathf.Min(path.Count, affordable);
+                return false; // 도달 불가
             }
 
             RoomType destType = system.GetRoomTypeOf(chosen);
@@ -185,7 +165,11 @@ namespace ProjectD
 
             ResetPlayersReady(); // 다음 맵 선택을 위해 레디 상태 리셋
 
-            M_MapManager.instance.DecreaseTotalActionCost(moveCost); // 이동 거리만큼 행동 비용 감소 (0이 되면 보스 출현)
+            // 턴 소모: 이동 자체에 1턴. 거리와 무관하게 몇 칸을 가든 이동은 1턴이다.
+            // 미클리어 방으로 이동하면 방 정리 시점(M_TurnManager.NoneBattleEnd)에 1턴이 더 빠져 합계 2턴,
+            // 이미 클리어한 방으로 이동하면 NoneBattleEnd를 거치지 않으므로 1턴만 소모된다.
+            if (!isBattleInPlace)
+                M_MapManager.instance.DecreaseTotalActionCost(1);
 
             // 보스 접근 (2D ApproachBossToPlayer 대응): 파티가 이동할 때마다 보스가 2칸씩 접근
             if (bossTileIndex >= 0 && bossTileIndex != chosen)

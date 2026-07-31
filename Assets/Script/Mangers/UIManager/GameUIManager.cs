@@ -81,6 +81,16 @@ public class GameUIManager : SingletonD<GameUIManager>
 
     void Start()
     {
+        // DDOL 정리 목록에 등록 — 메뉴씬으로 돌아갈 때 파괴되도록 한다.
+        // 등록하지 않으면 게임오버 후 재시작해도 이전 판의 GameUIManager가 살아남고,
+        // SingletonD가 새 GameScene의 정상 인스턴스를 중복으로 보고 파괴해 버린다.
+        // 그러면 screenFade/screenTransition 등 참조가 전부 파괴된 상태가 되어 화면 전환 트윈이
+        // 시작조차 못 하고, 완료 콜백이 호출되지 않아 맵→전투 전환이 멈춘다.
+        M_NetworkRoomManager networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        if(networkRoomManager != null && !networkRoomManager.persistentManagers.ContainsKey(gameObject.name)){
+            networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
+        }
+
         ConfigScreenChangeMode(screenTransitionMode);
         screenTransition.material =  new Material(screenTransition.material); // 머티리얼 인스턴스 복사본을 생성하여 이미지의 머티리얼값에 할당(원본대신 복사본을 사용해 프로퍼티값 변경)
         scrollSpeed = 500f;
