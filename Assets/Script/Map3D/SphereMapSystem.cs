@@ -804,8 +804,19 @@ namespace ProjectD
             ApplyStateToTiles();
         }
 
+        // 활성화(시야에 밝혀진) 방만 표시하고 나머지 타일(오각형, 미탐험 거점지역 포함)은 숨긴다.
+        // 보스 존/폐허는 미탐험 지역이라도 보스 위협이 보이도록 예외로 표시한다.
+        bool IsTileVisible(int index)
+        {
+            if (_activeRooms[index])
+                return true;
+            return _roomTypes[index] == RoomType.BOSS || _roomTypes[index] == RoomType.RUINS;
+        }
+
         void ApplyTileVisual(SphereMapTile tile)
         {
+            tile.SetVisible(IsTileVisible(tile.index));
+
             if (tile.isPentagon)
             {
                 tile.baseColor = _view.pentagonColor; // 이동 불가 지역

@@ -22,6 +22,7 @@ namespace ProjectD
         public bool highlight;              // true면 포커스 시에도 어두워지지 않음 (경로 표시용)
 
         public MeshRenderer Renderer { get; private set; }
+        public MeshCollider Collider { get; private set; }
         public Color baseColor;
         public SpriteRenderer iconRenderer; // 방 타입 아이콘 (SphereMapSystem이 생성)
 
@@ -35,7 +36,19 @@ namespace ProjectD
             this.neighbors.Clear();
             this.neighbors.AddRange(neighbors);
             Renderer = renderer;
+            Collider = GetComponent<MeshCollider>();
             this.baseColor = baseColor;
+        }
+
+        /// <summary>타일 표시/숨김. 숨기면 클릭/줌 레이캐스트에서도 제외된다.</summary>
+        public void SetVisible(bool visible)
+        {
+            if (Renderer != null)
+                Renderer.enabled = visible;
+            if (Collider != null)
+                Collider.enabled = visible;
+            if (!visible && iconRenderer != null)
+                iconRenderer.gameObject.SetActive(false);
         }
     }
 }
