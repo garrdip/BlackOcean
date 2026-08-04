@@ -1,3 +1,9 @@
-code,displayName,font,note
-ko,한국어,,기준 언어(폴백). 카드/버프/용어의 한국어 원문은 DB CSV에 있고 ko.csv에는 UI 문자열만 둔다
-en,English,,
+code,displayName,font,priorityFont,note
+ko,한국어,,NotoSansKR-Bold SDF,기준 언어(폴백). 카드/버프/용어의 한국어 원문은 DB CSV에 있고 ko.csv에는 UI 문자열만 둔다
+en,English,,,
+ja,日本語,,NotoSansJP SDF,font 열은 비워 디자인 폰트를 유지하고 priorityFont로 한자 자형만 일본어 것으로 맞춘다
+zh-Hans,简体中文,,NotoSansSC SDF,JP와 자형이 다른 한자가 있어 폴백 우선순위를 SC로 올린다
+es,Español,,,악센트 문자는 기존 라틴/CJK 폰트에 모두 있어 폴백 우선순위 지정이 필요 없다
+de,Deutsch,,,움라우트는 기존 폰트에 모두 있음. 대문자 ẞ는 미보유라 번역에서 SS 표기를 쓴다
+ru,Русский,,,키릴은 NotoSansExtra 폴백이 담당한다
+fr,Français,,,합자 œ Œ 는 NotoSansExtra 폴백이 담당한다

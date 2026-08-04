@@ -1,0 +1,1080 @@
+key,text,source_ko
+ui.Main_Single_Play,Solo,싱글 플레이
+ui.Main_Multi_Play,Multijoueur,멀티 플레이
+ui.Main_Multi_CreateRoom,Créer un salon,방 만들기
+ui.Main_Encyclopedia,Encyclopédie,백과사전
+ui.Main_Settings,Options,환경설정
+ui.Main_Quit,Quitter,게임 종료
+ui.Settings_Full_Screen,Plein écran,전체 화면
+ui.Settings_Apply,Appliquer,적용
+ui.LabelGeork,Geork,게오르크
+ui.LabelEris,Eris,에리스
+ui.LabelDanhyang,Danhyang,단향
+ui.Room_Ready,Prêt,준비
+ui.Room_Select_Cancel,Annuler,취소
+ui.Room_Start,Commencer,시작
+ui.Room_Send,Envoyer,전송
+ui.Room_Placeholder,Saisissez un message.,메세지를 입력하세요.
+markup.multi_hit,{damage} ×{hits},{damage} {hits}번
+ui.MapInfoPopUpItem.TextRewardTitle,Récompense,보상
+ui.MapInfoPopUpItem.TextRewardDetail,Détails,보상 내용
+ui.NPC_Mercurius.ButtonCardShop_Label,Boutique\n,카드 상점\n
+ui.NPC_Mercurius.ButtonCardEnhance_Label,Améliorer,카드 강화
+ui.NPC_Mercurius.ButtonCardRemove_Label,Retirer,카드 제거
+ui.NPC_RyuJinSol.ButtonHeal_Label,Soigner,체력 회복
+ui.NPC_RyuJinSol.ButtonGiveGold_Label,Donner de l’or\n,골드 전달\n
+ui.NPC_ShadowMan.ButtonItemShop_Label,Objets,아이템 상점
+ui.NPC_ShadowMan.Button1_Label,Bouton,버튼
+ui.NPC_ShadowMan.Button2_Label,Bouton,버튼
+ui.NPC_Sophia.ButtonHeal_Label,Soigner,체력 회복
+ui.NPC_Sophia.ButtonGiveGold_Label,Donner de l’or,골드 전달
+ui.MapPlayer.TextSwap,Changer de place,위치 변경
+ui.MapPlayer.ButtonDeckInfo_Label,Deck,덱 정보
+ui.ForgottenDeckListPopUp.TextDeckListTitle,Oubli,잊혀진 덱
+ui.PrefareDeckListPopUp.TextDeckListTitle,Pioche,뽑을 덱
+ui.TrashDeckListPopUp.TextDeckListTitle,Défausse,버린 덱
+ui.Game.TextHazardTitle,Danger\n,위험도\n
+ui.Game.TextDeadLine,Avant la distorsion,뒤틀림까지
+ui.Game.TextArea,Littoral\n,연안\n
+ui.Game.TextRegionInfo,Infos de la région\n,거점 지역 정보\n
+ui.Game.TextRegionGrade,Infos de la région : \n,거점 지역 정보 : \n
+ui.Game.TextRegionDetail,Détails de la région :,거점 지역 내용 :
+ui.Game.TextEndTurn,Fin du tour,턴 종료
+ui.Game.TextDanger,Danger\n,위험도\n
+ui.Game.TextDeadLine_2,Avant la distorsion,뒤틀림까지
+ui.Game.TextArea_2,Littoral\n,연안\n
+ui.Game.TextTitle,Vérification : choisissez les cartes à défausser,카드 확인 : 버릴 카드를 선택하십시오
+ui.Game.TextRemoveConfirm,OK,확인
+ui.Game.TitleText,Butin,전리품
+ui.Game.TitleText_2,Choisissez une carte,카드를 선택하십시오
+ui.Game.ButtonSkip_Label,Passer,넘기기
+ui.Game.TitleText_3,Choisissez une carte,카드를 선택하십시오
+ui.Game.ButtonSkip_Label_2,Passer,넘기기
+ui.Game.TitleText_4,Choisissez une carte,카드를 선택하십시오
+ui.Game.ButtonSkip_Label_3,Passer,넘기기
+ui.Game.ButtonReturnMenuScene_Label,Retour au menu principal,메인 메뉴로 돌아가기
+ui.Game.TextDeckListTitle,Améliorer une carte,카드 강화
+ui.Game.ButtonEnhanceOk_Label,Améliorer,강화
+ui.Game.ButtonEnhanceCancel_Label,Annuler,취소
+ui.Game.TextDeckListTitle_2,Retirer une carte,카드 제거
+ui.Game.ButtonCardRemoveOk_Label,Retirer,제거
+ui.Game.ButtonCardRemoveCancel_Label,Annuler,취소
+ui.Game.TitleBackground_Label,Choisissez le personnage à soigner.,체력을 회복할 캐릭터를 선택하세요.
+ui.Game.TitleBackground_Label_2,Choisissez le personnage à qui donner de l’or.,골드를 넘겨줄 캐릭터를 선택하세요.
+ui.Game.TextArea_Placeholder,Saisissez un montant d’or..,골드 금액을 입력하세요..
+ui.Game.ButtonGiveGoldOk_Label,OK,확인
+ui.Game.ButtonGiveGoldCancel_Label,Annuler,취소
+ui.Game.ButtonSelectSubmit_Label,OK,확 인
+ui.Game.TextTitle_2,Oubli,잊혀진 덱
+ui.Game.TextTitle_3,Défausse,버린 덱
+ui.Game.ButtonSelectSubmit_Label_2,OK,확 인
+ui.Game.ButtonOpenDeckBook_Label,Compendium,덱 북
+ui.Game.ButtonCardEnhance_Label,Améliorer une carte,카드 강화
+ui.Game.ButtonGeorkTransform_Label,Transformation !,변신!
+ui.Game.ButtonSave_Label,Sauvegarder,세이브
+ui.Menu.TextArea_Placeholder,Nom de la carte,카드 이름
+ui.Menu.ButtonSearch_Label,Rechercher\n,검색\n
+ui.Menu.TextArea_Placeholder_2,Nom de la carte,카드 이름
+ui.Menu.ButtonSearch_Label_2,Rechercher\n,검색\n
+ui.Menu.TextArea_Placeholder_3,Nom de la carte,카드 이름
+ui.Menu.ButtonSearch_Label_3,Rechercher\n,검색\n
+ui.msg.battle_boss,Combat : boss,전투 : 보스
+ui.msg.battle_normal,Combat : monstres ordinaires,전투 : 일반 몬스터
+ui.msg.battle_elite,Combat : monstres d’élite,전투 : 엘리트 몬스터
+ui.msg.event_positive,Événement favorable,긍정적 이벤트
+ui.msg.event_negative,Événement défavorable,부정적 이벤트
+ui.msg.camp,Avant-poste,전초기지
+ui.msg.card_shop,Boutique de cartes,카드 상점
+ui.msg.item_shop,Boutique d’objets,아이템 상점
+ui.msg.map_boss_appeared,Un boss est apparu sur la carte.,맵에 보스가 출현 했습니다.
+ui.msg.gold_input_invalid,Saisissez un montant d’or valide.,골드 금액을 정확하게 입력하세요.
+ui.deck.multi_select_explanation,Choisissez <color=green>1</color> carte dans l’oubli et <color=red>1</color> carte dans la défausse.,"""잊혀진 덱에서 카드 <color=green>1</color> 장, 버린 덱에서 카드 <color=red>1</color> 장을 선택하세요."""
+ui.deck.select_explanation,"Choisissez <color=green>{0}</color> cartes.\n( Clic gauche pour sélectionner, clic droit pour désélectionner. )","""카드를 <color=green>{0}</color> 장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )"""
+ui.hazard.same,Danger identique,위험도 동일
+ui.hazard.up,Danger accru,위험도 증가
+ui.hazard.down,Danger réduit,위험도 감소
+ui.msg.swap_accepted,La demande d’échange de place a été acceptée.,위치 교환 요청이 수락되었습니다.
+ui.msg.swap_rejected,La demande d’échange de place a été refusée.,위치 교환 요청이 거절되었습니다.
+ui.msg.player_left_room,{0} a quitté le salon.,{0} 님이 대기방을 나갔습니다.
+ui.msg.host_transferred,{0} a quitté la partie.\nLes droits passent à {1}.,{0} 님이 게임을 나갔습니다.\n{1} 님에게 권한이 이전됩니다.
+ui.order.back,Ligne arrière,후열
+ui.order.middle,Ligne centrale,중열
+ui.order.front,Première ligne,전열
+ui.map.turn_count,{0} tours,{0}턴
+card.HA.name,Déplacer le Démon de Fer,철귀이동
+card.HA.desc,Déplace le démon de fer.,철귀를 이동시킵니다.
+card.HA_E.name,Améliorée : Déplacer le Démon de Fer,철귀이동
+card.HA_E.desc,Déplace le démon de fer.,철귀를 이동시킵니다.
+card.H0.name,Griffe de Fer,철의 손톱
+card.H0.desc,Inflige !{6} dégâts.,피해 !{6} 줍니다.
+card.H0_E.name,Améliorée : Griffe de Fer,강화 철의 손톱
+card.H0_E.desc,"Inflige !{6} dégâts. Si le démon de fer est sur la cible, déclenche l’harmonie.",피해 !{6} 줍니다. 대상에 철귀가 있을 시 화합 발동
+card.H1.name,Croc de Fer,철의 이빨
+card.H1.desc,Inflige !{10} dégâts. Applique 1 @{붕괴} sur vous.,피해 !{10} 줍니다. 자신에게 @{붕괴} 1 을 부여합니다.
+card.H1_E.name,Améliorée : Croc de Fer,강화 철의 이빨
+card.H1_E.desc,Inflige !{10} dégâts. Applique 1 @{붕괴} sur vous.,피해 !{10} 줍니다. 자신에게 @{붕괴} 1 을 부여합니다.
+card.H2.name,Bloque !,막아라
+card.H2.desc,Gagne #{5} de blocage.,방어 #{5} 얻습니다.
+card.H2_E.name,Améliorée : Bloque !,강화 막아라
+card.H2_E.desc,Gagne #{5} de blocage.,방어 #{5} 얻습니다.
+card.H3.name,Sois mon bouclier,방패가 되어라
+card.H3.desc,Accorde #{5} de blocage à un allié.,아군 한명에게 방어 #{5} 부여합니다.
+card.H3_E.name,Améliorée : Sois mon bouclier,강화 방패가 되어라
+card.H3_E.desc,Accorde #{5} de blocage à un allié.,아군 한명에게 방어 #{5} 부여합니다.
+card.H4.name,Bouclier de Fer,철의 방패
+card.H4.desc,Accorde #{4} de blocage à tous les alliés. Applique 1 @{쇠락} sur vous.,아군 전체에게 방어 #{4} 부여합니다. 자신에게 @{쇠락} 1 을 부여합니다.
+card.H4_E.name,Améliorée : Bouclier de Fer,강화 철의 방패
+card.H4_E.desc,Accorde #{4} de blocage à tous les alliés. Applique 1 @{쇠락} sur vous.,아군 전체에게 방어 #{4} 부여합니다. 자신에게 @{쇠락} 1 을 부여합니다.
+card.H5.name,Pousse,새싹
+card.H5.desc,Accorde 1 @{메마른샘} à un allié.,아군 한명에게 @{메마른샘} 1 을 부여합니다.
+card.H5_E.name,Améliorée : Pousse,강화 새싹
+card.H5_E.desc,Accorde 1 @{메마른샘} à un allié.,아군 한명에게 @{메마른샘} 1 을 부여합니다.
+card.H6.name,Chaleur,따뜻함
+card.H6.desc,Accorde 1 @{메마른샘} à tous les alliés.,아군 전체에게 @{메마른샘} 1 을 부여합니다.
+card.H6_E.name,Améliorée : Chaleur,강화 따뜻함
+card.H6_E.desc,Accorde 1 @{메마른샘} à tous les alliés.,아군 전체에게 @{메마른샘} 1 을 부여합니다.
+card.H7.name,Bénédiction parentale,어버이의 축복
+card.H7.desc,Pioche 2 cartes. Gagne 1 @{이치}.,카드 2장 드로우 @{이치} 1 을 얻습니다.
+card.H7_E.name,Améliorée : Bénédiction parentale,강화 어버이의 축복
+card.H7_E.desc,Pioche 2 cartes. Gagne 1 @{이치}.,카드 2장 드로우 @{이치} 1 을 얻습니다.
+card.H8.name,Dévorer,씹어먹기
+card.H8.desc,Inflige ${4}{3}.,피해 ${4}{3} 줍니다.
+card.H8_E.name,Améliorée : Dévorer,강화 씹어먹기
+card.H8_E.desc,Inflige ${4}{3}.,피해 ${4}{3} 줍니다.
+card.H9.name,Je suis avec vous,너희와 함께 하리
+card.H9.desc,Accorde #{30} de blocage à tous les alliés sauf vous. Applique 3 @{붕괴} sur vous.,자신을 제외한 아군 전체에게 방어 #{30} 부여합니다. 자신에게 @{붕괴} 3을 부여합니다.
+card.H9_E.name,Améliorée : Je suis avec vous,강화 너희와 함께 하리
+card.H9_E.desc,Accorde #{30} de blocage à tous les alliés sauf vous. Applique 3 @{붕괴} sur vous.,자신을 제외한 아군 전체에게 방어 #{30} 부여합니다. 자신에게 @{붕괴} 3을 부여합니다.
+card.H10.name,Champ de fleurs de fer,철의 꽃밭
+card.H10.desc,Tous les alliés piochent 2 cartes et gagnent 1 @{이치}.,아군 전체에게 카드 2장 드로우 @{이치} 1 을 부여합니다.
+card.H10_E.name,Améliorée : Champ de fleurs de fer,강화 철의 꽃밭
+card.H10_E.desc,Tous les alliés piochent 2 cartes et gagnent 1 @{이치}.,아군 전체에게 카드 2장 드로우 @{이치} 1 을 부여합니다.
+card.H11.name,Engrais,비료
+card.H11.desc,Pioche 1 carte pour chaque tranche de 7 cartes dans la ~{défausse}.,~{버린덱} 의 카드 7장당 1장 드로우.
+card.H11_E.name,Améliorée : Engrais,강화 비료
+card.H11_E.desc,Pioche 1 carte pour chaque tranche de 7 cartes dans la ~{défausse}.,~{버린덱} 의 카드 7장당 1장 드로우.
+card.H12.name,Taille à deux mains,양손베기
+card.H12.desc,Inflige ${4}{2}.,피해 ${4}{2} 줍니다.
+card.H12_E.name,Améliorée : Taille à deux mains,강화 양손베기
+card.H12_E.desc,Inflige ${4}{2}.,피해 ${4}{2} 줍니다.
+card.H13.name,Vengeance montante,차오르는 복수심
+card.H13.desc,Inflige !{20} dégâts à tous les ennemis. Applique ensuite 3 @{붕괴} sur vous.,적 전체에게 피해 !{20} 줍니다. 그 후 자신에게 @{붕괴} 3 을 부여합니다.
+card.H13_E.name,Améliorée : Vengeance montante,강화 차오르는 복수심
+card.H13_E.desc,Inflige !{20} dégâts à tous les ennemis. Applique ensuite 3 @{붕괴} sur vous.,적 전체에게 피해 !{20} 줍니다. 그 후 자신에게 @{붕괴} 3 을 부여합니다.
+card.H14.name,Esquive !,피해라
+card.H14.desc,Gagne #{7} de blocage.,방어 #{7} 얻습니다.
+card.H14_E.name,Améliorée : Esquive !,강화 피해라
+card.H14_E.desc,Gagne #{7} de blocage.,방어 #{7} 얻습니다.
+card.H15.name,Je te le demande,부탁하마
+card.H15.desc,Inflige !{8} dégâts.,피해 !{8} 줍니다.
+card.H15_E.name,Améliorée : Je te le demande,강화 부탁하마
+card.H15_E.desc,Inflige !{8} dégâts.,피해 !{8} 줍니다.
+card.H16.name,Miracle de la fleur brûlée,그을린 꽃의 기적
+card.H16.desc,Retire @{붕괴} et @{쇠락} de tous les alliés et accorde 2 @{방어의이치} à chaque allié ainsi purifié.,아군 전체의 @{붕괴} @{쇠락} 을 제거 하고 제거된 아군에게는 @{방어의이치} 2 를 부여합니다.
+card.H16_E.name,Améliorée : Miracle de la fleur brûlée,강화 그을린 꽃의 기적
+card.H16_E.desc,Retire @{붕괴} et @{쇠락} de tous les alliés et accorde 2 @{방어의이치} à chaque allié ainsi purifié.,아군 전체의 @{붕괴} @{쇠락} 을 제거 하고 제거된 아군에게는 @{방어의이치} 2 를 부여합니다.
+card.H17.name,Le poids d’un miracle,기적의 무게
+card.H17.desc,Pioche 2 cartes. Applique @{중력} sur l’une d’elles.,카드 2 장 드로우 한장에 @{중력} 을 부여합니다.
+card.H17_E.name,Améliorée : Le poids d’un miracle,강화 기적의 무게
+card.H17_E.desc,Pioche 2 cartes. Applique @{중력} sur l’une d’elles.,카드 2 장 드로우 한장에 @{중력} 을 부여합니다.
+card.H18.name,Coulée,주조
+card.H18.desc,Applique @{숙련} sur les 3 cartes de gauche dans la main de chaque allié.,아군 전체 패의 좌측 3장 카드에 @{숙련} 을 부여합니다.
+card.H18_E.name,Améliorée : Coulée,강화 주조
+card.H18_E.desc,Applique @{숙련} sur les 3 cartes de gauche dans la main de chaque allié.,아군 전체 패의 좌측 3장 카드에 @{숙련} 을 부여합니다.
+card.H19.name,Laisse-moi faire,맡기거라
+card.H19.desc,"Échange de place avec un allié, puis gagne #{10} de blocage.",아군 한명과 위치를 바꾼 후 방어 #{10} 얻습니다.
+card.H19_E.name,Améliorée : Laisse-moi faire,강화맡기거라
+card.H19_E.desc,"Échange de place avec un allié, puis gagne #{10} de blocage.",아군 한명과 위치를 바꾼 후 방어 #{10} 얻습니다.
+card.H20.name,Monstre forgé de fer,철로 만든 괴물
+card.H20.desc,Inflige !{5} en @{고정피해}. Se répète pour chaque *{H0} et *{H1} dans la ~{pioche} et la ~{défausse}.,@{고정피해} !{5} 줍니다. ~{뽑을덱} 과 ~{버린덱} 에 있는 *{H0} *{H1} 카드 수 만큼 반복 합니다.
+card.H20_E.name,Améliorée : Monstre forgé de fer,강화 철로 만든 괴물
+card.H20_E.desc,Inflige !{5} en @{고정피해}. Se répète pour chaque *{H0} et *{H1} dans la ~{pioche} et la ~{défausse}.,@{고정피해} !{5} 줍니다. ~{뽑을덱} 과 ~{버린덱} 에 있는 *{H0} *{H1} 카드 수 만큼 반복 합니다.
+card.H21.name,Fureur du Fer,철의 분노
+card.H21.desc,Les cartes *{H0} et *{H1} sont améliorées.,*{H0} *{H1} 카드가 강화 됩니다.
+card.H21_E.name,Améliorée : Fureur du Fer,강화 철의 분노
+card.H21_E.desc,Les cartes *{H0} et *{H1} sont améliorées.,*{H0} *{H1} 카드가 강화 됩니다.
+card.H22.name,Affûtage des griffes,손톱 다듬기
+card.H22.desc,Gagne #{7} de blocage. Crée 3 cartes *{H0} en main.,방어 #{7} 을 얻습니다. *{H0} 카드 3장을 패에 생성합니다.
+card.H22_E.name,Améliorée : Affûtage des griffes,강화 손톱 다듬기
+card.H22_E.desc,Gagne #{7} de blocage. Crée 3 cartes *{H0} en main.,방어 #{7} 을 얻습니다. *{H0} 카드 3장을 패에 생성합니다.
+card.H23.name,Avatar du père,아버지의 화신
+card.H23.desc,Inflige !{4} dégâts à un ennemi au hasard. Se répète pour chaque *{H0} et *{H1} jouée ce tour-ci.,무작위 적 에게 피해 !{4} 줍니다. 이번턴에 사용한 *{H0} *{H1} 카드 수 만큼 반복합니다.
+card.H23_E.name,Améliorée : Avatar du père,강화 아버지의 화신
+card.H23_E.desc,Inflige !{4} dégâts à un ennemi au hasard. Se répète pour chaque *{H0} et *{H1} jouée ce tour-ci.,무작위 적 에게 피해 !{4} 줍니다. 이번턴에 사용한 *{H0} *{H1} 카드 수 만큼 반복합니다.
+card.H24.name,Affûtage des Lames,칼날 손질
+card.H24.desc,"Au début du tour, crée une *{H0} et un *{H1} en main.",턴 시작 시 *{H0} *{H1} 카드가 한장씩 패에 생성 됩니다.
+card.H24_E.name,Améliorée : Affûtage des Lames,강화 칼날 손질
+card.H24_E.desc,"Au début du tour, crée une *{H0} et un *{H1} en main.",턴 시작 시 *{H0} *{H1} 카드가 한장씩 패에 생성 됩니다.
+card.H25.name,Se lécher les babines,입맛 다시기
+card.H25.desc,Crée une carte *{H1} en main pour chaque ennemi.,적의 개체 수 만큼 *{H1} 카드를 패에 생성합니다.
+card.H25_E.name,Améliorée : Se lécher les babines,강화 입맛 다시기
+card.H25_E.desc,Crée une carte *{H1} en main pour chaque ennemi.,적의 개체 수 만큼 *{H1} 카드를 패에 생성합니다.
+card.H26.name,Refonte,재조물
+card.H26.desc,Envoie jusqu’à 3 cartes de la main dans l’~{oubli}. Crée autant de cartes *{H0} ou *{H1} au hasard en main.,패의 카드 3장까지 ~{잊혀진덱} 으로 보냅니다. 보낸 카드 수 만큼 *{H0} *{H1} 카드를 무작위로 패에 생성합니다.
+card.H26_E.name,Améliorée : Refonte,강화 재조물
+card.H26_E.desc,Envoie jusqu’à 3 cartes de la main dans l’~{oubli}. Crée autant de cartes *{H0} ou *{H1} au hasard en main.,패의 카드 3장까지 ~{잊혀진덱} 으로 보냅니다. 보낸 카드 수 만큼 *{H0} *{H1} 카드를 무작위로 패에 생성합니다.
+card.H27.name,Ça m’énerve,화가 나는구나
+card.H27.desc,Les cartes *{H0} et *{H1} jouées ce tour-ci infligent le double de dégâts.,이번 턴에 사용하는 *{H0} *{H1} 카드의 피해가 2배가 됩니다.
+card.H27_E.name,Améliorée : Ça m’énerve,강화 화가 나는구나
+card.H27_E.desc,Les cartes *{H0} et *{H1} jouées ce tour-ci infligent le double de dégâts.,이번 턴에 사용하는 *{H0} *{H1} 카드의 피해가 2배가 됩니다.
+card.H28.name,Poussée de Croissance,성장기
+card.H28.desc,"Au début du tour, @{크기} augmente de &{2}.",턴 시작 시 @{크기} &{2} 증가합니다.
+card.H28_E.name,Améliorée : Poussée de Croissance,강화 성장기
+card.H28_E.desc,"Au début du tour, @{크기} augmente de &{2}.",턴 시작 시 @{크기} &{2} 증가합니다.
+card.H29.name,Explosion de fer en fusion,용철 폭발
+card.H29.desc,Fixe @{크기} à &{1}. Inflige à tous les ennemis des dégâts égaux à 8 fois la taille perdue.,@{크기} 를 &{1} 로 변경 합니다. 감소된 @{크기}의 8 배 만큼 적 전체에게 피해를 줍니다.
+card.H29_E.name,Améliorée : Explosion de fer en fusion,강화 용철 폭발
+card.H29_E.desc,Fixe @{크기} à &{1}. Inflige à tous les ennemis des dégâts égaux à 8 fois la taille perdue.,@{크기} 를 &{1} 로 변경 합니다. 감소된 @{크기}의 8 배 만큼 적 전체에게 피해를 줍니다.
+card.H30.name,Miséricorde du père,아버지의 자비
+card.H30.desc,Réduit @{크기} de &{5}. Accorde #{30} de blocage à tous les alliés.,@{크기} &{5} 감소. 아군 전체에게 방어 #{30} 부여합니다.
+card.H30_E.name,Améliorée : Miséricorde du père,강화 아버지의 자비
+card.H30_E.desc,Réduit @{크기} de &{5}. Accorde #{30} de blocage à tous les alliés.,@{크기} &{5} 감소. 아군 전체에게 방어 #{30} 부여합니다.
+card.H31.name,Lourdeur,무게감
+card.H31.desc,Inflige des dégâts égaux à la taille : @{크기}.,@{크기} 의 만큼 피해를 줍니다.
+card.H31_E.name,Améliorée : Lourdeur,강화 무게감
+card.H31_E.desc,Inflige des dégâts égaux à la taille : @{크기}.,@{크기} 의 만큼 피해를 줍니다.
+card.H32.name,Prédateur,포식자
+card.H32.desc,"Inflige !{8} dégâts. Si l’ennemi meurt, @{크기} augmente définitivement de &{1}.",피해 !{8} 줍니다. 이 효과로 적 제거 시 영구히 @{크기} &{1} 증가합니다.
+card.H32_E.name,Améliorée : Prédateur,강화 포식자
+card.H32_E.desc,"Inflige !{8} dégâts. Si l’ennemi meurt, @{크기} augmente définitivement de &{1}.",피해 !{8} 줍니다. 이 효과로 적 제거 시 영구히 @{크기} &{1} 증가합니다.
+card.H33.name,Pillage d’armure,갑옷 약탈
+card.H33.desc,Inflige !{10} dégâts. @{크기} augmente de &{2}.,피해 !{10} 줍니다. @{크기} &{2} 증가합니다.
+card.H33_E.name,Améliorée : Pillage d’armure,강화 갑옷 약탈
+card.H33_E.desc,Inflige !{10} dégâts. @{크기} augmente de &{2}.,피해 !{10} 줍니다. @{크기} &{2} 증가합니다.
+card.H34.name,Fureur de la Fleur et du Fer,꽃과 철의 분노
+card.H34.desc,Déclenche @{화합} chaque fois que vous jouez 3 cartes.,카드 3장 사용 시 @{화합} 이 발동됩니다.
+card.H34_E.name,Améliorée : Fureur de la Fleur et du Fer,강화 꽃과 철의 분노
+card.H34_E.desc,Déclenche @{화합} chaque fois que vous jouez 3 cartes.,카드 3장 사용 시 @{화합} 이 발동됩니다.
+card.H35.name,Balayage,휩쓸기
+card.H35.desc,"Inflige !{7} dégâts à tous les ennemis. Si le démon de fer est sur un ennemi, déclenche @{화합}.",적 전체에게 피해 !{7} 줍니다. 적 위치에 철귀가 있으면 @{화합} 이 발동 됩니다.
+card.H35_E.name,Améliorée : Balayage,강화 휩쓸기
+card.H35_E.desc,"Inflige !{7} dégâts à tous les ennemis. Si le démon de fer est sur un ennemi, déclenche @{화합}.",적 전체에게 피해 !{7} 줍니다. 적 위치에 철귀가 있으면 @{화합} 이 발동 됩니다.
+card.H36.name,Protégez Mère,어머니를 지켜라
+card.H36.desc,Déplace le démon de fer sur vous et déclenche @{화합} deux fois.,철귀의 위치를 자신에게 옮기고 @{화합} 을 2번 발동 합니다.
+card.H36_E.name,Améliorée : Protégez Mère,강화 어머니를 지켜라
+card.H36_E.desc,Déplace le démon de fer sur vous et déclenche @{화합} deux fois.,철귀의 위치를 자신에게 옮기고 @{화합} 을 2번 발동 합니다.
+card.H37.name,Ordre d’après festin,식후 명령
+card.H37.desc,"Augmente @{크기} de &{1}, puis déclenche @{화합}.",@{크기} &{1} 증가 후 @{화합} 을 발동합니다.
+card.H37_E.name,Améliorée : Ordre d’après festin,강화 식후 명령
+card.H37_E.desc,"Augmente @{크기} de &{1}, puis déclenche @{화합}.",@{크기} &{1} 증가 후 @{화합} 을 발동합니다.
+card.H38.name,Rideau de Fer,철의 장막
+card.H38.desc,Accorde #{8} de blocage à tous les alliés sauf vous.,자신을 제외한 아군 전체에게 방어 #{8} 부여합니다.
+card.H38_E.name,Améliorée : Rideau de Fer,강화 철의 장막
+card.H38_E.desc,Accorde #{8} de blocage à tous les alliés sauf vous.,자신을 제외한 아군 전체에게 방어 #{8} 부여합니다.
+card.H39.name,Traqueur,추적자
+card.H39.desc,Inflige !{2} dégâts et gagne #{2} de blocage. Se déclenche deux fois.,피해 !{2} 줍니다. 방어 #{2} 얻습니다. 2 번 발동합니다.
+card.H39_E.name,Améliorée : Traqueur,강화추적자
+card.H39_E.desc,Inflige !{2} dégâts et gagne #{2} de blocage. Se déclenche deux fois.,피해 !{2} 줍니다. 방어 #{2} 얻습니다. 2 번 발동합니다.
+card.H40.name,Ordre prudent,신중한 명령
+card.H40.desc,Déclenche @{화합} 3 fois.,@{화합} 을 3번 발동합니다.
+card.H40_E.name,Améliorée : Ordre prudent,강화 신중한 명령
+card.H40_E.desc,Déclenche @{화합} 3 fois.,@{화합} 을 3번 발동합니다.
+card.H41.name,Tir concentré,집중포화
+card.H41.desc,Applique 5 @{꽃가루} sur la cible.,대상에게 @{꽃가루} 를 5 부여합니다.
+card.H41_E.name,Améliorée : Tir concentré,강화 집중포화
+card.H41_E.desc,Applique 5 @{꽃가루} sur la cible.,대상에게 @{꽃가루} 를 5 부여합니다.
+card.H42.name,Épandage de poudre,가루 뿌리기
+card.H42.desc,Inflige !{3} dégâts. Applique 2 @{꽃가루}.,피해 !{3} 줍니다. @{꽃가루} 를 2 부여합니다.
+card.H42_E.name,Améliorée : Épandage de poudre,강화 가루 뿌리기
+card.H42_E.desc,Inflige !{3} dégâts. Applique 2 @{꽃가루}.,피해 !{3} 줍니다. @{꽃가루} 를 2 부여합니다.
+card.H43.name,Salve d’honneur,축포
+card.H43.desc,Applique 3 @{꽃가루} à tous les alliés ou à tous les ennemis.,아군 전체 또는 적 전체 에게 @{꽃가루} 를 3 부여합니다.
+card.H43_E.name,Améliorée : Salve d’honneur,강호 축포
+card.H43_E.desc,Applique 3 @{꽃가루} à tous les alliés ou à tous les ennemis.,아군 전체 또는 적 전체 에게 @{꽃가루} 를 3 부여합니다.
+card.H44.name,Bourgeon précoce,이른 봉우리
+card.H44.desc,Retire tout le @{꽃가루}. Inflige aux ennemis et accorde aux alliés le double de la quantité retirée.,모든 @{꽃가루} 를 제거합니다. 제거된 @{꽃가루} 의 2배 만큼 적에게는 피해를 아군에게는 방어를 부여합니다.
+card.H44_E.name,Améliorée : Bourgeon précoce,강화 이른 봉우리
+card.H44_E.desc,Retire tout le @{꽃가루}. Inflige aux ennemis et accorde aux alliés le double de la quantité retirée.,모든 @{꽃가루} 를 제거합니다. 제거된 @{꽃가루} 의 2배 만큼 적에게는 피해를 아군에게는 방어를 부여합니다.
+card.H45.name,Prendre racine,뿌리내리기
+card.H45.desc,"Inflige !{7} dégâts. Si la cible a @{꽃가루}, inflige le double.",피해 !{7} 줍니다. 대상이 @{꽃가루} 효과를 받고 있다면 2배만큼 피해를 줍니다.
+card.H45_E.name,Améliorée : Prendre racine,강화 뿌리내리기
+card.H45_E.desc,"Inflige !{7} dégâts. Si la cible a @{꽃가루}, inflige le double.",피해 !{7} 줍니다. 대상이 @{꽃가루} 효과를 받고 있다면 2배만큼 피해를 줍니다.
+card.H46.name,Explosion de pollen,꽃가루 폭발
+card.H46.desc,Double le @{꽃가루} d’un allié.,아군 한명의 @{꽃가루} 를 2배로 만듭니다.
+card.H46_E.name,Améliorée : Explosion de pollen,강화 꽃가루 폭발
+card.H46_E.desc,Double le @{꽃가루} d’un allié.,아군 한명의 @{꽃가루} 를 2배로 만듭니다.
+card.H47.name,Changement de saison,환절기
+card.H47.desc,Double le @{꽃가루} de tous.,전체 @{꽃가루} 를 2배로 만듭니다.
+card.H47_E.name,Améliorée : Changement de saison,강화 환절기
+card.H47_E.desc,Double le @{꽃가루} de tous.,전체 @{꽃가루} 를 2배로 만듭니다.
+card.H48.name,Fleur Parfumée,향기로운 꽃
+card.H48.desc,"Au début du tour, applique 2 @{꽃가루} à tous.",턴 시작 시 전체에게 @{꽃가루} 를 2 부여합니다.
+card.H48_E.name,Améliorée : Fleur Parfumée,강화 향기로운 꽃
+card.H48_E.desc,"Au début du tour, applique 2 @{꽃가루} à tous.",턴 시작 시 전체에게 @{꽃가루} 를 2 부여합니다.
+card.H49.name,Cotte de fleurs,꽃사슬갑옷
+card.H49.desc,Gagne #{8} de blocage. Gagne 2 @{꽃가루}.,방어 #{8} 얻습니다. @{꽃가루} 2 를 얻습니다.
+card.H49_E.name,Améliorée : Cotte de fleurs,강화 꽃사슬갑옷
+card.H49_E.desc,Gagne #{8} de blocage. Gagne 2 @{꽃가루}.,방어 #{8} 얻습니다. @{꽃가루} 2 를 얻습니다.
+card.H50.name,L’art d’attendre,기다림의 미학
+card.H50.desc,Applique 3 @{꽃가루} sur la cible.,대상에게 @{꽃가루} 3 을 부여합니다.
+card.H50_E.name,Améliorée : L’art d’attendre,강화 기다림의 미학
+card.H50_E.desc,Applique 3 @{꽃가루} sur la cible.,대상에게 @{꽃가루} 3 을 부여합니다.
+card.H51.name,Cueillette de fleurs,꽃 줍기
+card.H51.desc,Crée 3 cartes *{H52} dans le deck d’un allié choisi.,선택한 아군의 덱에 *{H52} 카드 3장을 생성합니다.
+card.H51_E.name,Améliorée : Cueillette de fleurs,강화 꽃 줍기
+card.H51_E.desc,Crée 3 cartes *{H52} dans le deck d’un allié choisi.,선택한 아군의 덱에 *{H52} 카드 3장을 생성합니다.
+card.H52.name,Pétale,꽃 잎
+card.H52.desc,Inflige à la cible des dégâts égaux à son pollen : @{꽃가루}. Pioche 1 carte.,대상에게 @{꽃가루} 만큼 피해를 줍니다. 드로우 1
+card.H52_E.name,Améliorée : Pétale,강화 꽃 잎
+card.H52_E.desc,Inflige à la cible des dégâts égaux à son pollen : @{꽃가루}. Pioche 1 carte.,대상에게 @{꽃가루} 만큼 피해를 줍니다. 드로우 1
+card.H53.name,Meurs par le miasme,독기에 죽어라
+card.H53.desc,Inflige des dégâts égaux au triple du pollen de la cible : @{꽃가루}.,대상에게 부여된 @{꽃가루} 3배 만큼 피해를 줍니다.
+card.H53_E.name,Améliorée : Meurs par le miasme,강화 독기에 죽어라
+card.H53_E.desc,Inflige des dégâts égaux au triple du pollen de la cible : @{꽃가루}.,대상에게 부여된 @{꽃가루} 3배 만큼 피해를 줍니다.
+card.H54.name,Floraison,개화
+card.H54.desc,Applique @{개화} à tous.,전체에게 @{개화} 합니다.
+card.H54_E.name,Améliorée : Floraison,강화 개화
+card.H54_E.desc,Applique @{개화} à tous.,전체에게 @{개화} 합니다.
+card.H55.name,Mystère de l’Orient,동방의 신비
+card.H55.desc,Applique @{개화} à tous les alliés ou à tous les ennemis.,아군 전체 또는 적 전체 에게 @{개화} 합니다.
+card.H55_E.name,Améliorée : Mystère de l’Orient,강화 동방의 신비
+card.H55_E.desc,Applique @{개화} à tous les alliés ou à tous les ennemis.,아군 전체 또는 적 전체 에게 @{개화} 합니다.
+card.H56.name,Parfum des fleurs,꽃의 향
+card.H56.desc,Applique @{개화} à un allié.,아군 중 한명에게 @{개화} 합니다.
+card.H56_E.name,Améliorée : Parfum des fleurs,강화 꽃의 향
+card.H56_E.desc,Applique @{개화} à un allié.,아군 중 한명에게 @{개화} 합니다.
+card.H57.name,Fleur éclose sur le fer,철에 피는 꽃
+card.H57.desc,"Applique 3 @{꽃가루} sur la cible où se tient @{철귀}, puis applique @{개화}.",@{철귀} 대상에게 @{꽃가루} 3 을 부여하고 @{개화} 합니다.
+card.H57_E.name,Améliorée : Fleur éclose sur le fer,강화 철에 피는 꽃
+card.H57_E.desc,"Applique 3 @{꽃가루} sur la cible où se tient @{철귀}, puis applique @{개화}.",@{철귀} 대상에게 @{꽃가루} 3 을 부여하고 @{개화} 합니다.
+card.H58.name,Héritiers des parents,어버이의 후예들
+card.H58.desc,Envoie toutes les cartes *{H0} et *{H1} de la ~{pioche} et de la ~{défausse} dans l’~{oubli}. Chaque carte envoyée se déclenche sur un ennemi au hasard.,~{뽑을덱} 과 ~{버려진덱} 의 모든 *{H0} *{H1} 카드를 ~{잊혀진덱} 으로 보냅니다. 보내진 카드가 무작위 적에게 발동 됩니다.
+card.H58_E.name,Améliorée : Héritiers des parents,강화 어버이의 후예들
+card.H58_E.desc,Envoie toutes les cartes *{H0} et *{H1} de la ~{pioche} et de la ~{défausse} dans l’~{oubli}. Chaque carte envoyée se déclenche sur un ennemi au hasard.,~{뽑을덱} 과 ~{버려진덱} 의 모든 *{H0} *{H1} 카드를 ~{잊혀진덱} 으로 보냅니다. 보내진 카드가 무작위 적에게 발동 됩니다.
+card.H59.name,Ligne de front de l’Empire,제국의 최전선
+card.H59.desc,Échange de place avec la ligne avant : @{전열}. Déplace sur vous le démon de fer : @{철귀}. Inflige à tous les ennemis des dégâts égaux à la taille : @{크기}.,@{전열}과 위치를 변경합니다. @{철귀} 를 자신에게 이동합니다. @{크기} 만큼 적 전체에게 피해를 줍니다.
+card.H59_E.name,Améliorée : Ligne de front de l’Empire,강화 제국의 최전선
+card.H59_E.desc,Échange de place avec la ligne avant : @{전열}. Déplace sur vous le démon de fer : @{철귀}. Inflige à tous les ennemis des dégâts égaux à la taille : @{크기}.,@{전열}과 위치를 변경합니다. @{철귀} 를 자신에게 이동합니다. @{크기} 만큼 적 전체에게 피해를 줍니다.
+card.H60.name,Honneur de la maison Hong,홍씨 가문의 명예
+card.H60.desc,"Gagne 1 @{이치}, augmenté du nombre de boss vaincus dans cette partie.",@{이치} 1 을 얻습니다. 이번 게임에서 잡은 보스 수 만큼 증가합니다.
+card.H60_E.name,Améliorée : Honneur de la maison Hong,강화 홍씨 가문의 명예
+card.H60_E.desc,"Gagne 1 @{이치}, augmenté du nombre de boss vaincus dans cette partie.",@{이치} 1 을 얻습니다. 이번 게임에서 잡은 보스 수 만큼 증가합니다.
+card.G0.name,Pénitence I,고행 I
+card.G0.desc,"Inflige !{9} dégâts. @{고행길} À la fin du tour, votre blocage subit 10 dégâts. @{기사도} [ Se répète deux fois ]",피해 !{9} 줍니다. @{고행길} 턴 종료 시 방어에 10 피해를 받습니다. @{기사도} [ 2번 반복 합니다 ]
+card.G0_E.name,Améliorée : Pénitence I,강화 고행 I
+card.G0_E.desc,"Inflige !{9} dégâts. @{고행길} À la fin du tour, votre blocage subit 10 dégâts. @{기사도} [ Se répète deux fois ]",피해 !{9} 줍니다. @{고행길} 턴 종료 시 방어에 10 피해를 받습니다. @{기사도} [ 2번 반복 합니다 ]
+card.G0_H.name,Pénitence Éclatante I,찬란한 고행 I
+card.G0_H.desc,Brise le blocage et inflige !{30} dégâts.,방어를 부수고 피해 !{30} 줍니다.
+card.G0_H_E.name,Améliorée : Pénitence Éclatante I,강화 찬란한 고행 I
+card.G0_H_E.desc,Brise le blocage et inflige !{30} dégâts.,방어를 부수고 피해 !{30} 줍니다.
+card.G1.name,Pénitence II,고행 II
+card.G1.desc,Gagne #{15} de blocage. @{고행길} Applique @{붕괴} sur vous à la fin du tour et @{쇠락} au début du tour.,방어 #{15} 얻습니다. @{고행길} 턴 종료 시 자신에게 @{붕괴} 턴 시작 시 @{쇠락} 을 부여합니다.
+card.G1_E.name,Améliorée : Pénitence II,강화 고행 II
+card.G1_E.desc,Gagne #{15} de blocage. @{고행길} Applique @{붕괴} sur vous à la fin du tour et @{쇠락} au début du tour.,방어 #{15} 얻습니다. @{고행길} 턴 종료 시 자신에게 @{붕괴} 턴 시작 시 @{쇠락} 을 부여합니다.
+card.G1_H.name,Pénitence Éclatante II,찬란한 고행 II
+card.G1_H.desc,Réduit de 1 chaque affaiblissement sur vous et gagne #{20} de blocage.,자신에게 걸린 디버프를 1 씩 내리고 방어 #{20} 얻습니다.
+card.G1_H_E.name,Améliorée : Pénitence Éclatante II,강화 찬란한 고행 II
+card.G1_H_E.desc,Réduit de 1 chaque affaiblissement sur vous et gagne #{20} de blocage.,자신에게 걸린 디버프를 1 씩 내리고 방어 #{20} 얻습니다.
+card.G2.name,Pénitence III,고행 III
+card.G2.desc,Toutes les cartes jouées ce tour-ci coûtent 1. @{고행길} Toutes les cartes sauf celle-ci coûtent 1 de plus.,이번턴에 사용하는 모든 카드의 비용은 1 입니다. @{고행길} 이 카드를 제외한 모든 카드가 비용 1 증가합니다.
+card.G2_E.name,Améliorée : Pénitence III,강화 고행 III
+card.G2_E.desc,Toutes les cartes jouées ce tour-ci coûtent 1. @{고행길} Toutes les cartes sauf celle-ci coûtent 1 de plus.,이번턴에 사용하는 모든 카드의 비용은 1 입니다. @{고행길} 이 카드를 제외한 모든 카드가 비용 1 증가합니다.
+card.G2_H.name,Pénitence Éclatante III,찬란한 고행 III
+card.G2_H.desc,Toutes les cartes en main coûtent 1 de moins pour le reste du combat.,패에 있는 모든 카드는 이번 전투 동안 비용 1 이 감소합니다.
+card.G2_H_E.name,Améliorée : Pénitence Éclatante III,강화 찬란한 고행 III
+card.G2_H_E.desc,Toutes les cartes en main coûtent 1 de moins pour le reste du combat.,패에 있는 모든 카드는 이번 전투 동안 비용 1 이 감소합니다.
+card.G3.name,4 Stigmates,4 성흔
+card.G3.desc,"@{고행길} Subit 3 dégâts à la fin du tour. À l’usage, inflige 4 dégâts.",@{고행길} 턴 종료 시 피해 3을 받습니다. 사용시 피해 4 줍니다.
+card.G3_E.name,Améliorée : 4 Stigmates,강화 4 성흔
+card.G3_E.desc,"@{고행길} Subit 3 dégâts à la fin du tour. À l’usage, inflige 4 dégâts.",@{고행길} 턴 종료 시 피해 3을 받습니다. 사용시 피해 4 줍니다.
+card.G3_H.name,4 Éclat des stigmates,4 성흔의 찬란함
+card.G3_H.desc,"Inflige !{6} dégâts, augmentés de 2 par carte de héros possédée.",피해 !{6} 줍니다. 자신이 소유한 영웅 카드 당 2 씩 증가합니다.
+card.G3_H_E.name,Améliorée : 4 Éclat des stigmates,강화 4 성흔의 찬란함
+card.G3_H_E.desc,"Inflige !{6} dégâts, augmentés de 2 par carte de héros possédée.",피해 !{6} 줍니다. 자신이 소유한 영웅 카드 당 2 씩 증가합니다.
+card.G4.name,5 Armure oppressante,5 조여오는 갑주
+card.G4.desc,"@{고행길} Applique -1 d’Ichi de Puissance. À l’usage, gagne #{6} de blocage.",@{고행길} 힘의 이치 -1 을 부여합니다. 사용시 방어 #{6} 을 얻습니다.
+card.G4_E.name,Améliorée : 5 Armure oppressante,강화 5 조여오는 갑주
+card.G4_E.desc,"@{고행길} Applique -1 d’Ichi de Puissance. À l’usage, gagne #{6} de blocage.",@{고행길} 힘의 이치 -1 을 부여합니다. 사용시 방어 #{6} 을 얻습니다.
+card.G4_H.name,5 Armure de lumière solaire,5 태양빛의 갑주
+card.G4_H.desc,"Gagne 2 @{방어의이치}, puis #{18} de blocage.",@{방어의이치} 2 후 방어 #{18} 얻습니다.
+card.G4_H_E.name,Améliorée : 5 Armure de lumière solaire,강화 5 태양빛의 갑주
+card.G4_H_E.desc,"Gagne 2 @{방어의이치}, puis #{18} de blocage.",@{방어의이치} 2 후 방어 #{18} 얻습니다.
+card.G5.name,6 Nom emprunté,6 빌린 이름
+card.G5.desc,"@{고행길} Gagne 1 @{붕괴}. À l’usage, applique 1 @{쇠락} sur un ennemi.",@{고행길} @{붕괴} 1을 얻습니다. 사용 시 적 한명에게 @{쇠락} 1을 부여합니다.
+card.G5_E.name,Améliorée : 6 Nom emprunté,강화 6 빌린 이름
+card.G5_E.desc,"@{고행길} Gagne 1 @{붕괴}. À l’usage, applique 1 @{쇠락} sur un ennemi.",@{고행길} @{붕괴} 1을 얻습니다. 사용 시 적 한명에게 @{쇠락} 1을 부여합니다.
+card.G5_H.name,6 Mon nom,6 나의 이름
+card.G5_H.desc,Applique 3 @{압도} et 2 @{쇠락} sur un ennemi.,적 한명에게 @{압도} 3 @{쇠락} 2 을 부여합니다.
+card.G5_H_E.name,Améliorée : 6 Mon nom,강화 6 나의 이름
+card.G5_H_E.desc,Applique 3 @{압도} et 2 @{쇠락} sur un ennemi.,적 한명에게 @{압도} 3 @{쇠락} 2 을 부여합니다.
+card.G6.name,7 Foi vacillante,7 흔들리는 신념
+card.G6.desc,La carte « Foi vacillante » n’existe pas.,흔들리는 신념 카드는 존재하지 않습니다.
+card.G6_E.name,Améliorée : 7 Foi vacillante,강화 7 흔들리는 신념
+card.G6_E.desc,La carte « Foi vacillante » n’existe pas.,흔들리는 신념 카드는 존재하지 않습니다.
+card.G6_H.name,7 Foi inébranlable,7 굳건한 신념
+card.G6_H.desc,La carte « Foi inébranlable » n’existe pas.,굳건한 신념 카드는 존재하지 않습니다.
+card.G6_H_E.name,Améliorée : 7 Foi inébranlable,강화 7 굳건한 신념
+card.G6_H_E.desc,La carte « Foi inébranlable » n’existe pas.,굳건한 신념 카드는 존재하지 않습니다.
+card.G7.name,8 Bénédiction et malédiction,8 축복이자 저주
+card.G7.desc,"@{고행길} Subit 2 dégâts à la fin du tour. À l’usage, pioche une carte.",@{고행길} 턴 종료 시 피해 2 를 받습니다. 사용 시 카드 한 장을 뽑습니다.
+card.G7_E.name,Améliorée : 8 Bénédiction et malédiction,강화 8 축복이자 저주
+card.G7_E.desc,"@{고행길} Subit 2 dégâts à la fin du tour. À l’usage, pioche une carte.",@{고행길} 턴 종료 시 피해 2 를 받습니다. 사용 시 카드 한 장을 뽑습니다.
+card.G7_H.name,8 Même la malédiction est belle,8 저주조차 아름답다
+card.G7_H.desc,Gagne 2 @{이치} et pioche 3 cartes.,@{이치} 2 를 얻고 카드 3장을 뽑습니다.
+card.G7_H_E.name,Améliorée : 8 Même la malédiction est belle,강화 8 저주조차 아름답다
+card.G7_H_E.desc,Gagne 2 @{이치} et pioche 3 cartes.,@{이치} 2 를 얻고 카드 3장을 뽑습니다.
+card.G8.name,Fendre,가르기
+card.G8.desc,Inflige !{7} dégâts.,피해 !{7} 줍니다.
+card.G8_E.name,Améliorée : Fendre,강화 가르기
+card.G8_E.desc,Inflige !{7} dégâts.,피해 !{7} 줍니다.
+card.G9.name,Abattre,찍기
+card.G9.desc,"Inflige !{9} dégâts, puis applique 1 @{쇠락}.",피해 !{9} 준 후 @{쇠락} 1 을 부여합니다.
+card.G9_E.name,Améliorée : Abattre,강화 찍기
+card.G9_E.desc,"Inflige !{9} dégâts, puis applique 1 @{쇠락}.",피해 !{9} 준 후 @{쇠락} 1 을 부여합니다.
+card.G10.name,Parade,막기
+card.G10.desc,Gagne #{6} de blocage.,방어 #{6} 얻습니다.
+card.G10_E.name,Améliorée : Parade,강화 막기
+card.G10_E.desc,Gagne #{6} de blocage.,방어 #{6} 얻습니다.
+card.G11.name,Je tiendrai bon,막겠다
+card.G11.desc,Accorde #{4} de blocage à vous et à un allié.,자신과 아군 한명에게 방어 #{4} 부여합니다.
+card.G11_E.name,Améliorée : Je tiendrai bon,강화 막겠다
+card.G11_E.desc,Accorde #{4} de blocage à vous et à un allié.,자신과 아군 한명에게 방어 #{4} 부여합니다.
+card.G12.name,Approche donc,덤벼라
+card.G12.desc,Inflige !{8} dégâts. @{기사도} [ Se répète une fois. ],피해 !{8} 줍니다. @{기사도} [ 1번 반복합니다. ]
+card.G12_E.name,Améliorée : Approche donc,강화 덤벼라
+card.G12_E.desc,Inflige !{8} dégâts. @{기사도} [ Se répète une fois. ],피해 !{8} 줍니다. @{기사도} [ 1번 반복합니다. ]
+card.G13.name,Je vais t’écraser,뭉개주마
+card.G13.desc,"Inflige !{8} dégâts, puis applique 1 @{압도}.",피해 !{8} 준 후 @{압도} 1 을 부여합니다.
+card.G13_E.name,Améliorée : Je vais t’écraser,강화 뭉개주마
+card.G13_E.desc,"Inflige !{8} dégâts, puis applique 1 @{압도}.",피해 !{8} 준 후 @{압도} 1 을 부여합니다.
+card.G14.name,Taille tournoyante,회전 베기
+card.G14.desc,Inflige !{6} dégâts à tous les ennemis.,적 전체에게 피해 !{6} 줍니다.
+card.G14_E.name,Améliorée : Taille tournoyante,강화 회전 베기
+card.G14_E.desc,Inflige !{6} dégâts à tous les ennemis.,적 전체에게 피해 !{6} 줍니다.
+card.G15.name,Sectionner,절단
+card.G15.desc,Applique 2 @{쇠락} sur un ennemi.,적 한명에게 @{쇠락} 2 을 부여합니다.
+card.G15_E.name,Améliorée : Sectionner,강화 절단
+card.G15_E.desc,Applique 2 @{쇠락} sur un ennemi.,적 한명에게 @{쇠락} 2 을 부여합니다.
+card.G16.name,Douleur des stigmates,성흔의 고통
+card.G16.desc,Crée une carte *{G3} en main et une carte *{G3} dans la ~{pioche}.,패에 *{G3} 카드 한 장 ~{뽑을덱} 에 *{G3} 카드 한 장 생성합니다.
+card.G16_E.name,Améliorée : Douleur des stigmates,강화 성흔의 고통
+card.G16_E.desc,Crée une carte *{G3} en main et une carte *{G3} dans la ~{pioche}.,패에 *{G3} 카드 한 장 ~{뽑을덱} 에 *{G3} 카드 한 장 생성합니다.
+card.G17.name,Grand Guerrier du Nord,북방의 위대한 투사
+card.G17.desc,"Durant ce combat, gagne 1 @{힘의이치} au début du tour. Cette carte part à la ~{défausse} après usage.",이번 전투에서 턴 시작시 @{힘의이치} 1 을 얻습니다. 이 카드는 사용 후 ~{버린덱} 으로 갑니다.
+card.G17_E.name,Améliorée : Grand Guerrier du Nord,강화 북방의 위대한 투사
+card.G17_E.desc,"Durant ce combat, gagne 1 @{힘의이치} au début du tour. Cette carte part à la ~{défausse} après usage.",이번 전투에서 턴 시작시 @{힘의이치} 1 을 얻습니다. 이 카드는 사용 후 ~{버린덱} 으로 갑니다.
+card.G18.name,Enchaînement prêt,연격 준비
+card.G18.desc,"Inflige !{8} dégâts, puis pioche une carte.",피해 !{8} 준 후 카드 한장을 뽑습니다.
+card.G18_E.name,Améliorée : Enchaînement prêt,강화 연격 준비
+card.G18_E.desc,"Inflige !{8} dégâts, puis pioche une carte.",피해 !{8} 준 후 카드 한장을 뽑습니다.
+card.G19.name,Écho de la Douleur,고통의 메아리
+card.G19.desc,"Durant ce combat, jouer une carte de malédiction inflige 3 en @{고정피해} à tous les ennemis. Cette carte part à la ~{défausse} après usage.",이번 전투에서 저주 카드 사용 시 적 전체에게 @{고정피해} 3 을 줍니다. 이 카드는 사용 후 ~{버린덱} 으로 갑니다.
+card.G19_E.name,Améliorée : Écho de la Douleur,강화 고통의 메아리
+card.G19_E.desc,"Durant ce combat, jouer une carte de malédiction inflige 3 en @{고정피해} à tous les ennemis. Cette carte part à la ~{défausse} après usage.",이번 전투에서 저주 카드 사용 시 적 전체에게 @{고정피해} 3 을 줍니다. 이 카드는 사용 후 ~{버린덱} 으로 갑니다.
+card.G20.name,Guerrier du bien,선의 투사
+card.G20.desc,Inflige !{10} dégâts. @{기사도} [ Accorde #{6} de blocage à tous les alliés. ],피해 !{10} 줍니다. @{기사도} [ 아군 전체에게 방어 #{6} 부여합니다. ]
+card.G20_E.name,Améliorée : Guerrier du bien,강화 선의 투사
+card.G20_E.desc,Inflige !{10} dégâts. @{기사도} [ Accorde #{6} de blocage à tous les alliés. ],피해 !{10} 줍니다. @{기사도} [ 아군 전체에게 방어 #{6} 부여합니다. ]
+card.G21.name,Puissance inatteignable,범접할수 없는 힘
+card.G21.desc,Inflige !{11} dégâts. L’effet de @{힘의이치} s’applique au triple.,피해 !{11} 줍니다. @{힘의이치} 효과가 3배로 적용됩니다.
+card.G21_E.name,Améliorée : Puissance inatteignable,강화 범접할수 없는 힘
+card.G21_E.desc,Inflige !{11} dégâts. L’effet de @{힘의이치} s’applique au triple.,피해 !{11} 줍니다. @{힘의이치} 효과가 3배로 적용됩니다.
+card.G22.name,Estoc et parade,찌르고 막기
+card.G22.desc,Inflige !{5} dégâts. @{기사도} [ Gagne #{15} de blocage. ],피해 !{5} 줍니다. @{기사도} [ 방어 #{15} 얻습니다. ]
+card.G22_E.name,Améliorée : Estoc et parade,강화 찌르고 막기
+card.G22_E.desc,Inflige !{5} dégâts. @{기사도} [ Gagne #{15} de blocage. ],피해 !{5} 줍니다. @{기사도} [ 방어 #{15} 얻습니다. ]
+card.G23.name,Armure dorée,황금빛 갑주
+card.G23.desc,"Gagne #{15} de blocage, puis crée une carte *{G4} dans la ~{pioche}.",방어 #{15} 얻은 후 *{G4} 카드 한장 생성해 ~{뽑을덱} 에 넣습니다.
+card.G23_E.name,Améliorée : Armure dorée,강화 황금빛 갑주
+card.G23_E.desc,"Gagne #{15} de blocage, puis crée une carte *{G4} dans la ~{pioche}.",방어 #{15} 얻은 후 *{G4} 카드 한장 생성해 ~{뽑을덱} 에 넣습니다.
+card.G24.name,Ardeur montante,차오르는 투지
+card.G24.desc,Inflige !{5} dégâts. @{기사도} [ Gagne 1 @{힘의이치}. ],피해 !{5} 줍니다 @{기사도} [ @{힘의이치} 1 을 얻습니다. ]
+card.G24_E.name,Améliorée : Ardeur montante,강화 차오르는 투지
+card.G24_E.desc,Inflige !{5} dégâts. @{기사도} [ Gagne 1 @{힘의이치}. ],피해 !{5} 줍니다 @{기사도} [ @{힘의이치} 1 을 얻습니다. ]
+card.G25.name,Même la Malédiction Brille,저주조차 찬란하다
+card.G25.desc,"Durant ce combat, les cartes @{이치의저주} sont améliorées.",이번 전투에서 @{이치의저주} 카드가 강화 됩니다.
+card.G25_E.name,Améliorée : Même la Malédiction Brille,강화 저주조차 찬란하다
+card.G25_E.desc,"Durant ce combat, les cartes @{이치의저주} sont améliorées.",이번 전투에서 @{이치의저주} 카드가 강화 됩니다.
+card.G26.name,Enfoncer le coin,쐐기박기
+card.G26.desc,Inflige !{4} dégâts. Consomme toute la domination que vous avez appliquée ; les dégâts augmentent de 4 par charge.,피해 !{4} 줍니다. 자신이 부여한 @{압도} 를 전부 제거하고 @{압도} 당 4 만큼 피해가 증가합니다.
+card.G26_E.name,Améliorée : Enfoncer le coin,강화 쐐기박기
+card.G26_E.desc,Inflige !{4} dégâts. Consomme toute la domination que vous avez appliquée ; les dégâts augmentent de 4 par charge.,피해 !{4} 줍니다. 자신이 부여한 @{압도} 를 전부 제거하고 @{압도} 당 4 만큼 피해가 증가합니다.
+card.G27.name,J’en finirai d’un coup,한번에 처리하마
+card.G27.desc,"Inflige !{6} dégâts à tous les ennemis, puis applique 1 @{압도}.",적 전체에게 피해 !{6} 준 후 @{압도} 1 을 부여합니다.
+card.G27_E.name,Améliorée : J’en finirai d’un coup,강화 한번에 처리하마
+card.G27_E.desc,"Inflige !{6} dégâts à tous les ennemis, puis applique 1 @{압도}.",적 전체에게 피해 !{6} 준 후 @{압도} 1 을 부여합니다.
+card.G28.name,Hurlement du maudit,저주자의 울부짖음
+card.G28.desc,"Inflige !{6} dégâts à tous les ennemis, augmentés de 3 par carte @{이치의저주} possédée.",적 전체에게 피해 !{6} 줍니다. 내가 소유중인 @{이치의저주} 카드 당 3 만큼 피해가 증가합니다.
+card.G28_E.name,Améliorée : Hurlement du maudit,강화 저주자의 울부짖음
+card.G28_E.desc,"Inflige !{6} dégâts à tous les ennemis, augmentés de 3 par carte @{이치의저주} possédée.",적 전체에게 피해 !{6} 줍니다. 내가 소유중인 @{이치의저주} 카드 당 3 만큼 피해가 증가합니다.
+card.G29.name,Tu as peur ?,두려운가?
+card.G29.desc,Inflige !{10} dégâts. @{기사도} [ Applique 2 @{압도}. ],피해 !{10} 줍니다. @{기사도} [ @{압도} 2 를 부여합니다. ]
+card.G29_E.name,Améliorée : Tu as peur ?,강화 두려운가?
+card.G29_E.desc,Inflige !{10} dégâts. @{기사도} [ Applique 2 @{압도}. ],피해 !{10} 줍니다. @{기사도} [ @{압도} 2 를 부여합니다. ]
+card.G30.name,"Laid, mais Chevaleresque",추하기에 기사답게
+card.G30.desc,"Durant ce combat, les effets de @{기사도} se répètent une fois de plus.",이번 전투에서 @{기사도} 효과는 1번 더 반복이 됩니다.
+card.G30_E.name,"Améliorée : Laid, mais Chevaleresque",강화 추하기에 기사답게
+card.G30_E.desc,"Durant ce combat, les effets de @{기사도} se répètent une fois de plus.",이번 전투에서 @{기사도} 효과는 1번 더 반복이 됩니다.
+card.G31.name,Transfert de douleur,고통 전가
+card.G31.desc,Inflige 8 dégâts par carte @{이치의저주} en main.,내 패에 있는 @{이치의저주} 카드 당 피해 8을 줍니다.
+card.G31_E.name,Améliorée : Transfert de douleur,강화 고통 전가
+card.G31_E.desc,Inflige 8 dégâts par carte @{이치의저주} en main.,내 패에 있는 @{이치의저주} 카드 당 피해 8을 줍니다.
+card.G32.name,Frapper le point faible,약점 찌르기
+card.G32.desc,Inflige !{8} dégâts. @{기사도} [ Applique 2 @{쇠락}. ],피해 !{8} 줍니다. @{기사도} [ @{쇠락} 2 를 부여합니다. ]
+card.G32_E.name,Améliorée : Frapper le point faible,강화 약점 찌르기
+card.G32_E.desc,Inflige !{8} dégâts. @{기사도} [ Applique 2 @{쇠락}. ],피해 !{8} 줍니다. @{기사도} [ @{쇠락} 2 를 부여합니다. ]
+card.G33.name,Laisse-moi,대신하지
+card.G33.desc,"Échange de place avec un allié, puis gagne #{8} de blocage.",아군과 위치를 바꾼후 방어력 #{8} 얻습니다.
+card.G33_E.name,Améliorée : Laisse-moi,강화 대신하지
+card.G33_E.desc,"Échange de place avec un allié, puis gagne #{8} de blocage.",아군과 위치를 바꾼후 방어력 #{8} 얻습니다.
+card.G34.name,J’y vais,내가 가마
+card.G34.desc,Gagne #{7} de blocage.,방어 #{7} 얻습니다.
+card.G34_E.name,Améliorée : J’y vais,강화 내가 가마
+card.G34_E.desc,Gagne #{7} de blocage.,방어 #{7} 얻습니다.
+card.G35.name,Je m’en charge,맡기지
+card.G35.desc,Inflige !{5} dégâts.,피해 !{5} 줍니다.
+card.G35_E.name,Améliorée : Je m’en charge,강화 맡기지
+card.G35_E.desc,Inflige !{5} dégâts.,피해 !{5} 줍니다.
+card.G36.name,Regarde-moi dans les yeux,내 눈을 봐라
+card.G36.desc,Applique 2 @{압도}.,@{압도} 2 를 부여합니다.
+card.G36_E.name,Améliorée : Regarde-moi dans les yeux,강화 내 눈을 봐라
+card.G36_E.desc,Applique 2 @{압도}.,@{압도} 2 를 부여합니다.
+card.G37.name,Écarte-toi…,비켜라…
+card.G37.desc,"Échange de place avec un allié, puis gagne 2 @{힘의이치}.",아군과 위치를 바꾼 후 자신에게 @{힘의이치} 2 를 부여합니다.
+card.G37_E.name,Améliorée : Écarte-toi…,강화 비켜라…
+card.G37_E.desc,"Échange de place avec un allié, puis gagne 2 @{힘의이치}.",아군과 위치를 바꾼 후 자신에게 @{힘의이치} 2 를 부여합니다.
+card.G38.name,Dominateur Absolu,절대 강자
+card.G38.desc,Gagne 1 @{힘의이치} chaque fois que @{기사도} réussit. Cette carte part à la ~{défausse} après usage.,@{기사도} 성공 시 @{힘의이치} 1 을 얻습니다. 이 카드는 사용 후 ~{버린덱} 으로 갑니다.
+card.G38_E.name,Améliorée : Dominateur Absolu,강화 절대 강자
+card.G38_E.desc,Gagne 1 @{힘의이치} chaque fois que @{기사도} réussit. Cette carte part à la ~{défausse} après usage.,@{기사도} 성공 시 @{힘의이치} 1 을 얻습니다. 이 카드는 사용 후 ~{버린덱} 으로 갑니다.
+card.G39.name,La main qui reste,남아있는 한손
+card.G39.desc,Inflige !{4} dégâts. @{기사도} [ Gagne 1 @{이치}. ],피해 !{4} 줍니다. @{기사도} [ @{이치} 1 를 얻습니다. ]
+card.G39_E.name,Améliorée : La main qui reste,강화 남아있는 한손
+card.G39_E.desc,Inflige !{4} dégâts. @{기사도} [ Gagne 1 @{이치}. ],피해 !{4} 줍니다. @{기사도} [ @{이치} 1 를 얻습니다. ]
+card.G40.name,Enchaînement possédé,신들린 연격
+card.G40.desc,Inflige ${2}{5}.,피해 ${2}{5} 줍니다.
+card.G40_E.name,Améliorée : Enchaînement possédé,강화 신들린 연격
+card.G40_E.desc,Inflige ${2}{5}.,피해 ${2}{5} 줍니다.
+card.G41.name,Taille en moulinet,풍차 베기
+card.G41.desc,Inflige ${3}{2} à tous les ennemis.,적 전체 피해 ${3}{2} 줍니다.
+card.G41_E.name,Améliorée : Taille en moulinet,강화 풍차 베기
+card.G41_E.desc,Inflige ${3}{2} à tous les ennemis.,적 전체 피해 ${3}{2} 줍니다.
+card.G42.name,Coup aveugle,눈먼 공격
+card.G42.desc,Inflige !{4} dégâts à un ennemi au hasard. Se répète 3 fois.,무작위 적에게 피해 !{4} 줍니다. 3번 반복 합니다.
+card.G42_E.name,Améliorée : Coup aveugle,강화 눈먼 공격
+card.G42_E.desc,Inflige !{4} dégâts à un ennemi au hasard. Se répète 3 fois.,무작위 적에게 피해 !{4} 줍니다. 3번 반복 합니다.
+card.G43.name,Charcuter,난도질
+card.G43.desc,"Inflige !{4} dégâts à tous les ennemis, puis applique 1 @{쇠락}.",적 전체 피해 !{4} 준 후 @{쇠락} 1 을 부여합니다.
+card.G43_E.name,Améliorée : Charcuter,강화 난도질
+card.G43_E.desc,"Inflige !{4} dégâts à tous les ennemis, puis applique 1 @{쇠락}.",적 전체 피해 !{4} 준 후 @{쇠락} 1 을 부여합니다.
+card.G44.name,Aucune Pitié,자비란 없다
+card.G44.desc,"Quand la domination est appliquée à un ennemi, la consomme et inflige !{3} dégâts par charge. Cette carte part à la ~{défausse} après usage.",적에게 @{압도} 부여 시 @{압도}를 제거 후 @{압도} 1당 피해 !{3} 줍니다. 이 카드는 사용 후 ~{버린덱} 으로 갑니다.
+card.G44_E.name,Améliorée : Aucune Pitié,강화 자비란 없다
+card.G44_E.desc,"Quand la domination est appliquée à un ennemi, la consomme et inflige !{3} dégâts par charge. Cette carte part à la ~{défausse} après usage.",적에게 @{압도} 부여 시 @{압도}를 제거 후 @{압도} 1당 피해 !{3} 줍니다. 이 카드는 사용 후 ~{버린덱} 으로 갑니다.
+card.G45.name,Position de garde,준비 자세
+card.G45.desc,"Gagne #{7} de blocage, puis pioche une carte.",방어 #{7} 얻은 후 카드 한장을 뽑습니다.
+card.G45_E.name,Améliorée : Position de garde,강화 준비 자세
+card.G45_E.desc,"Gagne #{7} de blocage, puis pioche une carte.",방어 #{7} 얻은 후 카드 한장을 뽑습니다.
+card.G46.name,Ailes Repliées,날개 감싸기
+card.G46.desc,Gagne le double de blocage ce tour-ci.,이번 턴에 방어를 2배 얻습니다.
+card.G46_E.name,Améliorée : Ailes Repliées,강화 날개 감싸기
+card.G46_E.desc,Gagne le double de blocage ce tour-ci.,이번 턴에 방어를 2배 얻습니다.
+card.G47.name,Prière,기도
+card.G47.desc,Accorde 2 @{힘의이치} à un allié.,아군 한명에게 @{힘의이치} 2 를 부여합니다.
+card.G47_E.name,Améliorée : Prière,강화 기도
+card.G47_E.desc,Accorde 2 @{힘의이치} à un allié.,아군 한명에게 @{힘의이치} 2 를 부여합니다.
+card.G48.name,Faire un exemple,본보기
+card.G48.desc,Inflige ${4}{2}. Applique 1 @{쇠락} à tous les autres ennemis.,피해 ${4}{2} 줍니다. 나머지 적 전체 에게는 @{쇠락} 1 을 부여합니다.
+card.G48_E.name,Améliorée : Faire un exemple,강화 본보기
+card.G48_E.desc,Inflige ${4}{2}. Applique 1 @{쇠락} à tous les autres ennemis.,피해 ${4}{2} 줍니다. 나머지 적 전체 에게는 @{쇠락} 1 을 부여합니다.
+card.G49.name,Garde Sans Faille,빈틈없는 자세
+card.G49.desc,Gagne #{3} de blocage à chaque attaque ce tour-ci.,이번 턴에 공격할 때마다 방어 #{3} 얻습니다
+card.G49_E.name,Améliorée : Garde Sans Faille,강화 빈틈없는 자세
+card.G49_E.desc,Gagne #{3} de blocage à chaque attaque ce tour-ci.,이번 턴에 공격할 때마다 방어 #{3} 얻습니다
+card.G50.name,Le nom de Geork,게오르크 라는 이름
+card.G50.desc,Inflige !{15} dégâts. Crée une carte *{G5} dans la ~{pioche}.,피해 !{15} 줍니다. *{G5} 카드 1장 생성해 ~{뽑을덱} 에 넣습니다.
+card.G50_E.name,Améliorée : Le nom de Geork,강화 게오르크 라는 이름
+card.G50_E.desc,Inflige !{15} dégâts. Crée une carte *{G5} dans la ~{pioche}.,피해 !{15} 줍니다. *{G5} 카드 1장 생성해 ~{뽑을덱} 에 넣습니다.
+card.G51.name,Sagesse du Vieux Soldat,노병의 지혜
+card.G51.desc,Accorde #{5} de blocage à tous les alliés chaque fois que les positions changent. Cette carte part à la ~{défausse} après usage.,위치가 바뀔 때 마다 바뀐 아군전체에게 방어 #{5} 부여합니다. 이 카드는 사용후 ~{버린덱} 으로 갑니다.
+card.G51_E.name,Améliorée : Sagesse du Vieux Soldat,강화 노병의 지혜
+card.G51_E.desc,Accorde #{5} de blocage à tous les alliés chaque fois que les positions changent. Cette carte part à la ~{défausse} après usage.,위치가 바뀔 때 마다 바뀐 아군전체에게 방어 #{5} 부여합니다. 이 카드는 사용후 ~{버린덱} 으로 갑니다.
+card.G52.name,Le fruit qui mûrit,맺어지는 열매
+card.G52.desc,"Gagne #{6} de blocage, augmenté de 3 par @{이치의저주} et @{영웅카드} possédée.",방어 #{6} 얻습니다. 자신이 소유한 @{이치의저주} 카드와 @{영웅카드} 당 3 씩 증가 합니다.
+card.G52_E.name,Améliorée : Le fruit qui mûrit,강화 맺어지는 열매
+card.G52_E.desc,"Gagne #{6} de blocage, augmenté de 3 par @{이치의저주} et @{영웅카드} possédée.",방어 #{6} 얻습니다. 자신이 소유한 @{이치의저주} 카드와 @{영웅카드} 당 3 씩 증가 합니다.
+card.G53.name,Révision de stratégie,전략 수정
+card.G53.desc,"Pioche 2 cartes, puis envoie 2 cartes à la ~{défausse}.",카드 2장을 뽑은 후 2장을 ~{버린덱} 으로 보냅니다.
+card.G53_E.name,Améliorée : Révision de stratégie,강화 전략 수정
+card.G53_E.desc,"Pioche 2 cartes, puis envoie 2 cartes à la ~{défausse}.",카드 2장을 뽑은 후 2장을 ~{버린덱} 으로 보냅니다.
+card.G54.name,Collecte de douleur,고통 수집
+card.G54.desc,Inflige !{14} dégâts à tous les ennemis. Gagne #{5} de blocage par ennemi touché.,적 전체에게 피해 !{14} 줍니다. 공격한 적 하나당 방어 #{5} 얻습니다.
+card.G54_E.name,Améliorée : Collecte de douleur,강화 고통 수집
+card.G54_E.desc,Inflige !{14} dégâts à tous les ennemis. Gagne #{5} de blocage par ennemi touché.,적 전체에게 피해 !{14} 줍니다. 공격한 적 하나당 방어 #{5} 얻습니다.
+card.G55.name,L’Infatigable,지치지 않는 자
+card.G55.desc,Inflige !{2} dégâts. Se répète selon la valeur de @{힘의이치}. @{기사도} [ Revient en main après usage ],피해 !{2} 줍니다. @{힘의이치} 수치 만큼 반복합니다. @{기사도} [ 사용후 다시 패로 돌아옴 ]
+card.G55_E.name,Améliorée : L’Infatigable,강화 지치지 않는 자
+card.G55_E.desc,Inflige !{2} dégâts. Se répète selon la valeur de @{힘의이치}. @{기사도} [ Revient en main après usage ],피해 !{2} 줍니다. @{힘의이치} 수치 만큼 반복합니다. @{기사도} [ 사용후 다시 패로 돌아옴 ]
+card.G56.name,Collecte de butin,전리품 수집
+card.G56.desc,Inflige !{15} dégâts. Cette carte gagne définitivement 5 dégâts par élite ou boss vaincu après son obtention.,피해 !{15} 줍니다. 이 카드는 획득 후 처치한 엘리트 몬스터 나 보스 당 피해 5 가 영구적으로 증가합니다.
+card.G56_E.name,Améliorée : Collecte de butin,강화 전리품 수집
+card.G56_E.desc,Inflige !{15} dégâts. Cette carte gagne définitivement 5 dégâts par élite ou boss vaincu après son obtention.,피해 !{15} 줍니다. 이 카드는 획득 후 처치한 엘리트 몬스터 나 보스 당 피해 5 가 영구적으로 증가합니다.
+card.G57.name,La Croix,십자가
+card.G57.desc,Gagne 1 Ichi lorsque vous piochez ou jouez cette carte.,이 카드를 뽑거나 사용할 때 이치 1을 얻습니다.
+card.G57_E.name,Améliorée : La Croix,강화 십자가
+card.G57_E.desc,Gagne 1 Ichi lorsque vous piochez ou jouez cette carte.,이 카드를 뽑거나 사용할 때 이치 1을 얻습니다.
+card.G58.name,L’Absolu,절대자
+card.G58.desc,La valeur de @{힘의이치} est doublée.,@{힘의이치} 가 2배가 됩니다.
+card.G58_E.name,Améliorée : L’Absolu,강화 절대자
+card.G58_E.desc,La valeur de @{힘의이치} est doublée.,@{힘의이치} 가 2배가 됩니다.
+card.G59.name,Pendre le cadavre,시체 걸기
+card.G59.desc,"Inflige !{3} dégâts. Si la cible meurt, applique 3 @{압도} à tous les ennemis.",피해 !{3} 줍니다 대상이 사망 시 적 전체에 @{압도} 3 을 부여합니다.
+card.G59_E.name,Améliorée : Pendre le cadavre,강화 시체 걸기
+card.G59_E.desc,"Inflige !{3} dégâts. Si la cible meurt, applique 3 @{압도} à tous les ennemis.",피해 !{3} 줍니다 대상이 사망 시 적 전체에 @{압도} 3 을 부여합니다.
+card.G60.name,Lame forgée par la malédiction,저주벼린 검
+card.G60.desc,"Inflige !{10} dégâts, augmentés de !{1} par malédiction d’Ichi obtenue durant ce combat.",피해 !{10} 줍니다. 이번 전투에서 @{이치의저주} 를 획득한 수 당 피해 !{1} 증가합니다.
+card.G60_E.name,Améliorée : Lame forgée par la malédiction,강화 저주벼린 검
+card.G60_E.desc,"Inflige !{10} dégâts, augmentés de !{1} par malédiction d’Ichi obtenue durant ce combat.",피해 !{10} 줍니다. 이번 전투에서 @{이치의저주} 를 획득한 수 당 피해 !{1} 증가합니다.
+card.G61.name,Volonté divine,신의 뜻
+card.G61.desc,"Inflige !{2} dégâts. En état de héros, inflige plutôt !{60} dégâts.",피해 !{2} 줍니다. 자신이 영웅 상태일 시 피해 !{60} 줍니다.
+card.G61_E.name,Améliorée : Volonté divine,강화 신의 뜻
+card.G61_E.desc,"Inflige !{2} dégâts. En état de héros, inflige plutôt !{60} dégâts.",피해 !{2} 줍니다. 자신이 영웅 상태일 시 피해 !{60} 줍니다.
+card.G62.name,Sauveur,구세주
+card.G62.desc,"Gagne #{4} de blocage. En état de héros, accorde plutôt #{25} de blocage à tous les alliés.",방어 #{4} 얻습니다. 자신이 영웅 상태일 시 아군 전체에게 방어 #{25} 부여합니다.
+card.G62_E.name,Améliorée : Sauveur,강화 구세주
+card.G62_E.desc,"Gagne #{4} de blocage. En état de héros, accorde plutôt #{25} de blocage à tous les alliés.",방어 #{4} 얻습니다. 자신이 영웅 상태일 시 아군 전체에게 방어 #{25} 부여합니다.
+card.G63.name,Avant-garde,선봉대
+card.G63.desc,"Échange de place avec la première ligne et gagne #{7} de blocage. Si vous y êtes déjà, gagne plutôt #{15} de blocage.",전열과 자리를 교체하며 자신에게 방어 #{7} 부여합니다 이미 전열시 방어 #{15} 부여합니다.
+card.G63_E.name,Améliorée : Avant-garde,강화 선봉대
+card.G63_E.desc,"Échange de place avec la première ligne et gagne #{7} de blocage. Si vous y êtes déjà, gagne plutôt #{15} de blocage.",전열과 자리를 교체하며 자신에게 방어 #{7} 부여합니다 이미 전열시 방어 #{15} 부여합니다.
+card.G64.name,Expérience,노련함
+card.G64.desc,Inflige !{5} dégâts. @{기사도} [ Pioche une carte. ],피해 !{5} 줍니다. @{기사도} [ 카드 한장을 뽑습니다. ]
+card.G64_E.name,Améliorée : Expérience,강화 노련함
+card.G64_E.desc,Inflige !{5} dégâts. @{기사도} [ Pioche une carte. ],피해 !{5} 줍니다. @{기사도} [ 카드 한장을 뽑습니다. ]
+card.G65.name,Encore une fois,한번더
+card.G65.desc,Inflige !{12} dégâts. @{기사도} [ Crée une copie de cette carte dans le deck. ],피해 !{12} 줍니다. @{기사도} [ 이 카드를 1장 생성해 덱에 넣습니다. ]
+card.G65_E.name,Améliorée : Encore une fois,강화 한번더
+card.G65_E.desc,Inflige !{12} dégâts. @{기사도} [ Crée une copie de cette carte dans le deck. ],피해 !{12} 줍니다. @{기사도} [ 이 카드를 1장 생성해 덱에 넣습니다. ]
+card.G66.name,Mélodie du Héros,영웅의 선율
+card.G66.desc,Pioche une carte chaque fois que vous jouez une carte @{이치의축복}. Cette carte part à la ~{défausse} après usage.,@{이치의축복} 카드 사용 시 카드 한 장을 뽑습니다. 이 카드는 사용 후 ~{버린덱} 으로 갑니다.
+card.G66_E.name,Améliorée : Mélodie du Héros,강화 영웅의 선율
+card.G66_E.desc,Pioche une carte chaque fois que vous jouez une carte @{이치의축복}. Cette carte part à la ~{défausse} après usage.,@{이치의축복} 카드 사용 시 카드 한 장을 뽑습니다. 이 카드는 사용 후 ~{버린덱} 으로 갑니다.
+card.G67.name,Corps aguerri,단련된 몸
+card.G67.desc,"Gagne #{3} de blocage, plus un montant égal à @{힘의이치}.",방어 #{3} 얻습니다. @{힘의이치} 수치 만큼 추가 됩니다.
+card.G67_E.name,Améliorée : Corps aguerri,강화 단련된 몸
+card.G67_E.desc,"Gagne #{3} de blocage, plus un montant égal à @{힘의이치}.",방어 #{3} 얻습니다. @{힘의이치} 수치 만큼 추가 됩니다.
+card.E0.name,Autorité : Estoc,권능 : 찌르기
+card.E0.desc,Inflige !{5} dégâts.,피해 !{5} 줍니다.
+card.E0_E.name,Améliorée : Autorité : Estoc,강화 권능 : 찌르기
+card.E0_E.desc,Inflige !{5} dégâts.,피해 !{5} 줍니다.
+card.E1.name,Autorité : Estoc profond,권능 : 깊게 찌르기
+card.E1.desc,Inflige !{8} dégâts.,피해 !{8} 줍니다.
+card.E1_E.name,Améliorée : Autorité : Estoc profond,강화 권능 : 깊게 찌르기
+card.E1_E.desc,Inflige !{8} dégâts.,피해 !{8} 줍니다.
+card.E2.name,Bras transformé,변화된 팔
+card.E2.desc,Gagne #{4} de blocage.,방어 #{4} 얻습니다.
+card.E2_E.name,Améliorée : Bras transformé,강화 변화된 팔
+card.E2_E.desc,Gagne #{4} de blocage.,방어 #{4} 얻습니다.
+card.E3.name,Bras du salut,구원의 팔
+card.E3.desc,Accorde #{3} de blocage à un allié.,아군 전체 중 한명에게 방어 #{3} 부여합니다.
+card.E3_E.name,Améliorée : Bras du salut,강화 구원의 팔
+card.E3_E.desc,Accorde #{3} de blocage à un allié.,아군 전체 중 한명에게 방어 #{3} 부여합니다.
+card.E4.name,"Brisez-vous, je vous prie",부서지세요
+card.E4.desc,Inflige !{3} dégâts. Applique 1 @{붕괴}.,피해 !{3} 줍니다. @{붕괴} 1 을 부여합니다.
+card.E4_E.name,"Améliorée : Brisez-vous, je vous prie",강화 부서지세요
+card.E4_E.desc,Inflige !{3} dégâts. Applique 1 @{붕괴}.,피해 !{3} 줍니다. @{붕괴} 1 을 부여합니다.
+card.E5.name,Cueillir une étoile,별 따기
+card.E5.desc,Inflige !{2} dégâts. Applique 1 @{별무리} sur vous.,피해 !{2} 줍니다. 자신에게 @{별무리} 1 을 부여합니다.
+card.E5_E.name,Améliorée : Cueillir une étoile,강화 별 따기
+card.E5_E.desc,Inflige !{2} dégâts. Applique 1 @{별무리} sur vous.,피해 !{2} 줍니다. 자신에게 @{별무리} 1 을 부여합니다.
+card.E6.name,Bénédiction de l’étoile,별의 축복
+card.E6.desc,Accorde #{5} de blocage et 1 @{별무리} à un allié.,아군 전체중 한명에게 방어 #{5} @{별무리} 1 을 부여합니다.
+card.E6_E.name,Améliorée : Bénédiction de l’étoile,강화 별의 축복
+card.E6_E.desc,Accorde #{5} de blocage et 1 @{별무리} à un allié.,아군 전체중 한명에게 방어 #{5} @{별무리} 1 을 부여합니다.
+card.E7.name,Dolore,돌로레
+card.E7.desc,Pioche 2 cartes. Perd ^{6} PV.,카드 2장을 뽑습니다. 체력 ^{6} 잃습니다.
+card.E7_E.name,Améliorée : Dolore,강화 돌로레
+card.E7_E.desc,Pioche 2 cartes. Perd ^{6} PV.,카드 2장을 뽑습니다. 체력 ^{6} 잃습니다.
+card.E8.name,Voyons voir,한번 볼까요
+card.E8.desc,Pioche 3 cartes. Garde-en 1 en main et envoie les 2 autres dans l’~{oubli}.,카드 3장을 뽑습니다. 1장을 패로갑니다. 나머지 2장을 ~{잊혀진덱} 으로 보냅니다.
+card.E8_E.name,Améliorée : Voyons voir,강화 한번 볼까요
+card.E8_E.desc,Pioche 3 cartes. Garde-en 1 en main et envoie les 2 autres dans l’~{oubli}.,카드 3장을 뽑습니다. 1장을 패로갑니다. 나머지 2장을 ~{잊혀진덱} 으로 보냅니다.
+card.E9.name,Autorité : Création tordue,권능 : 뒤틀리는 창조
+card.E9.desc,Ajoute une carte *{E10} en main. Copie cette carte dans le deck.,*{E10} 카드 1장을 패로 가져옵니다. 이 카드를 복사해 덱으로 보냅니다.
+card.E9_E.name,Améliorée : Autorité : Création tordue,강화 권능 : 뒤틀리는 창조
+card.E9_E.desc,Ajoute une carte *{E10} en main. Copie cette carte dans le deck.,*{E10} 카드 1장을 패로 가져옵니다. 이 카드를 복사해 덱으로 보냅니다.
+card.E10.name,Vie Tordue,뒤틀리는 생명
+card.E10.desc,Soigne ^{3} PV. Inflige à tous les ennemis des dégâts égaux au surplus de soin. N’est pas affectée par @{파괴의권능}.,체력 ^{3} 회복합니다. 초과된 회복량 만큼 적 전체에 피해를 줍니다. @{파괴의권능} 효과를 받지 않습니다.
+card.E10_E.name,Améliorée : Vie Tordue,강화 뒤틀리는 생명
+card.E10_E.desc,Soigne ^{3} PV. Inflige à tous les ennemis des dégâts égaux au surplus de soin. N’est pas affectée par @{파괴의권능}.,체력 ^{3} 회복합니다. 초과된 회복량 만큼 적 전체에 피해를 줍니다. @{파괴의권능} 효과를 받지 않습니다.
+card.E11.name,Tisseuse d’amas,별무리꾼
+card.E11.desc,Applique 1 @{별무리} à tous les alliés.,아군 전체에게 @{별무리} 1 을 부여합니다.
+card.E11_E.name,Améliorée : Tisseuse d’amas,강화 별무리꾼
+card.E11_E.desc,Applique 1 @{별무리} à tous les alliés.,아군 전체에게 @{별무리} 1 을 부여합니다.
+card.E12.name,Autorité : Perte,권능 : 상실
+card.E12.desc,Vos PV restants sont réduits de moitié.,자신의 남은 체력이 반이 됩니다.
+card.E12_E.name,Améliorée : Autorité : Perte,강화 권능 : 상실
+card.E12_E.desc,Vos PV restants sont réduits de moitié.,자신의 남은 체력이 반이 됩니다.
+card.E13.name,Décharge de pression,압력 분출
+card.E13.desc,"Inflige !{3} dégâts à tous les ennemis. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige !{6} dégâts à tous les ennemis. ]",적 전체에게 피해 !{3} 줍니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 적 전체에게 피해 !{6} 줍니다. ]
+card.E13_E.name,Améliorée : Décharge de pression,강화 압력 분출
+card.E13_E.desc,"Inflige !{3} dégâts à tous les ennemis. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige !{6} dégâts à tous les ennemis. ]",적 전체에게 피해 !{3} 줍니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 적 전체에게 피해 !{6} 줍니다. ]
+card.E14.name,Autorité : Déchirure,권능 : 찢어 가르기
+card.E14.desc,"Inflige !{20} dégâts. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige !{10} dégâts à un ennemi au hasard. ]",피해 !{20} 줍니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 무작위 적 한명에게 피해 !{10} 줍니다. ]
+card.E14_E.name,Améliorée : Autorité : Déchirure,강화 권능 : 찢어 가르기
+card.E14_E.desc,"Inflige !{20} dégâts. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige !{10} dégâts à un ennemi au hasard. ]",피해 !{20} 줍니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 무작위 적 한명에게 피해 !{10} 줍니다. ]
+card.E15.name,Autorité : Destruction,권능 : 파괴
+card.E15.desc,"Inflige !{3} dégâts, augmentés de 2 par carte d’attaque jouée durant ce combat.",피해 !{3} 줍니다. 이번 전투동안 사용한 공격 카드의 개수 만큼 2씩 증가합니다.
+card.E15_E.name,Améliorée : Autorité : Destruction,강화 권능 : 파괴
+card.E15_E.desc,"Inflige !{3} dégâts, augmentés de 2 par carte d’attaque jouée durant ce combat.",피해 !{3} 줍니다. 이번 전투동안 사용한 공격 카드의 개수 만큼 2씩 증가합니다.
+card.E16.name,Autorité : Effondrement,권능 : 붕괴
+card.E16.desc,Applique 2 @{붕괴} à tous les ennemis.,적 전체에게 @{붕괴} 2 를 부여합니다.
+card.E16_E.name,Améliorée : Autorité : Effondrement,강화 권능 : 붕괴
+card.E16_E.desc,Applique 2 @{붕괴} à tous les ennemis.,적 전체에게 @{붕괴} 2 를 부여합니다.
+card.E17.name,Combien de temps tiendrez-vous ?,얼마나 버틸까요
+card.E17.desc,Brise le blocage de l’ennemi. Inflige !{5} dégâts.,적의 방어를 부숩니다. 피해 !{5} 줍니다.
+card.E17_E.name,Améliorée : Combien de temps tiendrez-vous ?,강화 얼마나 버틸까요
+card.E17_E.desc,Brise le blocage de l’ennemi. Inflige !{5} dégâts.,적의 방어를 부숩니다. 피해 !{5} 줍니다.
+card.E18.name,Animato,아니마토
+card.E18.desc,Retire votre blocage et soigne autant de PV.,자신의 방어를 제거합니다. 제거된 방어만큼 체력을 회복합니다.
+card.E18_E.name,Améliorée : Animato,강화 아니마토
+card.E18_E.desc,Retire votre blocage et soigne autant de PV.,자신의 방어를 제거합니다. 제거된 방어만큼 체력을 회복합니다.
+card.E19.name,Entraîner au fond,물귀신
+card.E19.desc,Applique 99 @{붕괴} sur un ennemi et sur vous.,적 한명과 자신에게 @{붕괴} 99 를 부여합니다.
+card.E19_E.name,Améliorée : Entraîner au fond,강화 물귀신
+card.E19_E.desc,Applique 99 @{붕괴} sur un ennemi et sur vous.,적 한명과 자신에게 @{붕괴} 99 를 부여합니다.
+card.E20.name,Tempestoso,템페스토소
+card.E20.desc,Pioche une carte chaque fois que vous perdez ^{10} PV.,체력 ^{10} 잃을 때마다 카드를 한장 뽑습니다.
+card.E20_E.name,Améliorée : Tempestoso,강화 템페스토소
+card.E20_E.desc,Pioche une carte chaque fois que vous perdez ^{10} PV.,체력 ^{10} 잃을 때마다 카드를 한장 뽑습니다.
+card.E21.name,Éclipse,월식
+card.E21.desc,Gagne du blocage égal aux dégâts infligés ce tour-ci.,이번 턴에 준 피해 만큼 방어를 얻습니다.
+card.E21_E.name,Améliorée : Éclipse,강화 월식
+card.E21_E.desc,Gagne du blocage égal aux dégâts infligés ce tour-ci.,이번 턴에 준 피해 만큼 방어를 얻습니다.
+card.E22.name,Éclat de mémoire,기억파편
+card.E22.desc,Choisis 2 cartes dans la ~{défausse} et ajoute-les en main.,~{버린덱} 에서 카드 2장을 고릅니다. 패로 가져옵니다.
+card.E22_E.name,Améliorée : Éclat de mémoire,강화 기억파편
+card.E22_E.desc,Choisis 2 cartes dans la ~{défausse} et ajoute-les en main.,~{버린덱} 에서 카드 2장을 고릅니다. 패로 가져옵니다.
+card.E23.name,Étoile tricolore,삼색빛별
+card.E23.desc,Inflige !{4} dégâts. Gagne du blocage égal aux dégâts infligés. Applique 1 @{별무리} sur vous.,피해 !{4} 줍니다. 피해량 만큼 방어를 얻습니다. 자신에게 @{별무리} 1 을 부여합니다.
+card.E23_E.name,Améliorée : Étoile tricolore,강화 삼색빛별
+card.E23_E.desc,Inflige !{4} dégâts. Gagne du blocage égal aux dégâts infligés. Applique 1 @{별무리} sur vous.,피해 !{4} 줍니다. 피해량 만큼 방어를 얻습니다. 자신에게 @{별무리} 1 을 부여합니다.
+card.E24.name,Signe de Reprise,도돌이표
+card.E24.desc,Les cartes d’attaque jouées ce tour-ci sont jouées deux fois.,이번 턴에 사용되는 공격카드는 2번 사용됩니다.
+card.E24_E.name,Améliorée : Signe de Reprise,강화 도돌이표
+card.E24_E.desc,Les cartes d’attaque jouées ce tour-ci sont jouées deux fois.,이번 턴에 사용되는 공격카드는 2번 사용됩니다.
+card.E25.name,Le rêve hors d’atteinte,닿을 수 없던 꿈
+card.E25.desc,Choisis 3 cartes dans la ~{pioche} et envoie-les à la ~{défausse}.,~{뽑을덱} 에 있는 카드 3장을 선택하여 ~{버린덱} 으로 보냅니다.
+card.E25_E.name,Améliorée : Le rêve hors d’atteinte,강화 닿을 수 없던 꿈
+card.E25_E.desc,Choisis 3 cartes dans la ~{pioche} et envoie-les à la ~{défausse}.,~{뽑을덱} 에 있는 카드 3장을 선택하여 ~{버린덱} 으로 보냅니다.
+card.E26.name,Delicato,델리카토
+card.E26.desc,"Inflige !{12} dégâts. Choisis 1 carte dans la ~{pioche} et envoie-la à la ~{défausse}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige !{8} dégâts à tous les ennemis. ]",피해 !{12} 줍니다. ~{뽑을덱} 에서 카드 1장을 골라서 ~{버린덱} 으로 보냅니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 적 전체에게 피해 !{8} 줍니다. ]
+card.E26_E.name,Améliorée : Delicato,강화 델리카토
+card.E26_E.desc,"Inflige !{12} dégâts. Choisis 1 carte dans la ~{pioche} et envoie-la à la ~{défausse}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige !{8} dégâts à tous les ennemis. ]",피해 !{12} 줍니다. ~{뽑을덱} 에서 카드 1장을 골라서 ~{버린덱} 으로 보냅니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 적 전체에게 피해 !{8} 줍니다. ]
+card.E27.name,Moisson dans le vide,공허 속 갈무리
+card.E27.desc,Inflige !{N} dégâts selon le nombre de cartes dans la ~{défausse}.,~{버린덱} 의 카드 수 만큼 피해 !{N} 를 줍니다.
+card.E27_E.name,Améliorée : Moisson dans le vide,강화 공허속 갈무리
+card.E27_E.desc,Inflige !{N} dégâts selon le nombre de cartes dans la ~{défausse}.,~{버린덱} 의 카드 수 만큼 피해 !{N} 를 줍니다.
+card.E28.name,Autorité : Inertie,권능 : 관성
+card.E28.desc,"Envoie toute la main à la ~{défausse}, puis choisis autant de cartes dans la ~{pioche} et envoie-les à la ~{défausse}.",패를 전부 ~{버린덱} 으로 보내고 보낸 수 만큼 ~{뽑을덱} 에서 카드를 고르고 ~{버린덱} 으로 보냅니다.
+card.E28_E.name,Améliorée : Autorité : Inertie,강화 권능 : 관성
+card.E28_E.desc,"Envoie toute la main à la ~{défausse}, puis choisis autant de cartes dans la ~{pioche} et envoie-les à la ~{défausse}.",패를 전부 ~{버린덱} 으로 보내고 보낸 수 만큼 ~{뽑을덱} 에서 카드를 고르고 ~{버린덱} 으로 보냅니다.
+card.E29.name,Présage de la Fin,종말의 징조
+card.E29.desc,Inflige !{2} dégâts à tous les ennemis chaque fois qu’une carte passe de la ~{pioche} à la ~{défausse}.,카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 갈 때 마다 적 전체에게 피해 !{2} 줍니다.
+card.E29_E.name,Améliorée : Présage de la Fin,강화 종말의 징조
+card.E29_E.desc,Inflige !{2} dégâts à tous les ennemis chaque fois qu’une carte passe de la ~{pioche} à la ~{défausse}.,카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 갈 때 마다 적 전체에게 피해 !{2} 줍니다.
+card.E30.name,Autorité de Création,창조의 권능
+card.E30.desc,"Crée 2 cartes *{E10} dans le deck. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, crée une carte *{E10} en main. ]",*{E10} 카드 2장을 생성해 덱에 넣습니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 *{E10} 카드를 생성해 패에 1장 넣습니다. ]
+card.E30_E.name,Améliorée : Autorité de Création,강화 창조의 권능
+card.E30_E.desc,"Crée 2 cartes *{E10} dans le deck. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, crée une carte *{E10} en main. ]",*{E10} 카드 2장을 생성해 덱에 넣습니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 *{E10} 카드를 생성해 패에 1장 넣습니다. ]
+card.E31.name,Amasser des poussières,티끌 모으기
+card.E31.desc,"Gagne 1 @{이치}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, gagne 2 @{이치}. ]",@{이치} 1 을 얻습니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 @{이치} 2 를 얻습니다. ]
+card.E31_E.name,Améliorée : Amasser des poussières,강화 티끌 모으기
+card.E31_E.desc,"Gagne 1 @{이치}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, gagne 2 @{이치}. ]",@{이치} 1 을 얻습니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 @{이치} 2 를 얻습니다. ]
+card.E32.name,La partie émergée de l’iceberg,빙산의 일각
+card.E32.desc,"Inflige !{8} dégâts. Choisis 1 carte dans la ~{pioche} et envoie-la à la ~{défausse}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige !{20} dégâts à un ennemi au hasard. ]",피해 !{8} 줍니다. ~{뽑을덱} 에서 카드 1장을 골라서 ~{버린덱} 으로 보냅니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 무작위 적 한명에게 피해 !{20} 줍니다. ]
+card.E32_E.name,Améliorée : La partie émergée de l’iceberg,강화 빙산의 일각
+card.E32_E.desc,"Inflige !{8} dégâts. Choisis 1 carte dans la ~{pioche} et envoie-la à la ~{défausse}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige !{20} dégâts à un ennemi au hasard. ]",피해 !{8} 줍니다. ~{뽑을덱} 에서 카드 1장을 골라서 ~{버린덱} 으로 보냅니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 무작위 적 한명에게 피해 !{20} 줍니다. ]
+card.E33.name,Fin de la Distorsion,뒤틀림의 끝
+card.E33.desc,"Pour le reste de la partie, à pleins PV vos cartes n’accordent plus de blocage et infligent ce montant en dégâts à l’ennemi.",이번 게임동안 자신의 체력이 가득 차있다면 자신의 카드로는 방어가 오르지 않고 그 수치 만큼 적에게 피해를 줍니다.
+card.E33_E.name,Améliorée : Fin de la Distorsion,강화 뒤틀림의 끝
+card.E33_E.desc,"Pour le reste de la partie, à pleins PV vos cartes n’accordent plus de blocage et infligent ce montant en dégâts à l’ennemi.",이번 게임동안 자신의 체력이 가득 차있다면 자신의 카드로는 방어가 오르지 않고 그 수치 만큼 적에게 피해를 줍니다.
+card.E34.name,Collecte de cellules,세포 수집
+card.E34.desc,Inflige !{2} dégâts. Crée une carte *{E10} en main.,피해 !{2} 줍니다. *{E10} 카드 1장을 생성해 패에 가져옵니다.
+card.E34_E.name,Améliorée : Collecte de cellules,강화 세포 수집
+card.E34_E.desc,Inflige !{2} dégâts. Crée une carte *{E10} en main.,피해 !{2} 줍니다. *{E10} 카드 1장을 생성해 패에 가져옵니다.
+card.E35.name,Mue Renforcée,허물 강화
+card.E35.desc,"Ce tour-ci, les PV soignés sont convertis en blocage.",이번 턴 동안 체력 회복은 방어로 전환 됩니다.
+card.E35_E.name,Améliorée : Mue Renforcée,강화 허물 강화
+card.E35_E.desc,"Ce tour-ci, les PV soignés sont convertis en blocage.",이번 턴 동안 체력 회복은 방어로 전환 됩니다.
+card.E36.name,Échange de constellations,별자리 교환
+card.E36.desc,Échange la première et la dernière ligne et applique 1 @{별무리} aux deux.,전열과 후열의 위치를 교체하고 전열과 후열에게 @{별무리} 1 을 부여합니다.
+card.E36_E.name,Améliorée : Échange de constellations,강화 별자리 교환
+card.E36_E.desc,Échange la première et la dernière ligne et applique 1 @{별무리} aux deux.,전열과 후열의 위치를 교체하고 전열과 후열에게 @{별무리} 1 을 부여합니다.
+card.E37.name,Écho de la ruine,파멸의 메아리
+card.E37.desc,"Inflige ${1}{6}, puis choisis 1 carte dans la ~{pioche} et envoie-la à la ~{défausse}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige ${2}{7} à un ennemi au hasard. ]",피해 ${1}{6} 준 후 ~{뽑을덱} 에서 카드를 1장 고르고 ~{버린덱} 으로 보냅니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 간다면 무작위 적 한명에게 피해 ${2}{7} 줍니다. ]
+card.E37_E.name,Améliorée : Écho de la ruine,강화 파멸의 메아리
+card.E37_E.desc,"Inflige ${1}{6}, puis choisis 1 carte dans la ~{pioche} et envoie-la à la ~{défausse}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige ${2}{7} à un ennemi au hasard. ]",피해 ${1}{6} 준 후 ~{뽑을덱} 에서 카드를 1장 고르고 ~{버린덱} 으로 보냅니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 간다면 무작위 적 한명에게 피해 ${2}{7} 줍니다. ]
+card.E38.name,Autorité de Miséricorde,자비의 권능
+card.E38.desc,"Envoie toutes vos cartes *{E10} dans l’~{oubli}. Pour chaque carte envoyée, soigne tous les alliés du nombre de cartes envoyées.",자신이 소유하고 있는 *{E10} 카드를 전부 ~{잊혀진덱} 으로 보냅니다. 보낸 카드 1장당 보낸 카드 개수 만큼 아군 전체를 회복합니다.
+card.E38_E.name,Améliorée : Autorité de Miséricorde,강화 자비의 권능
+card.E38_E.desc,"Envoie toutes vos cartes *{E10} dans l’~{oubli}. Pour chaque carte envoyée, soigne tous les alliés du nombre de cartes envoyées.",자신이 소유하고 있는 *{E10} 카드를 전부 ~{잊혀진덱} 으로 보냅니다. 보낸 카드 1장당 보낸 카드 개수 만큼 아군 전체를 회복합니다.
+card.E39.name,Allegretto,알레그레토
+card.E39.desc,"Applique 1 @{붕괴} sur un ennemi. S’il a déjà l’effondrement, inflige !{10} dégâts supplémentaires.",적 하나에게 @{붕괴} 1 을 부여합니다. 붕괴가 있다면 피해 !{10} 추가로 줍니다.
+card.E39_E.name,Améliorée : Allegretto,강화 알레그레토
+card.E39_E.desc,"Applique 1 @{붕괴} sur un ennemi. S’il a déjà l’effondrement, inflige !{10} dégâts supplémentaires.",적 하나에게 @{붕괴} 1 을 부여합니다. 붕괴가 있다면 피해 !{10} 추가로 줍니다.
+card.E40.name,Bouclier du vide,공허 방패
+card.E40.desc,"Gagne #{8} de blocage. Choisis 1 carte dans la ~{pioche} et envoie-la à la ~{défausse}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, accorde #{8} de blocage à tous les alliés. ]",방어 #{8} 얻습니다. ~{뽑을덱} 에서 카드 1장을 고르고 ~{버린덱} 으로 보냅니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 아군 전체에게 방어 #{8} 부여합니다. ]
+card.E40_E.name,Améliorée : Bouclier du vide,강화 공허 방패
+card.E40_E.desc,"Gagne #{8} de blocage. Choisis 1 carte dans la ~{pioche} et envoie-la à la ~{défausse}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, accorde #{8} de blocage à tous les alliés. ]",방어 #{8} 얻습니다. ~{뽑을덱} 에서 카드 1장을 고르고 ~{버린덱} 으로 보냅니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 아군 전체에게 방어 #{8} 부여합니다. ]
+card.E41.name,Éclat de comète,혜성 조각
+card.E41.desc,Inflige !{5} dégâts. Applique 1 @{붕괴}.,피해 !{5} 줍니다. @{붕괴} 1 을 부여합니다.
+card.E41_E.name,Améliorée : Éclat de comète,강화 혜성 조각
+card.E41_E.desc,Inflige !{5} dégâts. Applique 1 @{붕괴}.,피해 !{5} 줍니다. @{붕괴} 1 을 부여합니다.
+card.E42.name,Je prends votre place,제가 대신하죠
+card.E42.desc,Gagne #{4} de blocage.,방어 #{4} 얻습니다.
+card.E42_E.name,Améliorée : Je prends votre place,강화 제가 대신하죠
+card.E42_E.desc,Gagne #{4} de blocage.,방어 #{4} 얻습니다.
+card.E43.name,Je vous en prie,부탁 드립니다
+card.E43.desc,Inflige !{6} dégâts.,피해 !{6} 줍니다.
+card.E43_E.name,Améliorée : Je vous en prie,강화 부탁 드립니다
+card.E43_E.desc,Inflige !{6} dégâts.,피해 !{6} 줍니다.
+card.E44.name,Celle qui touche le vide,공허를 만지는 자
+card.E44.desc,Chaque allié ajoute en main 1 carte de l’~{oubli} et 1 carte de la ~{défausse}.,아군 전체는 ~{잊혀진덱} 에서 1장 ~{버린덱} 에서 1장을 패로 가져옵니다.
+card.E44_E.name,Améliorée : Celle qui touche le vide,강화 공허를 만지는 자
+card.E44_E.desc,Chaque allié ajoute en main 1 carte de l’~{oubli} et 1 carte de la ~{défausse}.,아군 전체는 ~{잊혀진덱} 에서 1장 ~{버린덱} 에서 1장을 패로 가져옵니다.
+card.E45.name,Gémeaux,쌍둥이 자리
+card.E45.desc,Échange de place avec un allié et applique 1 @{별무리} à vous deux.,자신과 아군 한명의 위치를 바꾸고 자신과 그 아군에게 @{별무리} 1 를 부여합니다.
+card.E45_E.name,Améliorée : Gémeaux,강화 쌍둥이 자리
+card.E45_E.desc,Échange de place avec un allié et applique 1 @{별무리} à vous deux.,자신과 아군 한명의 위치를 바꾸고 자신과 그 아군에게 @{별무리} 1 를 부여합니다.
+card.E46.name,Halo,헤일로
+card.E46.desc,"Inflige !{1} dégâts à tous les ennemis. Copie cette carte dans le deck, puis les dégâts de toutes les cartes du même nom augmentent de !{1}.",적 전체에게 피해 !{1} 줍니다. 이 카드를 덱으로 한장 복사 후 이 이름의 카드의 피해 !{1} 증가합니다.
+card.E46_E.name,Améliorée : Halo,강화 헤일로
+card.E46_E.desc,"Inflige !{1} dégâts à tous les ennemis. Copie cette carte dans le deck, puis les dégâts de toutes les cartes du même nom augmentent de !{1}.",적 전체에게 피해 !{1} 줍니다. 이 카드를 덱으로 한장 복사 후 이 이름의 카드의 피해 !{1} 증가합니다.
+card.E47.name,Enseignement de l’amas,별무리의 가르침
+card.E47.desc,"Inflige !{5} dégâts. Pioche une carte. Si vos PV sont à la moitié ou moins, applique 1 @{별무리} sur vous.",피해 !{5} 줍니다. 카드를 한장 뽑습니다. 자신의 체력이 절반 이하라면 자신에게 @{별무리} 1 을 부여합니다.
+card.E47_E.name,Améliorée : Enseignement de l’amas,강화 별무리의 가르침
+card.E47_E.desc,"Inflige !{5} dégâts. Pioche une carte. Si vos PV sont à la moitié ou moins, applique 1 @{별무리} sur vous.",피해 !{5} 줍니다. 카드를 한장 뽑습니다. 자신의 체력이 절반 이하라면 자신에게 @{별무리} 1 을 부여합니다.
+card.E48.name,Grandioso,그랜디오소
+card.E48.desc,"Inflige !{8} dégâts. Choisis 2 cartes dans la ~{pioche} et envoie-les à la ~{défausse}. [ Si l’une des cartes envoyées est *{E48}, les dégâts sont doublés ; si les deux le sont, ils sont triplés. ]",피해 !{8} 줍니다. ~{뽑을덱} 에서 카드를 2장을 골라 ~{버린덱} 으로 보냅니다. [ 보낸 카드 중 *{E48} 이 있으면 피해가 2배 두 장 모두 *{E48} 이면 3배가 됩니다. ]
+card.E48_E.name,Améliorée : Grandioso,강화 그랜디오소
+card.E48_E.desc,"Inflige !{8} dégâts. Choisis 2 cartes dans la ~{pioche} et envoie-les à la ~{défausse}. [ Si l’une des cartes envoyées est *{E48}, les dégâts sont doublés ; si les deux le sont, ils sont triplés. ]",피해 !{8} 줍니다. ~{뽑을덱} 에서 카드를 2장을 골라 ~{버린덱} 으로 보냅니다. [ 보낸 카드 중 *{E48} 이 있으면 피해가 2배 두 장 모두 *{E48} 이면 3배가 됩니다. ]
+card.E49.name,Poupée de chiffon,봉제 인형
+card.E49.desc,Accorde à tous les alliés sauf vous du blocage égal aux PV qui vous manquent.,자신의 잃은 체력 만큼 자신을 제외한 아군 전체에게 방어를 부여합니다.
+card.E49_E.name,Améliorée : Poupée de chiffon,강화 봉제 인형
+card.E49_E.desc,Accorde à tous les alliés sauf vous du blocage égal aux PV qui vous manquent.,자신의 잃은 체력 만큼 자신을 제외한 아군 전체에게 방어를 부여합니다.
+card.E50.name,Râle de la Poupée Souriante,웃는 인형의 단말마
+card.E50.desc,"Le multiplicateur de @{파괴의권능} gagne +1, mais les dégâts que vous subissez augmentent aussi de +1 multiplicateur.",@{파괴의권능} 이 +1배가 되는 대신 자신이 받는 피해는 +1배가 됩니다.
+card.E50_E.name,Améliorée : Râle de la Poupée Souriante,강화 웃는 인형의 단말마
+card.E50_E.desc,"Le multiplicateur de @{파괴의권능} gagne +1, mais les dégâts que vous subissez augmentent aussi de +1 multiplicateur.",@{파괴의권능} 이 +1배가 되는 대신 자신이 받는 피해는 +1배가 됩니다.
+card.E51.name,Avez-vous mal ?,아프나요?
+card.E51.desc,Inflige !{8} dégâts. Cette carte reçoit le double du multiplicateur de dégâts de @{파괴의권능}.,피해 !{8} 줍니다. 이 카드는 @{파괴의권능} 피해 배수를 2배로 받습니다.
+card.E51_E.name,Améliorée : Avez-vous mal ?,강화 아프나요?
+card.E51_E.desc,Inflige !{8} dégâts. Cette carte reçoit le double du multiplicateur de dégâts de @{파괴의권능}.,피해 !{8} 줍니다. 이 카드는 @{파괴의권능} 피해 배수를 2배로 받습니다.
+card.E52.name,Onde gravitationnelle,중력파
+card.E52.desc,"Inflige ${1}{5}. Choisis 1 carte dans la ~{pioche} et envoie-la à la ~{défausse}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige ${1}{9} à un ennemi au hasard. ]",피해 ${1}{5} 줍니다. ~{뽑을덱} 에서 카드를 1장 고르고 ~{버린덱} 으로 보냅니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 무작위 적 한명에게 피해 ${1}{9} 줍니다. ]
+card.E52_E.name,Améliorée : Onde gravitationnelle,강화 중력파
+card.E52_E.desc,"Inflige ${1}{5}. Choisis 1 carte dans la ~{pioche} et envoie-la à la ~{défausse}. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, inflige ${1}{9} à un ennemi au hasard. ]",피해 ${1}{5} 줍니다. ~{뽑을덱} 에서 카드를 1장 고르고 ~{버린덱} 으로 보냅니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 무작위 적 한명에게 피해 ${1}{9} 줍니다. ]
+card.E53.name,Offrande à la ruine,파멸에게 바치는 공물
+card.E53.desc,"Pioche une carte. Si c’est une carte d’attaque, répète une fois de plus.",카드를 한장 뽑습니다. 공격 카드일 경우 한번 더 반복합니다.
+card.E53_E.name,Améliorée : Offrande à la ruine,강화 파멸에게 바치는 공물
+card.E53_E.desc,"Pioche une carte. Si c’est une carte d’attaque, répète une fois de plus.",카드를 한장 뽑습니다. 공격 카드일 경우 한번 더 반복합니다.
+card.E54.name,Amas ouvert,산개 성단
+card.E54.desc,Inflige !{5} dégâts. Se répète selon le nombre de cartes d’attaque jouées ce tour-ci.,피해 !{5} 줍니다. 이번 턴에 쓴 공격 카드 개수 만큼 반복합니다.
+card.E54_E.name,Améliorée : Amas ouvert,강화 산개 성단
+card.E54_E.desc,Inflige !{5} dégâts. Se répète selon le nombre de cartes d’attaque jouées ce tour-ci.,피해 !{5} 줍니다. 이번 턴에 쓴 공격 카드 개수 만큼 반복합니다.
+card.E55.name,Répartition des éclats,파편 분배
+card.E55.desc,Inflige !{10} dégâts. Gagne #{2} de blocage.,피해 !{10} 줍니다. 방어 #{2} 얻습니다.
+card.E55_E.name,Améliorée : Répartition des éclats,강화 파편 분배
+card.E55_E.desc,Inflige !{10} dégâts. Gagne #{2} de blocage.,피해 !{10} 줍니다. 방어 #{2} 얻습니다.
+card.E56.name,Mélodie de la galaxie,은하의 선율
+card.E56.desc,"Inflige ${3}{2}. Gagne #{3} de blocage. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, gagne #{15} de blocage. ]",피해 ${3}{2} 줍니다. 방어 #{3} 얻습니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 방어 #{15} 얻습니다. ]
+card.E56_E.name,Améliorée : Mélodie de la galaxie,강화 은하의 선율
+card.E56_E.desc,"Inflige ${3}{2}. Gagne #{3} de blocage. [ Quand cette carte passe de la ~{pioche} à la ~{défausse}, gagne #{15} de blocage. ]",피해 ${3}{2} 줍니다. 방어 #{3} 얻습니다. [ 이 카드가 ~{뽑을덱} 에서 ~{버린덱} 으로 가면 방어 #{15} 얻습니다. ]
+card.E57.name,Comme une vague déchaînée,거친 파도 처럼
+card.E57.desc,Inflige !{14} dégâts. Gagne #{5} de blocage. Cette carte coûte 1 de moins par carte @{은하수} possédée.,피해 !{14} 줍니다. 방어 #{5} 얻습니다. 자신이 소유한 @{은하수} 카드당 비용이 감소합니다.
+card.E57_E.name,Améliorée : Comme une vague déchaînée,강화 거친 파도 처럼
+card.E57_E.desc,Inflige !{14} dégâts. Gagne #{5} de blocage. Cette carte coûte 1 de moins par carte @{은하수} possédée.,피해 !{14} 줍니다. 방어 #{5} 얻습니다. 자신이 소유한 @{은하수} 카드당 비용이 감소합니다.
+card.E58.name,Poupée façonnée d’étoiles,별로 빚어진 인형
+card.E58.desc,Applique 3 @{별무리} sur vous.,자신에게 @{별무리} 3 을 부여합니다.
+card.E58_E.name,Améliorée : Poupée façonnée d’étoiles,강화 별로 빚어진 인형
+card.E58_E.desc,Applique 3 @{별무리} sur vous.,자신에게 @{별무리} 3 을 부여합니다.
+card.E59.name,Dichotomie,이분법
+card.E59.desc,"Au début du tour, perd ^{2} PV et crée une carte *{E10} en main.",턴 시작 시 체력 ^{2} 소모합니다. *{E10} 카드를 1장 생성해 패에 추가 합니다.
+card.E59_E.name,Améliorée : Dichotomie,강화 이분법
+card.E59_E.desc,"Au début du tour, perd ^{2} PV et crée une carte *{E10} en main.",턴 시작 시 체력 ^{2} 소모합니다. *{E10} 카드를 1장 생성해 패에 추가 합니다.
+card.E60.name,Je vais vous déchirer,찢어줄게요
+card.E60.desc,"Inflige !{8} dégâts. Se répète deux fois si vos PV sont à la moitié ou moins, et 3 fois en état ???.",피해 !{8} 줍니다. 체력이 절반 이하라면 2번 반복하며 ??? 상태라면 3번 반복 합니다.
+card.E60_E.name,Améliorée : Je vais vous déchirer,강화 찢어줄게요
+card.E60_E.desc,"Inflige !{8} dégâts. Se répète deux fois si vos PV sont à la moitié ou moins, et 3 fois en état ???.",피해 !{8} 줍니다. 체력이 절반 이하라면 2번 반복하며 ??? 상태라면 3번 반복 합니다.
+buff.BOONGGUI.name,Effondrement,붕괴
+buff.BOONGGUI.desc,Vous subissez 50 % de dégâts d’attaque en plus (arrondi à l’inférieur).,공격 피해를 입을 때 50%(소수점 버림)의 피해를 추가로 입습니다.
+buff.SOIRAK.name,Déclin,쇠락
+buff.SOIRAK.desc,Vous infligez 25 % de dégâts d’attaque en moins (arrondi à l’inférieur).,공격 피해를 입힐 때 25%(소수점 버림) 만큼 줄어듭니다.
+buff.ICHI_ATTACK.name,Ichi de Puissance,힘의 이치
+buff.ICHI_ATTACK.desc,Les dégâts des cartes augmentent ou diminuent de cette valeur.,카드로 주는 피해량이 힘의 이치의 수치 만큼 증가/ 감소 합니다.
+buff.ICHI_DEFENSE.name,Ichi de Défense,방어의 이치
+buff.ICHI_DEFENSE.desc,Le blocage des cartes augmente ou diminue de cette valeur.,카드로 주는 방어량이 방어의 이치의 수치 만큼 증가/ 감소 합니다.
+buff.IRONDEMON.name,Taille,크기
+buff.IRONDEMON.desc,La taille du démon de fer peut monter ou descendre (minimum 1) et elle est liée aux améliorations de Danhyang. Des cartes peuvent aussi appliquer des effets à l’esprit lui-même.,철귀는 크기 버프를 올리거나 내릴 수 있으며 (최솟값 1) 단향의 버프와 연결되며 정령 자체에 효과를 카드로 부여 할 수 있습니다.
+buff.FLOWERPOWDER.name,Pollen,꽃가루
+buff.FLOWERPOWDER.desc,"Peut être appliqué aux alliés comme aux ennemis. À la fin du tour, il accorde N de blocage aux alliés ou inflige N dégâts aux ennemis, puis perd 1 charge.",아군과 적 모두에게 걸 수 있으며 턴종료 후 아군에게 N 방어력 적에겐 N 피해 후 1 스택 감소합니다.
+buff.FLOWER.name,Floraison,개화
+buff.FLOWER.desc,Obtenue à hauteur du pollen. Les alliés subissent d’autant moins de dégâts et les ennemis d’autant plus. Disparaît quand on est touché ou au début du tour.,꽃가루 만큼 개화 되며 아군은 받는 피해 개화 만큼 감소 로 받습니다. 적군은 받는 피해 개화 만큼 증가 합니다. 피격시 나 턴종료시 사라집니다.
+buff.FURYOFIRON.name,Fureur du Fer,철의 분노
+buff.FURYOFIRON.desc,"Durant ce combat, « Griffe de Fer » et « Croc de Fer » sont améliorées, et « Griffe de Fer » gagne [déclenche l’harmonie si le démon de fer se trouve sur la cible].",이번 전투에서 '철의 손톱'과 '철의 이빨' 카드가 강화되며 '철의 손톱' 카드는 [발동 시 그 위치 철귀가 있을 시 화합] 이 붙습니다.
+buff.BLADETRIMMING.name,Affûtage des Lames,칼날 손질
+buff.BLADETRIMMING.desc,"Durant ce combat, une « Griffe de Fer » et un « Croc de Fer » sont créés en main au début de chaque tour.",이번 전투에서 턴 시작시 '철의 손톱'과 '철의 이빨' 카드가 한장 씩 패에 생성됩니다.
+buff.IMANGRY.name,Ça m’énerve,화가나는 구나
+buff.IMANGRY.desc,"Ce tour-ci, « Croc de Fer » et « Griffe de Fer » infligent le double de dégâts.",이번 턴 시용하는 '철의 이빨' 과 '철의 손톱' 카드의 피해가 2 배가 됩니다.
+buff.GROWTHSPURT.name,Poussée de Croissance,성장기
+buff.GROWTHSPURT.desc,"Durant ce combat, la taille augmente de 2 au début de chaque tour.",이번 전투에서 턴 시작시 크기 2 증가 합니다.
+buff.FURYOFFLOWER.name,Fureur de la Fleur et du Fer,꽃과 철의 분노
+buff.FURYOFFLOWER.desc,"Durant ce combat, l’harmonie se déclenche chaque fois que vous jouez 3 cartes.",이번 전투에서 자신이 카드를 3장 사용시 화합 이 발동됩니다.
+buff.FRAGRANT.name,Fleur Parfumée,향기로운 꽃
+buff.FRAGRANT.desc,"Durant ce combat, applique 2 pollen à tous au début de chaque tour.",이번 전투에서 턴 시작시 전체 꽃가루 2 를 부여합니다.
+buff.GREATMAN.name,Le Grand,위대한 자
+buff.GREATMAN.desc,"Une fois par tour, dépensez 1 Ichi pour prendre l’une des trois pénitences. Quand les trois sont en main, la capacité devient « Devenir un héros ». (Chaque carte de pénitence ne peut être prise qu’une fois.)",한턴에 한번 능력을 누를시  이치 1을 소비하고 3가지 고행 중 하나를 가져 옵니다. 3가지 고행이 전부 패에 있다면 능력이 '영웅 상태가 됩니다.' 로 바뀝니다. (고행카드는 한번씩만 가져 올수 있음)
+buff.HERO.name,Héros,영웅
+buff.HERO.desc,"En état de héros, toutes les malédictions d’Ichi deviennent des cartes de héros et vous gagnez [au début du tour, pour chaque carte de héros possédée, 3 d’Ichi de Puissance pour ce tour et 3 de blocage].",영웅 상태시 이치의 저주 카드가 전부 영웅 카드로 변하며 [턴 시작시 자신이 소유한 영웅 카드 갯수 당 그 턴에만 힘의 이치가 3 증가하고 방어 3 을 획득합니다.] 를 능력으로 추가합니다.
+buff.APDO.name,Domination,압도
+buff.APDO.desc,"À 8 charges, la domination est consommée et l’action de l’ennemi est retardée d’un tour. Chaque réussite multiplie la quantité requise.",압도가 8 모이면 압도를 제거하고 적의 행동을 한 턴 미루게 합니다. 압도 성공시 필요한 압도는 N 배가 됩니다.
+buff.BOOKBANG.name,Grand Guerrier du Nord,북방의 위대한 투사
+buff.BOOKBANG.desc,"Durant ce combat, gagnez 1 d’Ichi de Puissance au début de chaque tour. Cette carte part à la défausse après usage. Maîtrise",이번 전투에서 턴 시작시 힘의 이치 1 을 얻습니다. 이 카드는 사용 후 버린 덱으로 갑니다. 숙련
+buff.GOTONG.name,Écho de la Douleur,고통의 메아리
+buff.GOTONG.desc,"Durant ce combat, jouer une carte de malédiction inflige 3 dégâts à tous les ennemis. Cette carte part à la défausse après usage.",이번 전투에서 저주 카드 사용시 적 전체에게 피해 3을 줍니다. 이 카드는 사용 후 버린 덱으로 갑니다.
+buff.BRILLIANTCURSE.name,Même la Malédiction Brille,저주조차 찬란하다
+buff.BRILLIANTCURSE.desc,"Durant ce combat, les cartes de malédiction d’Ichi sont améliorées.",이번 전투에서 이치의 저주 카드가 강화 됩니다.
+buff.UGLYKNIGHT.name,"Laid, mais Chevaleresque",추하기에 기사답게
+buff.UGLYKNIGHT.desc,"Durant ce combat, les effets de chevalerie se répètent une fois de plus.",이번 전투에서 기사도 효과는 1번 더 반복이 됩니다.
+buff.ABSOLUTEDOMINATOR.name,Dominateur Absolu,절대 강자
+buff.ABSOLUTEDOMINATOR.desc,"Durant ce combat, gagnez 1 d’Ichi de Puissance chaque fois que la chevalerie réussit. Cette carte part à la défausse après usage.",이번 전투에서 기사도 성공시 힘의 이치 1 을 얻습니다. 이 카드는 사용후 버린 덱으로 갑니다.
+buff.THEREISNOJABI.name,Aucune Pitié,자비란 없다
+buff.THEREISNOJABI.desc,"Durant ce combat, quand la domination est appliquée à un ennemi, elle est consommée et inflige 3 dégâts par charge. Cette carte part à la défausse après usage.",이번 전투에서 적에게 압도 부여 시 압도를 제거후 압도 1당 피해 3 을 줍니다. 이 카드는 사용후 버린 덱으로 갑니다.
+buff.WRAPWINGS.name,Ailes Repliées,날개 감싸기
+buff.WRAPWINGS.desc,Gagnez le double de blocage ce tour-ci. Éphémère,이번 턴에 방어를 2배 얻습니다. 찰나
+buff.CLOSEPOSE.name,Garde Sans Faille,빈틈없는 자세
+buff.CLOSEPOSE.desc,Gagnez 3 de blocage à chaque attaque ce tour-ci.,이번턴에 공격할 때마다 방어 3을 얻습니다
+buff.WISDOMOFOLDSOLDIER.name,Sagesse du Vieux Soldat,노병의 지혜
+buff.WISDOMOFOLDSOLDIER.desc,"Durant ce combat, accorde 5 de blocage à tous les alliés chaque fois que les positions changent. Cette carte part à la défausse après usage.",이번 전투에서 위치가 바뀔 때 마다 바뀐 아군전체에게 방어 5 를 부여합니다. 이 카드는 사용후 버린 덱으로 갑니다.
+buff.MELODYOFHERO.name,Mélodie du Héros,영웅의 선율
+buff.MELODYOFHERO.desc,"Durant ce combat, piochez une carte chaque fois que vous jouez une bénédiction d’Ichi. Cette carte part à la défausse après usage.",이번 전투에서 이치의 축복 카드 사용시 카드 한장을 뽑습니다. 이 카드는 사용후 버린 덱으로 갑니다.
+buff.GOHANG2_DEBUFF.name,Pénitence II,고행2
+buff.GOHANG2_DEBUFF.desc,Une marque de la malédiction qui subsiste jusqu’à ce que vous jouiez Pénitence II.,고행 II 를 사용할 때까지 남는 저주의 낙인입니다.
+buff.GOHANG3_DEBUFF.name,Pénitence III,고행3
+buff.GOHANG3_DEBUFF.desc,Toutes les cartes sauf Pénitence III coûtent 1 de plus jusqu’à ce que vous la jouiez.,고행 III 를 사용할 때까지 고행 III 를 제외한 모든 카드의 비용이 1 증가합니다.
+buff.GOHANG3.name,Pénitence,고행
+buff.GOHANG3.desc,Toutes les cartes que vous jouez ce tour-ci coûtent 1.,이번 턴에 사용하는 모든 카드의 비용이 1 이 됩니다.
+buff.ERIS_NORMAL.name,Poupée qui a Vu un Rêve,꿈을 본 인형 기본
+buff.ERIS_NORMAL.desc,"À 1 PV, elle entre en état ??? (levé si elle remonte à 2 ou plus). Une fois par combat, si une attaque n’excédant pas le double de ses PV actuels devait la tuer, elle survit à 1 PV.",그녀는 체력 1일시 ??? 상태로 진입하며 (2 이상으로 돌아갈시 풀립니다.) 한 전투에 한번 자신의 현재 체력의 2배 이하의 공격을 받고 사망 시 체력 1로 살아남습니다.
+buff.ERIS_2ND.name,Poupée qui a Vu un Rêve — avant,꿈을 본 인형 진입전
+buff.ERIS_2ND.desc,,description is empty
+buff.ERIS_3RD.name,Poupée qui a Vu un Rêve — ???,꿈을 본 인형 ???
+buff.ERIS_3RD.desc,,description is empty
+buff.POWEROFDESTRUCTION.name,Autorité de Destruction,파괴의 권능
+buff.POWEROFDESTRUCTION.desc,"Jouer une carte d’attaque coûte 2 PV, mais à la moitié des PV ou moins les cartes d’attaque infligent le double de dégâts, et le triple en état de folie. Cet effet ne peut pas vous faire descendre sous 1 PV.",공격 카드를 사용시 체력이 2씩 감소되지만 체력이 절반 이하면 공격 카드가 2배 피해를 광기 상태시 3배 피해를 주게 됩니다. 이 효과로는 체력 1 밑으로 떨어지지 않습니다.
+buff.POWEROFCREATION.name,Autorité de Création,창조의 권능
+buff.POWEROFCREATION.desc,"Quand vos cartes vous accordent du blocage, vous soignez à la place s’il vous manque des PV ; à pleins PV, le blocage s’accumule normalement.",자신의 카드로 방어가 올라갈시 체력이 달아있다면 체력이 차며 체력이 가득 차 있다면 방어가 쌓입니다.
+buff.BYEOLMURI.name,Amas d’Étoiles,별무리
+buff.BYEOLMURI.desc,Renforce la prochaine carte jouée et consomme 1 charge. Attaque = blocage égal à la moitié des dégâts infligés. Stratégie = revient en main après usage. Autres cartes = coûtent 2 de moins.,다음에 쓰는 카드에 효과를 부여하고 별무리 스택 1 제거합니다.  공격 = 준 피해 절반 방어 / 전략 = 사용후 다시 패 / 그 외 카드 = 비용 2감소
+buff.TEMPESTOSO.name,Tempestoso,템페스토소
+buff.TEMPESTOSO.desc,"Durant ce combat, piochez une carte chaque fois que vous perdez 10 PV.",이번 전투동안 체력을 10 잃을 때마다 카드를 한장 뽑습니다.
+buff.ECLIPSE.name,Éclipse,월식
+buff.ECLIPSE.desc,Gagnez du blocage égal aux dégâts que vous infligez ce tour-ci. Gravité,이번 턴에 넣은 피해 만큼 방어를 얻습니다. 중력
+buff.REPEATMARK.name,Signe de Reprise,도돌이표
+buff.REPEATMARK.desc,Les cartes d’attaque jouées ce tour-ci sont jouées deux fois.,이번 턴에 사용되는 공격 카드는 2번 사용됩니다.
+buff.SIGNOFEND.name,Présage de la Fin,종말의 징조
+buff.SIGNOFEND.desc,"Durant ce combat, inflige 2 dégâts à tous les ennemis chaque fois qu’une carte passe de la pioche à la défausse.",이번 전투에서 카드가 뽑을 덱에서 버린 덱으로 갈 때마다 적 전체에게 피해 2 를 줍니다.
+buff.ENDOFDISTORTION.name,Fin de la Distorsion,뒤틀림의 끝
+buff.ENDOFDISTORTION.desc,"Pour le reste de la partie, à pleins PV vos cartes n’accordent plus de blocage et infligent ce montant en dégâts à tous les ennemis.",이번 게임동안 자신의 체력이 가득 차있다면 자신의 카드로는 방어가 오르지 않고 그 수치 만큼 적 전체에게 피해를 줍니다.
+buff.ENHANCESKIN.name,Mue Renforcée,허물 강화
+buff.ENHANCESKIN.desc,"Ce tour-ci, les PV soignés sont convertis en blocage.",이번 턴 체력 회복은 방어로 전환 됩니다.
+buff.DEATHTHROES.name,Râle de la Poupée Souriante,웃는 인형의 단말마
+buff.DEATHTHROES.desc,"Durant ce combat, l’Autorité de Destruction gagne +1 multiplicateur, mais les dégâts que vous subissez sont aussi doublés.",이번 전투 동안 파괴의 권능이 + 1 배가 되는 대신 자신이 받는 피해는 + 1 배가 됩니다.
+buff.DICHOTOMY.name,Dichotomie,이분법
+buff.DICHOTOMY.desc,"Durant ce combat, au début du tour perdez 2 PV et créez une carte « Vie Tordue » en main.",이번 전투동안 턴 시작시 체력 2를 소모하고 '뒤틀리는 생명' 카드를 1장 생성해 패에 추가 합니다.
+term.이치.name,Ichi,이치
+term.이치.desc,Le coût nécessaire pour jouer des cartes.,카드를 사용할 수 있는 비용
+term.흐르는이치의샘.name,Source vive d'Ichi,흐르는 이치의 샘
+term.흐르는이치의샘.desc,Une source qui contient de l'Ichi.,이치를 가지고 있는 샘
+term.흐르는샘.name,Source vive d'Ichi,흐르는 이치의 샘
+term.흐르는샘.desc,Une source qui contient de l'Ichi.,이치를 가지고 있는 샘
+term.메마른이치의샘.name,Source tarie d'Ichi,메마른 이치의 샘
+term.메마른이치의샘.desc,Une source qui produit de l'Ichi au début de votre tour.,턴 시작시 이치를 생성하는 샘
+term.메마른샘.name,Source tarie d'Ichi,메마른 이치의 샘
+term.메마른샘.desc,Une source qui produit de l'Ichi au début de votre tour.,턴 시작시 이치를 생성하는 샘
+term.방어.name,Blocage,방어
+term.방어.desc,Absorbe les dégâts d’attaque subis et disparaît au début du tour suivant.,맞으면 공격을 차감하며 다음턴시 소멸
+term.구원.name,Salut,구원
+term.구원.desc,Double l’effet lorsqu’elle vise un allié autre que vous.,자신을 제외한 아군에게 사용시 효과가 2배가 됨
+term.영원.name,Éternelle,영원
+term.영원.desc,Reste en main à la fin du tour au lieu d’aller à la défausse.,카드를 사용하지 않아도 버린 덱으로 가지않고 패에 유지
+term.근원.name,Origine,근원
+term.근원.desc,Se trouve au sommet de votre deck au début de la partie.,게임 시작시 덱 위에 있음
+term.찰나.name,Éphémère,찰나
+term.찰나.desc,Part dans l’oubli après avoir été jouée.,카드를 사용시 잊혀진 덱으로 보내짐
+term.해방.name,Libération,해방
+term.해방.desc,Coûte 1 de moins par carte jouée durant ce combat.,카드를 사용시 이 카드의 비용 이번 전투 동안 1 감소
+term.중력.name,Gravité,중력
+term.중력.desc,Chaque utilisation augmente son coût de 1 pour ce combat.,이 카드를 사용시 이 카드의 비용 이번 전투 동안 1증가
+term.숙련.name,Maîtrise,숙련
+term.숙련.desc,Chaque utilisation réduit son coût de 1 pour ce combat.,이 카드를 사용시 이 카드의 비용 이번 전투 동안 1감소
+term.붕괴.name,Effondrement,붕괴
+term.붕괴.desc,Vous subissez 50 % de dégâts d’attaque en plus (arrondi à l’inférieur).,공격 피해를 입을 때 50%(소수점 버림)의 피해를 추가로 입는다
+term.쇠락.name,Déclin,쇠락
+term.쇠락.desc,Vous infligez 25 % de dégâts d’attaque en moins (arrondi à l’inférieur).,공격 피해를 입힐 때 25%(소수점 버림) 만큼 줄어든다.
+term.힘의이치.name,Ichi de Puissance,힘의 이치
+term.힘의이치.desc,Les dégâts des cartes augmentent ou diminuent de cette valeur.,카드로 주는 피해량이 힘의 이치의 수치 만큼 증가/ 감소
+term.방어의이치.name,Ichi de Défense,방어의 이치
+term.방어의이치.desc,Le blocage des cartes augmente ou diminue de cette valeur.,카드로 주는 방어량이 방어의 이치의 수치 만큼 증가/ 감소
+term.전진.name,Avancer,전진
+term.전진.desc,Avance d’une ligne et échange sa place avec l’allié qui s’y trouve.,앞으로 한칸 가고 그 위치에 아군과 바꿉니다.
+term.후퇴.name,Reculer,후퇴
+term.후퇴.desc,Recule d’une ligne et échange sa place avec l’allié qui s’y trouve.,뒤로 한간 가고 그 위치에 아군과 바꿉니다.
+term.뽑을덱.name,Pioche,뽑을 덱
+term.뽑을덱.desc,La pile dans laquelle vous piochez.,드로우 할 카드 덱
+term.버린덱.name,Défausse,버린 덱
+term.버린덱.desc,La pile des cartes jouées ou défaussées.,사용하거나 버려진 카드 덱
+term.버려진덱.name,Défausse,버린 덱
+term.버려진덱.desc,La pile des cartes jouées ou défaussées.,사용하거나 버려진 카드 덱
+term.잊혀진덱.name,Oubli,잊혀진 덱
+term.잊혀진덱.desc,La pile où partent les cartes éphémères.,찰나로 보내진 카드 덱
+term.꽃가루.name,Pollen,꽃가루
+term.꽃가루.desc,"Peut être appliqué aux alliés comme aux ennemis. À la fin du tour, il accorde du blocage aux alliés ou inflige des dégâts aux ennemis selon son nombre, puis perd 1 charge.",아군과 적 모두에게 걸수 있으며 턴종료 후 스택 수 만큼 아군에게 방어력 적에겐 피해 준 후 1 스택 감소합니다.
+term.개화.name,Floraison,개화
+term.개화.desc,Obtenue à hauteur du pollen. Les alliés subissent d’autant moins de dégâts et les ennemis d’autant plus. Disparaît quand on est touché ou au début du tour.,꽃가루 만큼 개화 되며 아군은 받는 피해 개화 만큼 감소 로 받습니다. 적군은 받는 피해 개화 만큼 증가 합니다. 피격시 나 턴종료시 사라집니다.
+term.화합.name,Harmonie,화합
+term.화합.desc,Déclenche la capacité passive du démon de fer (attaque ou blocage) à sa position.,효과 발동시 철귀 위치에 철귀의 패시브(공격 방어)가 발동됩니다.
+term.기사도.name,Chevalerie,기사도
+term.기사도.desc,Se déclenche lorsque vous frappez un ennemi qui compte vous attaquer.,자신을 공격하려는 적에게 공격을 성공하면 기사도 효과가 나타납니다
+term.압도.name,Domination,압도
+term.압도.desc,"À 8 charges, la domination est consommée et l’action de l’ennemi est retardée d’un tour. Chaque réussite multiplie la quantité requise.",압도가 8 모이면 압도를 제거하고 적의 행동을 한 턴 미루게 합니다. 압도 성공시 필요한 압도는 N 배가 됩니다.
+term.은하수.name,Galaxie,은하수
+term.은하수.desc,"Coûte 1 de moins si la carte précédente était du même type, sinon 1 de plus.",전에 사용한 카드가 같은 종류의 카드라면 비용이 1 감소 . 아니라면 비용이 1 증가합니다.
+term.별무리.name,Amas d’Étoiles,별무리
+term.별무리.desc,Renforce la prochaine carte jouée et consomme 1 charge. Attaque = blocage égal à la moitié des dégâts infligés. Stratégie = revient en main après usage. Autres cartes = coûtent 2 de moins.,다음에 쓰는 카드에 효과를 부여하고 별무리 스택 1 제거합니다. 공격 = 준 피해 절반 방어  전략 = 사용 후 다시 패 그 외 카드 = 비용 2감소
+term.고정피해.name,Dégâts Fixes,고정 피해
+term.고정피해.desc,Des dégâts que les effets d’amplification comme l’effondrement n’augmentent pas. Le blocage les absorbe malgré tout.,붕괴 등 피해 증폭 효과를 받지 않는 피해입니다. 방어력에는 막힙니다.
+term.고행길.name,Voie de la Pénitence,고행길
+term.고행길.desc,"Effet différé de la malédiction, déclenché si une carte de pénitence reste en main à la fin du tour.",고행 카드가 턴 종료 시 손에 남아 있으면 발동하는 저주 사후효과입니다.
+term.영웅카드.name,Carte de Héros,영웅 카드
+term.영웅카드.desc,"Une malédiction d’Ichi transformée pendant Le Grand. Au début du tour, vous gagnez de l’Ichi de Puissance et du blocage pour chacune que vous possédez.",위대한 자 변신 중 이치의 저주가 변한 카드입니다. 턴 시작 시 소유한 수만큼 힘의 이치와 방어를 얻습니다.
+term.이치의저주.name,Malédiction d’Ichi,이치의 저주
+term.이치의저주.desc,Les cartes de malédiction de Geork. Elles deviennent des cartes de héros lors de la transformation en Le Grand.,게오르크의 저주 카드입니다. 위대한 자 변신 시 영웅 카드로 변합니다.
+term.이치의축복.name,Bénédiction d’Ichi,이치의 축복
+term.이치의축복.desc,Une carte de type bénédiction.,축복 유형의 카드입니다.
+term.철귀.name,Démon de Fer,철귀
+term.철귀.desc,"Le serviteur d’acier que commande Hongdanhyang. Il reste sur la cible désignée et, lors d’une harmonie, accorde du blocage aux alliés ou inflige des dégâts aux ennemis.",홍단향이 부리는 강철 동귀입니다. 지정한 대상의 위치에 머물며 화합 발동 시 아군에게는 방어를 적에게는 피해를 줍니다.
+term.크기.name,Taille,크기
+term.크기.desc,"La taille du démon de fer. Lors d’une harmonie, il accorde du blocage ou inflige des dégâts à hauteur de cette valeur.",철귀의 크기입니다. 화합 발동 시 크기만큼 방어 또는 피해를 줍니다.
+term.파괴의권능.name,Autorité de Destruction,파괴의 권능
+term.파괴의권능.desc,"Jouer une carte d’attaque coûte 2 PV, mais à la moitié des PV ou moins les cartes d’attaque infligent le double de dégâts, et le triple en état de folie. Cet effet ne peut pas vous faire descendre sous 1 PV.",공격 카드를 사용시 체력이 2씩 감소되지만 체력이 절반 이하면 공격 카드가 2배 피해를 광기 상태시 3배 피해를 주게 됩니다. 이 효과로는 체력 1 밑으로 떨어지지 않습니다.
+term.전열.name,Première Ligne,전열
+term.전열.desc,"La position la plus avancée, la plus proche de l’ennemi.",적과 가장 가까운 앞줄 위치입니다.
+characteristic.GOOWON.name,Salut,구원
+characteristic.YOUNGWON.name,Éternelle,영원
+characteristic.GEUNWON.name,Origine,근원
+characteristic.CHALNA.name,Éphémère,찰나
+characteristic.HEBANG.name,Libération,해방
+characteristic.JOONGREUK.name,Gravité,중력
+characteristic.SOOKREON.name,Maîtrise,숙련
+characteristic.BOONGGUI.name,Effondrement,붕괴
+characteristic.SOIRAK.name,Déclin,쇠락
+characteristic.FORWARD.name,Avancer,전진
+characteristic.BACKWARD.name,Reculer,후진
+characteristic.GOHENG.name,Pénitence,고행
+characteristic.GISADO.name,Chevalerie,기사도
+characteristic.EUNHASOO.name,Galaxie,은하수
+characteristic.HWAHAP.name,Harmonie,화합
+characteristic.NON_CHALNA.name,Part à la défausse,버린덱으로보내짐
+characteristic.BYULMOORI.name,Amas d’Étoiles,별무리
