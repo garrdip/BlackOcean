@@ -1,0 +1,19 @@
+NotoSansSC.otf
+==============
+
+Noto Sans CJK SC (Regular) — 중국어 간체 표시용 폰트.
+
+출처   : Google Noto CJK (https://github.com/notofonts/noto-cjk)
+라이선스: SIL Open Font License, Version 1.1 (재배포·상업적 이용 가능, 폰트 자체 판매만 금지)
+         전문: https://scripts.sil.org/OFL
+
+가공 내용
+- NotoSansCJK-Regular.ttc 에서 간체(SC) 페이스만 추출한 뒤 표시에 필요한
+  유니코드 범위로 서브셋했다 (글리프 22,479자, 15.7MB → 10.0MB).
+- NotoSansJP.otf 와 같은 범위·같은 방식으로 만들었다.
+
+한자 자형 주의
+- 일본어(JP)와 중국어(SC)는 같은 유니코드 코드포인트라도 자형이 다른 글자가 있다
+  (直·骨·今 등의 세부 형태). 그래서 M_LanguageManager가 현재 언어에 맞는 폰트를
+  TMP 전역 폴백 목록의 맨 앞으로 올려, 해당 언어의 자형이 먼저 선택되게 한다.
+  (Locales.csv 의 priorityFont 열)

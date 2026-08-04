@@ -27,6 +27,7 @@ public class M_LanguageManager : SingletonD<M_LanguageManager>
         public string code;             // ko, en, ja, zh-Hans, fr, es …
         public string displayName;      // 드롭다운 표기 (해당 언어 표기법으로 — 한국어, English, 日本語 …)
         public string fontResourcePath; // Resources 기준 TMP 폰트 에셋 경로 (비우면 폰트 교체 안 함)
+        public string priorityFontName; // 이 언어에서 TMP 전역 폴백 맨 앞으로 올릴 폰트 에셋 이름
     }
 
     static readonly List<LocaleInfo> locales = new List<LocaleInfo>();
@@ -129,6 +130,19 @@ public class M_LanguageManager : SingletonD<M_LanguageManager>
         languageChangedCallback?.Invoke();
     }
 
+    /// <summary>
+    /// 언어 목록과 번역 테이블을 디스크에서 다시 읽는다.
+    /// 테이블은 최초 1회만 로드되므로, 에디터에서 CSV를 고치거나 언어를 추가한 뒤 확인할 때 쓴다.
+    /// </summary>
+    public static void Reload()
+    {
+        string keep = CurrentLocaleCode;
+        initialized = false;
+        EnsureInitialized();
+        if (FindLocale(keep) == null) return; // 목록에서 사라진 언어면 새로 결정된 언어를 그대로 둔다
+        ApplyLocale(keep, notify: true);
+    }
+
     static void ApplyLocale(string code, bool notify)
     {
         CurrentLocaleCode = code;
@@ -143,6 +157,7 @@ public class M_LanguageManager : SingletonD<M_LanguageManager>
         }
         reportedMissingKeys.Clear();
         LoadFont(FindLocale(code));
+        ApplyFallbackPriority(FindLocale(code));
 
         if (notify)
         {
@@ -172,7 +187,8 @@ public class M_LanguageManager : SingletonD<M_LanguageManager>
             {
                 code = code,
                 displayName = string.IsNullOrEmpty(row.Get("displayName")) ? code : row.Get("displayName"),
-                fontResourcePath = row.Get("font")
+                fontResourcePath = row.Get("font"),
+                priorityFontName = row.Get("priorityFont")
             });
         }
         if (locales.Count == 0)
@@ -193,6 +209,34 @@ public class M_LanguageManager : SingletonD<M_LanguageManager>
             // CSV는 한 줄이 한 항목이므로 줄바꿈은 "\n" 두 글자로 적고 여기서 실제 개행으로 바꾼다
             into[key] = row.Get("text").Replace("\\n", "\n");
         }
+    }
+
+    /// <summary>
+    /// 현재 언어의 폰트를 TMP 전역 폴백 목록 맨 앞으로 올린다.
+    ///
+    /// 일본어와 중국어는 같은 유니코드 코드포인트라도 자형이 다른 한자가 있다(直·骨·今 등).
+    /// 폴백은 앞에서부터 찾으므로, 순서를 그대로 두면 중국어 화면에 일본어 자형이 섞인다.
+    /// 폰트 자체를 바꾸는 게 아니라 '없는 글리프를 어디서 먼저 가져올지'만 조정하므로
+    /// 각 텍스트의 디자인 폰트는 그대로 유지된다.
+    /// </summary>
+    static void ApplyFallbackPriority(LocaleInfo locale)
+    {
+        if (locale == null || string.IsNullOrEmpty(locale.priorityFontName)) return;
+
+        List<TMP_FontAsset> fallbacks = TMP_Settings.fallbackFontAssets;
+        if (fallbacks == null || fallbacks.Count < 2) return;
+
+        int index = fallbacks.FindIndex(f => f != null && f.name == locale.priorityFontName);
+        if (index < 0)
+        {
+            Debug.LogWarning($"[Language] 폴백 폰트 '{locale.priorityFontName}'를 찾을 수 없습니다 ({locale.code}) — TMP Settings의 Fallback 목록 확인");
+            return;
+        }
+        if (index == 0) return; // 이미 맨 앞
+
+        TMP_FontAsset font = fallbacks[index];
+        fallbacks.RemoveAt(index);
+        fallbacks.Insert(0, font);
     }
 
     static void LoadFont(LocaleInfo locale)

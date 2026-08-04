@@ -1,0 +1,21 @@
+NotoSansExtra.otf
+=================
+
+라틴 확장 · 그리스 · 키릴 보충용 폰트 (46KB, 글리프 302자).
+
+출처   : Google Noto CJK (https://github.com/notofonts/noto-cjk) — Noto Sans CJK JP 페이스
+라이선스: SIL Open Font License, Version 1.1
+         전문: https://scripts.sil.org/OFL
+
+포함 범위
+- Latin Extended-A/B (0100-024F) — 프랑스어 합자 œ Œ 등
+- 결합 발음기호 (0300-036F), 그리스 (0370-03FF)
+- 키릴 (0400-04FF) + 키릴 보충 (0500-052F) — 러시아어
+- Latin Extended Additional (1E00-1EFF), 일반 구두점, 통화기호
+
+이유
+- 기존 폰트(LiberationSans·Anton·NotoSansKR/JP/SC)에 키릴이 전혀 없었고,
+  프랑스어 합자 œ Œ 도 대부분의 폰트에서 빠져 있었다.
+- CJK 폰트와 같은 Noto Sans 계열이라 자형이 일관된다.
+- TMP 전역 폴백의 마지막에 등록해 두면 어떤 텍스트에서든 없는 글자만 보충된다.
+  자형 충돌이 없으므로 Locales.csv 의 priorityFont 는 지정하지 않는다.

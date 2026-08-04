@@ -45,6 +45,13 @@ public class LocalizationTools : EditorWindow
         {
             if (GUILayout.Button("번역 누락 리포트")) report = BuildMissingReport();
             if (GUILayout.Button("마크업 검증")) report = BuildMarkupReport();
+            if (GUILayout.Button("언어 다시 읽기"))
+            {
+                // 번역 테이블은 최초 1회만 로드된다 — CSV를 고쳤거나 언어를 추가했으면 눌러서 반영
+                M_LanguageManager.Reload();
+                report = "다시 읽음 — 현재 언어: " + M_LanguageManager.CurrentLocaleCode
+                       + " / 지원 언어 " + M_LanguageManager.Locales.Count + "종";
+            }
         }
 
         EditorGUILayout.Space();

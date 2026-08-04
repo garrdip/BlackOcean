@@ -1,0 +1,22 @@
+NotoSansJP.otf
+==============
+
+Noto Sans CJK JP (Regular) — 일본어 표시용 폰트.
+
+출처   : Google Noto CJK (https://github.com/notofonts/noto-cjk)
+라이선스: SIL Open Font License, Version 1.1 (재배포·상업적 이용 가능, 폰트 자체 판매만 금지)
+         전문: https://scripts.sil.org/OFL
+
+가공 내용
+- NotoSansCJK-Regular.ttc 에서 일본어(JP) 페이스만 추출한 뒤,
+  일본어 표시에 필요한 유니코드 범위로 서브셋했다 (글리프 22,479자, 15.7MB → 10.1MB).
+  포함 범위: ASCII / Latin-1 / 일반·CJK 구두점 / 히라가나 / 가타카나 /
+             CJK 통합 한자(4E00-9FFF) / 전각·반각 폼 / 기호 일부
+- 채팅·스팀 닉네임처럼 런타임에 들어오는 임의의 일본어도 표시되도록
+  상용 한자를 임의로 줄이지 않고 통합 한자 전체를 남겼다.
+
+사용 방식
+- TMP 폰트 에셋 `NotoSansJP SDF.asset` (Dynamic 모드)가 이 파일을 소스로 쓴다.
+  필요한 글리프만 실행 중에 아틀라스로 굽기 때문에 에셋 자체는 작다.
+- `TMP Settings`의 전역 폴백 목록에 등록되어 있어, 어떤 텍스트든 일본어 문자가
+  나오면 이 폰트에서 글리프를 가져온다.
