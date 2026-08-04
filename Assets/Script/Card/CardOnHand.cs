@@ -532,8 +532,9 @@ public class CardOnHand : NetworkBehaviour
         }
         else
         {
-            textCardName.text = newCard.baseCard.name;
-            textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(newCard.baseCard.description);
+            // 네트워크로 받은 카드는 보낸 쪽 언어의 문자열을 갖고 있으므로 로컬 카드 데이터로 표시한다
+            textCardName.text = CardData.instance.GetLocalizedName(newCard.baseCard);
+            textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(CardData.instance.GetLocalizedDescription(newCard.baseCard));
         }
 
         textCardDescription.text += '\n';

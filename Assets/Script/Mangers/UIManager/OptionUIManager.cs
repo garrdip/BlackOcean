@@ -25,7 +25,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     public bool isOptionPopUpActive = false;
     public TMP_Dropdown languageDropdown;
     public GameObject dropdownLight;
-    private const string currentLanguage = "CurrentLanguage";
+    // 언어 선택 저장은 M_LanguageManager가 담당한다 (PlayerPrefs 키도 그쪽에 있음)
 
 
     void Start()
@@ -73,13 +73,20 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         }
     }
 
+    // 드롭다운 항목을 Resources/Language/Locales.csv 목록으로 채우고 현재 언어를 선택 상태로 맞춘다.
+    // (씬에 손으로 넣어둔 English/Korean 항목은 여기서 대체된다 — 언어 추가 시 씬을 건드릴 필요가 없도록)
     private void InitDropdownValue()
     {
-        string savedLanguage = PlayerPrefs.GetString(currentLanguage);
-        int index = languageDropdown.options.FindIndex(option => option.text == savedLanguage);
-        if(index != -1){
-            languageDropdown.value = index;
+        languageDropdown.ClearOptions();
+        int currentIndex = 0;
+        for(int i = 0; i < M_LanguageManager.Locales.Count; i++)
+        {
+            M_LanguageManager.LocaleInfo locale = M_LanguageManager.Locales[i];
+            languageDropdown.options.Add(new TMP_Dropdown.OptionData(locale.displayName));
+            if(locale.code == M_LanguageManager.CurrentLocaleCode) currentIndex = i;
         }
+        languageDropdown.SetValueWithoutNotify(currentIndex);
+        languageDropdown.RefreshShownValue();
     }
 
     private void OnChangeOptionPopUpActive(bool isActive)
@@ -192,9 +199,13 @@ public class OptionUIManager : SingletonD<OptionUIManager>
 
     private void HandleChangeLanguageDropdown(TMP_Dropdown select)
     {
-        string selectLanguage = select.options[select.value].text;
-        PlayerPrefs.SetString(currentLanguage, selectLanguage);
-        Debug.Log("언어 변경 : " + selectLanguage);
+        // 드롭다운 항목 순서 = M_LanguageManager.Locales 순서 (InitDropdownValue에서 그대로 채운다)
+        if(select.value >= 0 && select.value < M_LanguageManager.Locales.Count)
+        {
+            M_LanguageManager.LocaleInfo selected = M_LanguageManager.Locales[select.value];
+            Debug.Log("언어 변경 : " + selected.displayName + " (" + selected.code + ")");
+            M_LanguageManager.SetLocaleStatic(selected.code); // 저장·DB 재적용·화면 갱신까지 매니저가 처리
+        }
         AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }

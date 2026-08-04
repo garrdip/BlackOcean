@@ -259,7 +259,7 @@ public class LobbyPlayer : NetworkBehaviour
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.green)
             .TextColor(Color.white)
-            .Text("위치 교환 요청이 수락되었습니다.")
+            .Text(M_LanguageManager.Get("ui.msg.swap_accepted", "위치 교환 요청이 수락되었습니다."))
             .Show();
     }
 
@@ -272,7 +272,7 @@ public class LobbyPlayer : NetworkBehaviour
             .Position(ToastPosition.Bottom)
             .MessageBoxColor(Color.red)
             .TextColor(Color.white)
-            .Text("위치 교환 요청이 거절되었습니다.")
+            .Text(M_LanguageManager.Get("ui.msg.swap_rejected", "위치 교환 요청이 거절되었습니다."))
             .Show();
     }
 
@@ -400,13 +400,13 @@ public class LobbyPlayer : NetworkBehaviour
     {
         switch(playOrder){
             case PlayOrder.FIRST:
-                textOrder.text = "후열";
+                textOrder.text = M_LanguageManager.Get("ui.order.back", "후열");
                 break;
             case PlayOrder.SECOND:
-                textOrder.text = "중열";
+                textOrder.text = M_LanguageManager.Get("ui.order.middle", "중열");
                 break;
             case PlayOrder.THIRD:
-                textOrder.text = "전열";
+                textOrder.text = M_LanguageManager.Get("ui.order.front", "전열");
                 break;     
         }      
     }

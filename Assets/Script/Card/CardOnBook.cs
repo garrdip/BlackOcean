@@ -170,7 +170,7 @@ public class CardOnBook : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void initCardData(Card card)
     {
-        textCardDescription.text = CardData.instance.ReplaceDescription(card.baseCard.description);
+        textCardDescription.text = CardData.instance.ReplaceDescription(CardData.instance.GetLocalizedDescription(card.baseCard));
         textCardDescription.text += '\n';
         textCardDescription.text += '\n';
         foreach(CardCharacteristic character in card.baseCard.cardCharacteristics)

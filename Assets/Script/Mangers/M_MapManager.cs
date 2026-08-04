@@ -838,15 +838,15 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     public void OnChangedCurrentActionCost(int oldValue, int newValue)
     {
         Debug.Log($"행동 비용이 {oldValue} -> {newValue} 감소했습니다.");
-        MapUI.instance.textCurrentActionCost.text = $"{newValue.ToString()}턴";
-        GameUIManager.instance.textCurrentActionCost.text = $"{newValue.ToString()}턴";
+        MapUI.instance.textCurrentActionCost.text = M_LanguageManager.Get("ui.map.turn_count", "{0}턴").Replace("{0}", newValue.ToString());
+        GameUIManager.instance.textCurrentActionCost.text = M_LanguageManager.Get("ui.map.turn_count", "{0}턴").Replace("{0}", newValue.ToString());
         MapUI.instance.turnGageBar.fillAmount = ((float)newValue / (float)maxActionCost);
     }
 
     public void OnChangedMaxActionCost(int oldValue, int newValue)
     {
-        MapUI.instance.textMaxActionCostCount.text = $"{newValue.ToString()}턴";
-        GameUIManager.instance.textMaxActionCost.text = $"{newValue.ToString()}턴";
+        MapUI.instance.textMaxActionCostCount.text = M_LanguageManager.Get("ui.map.turn_count", "{0}턴").Replace("{0}", newValue.ToString());
+        GameUIManager.instance.textMaxActionCost.text = M_LanguageManager.Get("ui.map.turn_count", "{0}턴").Replace("{0}", newValue.ToString());
     }
 
     // 행동비용 변경 이벤트 수신(1회당 소모되는 행동비용 값)
@@ -866,7 +866,7 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 .FadeOutTime(1.5f)
                 .MessageBoxColor(ColorUtils.HexToColor("#E700FF"))
                 .TextColor(Color.white)
-                .Text("맵에 보스가 출현 했습니다.")
+                .Text(M_LanguageManager.Get("ui.msg.map_boss_appeared", "맵에 보스가 출현 했습니다."))
                 .Show();
             AudioClip audioClip_map = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Map, "Stage_1_Map_Boss_Spawn");
             M_SoundManager.instance.PlayBGM(audioClip_map, MusicTransition.CrossFade, 2f); // 맵 보스 배경음 재생

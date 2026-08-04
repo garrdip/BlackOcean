@@ -26,6 +26,14 @@ public partial class CardData : SingletonD<CardData>
 
     public Dictionary<CardCharacteristic, string> cardCharacteristicToString = new Dictionary<CardCharacteristic, string>();
 
+    // CSV 원문(한국어) 보관 — 표시용 데이터는 언어에 따라 이 원문에서 다시 만들어진다.
+    // CardBase는 Mirror로 직렬화되므로 원문을 거기 두지 않고 여기(로컬 전용)에 둔다.
+    readonly Dictionary<string, InfomationDB> infomationSource = new Dictionary<string, InfomationDB>();
+    readonly Dictionary<CardCharacteristic, string> characteristicSource = new Dictionary<CardCharacteristic, string>();
+    readonly Dictionary<string, string> cardNameSource = new Dictionary<string, string>();
+    readonly Dictionary<string, string> cardDescriptionSource = new Dictionary<string, string>();
+    readonly Dictionary<string, CardBase> cardByNumber = new Dictionary<string, CardBase>();
+
 
     public bool isCardOperatingTEST;
     
@@ -65,8 +73,11 @@ public partial class CardData : SingletonD<CardData>
             {
                 card.cardNumber = row.Get("CardNo"); //카드 번호 사실상 메소드이름
                 card.character = row.GetEnum<Character>("Character");//케릭터
+                // CSV 값은 한국어 원문 = 번역 폴백. 실제 표시 문자열은 ApplyLocalizedText()에서 만든다
                 card.name = row.Get("Name");//카드이름
                 card.description = row.Get("Description");
+                cardNameSource[card.cardNumber] = card.name;
+                cardDescriptionSource[card.cardNumber] = card.description;
                 card.cardType = row.GetEnum<CardType>("TYPE");
                 card.cost = row.GetInt("Cost");
                 card.isTargetable = row.Get("Targetable") == "Y";
@@ -101,7 +112,7 @@ public partial class CardData : SingletonD<CardData>
         {
             try
             {
-                infomationDB.Add(row.Get("info"), new InfomationDB(row.Get("name"), row.Get("description")));
+                infomationSource.Add(row.Get("info"), new InfomationDB(row.Get("name"), row.Get("description")));
             }
             catch (Exception e)
             {
@@ -112,7 +123,7 @@ public partial class CardData : SingletonD<CardData>
         {
             try
             {
-                cardCharacteristicToString.Add(row.GetEnum<CardCharacteristic>("enum"), row.Get("name"));
+                characteristicSource.Add(row.GetEnum<CardCharacteristic>("enum"), row.Get("name"));
             }
             catch (Exception e)
             {
@@ -120,118 +131,93 @@ public partial class CardData : SingletonD<CardData>
             }
         }
 
-        // DB 파일에서 카드데이터 조회하여 cards 리스트에 추가 완료 후, 카드 정보 문자열 치환
-        foreach(CardBase cardBase in cards){
-            cardBase.description = ReplaceCardDescription(cardBase.description, cardBase);
-        }
+        // 표시 문자열(카드 이름·설명, 용어, 특성명)을 현재 언어로 조립. 언어가 바뀌면 이 함수만 다시 돈다
+        ApplyLocalizedText();
+        M_LanguageManager.onLocaleChanged -= ApplyLocalizedText;
+        M_LanguageManager.onLocaleChanged += ApplyLocalizedText;
     }
 
-    // 카드 정보 문자열 치환 함수
-    private string ReplaceCardDescription(string desc, CardBase card)
+    void OnDestroy()
     {
-        int colorCnt = 0;
-        string[] values = desc.Trim().Split(" ");
-        for(int i = 0 ;i < values.Length ; i++)
+        M_LanguageManager.onLocaleChanged -= ApplyLocalizedText;
+    }
+
+    /// <summary>
+    /// 현재 언어 기준으로 표시 문자열을 다시 만든다.
+    /// 번역이 없으면 CSV의 한국어 원문(nameSource/descriptionSource)이 그대로 쓰인다.
+    /// </summary>
+    public void ApplyLocalizedText()
+    {
+        infomationDB.Clear();
+        foreach(KeyValuePair<string, InfomationDB> pair in infomationSource)
         {
-            if(values[i].ToCharArray()[0] == '@') // 특수 용어
-            {
-                values[i] = values[i].Remove(0,1);
-                card.info.Add(new Infomation(ResolveInfoKey(values[i]),colorCnt)); // '압도를' 처럼 조사가 붙은 토큰도 툴팁 키로 정규화
-                values[i] = colorList[colorCnt] + values[i] + "</color>";
-                colorCnt++;
-            }
-            if(values[i].ToCharArray()[0] == '*') // 카드 이름
-            {
-                values[i] = values[i].Remove(0,1);
-                card.cardInfo.Add(values[i]);
-                foreach(CardBase cardBase in cards){
-                    if(cardBase.cardNumber == values[i]){
-                        string temp = cardColor + cardBase.name + "</color>";
-                        values[i] = temp;
-                    }
-                }
-            }
-            if(values[i].ToCharArray()[0] == '~') // 뽑을덱, 버린덱, 잊혀진덱 굵은 글씨
-            {
-                values[i] = values[i].Remove(0,1);
-                string temp = "<b>" + values[i] + "</b>";
-                values[i] = temp;
-            }
-
+            infomationDB.Add(pair.Key, new InfomationDB(
+                M_LanguageManager.Get(LocKey.TermName(pair.Key), pair.Value.name),
+                M_LanguageManager.Get(LocKey.TermDesc(pair.Key), pair.Value.description)));
         }
-        return string.Join(" ",values); // Concat 메서드를 사용하여 배열의 요소들을 하나로 합침
+
+        cardCharacteristicToString.Clear();
+        foreach(KeyValuePair<CardCharacteristic, string> pair in characteristicSource)
+            cardCharacteristicToString.Add(pair.Key, M_LanguageManager.Get(LocKey.Characteristic(pair.Key.ToString()), pair.Value));
+
+        // 이름을 먼저 전부 확정해야 설명문의 *{카드번호} 참조가 번역된 이름으로 치환된다
+        cardByNumber.Clear();
+        foreach(CardBase cardBase in cards)
+        {
+            cardNameSource.TryGetValue(cardBase.cardNumber, out string nameSource);
+            cardBase.name = M_LanguageManager.Get(LocKey.CardName(cardBase.cardNumber), nameSource);
+            cardByNumber[cardBase.cardNumber] = cardBase;
+        }
+
+        foreach(CardBase cardBase in cards)
+        {
+            cardBase.info.Clear();      // 언어 변경 시 툴팁 목록이 중복 누적되지 않도록 초기화
+            cardBase.cardInfo.Clear();
+            cardDescriptionSource.TryGetValue(cardBase.cardNumber, out string descriptionSource);
+            string source = M_LanguageManager.Get(LocKey.CardDesc(cardBase.cardNumber), descriptionSource);
+            cardBase.description = CardMarkup.ApplyStructural(source, cardBase, GetCardNameByNumber, colorList, cardColor);
+        }
     }
 
-    // '@압도를'·'@크기의' 처럼 조사가 붙은 특수 용어 토큰을 Description.csv 키로 정규화 (최장 전방일치)
-    private string ResolveInfoKey(string token)
+    string GetCardNameByNumber(string cardNumber)
     {
-        if(infomationDB.ContainsKey(token)) return token;
-        string bestKey = token;
-        int bestLength = 0;
-        foreach(string key in infomationDB.Keys)
-            if(token.StartsWith(key) && key.Length > bestLength){ bestKey = key; bestLength = key.Length; }
-        return bestKey;
+        return cardByNumber.TryGetValue(cardNumber, out CardBase found) ? found.name : null;
     }
 
-    
-    // 카드 정보 문자열 치환 함수 (정규표현식 ver)
+    /// <summary>
+    /// 네트워크로 받은 CardBase를 로컬 카드 데이터로 되돌린다.
+    /// Card는 Mirror로 통째로 직렬화되므로 클라이언트가 받은 name/description은 '보낸 쪽 언어'다.
+    /// 화면에 글자를 찍을 때는 반드시 이 함수를 거쳐 각자의 언어로 표시한다.
+    /// </summary>
+    public CardBase GetLocalCardBase(CardBase networkCard)
+    {
+        if(networkCard == null) return null;
+        return cardByNumber.TryGetValue(networkCard.cardNumber, out CardBase local) ? local : networkCard;
+    }
+
+    public string GetLocalizedName(CardBase networkCard)
+    {
+        CardBase local = GetLocalCardBase(networkCard);
+        return local != null ? local.name : "";
+    }
+
+    public string GetLocalizedDescription(CardBase networkCard)
+    {
+        CardBase local = GetLocalCardBase(networkCard);
+        return local != null ? local.description : "";
+    }
+
+    // 카드 설명의 수치 토큰(!{} #{} ^{} &{} ${}{})을 원본값 그대로 표시 — 버프 미반영 정적 표시용
     public string ReplaceDescription(string str)
     {
-        string patternDamage = @"!(\S+)"; // !피해량
-        str = Regex.Replace(str, patternDamage, match => { 
-            int value;
-            if(int.TryParse(match.Groups[1].Value, out value)){
-                return$"<color=green>{match.Groups[1].Value}</color>{GetPrepositionalParticle(value)}"; 
-            }else{
-                return$"<color=green>{match.Groups[1].Value}</color>";
-            }
-        });
-
-        string patternDeffence = @"(?<!<)#(\d+)"; // #방어도
-        str = Regex.Replace(str, patternDeffence, match => { 
-            int value;
-            if(int.TryParse(match.Groups[1].Value, out value)){
-                return$"<color=green>{match.Groups[1].Value}</color>{GetPrepositionalParticle(value)}"; 
-            }else{
-                return$"<color=green>{match.Groups[1].Value}</color>";
-            }
-        });
-
-        string patternHp = @"\^(\d+)"; // ^체력
-        str = Regex.Replace(str, patternHp, match => { 
-            int value;
-            if(int.TryParse(match.Groups[1].Value, out value)){
-                return$"<#FF7F00>{match.Groups[1].Value}</color>{GetPrepositionalParticle(value)}"; 
-            }else{
-                return$"<#FF7F00>{match.Groups[1].Value}</color>";
-            }
-        });
-
-        string patternBulk = @"&(\d+)"; // &크기
-        str = Regex.Replace(str, patternBulk, match => $"<color=purple>{match.Groups[1].Value}</color>");
-
-        string patternMultipleDamage = @"\$(\d+)\s*\$(\d+)"; // $피해량$타수
-        Regex regex = new Regex(patternMultipleDamage); // 그룹[0] : $피해량$타수, 그룹[1] : $피해량, 그룹[2] : $타수
-        foreach(Match match in regex.Matches(str)){
-            if(match.Groups.Count == 3){
-                int value;
-                if(int.TryParse(match.Groups[1].Value, out value)){
-                    string color = colorList[2];
-                    string damage = match.Groups[1].Value;
-                    string hitCount = match.Groups[2].Value;
-                    string preposionalParticle = GetPrepositionalParticle(value);
-                    string replacedText = $"<color=green>{damage}</color>{preposionalParticle} {color}{hitCount}</color>번";
-                    str = str.Replace(match.Value, replacedText);
-                }
-            }
-        }
-        return str;
+        return CardMarkup.ApplyValues(str);
     }
 
-    // 숫자값에 따라 조사(을, 를) 구분해서 반환
+    // 숫자값에 따라 조사(을, 를) 구분해서 반환 — 한국어가 아니면 빈 문자열
     public string GetPrepositionalParticle(int number)
     {
-        int lastDigit = number % 10; // 매개변수로 넘어오는 숫자의 마지막 자리 숫자
+        if(!M_LanguageManager.IsKorean) return "";
+        int lastDigit = System.Math.Abs(number) % 10; // 매개변수로 넘어오는 숫자의 마지막 자리 숫자
         if(lastDigit == 0 || lastDigit == 1 || lastDigit == 3 || lastDigit == 6 || lastDigit == 7 || lastDigit == 8){
             return "을"; // 받침 있는 숫자는 '을' 반환
         }else{

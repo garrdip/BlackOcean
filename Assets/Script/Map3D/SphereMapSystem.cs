@@ -1267,7 +1267,7 @@ namespace ProjectD
             SetLayoutText(layout, "TextHazardValue", Mathf.Abs(hazardDiff).ToString());
             if (hazardDiff == 0)
             {
-                SetLayoutText(layout, "TextHazardState", "위험도 동일");
+                SetLayoutText(layout, "TextHazardState", M_LanguageManager.Get("ui.hazard.same", "위험도 동일"));
                 if (arrow != null)
                 {
                     arrow.gameObject.SetActive(false);
@@ -1276,7 +1276,7 @@ namespace ProjectD
                 return;
             }
 
-            SetLayoutText(layout, "TextHazardState", hazardDiff > 0 ? "위험도 증가" : "위험도 감소");
+            SetLayoutText(layout, "TextHazardState", hazardDiff > 0 ? M_LanguageManager.Get("ui.hazard.up", "위험도 증가") : M_LanguageManager.Get("ui.hazard.down", "위험도 감소"));
             if (arrow != null)
             {
                 arrow.gameObject.SetActive(true);

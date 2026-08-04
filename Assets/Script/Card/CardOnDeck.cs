@@ -336,8 +336,9 @@ public class CardOnDeck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         }
         else
         {
-            textCardName.text = card.baseCard.name;
-            textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(card.baseCard.description);
+            // 네트워크로 받은 카드는 보낸 쪽 언어의 문자열을 갖고 있으므로 로컬 카드 데이터로 표시한다
+            textCardName.text = CardData.instance.GetLocalizedName(card.baseCard);
+            textCardDescription.text = M_CardManager.instance.GetAdditionalValueFromDescription(CardData.instance.GetLocalizedDescription(card.baseCard));
         }
 
         textCardDescription.text += '\n';

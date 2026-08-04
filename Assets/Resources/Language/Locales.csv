@@ -1,0 +1,3 @@
+code,displayName,font,note
+ko,한국어,,기준 언어(폴백). 카드/버프/용어의 한국어 원문은 DB CSV에 있고 ko.csv에는 UI 문자열만 둔다
+en,English,,

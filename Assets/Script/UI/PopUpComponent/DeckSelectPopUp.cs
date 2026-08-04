@@ -115,7 +115,7 @@ public class DeckSelectPopUp : SingletonD<DeckSelectPopUp>
     public void OnDeckSelectPopUpShow(DeckListType type, string cardNumber)
     {
         GamePlayerDeck gamePlayerDeck = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerDeck>();
-        textExplanation.text = $"카드를 <color=green>{gamePlayerDeck.maxSelectableCardCount}</color> 장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )";
+        textExplanation.text = M_LanguageManager.Get("ui.deck.select_explanation", "카드를 <color=green>{0}</color> 장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )").Replace("{0}", gamePlayerDeck.maxSelectableCardCount.ToString());
         requestCardNumber = cardNumber;
         canvasGroup.DOFade(1.0f, 0.5f);
         switch(type){

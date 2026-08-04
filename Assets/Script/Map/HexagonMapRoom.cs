@@ -452,11 +452,11 @@ public class HexagonMapRoom : NetworkBehaviour
         textHazardValue.text = Mathf.Abs(hazardValue).ToString();
         if(hazardValue == 0){
             hazardArrow.gameObject.SetActive(false);
-            textHazardState.text = "위험도 동일";
+            textHazardState.text = M_LanguageManager.Get("ui.hazard.same", "위험도 동일");
             hazardArrow.color = Color.white;
         }else{
             hazardArrow.gameObject.SetActive(true);
-            textHazardState.text = hazardValue > 0 ? "위험도 증가" : "위험도 감소" ;
+            textHazardState.text = hazardValue > 0 ? M_LanguageManager.Get("ui.hazard.up", "위험도 증가") : M_LanguageManager.Get("ui.hazard.down", "위험도 감소");
             hazardArrow.flipY = hazardValue > 0 ? false : true;
             hazardArrow.color =  hazardValue > 0 ? Color.red : ProjectD.ColorUtils.HexToColor("#0080ff");
         }

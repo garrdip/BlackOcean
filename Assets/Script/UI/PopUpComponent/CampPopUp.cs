@@ -42,7 +42,7 @@ public class CampPopUp : SingletonD<CampPopUp>
                 .Position(ToastPosition.Bottom)
                 .MessageBoxColor(Color.red)
                 .TextColor(Color.white)
-                .Text("골드 금액을 정확하게 입력하세요.")
+                .Text(M_LanguageManager.Get("ui.msg.gold_input_invalid", "골드 금액을 정확하게 입력하세요."))
                 .FadeInTime(2f)
                 .FadeOutTime(2f)
                 .Show();

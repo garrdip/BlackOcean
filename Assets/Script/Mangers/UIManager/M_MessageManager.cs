@@ -196,7 +196,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         .Position(ToastPosition.Bottom)
         .MessageBoxColor(Color.red)
         .TextColor(Color.white)
-        .Text($"{oldOwner} 님이 대기방을 나갔습니다.")
+        .Text(M_LanguageManager.Get("ui.msg.player_left_room", "{0} 님이 대기방을 나갔습니다.").Replace("{0}", oldOwner))
         .Show();
     }
 
@@ -208,7 +208,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
         .Position(ToastPosition.Bottom)
         .MessageBoxColor(Color.red)
         .TextColor(Color.white)
-        .Text($"{oldPlayer} 님이 게임을 나갔습니다.\n{newPlayer} 님에게 권한이 이전됩니다.")
+        .Text(M_LanguageManager.Get("ui.msg.host_transferred", "{0} 님이 게임을 나갔습니다.\n{1} 님에게 권한이 이전됩니다.").Replace("{0}", oldPlayer).Replace("{1}", newPlayer))
         .Show();
     }
 }

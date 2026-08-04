@@ -1,0 +1,103 @@
+key,text
+ui.Main_Single_Play,싱글 플레이
+ui.Main_Multi_Play,멀티 플레이
+ui.Main_Multi_CreateRoom,방 만들기
+ui.Main_Encyclopedia,백과사전
+ui.Main_Settings,환경설정
+ui.Main_Quit,게임 종료
+ui.Settings_Full_Screen,전체 화면
+ui.Settings_Apply,적용
+ui.LabelGeork,게오르크
+ui.LabelEris,에리스
+ui.LabelDanhyang,단향
+ui.Room_Ready,준비
+ui.Room_Select_Cancel,취소
+ui.Room_Start,시작
+ui.Room_Send,전송
+ui.Room_Placeholder,메세지를 입력하세요.
+markup.multi_hit,{damage} {hits}번
+ui.MapInfoPopUpItem.TextRewardTitle,보상
+ui.MapInfoPopUpItem.TextRewardDetail,보상 내용
+ui.NPC_Mercurius.ButtonCardShop_Label,카드 상점\n
+ui.NPC_Mercurius.ButtonCardEnhance_Label,카드 강화
+ui.NPC_Mercurius.ButtonCardRemove_Label,카드 제거
+ui.NPC_RyuJinSol.ButtonHeal_Label,체력 회복
+ui.NPC_RyuJinSol.ButtonGiveGold_Label,골드 전달\n
+ui.NPC_ShadowMan.ButtonItemShop_Label,아이템 상점
+ui.NPC_ShadowMan.Button1_Label,버튼
+ui.NPC_ShadowMan.Button2_Label,버튼
+ui.NPC_Sophia.ButtonHeal_Label,체력 회복
+ui.NPC_Sophia.ButtonGiveGold_Label,골드 전달
+ui.MapPlayer.TextSwap,위치 변경
+ui.MapPlayer.ButtonDeckInfo_Label,덱 정보
+ui.ForgottenDeckListPopUp.TextDeckListTitle,잊혀진 덱
+ui.PrefareDeckListPopUp.TextDeckListTitle,뽑을 덱
+ui.TrashDeckListPopUp.TextDeckListTitle,버린 덱
+ui.Game.TextHazardTitle,위험도\n
+ui.Game.TextDeadLine,뒤틀림까지
+ui.Game.TextArea,연안\n
+ui.Game.TextRegionInfo,거점 지역 정보\n
+ui.Game.TextRegionGrade,거점 지역 정보 : \n
+ui.Game.TextRegionDetail,거점 지역 내용 :
+ui.Game.TextEndTurn,턴 종료
+ui.Game.TextDanger,위험도\n
+ui.Game.TextDeadLine_2,뒤틀림까지
+ui.Game.TextArea_2,연안\n
+ui.Game.TextTitle,카드 확인 : 버릴 카드를 선택하십시오
+ui.Game.TextRemoveConfirm,확인
+ui.Game.TitleText,전리품
+ui.Game.TitleText_2,카드를 선택하십시오
+ui.Game.ButtonSkip_Label,넘기기
+ui.Game.TitleText_3,카드를 선택하십시오
+ui.Game.ButtonSkip_Label_2,넘기기
+ui.Game.TitleText_4,카드를 선택하십시오
+ui.Game.ButtonSkip_Label_3,넘기기
+ui.Game.ButtonReturnMenuScene_Label,메인 메뉴로 돌아가기
+ui.Game.TextDeckListTitle,카드 강화
+ui.Game.ButtonEnhanceOk_Label,강화
+ui.Game.ButtonEnhanceCancel_Label,취소
+ui.Game.TextDeckListTitle_2,카드 제거
+ui.Game.ButtonCardRemoveOk_Label,제거
+ui.Game.ButtonCardRemoveCancel_Label,취소
+ui.Game.TitleBackground_Label,체력을 회복할 캐릭터를 선택하세요.
+ui.Game.TitleBackground_Label_2,골드를 넘겨줄 캐릭터를 선택하세요.
+ui.Game.TextArea_Placeholder,골드 금액을 입력하세요..
+ui.Game.ButtonGiveGoldOk_Label,확인
+ui.Game.ButtonGiveGoldCancel_Label,취소
+ui.Game.ButtonSelectSubmit_Label,확 인
+ui.Game.TextTitle_2,잊혀진 덱
+ui.Game.TextTitle_3,버린 덱
+ui.Game.ButtonSelectSubmit_Label_2,확 인
+ui.Game.ButtonOpenDeckBook_Label,덱 북
+ui.Game.ButtonCardEnhance_Label,카드 강화
+ui.Game.ButtonGeorkTransform_Label,변신!
+ui.Game.ButtonSave_Label,세이브
+ui.Menu.TextArea_Placeholder,카드 이름
+ui.Menu.ButtonSearch_Label,검색\n
+ui.Menu.TextArea_Placeholder_2,카드 이름
+ui.Menu.ButtonSearch_Label_2,검색\n
+ui.Menu.TextArea_Placeholder_3,카드 이름
+ui.Menu.ButtonSearch_Label_3,검색\n
+ui.msg.battle_boss,전투 : 보스
+ui.msg.battle_normal,전투 : 일반 몬스터
+ui.msg.battle_elite,전투 : 엘리트 몬스터
+ui.msg.event_positive,긍정적 이벤트
+ui.msg.event_negative,부정적 이벤트
+ui.msg.camp,전초기지
+ui.msg.card_shop,카드 상점
+ui.msg.item_shop,아이템 상점
+ui.msg.map_boss_appeared,맵에 보스가 출현 했습니다.
+ui.msg.gold_input_invalid,골드 금액을 정확하게 입력하세요.
+ui.deck.multi_select_explanation,"잊혀진 덱에서 카드 <color=green>1</color> 장, 버린 덱에서 카드 <color=red>1</color> 장을 선택하세요."
+ui.deck.select_explanation,"카드를 <color=green>{0}</color> 장 선택하세요.\n( 마우스 왼쪽 버튼 클릭 시 선택, 오른쪽 버튼 클릭 시 해제 됩니다. )"
+ui.hazard.same,위험도 동일
+ui.hazard.up,위험도 증가
+ui.hazard.down,위험도 감소
+ui.msg.swap_accepted,위치 교환 요청이 수락되었습니다.
+ui.msg.swap_rejected,위치 교환 요청이 거절되었습니다.
+ui.msg.player_left_room,{0} 님이 대기방을 나갔습니다.
+ui.msg.host_transferred,{0} 님이 게임을 나갔습니다.\n{1} 님에게 권한이 이전됩니다.
+ui.order.back,후열
+ui.order.middle,중열
+ui.order.front,전열
+ui.map.turn_count,{0}턴

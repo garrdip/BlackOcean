@@ -67,7 +67,7 @@ public partial class M_TurnManager
             .FadeOutTime(1f)
             .MessageBoxColor(ColorUtils.HexToColor("#E700FF"))
             .TextColor(Color.white)
-            .Text("전투 : 보스")
+            .Text(M_LanguageManager.Get("ui.msg.battle_boss", "전투 : 보스"))
             .Show();
     }
 
@@ -90,7 +90,7 @@ public partial class M_TurnManager
                     .FadeOutTime(1f)
                     .MessageBoxColor(Color.red)
                     .TextColor(Color.white)
-                    .Text("전투 : 일반 몬스터")
+                    .Text(M_LanguageManager.Get("ui.msg.battle_normal", "전투 : 일반 몬스터"))
                     .Show();  
                 
                 // BGM 재생     
@@ -127,7 +127,7 @@ public partial class M_TurnManager
                     .FadeOutTime(1f)
                     .MessageBoxColor(Color.red)
                     .TextColor(Color.white)
-                    .Text("전투 : 엘리트 몬스터")
+                    .Text(M_LanguageManager.Get("ui.msg.battle_elite", "전투 : 엘리트 몬스터"))
                     .Show();
                
                 // BGM 재생            
@@ -171,7 +171,7 @@ public partial class M_TurnManager
                     .FadeOutTime(1f)
                     .MessageBoxColor(Color.yellow)
                     .TextColor(Color.white)
-                    .Text("긍정적 이벤트")
+                    .Text(M_LanguageManager.Get("ui.msg.event_positive", "긍정적 이벤트"))
                     .Show();
                 AudioClip audioClip_event_positive = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Positive_Event");
                 M_SoundManager.instance.PlayBGM(audioClip_event_positive, MusicTransition.Swift, 1.5f);
@@ -185,7 +185,7 @@ public partial class M_TurnManager
                     .FadeOutTime(1f)
                     .MessageBoxColor(Color.yellow)
                     .TextColor(Color.white)
-                    .Text("부정적 이벤트")
+                    .Text(M_LanguageManager.Get("ui.msg.event_negative", "부정적 이벤트"))
                     .Show();
                 AudioClip audioClip_event_negative = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Negative_Event");
                 M_SoundManager.instance.PlayBGM(audioClip_event_negative, MusicTransition.Swift, 1.5f);
@@ -199,7 +199,7 @@ public partial class M_TurnManager
                     .FadeOutTime(1f)
                     .MessageBoxColor( Color.green)
                     .TextColor(Color.white)
-                    .Text("전초기지")
+                    .Text(M_LanguageManager.Get("ui.msg.camp", "전초기지"))
                     .Show();
                 // 전초기지 배경음 재생
                 AudioClip audioClip_base_camp = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Base_Camp");
@@ -213,7 +213,7 @@ public partial class M_TurnManager
                     .FadeOutTime(1f)
                     .MessageBoxColor(Color.magenta)
                     .TextColor(Color.white)
-                    .Text("카드 상점")
+                    .Text(M_LanguageManager.Get("ui.msg.card_shop", "카드 상점"))
                     .Show();
                 // 카드 상점 배경음 재생                    
                 AudioClip audioClip_card_hop = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Card_Shop");
@@ -227,7 +227,7 @@ public partial class M_TurnManager
                     .FadeOutTime(1f)
                     .MessageBoxColor(Color.blue)
                     .TextColor(Color.white)
-                    .Text("아이템 상점")
+                    .Text(M_LanguageManager.Get("ui.msg.item_shop", "아이템 상점"))
                     .Show();                
                 // 아이템 상점 배경음 재생
                 AudioClip audioClip_item_hop = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Item_Shop");

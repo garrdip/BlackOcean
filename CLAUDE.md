@@ -50,7 +50,7 @@ Each player is a set of NetworkBehaviours: `PlayerInterface` (persistent identit
 - `Assets/Script/Monster/` — `Monster` base with subclasses under `Normal/`, `Elite/`, `Boss/`; monsters use Spine animations.
 - `Assets/Script/Map/` — hexagonal room-based map progression (`HexagonMapRoom`, `Region`, `MapPlayer`).
 - `Assets/Script/UI/PopUpComponent/` — popup windows managed by `PopUpUIManager`.
-- Localization: key/value CSV at `Language/Korean.csv` (repo root), loaded by `M_LanguageManager`.
+- Localization: key-based string tables at `Assets/Resources/Language/` (`Locales.csv` + one CSV per locale), loaded by `M_LanguageManager`. Korean is the base/fallback language and its source text stays in the DB CSVs (`CardDB.csv` etc.) — other locales override by key (`card.<no>.desc`, `buff.<enum>.name`, `ui.*`). Adding a language = one CSV + one row in `Locales.csv`. Card descriptions use brace-delimited markup (`@{용어}`, `!{15}`, `${4}{3}`) parsed by `CardMarkup`. See `LOCALIZATION.md`.
 
 ### Key Third-Party Libraries
 

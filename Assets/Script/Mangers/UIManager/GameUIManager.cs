@@ -195,9 +195,10 @@ public class GameUIManager : SingletonD<GameUIManager>
             string playerName = gamePlayerDeck.GetComponent<GamePlayer>().objectOwner.steamPersonaName;
             textCardOwnerName.text = playerName;
             Card card = cardQueue.card;
-            textCardQueueName.text = card.baseCard.name.ToString();
+            // 다른 플레이어가 낸 카드도 각자의 언어로 보이도록 로컬 카드 데이터를 거친다
+            textCardQueueName.text = CardData.instance.GetLocalizedName(card.baseCard);
             textCardQueueType.text = card.baseCard.cardType.ToString();
-            textCardQueueDesc.text = CardData.instance.ReplaceDescription(card.baseCard.description);
+            textCardQueueDesc.text = CardData.instance.ReplaceDescription(CardData.instance.GetLocalizedDescription(card.baseCard));
             cardQueuePopUp.gameObject.SetActive(true);
             cardQueuePopUp.GetComponent<CanvasGroup>().DOFade(1f, 0.25f);
         }else{

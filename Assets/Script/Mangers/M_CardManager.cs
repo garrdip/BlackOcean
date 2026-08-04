@@ -132,7 +132,9 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
 
                                 if(Vector3.Distance(cardOnHand.transform.localPosition,cardOverPosition) < 0.01f && cardOnHand.transform.localRotation.x < 0.01f && cardOnHand.transform.localRotation.y < 0.01f && cardOnHand.createdPopUpWindow.Count == 0)
                                 {
-                                    foreach(Infomation info in cardOnHand.card.baseCard.info)
+                                    // 용어/카드 참조 목록은 화면에 찍은 설명문과 같은 출처(로컬 언어)여야 색·개수가 어긋나지 않는다
+                                    CardBase localBase = CardData.instance.GetLocalCardBase(cardOnHand.card.baseCard);
+                                    foreach(Infomation info in localBase.info)
                                     {
                                         GameObject newPopUpWindow = Instantiate(cardOnHand.popUpWindow,new Vector3(0,0,0),Quaternion.identity);
                                         newPopUpWindow.GetComponent<PopUpWindow>().SetPopUpWinwdowText(info);
@@ -156,7 +158,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
                                         newPopUpWindow.transform.localScale = new Vector3(1f,1f,0);
                                         cardOnHand.createdPopUpWindow.Add(newPopUpWindow);
                                     }
-                                    foreach(string cardNumber in cardOnHand.card.baseCard.cardInfo)
+                                    foreach(string cardNumber in localBase.cardInfo)
                                     {
                                         Debug.Log("Card  생 성 !");
                                         GameObject popUpCard = Instantiate(cardOnHand.popUpCard);
@@ -626,65 +628,18 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         int totalFlower = 0;
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
             totalFlower += tar.GetBuffValue(BuffType.FLOWER,target);
-        string[] splitString = str.Trim().Split(" ");
-        for(int i = 0 ;i < splitString.Length ; i++)
-        {
-            if(splitString[i].ToCharArray()[0] == '!') // !피해량
+
+        // 수치 토큰(!{} #{} ^{} &{} ${}{})에 현재 버프를 반영한 값을 표시한다.
+        // 파싱·색상·조사 처리는 CardMarkup이 담당 (언어별 규칙이 한 곳에 모이도록)
+        return CardMarkup.ApplyValues(str, (sigil, value) => {
+            switch(sigil)
             {
-                splitString[i] = splitString[i].Remove(0,1);
-                int parseValue;
-                if(int.TryParse(splitString[i], out parseValue)){
-                    int result = parseValue + tar.GetBuffValue(BuffType.ICHI_ATTACK) + totalFlower;
-                    splitString[i] = "<color=green>" + result.ToString() + "</color>" + CardData.instance.GetPrepositionalParticle(parseValue);
-                }else{
-                    splitString[i] = "<color=green>" + splitString[i] + "</color>";
-                }
+                case '!': return value + tar.GetBuffValue(BuffType.ICHI_ATTACK) + totalFlower; // 피해
+                case '$': return value + tar.GetBuffValue(BuffType.ICHI_ATTACK) + totalFlower; // 다단히트 피해
+                case '#': return value + tar.GetBuffValue(BuffType.ICHI_DEFENSE);              // 방어
+                default:  return value;                                                        // 체력·크기는 보정 없음
             }
-            if(splitString[i].ToCharArray()[0] == '#') // #방어도
-            {
-                splitString[i] = splitString[i].Remove(0,1);
-                int parseValue;
-                if(int.TryParse(splitString[i], out parseValue)){
-                    int result = parseValue + tar.GetBuffValue(BuffType.ICHI_DEFENSE);
-                    splitString[i] = "<color=green>" + result.ToString() + "</color>" + CardData.instance.GetPrepositionalParticle(parseValue);
-                }else{
-                    splitString[i] = "<color=green>" + splitString[i] + "</color>";
-                }
-            }
-            if(splitString[i].ToCharArray()[0] == '^') // ^체력
-            {
-                splitString[i] = splitString[i].Remove(0,1);
-                int parseValue;
-                if(int.TryParse(splitString[i], out parseValue)){
-                    int result = parseValue;
-                    splitString[i] = "<#FF7F00>" + result.ToString() + "</color>" + CardData.instance.GetPrepositionalParticle(parseValue);
-                }else{
-                    splitString[i] = "<#FF7F00>" + splitString[i] + "</color>";
-                }
-            }
-            if(splitString[i].ToCharArray()[0] == '&') // &크기
-            {
-                splitString[i] = splitString[i].Remove(0,1);
-                int result = int.Parse(splitString[i]);
-                splitString[i] = "<color=purple>" + result.ToString() + "</color>";
-            }
-            if(splitString[i].ToCharArray()[0] == '$') // $피해량$타수
-            {
-                splitString[i] = splitString[i].Remove(0,1);
-                string[] data = splitString[i].Trim().Split("$");
-                int result = int.Parse(data[0]) + tar.GetBuffValue(BuffType.ICHI_ATTACK) + totalFlower;
-                int value;
-                if(int.TryParse(result.ToString(), out value)){
-                    string color = CardData.instance.colorList[2];
-                    string damage = result.ToString();
-                    string hitCount = data[1];
-                    string preposionalParticle = CardData.instance.GetPrepositionalParticle(value);
-                    splitString[i] = "<color=green>" + damage + "</color>" + preposionalParticle + " " + color + hitCount + "</color>" + "번";
-                }
-            }
-        }
-        
-        return string.Join(" ",splitString);
+        });
     }
 
     public IEnumerator CurseCardOperation()
