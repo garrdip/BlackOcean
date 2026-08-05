@@ -299,8 +299,8 @@ namespace ProjectD
                     if (Physics.Raycast(ray, out RaycastHit hit, 1000f))
                     {
                         var tile = hit.collider.GetComponent<SphereMapTile>();
-                        if (tile != null && tile.transform.IsChildOf(_tileRoot))
-                            hoveredTile = tile;
+                        if (tile != null && tile.visible && tile.transform.IsChildOf(_tileRoot))
+                            hoveredTile = tile; // 숨겨진 타일은 호버 대상에서 제외
                     }
                 }
             }
@@ -369,7 +369,8 @@ namespace ProjectD
             if (Physics.Raycast(ray, out RaycastHit hit, 1000f))
             {
                 var tile = hit.collider.GetComponent<SphereMapTile>();
-                if (tile != null && tile.transform.IsChildOf(_tileRoot))
+                // 숨겨진 타일은 보이지 않으므로 빈 공간 클릭과 동일하게 처리한다
+                if (tile != null && tile.visible && tile.transform.IsChildOf(_tileRoot))
                 {
                     // 게임 로직 레이어(SphereMapSystem)가 연결되어 있으면 클릭 처리를 위임
                     if (OnTileClicked != null)
@@ -467,6 +468,11 @@ namespace ProjectD
             {
                 SphereMapTile tile = _tiles[i];
                 if (tile == null || tile.Renderer == null)
+                    continue;
+                // 밝혀지지 않은 회색 타일은 아예 그리지 않는다.
+                // (콜라이더는 그대로 두어 빈 공간에서도 구체 회전/줌이 계속 동작하게 한다)
+                tile.Renderer.enabled = tile.visible;
+                if (!tile.visible)
                     continue;
                 // 포커스된 타일과 하이라이트(경로 표시) 타일은 어두워지지 않음
                 float dim = (i == _focusedIndex || tile.highlight) ? 0f : _dimValue;
