@@ -28,6 +28,8 @@ public class M_SteamManager : InstanceD<M_SteamManager>
     private void Start()
     {
         if(!SteamManager.Initialized){SteamAccessFail(); return;}
+        // 씬 로드 초기에는 스팀 언어를 읽을 수 없으므로 초기화 확인 후 이 시점에 반영
+        M_LanguageManager.ApplySteamLocaleIfNoUserChoice();
         lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequeseted);
         lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEnter);

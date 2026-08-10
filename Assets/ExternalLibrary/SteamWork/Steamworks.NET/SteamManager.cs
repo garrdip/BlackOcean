@@ -43,6 +43,15 @@ public class SteamManager : MonoBehaviour {
 		}
 	}
 
+	// 인스턴스를 자동 생성하지 않는 초기화 확인.
+	// Initialized는 s_instance가 없으면 새 SteamManager를 만들어 버려, 씬에 배치된 SteamManager가
+	// 나중에 Awake될 때 중복으로 판정·파괴되는 부작용이 있다. 씬 로드 초기(다른 Awake)에서는 이것을 쓸 것.
+	public static bool InitializedSafe {
+		get {
+			return s_instance != null && s_instance.m_bInitialized;
+		}
+	}
+
 	protected SteamAPIWarningMessageHook_t m_SteamAPIWarningMessageHook;
 
 	[AOT.MonoPInvokeCallback(typeof(SteamAPIWarningMessageHook_t))]
@@ -63,7 +72,9 @@ public class SteamManager : MonoBehaviour {
 	protected virtual void Awake() {
 		// Only one instance of SteamManager at a time!
 		if (s_instance != null) {
-			Destroy(gameObject);
+			// 같은 게임오브젝트에 다른 컴포넌트(M_SteamManager 등)가 함께 붙어 있을 수 있으므로
+			// 게임오브젝트가 아니라 중복된 이 컴포넌트만 파괴한다
+			Destroy(this);
 			return;
 		}
 		s_instance = this;
@@ -174,6 +185,12 @@ public class SteamManager : MonoBehaviour {
 	}
 #else
 	public static bool Initialized {
+		get {
+			return false;
+		}
+	}
+
+	public static bool InitializedSafe {
 		get {
 			return false;
 		}

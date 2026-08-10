@@ -266,11 +266,27 @@ public class M_LanguageManager : SingletonD<M_LanguageManager>
         return FallbackLocaleCode;
     }
 
+    /// <summary>
+    /// 스팀 초기화가 끝난 뒤 호출 (M_SteamManager.Start).
+    /// 씬 로드 초기에는 SteamManager가 아직 준비 전이라 스팀 언어를 읽지 못하므로,
+    /// 사용자가 언어를 직접 고른 적이 없으면 이 시점에 스팀 클라이언트 언어를 적용한다.
+    /// </summary>
+    public static void ApplySteamLocaleIfNoUserChoice()
+    {
+        EnsureInitialized();
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPrefsKey, ""))) return; // 사용자 선택이 우선
+        string steam = ResolveSteamLocale();
+        if (!string.IsNullOrEmpty(steam) && steam != CurrentLocaleCode && FindLocale(steam) != null)
+            ApplyLocale(steam, notify: true);
+    }
+
     static string ResolveSteamLocale()
     {
         try
         {
-            if (!SteamManager.Initialized) return null;
+            // Initialized는 SteamManager가 없으면 자동 생성해 씬의 SteamManager와 중복을 만들므로
+            // 부작용 없는 InitializedSafe로 확인한다
+            if (!SteamManager.InitializedSafe) return null;
             string steamLanguage = Steamworks.SteamApps.GetCurrentGameLanguage();
             if (string.IsNullOrEmpty(steamLanguage)) return null;
             // 스팀 API 언어명 → 로케일 코드 (https://partner.steamgames.com/doc/store/localization)
