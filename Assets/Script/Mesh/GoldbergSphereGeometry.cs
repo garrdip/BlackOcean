@@ -352,13 +352,45 @@ namespace ProjectD
             return mesh;
         }
 
+        /// <summary>맞닿은 두 타일 인덱스 쌍의 정규화 키 (변 식별용, 순서 무관)</summary>
+        public static long EdgeKey(int a, int b)
+        {
+            return a < b ? ((long)a << 32) | (uint)b : ((long)b << 32) | (uint)a;
+        }
+
+        /// <summary>
+        /// 거점지역 외곽선(BuildRegionBorderMesh)이 덮는 변·접합부를 수집한다.
+        /// BuildAllBordersMesh의 제외 목록으로 넘기면 지역 외곽선 자리에는 기본 테두리가 그려지지 않는다.
+        /// </summary>
+        public static void CollectRegionBorderCoverage(List<Tile> tiles, List<int> regionTiles,
+            HashSet<long> edges, HashSet<int> cornerTris)
+        {
+            var region = new HashSet<int>(regionTiles);
+            foreach (int t in regionTiles)
+            {
+                Tile tile = tiles[t];
+                int m = tile.ringUnit.Length;
+                for (int k = 0; k < m; k++)
+                {
+                    int nb = tile.edgeNeighbors[k];
+                    if (nb < 0 || region.Contains(nb))
+                        continue;
+                    edges.Add(EdgeKey(t, nb));
+                    cornerTris.Add(tile.ringTri[k]);
+                    cornerTris.Add(tile.ringTri[(k + 1) % m]);
+                }
+            }
+        }
+
         /// <summary>
         /// 구체 전체의 타일 사이 홈(spacing)을 채우는 상감 메쉬를 생성한다. (거점지역 외곽선과 같은 방식)
         /// - 서로 맞닿은 두 타일의 변마다: 양쪽의 수축된 변 꼭짓점 4개를 잇는 사각형
         /// - 타일 3개 접합부마다: 세 타일의 수축된 코너를 잇는 삼각형
         /// inset만큼 구 중심 방향으로 가라앉혀 표면 높이에 그려지는 거점지역 외곽선이 위에 보이게 한다.
+        /// excludedEdges/excludedTris(CollectRegionBorderCoverage로 수집)에 포함된 변·접합부는 그리지 않는다.
         /// </summary>
-        public static Mesh BuildAllBordersMesh(List<Tile> tiles, float radius, float spacing, float inset)
+        public static Mesh BuildAllBordersMesh(List<Tile> tiles, float radius, float spacing, float inset,
+            HashSet<long> excludedEdges = null, HashSet<int> excludedTris = null)
         {
             var shrunkCache = new Dictionary<int, Vector3[]>();
             Vector3[] GetRing(int index)
@@ -413,6 +445,8 @@ namespace ProjectD
                     int nb = tile.edgeNeighbors[k];
                     if (nb <= t)
                         continue;
+                    if (excludedEdges != null && excludedEdges.Contains(EdgeKey(t, nb)))
+                        continue; // 지역 외곽선이 덮는 변
                     int k1 = (k + 1) % m;
                     Tile nbTile = tiles[nb];
                     Vector3[] ringB = GetRing(nb);
@@ -446,6 +480,8 @@ namespace ProjectD
             }
             foreach (KeyValuePair<int, List<int>> entry in triOwners)
             {
+                if (excludedTris != null && excludedTris.Contains(entry.Key))
+                    continue; // 지역 외곽선이 덮는 접합부
                 List<int> owners = entry.Value;
                 if (owners.Count != 3)
                     continue; // 이론상 항상 3개

@@ -32,6 +32,8 @@ namespace ProjectD
         public Color pentagonColor = new Color(0.16f, 0.16f, 0.2f);
         [Tooltip("모든 타일 사이 홈을 채우는 테두리 색 (거점지역 외곽선과 같은 상감 방식)")]
         public Color tileBorderColor = new Color(0.10f, 0.10f, 0.12f);
+        [Tooltip("타일 테두리를 표면에서 가라앉히는 깊이 (월드 단위). 0이면 표면과 같은 높이가 되어 거점지역 외곽선과 겹칠 수 있다")]
+        [Min(0f)] public float tileBorderInset = 0.045f;
 
         [Header("포커스 연출")]
         [Tooltip("선택된 타일이 방사형으로 상승하는 높이")]
@@ -78,6 +80,10 @@ namespace ProjectD
         readonly List<SphereMapTile> _tiles = new List<SphereMapTile>();
         Transform _tileRoot;
         Material _runtimeMaterial;
+        List<GoldbergSphereGeometry.Tile> _geoTiles;   // 타일 테두리 재생성용 기하 캐시
+        GameObject _tileBordersGo;                     // 타일 사이 홈을 채우는 테두리 메쉬 오브젝트
+        HashSet<long> _borderExcludedEdges;            // 거점지역 외곽선이 덮어 테두리에서 제외할 변
+        HashSet<int> _borderExcludedTris;              // 거점지역 외곽선이 덮어 테두리에서 제외할 접합부
         int _focusedIndex = -1;
         float _dimValue; // 0 = 전체 밝음, 1 = 포커스 외 타일 어두움
         Tween _dimTween;
@@ -176,6 +182,7 @@ namespace ProjectD
             _tiles.Clear();
 
             List<GoldbergSphereGeometry.Tile> tiles = GoldbergSphereGeometry.Generate(subdivision);
+            _geoTiles = tiles;
             foreach (GoldbergSphereGeometry.Tile tileData in tiles)
             {
                 var go = new GameObject((tileData.isPentagon ? "Pent_" : "Hex_") + tileData.index.ToString("D3"));
@@ -198,11 +205,13 @@ namespace ProjectD
             OnRebuilt?.Invoke();
         }
 
-        // 모든 타일 사이 홈을 채우는 테두리 메쉬 생성. 표면보다 살짝 가라앉혀
+        // 모든 타일 사이 홈을 채우는 테두리 메쉬 생성. tileBorderInset만큼 가라앉혀
         // 표면 높이에 그려지는 거점지역 외곽선이 위에 보이게 한다. (콜라이더 없음 — 입력에 영향 없음)
+        // 거점지역 외곽선이 덮는 변·접합부(_borderExcluded*)에는 그리지 않는다.
         void BuildTileBorders(List<GoldbergSphereGeometry.Tile> tiles, Material material)
         {
-            Mesh mesh = GoldbergSphereGeometry.BuildAllBordersMesh(tiles, radius, spacing, thickness * 0.3f);
+            Mesh mesh = GoldbergSphereGeometry.BuildAllBordersMesh(tiles, radius, spacing, tileBorderInset,
+                _borderExcludedEdges, _borderExcludedTris);
             if (mesh == null)
                 return;
             var go = new GameObject("TileBorders");
@@ -216,6 +225,28 @@ namespace ProjectD
             s_mpb.Clear();
             s_mpb.SetColor("_Color", tileBorderColor);
             meshRenderer.SetPropertyBlock(s_mpb);
+            _tileBordersGo = go;
+        }
+
+        /// <summary>
+        /// 거점지역 외곽선이 덮는 변·접합부를 타일 테두리에서 제외하고 테두리 메쉬만 다시 만든다.
+        /// (SphereMapSystem이 거점지역 외곽선을 만들 때 호출. 겹쳐서 삐져나와 보이는 것 방지)
+        /// </summary>
+        public void SetTileBorderExclusions(HashSet<long> excludedEdges, HashSet<int> excludedTris)
+        {
+            _borderExcludedEdges = excludedEdges;
+            _borderExcludedTris = excludedTris;
+            if (_geoTiles == null || _tileRoot == null)
+                return;
+            if (_tileBordersGo != null)
+            {
+                var meshFilter = _tileBordersGo.GetComponent<MeshFilter>();
+                if (meshFilter != null && meshFilter.sharedMesh != null)
+                    DestroyImmediate(meshFilter.sharedMesh);
+                DestroyImmediate(_tileBordersGo);
+                _tileBordersGo = null;
+            }
+            BuildTileBorders(_geoTiles, EnsureMaterial());
         }
 
         void EnsureTileRoot()

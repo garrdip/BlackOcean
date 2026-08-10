@@ -171,6 +171,38 @@ namespace ProjectD
                 ApplyStateToTiles();
         }
 
+        void OnValidate()
+        {
+            if (!_hasState)
+                return;
+#if UNITY_EDITOR
+            // 에디트 모드에서는 OnValidate 안에서 씬 오브젝트를 건드리면 경고가 나므로 한 프레임 미룬다
+            if (!Application.isPlaying)
+            {
+                UnityEditor.EditorApplication.delayCall += EditorDelayedRefresh;
+                return;
+            }
+#endif
+            RefreshInspectorVisuals();
+        }
+
+#if UNITY_EDITOR
+        void EditorDelayedRefresh()
+        {
+            UnityEditor.EditorApplication.delayCall -= EditorDelayedRefresh;
+            if (this == null || !_hasState || !isActiveAndEnabled)
+                return;
+            RefreshInspectorVisuals();
+        }
+#endif
+
+        // 인스펙터에서 바꾼 색상 등을 이미 만들어진 오브젝트에 즉시 반영
+        void RefreshInspectorVisuals()
+        {
+            ApplyStateToTiles();         // 방 타입 색·아이콘 등
+            RefreshRegionBorderColors(); // 지역 외곽선은 생성 시에만 칠하므로 별도 갱신
+        }
+
         void OnGUI()
         {
             if (!Application.isPlaying || !_hasState)
@@ -846,6 +878,30 @@ namespace ProjectD
                 mpb.SetColor("_Color", GetRegionGradeColor(_regionGrades[r]));
                 meshRenderer.SetPropertyBlock(mpb);
                 _regionBorders.Add(go);
+            }
+
+            // 지역 외곽선이 덮는 변·접합부에는 기본 타일 테두리를 그리지 않는다 (겹쳐서 삐져나와 보이는 것 방지)
+            var excludedEdges = new HashSet<long>();
+            var excludedTris = new HashSet<int>();
+            foreach (List<int> regionTiles in _regionTiles)
+                GoldbergSphereGeometry.CollectRegionBorderCoverage(_geoTiles, regionTiles, excludedEdges, excludedTris);
+            _view.SetTileBorderExclusions(excludedEdges, excludedTris);
+        }
+
+        // 이미 만들어진 지역 외곽선의 등급 색을 다시 칠한다 (인스펙터 색상 변경 반영용)
+        void RefreshRegionBorderColors()
+        {
+            for (int r = 0; r < _regionBorders.Count && r < _regionGrades.Count; r++)
+            {
+                GameObject border = _regionBorders[r];
+                if (border == null)
+                    continue;
+                var meshRenderer = border.GetComponent<MeshRenderer>();
+                if (meshRenderer == null)
+                    continue;
+                var mpb = new MaterialPropertyBlock();
+                mpb.SetColor("_Color", GetRegionGradeColor(_regionGrades[r]));
+                meshRenderer.SetPropertyBlock(mpb);
             }
         }
 
