@@ -23,7 +23,6 @@ namespace ProjectD
 
         public MeshRenderer Renderer { get; private set; }
         public Color baseColor;
-        public bool visible = true;         // false면 메쉬를 그리지 않는다 (미탐색 회색 타일 숨김용)
         public SpriteRenderer iconRenderer; // 방 타입 아이콘 (SphereMapSystem이 생성)
 
         public void Init(int index, bool isPentagon, Vector3 normal, Vector3 center,

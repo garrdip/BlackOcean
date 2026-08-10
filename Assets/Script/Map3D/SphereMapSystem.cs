@@ -79,10 +79,6 @@ namespace ProjectD
         public Color regionUniqueColor = new Color(0f, 0f, 1f);
         public Color regionLegendColor = new Color(1f, 0.8f, 0f);
 
-        [Header("테스트")]
-        [Tooltip("켜면 아직 밝혀지지 않은 회색 타일과 이동 불가(오각형) 타일도 그린다. 우상단 테스트 버튼으로 토글")]
-        public bool showInactiveTiles = false;
-
         [Header("상태 (읽기 전용)")]
         public int currentTileIndex = -1; // 현재 위치한 방
         public int destinationIndex = -1; // 내가 선택(투표)한 목적지
@@ -179,14 +175,6 @@ namespace ProjectD
         {
             if (!Application.isPlaying || !_hasState)
                 return;
-
-            // 테스트용 임시 버튼 (우상단, 2D/3D 토글 버튼 바로 아래). 구체 입력이 이 영역을 무시하도록 등록
-            var rect = new Rect(Screen.width - 180f, 60f, 170f, 44f);
-            Map3DGuiArea.Register(rect);
-            if (GUI.Button(rect, showInactiveTiles ? "회색 타일 숨기기 (테스트)" : "회색 타일 보기 (테스트)"))
-            {
-                ToggleInactiveTiles();
-            }
 
             string info = "3D 맵 테스트  |  현재 방: " + currentTileIndex;
             if (destinationIndex >= 0)
@@ -892,50 +880,29 @@ namespace ProjectD
             ApplyStateToTiles();
         }
 
-        /// <summary>테스트용: 아직 밝혀지지 않은 회색 타일(+이동 불가 오각형)의 표시를 토글한다.</summary>
-        [ContextMenu("Toggle Inactive Tiles")]
-        public void ToggleInactiveTiles()
-        {
-            SetInactiveTilesVisible(!showInactiveTiles);
-        }
-
-        /// <summary>테스트용: 회색 타일 표시 여부를 지정한다.</summary>
-        public void SetInactiveTilesVisible(bool visible)
-        {
-            if (showInactiveTiles == visible)
-                return;
-            showInactiveTiles = visible;
-            if (_hasState)
-                ApplyStateToTiles();
-        }
-
         void ApplyTileVisual(SphereMapTile tile)
         {
             if (tile.isPentagon)
             {
                 tile.baseColor = _view.pentagonColor; // 이동 불가 지역
-                tile.visible = showInactiveTiles;     // 회색 타일은 기본적으로 숨긴다
                 UpdateIcon(tile, null);
                 return;
             }
 
             if (!tile.isActiveRoom)
             {
-                // 보스 존/폐허는 미탐험 지역이라도 표시 (보스 위협이 보이도록)
+                // 보스 존/폐허는 미탐험 지역이라도 방 타입 색으로 표시 (보스 위협이 보이도록)
                 if (tile.roomType == RoomType.BOSS || tile.roomType == RoomType.RUINS)
                 {
                     tile.baseColor = GetRoomColor(tile.roomType);
-                    tile.visible = true;
                     UpdateIcon(tile, tile.roomType == RoomType.BOSS ? GetIconSprite(tile.roomType) : null);
                     return;
                 }
                 tile.baseColor = inactiveColor;      // 아직 밝혀지지 않은 방
-                tile.visible = showInactiveTiles;    // 밝혀지지 않은 회색 타일은 기본적으로 그리지 않는다
                 UpdateIcon(tile, null);
                 return;
             }
 
-            tile.visible = true;
             Color color = GetRoomColor(tile.roomType);
             if (tile.index == currentTileIndex)
                 color = startColor; // 현재 위치 표시

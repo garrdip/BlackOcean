@@ -353,6 +353,123 @@ namespace ProjectD
         }
 
         /// <summary>
+        /// 구체 전체의 타일 사이 홈(spacing)을 채우는 상감 메쉬를 생성한다. (거점지역 외곽선과 같은 방식)
+        /// - 서로 맞닿은 두 타일의 변마다: 양쪽의 수축된 변 꼭짓점 4개를 잇는 사각형
+        /// - 타일 3개 접합부마다: 세 타일의 수축된 코너를 잇는 삼각형
+        /// inset만큼 구 중심 방향으로 가라앉혀 표면 높이에 그려지는 거점지역 외곽선이 위에 보이게 한다.
+        /// </summary>
+        public static Mesh BuildAllBordersMesh(List<Tile> tiles, float radius, float spacing, float inset)
+        {
+            var shrunkCache = new Dictionary<int, Vector3[]>();
+            Vector3[] GetRing(int index)
+            {
+                if (!shrunkCache.TryGetValue(index, out Vector3[] ring))
+                {
+                    ring = GetShrunkRing(tiles[index], radius, spacing);
+                    shrunkCache.Add(index, ring);
+                }
+                return ring;
+            }
+
+            int RingIndexOfTri(Tile tile, int tri)
+            {
+                for (int k = 0; k < tile.ringTri.Length; k++)
+                {
+                    if (tile.ringTri[k] == tri)
+                        return k;
+                }
+                return -1;
+            }
+
+            var vertices = new List<Vector3>();
+            var uvs = new List<Vector2>();
+            var triangles = new List<int>();
+
+            void AddFace(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 outward)
+            {
+                p0 -= p0.normalized * inset;
+                p1 -= p1.normalized * inset;
+                p2 -= p2.normalized * inset;
+                if (Vector3.Dot(Vector3.Cross(p1 - p0, p2 - p0), outward) < 0f)
+                {
+                    Vector3 tmp = p1;
+                    p1 = p2;
+                    p2 = tmp;
+                }
+                int baseIdx = vertices.Count;
+                vertices.Add(p0); vertices.Add(p1); vertices.Add(p2);
+                uvs.Add(new Vector2(0.5f, 0.5f)); uvs.Add(new Vector2(0.5f, 0.5f)); uvs.Add(new Vector2(0.5f, 0.5f));
+                triangles.Add(baseIdx); triangles.Add(baseIdx + 1); triangles.Add(baseIdx + 2);
+            }
+
+            // 1) 모든 변: 맞닿은 두 타일의 수축된 변을 잇는 사각형 (nb > t 조건으로 중복 방지)
+            for (int t = 0; t < tiles.Count; t++)
+            {
+                Tile tile = tiles[t];
+                int m = tile.ringUnit.Length;
+                Vector3[] ringA = GetRing(t);
+                for (int k = 0; k < m; k++)
+                {
+                    int nb = tile.edgeNeighbors[k];
+                    if (nb <= t)
+                        continue;
+                    int k1 = (k + 1) % m;
+                    Tile nbTile = tiles[nb];
+                    Vector3[] ringB = GetRing(nb);
+                    int iP = RingIndexOfTri(nbTile, tile.ringTri[k]);
+                    int iQ = RingIndexOfTri(nbTile, tile.ringTri[k1]);
+                    if (iP < 0 || iQ < 0)
+                        continue;
+
+                    Vector3 outward = (tile.normal + nbTile.normal).normalized;
+                    AddFace(ringA[k], ringA[k1], ringB[iQ], outward);
+                    AddFace(ringA[k], ringB[iQ], ringB[iP], outward);
+                }
+            }
+            if (triangles.Count == 0)
+                return null;
+
+            // 2) 모든 접합부(측지 삼각형): 모이는 타일 3개의 수축된 코너를 잇는 미니 삼각형
+            var triOwners = new Dictionary<int, List<int>>();
+            for (int t = 0; t < tiles.Count; t++)
+            {
+                int[] ringTri = tiles[t].ringTri;
+                for (int k = 0; k < ringTri.Length; k++)
+                {
+                    if (!triOwners.TryGetValue(ringTri[k], out List<int> owners))
+                    {
+                        owners = new List<int>(3);
+                        triOwners.Add(ringTri[k], owners);
+                    }
+                    owners.Add(t);
+                }
+            }
+            foreach (KeyValuePair<int, List<int>> entry in triOwners)
+            {
+                List<int> owners = entry.Value;
+                if (owners.Count != 3)
+                    continue; // 이론상 항상 3개
+                Vector3 p0 = GetRing(owners[0])[RingIndexOfTri(tiles[owners[0]], entry.Key)];
+                Vector3 p1 = GetRing(owners[1])[RingIndexOfTri(tiles[owners[1]], entry.Key)];
+                Vector3 p2 = GetRing(owners[2])[RingIndexOfTri(tiles[owners[2]], entry.Key)];
+                Vector3 outward = (tiles[owners[0]].normal + tiles[owners[1]].normal + tiles[owners[2]].normal).normalized;
+                AddFace(p0, p1, p2, outward);
+            }
+
+            var mesh = new Mesh
+            {
+                name = "TileBordersMesh",
+                hideFlags = HideFlags.DontSave
+            };
+            mesh.SetVertices(vertices);
+            mesh.SetUVs(0, uvs);
+            mesh.SetTriangles(triangles, 0);
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+            return mesh;
+        }
+
+        /// <summary>
         /// 거점지역(타일 인덱스 묶음)의 외곽 경계를 타일 사이 홈(spacing)에 정확히 끼워지는 상감 메쉬로 생성한다.
         /// - 경계 변(지역 안 타일 ↔ 밖 타일)마다: 양쪽 타일의 수축된 변 꼭짓점 4개를 잇는 사각형
         /// - 경계가 꺾이는 꼭짓점(타일 3개 접합부)마다: 세 타일의 수축된 코너를 잇는 삼각형

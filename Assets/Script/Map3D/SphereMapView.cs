@@ -30,6 +30,8 @@ namespace ProjectD
         public Material tileMaterial;
         public Color hexagonColor = new Color(0.85f, 0.85f, 0.85f);
         public Color pentagonColor = new Color(0.16f, 0.16f, 0.2f);
+        [Tooltip("모든 타일 사이 홈을 채우는 테두리 색 (거점지역 외곽선과 같은 상감 방식)")]
+        public Color tileBorderColor = new Color(0.10f, 0.10f, 0.12f);
 
         [Header("포커스 연출")]
         [Tooltip("선택된 타일이 방사형으로 상승하는 높이")]
@@ -79,6 +81,7 @@ namespace ProjectD
         int _focusedIndex = -1;
         float _dimValue; // 0 = 전체 밝음, 1 = 포커스 외 타일 어두움
         Tween _dimTween;
+        Tween _alignTween; // 선택 타일을 화면 중앙(카메라 정면)으로 정렬하는 회전/이동 트윈
 
         bool _dirty;
         Vector3 _mouseDownPos;
@@ -104,6 +107,7 @@ namespace ProjectD
         void OnDisable()
         {
             _dimTween?.Kill();
+            _alignTween?.Kill();
             foreach (SphereMapTile tile in _tiles)
             {
                 if (tile != null)
@@ -154,6 +158,7 @@ namespace ProjectD
             _focusedIndex = -1;
             _dimValue = 0f;
             _dimTween?.Kill();
+            _alignTween?.Kill();
 
             EnsureTileRoot();
             EnsureLight();
@@ -188,8 +193,29 @@ namespace ProjectD
                     tileData.neighbors, meshRenderer, tileData.isPentagon ? pentagonColor : hexagonColor);
                 _tiles.Add(tile);
             }
+            BuildTileBorders(tiles, material);
             ApplyDimToAll();
             OnRebuilt?.Invoke();
+        }
+
+        // 모든 타일 사이 홈을 채우는 테두리 메쉬 생성. 표면보다 살짝 가라앉혀
+        // 표면 높이에 그려지는 거점지역 외곽선이 위에 보이게 한다. (콜라이더 없음 — 입력에 영향 없음)
+        void BuildTileBorders(List<GoldbergSphereGeometry.Tile> tiles, Material material)
+        {
+            Mesh mesh = GoldbergSphereGeometry.BuildAllBordersMesh(tiles, radius, spacing, thickness * 0.3f);
+            if (mesh == null)
+                return;
+            var go = new GameObject("TileBorders");
+            go.hideFlags = HideFlags.DontSave;
+            go.transform.SetParent(_tileRoot, false);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var meshRenderer = go.AddComponent<MeshRenderer>();
+            meshRenderer.sharedMaterial = material;
+            if (s_mpb == null)
+                s_mpb = new MaterialPropertyBlock();
+            s_mpb.Clear();
+            s_mpb.SetColor("_Color", tileBorderColor);
+            meshRenderer.SetPropertyBlock(s_mpb);
         }
 
         void EnsureTileRoot()
@@ -265,7 +291,8 @@ namespace ProjectD
                 Vector3 delta = Input.mousePosition - _lastMousePos;
                 if (!_dragging && (Input.mousePosition - _mouseDownPos).magnitude > dragThreshold)
                     _dragging = true;
-                if (_dragging)
+                // 방 선택(포커스) 중에는 구체를 돌릴 수 없다 (드래그 판정은 유지해 릴리즈가 클릭으로 오인되지 않게 함)
+                if (_dragging && _focusedIndex < 0)
                     RotateBy(delta);
                 _lastMousePos = Input.mousePosition;
             }
@@ -299,8 +326,8 @@ namespace ProjectD
                     if (Physics.Raycast(ray, out RaycastHit hit, 1000f))
                     {
                         var tile = hit.collider.GetComponent<SphereMapTile>();
-                        if (tile != null && tile.visible && tile.transform.IsChildOf(_tileRoot))
-                            hoveredTile = tile; // 숨겨진 타일은 호버 대상에서 제외
+                        if (tile != null && tile.transform.IsChildOf(_tileRoot))
+                            hoveredTile = tile;
                     }
                 }
             }
@@ -369,8 +396,7 @@ namespace ProjectD
             if (Physics.Raycast(ray, out RaycastHit hit, 1000f))
             {
                 var tile = hit.collider.GetComponent<SphereMapTile>();
-                // 숨겨진 타일은 보이지 않으므로 빈 공간 클릭과 동일하게 처리한다
-                if (tile != null && tile.visible && tile.transform.IsChildOf(_tileRoot))
+                if (tile != null && tile.transform.IsChildOf(_tileRoot))
                 {
                     // 게임 로직 레이어(SphereMapSystem)가 연결되어 있으면 클릭 처리를 위임
                     if (OnTileClicked != null)
@@ -416,15 +442,53 @@ namespace ProjectD
             else
                 tile.transform.localPosition = tile.normal * focusHeight;
 
+            AlignFocusedTileToCamera(tile); // 선택한 방이 화면 중앙에서 정면을 보도록 구체 정렬
             ApplyDimToAll(); // 포커스 대상이 바뀌었을 때 즉시 밝기 재적용
             SetDim(1f);
         }
 
-        /// <summary>포커스 해제 (타일 복귀 + 전체 밝기 복원)</summary>
+        /// <summary>포커스 해제 (타일 복귀 + 전체 밝기 복원 + 정렬 트윈 중단)</summary>
         public void UnfocusTile()
         {
+            _alignTween?.Kill(); // 정렬 중 해제되면 그 자리에서 멈춰 사용자가 바로 회전할 수 있게 한다
             ReturnFocusedTile();
             SetDim(0f);
+        }
+
+        /// <summary>
+        /// 선택된 타일이 화면 중앙에서 정면을 보도록 구체를 정렬한다.
+        /// - 구체 중심을 카메라 시선 축 위로 이동 (줌 등으로 어긋난 중심 보정)
+        /// - 타일 법선이 카메라를 향하고, 타일 위 장식(아이콘·투표 창)의 위쪽이 화면 위와 일치하도록 TileRoot 회전
+        /// </summary>
+        void AlignFocusedTileToCamera(SphereMapTile tile)
+        {
+            Camera cam = Camera.main;
+            if (cam == null)
+                return;
+
+            // 현재 카메라와의 거리를 유지한 채 중심만 시선 축으로 이동 (줌 상태가 튀지 않게)
+            Vector3 camPos = cam.transform.position;
+            float distance = Vector3.Distance(camPos, _tileRoot.position);
+            Vector3 targetPos = camPos + cam.transform.forward * distance;
+            // 장식(아이콘·투표 창)은 TileRoot 로컬에서 LookRotation(-normal, upHint)로 놓인다 (SphereMapSystem 참조).
+            // 그 장식 기준 좌표계가 정확히 "카메라 정면 + 화면 위쪽"이 되는 회전을 역산하면
+            // 법선 정렬과 UI 수직 정렬(롤 제거)이 한 번에 결정된다.
+            Vector3 upHint = Mathf.Abs(Vector3.Dot(tile.normal, Vector3.up)) > 0.99f ? Vector3.forward : Vector3.up;
+            Quaternion decoLocalRot = Quaternion.LookRotation(-tile.normal, upHint);
+            Quaternion targetRot = Quaternion.LookRotation(cam.transform.forward, cam.transform.up) * Quaternion.Inverse(decoLocalRot);
+
+            _alignTween?.Kill();
+            if (Application.isPlaying)
+            {
+                _alignTween = DOTween.Sequence()
+                    .Join(transform.DOMove(targetPos, focusDuration).SetEase(Ease.OutCubic))
+                    .Join(_tileRoot.DORotateQuaternion(targetRot, focusDuration).SetEase(Ease.OutCubic));
+            }
+            else
+            {
+                transform.position = targetPos;
+                _tileRoot.rotation = targetRot;
+            }
         }
 
         void ReturnFocusedTile()
@@ -468,11 +532,6 @@ namespace ProjectD
             {
                 SphereMapTile tile = _tiles[i];
                 if (tile == null || tile.Renderer == null)
-                    continue;
-                // 밝혀지지 않은 회색 타일은 아예 그리지 않는다.
-                // (콜라이더는 그대로 두어 빈 공간에서도 구체 회전/줌이 계속 동작하게 한다)
-                tile.Renderer.enabled = tile.visible;
-                if (!tile.visible)
                     continue;
                 // 포커스된 타일과 하이라이트(경로 표시) 타일은 어두워지지 않음
                 float dim = (i == _focusedIndex || tile.highlight) ? 0f : _dimValue;
