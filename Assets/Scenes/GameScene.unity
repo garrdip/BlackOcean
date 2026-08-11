@@ -10645,18 +10645,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10837ee7ec97f6d48b4db00e8ee75cba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  needItemCount: 0
-  itemPrefab: {fileID: -990507043462641631, guid: c594336229e16324b85b8ff78e4bb051, type: 3}
-  dynamicItemSize: 0
-  layout:
-    axis: 4
-    padding: {x: 0, y: 0}
-    space: {x: 0, y: 0}
-    topToBotton: 1
-    leftToRight: 1
-    values: []
-  padding: 0
-  space: 0
   onChangeValue:
     m_PersistentCalls:
       m_Calls: []
@@ -10669,6 +10657,18 @@ MonoBehaviour:
   onEndLine:
     m_PersistentCalls:
       m_Calls: []
+  needItemCount: 0
+  itemPrefab: {fileID: -990507043462641631, guid: c594336229e16324b85b8ff78e4bb051, type: 3}
+  dynamicItemSize: 0
+  layout:
+    axis: 4
+    padding: {x: 0, y: 0}
+    space: {x: 0, y: 0}
+    topToBotton: 1
+    leftToRight: 1
+    values: []
+  padding: 0
+  space: 0
 --- !u!1 &642702211
 GameObject:
   m_ObjectHideFlags: 0
@@ -11246,6 +11246,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675627144}
   m_CullTransparentMesh: 1
+--- !u!1 &680784593
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 680784595}
+  - component: {fileID: 680784594}
+  m_Layer: 0
+  m_Name: PostProcessVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &680784594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680784593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Postprocessing.Runtime::UnityEngine.Rendering.PostProcessing.PostProcessVolume
+  sharedProfile: {fileID: 11400000, guid: f2ba96622e079a643b85d6b20e8a9aaf, type: 2}
+  isGlobal: 1
+  blendDistance: 0
+  weight: 1
+  priority: 0
+--- !u!4 &680784595
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680784593}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &686002149
 GameObject:
   m_ObjectHideFlags: 0
@@ -14241,6 +14290,7 @@ GameObject:
   - component: {fileID: 842314908}
   - component: {fileID: 842314911}
   - component: {fileID: 842314912}
+  - component: {fileID: 842314913}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -14357,6 +14407,66 @@ MonoBehaviour:
   vibrato: 0
   randomness: 0
   isShakeXY: 0
+--- !u!114 &842314913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842314907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Postprocessing.Runtime::UnityEngine.Rendering.PostProcessing.PostProcessLayer
+  volumeTrigger: {fileID: 842314910}
+  volumeLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  stopNaNPropagation: 1
+  finalBlitToCameraTarget: 0
+  antialiasingMode: 0
+  temporalAntialiasing:
+    jitterSpread: 0.75
+    sharpness: 0.25
+    stationaryBlending: 0.95
+    motionBlending: 0.85
+  subpixelMorphologicalAntialiasing:
+    quality: 2
+  fastApproximateAntialiasing:
+    fastMode: 0
+    keepAlpha: 0
+  fog:
+    enabled: 1
+    excludeSkybox: 1
+  debugLayer:
+    lightMeter:
+      width: 512
+      height: 256
+      showCurves: 1
+    histogram:
+      width: 512
+      height: 256
+      channel: 3
+    waveform:
+      exposure: 0.12
+      height: 256
+    vectorscope:
+      size: 256
+      exposure: 0.12
+    overlaySettings:
+      linearDepth: 0
+      motionColorIntensity: 4
+      motionGridSize: 64
+      colorBlindnessType: 0
+      colorBlindnessStrength: 1
+  m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
+  m_ShowToolkit: 0
+  m_ShowCustomSorter: 0
+  breakBeforeColorGrading: 0
+  m_BeforeTransparentBundles: []
+  m_BeforeStackBundles: []
+  m_AfterStackBundles: []
 --- !u!1 &846299907
 GameObject:
   m_ObjectHideFlags: 0
@@ -25464,7 +25574,8 @@ MonoBehaviour:
   hexagonColor: {r: 0.85, g: 0.85, b: 0.85, a: 1}
   pentagonColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
   tileBorderColor: {r: 0.1, g: 0.1, b: 0.12, a: 1}
-  tileBorderInset: 0.045
+  tileBorderInset: 0.1
+  tileBorderEmission: {r: 4.5, g: 0.12, b: 0.08, a: 1}
   focusHeight: 0.6
   focusDuration: 0.5
   unfocusedDim: 0.75
@@ -63808,3 +63919,4 @@ SceneRoots:
   - {fileID: 4197376}
   - {fileID: 1253688897}
   - {fileID: 553773941}
+  - {fileID: 680784595}

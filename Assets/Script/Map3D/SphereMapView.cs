@@ -34,6 +34,8 @@ namespace ProjectD
         public Color tileBorderColor = new Color(0.10f, 0.10f, 0.12f);
         [Tooltip("타일 테두리를 표면에서 가라앉히는 깊이 (월드 단위). 0이면 표면과 같은 높이가 되어 거점지역 외곽선과 겹칠 수 있다")]
         [Min(0f)] public float tileBorderInset = 0.045f;
+        [Tooltip("타일 사이 홈의 발광 색 (HDR). 카메라 블룸과 함께 홈이 붉게 빛나는 네온 효과를 만든다. 검정이면 발광 없음")]
+        [ColorUsage(false, true)] public Color tileBorderEmission = new Color(4.5f, 0.12f, 0.08f, 1f);
 
         [Header("포커스 연출")]
         [Tooltip("선택된 타일이 방사형으로 상승하는 높이")]
@@ -80,6 +82,7 @@ namespace ProjectD
         readonly List<SphereMapTile> _tiles = new List<SphereMapTile>();
         Transform _tileRoot;
         Material _runtimeMaterial;
+        Material _borderMaterial;                      // 발광(_EMISSION) 켠 테두리 전용 머티리얼
         List<GoldbergSphereGeometry.Tile> _geoTiles;   // 타일 테두리 재생성용 기하 캐시
         GameObject _tileBordersGo;                     // 타일 사이 홈을 채우는 테두리 메쉬 오브젝트
         HashSet<long> _borderExcludedEdges;            // 거점지역 외곽선이 덮어 테두리에서 제외할 변
@@ -200,7 +203,7 @@ namespace ProjectD
                     tileData.neighbors, meshRenderer, tileData.isPentagon ? pentagonColor : hexagonColor);
                 _tiles.Add(tile);
             }
-            BuildTileBorders(tiles, material);
+            BuildTileBorders(tiles);
             ApplyDimToAll();
             OnRebuilt?.Invoke();
         }
@@ -208,7 +211,7 @@ namespace ProjectD
         // 모든 타일 사이 홈을 채우는 테두리 메쉬 생성. tileBorderInset만큼 가라앉혀
         // 표면 높이에 그려지는 거점지역 외곽선이 위에 보이게 한다. (콜라이더 없음 — 입력에 영향 없음)
         // 거점지역 외곽선이 덮는 변·접합부(_borderExcluded*)에는 그리지 않는다.
-        void BuildTileBorders(List<GoldbergSphereGeometry.Tile> tiles, Material material)
+        void BuildTileBorders(List<GoldbergSphereGeometry.Tile> tiles)
         {
             Mesh mesh = GoldbergSphereGeometry.BuildAllBordersMesh(tiles, radius, spacing, tileBorderInset,
                 _borderExcludedEdges, _borderExcludedTris);
@@ -219,13 +222,37 @@ namespace ProjectD
             go.transform.SetParent(_tileRoot, false);
             go.AddComponent<MeshFilter>().sharedMesh = mesh;
             var meshRenderer = go.AddComponent<MeshRenderer>();
-            meshRenderer.sharedMaterial = material;
+            meshRenderer.sharedMaterial = EnsureBorderMaterial();
             if (s_mpb == null)
                 s_mpb = new MaterialPropertyBlock();
             s_mpb.Clear();
             s_mpb.SetColor("_Color", tileBorderColor);
+            s_mpb.SetColor("_EmissionColor", tileBorderEmission); // HDR 발광 — 블룸이 이 값을 받아 홈이 빛난다
             meshRenderer.SetPropertyBlock(s_mpb);
             _tileBordersGo = go;
+        }
+
+        // 테두리 전용 머티리얼: 타일과 달리 _EMISSION 키워드가 켜져 있어야 MPB의 _EmissionColor가 적용된다.
+        // (키워드는 MaterialPropertyBlock으로 제어할 수 없으므로 머티리얼을 분리)
+        Material EnsureBorderMaterial()
+        {
+            if (_borderMaterial == null)
+            {
+                _borderMaterial = new Material(Shader.Find("Standard"))
+                {
+                    name = "SphereMapBorderMaterial",
+                    hideFlags = HideFlags.DontSave,
+                };
+                _borderMaterial.EnableKeyword("_EMISSION");
+                _borderMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
+                // 스페큘러/반사가 흰색 하이라이트로 발광 색을 씻어내지 않게 차단 (홈은 순수 발광 색만 보이게)
+                _borderMaterial.SetFloat("_Glossiness", 0f);
+                _borderMaterial.SetFloat("_SpecularHighlights", 0f);
+                _borderMaterial.SetFloat("_GlossyReflections", 0f);
+                _borderMaterial.EnableKeyword("_SPECULARHIGHLIGHTS_OFF");
+                _borderMaterial.EnableKeyword("_GLOSSYREFLECTIONS_OFF");
+            }
+            return _borderMaterial;
         }
 
         /// <summary>
@@ -246,7 +273,7 @@ namespace ProjectD
                 DestroyImmediate(_tileBordersGo);
                 _tileBordersGo = null;
             }
-            BuildTileBorders(_geoTiles, EnsureMaterial());
+            BuildTileBorders(_geoTiles);
         }
 
         void EnsureTileRoot()
