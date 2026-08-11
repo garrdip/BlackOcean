@@ -1921,6 +1921,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59f35eca9b21f95489a4642c361cb055, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  items: []
   artifacts: []
   legacies: []
 --- !u!4 &227943065
