@@ -36,6 +36,12 @@ namespace ProjectD
         [Tooltip("투표 정보 창 배율. 1이면 2D 맵과 같은 비율(타일 아이콘과 동일한 기준 스케일)이 된다")]
         [Min(0.01f)] public float roomInfoScale = 1f;
 
+        [Header("미확인 타일 아트")]
+        [Tooltip("아직 밝혀지지 않은 일반 타일 면에 표시할 아트 (비워두면 기존처럼 회색 단색만 표시)")]
+        public Sprite unknownTileSprite;
+        [Tooltip("미확인 타일 아트 배율. 1이면 타일 폭(이웃 중심 간 거리)에 맞춘다")]
+        [Min(0.01f)] public float unknownTileSpriteScale = 1f;
+
         [Header("방 타입 색상")]
         public Color startColor = new Color(0.30f, 0.65f, 1.00f);
         public Color monsterColor = new Color(0.90f, 0.45f, 0.40f);
@@ -199,6 +205,7 @@ namespace ProjectD
         // 인스펙터에서 바꾼 색상 등을 이미 만들어진 오브젝트에 즉시 반영
         void RefreshInspectorVisuals()
         {
+            _unknownTileArtScales = null; // 뷰 radius/spacing 변경 시 타일 면 크기가 달라지므로 아트 배율 재계산
             ApplyStateToTiles();         // 방 타입 색·아이콘 등
             RefreshRegionBorderColors(); // 지역 외곽선은 생성 시에만 칠하므로 별도 갱신
         }
@@ -500,6 +507,12 @@ namespace ProjectD
             return Application.isPlaying && SphereMapNetwork.instance != null && SphereMapNetwork.instance.warpMode;
         }
 
+        /// <summary>워프 후보로 한 번이라도 밝혀진 타일인지 (표시 전용)</summary>
+        bool IsRevealedTile(int index)
+        {
+            return Application.isPlaying && SphereMapNetwork.instance != null && SphereMapNetwork.instance.IsRevealedTile(index);
+        }
+
         /// <summary>일반 경로로는 도달할 수 없어 워프로만 갈 수 있는 타일인지</summary>
         public bool IsWarpOnlyTile(int index)
         {
@@ -548,7 +561,8 @@ namespace ProjectD
             if (!_hasState)
                 return;
             int index = tile.index;
-            bool isWarpTile = IsWarpCandidateTile(index); // 워프 후보는 미탐험 타일이라도 선택 가능
+            // 워프 후보는 워프 모드 중에만 선택 가능 — 평상시에는 클리어한 타일로 이어진 경로가 있어야만 이동할 수 있다
+            bool isWarpTile = IsWarpModeActive() && IsWarpCandidateTile(index);
             if (_isPentagon[index] || (!_activeRooms[index] && !isWarpTile))
                 return;
             // 워프 모드 중에는 워프 후보 전초기지만 선택 가능 (서버 CmdVote에서도 동일하게 검증)
@@ -884,6 +898,12 @@ namespace ProjectD
             if (tiles.Count != _tileCount)
                 return; // 뷰가 아직 생성 전이거나 분할 수가 다름
 
+            // 미확인 타일 아트 스케일 캐시: 스프라이트가 바뀌면 무효화 (타일별 지오메트리 계산이라 매 반영마다 재계산하지 않는다)
+            if (_unknownTileArtSpriteCached != unknownTileSprite)
+            {
+                _unknownTileArtScales = null;
+                _unknownTileArtSpriteCached = unknownTileSprite;
+            }
             for (int i = 0; i < _tileCount; i++)
             {
                 SphereMapTile tile = tiles[i];
@@ -1005,8 +1025,9 @@ namespace ProjectD
                     UpdateIcon(tile, tile.roomType == RoomType.BOSS ? GetIconSprite(tile.roomType) : null);
                     return;
                 }
-                // 워프 후보 전초기지는 미탐험 지역이라도 방 타입 색/아이콘으로 표시 (전초기지 입장 시 5칸 이내 표시)
-                if (IsWarpCandidateTile(tile.index))
+                // 워프 후보(전초기지 입장 시 5칸 이내) 또는 이전에 한 번 밝혀진 전초기지는
+                // 미탐험 지역이라도 방 타입 색/아이콘으로 표시 — 이미 알려진 위치는 다시 숨기지 않는다
+                if (IsWarpCandidateTile(tile.index) || IsRevealedTile(tile.index))
                 {
                     Color warpColor = GetRoomColor(tile.roomType);
                     if (IsTileVotedByAnyone(tile.index))
@@ -1016,7 +1037,7 @@ namespace ProjectD
                     return;
                 }
                 tile.baseColor = inactiveColor;      // 아직 밝혀지지 않은 방
-                UpdateIcon(tile, null);
+                UpdateIcon(tile, unknownTileSprite, GetUnknownTileArtScale(tile), true); // 미확인 타일 아트 — 타일 꼭짓점에 회전 정렬
                 return;
             }
 
@@ -1556,6 +1577,11 @@ namespace ProjectD
 
         void UpdateIcon(SphereMapTile tile, Sprite sprite)
         {
+            UpdateIcon(tile, sprite, iconScale, false);
+        }
+
+        void UpdateIcon(SphereMapTile tile, Sprite sprite, float scale, bool alignToTileVertex)
+        {
             if (sprite == null)
             {
                 if (tile.iconRenderer != null)
@@ -1568,18 +1594,88 @@ namespace ProjectD
                 var go = new GameObject("Icon");
                 go.hideFlags = HideFlags.DontSave;
                 go.transform.SetParent(tile.transform, false);
-                // 타일 면 중심에서 살짝 띄우고, 스프라이트 정면이 구 바깥을 향하도록 회전
-                go.transform.localPosition = tile.center + tile.normal * 0.05f;
-                Vector3 upHint = Mathf.Abs(Vector3.Dot(tile.normal, Vector3.up)) > 0.99f ? Vector3.forward : Vector3.up;
-                go.transform.localRotation = Quaternion.LookRotation(-tile.normal, upHint);
                 tile.iconRenderer = go.AddComponent<SpriteRenderer>();
                 ApplyMapSortingLayer(tile.iconRenderer, SortingLayerIcon, 0);
             }
 
+            // 타일 면 중심에서 띄우는 높이: 방 아이콘은 기존대로 0.05, 면 전체를 덮는 아트는 떠 보이지 않게 z-파이팅만 피하는 최소치
+            tile.iconRenderer.transform.localPosition = tile.center + tile.normal * (alignToTileVertex ? 0.005f : 0.05f);
+
+            // 스프라이트 정면이 구 바깥을 향하도록 회전. 타일 면 아트는 타일의 실제 꼭짓점 방향에 위쪽을 정렬하고
+            // (뾰족한 꼭짓점이 위인 육각형 아트가 타일 모서리와 맞물리도록), 방 아이콘은 기존처럼 화면 기준 위쪽 고정.
+            // 같은 렌더러를 아트↔아이콘으로 재사용하므로 회전·위치는 매 호출마다 갱신한다.
+            Vector3 upHint = alignToTileVertex ? GetTileVertexUp(tile) : Vector3.zero;
+            if (upHint == Vector3.zero)
+                upHint = Mathf.Abs(Vector3.Dot(tile.normal, Vector3.up)) > 0.99f ? Vector3.forward : Vector3.up;
+            tile.iconRenderer.transform.localRotation = Quaternion.LookRotation(-tile.normal, upHint);
+
             tile.iconRenderer.gameObject.SetActive(true);
             if (tile.iconRenderer.sprite != sprite)
                 tile.iconRenderer.sprite = sprite;
-            tile.iconRenderer.transform.localScale = Vector3.one * iconScale;
+            tile.iconRenderer.transform.localScale = Vector3.one * scale;
+        }
+
+        // 타일 중심 → 실제 꼭짓점 방향 (타일 면 위로 투영, 로컬 좌표). 지오메트리 캐시가 없으면 zero 반환
+        Vector3 GetTileVertexUp(SphereMapTile tile)
+        {
+            if (_geoTiles == null || tile.index >= _geoTiles.Count)
+                return Vector3.zero;
+            GoldbergSphereGeometry.Tile geoTile = _geoTiles[tile.index];
+            if (geoTile.ringUnit == null || geoTile.ringUnit.Length == 0)
+                return Vector3.zero;
+            Vector3 toVertex = Vector3.ProjectOnPlane(geoTile.ringUnit[0] - geoTile.centerUnit, tile.normal);
+            return toVertex.sqrMagnitude > 0f ? toVertex.normalized : Vector3.zero;
+        }
+
+        float[] _unknownTileArtScales;        // 타일별 아트 기준 배율 캐시 (골드버그 육각형은 타일마다 크기가 달라 전역 배율로는 맞지 않는다)
+        Sprite _unknownTileArtSpriteCached;   // 캐시가 계산된 스프라이트 (아트 폭이 배율에 들어가므로 스프라이트 변경 시 무효화)
+
+        // 미확인 타일 아트 스케일: 아트 육각형의 실제 폭(불투명 영역, flat-to-flat)이
+        // 해당 타일의 수축된 면 폭(가장 먼 변 기준 2×아포템)과 일치하도록 타일별로 맞추고 인스펙터 배율을 곱한다.
+        // 최대 변 기준이라 불규칙 육각형에서도 면이 끝까지 덮이고, 가까운 변 쪽은 홈에 살짝 걸치는 정도로 그친다.
+        float GetUnknownTileArtScale(SphereMapTile tile)
+        {
+            if (unknownTileSprite == null)
+                return 1f;
+            if (_unknownTileArtScales == null || _unknownTileArtScales.Length != _tileCount)
+                _unknownTileArtScales = new float[_tileCount];
+            if (_unknownTileArtScales[tile.index] > 0f)
+                return _unknownTileArtScales[tile.index] * unknownTileSpriteScale;
+
+            float baseScale = 1f;
+            if (_geoTiles != null && tile.index < _geoTiles.Count)
+            {
+                Vector3[] ring = GoldbergSphereGeometry.GetShrunkRing(_geoTiles[tile.index], _view.radius, _view.spacing);
+                float apothem = 0f;
+                for (int k = 0; k < ring.Length; k++)
+                {
+                    Vector3 edgeMid = (ring[k] + ring[(k + 1) % ring.Length]) * 0.5f;
+                    apothem = Mathf.Max(apothem, (edgeMid - tile.center).magnitude);
+                }
+                float artWidth = GetSpriteOpaqueWidth(unknownTileSprite);
+                if (apothem > 0f && artWidth > 0f)
+                    baseScale = (2f * apothem) / artWidth;
+            }
+            _unknownTileArtScales[tile.index] = baseScale;
+            return baseScale * unknownTileSpriteScale;
+        }
+
+        // 스프라이트 불투명 영역의 폭 (Tight 메쉬 정점 기준 — FullRect 임포트면 rect 폭으로 폴백)
+        static float GetSpriteOpaqueWidth(Sprite sprite)
+        {
+            Vector2[] verts = sprite.vertices;
+            if (verts != null && verts.Length >= 3)
+            {
+                float min = float.MaxValue, max = float.MinValue;
+                foreach (Vector2 vertex in verts)
+                {
+                    min = Mathf.Min(min, vertex.x);
+                    max = Mathf.Max(max, vertex.x);
+                }
+                if (max > min)
+                    return max - min;
+            }
+            return sprite.bounds.size.x;
         }
 
         // 구체 위 장식을 맵 전용 정렬 레이어로 옮긴다. 레이어가 프로젝트에 없으면 정렬 순서만 적용한다.

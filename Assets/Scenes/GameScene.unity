@@ -8762,6 +8762,7 @@ MonoBehaviour:
   system: {fileID: 1539388190}
   mapSeed: 0
   bossTileIndex: -1
+  warpMode: 0
 --- !u!114 &553773943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25462,6 +25463,8 @@ MonoBehaviour:
   tileMaterial: {fileID: 0}
   hexagonColor: {r: 0.85, g: 0.85, b: 0.85, a: 1}
   pentagonColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+  tileBorderColor: {r: 0.1, g: 0.1, b: 0.12, a: 1}
+  tileBorderInset: 0.045
   focusHeight: 0.6
   focusDuration: 0.5
   unfocusedDim: 0.75
@@ -25502,6 +25505,8 @@ MonoBehaviour:
   iconAtlas: {fileID: 4343727234628468602, guid: 0cbd91c0212b3c44597746546b01860c, type: 2}
   iconScale: 1
   roomInfoScale: 1
+  unknownTileSprite: {fileID: 8356354729213926755, guid: 806ce4171168f2047b15ff118edfbd3d, type: 3}
+  unknownTileSpriteScale: 1
   startColor: {r: 0.3, g: 0.65, b: 1, a: 1}
   monsterColor: {r: 0.9, g: 0.45, b: 0.4, a: 1}
   eliteColor: {r: 0.75, g: 0.3, b: 0.75, a: 1}

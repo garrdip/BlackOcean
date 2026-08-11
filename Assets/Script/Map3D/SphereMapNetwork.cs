@@ -35,6 +35,10 @@ namespace ProjectD
         // 전초기지 입장 시 서버가 채우는 워프 목적지 후보 (5칸 이내의 미방문 전초기지 타일)
         public readonly SyncList<int> warpCampTiles = new SyncList<int>();
 
+        // 워프 후보로 한 번이라도 밝혀진 타일 누적 목록 — 전초기지를 벗어나 워프 기회가 사라져도
+        // 이미 알려진 위치이므로 맵 표시는 유지한다 (선택 가능 여부와 무관, 표시 전용)
+        public readonly SyncList<int> revealedTiles = new SyncList<int>();
+
         // 워프 목적지 선택 모드 — 워프 버튼을 누르면 켜지고, 켜진 동안에는 워프 후보 전초기지만 선택할 수 있다.
         // 이동 확정 또는 골드 부족 실패 시 꺼진다 (골드 부족 시에도 꺼야 일반 이동으로 빠져나갈 수 있다)
         [SyncVar(hook = nameof(OnChangedWarpMode))]
@@ -60,6 +64,7 @@ namespace ProjectD
             base.OnStartClient();
             votes.Callback += OnVotesChanged;
             warpCampTiles.Callback += OnWarpCampTilesChanged;
+            revealedTiles.Callback += OnWarpCampTilesChanged; // 표시 갱신 동작이 동일하므로 콜백 공유
             if (mapSeed != 0 && system != null)
                 system.SetNetworkSeed(mapSeed);
         }
@@ -131,6 +136,12 @@ namespace ProjectD
             return warpCampTiles.Contains(tileIndex);
         }
 
+        /// <summary>워프 후보로 한 번이라도 밝혀진 타일인지 (표시 전용 — 선택 가능 여부와 무관)</summary>
+        public bool IsRevealedTile(int tileIndex)
+        {
+            return revealedTiles.Contains(tileIndex);
+        }
+
         /// <summary>
         /// 전초기지 입장 시 워프 후보 갱신 (서버 — TryMoveByVotes에서 전초기지 도착이 확정될 때 호출).
         /// 워프로 도착한 경우에도 새 전초기지 기준으로 다시 계산되므로 연쇄 워프가 가능하다.
@@ -143,7 +154,11 @@ namespace ProjectD
                 return;
             warpCampTiles.Clear();
             foreach (int tileIndex in system.FindTilesInRange(originTile, WarpRange, RoomType.CAMP))
+            {
                 warpCampTiles.Add(tileIndex);
+                if (!revealedTiles.Contains(tileIndex))
+                    revealedTiles.Add(tileIndex); // 한 번 밝혀진 전초기지는 워프 기회가 끝나도 계속 표시
+            }
         }
 
         [Server]
@@ -158,8 +173,9 @@ namespace ProjectD
         [Command(requiresAuthority = false)]
         public void CmdVote(uint playerNetId, int tileIndex)
         {
-            // 서버의 맵 상태로 유효성 검증 (오각형/미탐험/도달불가 거부) — 워프 후보는 미탐험이라도 허용
-            if (system == null || (!system.IsValidDestination(tileIndex) && !IsWarpCandidate(tileIndex)))
+            // 서버의 맵 상태로 유효성 검증 (오각형/미탐험/도달불가 거부).
+            // 워프 후보는 워프 모드 중에만 허용 — 평상시에는 클리어한 타일로 이어진 경로가 있어야만 투표할 수 있다
+            if (system == null || (!system.IsValidDestination(tileIndex) && !(warpMode && IsWarpCandidate(tileIndex))))
                 return;
             // 워프 모드 중에는 워프 후보 전초기지만 투표 가능
             if (warpMode && !IsWarpCandidate(tileIndex))
@@ -213,8 +229,9 @@ namespace ProjectD
 
             bool bossExists = M_MapManager.instance.mapBoss != null;
             bool isBattleInPlace = chosen == system.currentTileIndex; // 이동이 아니므로 이동분 턴은 소모하지 않는다
-            // 일반 경로로 도달 불가한 워프 후보 = 워프 이동 (골드 차감). 탐험된 후보라면 일반 이동으로 처리해 비용을 물리지 않는다
-            bool isWarp = !isBattleInPlace && IsWarpCandidate(chosen) && !system.IsValidDestination(chosen);
+            // 워프 모드 중에 선택된, 일반 경로로 도달 불가한 워프 후보 = 워프 이동 (골드 차감).
+            // 탐험된 후보라면 일반 이동으로 처리해 비용을 물리지 않고, 워프 모드가 아니면 미연결 타일 이동은 아래 일반 검증에서 거부된다
+            bool isWarp = !isBattleInPlace && warpMode && IsWarpCandidate(chosen) && !system.IsValidDestination(chosen);
             if (isBattleInPlace)
             {
                 // 보스가 현재 방까지 도달한 경우의 제자리 보스전 (2D의 보스방 재진입 대응)
