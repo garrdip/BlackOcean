@@ -36,6 +36,9 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     // 카드 큐 데이터 저장할 Synclist
     public readonly SyncList<CardQueue> cardQueueList = new SyncList<CardQueue>();
 
+    // 파티 공용 아티팩트 목록 — 지역거점 클리어 보상으로 획득하며, 발동 시점마다 모든 플레이어에게 효과가 적용된다
+    public readonly SyncList<Item> teamArtifacts = new SyncList<Item>();
+
     [Header("카드 큐")]
     public System.Action<int> onCurrentCardQueueUpdated; // 현재 카드 큐 변경 이벤트
     public int currentCardQueueIndex; // 현재 카드 큐 인덱스
@@ -159,6 +162,22 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     }
 
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
+
+    // 공용 아티팩트 지급 (서버) — 지역거점 클리어 보상 지점에서 호출. ONCEGET 효과는 즉시 모든 플레이어에게 발동한다.
+    [Server]
+    public void AddTeamArtifact(Item artifact)
+    {
+        teamArtifacts.Add(artifact);
+        if(artifact.effectTime != ItemEffectTime.ONCEGET) return;
+        foreach(PlayerInterface playerInterface in PlayerRegistry.All)
+        {
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers)
+            {
+                GamePlayerItem gamePlayerItem = gamePlayer.GetComponent<GamePlayerItem>();
+                gamePlayerItem.InvokeSingleEffect(artifact, gamePlayer.GetComponent<GamePlayerTarget>().GetTargetObject());
+            }
+        }
+    }
 
     // 플레이어 오더 스왑
     [Server]
@@ -337,9 +356,13 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     [Server]
     public IEnumerator PlayerPreEffect()
     {
-        foreach(TargetObject tar in spawnedPlayerList) 
+        foreach(TargetObject tar in spawnedPlayerList)
         {
             tar.defense = 0;
+            // 턴 시작 시점 효과 발동 (개인 아이템 + 공용 아티팩트) — 방어도 초기화 직후에 적용해야 아이템 방어도가 남는다
+            GamePlayerItem gamePlayerItem = tar.player.GetComponent<GamePlayerItem>();
+            gamePlayerItem.InvokeItemEffects(ItemEffectTime.STARTTURN, tar);
+            gamePlayerItem.InvokeEffects(teamArtifacts, ItemEffectTime.STARTTURN, tar);
             tar.player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth = 0;
             tar.player.GetComponent<GamePlayerDeck>().numOfUsedAttackCardOnTurn = 0; // E54용 턴 단위 공격 카드 카운터 리셋
             List<int> currentKeys = tar.buffTrunBeginEffect.Keys.ToList();
@@ -569,6 +592,10 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
             {
                 player.GainBuff(BuffType.IRONDEMON, 4 + player.player.GetComponent<GamePlayerDeck>().AdditionalSizeOfIromDemon, false, false, false, false, player, null);
             }
+            // 전투 시작 시점 효과 발동 — 개인 아이템은 소유자에게, 공용 아티팩트는 모든 플레이어에게
+            GamePlayerItem gamePlayerItem = player.player.GetComponent<GamePlayerItem>();
+            gamePlayerItem.InvokeItemEffects(ItemEffectTime.STARTBATTLE, player);
+            gamePlayerItem.InvokeEffects(teamArtifacts, ItemEffectTime.STARTBATTLE, player);
         }
         phase = BattleTurn.BATTLE_STANDBY;
     }

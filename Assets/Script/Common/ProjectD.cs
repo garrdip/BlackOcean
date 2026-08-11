@@ -23,7 +23,8 @@ namespace ProjectD
     public enum DeckListType { NONE, PREFARE_DECK, TRASH_DECK, FORGOTTEN_DECK }
     public enum RegionGrade{ NONE, NORMAL, RARE, UNIQUE, LEGEND }
     public enum ItemEffectTime { STARTBATTLE, CHANGEPOSITION, DEAD, ENDBATTLE, KILLMONSTER, ALWAYS, MOVETOROOM, STARTTURN, GETCARD, HOOKHP, ONCEGET, GETICHI }
-    public enum ItemType {ARTIFACT, LEGACY}
+    // ITEM: 개인 아이템(상인·이벤트 보상, 소유자에게만 효과) / ARTIFACT: 공용 아티팩트(지역거점 클리어 보상, 전원에게 효과)
+    public enum ItemType {ITEM, ARTIFACT, LEGACY}
     public enum ItemGrade {NORMAL, RARE, UNIQUE, LEGEND}
     public enum ValidTarget { NONE, ENEMY, ENEMY_ALL, MEMBER, TEAM , ALL}
     public enum ErisMode {NORMAL, ANGER, MAD}
@@ -61,7 +62,8 @@ namespace ProjectD
 
     public delegate IEnumerator ExecuteCard(Card card,List<TargetObject> target);
     public delegate IEnumerator CurssEffect(TargetObject target);
-    public delegate void ItemEventHanddler(TargetObject sender);
+    // owner: 아이템 소유 플레이어(전투 밖에서도 유효), sender: 전투 중 해당 플레이어의 타겟오브젝트(비전투 시점 발동이면 null)
+    public delegate void ItemEventHanddler(GamePlayerItem owner, TargetObject sender, Item item);
     public delegate void CardSelectCallBack(GamePlayerDeck gpd, List<CardOnHand> cards);
     public delegate IEnumerator CardBlessEffect(TargetObject target,int index, Card card);
     public delegate IEnumerator GOHENGEffcet(TargetObject target);

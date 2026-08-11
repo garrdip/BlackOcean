@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectD;
+using Mirror;
 using Spine;
 using Spine.Unity;
 
@@ -20,6 +21,40 @@ public class TEST : MonoBehaviour
         buttonEnhance.onClick.AddListener(() => TestEnhance());
         buttonTranfrom.onClick.AddListener(() => TestTransform());
         buttonOpenDeckBook.onClick.AddListener(() => TestOpenDeckBook());
+    }
+
+    void Update()
+    {
+        // [아이템 시스템 테스트] F6 : 모든 플레이어에게 DB의 전체 개인 아이템 지급 / F7 : 파티에 전체 공용 아티팩트 지급 (호스트 전용)
+        if(Input.GetKeyDown(KeyCode.F6)) TestGrantAllItems();
+        if(Input.GetKeyDown(KeyCode.F7)) TestGrantAllTeamArtifacts();
+    }
+
+    void TestGrantAllItems()
+    {
+        if(!NetworkServer.active) return;
+        foreach(PlayerInterface playerInterface in PlayerRegistry.All)
+        {
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers)
+            {
+                GamePlayerItem gamePlayerItem = gamePlayer.GetComponent<GamePlayerItem>();
+                foreach(Item item in ItemData.instance.items)
+                {
+                    gamePlayerItem.AddItem(new Item(item));
+                    Debug.Log($"[TEST] 개인 아이템 지급 : {item.itemName}({item.itemNumber}) → {gamePlayer.name}");
+                }
+            }
+        }
+    }
+
+    void TestGrantAllTeamArtifacts()
+    {
+        if(!NetworkServer.active) return;
+        foreach(Item artifact in ItemData.instance.artifacts)
+        {
+            M_TurnManager.instance.AddTeamArtifact(new Item(artifact));
+            Debug.Log($"[TEST] 공용 아티팩트 지급 : {artifact.itemName}({artifact.itemNumber})");
+        }
     }
 
     void TestEnhance()

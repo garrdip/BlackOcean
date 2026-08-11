@@ -17,6 +17,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
     [SyncVar]
     public int limitiChi;
 
+    // 아이템(심연의 그릇 등)으로 얻은 영구 최대 이치 보정치 — 전투 종료 시 SetInitialIchi 리셋에도 유지된다 (서버 전용)
+    public int bonusMaxIchi;
+
     private readonly int maxDisplayCostValue = 5; // UI 표시될 이치 아이콘 오브젝트의 최대 갯수
 
     // ------------------------------------------------------------- Server Method --------------------------------------------------------------------//
@@ -27,9 +30,9 @@ public partial class GamePlayerDeck : NetworkBehaviour
         int initialIchi = GetComponent<GamePlayer>().character == Character.ERIS
             ? BalanceData.Get("ICHI_INIT_ERIS", 2)
             : BalanceData.Get("ICHI_INIT_DEFAULT", 3);
-        currentIchi = initialIchi;
-        maxIchi = initialIchi;
         limitiChi = BalanceData.Get("ICHI_LIMIT", 6);
+        maxIchi = Mathf.Min(initialIchi + bonusMaxIchi, limitiChi);
+        currentIchi = maxIchi;
     }
 
     // 최대 이치 증가 공통 경로 (H5/H6 등) — ICHI_LIMIT 상한 클램프

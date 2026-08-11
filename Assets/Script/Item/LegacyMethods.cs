@@ -4,12 +4,12 @@ using UnityEngine;
 
 public partial class ItemData : SingletonD<ItemData>
 {
-    public void L0(TargetObject sender)
+    public void L0(GamePlayerItem owner, TargetObject sender, Item item)
     {
 
     }
-    public void L1(TargetObject sender)
+    public void L1(GamePlayerItem owner, TargetObject sender, Item item)
     {
-        
+
     }
 }

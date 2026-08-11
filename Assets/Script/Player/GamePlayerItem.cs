@@ -4,53 +4,50 @@ using UnityEngine;
 using ProjectD;
 using Mirror;
 
+// 플레이어의 개인 아이템 보유 목록과 효과 발동을 담당.
+// - 개인 아이템(items): 상인·이벤트 보상으로 획득, 효과는 소유자에게만 적용.
+// - 공용 아티팩트는 M_TurnManager.teamArtifacts에 있으며, 발동 시 이 컴포넌트의 InvokeEffects를 통해 플레이어별로 적용된다.
+// 효과는 이벤트 구독 대신 발동 시점(ItemEffectTime)별로 목록을 순회해 호출한다
+// — 아이템 제거/전체 초기화 시 구독 해제 관리가 필요 없고, SyncList가 곧 단일 진실 소스가 된다.
+// 발동은 전부 서버 전용이며, 클라이언트는 SyncList 동기화로 보유 목록만 전달받는다.
 public class GamePlayerItem : NetworkBehaviour
 {
-    public readonly SyncList<Item> artifacts;
-    public event ItemEventHanddler ART_OnStartBattleEvent;
-    public event ItemEventHanddler ART_OnChangePosition;
-    public event ItemEventHanddler ART_OnDead;
-    public event ItemEventHanddler ART_OnEndBattle;
+    public readonly SyncList<Item> items = new SyncList<Item>();
 
-    public override void OnStartServer()
+    // 개인 아이템 지급 (서버). ONCEGET(획득 즉시) 효과는 이 시점에 바로 발동한다.
+    [Server]
+    public void AddItem(Item newItem)
     {
-        artifacts.Callback += OnArtifactUpdated;
+        items.Add(newItem);
+        if(newItem.effectTime == ItemEffectTime.ONCEGET)
+            InvokeSingleEffect(newItem, GetComponent<GamePlayerTarget>().GetTargetObject());
     }
 
-    public void ART_OnStartBattleEvent_Invoke()
+    // 개인 아이템의 특정 발동 시점 효과를 전부 발동 (서버)
+    [Server]
+    public void InvokeItemEffects(ItemEffectTime effectTime, TargetObject sender)
     {
-        ART_OnStartBattleEvent?.Invoke(M_TurnManager.instance.spawnedPlayerList.Find(tar => tar.player == GetComponent<GamePlayer>()));
+        InvokeEffects(items, effectTime, sender);
     }
 
-    void OnArtifactUpdated(SyncList<Item>.Operation op, int index, Item oldArtifact, Item newArtifact)
+    // 임의 목록(개인 아이템/공용 아티팩트)의 특정 발동 시점 효과를 이 플레이어 기준으로 발동 (서버)
+    [Server]
+    public void InvokeEffects(IEnumerable<Item> source, ItemEffectTime effectTime, TargetObject sender)
     {
-        switch (op)
+        foreach(Item item in source)
         {
-            case SyncList<Item>.Operation.OP_ADD:
-                switch(newArtifact.effectTime){
-                    case ItemEffectTime.STARTBATTLE :
-                        // itemEffects의 키는 아이템 번호(=효과 메서드명) — itemName으로 조회하면 KeyNotFoundException
-                        if(ItemData.instance.itemEffects.TryGetValue(newArtifact.itemNumber, out ItemEventHanddler effect)){
-                            ART_OnStartBattleEvent += effect;
-                        }else{
-                            Debug.LogError($"[GamePlayerItem] 아이템 효과 조회 실패: {newArtifact.itemName}({newArtifact.itemNumber})");
-                        }
-                    break;
-                }
-                break;
-            case SyncList<Item>.Operation.OP_INSERT:
-                
-                break;
-            case SyncList<Item>.Operation.OP_REMOVEAT:
-
-                break;
-            case SyncList<Item>.Operation.OP_SET:
-                
-                break;
-            case SyncList<Item>.Operation.OP_CLEAR:
-                
-                break;
+            if(item.effectTime != effectTime) continue;
+            InvokeSingleEffect(item, sender);
         }
     }
 
+    [Server]
+    public void InvokeSingleEffect(Item item, TargetObject sender)
+    {
+        // itemEffects의 키는 아이템 번호(=효과 메서드명)
+        if(ItemData.instance.itemEffects.TryGetValue(item.itemNumber, out ItemEventHanddler effect))
+            effect(this, sender, item);
+        else
+            Debug.LogError($"[GamePlayerItem] 아이템 효과 조회 실패: {item.itemName}({item.itemNumber})");
+    }
 }
