@@ -19,6 +19,7 @@ public class NPC_RyuJinSol : SpawnedMonster
     private bool isOpenExpandableButtons = false;
     public Button buttonHeal;
     public Button butonGiveGold;
+    public Button buttonWarp;
 
 
     void Awake()
@@ -26,6 +27,7 @@ public class NPC_RyuJinSol : SpawnedMonster
         AddEventTrigger();
         buttonHeal.onClick.AddListener(() => OnClickHealButton());
         butonGiveGold.onClick.AddListener(() => OnClickGiveGoldButton());
+        buttonWarp.onClick.AddListener(() => OnClickWarpButton());
         PopUpUIManager.instance.onCampPopUpShow += OnCampPopUpShow;
         PopUpUIManager.instance.onCampPopUpHide += OnCampPopUpHide;
     }
@@ -82,6 +84,40 @@ public class NPC_RyuJinSol : SpawnedMonster
     {
         PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>().giveGoldLayout.SetActive(true);
         PopUpUIManager.instance.HandleCampPopUpShow(CampAction.Gold);
+    }
+
+    // 워프: 5칸 이내의 다른 전초기지로 유료 이동(1칸당 10골드). 후보는 전초기지 입장 시 서버가 계산해 맵에 표시돼 있다.
+    // 클릭 시 턴 종료와 동일하게 처리 — 모든 플레이어가 턴을 마치면 맵 화면으로 나가고, 표시된 전초기지에 투표 후 전원 레디 시 이동한다.
+    public void OnClickWarpButton()
+    {
+        if(M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;
+        if(SphereMapNetwork.instance == null || SphereMapNetwork.instance.warpCampTiles.Count == 0){
+            ShowWarpToast(M_LanguageManager.Get("ui.msg.warp_no_target", "5칸 이내에 워프 가능한 전초기지가 없습니다."), Color.red);
+            return;
+        }
+        ShowWarpToast(M_LanguageManager.Get("ui.msg.warp_select", "맵에서 워프할 전초기지를 선택한 뒤 모든 플레이어가 레디하면 이동합니다."), Color.blue);
+        SphereMapNetwork.instance.CmdSetWarpMode(true); // 워프 목적지 선택 모드 — 맵에서 워프 후보 전초기지만 선택 가능
+        // 턴 종료 처리 (EndTurnButton과 동일한 경로) — 전원 턴 종료 시 맵 화면으로 전환된다
+        PlayerInterface playerInterface = PlayerRegistry.Local;
+        if(!playerInterface.endTurnActive){
+            playerInterface.endTurnActive = true;
+            playerInterface.OnEndTurnStateChanged(true, true);
+        }
+        expandableButtonGroup.HideExpandableButtonGroup();
+        isOpenExpandableButtons = false;
+    }
+
+    private void ShowWarpToast(string message, Color color)
+    {
+        M_MessageManager.instance
+            .MakeToast()
+            .Position(ToastPosition.Bottom)
+            .MessageBoxColor(color)
+            .TextColor(Color.white)
+            .Text(message)
+            .FadeInTime(1f)
+            .FadeOutTime(1f)
+            .Show();
     }
 
     public void OnPointerEnterRyuJinSol(PointerEventData eventData)

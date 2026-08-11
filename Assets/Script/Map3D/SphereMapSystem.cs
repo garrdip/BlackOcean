@@ -213,6 +213,8 @@ namespace ProjectD
             {
                 info += "  →  목적지 투표 완료 (" + _roomTypes[destinationIndex] + ", 위험도 " + GetHazardOf(destinationIndex)
                     + ", 거리 " + _currentPath.Count + ") — 모든 플레이어가 레디하면 이동합니다";
+                if (IsWarpOnlyTile(destinationIndex))
+                    info += "  |  워프 비용: 인당 " + (GetHexDistance(currentTileIndex, destinationIndex) * SphereMapNetwork.WarpGoldPerTile) + "골드";
             }
             GUI.Label(new Rect(10f, 10f, 900f, 24f), info);
         }
@@ -463,6 +465,47 @@ namespace ProjectD
 
         public RoomType GetRoomTypeOf(int index) => _hasState ? _roomTypes[index] : RoomType.UNDEFINED;
 
+        /// <summary>두 타일 간 BFS 홉 거리 (탐험 여부 무관, 오각형만 제외). 도달 불가면 -1</summary>
+        public int GetHexDistance(int from, int to)
+        {
+            if (!_hasState || from < 0 || to < 0 || from >= _tileCount || to >= _tileCount)
+                return -1;
+            return BFSDistances(from)[to];
+        }
+
+        /// <summary>기준 타일에서 range칸 이내의 특정 방 타입 타일 목록 (탐험 여부 무관 — 워프 후보 계산용)</summary>
+        public List<int> FindTilesInRange(int origin, int range, RoomType roomType)
+        {
+            var result = new List<int>();
+            if (!_hasState || origin < 0 || origin >= _tileCount)
+                return result;
+            int[] dist = BFSDistances(origin);
+            for (int i = 0; i < _tileCount; i++)
+            {
+                if (i != origin && dist[i] > 0 && dist[i] <= range && _roomTypes[i] == roomType)
+                    result.Add(i);
+            }
+            return result;
+        }
+
+        /// <summary>워프 목적지 후보인지 (전초기지 입장 시 SphereMapNetwork가 동기화)</summary>
+        public bool IsWarpCandidateTile(int index)
+        {
+            return Application.isPlaying && SphereMapNetwork.instance != null && SphereMapNetwork.instance.IsWarpCandidate(index);
+        }
+
+        /// <summary>워프 목적지 선택 모드인지 — 켜져 있으면 워프 후보 전초기지만 선택 가능</summary>
+        bool IsWarpModeActive()
+        {
+            return Application.isPlaying && SphereMapNetwork.instance != null && SphereMapNetwork.instance.warpMode;
+        }
+
+        /// <summary>일반 경로로는 도달할 수 없어 워프로만 갈 수 있는 타일인지</summary>
+        public bool IsWarpOnlyTile(int index)
+        {
+            return IsWarpCandidateTile(index) && FindPath(currentTileIndex, index).Count == 0;
+        }
+
         /// <summary>방 위험도 = 시작 지점에서의 거리분(1칸당 HazardPerTile) + 게임 시작 후 경과 턴수</summary>
         public int GetHazardOf(int index) => _hasState ? _hazards[index] + ElapsedTurnHazard : 0;
 
@@ -505,7 +548,11 @@ namespace ProjectD
             if (!_hasState)
                 return;
             int index = tile.index;
-            if (_isPentagon[index] || !_activeRooms[index])
+            bool isWarpTile = IsWarpCandidateTile(index); // 워프 후보는 미탐험 타일이라도 선택 가능
+            if (_isPentagon[index] || (!_activeRooms[index] && !isWarpTile))
+                return;
+            // 워프 모드 중에는 워프 후보 전초기지만 선택 가능 (서버 CmdVote에서도 동일하게 검증)
+            if (IsWarpModeActive() && !isWarpTile)
                 return;
             if (index == currentTileIndex && _roomTypes[index] != RoomType.BOSS)
                 return; // 제자리는 보스가 도달한 경우(보스전)에만 선택 가능
@@ -522,17 +569,21 @@ namespace ProjectD
             {
                 path = new List<int>(); // 제자리 보스전 (이동 없음)
             }
-            else if (IsBossExists())
+            else if (IsBossExists() && !isWarpTile)
             {
                 if (!_neighbors[currentTileIndex].Contains(index))
-                    return; // 보스 출현 시 1칸만 이동 가능
+                    return; // 보스 출현 시 1칸만 이동 가능 (워프는 예외)
                 path = new List<int> { index };
             }
             else
             {
                 path = FindPath(currentTileIndex, index);
                 if (path.Count == 0)
-                    return; // 도달 불가
+                {
+                    if (!isWarpTile)
+                        return; // 도달 불가
+                    path = new List<int> { index }; // 워프: 경로 없이 목적지만 표시
+                }
             }
 
             destinationIndex = index;
@@ -954,6 +1005,16 @@ namespace ProjectD
                     UpdateIcon(tile, tile.roomType == RoomType.BOSS ? GetIconSprite(tile.roomType) : null);
                     return;
                 }
+                // 워프 후보 전초기지는 미탐험 지역이라도 방 타입 색/아이콘으로 표시 (전초기지 입장 시 5칸 이내 표시)
+                if (IsWarpCandidateTile(tile.index))
+                {
+                    Color warpColor = GetRoomColor(tile.roomType);
+                    if (IsTileVotedByAnyone(tile.index))
+                        warpColor = Color.Lerp(warpColor, Color.white, votedTint);
+                    tile.baseColor = warpColor;
+                    UpdateIcon(tile, GetIconSprite(tile.roomType));
+                    return;
+                }
                 tile.baseColor = inactiveColor;      // 아직 밝혀지지 않은 방
                 UpdateIcon(tile, null);
                 return;
@@ -1240,6 +1301,8 @@ namespace ProjectD
         {
             if (tileIndex == currentTileIndex)
                 return 0; // 제자리 보스전
+            if (IsWarpOnlyTile(tileIndex))
+                return GetHexDistance(currentTileIndex, tileIndex); // 워프: 미탐험 지역 관통 홉 거리
             if (IsBossExists())
                 return 1; // 보스 출현 시 1칸 이동만 허용됨
             return FindPath(currentTileIndex, tileIndex).Count;

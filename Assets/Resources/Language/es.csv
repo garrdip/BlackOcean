@@ -1078,3 +1078,9 @@ characteristic.EUNHASOO.name,Galaxia,은하수
 characteristic.HWAHAP.name,Armonía,화합
 characteristic.NON_CHALNA.name,A la Pila de Descarte,버린덱으로보내짐
 characteristic.BYULMOORI.name,Cúmulo Estelar,별무리
+ui.NPC_RyuJinSol.ButtonWarp_Label,Teletransporte,워프
+ui.NPC_Sophia.ButtonWarp_Label,Teletransporte,워프
+ui.msg.warp_select,Selecciona un puesto avanzado en el mapa para teletransportarte. El grupo se moverá cuando todos estén listos.,맵에서 워프할 전초기지를 선택한 뒤 모든 플레이어가 레디하면 이동합니다.
+ui.msg.warp_no_target,No hay puestos avanzados a menos de 5 casillas.,5칸 이내에 워프 가능한 전초기지가 없습니다.
+ui.msg.warp_no_gold,No hay suficiente oro para el teletransporte. Cada casilla cuesta 10 de oro.,골드가 부족하여 워프할 수 없습니다. 1칸당 10골드가 필요합니다.
+ui.msg.warp_prompt,Selecciona un puesto avanzado para teletransportarte,워프할 전초기지를 선택하세요

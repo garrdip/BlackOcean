@@ -75,6 +75,9 @@ public class MapUI : InstanceD<MapUI>
     [Header("카메라 이동 속도")]
     float cameraMoveSpeed = 20;
 
+    // 워프 목적지 선택 안내 배너 (상단 중앙, 런타임 생성)
+    TextMeshProUGUI warpPromptText;
+
 
     void Start()
     {
@@ -95,8 +98,38 @@ public class MapUI : InstanceD<MapUI>
         });
     }
 
+    // 워프 목적지 선택 모드 안내 배너 표시/숨김 (SphereMapNetwork.warpMode 훅에서 호출)
+    public void SetWarpPromptActive(bool isActive)
+    {
+        if(isActive && warpPromptText == null) CreateWarpPrompt();
+        if(warpPromptText != null) warpPromptText.gameObject.SetActive(isActive);
+    }
+
+    // 상단 중앙 배너를 맵 UI 캔버스 아래에 런타임 생성 (씬/프리팹 수정 없이 코드로만 구성)
+    private void CreateWarpPrompt()
+    {
+        Canvas canvas = mapBaseLayout.GetComponentInParent<Canvas>();
+        if(canvas == null) return;
+        GameObject promptObject = new GameObject("WarpPromptText");
+        promptObject.transform.SetParent(canvas.transform, false);
+        warpPromptText = promptObject.AddComponent<TextMeshProUGUI>();
+        warpPromptText.font = textHazardValue.font; // 기존 맵 UI와 동일 폰트 (한글 글리프 보장)
+        warpPromptText.fontSize = 42f;
+        warpPromptText.alignment = TextAlignmentOptions.Center;
+        warpPromptText.color = new Color(1f, 0.85f, 0.35f);
+        warpPromptText.outlineWidth = 0.25f;
+        warpPromptText.outlineColor = new Color32(0, 0, 0, 255);
+        warpPromptText.text = M_LanguageManager.Get("ui.msg.warp_prompt", "워프할 전초기지를 선택하세요");
+        RectTransform promptRect = warpPromptText.rectTransform;
+        promptRect.anchorMin = new Vector2(0.5f, 1f);
+        promptRect.anchorMax = new Vector2(0.5f, 1f);
+        promptRect.pivot = new Vector2(0.5f, 1f);
+        promptRect.anchoredPosition = new Vector2(0f, -70f);
+        promptRect.sizeDelta = new Vector2(1400f, 90f);
+    }
+
     void Update()
-    { 
+    {
         if(Application.isFocused){
             //HandleCameraEdgeScrolling();
             if(!M_MessageManager.instance.isMouseOnChatBox){

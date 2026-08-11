@@ -28,6 +28,18 @@ namespace ProjectD
         // PlayerInterface netId → 투표한 타일 인덱스
         public readonly SyncDictionary<uint, int> votes = new SyncDictionary<uint, int>();
 
+        // ---------------- 워프 (전초기지 → 전초기지 유료 이동) ----------------
+        public const int WarpRange = 5;        // 워프 후보 탐색 범위 (칸)
+        public const int WarpGoldPerTile = 10; // 1칸당 워프 비용 (골드)
+
+        // 전초기지 입장 시 서버가 채우는 워프 목적지 후보 (5칸 이내의 미방문 전초기지 타일)
+        public readonly SyncList<int> warpCampTiles = new SyncList<int>();
+
+        // 워프 목적지 선택 모드 — 워프 버튼을 누르면 켜지고, 켜진 동안에는 워프 후보 전초기지만 선택할 수 있다.
+        // 이동 확정 또는 골드 부족 실패 시 꺼진다 (골드 부족 시에도 꺼야 일반 이동으로 빠져나갈 수 있다)
+        [SyncVar(hook = nameof(OnChangedWarpMode))]
+        public bool warpMode;
+
         HexagonMapRoom _proxyRoom; // 전투 진입 파이프라인 재사용용 프록시 방 (화면 밖, 비활성 비주얼)
 
         void Awake()
@@ -47,6 +59,7 @@ namespace ProjectD
         {
             base.OnStartClient();
             votes.Callback += OnVotesChanged;
+            warpCampTiles.Callback += OnWarpCampTilesChanged;
             if (mapSeed != 0 && system != null)
                 system.SetNetworkSeed(mapSeed);
         }
@@ -69,6 +82,38 @@ namespace ProjectD
                 system.RefreshAllVisuals(); // 투표 표시 갱신
         }
 
+        void OnWarpCampTilesChanged(SyncList<int>.Operation op, int index, int oldVal, int newVal)
+        {
+            if (system != null)
+                system.RefreshAllVisuals(); // 워프 후보 표시 갱신
+        }
+
+        void OnChangedWarpMode(bool oldVal, bool newVal)
+        {
+            if (system != null)
+                system.RefreshAllVisuals();
+            if (MapUI.instance != null)
+                MapUI.instance.SetWarpPromptActive(newVal); // 상단 중앙 "워프할 전초기지를 선택하세요" 배너
+        }
+
+        /// <summary>워프 목적지 선택 모드 진입/해제 (전초기지 워프 버튼에서 호출)</summary>
+        [Command(requiresAuthority = false)]
+        public void CmdSetWarpMode(bool active)
+        {
+            if (active && warpCampTiles.Count == 0)
+                return; // 후보 없이 워프 모드 진입 불가
+            SetWarpModeServer(active);
+        }
+
+        [Server]
+        void SetWarpModeServer(bool active)
+        {
+            if (warpMode == active)
+                return;
+            warpMode = active;
+            OnChangedWarpMode(!active, active); // 호스트에서는 SyncVar 훅이 자동 호출되지 않으므로 직접 반영
+        }
+
         /// <summary>해당 타일에 투표한 플레이어가 있는지 (투표 표시용)</summary>
         public bool IsTileVoted(int tileIndex)
         {
@@ -80,13 +125,44 @@ namespace ProjectD
             return false;
         }
 
+        /// <summary>워프 목적지 후보 타일인지</summary>
+        public bool IsWarpCandidate(int tileIndex)
+        {
+            return warpCampTiles.Contains(tileIndex);
+        }
+
+        /// <summary>
+        /// 전초기지 입장 시 워프 후보 갱신 (서버 — TryMoveByVotes에서 전초기지 도착이 확정될 때 호출).
+        /// 워프로 도착한 경우에도 새 전초기지 기준으로 다시 계산되므로 연쇄 워프가 가능하다.
+        /// 입장한 전초기지 기준 WarpRange칸 이내의 미방문 전초기지가 후보가 되며 SyncList로 전 클라이언트에 표시된다.
+        /// </summary>
+        [Server]
+        void SetupWarpCandidates(int originTile)
+        {
+            if (system == null || !system.HasState)
+                return;
+            warpCampTiles.Clear();
+            foreach (int tileIndex in system.FindTilesInRange(originTile, WarpRange, RoomType.CAMP))
+                warpCampTiles.Add(tileIndex);
+        }
+
+        [Server]
+        void ClearWarpCandidates()
+        {
+            if (warpCampTiles.Count > 0)
+                warpCampTiles.Clear();
+        }
+
         // ------------------------------------------------------------ 클라이언트 → 서버 투표 --------------------------------------------------------------- //
 
         [Command(requiresAuthority = false)]
         public void CmdVote(uint playerNetId, int tileIndex)
         {
-            // 서버의 맵 상태로 유효성 검증 (오각형/미탐험/도달불가 거부)
-            if (system == null || !system.IsValidDestination(tileIndex))
+            // 서버의 맵 상태로 유효성 검증 (오각형/미탐험/도달불가 거부) — 워프 후보는 미탐험이라도 허용
+            if (system == null || (!system.IsValidDestination(tileIndex) && !IsWarpCandidate(tileIndex)))
+                return;
+            // 워프 모드 중에는 워프 후보 전초기지만 투표 가능
+            if (warpMode && !IsWarpCandidate(tileIndex))
                 return;
             if (votes.ContainsKey(playerNetId))
                 votes[playerNetId] = tileIndex;
@@ -137,11 +213,26 @@ namespace ProjectD
 
             bool bossExists = M_MapManager.instance.mapBoss != null;
             bool isBattleInPlace = chosen == system.currentTileIndex; // 이동이 아니므로 이동분 턴은 소모하지 않는다
+            // 일반 경로로 도달 불가한 워프 후보 = 워프 이동 (골드 차감). 탐험된 후보라면 일반 이동으로 처리해 비용을 물리지 않는다
+            bool isWarp = !isBattleInPlace && IsWarpCandidate(chosen) && !system.IsValidDestination(chosen);
             if (isBattleInPlace)
             {
                 // 보스가 현재 방까지 도달한 경우의 제자리 보스전 (2D의 보스방 재진입 대응)
                 if (system.GetRoomTypeOf(chosen) != RoomType.BOSS)
                     return false;
+            }
+            else if (isWarp)
+            {
+                // 워프 비용: 홉 거리 1칸당 WarpGoldPerTile 골드 — 전 플레이어가 각자 지불 (한 명이라도 부족하면 실패)
+                int distance = system.GetHexDistance(system.currentTileIndex, chosen);
+                if (distance <= 0 || !TryChargeAllPlayersForWarp(distance * WarpGoldPerTile))
+                {
+                    votes.Clear();
+                    ResetPlayersReady(); // 다시 목적지를 고를 수 있도록 레디/투표 리셋
+                    SetWarpModeServer(false); // 워프 모드 해제 — 일반 이동으로 빠져나갈 수 있게 (소프트락 방지)
+                    RpcNotifyWarpFailed();
+                    return false;
+                }
             }
             else if (bossExists)
             {
@@ -162,6 +253,13 @@ namespace ProjectD
             bool entersBattle = !(destType == RoomType.COMPLETE || destType == RoomType.START_LOCATION);
             RpcMoveParty(chosen, !entersBattle); // 모든 클라이언트(호스트 포함)에 이동 전달
             votes.Clear();
+            // 전초기지 도착(워프 도착 포함)이면 새 위치 기준으로 워프 후보 재계산, 그 외 이동이면 워프 기회 종료.
+            // 호스트 클라이언트의 이동 RPC 처리 시점에 의존하지 않도록 서버가 확정한 목적지(chosen)를 직접 기준으로 삼는다.
+            if (destType == RoomType.CAMP)
+                SetupWarpCandidates(chosen);
+            else
+                ClearWarpCandidates();
+            SetWarpModeServer(false); // 이동 확정 → 워프 모드 종료 (도착한 전초기지에서 다시 워프 가능)
 
             ResetPlayersReady(); // 다음 맵 선택을 위해 레디 상태 리셋
 
@@ -190,6 +288,44 @@ namespace ProjectD
         {
             if (system != null)
                 system.MovePartyTo(tileIndex, applyImmediately);
+        }
+
+        // ------------------------------------------------------------ 워프 과금 --------------------------------------------------------------- //
+
+        // 모든 플레이어(캐릭터)가 각자 cost 골드를 지불. 한 명이라도 부족하면 아무도 차감하지 않고 실패
+        [Server]
+        bool TryChargeAllPlayersForWarp(int cost)
+        {
+            var players = new List<GamePlayer>();
+            foreach (PlayerInterface playerInterface in PlayerRegistry.All)
+            {
+                foreach (GamePlayer gamePlayer in playerInterface.ownedPlayers)
+                    players.Add(gamePlayer);
+            }
+            if (players.Count == 0)
+                return false;
+            foreach (GamePlayer gamePlayer in players)
+            {
+                if (gamePlayer.gold < cost)
+                    return false;
+            }
+            foreach (GamePlayer gamePlayer in players)
+                gamePlayer.gold -= cost;
+            return true;
+        }
+
+        [ClientRpc]
+        void RpcNotifyWarpFailed()
+        {
+            M_MessageManager.instance
+                .MakeToast()
+                .Position(ToastPosition.Bottom)
+                .MessageBoxColor(Color.red)
+                .TextColor(Color.white)
+                .Text(M_LanguageManager.Get("ui.msg.warp_no_gold", "골드가 부족하여 워프할 수 없습니다. 1칸당 10골드가 필요합니다."))
+                .FadeInTime(1.5f)
+                .FadeOutTime(1.5f)
+                .Show();
         }
 
         // ------------------------------------------------------------ 보스 --------------------------------------------------------------- //

@@ -101,3 +101,9 @@ ui.order.back,후열
 ui.order.middle,중열
 ui.order.front,전열
 ui.map.turn_count,{0}턴
+ui.NPC_RyuJinSol.ButtonWarp_Label,워프
+ui.NPC_Sophia.ButtonWarp_Label,워프
+ui.msg.warp_select,맵에서 워프할 전초기지를 선택한 뒤 모든 플레이어가 레디하면 이동합니다.
+ui.msg.warp_no_target,5칸 이내에 워프 가능한 전초기지가 없습니다.
+ui.msg.warp_no_gold,골드가 부족하여 워프할 수 없습니다. 1칸당 10골드가 필요합니다.
+ui.msg.warp_prompt,워프할 전초기지를 선택하세요
