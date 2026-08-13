@@ -25,9 +25,21 @@ public class TEST : MonoBehaviour
 
     void Update()
     {
+        // [디버그 버튼 토글] F5 : 우측 디버그 버튼 4개(강화/변신/덱북/세이브) 표시·숨김 전환
+        if(Input.GetKeyDown(KeyCode.F5)) ToggleDebugButtons();
         // [아이템 시스템 테스트] F6 : 모든 플레이어에게 DB의 전체 개인 아이템 지급 / F7 : 파티에 전체 공용 아티팩트 지급 (호스트 전용)
         if(Input.GetKeyDown(KeyCode.F6)) TestGrantAllItems();
         if(Input.GetKeyDown(KeyCode.F7)) TestGrantAllTeamArtifacts();
+    }
+
+    // TestCanvas의 자식(디버그 버튼)들을 일괄 토글 — 버튼이 추가되어도 별도 연결 없이 동작
+    void ToggleDebugButtons()
+    {
+        for(int i = 0; i < transform.childCount; i++)
+        {
+            GameObject child = transform.GetChild(i).gameObject;
+            child.SetActive(!child.activeSelf);
+        }
     }
 
     void TestGrantAllItems()
