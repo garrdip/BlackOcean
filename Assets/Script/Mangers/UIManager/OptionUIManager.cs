@@ -26,6 +26,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
     public TMP_Dropdown languageDropdown;
     public GameObject dropdownLight;
     // 언어 선택 저장은 M_LanguageManager가 담당한다 (PlayerPrefs 키도 그쪽에 있음)
+    DisplayOptionUI displayOptionUI; // Display 섹션 — 런타임에 생성 (씬 참조 없음)
 
 
     void Start()
@@ -53,6 +54,11 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         languageDropdown.onValueChanged.AddListener(delegate{
             HandleChangeLanguageDropdown(languageDropdown);
         });
+
+        // Display 설정: 저장된 해상도/화면 모드를 적용하고, 좌측 하단 섹션 UI를 구성한다
+        DisplayOptionUI.ApplySavedSettings();
+        displayOptionUI = gameObject.AddComponent<DisplayOptionUI>();
+        displayOptionUI.Init(languageDropdown);
     }
 
     void Update()
@@ -95,6 +101,7 @@ public class OptionUIManager : SingletonD<OptionUIManager>
         // Start()에서 1회만 맞추면 이후 코드 경로가 볼륨을 바꿨을 때 UI와 실제 소리가 어긋난다.
         if(isActive){
             SyncSoundOptionUI();
+            displayOptionUI?.SyncUI(); // 알트+엔터 등 외부 요인으로 바뀐 화면 상태를 반영
         }else{
             // 닫을 때 PlayerPrefs를 디스크에 flush (변경 자체는 세터에서 이미 기록됨)
             M_SoundManager sound = M_SoundManager.instance;

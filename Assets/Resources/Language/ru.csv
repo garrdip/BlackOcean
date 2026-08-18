@@ -7,6 +7,11 @@ ui.Main_Settings,Настройки,환경설정
 ui.Main_Quit,Выход,게임 종료
 ui.Settings_Full_Screen,Полный экран,전체 화면
 ui.Settings_Apply,Применить,적용
+ui.Settings_Display,Экран,디스플레이
+ui.Settings_Resolution,Разрешение,해상도
+ui.Settings_Screen_Mode,Режим экрана,화면 모드
+ui.Settings_Borderless_Window,Окно без рамки,전체 창 모드
+ui.Settings_Windowed,Оконный режим,창 모드
 ui.LabelGeork,Георк,게오르크
 ui.LabelEris,Эрис,에리스
 ui.LabelDanhyang,Данхян,단향
