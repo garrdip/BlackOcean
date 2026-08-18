@@ -43,7 +43,7 @@ public class Saddy : SpawnedMonster
     {
         switch(nextAction.actionName){
             case "찌르기" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,nextAction.actionValue.ToString());
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,GetCalculatedAttackDamage().ToString());
                 break;
             case "방어" :
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,nextAction.actionValue.ToString());

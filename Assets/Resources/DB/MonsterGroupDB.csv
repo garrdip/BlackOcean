@@ -1,5 +1,5 @@
 Group_Name,Minimum_Hazard,Maximum_Hazard,Name,,
-BasicSoldiers1,5,5,Soldier_Axe,Soldier_Shield,
+BasicSoldiers1,0,5,Soldier_Axe,Soldier_Shield,Elder
 BasicSoldiers2,5,5,Soldier_Axe,Soldier_Spear,
 BasicSoldiers3,5,10,Soldier_Axe,Soldier_Shield,Soldier_Spear
 BasicSoldiers4,6,15,Soldier_Axe,Soldier_Axe,Soldier_Spear
@@ -15,5 +15,5 @@ StrongSoldier1,15,20,Soldier_Shield,Soldier_Shield,Devourer
 DangerSoldier1,20,100,Devourer,Devourer,Devourer
 DangerSoldier2,20,100,GiantSoldier,Devourer,Devourer
 DangerSoldier3,20,100,GiantSoldier,GiantSoldier,Devourer
-DangerSoldier4,0,100,GiantSoldier,GiantSoldier,GiantSoldier
-Twins,0,200,Happy,Saddy,
+DangerSoldier4,20,100,GiantSoldier,GiantSoldier,GiantSoldier
+Twins,20,200,Happy,Saddy,

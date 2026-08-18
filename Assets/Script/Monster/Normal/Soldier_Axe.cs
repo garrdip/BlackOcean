@@ -52,7 +52,7 @@ public class Soldier_Axe : SpawnedMonster
     {
         switch(nextAction.actionName){
             case "두번찍기" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKX2,true,nextTarget,(nextAction.actionValue + parent.GetComponent<TargetObject>().GetBuffValue(BuffType.ICHI_ATTACK)).ToString()  + " X 2");
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKX2,true,nextTarget,GetCalculatedAttackDamage().ToString()  + " X 2");
                 break;
             case "힘증가" :
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,nextAction.actionValue.ToString());

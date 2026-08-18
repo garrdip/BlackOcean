@@ -138,7 +138,7 @@ public class GiantSoldier : SpawnedMonster
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"20");
                 break;
             case 3 :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,ActionTarget.FRONT,"30");
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,ActionTarget.FRONT,GetCalculatedAttackDamage().ToString());
                 break;
         }
     }

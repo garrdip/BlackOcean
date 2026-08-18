@@ -126,13 +126,23 @@ public class Boss_Momos : SpawnedMonster
     public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
     {
         if(newVal.actionName == "")return;
-        Debug.Log("정상 입력");
         transform.parent.GetChild(3).localPosition = new Vector3(transform.parent.GetChild(3).localPosition.x, 0, transform.parent.GetChild(3).localPosition.z);
+        RefreshNextActionIndicator();
+    }
+
+    // 버프 변화(쇠락/힘의이치)로 예고 피해가 바뀔 때도 다시 그릴 수 있도록 공용 경로 (TargetObject.OnChangedBuff가 OnChangedNextTarget을 호출)
+    public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
+    {
+        RefreshNextActionIndicator();
+    }
+
+    void RefreshNextActionIndicator()
+    {
+        if(nextAction.actionName == "")return;
         if(nextAction.actionName == "Enrage")
-            parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKANDDEBUFF,true,newVal.actionTarget,100.ToString());
+            parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKANDDEBUFF,true,nextAction.actionTarget,GetCalculatedAttackDamage().ToString());
         else
-            parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,newVal.actionTarget,100.ToString());
- 
+            parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextAction.actionTarget,GetCalculatedAttackDamage().ToString());
     }
 
     public override void OnChangedHpValue(int oldHpValue, int newHpValue)

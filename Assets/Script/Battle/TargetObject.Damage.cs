@@ -139,7 +139,12 @@ public partial class TargetObject
     {
         // 파괴의권능: 시전자(에리스)가 실행 중인 공격 카드의 피해 배수 (기본 1)
         if(from != null && from != this && from.objectType == ObjectType.PLAYER)
+        {
             damage *= from.destructionMultiplier;
+            // 쇠락: 공격자가 보유 시 공격 피해 25%(소수점 버림) 감소 — BuffDB 설명. 고정피해(Static)는 제외
+            if(from.GetBuffValue(BuffType.SOIRAK) > 0)
+                damage -= (int)(damage * 0.25f);
+        }
         // 붕괴 적용
         if(GetBuffValue(BuffType.BOONGGUI,null) > 0)
         {

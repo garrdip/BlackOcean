@@ -74,7 +74,7 @@ public class Devourer : SpawnedMonster
     {
         switch(nextAction.actionName){
             case "단일딜후붕괴" or "공격후흡혈":
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,nextAction.actionValue.ToString());
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,GetCalculatedAttackDamage().ToString());
                 break;
             case "광역붕괴" :
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,nextAction.actionValue.ToString());

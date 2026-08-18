@@ -186,6 +186,9 @@ public partial class TargetObject
         if(objectType == ObjectType.PLAYER && player != null)
             foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
                 if(!cardOnHand.isMoving)cardOnHand.CardInfoChangedEvent?.Invoke();
+        // 몬스터 버프 변화(쇠락/힘의이치 등)는 예고 피해량에 반영되므로 다음 행동 인디케이터를 다시 그린다
+        if(objectType == ObjectType.ENEMY && monster != null && monster.parent != null)
+            monster.OnChangedNextTarget(monster.nextTarget, monster.nextTarget);
         switch (op)
         {
             case SyncList<Buff>.Operation.OP_ADD:

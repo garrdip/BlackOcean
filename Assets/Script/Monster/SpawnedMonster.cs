@@ -402,12 +402,30 @@ public class SpawnedMonster : NetworkBehaviour
     }
     
     //-------------------------------------- Battle Method ----------------------------------//
+
+    /// <summary>
+    /// 예고된 공격의 최종 피해량 = 기본 피해 + 힘의이치 − 쇠락 감소(25%, 소수점 버림 — BuffDB 설명).
+    /// 서버의 실제 피해(GeneralAttack)와 클라이언트 인디케이터 표시가 같은 계산을 공유한다.
+    /// </summary>
+    public int GetCalculatedAttackDamage()
+    {
+        return GetCalculatedAttackDamage(nextAction.actionValue);
+    }
+
+    public int GetCalculatedAttackDamage(int baseValue)
+    {
+        int damage = baseValue + parent.GetBuffValue(BuffType.ICHI_ATTACK);
+        if(parent.GetBuffValue(BuffType.SOIRAK) > 0)
+            damage -= (int)(damage * 0.25f);
+        return Mathf.Max(0, damage);
+    }
+
     public void GeneralAttack()
     {
         if(nextTarget == ActionTarget.FIXEDPLAYER)
         {
             // 고정 상대일경우 수정 필요!!//
-            nextTargetObject.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
+            nextTargetObject.DamageToPlayer(GetCalculatedAttackDamage());
             M_TurnManager.instance.StartAnimation(nextTargetObject,0,"Defense",false);
             if(nextTargetObject.player.character == Character.HONGDANHYANG && nextTargetObject.ironDemonLocation == nextTargetObject)
                 nextTargetObject.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
@@ -438,7 +456,7 @@ public class SpawnedMonster : NetworkBehaviour
                 if(tar.player.character == Character.HONGDANHYANG && tar.ironDemonLocation == tar)
                     tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
 
-                tar.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
+                tar.DamageToPlayer(GetCalculatedAttackDamage());
             }
         }
     }
