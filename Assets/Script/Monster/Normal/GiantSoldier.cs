@@ -6,8 +6,15 @@ using Mirror;
 
 public class GiantSoldier : SpawnedMonster
 {
-    [SyncVar]
+    // 매 턴 nextAction/nextTarget이 동일(SinglePattern/FRONT)해서 OnChangedNextTarget 훅이 첫 턴 이후 발화하지 않는다.
+    // 단계 진행은 이 값의 변화로만 드러나므로, 훅을 달아 인디케이터(10→15→20→공격30)를 갱신한다.
+    [SyncVar(hook = nameof(OnChangedCurrentLevel))]
     int currentLevel = 0;
+
+    void OnChangedCurrentLevel(int oldVal, int newVal)
+    {
+        RefreshNextActionIndicator(newVal);
+    }
 
     public override void OnBreakedShield()
     {
@@ -112,16 +119,22 @@ public class GiantSoldier : SpawnedMonster
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
     {
-        Debug.Log("Changed Next Target");
-        switch(currentLevel)
+        RefreshNextActionIndicator(currentLevel);
+    }
+
+    // 단계별 다음 행동 표시: 0~2단계는 방어(10/15/20) 예고, 3단계는 전방 공격(30) 예고
+    void RefreshNextActionIndicator(int level)
+    {
+        if(parent == null || parent.nextActionIndicator == null) return;
+        switch(level)
         {
-            case 0 : 
+            case 0 :
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"10");
                 break;
-            case 1 : 
+            case 1 :
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"15");
                 break;
-            case 2 : 
+            case 2 :
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"20");
                 break;
             case 3 :

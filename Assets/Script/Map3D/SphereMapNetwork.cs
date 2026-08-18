@@ -280,10 +280,10 @@ namespace ProjectD
 
             ResetPlayersReady(); // 다음 맵 선택을 위해 레디 상태 리셋
 
-            // 턴 소모: 이동 자체에 1턴. 거리와 무관하게 몇 칸을 가든 이동은 1턴이다.
-            // 미클리어 방으로 이동하면 방 정리 시점(M_TurnManager.NoneBattleEnd)에 1턴이 더 빠져 합계 2턴,
-            // 이미 클리어한 방으로 이동하면 NoneBattleEnd를 거치지 않으므로 1턴만 소모된다.
-            if (!isBattleInPlace)
+            // 턴 소모: 한 번의 이동은 거리·방 종류와 무관하게 정확히 1턴이다.
+            // 미클리어 방 진입은 방 정리 시점(M_TurnManager.NoneBattleEnd)에 1턴이 빠지므로 여기서는 소모하지 않고,
+            // NoneBattleEnd를 거치지 않는 클리어된 방으로의 이동만 여기서 1턴을 소모한다. (합계가 2턴이 되지 않도록)
+            if (!isBattleInPlace && !entersBattle)
                 M_MapManager.instance.DecreaseTotalActionCost(1);
 
             // 보스 접근 (2D ApproachBossToPlayer 대응): 파티가 이동할 때마다 보스가 2칸씩 접근

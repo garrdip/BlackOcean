@@ -154,6 +154,8 @@ public class M_SoundManager : MonoBehaviour {
 
     void OnDestroy () {
         StopAllCoroutines ();
+        // 구독하지 않은 인스턴스의 -= 는 무해하므로 무조건 해제해 델리게이트 누수를 막는다
+        SceneManager.activeSceneChanged -= OnChangedActiveScene;
         // 중복 인스턴스가 파괴될 때 저장하면 그 인스턴스의 인스펙터 기본값(볼륨 1, 음소거 해제)이
         // 사용자 설정을 덮어쓴다. 실제 싱글톤일 때만 저장한다.
         if (Instance == this) SaveAllPreferences ();
@@ -207,10 +209,13 @@ public class M_SoundManager : MonoBehaviour {
         if (Instance == null) {
             Instance = this;
             Initialise ();
+            // 씬 전환 BGM 구독은 실제 싱글톤만 한다.
+            // 중복 인스턴스가 구독하면 파괴 후에도 델리게이트가 남아, 씬 복귀 때마다
+            // 그 사본의 인스펙터 기본 볼륨(최대치)으로 static 오디오소스를 재생해 사용자 설정을 덮어쓴다.
+            SceneManager.activeSceneChanged += OnChangedActiveScene;
         } else if (Instance != this) {
             Destroy (this.gameObject);
         }
-        SceneManager.activeSceneChanged += OnChangedActiveScene;
     }
 
     void Start () {
@@ -448,7 +453,8 @@ public class M_SoundManager : MonoBehaviour {
     /// <param name="playback_position">시작시점</param>
     public void PlayAudioClipBGM (AudioClip clip, MusicTransition transition, float transition_duration, float volume, float pitch, float playback_position = 0) {
         // 요구클립이 없거나 똑같은 클립이면 재생하지 않음.
-        if (clip == null || ( backgroundMusic.CurrentClip != null && backgroundMusic.CurrentClip.name.Equals(clip))) {
+        // (종전에는 string.Equals(AudioClip) 비교라 항상 false — 같은 곡도 매번 처음부터 재생됐다)
+        if (clip == null || ( backgroundMusic.CurrentClip != null && backgroundMusic.CurrentClip.name.Equals(clip.name))) {
             return;
         }
 

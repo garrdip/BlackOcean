@@ -841,6 +841,9 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         MapUI.instance.textCurrentActionCost.text = M_LanguageManager.Get("ui.map.turn_count", "{0}턴").Replace("{0}", newValue.ToString());
         GameUIManager.instance.textCurrentActionCost.text = M_LanguageManager.Get("ui.map.turn_count", "{0}턴").Replace("{0}", newValue.ToString());
         MapUI.instance.turnGageBar.fillAmount = ((float)newValue / (float)maxActionCost);
+        // 3D 구체 맵: 위험도에 경과 턴 가산분(+1/턴)이 포함되므로 턴이 줄 때마다 표시를 갱신한다
+        if(SphereMapNetwork.instance != null && SphereMapNetwork.instance.system != null)
+            SphereMapNetwork.instance.system.RefreshHazardUI();
     }
 
     public void OnChangedMaxActionCost(int oldValue, int newValue)

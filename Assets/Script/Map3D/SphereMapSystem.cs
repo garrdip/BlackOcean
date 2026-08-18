@@ -324,6 +324,7 @@ namespace ProjectD
             _hasState = true;
             ClearRegionBorders(); // 이전 맵의 외곽선 제거 (ApplyStateToTiles에서 새로 생성)
             ApplyStateToTiles();
+            RefreshHazardUI(); // 시작 위치 위험도(0) 표시
         }
 
         RoomType GetRandomRoomType()
@@ -522,6 +523,17 @@ namespace ProjectD
         /// <summary>방 위험도 = 시작 지점에서의 거리분(1칸당 HazardPerTile) + 게임 시작 후 경과 턴수</summary>
         public int GetHazardOf(int index) => _hasState ? _hazards[index] + ElapsedTurnHazard : 0;
 
+        /// <summary>
+        /// 맵 UI의 현재 위험도 숫자를 현재 타일 기준으로 갱신한다. 이동 반영/턴 변화/맵 생성 시점마다 호출.
+        /// (2D의 OnChangeCurrentRoom 훅은 3D에서 프록시 방 객체가 매번 동일해 재발화하지 않으므로 이 경로가 표시를 담당한다)
+        /// </summary>
+        public void RefreshHazardUI()
+        {
+            if (!_hasState || !Application.isPlaying || MapUI.instance == null)
+                return;
+            MapUI.instance.textHazardValue.text = GetHazardOf(currentTileIndex).ToString();
+        }
+
         /// <summary>경과 턴수만큼 모든 방에 공통으로 더해지는 위험도. 남은 턴이 줄어든 만큼이 경과 턴수다.</summary>
         static int ElapsedTurnHazard
         {
@@ -693,6 +705,7 @@ namespace ProjectD
             }
             currentTileIndex = destination;
             ApplyStateToTiles();
+            RefreshHazardUI(); // 새 위치 기준 위험도(거리분 3씩 증감 + 경과 턴) 표시 갱신
         }
 
         void ApplyPendingMove()
