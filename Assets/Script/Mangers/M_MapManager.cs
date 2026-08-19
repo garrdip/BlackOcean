@@ -709,8 +709,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
                 ChangeBattleScene(hexagonMapRoom);
             }else{
-                if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION){ // 목적지가 완료된 방 또는 시작지점인 경우
-                    if(hexagonMapRoom.mapBoss == null){ 
+                if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION || hexagonMapRoom.roomType == RoomType.ROAD){ // 목적지가 완료된 방/시작지점/길인 경우
+                    if(hexagonMapRoom.mapBoss == null){
                         MoveWithoutBattle(); // 목적지에 보스가 없을 경우 -> 이동만 수행
                     }else{ 
                         M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
@@ -727,8 +727,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 }
             }
         }else{ // 보스가 출현하지 않은 경우
-            if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION){
-                MoveWithoutBattle(); // 목적지가 완료된 방 또는 시작지점인 경우 -> 이동만 수행
+            if(hexagonMapRoom.roomType == RoomType.COMPLETE || hexagonMapRoom.roomType == RoomType.START_LOCATION || hexagonMapRoom.roomType == RoomType.ROAD){
+                MoveWithoutBattle(); // 목적지가 완료된 방/시작지점/길인 경우 -> 이동만 수행
             }else{
                 M_TurnManager.instance.GenerateBattleObject(hexagonMapRoom);
                 ChangeBattleScene(hexagonMapRoom); // 목적지가 완료되지 않은 방의 경우 -> 전투 혹은 이벤트 시작

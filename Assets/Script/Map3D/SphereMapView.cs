@@ -18,8 +18,8 @@ namespace ProjectD
     public class SphereMapView : MonoBehaviour
     {
         [Header("구체 구성")]
-        [Tooltip("분할 수. 총 면 수 = 10*n*n + 2 (오각형 12개는 이동 불가 지역). 최대 8 고정.")]
-        [Range(1, 8)] public int subdivision = 8;
+        [Tooltip("분할 수. 총 면 수 = 10*n*n + 2 (오각형 12개는 이동 불가 지역). 최대 16 고정.")]
+        [Range(1, 16)] public int subdivision = 16;
         [Min(0.01f)] public float radius = 5f;
         [Tooltip("타일 사이 간격 (월드 단위)")]
         [Min(0f)] public float spacing = 0.06f;
@@ -503,6 +503,13 @@ namespace ProjectD
             AlignFocusedTileToCamera(tile); // 선택한 방이 화면 중앙에서 정면을 보도록 구체 정렬
             ApplyDimToAll(); // 포커스 대상이 바뀌었을 때 즉시 밝기 재적용
             SetDim(1f);
+        }
+
+        /// <summary>해당 타일이 화면 중앙에서 정면을 보도록 구체만 정렬한다 (포커스 상승/딤 없음 — 이동 후 현재 위치 정렬용)</summary>
+        public void CenterOnTile(SphereMapTile tile)
+        {
+            if (tile != null)
+                AlignFocusedTileToCamera(tile);
         }
 
         /// <summary>포커스 해제 (타일 복귀 + 전체 밝기 복원 + 정렬 트윈 중단)</summary>

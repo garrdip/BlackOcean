@@ -9,11 +9,13 @@ namespace ProjectD
 {
     /// <summary>
     /// 3D 구체 맵의 게임 로직 레이어.
-    /// 기존 2D 맵 시스템과 같은 규칙을 이웃 그래프 기반으로 재현한다:
-    /// - 방 타입 배정: M_MapManager.GetRoomType()과 동일한 확률 분포 (몬스터 40%, 나머지 각 10%)
-    /// - 위험도(hazard): 시작 방에서 1칸 멀어질 때마다 +3, 1턴 지날 때마다 +1
-    /// - 시야: 시작 방 + 이웃만 활성화, 이동할 때마다 주변 방 활성화
-    /// - 경로 탐색: 방문 완료(COMPLETE)/시작 방만 통과 가능 (2D GetNeighbours 필터와 동일)
+    /// 지형 기반 규칙 (GenerateTerrain):
+    /// - 특수타일(전투/상점/전초기지 등)을 최소 간격을 두고 배치하고 길(ROAD, 녹색)로 연결. 나머지는 전부 장애물(OBSTACLE, 적색, 이동 불가)
+    /// - 길 깎기는 타일별 노이즈 비용의 가중 최단 경로 — 직선이 아닌 구불구불한 길이 나온다
+    /// - 시야: 시작 방 + 이웃만 밝힌 상태로 시작, 이동한 칸 주변이 한 칸씩 밝혀진다. 미확인 칸은 지형(길/장애물)도 가려진다
+    /// - 이동: 밝혀진 칸 클릭 → 밝혀진 길을 따라 이동, 도중 처음 만나는 미방문 특수타일에서 정지 (ResolveDestination)
+    /// - 위험도(hazard): 시작 방에서 길 기준 1칸 멀어질 때마다 +3, 1턴 지날 때마다 +1
+    /// - 경로 탐색: 밝혀진 길/방문 완료(COMPLETE)/시작 방만 통과 가능 — 미방문 특수타일은 목적지로만 허용
     /// - 오각형 12개: 이동 불가 지역
     ///
     /// 맵 상태(방 타입/시야/위험도/현재 위치)는 뷰(SphereMapView 타일 오브젝트)와 분리되어 있어
@@ -31,6 +33,8 @@ namespace ProjectD
         public SpriteAtlas iconAtlas;
         [Tooltip("아이콘 로컬 스케일")]
         [Min(0.01f)] public float iconScale = 1f;
+        [Tooltip("타일 표면에서 투표 정보창을 띄우는 높이 (월드 단위). 타일 상승/두께에 가려지면 키울 것")]
+        [Min(0f)] public float overlayLift = 0.12f;
 
         [Header("방 정보 팝업 (2D hexagonMapRoomUI 대응)")]
         [Tooltip("투표 정보 창 배율. 1이면 2D 맵과 같은 비율(타일 아이콘과 동일한 기준 스케일)이 된다")]
@@ -41,6 +45,18 @@ namespace ProjectD
         public Sprite unknownTileSprite;
         [Tooltip("미확인 타일 아트 배율. 1이면 타일 폭(이웃 중심 간 거리)에 맞춘다")]
         [Min(0.01f)] public float unknownTileSpriteScale = 1f;
+
+        [Header("지형 (길/장애물)")]
+        [Tooltip("맵에 배치할 특수타일(전투/상점/전초기지 등) 개수. 길 네트워크의 노드가 된다")]
+        public int specialSiteCount = 40;
+        [Tooltip("특수타일 간 최소 간격 (BFS 홉 거리). 클수록 띄엄띄엄 배치된다")]
+        public int siteMinSpacing = 5;
+        [Tooltip("최소 연결(신장 트리) 외에 추가로 잇는 순환 길 개수 — 갈림길/우회로를 만든다")]
+        public int extraLoopRoads = 8;
+        [Tooltip("길 타일 색 (이동 가능)")]
+        public Color roadColor = new Color(0.35f, 0.75f, 0.35f);
+        [Tooltip("장애물 타일 색 (이동 불가)")]
+        public Color obstacleColor = new Color(0.75f, 0.25f, 0.22f);
 
         [Header("방 타입 색상")]
         public Color startColor = new Color(0.30f, 0.65f, 1.00f);
@@ -72,19 +88,6 @@ namespace ProjectD
         [Tooltip("보스 말 이동 애니메이션 시간")]
         public float bossMoveDuration = 1.2f;
 
-        [Header("거점지역")]
-        [Tooltip("맵 생성 시 만들 거점지역 개수 (공간이 부족하면 더 적게 생성될 수 있음)")]
-        public int regionCount = 8;
-        [Tooltip("거점지역 크기(타일 수) 최소값")]
-        public int regionSizeMin = 8;
-        [Tooltip("거점지역 크기(타일 수) 최대값")]
-        public int regionSizeMax = 14;
-        [Tooltip("등급별 외곽선 색 (2D SetRegionWithColor와 동일값)")]
-        public Color regionNormalColor = new Color(1f, 0f, 0f);
-        public Color regionRareColor = new Color(0f, 1f, 0f);
-        public Color regionUniqueColor = new Color(0f, 0f, 1f);
-        public Color regionLegendColor = new Color(1f, 0.8f, 0f);
-
         [Header("상태 (읽기 전용)")]
         public int currentTileIndex = -1; // 현재 위치한 방
         public int destinationIndex = -1; // 내가 선택(투표)한 목적지
@@ -99,10 +102,7 @@ namespace ProjectD
         bool[] _activeRooms;
         int[] _hazards;
         Vector3[] _normals;
-        readonly List<List<int>> _regionTiles = new List<List<int>>();   // 거점지역별 타일 인덱스 묶음
-        readonly List<RegionGrade> _regionGrades = new List<RegionGrade>();
         List<GoldbergSphereGeometry.Tile> _geoTiles; // 외곽선 메쉬 생성용 기하 캐시 (SetupNewMap에서 채움)
-        readonly List<GameObject> _regionBorders = new List<GameObject>(); // 지역별 외곽선 메쉬 오브젝트
 
         SphereMapView _view;
         readonly List<int> _currentPath = new List<int>();
@@ -132,7 +132,6 @@ namespace ProjectD
             EnsureView();
             _view.OnTileClicked = HandleTileClicked;
             _view.OnEmptySpaceClicked = HandleEmptySpaceClicked;
-            _view.OnTileHovered = HandleTileHovered;
             _view.OnRebuilt += HandleViewRebuilt;
             // 맵 복귀(전투 클리어 후) 시점에 보류된 이동을 반영 — 화면이 딤에 가려진 동안 적용되므로 자연스럽다
             if (_pendingMoveIndex >= 0)
@@ -157,10 +156,8 @@ namespace ProjectD
             {
                 _view.OnTileClicked = null;
                 _view.OnEmptySpaceClicked = null;
-                _view.OnTileHovered = null;
                 _view.OnRebuilt -= HandleViewRebuilt;
             }
-            HideRegionPopUp();
         }
 
         void EnsureView()
@@ -207,7 +204,6 @@ namespace ProjectD
         {
             _unknownTileArtScales = null; // 뷰 radius/spacing 변경 시 타일 면 크기가 달라지므로 아트 배율 재계산
             ApplyStateToTiles();         // 방 타입 색·아이콘 등
-            RefreshRegionBorderColors(); // 지역 외곽선은 생성 시에만 칠하므로 별도 갱신
         }
 
         void OnGUI()
@@ -282,47 +278,37 @@ namespace ProjectD
             }
             currentTileIndex = start;
 
-            // 방 타입 배정 (2D GetRoomType과 동일 분포)
-            for (int i = 0; i < _tileCount; i++)
-            {
-                if (_isPentagon[i])
-                {
-                    _roomTypes[i] = RoomType.UNDEFINED;
-                    continue;
-                }
-                _roomTypes[i] = (i == start) ? RoomType.START_LOCATION : GetRandomRoomType();
-            }
+            // 지형 생성: 특수타일(노드)을 띄엄띄엄 배치하고 길로 연결, 나머지는 전부 장애물
+            GenerateTerrain(start);
 
-            // 거점지역: 시드 고정 상태이므로 모든 클라이언트가 같은 지역 배치를 얻는다
-            GenerateRegions(start);
-
-            // 위험도(거리분): 시작 방 기준 BFS 홉 거리 1칸당 HazardPerTile 씩 증가.
-            // 여기에 경과 턴수가 더해진 값이 최종 위험도다 (GetHazardOf 참조).
+            // 위험도(거리분): 시작 방 기준 길 위 BFS 홉 거리 1칸당 HazardPerTile 씩 증가.
+            // 장애물은 통과하지 않으므로 "길을 따라 얼마나 먼가"가 위험도가 된다.
             for (int i = 0; i < _tileCount; i++)
-                _hazards[i] = -1;
+                _hazards[i] = 0;
             var queue = new Queue<int>();
-            _hazards[start] = 0;
+            var hazardVisited = new bool[_tileCount];
+            hazardVisited[start] = true;
             queue.Enqueue(start);
             while (queue.Count > 0)
             {
                 int current = queue.Dequeue();
                 foreach (int next in _neighbors[current])
                 {
-                    if (_isPentagon[next] || _hazards[next] >= 0)
+                    if (_isPentagon[next] || _roomTypes[next] == RoomType.OBSTACLE || hazardVisited[next])
                         continue;
+                    hazardVisited[next] = true;
                     _hazards[next] = _hazards[current] + HazardPerTile;
                     queue.Enqueue(next);
                 }
             }
 
-            // 초기 시야: 시작 방 + 이웃 육각형 활성화
+            // 초기 시야: 시작 방 + 이웃만 밝힌다. 이동할 때마다 경유 칸 주변이 밝혀진다 (ApplyMove).
             _activeRooms[start] = true;
             ActivateNeighbours(start);
 
             destinationIndex = -1;
             _currentPath.Clear();
             _hasState = true;
-            ClearRegionBorders(); // 이전 맵의 외곽선 제거 (ApplyStateToTiles에서 새로 생성)
             ApplyStateToTiles();
         }
 
@@ -338,133 +324,241 @@ namespace ProjectD
             return RoomType.MONSTER;
         }
 
+        // ------------------------------------------------------------ Terrain (길/장애물 생성) --------------------------------------------------------------- //
+
+        /// <summary>
+        /// 지형 생성: 특수타일(전투/상점 등)을 최소 간격을 두고 배치한 뒤 길(ROAD)로 연결한다.
+        /// 나머지 육각형은 전부 장애물(OBSTACLE, 이동 불가). Random.InitState(seed) 이후 호출되므로 결정적이다.
+        /// </summary>
+        void GenerateTerrain(int start)
+        {
+            for (int i = 0; i < _tileCount; i++)
+                _roomTypes[i] = _isPentagon[i] ? RoomType.UNDEFINED : RoomType.OBSTACLE;
+
+            // 1) 특수타일(노드) 선정: 시작 방 포함, 서로 siteMinSpacing칸 이상 떨어지도록
+            var sites = new List<int> { start };
+            var tooClose = new bool[_tileCount];
+            MarkZone(tooClose, start, siteMinSpacing - 1);
+
+            // 결정적 셔플(Fisher-Yates) 후 순서대로 후보 검사
+            var order = new int[_tileCount];
+            for (int i = 0; i < _tileCount; i++)
+                order[i] = i;
+            for (int i = _tileCount - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (order[i], order[j]) = (order[j], order[i]);
+            }
+            foreach (int candidate in order)
+            {
+                if (sites.Count >= specialSiteCount)
+                    break;
+                if (_isPentagon[candidate] || tooClose[candidate])
+                    continue;
+                sites.Add(candidate);
+                MarkZone(tooClose, candidate, siteMinSpacing - 1);
+            }
+
+            // 2) 노드 간 홉 거리 테이블 (사이트별 BFS 1회)
+            int siteCount = sites.Count;
+            var distFromSite = new int[siteCount][];
+            for (int s = 0; s < siteCount; s++)
+                distFromSite[s] = BFSDistances(sites[s]);
+
+            // 3) 최소 신장 트리(Prim)로 전 노드 연결 보장
+            var inTree = new bool[siteCount];
+            var treeEdges = new List<(int a, int b)>();
+            inTree[0] = true;
+            for (int added = 1; added < siteCount; added++)
+            {
+                int bestFrom = -1, bestTo = -1, bestDist = int.MaxValue;
+                for (int a = 0; a < siteCount; a++)
+                {
+                    if (!inTree[a])
+                        continue;
+                    for (int b = 0; b < siteCount; b++)
+                    {
+                        if (inTree[b])
+                            continue;
+                        int d = distFromSite[a][sites[b]];
+                        if (d > 0 && d < bestDist)
+                        {
+                            bestDist = d;
+                            bestFrom = a;
+                            bestTo = b;
+                        }
+                    }
+                }
+                if (bestTo < 0)
+                    break; // 연결 불가 노드 (오각형에 고립된 경우 등) — 남은 노드는 길 없이 버려진다
+                inTree[bestTo] = true;
+                treeEdges.Add((bestFrom, bestTo));
+            }
+
+            // 4) 순환 길 추가: 트리에 없는 가장 가까운 노드쌍을 이어 갈림길/우회로 생성
+            var edgeSet = new HashSet<(int, int)>();
+            foreach (var e in treeEdges)
+                edgeSet.Add((Mathf.Min(e.a, e.b), Mathf.Max(e.a, e.b)));
+            for (int loop = 0; loop < extraLoopRoads; loop++)
+            {
+                int bestA = -1, bestB = -1, bestDist = int.MaxValue;
+                for (int a = 0; a < siteCount; a++)
+                {
+                    for (int b = a + 1; b < siteCount; b++)
+                    {
+                        if (edgeSet.Contains((a, b)))
+                            continue;
+                        int d = distFromSite[a][sites[b]];
+                        if (d > 0 && d < bestDist)
+                        {
+                            bestDist = d;
+                            bestA = a;
+                            bestB = b;
+                        }
+                    }
+                }
+                if (bestA < 0)
+                    break;
+                edgeSet.Add((bestA, bestB));
+                treeEdges.Add((bestA, bestB));
+            }
+
+            // 5) 길 깎기: 타일별 노이즈 비용의 가중 최단 경로로 이어 직선이 아닌 구불구불한 길을 만든다.
+            //    이미 깎인 길은 비용을 낮춰 간선끼리 자연스럽게 합류(공유 구간·교차로)하도록 유도한다.
+            var carveCost = new float[_tileCount];
+            for (int i = 0; i < _tileCount; i++)
+                carveCost[i] = Random.Range(1f, 5f);
+            foreach (var (a, b) in treeEdges)
+            {
+                foreach (int tile in WeightedPath(sites[a], sites[b], carveCost))
+                {
+                    if (_roomTypes[tile] == RoomType.OBSTACLE)
+                        _roomTypes[tile] = RoomType.ROAD;
+                    carveCost[tile] = 0.3f; // 기존 길 재사용 유도
+                }
+            }
+
+            // 6) 노드에 방 타입 배정 (기존 분포 재사용 — 노드 자체가 드물어 상점/전투 빈도가 낮아진다)
+            foreach (int site in sites)
+                _roomTypes[site] = (site == start) ? RoomType.START_LOCATION : GetRandomRoomType();
+        }
+
+        // center에서 range칸 이내(오각형 제외)를 마킹 — 특수타일 간격 확보용
+        void MarkZone(bool[] marked, int center, int range)
+        {
+            marked[center] = true;
+            if (range <= 0)
+                return;
+            var dist = new Dictionary<int, int> { [center] = 0 };
+            var queue = new Queue<int>();
+            queue.Enqueue(center);
+            while (queue.Count > 0)
+            {
+                int current = queue.Dequeue();
+                if (dist[current] >= range)
+                    continue;
+                foreach (int next in _neighbors[current])
+                {
+                    if (_isPentagon[next] || dist.ContainsKey(next))
+                        continue;
+                    dist[next] = dist[current] + 1;
+                    marked[next] = true;
+                    queue.Enqueue(next);
+                }
+            }
+        }
+
+        // 두 타일 간 가중치 최단 경로 (지형 무시, 오각형만 제외). 시작 제외, 도착 포함.
+        // 타일별 노이즈 비용(tileCost)을 따르므로 직선이 아닌 유기적인 경로가 나온다 — 길 깎기 전용
+        List<int> WeightedPath(int from, int to, float[] tileCost)
+        {
+            var result = new List<int>();
+            if (from == to)
+                return result;
+            var previous = new Dictionary<int, int>();
+            var cost = new Dictionary<int, float> { [from] = 0f };
+            var visited = new HashSet<int>();
+            var openSet = new List<int> { from };
+            while (openSet.Count > 0)
+            {
+                int bestIdx = 0;
+                for (int i = 1; i < openSet.Count; i++)
+                {
+                    if (cost[openSet[i]] < cost[openSet[bestIdx]])
+                        bestIdx = i;
+                }
+                int current = openSet[bestIdx];
+                openSet.RemoveAt(bestIdx);
+                if (!visited.Add(current))
+                    continue;
+                if (current == to)
+                {
+                    int node = to;
+                    while (node != from)
+                    {
+                        result.Add(node);
+                        node = previous[node];
+                    }
+                    result.Reverse();
+                    return result;
+                }
+                foreach (int next in _neighbors[current])
+                {
+                    if (_isPentagon[next] || visited.Contains(next))
+                        continue;
+                    float newCost = cost[current] + tileCost[next];
+                    if (!cost.ContainsKey(next) || newCost < cost[next])
+                    {
+                        cost[next] = newCost;
+                        previous[next] = current;
+                        if (!openSet.Contains(next))
+                            openSet.Add(next);
+                    }
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 클릭한 타일까지의 길 경로를 구하고, 경로 도중 첫 미방문 특수타일에서 이동을 끊는다.
+        /// 반환값 = 실제 목적지 타일 (경로에 특수타일이 없으면 클릭 타일 그대로). 도달 불가면 -1.
+        /// path에는 시작 제외~목적지 포함 경로가 담긴다. 클라이언트 클릭과 서버 투표 검증이 공유한다.
+        /// </summary>
+        public int ResolveDestination(int clickedIndex, List<int> path)
+        {
+            path.Clear();
+            if (!_hasState || clickedIndex < 0 || clickedIndex >= _tileCount)
+                return -1;
+            if (_isPentagon[clickedIndex] || _roomTypes[clickedIndex] == RoomType.OBSTACLE)
+                return -1;
+            List<int> fullPath = FindPath(currentTileIndex, clickedIndex);
+            if (fullPath.Count == 0)
+                return -1;
+            for (int i = 0; i < fullPath.Count; i++)
+            {
+                int tile = fullPath[i];
+                path.Add(tile);
+                if (IsEncounterTile(tile))
+                    return tile; // 첫 특수타일에서 정지
+            }
+            return clickedIndex;
+        }
+
+        // 이동을 멈추게 하는 미방문 특수타일인지 (길/방문완료/시작지점은 통과)
+        bool IsEncounterTile(int index)
+        {
+            RoomType type = _roomTypes[index];
+            return type != RoomType.ROAD && type != RoomType.COMPLETE
+                && type != RoomType.START_LOCATION && type != RoomType.UNDEFINED
+                && type != RoomType.OBSTACLE;
+        }
+
         void ActivateNeighbours(int index)
         {
             foreach (int next in _neighbors[index])
             {
                 if (!_isPentagon[next])
                     _activeRooms[next] = true;
-            }
-        }
-
-        // ------------------------------------------------------------ Region PopUp (거점지역 정보 팝업) --------------------------------------------------------------- //
-
-        // 2D 맵의 HexagonMapRoom.OnMouseEnter/Exit 대응 — 거점지역 소속 타일에 호버하면 등급 팝업 표시
-        void HandleTileHovered(SphereMapTile tile)
-        {
-            if (MapUI.instance == null)
-                return;
-            if (tile != null && _hasState && !_isPentagon[tile.index])
-            {
-                int regionIndex = FindRegionIndex(tile.index);
-                if (regionIndex >= 0)
-                {
-                    MapUI.instance.RegionPopUpShow(_regionGrades[regionIndex]);
-                    return;
-                }
-            }
-            MapUI.instance.RegionPopUpHide();
-        }
-
-        void HideRegionPopUp()
-        {
-            if (MapUI.instance != null)
-                MapUI.instance.RegionPopUpHide();
-        }
-
-        // 타일이 속한 거점지역 인덱스 (-1 = 소속 없음). 지역 수가 적어(기본 8개) 선형 탐색로 충분
-        int FindRegionIndex(int tileIndex)
-        {
-            for (int i = 0; i < _regionTiles.Count; i++)
-            {
-                if (_regionTiles[i].Contains(tileIndex))
-                    return i;
-            }
-            return -1;
-        }
-
-        // ------------------------------------------------------------ Region (거점지역) --------------------------------------------------------------- //
-
-        // 거점지역 생성: 랜덤 시드 타일에서 이웃으로 성장시킨 육각형 덩어리 (2D의 Region.tiles 대응).
-        // 지역끼리 최소 1타일 간격을 보장해 외곽선이 같은 홈을 공유하지 않게 한다.
-        // Random.InitState(seed) 이후 호출되므로 모든 클라이언트에서 결정적이다.
-        void GenerateRegions(int start)
-        {
-            _regionTiles.Clear();
-            _regionGrades.Clear();
-
-            var blocked = new bool[_tileCount];
-            for (int i = 0; i < _tileCount; i++)
-                blocked[i] = _isPentagon[i];
-            // 시작 방과 초기 시야(이웃)는 지역에 포함하지 않는다
-            blocked[start] = true;
-            foreach (int nb in _neighbors[start])
-                blocked[nb] = true;
-
-            int attempts = 0;
-            while (_regionTiles.Count < regionCount && attempts < 200)
-            {
-                attempts++;
-                int seedTile = Random.Range(0, _tileCount);
-                if (blocked[seedTile])
-                    continue;
-
-                int targetSize = Random.Range(regionSizeMin, regionSizeMax + 1);
-                var regionTiles = new List<int> { seedTile };
-                var frontier = new List<int>();
-                AddRegionFrontier(seedTile, blocked, regionTiles, frontier);
-                while (regionTiles.Count < targetSize && frontier.Count > 0)
-                {
-                    int pickIdx = Random.Range(0, frontier.Count);
-                    int pick = frontier[pickIdx];
-                    frontier.RemoveAt(pickIdx);
-                    regionTiles.Add(pick);
-                    AddRegionFrontier(pick, blocked, regionTiles, frontier);
-                }
-                if (regionTiles.Count < regionSizeMin)
-                {
-                    blocked[seedTile] = true; // 공간이 부족한 시드는 재시도 대상에서 제외
-                    continue;
-                }
-
-                foreach (int t in regionTiles)
-                {
-                    blocked[t] = true;
-                    foreach (int nb in _neighbors[t])
-                        blocked[nb] = true; // 지역 간 간격 확보
-                }
-                _regionTiles.Add(regionTiles);
-                _regionGrades.Add(GetRandomRegionGrade());
-            }
-        }
-
-        void AddRegionFrontier(int tileIndex, bool[] blocked, List<int> regionTiles, List<int> frontier)
-        {
-            foreach (int nb in _neighbors[tileIndex])
-            {
-                if (!blocked[nb] && !regionTiles.Contains(nb) && !frontier.Contains(nb))
-                    frontier.Add(nb);
-            }
-        }
-
-        // 2D Region.GetRegionGrade와 동일 분포 (각 25%)
-        RegionGrade GetRandomRegionGrade()
-        {
-            int value = Random.Range(0, 100);
-            if (value < 25) return RegionGrade.LEGEND;
-            if (value < 50) return RegionGrade.UNIQUE;
-            if (value < 75) return RegionGrade.RARE;
-            return RegionGrade.NORMAL;
-        }
-
-        Color GetRegionGradeColor(RegionGrade grade)
-        {
-            switch (grade)
-            {
-                case RegionGrade.RARE: return regionRareColor;
-                case RegionGrade.UNIQUE: return regionUniqueColor;
-                case RegionGrade.LEGEND: return regionLegendColor;
-                default: return regionNormalColor;
             }
         }
 
@@ -538,7 +632,8 @@ namespace ProjectD
         {
             if (!_hasState || index < 0 || index >= _tileCount)
                 return false;
-            if (_isPentagon[index] || !_activeRooms[index])
+            // 오각형/장애물/밝혀지지 않은 칸은 목적지 불가 — 이동하며 밝혀진 범위까지만 갈 수 있다
+            if (_isPentagon[index] || !_activeRooms[index] || _roomTypes[index] == RoomType.OBSTACLE)
                 return false;
             // 제자리는 보스가 도달해 보스방이 된 경우에만 허용 (2D와 동일)
             if (index == currentTileIndex)
@@ -561,52 +656,73 @@ namespace ProjectD
             if (!_hasState)
                 return;
             int index = tile.index;
-            // 워프 후보는 워프 모드 중에만 선택 가능 — 평상시에는 클리어한 타일로 이어진 경로가 있어야만 이동할 수 있다
+            // 워프 후보는 워프 모드 중에만 선택 가능 — 평상시에는 밝혀진 길로 이어진 경로가 있어야만 이동할 수 있다
             bool isWarpTile = IsWarpModeActive() && IsWarpCandidateTile(index);
-            if (_isPentagon[index] || (!_activeRooms[index] && !isWarpTile))
-                return;
+            if (_isPentagon[index] || (!isWarpTile && (!_activeRooms[index] || _roomTypes[index] == RoomType.OBSTACLE)))
+                return; // 밝혀지지 않은 칸/장애물은 선택 불가
             // 워프 모드 중에는 워프 후보 전초기지만 선택 가능 (서버 CmdVote에서도 동일하게 검증)
             if (IsWarpModeActive() && !isWarpTile)
                 return;
             if (index == currentTileIndex && _roomTypes[index] != RoomType.BOSS)
                 return; // 제자리는 보스가 도달한 경우(보스전)에만 선택 가능
-            if (index == destinationIndex)
-            {
-                // 같은 목적지 재클릭 → 선택/투표 취소
-                ClearSelection();
-                SendCancelVote();
-                return;
-            }
 
-            List<int> path;
+            // 길을 따라가다 처음 만나는 특수타일에서 이동이 끊긴다 — 실제 목적지/경로를 먼저 확정
+            List<int> path = new List<int>();
+            int destination;
             if (index == currentTileIndex)
             {
-                path = new List<int>(); // 제자리 보스전 (이동 없음)
+                destination = index; // 제자리 보스전 (이동 없음)
             }
             else if (IsBossExists() && !isWarpTile)
             {
                 if (!_neighbors[currentTileIndex].Contains(index))
                     return; // 보스 출현 시 1칸만 이동 가능 (워프는 예외)
-                path = new List<int> { index };
+                destination = index;
+                path.Add(index);
             }
             else
             {
-                path = FindPath(currentTileIndex, index);
-                if (path.Count == 0)
+                destination = ResolveDestination(index, path);
+                if (destination < 0)
                 {
                     if (!isWarpTile)
                         return; // 도달 불가
-                    path = new List<int> { index }; // 워프: 경로 없이 목적지만 표시
+                    destination = index;
+                    path.Clear();
+                    path.Add(index); // 워프: 경로 없이 목적지만 표시
                 }
             }
 
-            destinationIndex = index;
+            // 길/방문완료 타일이 목적지면 합의(레디) 없이 즉시 이동 — 탐험 스텝은 투표를 요구하지 않는다.
+            // 특수타일(전투/상점 등) 목적지만 기존 투표·레디 흐름을 탄다.
+            RoomType destType = _roomTypes[destination];
+            bool isExploreStep = !IsWarpModeActive() && destination != currentTileIndex
+                && (destType == RoomType.ROAD || destType == RoomType.COMPLETE || destType == RoomType.START_LOCATION);
+            if (isExploreStep)
+            {
+                ClearSelection();
+                if (Application.isPlaying && SphereMapNetwork.instance != null && PlayerRegistry.Local != null)
+                    SphereMapNetwork.instance.CmdInstantMove(destination);
+                else
+                    MovePartyTo(destination, true); // 오프라인/에디터 테스트 폴백
+                return;
+            }
+
+            if (destination == destinationIndex)
+            {
+                // 같은 목적지 재클릭(또는 같은 곳으로 끊기는 클릭) → 선택/투표 취소
+                ClearSelection();
+                SendCancelVote();
+                return;
+            }
+
+            destinationIndex = destination;
             _currentPath.Clear();
             _currentPath.AddRange(path);
 
             ApplyStateToTiles();
-            _view.FocusTile(index); // 방사형 상승 + 나머지 어둡게
-            SendVote(index);        // 서버에 투표 (모든 플레이어 레디 시 이동)
+            _view.FocusTile(destination); // 방사형 상승 + 나머지 어둡게
+            SendVote(destination);        // 서버에 투표 (모든 플레이어 레디 시 이동)
         }
 
         void HandleEmptySpaceClicked()
@@ -682,17 +798,29 @@ namespace ProjectD
             return path;
         }
 
-        // 경유/도착 방을 방문 완료(COMPLETE) 처리하고 주변 시야를 밝힌다
+        // 경유/도착한 특수타일을 방문 완료(COMPLETE) 처리하고 주변 시야를 밝힌다. 길 타일은 길로 유지된다.
         void ApplyMove(int destination, List<int> path)
         {
             foreach (int idx in path)
             {
-                _roomTypes[idx] = RoomType.COMPLETE;
+                if (_roomTypes[idx] != RoomType.ROAD)
+                    _roomTypes[idx] = RoomType.COMPLETE; // 특수타일만 소모 — 길은 계속 재사용
                 _activeRooms[idx] = true;
-                ActivateNeighbours(idx);
+                ActivateNeighbours(idx); // 지나가며 길가의 특수타일이 드러난다
             }
             currentTileIndex = destination;
+            CenterOnCurrentTile(); // 이동할 때마다 현재 위치가 화면 중앙으로 오도록 구체 정렬
             ApplyStateToTiles();
+        }
+
+        // 현재 위치 타일을 화면 중앙으로 정렬 (즉시 이동/전투 복귀 이동 공통)
+        void CenterOnCurrentTile()
+        {
+            if (_view == null || currentTileIndex < 0)
+                return;
+            IReadOnlyList<SphereMapTile> tiles = _view.Tiles;
+            if (currentTileIndex < tiles.Count)
+                _view.CenterOnTile(tiles[currentTileIndex]);
         }
 
         void ApplyPendingMove()
@@ -706,7 +834,7 @@ namespace ProjectD
 
         // ------------------------------------------------------------ Boss --------------------------------------------------------------- //
 
-        /// <summary>보스 출현 위치 선정: 현재 위치에서 BFS 거리가 가장 먼 육각형 (서버에서 호출)</summary>
+        /// <summary>보스 출현 위치 선정: 현재 위치에서 BFS 거리가 가장 먼 육각형 (서버에서 호출). 장애물 위에는 출현하지 않는다</summary>
         public int GetFarthestHexagonFrom(int start)
         {
             int[] dist = BFSDistances(start);
@@ -714,7 +842,7 @@ namespace ProjectD
             int bestDist = -1;
             for (int i = 0; i < _tileCount; i++)
             {
-                if (_isPentagon[i])
+                if (_isPentagon[i] || _roomTypes[i] == RoomType.OBSTACLE)
                     continue;
                 if (dist[i] > bestDist)
                 {
@@ -867,9 +995,10 @@ namespace ProjectD
 
                 foreach (int next in _neighbors[current])
                 {
-                    if (_isPentagon[next] || visited.Contains(next))
-                        continue;
-                    if (!(_roomTypes[next] == RoomType.COMPLETE || _roomTypes[next] == RoomType.START_LOCATION || next == destination))
+                    if (_isPentagon[next] || _roomTypes[next] == RoomType.OBSTACLE || !_activeRooms[next] || visited.Contains(next))
+                        continue; // 밝혀진 칸으로만 다닐 수 있다
+                    // 경유 가능: 길/방문완료/시작지점. 특수타일은 목적지로만 허용 (경유 중 만나면 ResolveDestination이 끊는다)
+                    if (!(_roomTypes[next] == RoomType.ROAD || _roomTypes[next] == RoomType.COMPLETE || _roomTypes[next] == RoomType.START_LOCATION || next == destination))
                         continue;
 
                     int newCost = cost[current] + 1;
@@ -916,89 +1045,6 @@ namespace ProjectD
             _view.RefreshColors();
             UpdateVoteMarkers();
             UpdateBossPiece();
-            EnsureRegionBorders();
-        }
-
-        // ------------------------------------------------------------ Region Border (거점지역 외곽선) --------------------------------------------------------------- //
-
-        // 거점지역 외곽선: 타일 사이 홈(spacing)에 정확히 끼워지는 상감 메쉬 (2D SetRegionWithColor의 RegionIndicator 대응).
-        // TileRoot 자식이라 구체 회전을 따라가고, 뷰 Rebuild 시 함께 파괴되므로 null 감지로 재생성한다.
-        void EnsureRegionBorders()
-        {
-            if (_regionBorders.Count > 0 && _regionBorders[0] != null)
-                return;
-            _regionBorders.Clear();
-            if (_geoTiles == null || _regionTiles.Count == 0 || _view == null)
-                return;
-            IReadOnlyList<SphereMapTile> tiles = _view.Tiles;
-            if (tiles.Count != _tileCount || tiles.Count == 0)
-                return;
-
-            for (int r = 0; r < _regionTiles.Count; r++)
-            {
-                Mesh mesh = GoldbergSphereGeometry.BuildRegionBorderMesh(_geoTiles, _regionTiles[r], _view.radius, _view.spacing);
-                if (mesh == null)
-                    continue;
-                var go = new GameObject("RegionBorder_" + r);
-                go.hideFlags = HideFlags.DontSave;
-                go.transform.SetParent(_view.TileRoot, false);
-                go.AddComponent<MeshFilter>().sharedMesh = mesh;
-                var meshRenderer = go.AddComponent<MeshRenderer>();
-                meshRenderer.sharedMaterial = tiles[0].Renderer.sharedMaterial;
-                var mpb = new MaterialPropertyBlock();
-                mpb.SetColor("_Color", GetRegionGradeColor(_regionGrades[r]));
-                meshRenderer.SetPropertyBlock(mpb);
-                _regionBorders.Add(go);
-            }
-
-            // 지역 외곽선이 덮는 변·접합부에는 기본 타일 테두리를 그리지 않는다 (겹쳐서 삐져나와 보이는 것 방지)
-            var excludedEdges = new HashSet<long>();
-            var excludedTris = new HashSet<int>();
-            foreach (List<int> regionTiles in _regionTiles)
-                GoldbergSphereGeometry.CollectRegionBorderCoverage(_geoTiles, regionTiles, excludedEdges, excludedTris);
-            _view.SetTileBorderExclusions(excludedEdges, excludedTris);
-        }
-
-        // 이미 만들어진 지역 외곽선의 등급 색을 다시 칠한다 (인스펙터 색상 변경 반영용)
-        void RefreshRegionBorderColors()
-        {
-            for (int r = 0; r < _regionBorders.Count && r < _regionGrades.Count; r++)
-            {
-                GameObject border = _regionBorders[r];
-                if (border == null)
-                    continue;
-                var meshRenderer = border.GetComponent<MeshRenderer>();
-                if (meshRenderer == null)
-                    continue;
-                var mpb = new MaterialPropertyBlock();
-                mpb.SetColor("_Color", GetRegionGradeColor(_regionGrades[r]));
-                meshRenderer.SetPropertyBlock(mpb);
-            }
-        }
-
-        void ClearRegionBorders()
-        {
-            foreach (GameObject border in _regionBorders)
-            {
-                if (border == null)
-                    continue;
-                var meshFilter = border.GetComponent<MeshFilter>();
-                if (meshFilter != null)
-                    DestroyObjectSafe(meshFilter.sharedMesh);
-                DestroyObjectSafe(border);
-            }
-            _regionBorders.Clear();
-        }
-
-        // ContextMenu(에디트 모드)에서도 호출될 수 있으므로 플레이 여부에 따라 파괴 방식 분기
-        static void DestroyObjectSafe(Object target)
-        {
-            if (target == null)
-                return;
-            if (Application.isPlaying)
-                Destroy(target);
-            else
-                DestroyImmediate(target);
         }
 
         /// <summary>색/아이콘만 갱신 (투표 표시 변경 등)</summary>
@@ -1041,6 +1087,13 @@ namespace ProjectD
                 return;
             }
 
+            if (tile.roomType == RoomType.OBSTACLE)
+            {
+                tile.baseColor = obstacleColor; // 밝혀진 장애물 — 붉은 지형, 아이콘 없음
+                UpdateIcon(tile, null);
+                return;
+            }
+
             Color color = GetRoomColor(tile.roomType);
             if (tile.index == currentTileIndex)
                 color = startColor; // 현재 위치 표시
@@ -1073,6 +1126,8 @@ namespace ProjectD
                 case RoomType.COMPLETE: return completeColor;
                 case RoomType.BOSS: return bossColor;
                 case RoomType.RUINS: return ruinsColor;
+                case RoomType.ROAD: return roadColor;
+                case RoomType.OBSTACLE: return obstacleColor;
                 default: return _view.hexagonColor;
             }
         }
@@ -1346,7 +1401,7 @@ namespace ProjectD
             var anchor = new GameObject("VoteInfoWindow");
             anchor.hideFlags = HideFlags.DontSave;
             anchor.transform.SetParent(parent, false);
-            anchor.transform.localPosition = tile.center + tile.normal * 0.12f;
+            anchor.transform.localPosition = tile.center + tile.normal * overlayLift;
             Vector3 upHint = Mathf.Abs(Vector3.Dot(tile.normal, Vector3.up)) > 0.99f ? Vector3.forward : Vector3.up;
             anchor.transform.localRotation = Quaternion.LookRotation(-tile.normal, upHint);
             anchor.transform.localScale = Vector3.one * (iconScale * roomInfoScale);

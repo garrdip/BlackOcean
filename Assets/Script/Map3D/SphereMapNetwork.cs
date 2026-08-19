@@ -173,9 +173,19 @@ namespace ProjectD
         [Command(requiresAuthority = false)]
         public void CmdVote(uint playerNetId, int tileIndex)
         {
-            // 서버의 맵 상태로 유효성 검증 (오각형/미탐험/도달불가 거부).
-            // 워프 후보는 워프 모드 중에만 허용 — 평상시에는 클리어한 타일로 이어진 경로가 있어야만 투표할 수 있다
-            if (system == null || (!system.IsValidDestination(tileIndex) && !(warpMode && IsWarpCandidate(tileIndex))))
+            if (system == null)
+                return;
+            // 클라이언트가 보낸 목적지를 서버 상태로 재해석 — "길을 따라가다 첫 특수타일에서 정지" 규칙을 서버가 강제한다.
+            // 제자리 보스전/워프 후보는 재해석 대상이 아니다.
+            if (tileIndex != system.currentTileIndex && !(warpMode && IsWarpCandidate(tileIndex)))
+            {
+                int resolved = system.ResolveDestination(tileIndex, new List<int>());
+                if (resolved >= 0)
+                    tileIndex = resolved;
+            }
+            // 서버의 맵 상태로 유효성 검증 (오각형/장애물/도달불가 거부).
+            // 워프 후보는 워프 모드 중에만 허용 — 평상시에는 길로 이어진 경로가 있어야만 투표할 수 있다
+            if (!system.IsValidDestination(tileIndex) && !(warpMode && IsWarpCandidate(tileIndex)))
                 return;
             // 워프 모드 중에는 워프 후보 전초기지만 투표 가능
             if (warpMode && !IsWarpCandidate(tileIndex))
@@ -191,6 +201,36 @@ namespace ProjectD
         {
             if (votes.ContainsKey(playerNetId))
                 votes.Remove(playerNetId);
+        }
+
+        /// <summary>
+        /// 길/방문완료 타일로의 즉시 이동 — 레디 합의 없이 클릭 즉시 파티 전체가 이동한다 (탐험 스텝).
+        /// 특수타일(전투/상점 등)이 목적지면 거부되어 기존 투표·레디 흐름만 허용된다.
+        /// </summary>
+        [Command(requiresAuthority = false)]
+        public void CmdInstantMove(int tileIndex)
+        {
+            if (system == null || !system.HasState || warpMode)
+                return;
+            // 서버 재해석: 경로 도중 특수타일에서 끊기면 즉시 이동 대상이 아니다 (투표 흐름으로만 진입 가능)
+            int resolved = system.ResolveDestination(tileIndex, new List<int>());
+            if (resolved != tileIndex)
+                return;
+            RoomType destType = system.GetRoomTypeOf(tileIndex);
+            if (destType != RoomType.ROAD && destType != RoomType.COMPLETE && destType != RoomType.START_LOCATION)
+                return;
+            if (!system.IsValidDestination(tileIndex))
+                return; // 밝혀지지 않음/도달 불가/보스 출현 시 1칸 제한 위반
+
+            RpcMoveParty(tileIndex, true); // 전투 없는 이동 → 전 클라이언트 즉시 반영
+            votes.Clear();                 // 파티 위치가 바뀌었으므로 기존 투표 경로는 무효
+            ResetPlayersReady();
+            ClearWarpCandidates();         // 전초기지를 벗어나는 이동 → 워프 기회 종료
+
+            // 턴 소모/보스 접근은 투표 이동과 동일 규칙
+            M_MapManager.instance.DecreaseTotalActionCost(1);
+            if (bossTileIndex >= 0 && bossTileIndex != tileIndex)
+                bossTileIndex = system.GetBossApproachTile(bossTileIndex, tileIndex, 2);
         }
 
         // ------------------------------------------------------------ 서버: 전원 레디 시 이동 --------------------------------------------------------------- //
@@ -267,7 +307,7 @@ namespace ProjectD
 
             // 전투 진입 여부: 미방문 방이면 전투/이벤트가 시작되므로,
             // 이동/시야 확장 반영은 전투 클리어 후 맵 복귀 시점으로 보류 (딤 처리와 자연스럽게 이어지도록)
-            bool entersBattle = !(destType == RoomType.COMPLETE || destType == RoomType.START_LOCATION);
+            bool entersBattle = !(destType == RoomType.COMPLETE || destType == RoomType.START_LOCATION || destType == RoomType.ROAD);
             RpcMoveParty(chosen, !entersBattle); // 모든 클라이언트(호스트 포함)에 이동 전달
             votes.Clear();
             // 전초기지 도착(워프 도착 포함)이면 새 위치 기준으로 워프 후보 재계산, 그 외 이동이면 워프 기회 종료.

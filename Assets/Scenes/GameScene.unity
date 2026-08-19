@@ -1317,7 +1317,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 842314909}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 1
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -3380,7 +3380,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 842314909}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 1
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -25566,8 +25566,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18669e1adbc10ea4bbd474a450678329, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectD.SphereMapView
-  subdivision: 8
-  radius: 5
+  subdivision: 16
+  radius: 10
   spacing: 0.12
   thickness: 0.15
   tileMaterial: {fileID: 0}
@@ -25635,7 +25635,7 @@ MonoBehaviour:
   bossVisualScale: 1
   bossPlateColor: {r: 0.12, g: 0.1, b: 0.14, a: 1}
   bossMoveDuration: 1.2
-  regionCount: 8
+  regionCount: 32
   regionSizeMin: 8
   regionSizeMax: 14
   regionNormalColor: {r: 1, g: 0, b: 0, a: 1}
@@ -32021,7 +32021,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 842314909}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 1
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -37216,7 +37216,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 842314909}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 1
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
