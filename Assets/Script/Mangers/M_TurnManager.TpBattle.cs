@@ -31,6 +31,17 @@ public partial class M_TurnManager
     [SyncVar]
     public uint tpCurrentUnitNetId; // 액션 입력을 기다리는 플레이어 유닛(TargetObject)의 netId. 0 = 대기 없음
 
+    /// <summary>클라이언트 표시용 TP 스냅샷 (유닛 netId + 현재 TP). 게이지 진행/턴/브레이크 시점마다 서버가 갱신</summary>
+    public struct TpGaugeSnapshot
+    {
+        public uint netId;
+        public int tp;
+    }
+    public readonly SyncList<TpGaugeSnapshot> tpGauges = new SyncList<TpGaugeSnapshot>();
+
+    [Tooltip("유닛 머리 위 TP 숫자 표시 높이 (월드 단위)")]
+    public float tpLabelHeight = 3.5f;
+
     bool tpActionSubmitted;                                        // 서버: 현재 턴 액션 접수 플래그
     (TpAction action, string skillNo, uint targetNetId, int row) tpSubmittedAction;
 
@@ -66,6 +77,7 @@ public partial class M_TurnManager
             tpUnits.Add(new TpUnit { target = monster, tp = GetUnitAgility(monster) });
             monster.monster.SetNextAction(); // 행동 예고 표시
         }
+        SyncTpGauges();
 
         WaitForSeconds wait = new WaitForSeconds(0.05f);
         while (true)
@@ -101,16 +113,31 @@ public partial class M_TurnManager
             // 턴 실행 — 넘친 TP는 이월된다 (민첩이 높으면 자연히 다회 턴)
             next.tp -= 100f;
             next.target.defense = 0; // 방어(실드)는 자기 다음 턴까지 유지 — 자기 턴 시작에 리셋
+            SyncTpGauges();
             if (next.target.objectType == ObjectType.PLAYER)
                 yield return ExecutePlayerTpTurn(next);
             else
                 yield return ExecuteMonsterTpTurn(next);
+            SyncTpGauges(); // 턴 중 TP 변동(브레이크/피의 가속/필살기 페널티) 반영
 
             yield return wait;
         }
 
         tpBattleActive = false;
         tpCurrentUnitNetId = 0;
+        tpGauges.Clear();
+    }
+
+    // 서버 → 클라이언트 TP 표시 동기화 (유닛 수가 적어 전체 재작성으로 충분)
+    [Server]
+    void SyncTpGauges()
+    {
+        tpGauges.Clear();
+        foreach (TpUnit unit in tpUnits)
+        {
+            if (unit.target == null) continue;
+            tpGauges.Add(new TpGaugeSnapshot { netId = unit.target.netId, tp = Mathf.RoundToInt(unit.tp) });
+        }
     }
 
     [Server]
@@ -351,6 +378,37 @@ public partial class M_TurnManager
 
     int guiSelectedAction = -1;      // -1 없음 / 0 공격 / 1 스킬 (대상 선택 대기)
     string guiSelectedSkillNo;
+    GUIStyle guiTpLabelStyle;        // TP 숫자 스타일 (가운데 정렬 + 굵게, OnGUI에서 지연 생성)
+
+    // 모든 유닛(플레이어·몬스터) 머리 위에 현재 TP를 숫자로 표시. 현재 턴 유닛은 ▶ 표시
+    void DrawTpGaugeLabels()
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return;
+        if (guiTpLabelStyle == null)
+        {
+            guiTpLabelStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontStyle = FontStyle.Bold,
+            };
+        }
+
+        foreach (TpGaugeSnapshot snapshot in tpGauges)
+        {
+            if (!NetworkClient.spawned.TryGetValue(snapshot.netId, out NetworkIdentity gaugeIdentity) || gaugeIdentity == null) continue;
+            TargetObject unitTarget = gaugeIdentity.GetComponent<TargetObject>();
+            if (unitTarget == null || unitTarget.isDying || !unitTarget.gameObject.activeSelf) continue;
+
+            Vector3 screenPos = cam.WorldToScreenPoint(unitTarget.transform.position + Vector3.up * tpLabelHeight);
+            if (screenPos.z < 0f) continue; // 카메라 뒤
+
+            bool isCurrentTurn = snapshot.netId == tpCurrentUnitNetId;
+            guiTpLabelStyle.normal.textColor = isCurrentTurn ? Color.yellow : Color.white;
+            var labelRect = new Rect(screenPos.x - 50f, Screen.height - screenPos.y - 11f, 100f, 22f);
+            GUI.Label(labelRect, isCurrentTurn ? $"▶ TP {snapshot.tp}" : $"TP {snapshot.tp}", guiTpLabelStyle);
+        }
+    }
 
     void OnGUI()
     {
@@ -370,6 +428,8 @@ public partial class M_TurnManager
             : (currentUnit.player != null ? $"{currentUnit.player.character} 턴" : "몬스터 턴");
         GUI.Label(new Rect(x, y - lineHeight, 640f, lineHeight),
             $"[TP 전투] {turnOwner}  |  내 HP {myPlayer.HP}/{myPlayer.MaxHP}  자원 {myPlayer.currentResource}/{myPlayer.maxResource}");
+
+        DrawTpGaugeLabels(); // 유닛(플레이어·몬스터) 머리 위 TP 숫자
 
         bool isMyTurn = currentUnit != null && currentUnit.player != null && currentUnit.player.isOwned;
         if (!isMyTurn)
