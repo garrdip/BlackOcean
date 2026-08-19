@@ -14,6 +14,7 @@ public class MonsterData : SingletonD<MonsterData>
     void Start()
     {
         LoadMonsterDataFromDB();
+        LoadMonsterStatFromDB();
         LoadMonsterGroupDataFromDB();
     }
 
@@ -66,6 +67,38 @@ public class MonsterData : SingletonD<MonsterData>
             catch (Exception e)
             {
                 Debug.LogError($"[MonsterData] MonsterDB 로드 실패: {row[0]} ({row.lineNumber}행) — {e.Message}");
+            }
+        }
+    }
+
+    // RPG 확장 스탯(약점/공격 속성/TP 실드) 로드 — MonsterDB의 3컬럼 반복 위치 기반 포맷을 건드리지 않도록 별도 CSV로 분리.
+    // MonsterStatDB에 없는 몬스터는 기본값(약점 없음/무속성/실드 0)으로 동작한다.
+    void LoadMonsterStatFromDB()
+    {
+        foreach(CsvTable.Row row in CsvTable.LoadFromResources("DB/MonsterStatDB").rows)
+        {
+            try
+            {
+                string monsterName = row.Get("Monster_Name").Trim();
+                Monster monster = monsterDataList.Find(m => m.name == monsterName);
+                if(monster == null)
+                {
+                    Debug.LogError($"[MonsterData] MonsterStatDB {row.lineNumber}행 — MonsterDB에 없는 몬스터 이름: '{monsterName}'");
+                    continue;
+                }
+                foreach(string weakness in row.Get("Weakness").Split('|'))
+                {
+                    if(weakness.Trim().Length == 0) continue;
+                    monster.weaknesses.Add(GetEnumData<AttackAttribute>(weakness.Trim()));
+                }
+                string attribute = row.Get("AttackAttribute").Trim();
+                monster.attackAttribute = (attribute.Length == 0) ? AttackAttribute.NONE : GetEnumData<AttackAttribute>(attribute);
+                monster.tpShield = row.GetInt("TPShield");
+                monster.agility = row.GetInt("Agility");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[MonsterData] MonsterStatDB 로드 실패: {row[0]} ({row.lineNumber}행) — {e.Message}");
             }
         }
     }

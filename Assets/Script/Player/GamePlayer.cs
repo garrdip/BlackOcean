@@ -5,7 +5,7 @@ using Mirror;
 using ProjectD;
 
 
-public class GamePlayer : NetworkBehaviour
+public partial class GamePlayer : NetworkBehaviour
 {
     public delegate void OnChangePlayerOrder(int order);
     public OnChangePlayerOrder onChangePlayerOrder;
@@ -29,6 +29,35 @@ public class GamePlayer : NetworkBehaviour
 
     [SyncVar]
     public int recoveryLimitCount; // 체력 회복 횟수 제한
+
+    // ---- RPG 스탯 (CharacterStatDB 기반, 레벨업으로 성장) ----
+    [SyncVar (hook = nameof(OnChangedLevel))]
+    public int level = 1;      // 레벨
+    [SyncVar]
+    public int exp = 0;        // 현재 레벨에서 쌓은 경험치 (레벨업 시 필요치만큼 차감)
+    [SyncVar]
+    public int strength;       // 힘 — 물리 공격력
+    [SyncVar]
+    public int agility;        // 민첩 — TP(턴 게이지) 충전 속도
+    [SyncVar]
+    public int vitality;       // 체력 — 최대 HP 결정 (MaxHP = PLAYER_INIT_HP + vitality * HP_PER_VITALITY)
+    [SyncVar]
+    public int intelligence;   // 지능 — 마법 공격력
+    [SyncVar]
+    public int defense;        // 방어력
+    [SyncVar]
+    public int magicDefense;   // 마법방어
+
+    // ---- 전투 자원 (게오르크: 분노 / 홍단향: MP / 에리스: HP 소모 — CharacterStatDB의 Resource) ----
+    [SyncVar]
+    public int currentResource; // 분노는 0에서 시작해 전투 중 충전, MP는 최대치로 시작
+    [SyncVar]
+    public int maxResource;     // HP형(에리스)은 0 — 자원 대신 자신의 HP를 소모한다
+
+    // ---- 스킬트리 (SkillTreeDB — 습득/검증은 GamePlayer.SkillTree.cs) ----
+    [SyncVar]
+    public int skillPoints;     // 레벨업당 +1
+    public readonly SyncList<string> learnedNodes = new SyncList<string>(); // 습득한 트리 노드 id 목록
 
     [SyncVar (hook = nameof(OnChangedObjectOwner))]
     public PlayerInterface objectOwner;
@@ -107,6 +136,47 @@ public class GamePlayer : NetworkBehaviour
     }
 
     // ------------------------------------------------------------- Server Method --------------------------------------------------------------------//
+
+    /// <summary>경험치 지급 + 레벨업 처리. 필요치(LevelDB)를 넘길 때마다 레벨업하며 캐릭터 성장치(CharacterStatDB)를 반영한다</summary>
+    [Server]
+    public void AddExp(int amount)
+    {
+        if(amount <= 0) return;
+        exp += amount;
+        int required = LevelData.GetRequiredExp(level);
+        while(required > 0 && exp >= required){ // required 0 = 최대 레벨
+            exp -= required;
+            level++;
+            skillPoints++; // 레벨업당 스킬 포인트 1 (스킬트리 습득 재화)
+            ApplyLevelUpGrowth();
+            required = LevelData.GetRequiredExp(level);
+        }
+    }
+
+    // 레벨업 1회분 성장치 반영. 체력 스탯이 오르면 최대 HP를 다시 계산하고 늘어난 만큼 현재 HP도 회복시킨다
+    [Server]
+    private void ApplyLevelUpGrowth()
+    {
+        CharacterStatData.Entry stat = CharacterStatData.Get(character);
+        if(stat == null) return;
+        strength += stat.growStr;
+        agility += stat.growAgi;
+        vitality += stat.growVit;
+        intelligence += stat.growInt;
+        defense += stat.growDef;
+        magicDefense += stat.growMdef;
+
+        int newMaxHP = GetMaxHPByVitality(vitality);
+        HP += Mathf.Max(0, newMaxHP - MaxHP);
+        MaxHP = newMaxHP;
+        Debug.Log($"[GamePlayer] {character} 레벨업 → Lv.{level} (힘{strength}/민첩{agility}/체력{vitality}/지능{intelligence}/방어{defense}/마방{magicDefense}, MaxHP {MaxHP})");
+    }
+
+    /// <summary>체력 스탯 기준 최대 HP 계산식 — 초기화(PlayerInterface)와 레벨업이 공유한다</summary>
+    public static int GetMaxHPByVitality(int vitality)
+    {
+        return BalanceData.Get("PLAYER_INIT_HP", 50) + vitality * BalanceData.Get("HP_PER_VITALITY", 2);
+    }
 
     [Server]
     public void SetPlayerOrder(int num)
@@ -223,5 +293,12 @@ public class GamePlayer : NetworkBehaviour
     public void OnChangedSelectOrder(int oldVal,int newVal)
     {
         onChangePlayerOrder?.Invoke(newVal);
+    }
+
+    public void OnChangedLevel(int oldVal, int newVal)
+    {
+        if(oldVal < newVal && oldVal > 0){ // 초기 동기화(0→1)는 제외하고 실제 레벨업만 로그
+            Debug.Log($"[GamePlayer] {character} 레벨 {oldVal} → {newVal}");
+        }
     }
 }

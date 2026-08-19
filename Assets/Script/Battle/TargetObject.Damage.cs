@@ -33,6 +33,12 @@ public partial class TargetObject
         // 개화꽃 적용
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
             damage -= GetBuffValue(BuffType.FLOWER,target);
+        // RPG 스탯 방어 (TP 전투): 대열 보정(전열 피해 증가/후열 감소) 후 방어력 스탯의 절반만큼 경감
+        if(M_TurnManager.instance.tpBattleActive && player != null)
+        {
+            damage = damage * BattleActions.RowIncomingDamagePercent(player) / 100;
+            damage -= player.TotalDefense / 2; // 장비 합산 방어력
+        }
         if(damage <= 0) return;
         // 방어력 적용
         if(defense >= damage)
@@ -56,6 +62,9 @@ public partial class TargetObject
             }
             player.HP = playerHP;
             AccumulateTempestosoHpLost(hpBefore - playerHP);
+            // 분노 충전 (TP 전투): 게오르크가 피해를 입으면 분노 획득
+            if(isServer && M_TurnManager.instance.tpBattleActive)
+                BattleActions.GainRage(player, BalanceData.Get("RAGE_GAIN_ON_TAKEN", 10));
         }
     }
 

@@ -1,0 +1,17 @@
+SkillNo,Character,Name,CostType,Cost,Attribute,ValidTarget,Power,ScaleStat,Innate,Description
+ES1,ERIS,흡혈 베기,HP,5,RESONANCE,ENEMY,120,STR,0,적 하나에게 힘의 120% 공명 피해를 주고 가한 피해의 50%만큼 HP를 회복한다
+ES2,ERIS,피의 가속,HP,8,NONE,NONE,0,STR,1,자신의 TP를 30 증가시킨다 (기본 스킬)
+ES3,ERIS,별무리 파편,HP,10,RESONANCE,ENEMY_ALL,70,STR,0,모든 적에게 힘의 70% 공명 피해를 준다
+ES4,ERIS,은하수 일격,HP,15,RESONANCE,ENEMY,220,STR,0,적 하나에게 힘의 220% 공명 피해를 준다
+EU1,ERIS,초신성,HP,25,RESONANCE,ENEMY_ALL,180,STR,0,모든 적에게 힘의 180% 공명 피해. 사용 후 자신의 TP가 50 감소한다 (필살기)
+GS1,GEORK,고행길,NONE,0,NONE,NONE,0,STR,1,자신의 HP를 8 잃고 분노를 40 얻는다 (기본 스킬)
+GS2,GEORK,강타,RAGE,20,SLASH,ENEMY,150,STR,0,적 하나에게 힘의 150% 참격 피해를 준다
+GS3,GEORK,방패치기,RAGE,15,STRIKE,ENEMY,120,STR,0,적 하나에게 힘의 120% 타격 피해를 준다
+GS4,GEORK,수호의 맹세,RAGE,15,NONE,TEAM,100,STR,0,아군 전원에게 자신의 방어력 100%만큼 실드를 부여한다
+GS5,GEORK,대지 가르기,RAGE,40,SLASH,ENEMY_ALL,100,STR,0,모든 적에게 힘의 100% 참격 피해를 준다
+GU1,GEORK,대장군의 일격,RAGE,50,SLASH,ENEMY,300,STR,0,적 하나에게 힘의 300% 참격 피해. 사용 후 자신의 TP가 50 감소한다 (필살기)
+HS1,HONGDANHYANG,화염구,MP,6,MAGIC,ENEMY,140,INT,0,적 하나에게 지능의 140% 마법 피해를 준다
+HS2,HONGDANHYANG,치유의 빛,MP,8,NONE,MEMBER,120,INT,0,아군 하나의 HP를 지능의 120%만큼 회복시킨다
+HS3,HONGDANHYANG,마력 폭풍,MP,12,MAGIC,ENEMY_ALL,80,INT,0,모든 적에게 지능의 80% 마법 피해를 준다
+HS4,HONGDANHYANG,수호 축복,MP,8,NONE,MEMBER,100,INT,0,아군 하나에게 지능의 100%만큼 실드를 부여한다
+HU1,HONGDANHYANG,만개,MP,20,NONE,TEAM,150,INT,0,아군 전원의 HP를 지능의 150% 회복시키고 그 절반만큼 실드를 부여한다. 사용 후 자신의 TP가 50 감소한다 (필살기)

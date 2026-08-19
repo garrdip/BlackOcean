@@ -1,0 +1,4 @@
+PotionNo,Name,Type,Value,Price,Description
+PO1,HP 물약,HEAL_HP,30,30,HP를 30 회복한다
+PO2,상급 HP 물약,HEAL_HP,60,80,HP를 60 회복한다
+PO3,MP 물약,RESTORE_RESOURCE,15,40,전투 자원(MP·분노)을 15 회복한다

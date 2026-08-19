@@ -41,6 +41,8 @@ public partial class M_TurnManager
             gamePlayer.GetComponent<GamePlayerDeck>().rewardCards.Clear();
         }
         EachPlayerNoneBattleEnd();
+        if(SphereMapNetwork.instance != null)
+            SphereMapNetwork.instance.ScheduleSave(); // 자동 저장 — 전투/방 정리 완료 (맵 복귀·이동 반영 후 저장되도록 지연 저장)
     }
 
 

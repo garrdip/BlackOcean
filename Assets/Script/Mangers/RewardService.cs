@@ -29,6 +29,20 @@ public class RewardService : InstanceD<RewardService>
                 gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = cardRewardGuid, reward_Type = Reward_Type.Card });
                 gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold, rewardGold = BalanceData.Get("BATTLE_REWARD_GOLD", 10) });
 
+                // 경험치 보상 — 선택 없이 서버가 즉시 지급. 멀티(2인 이상 접속) 시 배율 적용 (기획: 1.5배)
+                // TODO(Phase 2): 보상 목록 UI에 EXP 항목 표시 (Reward_Type.Exp)
+                int expReward = BalanceData.Get("BATTLE_REWARD_EXP", 20);
+                if(NetworkServer.connections.Count > 1){
+                    expReward = expReward * BalanceData.Get("EXP_MULTIPLAYER_PERCENT", 150) / 100;
+                }
+                gamePlayer.AddExp(expReward);
+
+                // 장비/소모품 드랍 — 확률 지급, 인벤토리로 직행 (Phase 4)
+                if(Random.Range(0, 100) < BalanceData.Get("EQUIP_DROP_PERCENT", 30))
+                    gamePlayer.ServerAddRandomEquip();
+                if(Random.Range(0, 100) < BalanceData.Get("POTION_DROP_PERCENT", 40))
+                    gamePlayer.ServerAddRandomConsumable();
+
                 // 카드 보상 데이터 세팅
                 int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
                 List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출

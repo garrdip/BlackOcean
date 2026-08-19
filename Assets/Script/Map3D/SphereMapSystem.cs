@@ -566,6 +566,40 @@ namespace ProjectD
 
         public RoomType GetRoomTypeOf(int index) => _hasState ? _roomTypes[index] : RoomType.UNDEFINED;
 
+        /// <summary>현재 맵의 생성 시드 — 저장(GameSaveService)이 사용. 시드 결정적 생성이라 시드+진행 상태만으로 월드가 복원된다</summary>
+        public int Seed => _seed;
+
+        /// <summary>진행 상태 내보내기 — 방문 완료(COMPLETE) 타일과 밝혀진 타일 목록 (저장용)</summary>
+        public void ExportProgress(List<int> completedTiles, List<int> activeTiles)
+        {
+            if (!_hasState) return;
+            for (int i = 0; i < _tileCount; i++)
+            {
+                if (_roomTypes[i] == RoomType.COMPLETE) completedTiles.Add(i);
+                if (_activeRooms[i]) activeTiles.Add(i);
+            }
+        }
+
+        /// <summary>진행 상태 복원 — 같은 시드로 SetupNewMap이 끝난 뒤 호출 (이어서 하기)</summary>
+        public void RestoreProgress(int currentTile, IList<int> completedTiles, IList<int> activeTiles)
+        {
+            if (!_hasState) return;
+            foreach (int index in completedTiles)
+            {
+                if (index >= 0 && index < _tileCount && !_isPentagon[index])
+                    _roomTypes[index] = RoomType.COMPLETE;
+            }
+            foreach (int index in activeTiles)
+            {
+                if (index >= 0 && index < _tileCount && !_isPentagon[index])
+                    _activeRooms[index] = true;
+            }
+            if (currentTile >= 0 && currentTile < _tileCount)
+                currentTileIndex = currentTile;
+            CenterOnCurrentTile();
+            ApplyStateToTiles();
+        }
+
         /// <summary>두 타일 간 BFS 홉 거리 (탐험 여부 무관, 오각형만 제외). 도달 불가면 -1</summary>
         public int GetHexDistance(int from, int to)
         {

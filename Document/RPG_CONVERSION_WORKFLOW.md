@@ -21,19 +21,19 @@
 
 ---
 
-## Phase 1 — 데이터·스탯 기반 (전투 개조의 선행 조건)
+## Phase 1 — 데이터·스탯 기반 ✅ (완료)
 
 **목표**: 기획서의 스탯/속성/레벨 체계를 데이터로 정의한다. 기존 CSV+리플렉션 파이프라인(`DB/CsvTable.cs`) 재사용.
 
-- [ ] 1-1. 스탯 6종 정의 — 힘/민첩/체력/지능/방어력/마법방어. `GamePlayer`에 SyncVar 추가 (`Player/GamePlayer.cs` — 현재 HP/골드뿐)
-- [ ] 1-2. 속성 enum — `AttackAttribute { SLASH(참격), STRIKE(타격), PIERCE(관통), MAGIC(마법), RESONANCE(공명), NONE(무속성) }` (`Common/ProjectD.cs`)
-- [ ] 1-3. `LevelDB.csv` 신설 — 레벨별 필요 EXP + 캐릭터별 성장치 (게오르크: 힘·체력·방어 / 홍단향: 지능·마법방어 / 에리스: 힘·민첩). 로더는 `BalanceData` 패턴
-- [ ] 1-4. `MonsterDB.csv` 확장 — 약점 속성(1개 이상), 공격 속성, TP 실드값 컬럼. `DB/MonsterData.cs` 파서 갱신
-- [ ] 1-5. 캐릭터 약점/내성 데이터 — 게오르크(약점 마법/내성 참격), 홍단향(약점 관통/내성 마법), 에리스(약점 타격/내성 공명)
-- [ ] 1-6. 자원 정의 — 분노(게오르크: 가한/받은 데미지로 충전), MP(홍단향), HP 소모(에리스). 기존 이치(`GamePlayerDeck_IchiPart.cs`)를 캐릭터별 자원으로 대체할 구조 설계
-- [ ] 1-7. 경험치 지급 — `Reward_Type`에 `Exp` 추가, `RewardService.cs`에서 분배. **멀티 시 1.5배** 규칙
+- [x] 1-1. 스탯 6종 — `GamePlayer`에 SyncVar 추가: level/exp + 힘/민첩/체력/지능/방어력/마법방어. `AddExp()` 레벨업 루프 + 성장치 반영, MaxHP = `PLAYER_INIT_HP` + 체력×`HP_PER_VITALITY`
+- [x] 1-2. 속성 enum — `AttackAttribute { NONE, SLASH, STRIKE, PIERCE, MAGIC, RESONANCE }` + `BattleResourceType { NONE, RAGE, MP, HP }` (`Common/ProjectD.cs`)
+- [x] 1-3. `LevelDB.csv`(레벨 1~30 필요 EXP) + `CharacterStatDB.csv`(기본치/성장치/약점·내성/자원) 신설. 로더: `DB/LevelData.cs`, `DB/CharacterStatData.cs` (BalanceData 패턴)
+- [x] 1-4. 몬스터 확장 스탯 — **`MonsterDB.csv` 직접 확장 대신 별도 `MonsterStatDB.csv`** (위치 기반 포맷 보호). 약점(복수 `|` 구분)/공격 속성/TP 실드. `MonsterData.LoadMonsterStatFromDB()`로 병합, 미등록 몬스터는 기본값
+- [x] 1-5. 캐릭터 약점/내성 — `CharacterStatDB.csv`에 포함 (게오르크 약점MAGIC/내성SLASH, 홍단향 약점PIERCE/내성MAGIC, 에리스 약점STRIKE/내성RESONANCE)
+- [x] 1-6. 자원 구조 — `GamePlayer.currentResource/maxResource` SyncVar + `BattleResourceType`. 초기값: 분노 0에서 시작, MP 가득, HP형은 max 0(자신의 HP 소모). **소모/충전 로직과 이치 대체는 Phase 2B에서** (전투가 아직 카드 기반이므로 이치는 그대로 둠)
+- [x] 1-7. 경험치 — `Reward_Type.Exp` 추가, `RewardService.DistributeBattleRewards`에서 서버 즉시 지급. `BATTLE_REWARD_EXP`(20) × 멀티 시 `EXP_MULTIPLAYER_PERCENT`(150%). 보상 목록 UI 표시는 Phase 2로
 
-**완료 기준**: 전투 없이도 인스펙터/로그로 스탯·레벨업·EXP 지급이 확인된다.
+**완료 기준**: 전투 없이도 인스펙터/로그로 스탯·레벨업·EXP 지급이 확인된다. → GamePlayer 인스펙터에서 스탯 확인, 전투 승리 시 EXP 지급·레벨업 로그 출력. (에디터 플레이 검증 필요)
 
 ---
 
@@ -42,56 +42,56 @@
 **목표**: 카드 전투 → TP 기반 턴제 커맨드 전투. **에리스 1명 + 몬스터 1종**으로 끝까지 도는 것을 먼저 만든다.
 
 ### 2A. 턴 시스템: BattleTurn → TP 게이지
-- [ ] 2A-1. TP 시스템 — 유닛별 TP가 민첩 비례로 충전, 100 도달 시 그 유닛의 턴. `M_TurnManager`의 전원 일괄 페이즈(`PLAYER_ACTIVE` 등)를 **유닛 단위 턴 큐**로 재설계. 민첩 격차에 따른 다회 턴 허용(상한 필요 — 밸런스 결정 사항)
-- [ ] 2A-2. 타임라인 UI — 향후 행동 순서 표시. 기존 카드 큐 스크롤(`GameUIManager.infiniteScroll`) 개조
-- [ ] 2A-3. ★ `PLAYER_END → MONSTER_ORDERSELECT` 전이 회수 — 현재 `M_CardManager.cs:654`에 숨어 있는 페이즈 전이를 턴매니저로 이동 (카드 제거 시 턴 정지 방지, `RPG_CONVERSION_PLAN.md` 수술 3)
-- [ ] 2A-4. 몬스터 AI 연결 — `SpawnedMonster.SetNextAction/DoAction` 구조는 유지, 실행 시점만 TP 턴에 맞춤
+- [x] 2A-1. TP 시스템 — `M_TurnManager.TpBattle.cs` 신설. 유닛별 TP가 민첩 비례 충전, 100 도달 시 턴 (이월분 유지 → **다회 턴 상한 없음**, 민첩 수치로 밸런싱 — 기획 확정). 진입: `BattleInitialize`가 `USE_TP_BATTLE`(BalanceDB)이면 카드 페이즈 대신 TP 루프 시작
+- [ ] 2A-2. 타임라인 UI — 미구현 (현재는 OnGUI 텍스트로 현재 턴만 표시). 정식 UI 작업 시 진행
+- [x] 2A-3. ~~PLAYER_END 전이 회수~~ → **불필요해짐**: 카드 페이즈 상태머신 자체를 우회 (TP 루프는 `M_CardManager` 경로를 타지 않음). 카드 코드 제거(2B-5) 시 함께 정리
+- [x] 2A-4. 몬스터 AI 연결 — `SetNextAction`(예고)/`DoAction`(실행)을 TP 턴에서 그대로 구동 (기존 `MonsterActionSeuqence` 대기 규약 유지)
 
 ### 2B. 액션 시스템: 1턴 1액션
-- [ ] 2B-1. 액션 5종 — 공격 / 방어 / 스킬 / 아이템 / 이동(전열·중열·후열). 액션 선택 UI는 `AbilityButton` + `AbilityCtrlArrow`(버튼→타겟 화살표→Cmd) 확장
-- [ ] 2B-2. 실행 델리게이트 치환 — `ExecuteCard(Card, List<TargetObject>)` → `ExecuteSkill(SkillInstance, List<TargetObject>)` (`ProjectD.cs:63`). 리플렉션 바인딩(`CardData.cs:235-247`)은 `SkillDB.csv`로 재사용
-- [ ] 2B-3. 검증 큐 유지 — `serverCardPredictQueue` 패턴(코스트 검산→차감→타겟 검증→서버 큐)을 스킬용으로 이식. `GamePlayerDeck` → `GamePlayerSkill` 신설
-- [ ] 2B-4. 데미지 공식 — 힘/지능 × 스킬 계수 + 속성 배율. 공용 유틸(`GeneralSingleAttack`/`GeneralGetDefense`)을 `BattleActions` 클래스로 추출해 스탯 기반으로 개조
-- [ ] 2B-5. 카드 시스템 제거 — `M_CardManager`, `CardOnHand`(NetworkBehaviour 스폰), 드로우/버리기 흐름, 손패 UI. 관련 대기 루프(`destroyCards` 핸드셰이크) 정리
+- [x] 2B-1. 액션 5종 — 공격/방어/스킬/이동(전열·중열·후열) 구현, 아이템은 스텁(Phase 4 소모품과 연결). **UI는 OnGUI 임시 액션 바** — 정식 UI는 후속
+- [x] 2B-2. 실행 델리게이트 — `ExecuteSkill(SkillDef, user, targets)` 신설 + `SkillDB.csv` + `SkillData` 정적 리플렉션 바인딩 (CardData 패턴 계승, 카드 델리게이트는 2B-5까지 병존)
+- [x] 2B-3. 검증 — TP 턴제는 동시 입력이 없어 **큐 대신 단일 턴 제출**(`CmdSubmitTpAction`: 자기 턴 검증 + 커넥션 검증 + 서버 코스트 지불). `GamePlayerSkill` 보유 시스템은 Phase 3 스킬트리에서 (현재는 캐릭터 전체 스킬 사용 가능)
+- [x] 2B-4. 데미지 공식 — `BattleActions` 신설: 스탯(힘/지능)×계수%×대열 보정, 약점 배율, 받는 피해 대열 보정+방어력 스탯 경감(`DamageToPlayer` 통합, TP 전투 한정)
+- [ ] 2B-5. 카드 시스템 제거 — 미착수 (USE_TP_BATTLE 토글로 우회 중). TP 전투 검증 후 일괄 제거
 
 ### 2C. 약점·TP 브레이크·포지션
-- [ ] 2C-1. 약점 판정 — 약점 속성 피격 시 데미지 1.2배(밸런스 변수화) + **대상 TP 감소(반복 시 효과 체감)**
-- [ ] 2C-2. 포지션 효과 — 전열(공↑방↓)/중열(위치 변환 코스트 무료)/후열(공↓방↑). 기존 `playerOrder`(전/중/후) + `SwapPlayerOrder` 재사용, 몬스터 타겟팅(`GetTargetObjectFromActionTarget`)도 그대로
-- [ ] 2C-3. 몬스터 행동 예고에 공격 속성 표시 — `NextActionIndicator` 확장 (이동/방어 액션의 존재 이유)
+- [x] 2C-1. 약점 판정 — `WEAKNESS_DAMAGE_PERCENT`(120%) + 대상 TP 감소 `TP_BREAK_BASE`(30) 반복 시 절반씩 체감(`TP_BREAK_MIN` 하한)
+- [x] 2C-2. 포지션 효과 — 전열 공+20%/피격+20%, 후열 공-20%/피격-20% (BalanceDB 변수), 이동 액션으로 열 변경(`SwapPlayerOrder` 재사용). 중열 특전(위치 변환 무료)은 1턴 1액션 구조 확정 후 재설계 필요
+- [ ] 2C-3. 몬스터 행동 예고에 공격 속성 표시 — 미구현 (`NextActionIndicator` 확장 필요, 데이터는 `MonsterStatDB.AttackAttribute`로 준비됨)
 
 **완료 기준(= 마일스톤 M1)**: 에리스 1명 vs 몬스터 1종 전투가 TP 턴·5액션·약점·포지션 규칙으로 3인 멀티에서 완주된다.
 
 ### 2D. 캐릭터 확장
-- [ ] 2D-1. 기본 스킬 — 게오르크 "고행길"(자기 디버프+분노), 홍단향 "철귀 이동"(턴 종료 시 공·방 버프 — 기존 철귀 코드 `M_TurnManager.IronDemon.cs` 재사용), 에리스(**기획 미정 — 결정 필요**)
-- [ ] 2D-2. 자원별 스킬 코스트 — 분노/MP/HP 소모 처리. 기존 카드 효과 코루틴(`CardData_*.cs` 225개 중 이식 가능 ~60%)을 스킬 본문으로 이관
-- [ ] 2D-3. 3캐릭터 전원 전투 가능
+- [x] 2D-1. 기본 스킬 — 게오르크 "고행길"(HP 8 소모 → 분노 40, GS1), 에리스 "피의 가속"(HP 소모 → TP+30, ES2). **홍단향 "철귀 이동"은 철귀 시스템 재설계와 함께 후속** (현재 치유/실드 지원가 킷으로 대체)
+- [x] 2D-2. 자원별 스킬 코스트 — 분노: 피해를 주면 +5/받으면 +10 충전, 전투 시작 시 0 리셋 / MP: 자기 턴 시작 시 +5 자연 회복 / HP: 빈사 가드 포함 소모. 카드 효과 코루틴 대량 이관은 Phase 3 스킬트리 볼륨 작업에서
+- [x] 2D-3. 3캐릭터 전원 전투 가능 — 게오르크 5스킬(분노), 홍단향 4스킬(MP, 아군 대상 회복/실드 타겟팅 포함), 에리스 4스킬(HP). 임시 UI에 아군 선택·약점 힌트 추가
 
 ---
 
-## Phase 3 — 스킬트리 (드퀘식)
+## Phase 3 — 스킬트리 (드퀘식) ✅ (1차 완료)
 
 **목표**: 레벨업 포인트로 트리를 찍는 성장 시스템.
 
-- [ ] 3-1. `SkillTreeDB.csv` — 캐릭터별 트리: 게오르크[방어(방어·보호)/약화(압도·쇠락)/공격(기사도·연격)], 홍단향[철귀(성장)/꽃가루(개화)/회복], 에리스[흡혈/회복/공격(별무리·은하수)] — 트리명이 기존 카드군과 대응하므로 효과 코루틴 재사용
-- [ ] 3-2. 노드 타입 — 액티브 스킬 습득 / 스킬 레벨업(리플렉션 `_E` 폴백 = 레벨 분기 재해석) / 스탯 상승
-- [ ] 3-3. 필살기 — 각 트리 최종 노드, 하이리스크 하이리턴 (리스크 규칙 결정 필요: TP 페널티/자원 대량 소모)
-- [ ] 3-4. 스킬트리 UI — 신규 팝업 (`PopUpUIManager` 체계)
+- [x] 3-1. `SkillTreeDB.csv` — 캐릭터당 2트리×4티어 (게오르크 연격/수호, 홍단향 개화/회복, 에리스 은하수/별무리). 로더 `DB/SkillTreeData.cs`. 습득 상태는 `GamePlayer.learnedNodes`(SyncList) + `skillPoints`(레벨업당 +1, 시작 1). **트리 볼륨 확장(기존 카드군 압도/쇠락/기사도 등 이관)은 후속 콘텐츠 작업**
+- [x] 3-2. 노드 타입 — SKILL(액티브 습득) / SKILL_LEVEL(강화 — 노드당 피해 +20%) / STAT(스탯 상승, 체력은 MaxHP 재계산) / ULTIMATE. 미습득 스킬은 전투 UI 미표시 + 서버 `KnowsSkill` 재검증 (기본 스킬 고행길/피의 가속은 innate)
+- [x] 3-3. 필살기 3종 — 대장군의 일격(단일 300%)/만개(전원 회복+실드)/초신성(전체 180%). **리스크 규칙: 사용 후 자신의 TP -50** (`ULTIMATE_TP_PENALTY`)
+- [x] 3-4. 스킬트리 UI — OnGUI 임시 창 (우상단 버튼 토글, 트리별 노드 목록 + 습득/잠김 상태). 정식 팝업(`PopUpUIManager`)은 UI 정리 단계에서
 
-**완료 기준**: 레벨업 → 포인트 획득 → 트리 습득 → 전투에서 사용까지 루프가 돈다.
+**완료 기준**: 레벨업 → 포인트 획득 → 트리 습득 → 전투에서 사용까지 루프가 돈다. → 구현 완료, 에디터 검증 필요.
 
 ---
 
-## Phase 4 — 장비·아이템
+## Phase 4 — 장비·아이템 ✅ (1차 완료)
 
-**목표**: 기존 아이템 프레임워크(`GamePlayerItem` + `ItemEffectTime` 훅)를 장비 시스템으로 승격.
+**목표**: 장비 슬롯/소모품 시스템 구축. (기존 `Item`+`ItemEffectTime` 훅은 유물 전용으로 유지 — 장비는 스탯 가산형 독립 시스템 `EquipData`+`GamePlayer.Equipment`로 분리, 특수 효과 장비가 생기면 훅 연동)
 
-- [ ] 4-1. `EquipDB.csv` — 무기(캐릭터 고정: 검/지팡이/크리스털 코어) + 방어구 5슬롯(갑옷/투구/신발/악세사리×2). 옵션: 공격력/스킬레벨/방어력/최대HP/최대MP (+ 검토: 민첩, 속성 부여/내성)
-- [ ] 4-2. 장비 착용 로직 — `Item`에 슬롯·요구레벨 필드, 착용 시 스탯 반영. 효과 발동은 기존 `ItemEffectTime` 훅 재사용
-- [ ] 4-3. 소모품 — HP/MP물약, 버프 물약. 전투 중 '아이템' 액션과 연결
-- [ ] 4-4. 인벤토리/장비창 UI
-- [ ] 4-5. 획득 경로 — 몬스터 드랍(`RewardService` 확장), 상인 구매(ShadowMan/Mercurius NPC 개조)
+- [x] 4-1. `EquipDB.csv` — 캐릭터별 무기 2종 + 공용 방어구(갑옷/투구/신발/악세사리, 악세 2슬롯) 총 17종. 옵션: 공격(캐릭터 공격 스탯 가산)/민첩/방어/마방/최대HP/자원 최대치/스킬레벨/요구레벨/등급/가격
+- [x] 4-2. 착용 로직 — `GamePlayer.Equipment.cs`: 착탈 Command(서버 검증: 소유/레벨/캐릭터 전용/슬롯 자동 교체), 합산 스탯은 `Total*` 프로퍼티(전투 코드 전체 교체), MaxHP/자원 최대치는 착탈 델타 반영. 전투 중 착탈 불가
+- [x] 4-3. 소모품 — `ConsumableDB.csv`(HP물약 2종/MP물약). 전투 '아이템' 액션(TpAction.ITEM) + 맵에서 사용 모두 연결. 버프 물약은 버프 지속 시스템 정리 후
+- [x] 4-4. 인벤토리/장비창 — OnGUI 임시 창 (스킬트리 아래 '장비' 버튼, 상호 배타 토글). 정식 UI는 UI 정리 단계
+- [x] 4-5. 획득 — 전투 승리 드랍(장비 30%/물약 40%, 인벤토리 직행) + 시작 시 기본 무기 장착 + HP물약 2개. **상인 구매(ShadowMan 개조)는 Phase 6 상점 작업에서**
 
-**완료 기준**: 드랍→착용→스탯 변화→전투 반영, 멀티 동기화 포함.
+**완료 기준**: 드랍→착용→스탯 변화→전투 반영, 멀티 동기화 포함. → 구현 완료, 에디터 검증 필요.
 
 ---
 
@@ -99,14 +99,14 @@
 
 **목표**: 런 소멸 구조 제거, 저장/로드 기반 진행.
 
-- [ ] 5-1. `M_SaveManager` 재설계 — `NetworkSingletonD` 분리, 메뉴에서도 동작하는 서비스로. 저장 데이터 3분할: `PlayerProfile`(레벨/EXP/스탯/스킬트리/장비/골드 — SteamID 키) + `WorldState`(맵 시드/탐험/클리어 플래그 — 호스트 소유) + 파티 구성
-- [ ] 5-2. 자동 저장 시점 — 전투 종료/특수타일 클리어/장비·트리 변경 (현재 저장 호출부는 디버그 버튼뿐)
-- [ ] 5-3. 메뉴 개편 — 싱글 플레이어(처음부터/이어서) + 멀티 플레이어(처음부터/이어서). `MenuScene` + `CreateLobby.cs`의 히든 "load" 트리거를 정식 UI로
-- [ ] 5-4. 싱글 플레이 모드 — **결정 필요: 1인이 3캐릭터 전원 조작 권장** (전투 밸런스를 3인 고정으로 통일, 호스트 단독 세션으로 기존 네트워크 구조 재사용)
-- [ ] 5-5. 사망 처리 — `RpcGameOver`의 세션 파괴(`PopUpUIManager:445` Shutdown) 대신 패널티+복귀 규칙 (기획 결정 필요)
-- [ ] 5-6. 씬 전환 시 상태 보존 — `M_NetworkRoomManager.OnChangedActiveScene`의 DDOL 전량 파괴 전에 프로필 flush
+- [x] 5-1. 저장 계층 신설 — **`GameSaveService`(정적 서비스, 네트워크 독립)**: `ProfileData`(레벨/EXP/스탯/스킬트리/장비/소모품/골드/HP — SteamID 키, 전원분) + 월드 상태(맵 시드/방문 완료/시야/현재 위치). 호스트가 `rpg_save.json` 단일 파일 소유. 구 `M_SaveManager`(카드 런 스냅샷)는 비활성 (카드 제거 시 삭제)
+- [x] 5-2. 자동 저장 — 탐험 스텝 확정(`CmdInstantMove`)/전투 없는 투표 이동/전투·방 정리 완료(`NoneBattleEnd`) 시 지연 저장(`ScheduleSave`). 장비·트리 변경은 다음 이동/전투 저장에 포함됨
+- [x] 5-3. 로드 진입 — 방 만들기 화면에 '이어서 하기 ON/OFF' 임시 토글 (저장 파일 있을 때만, 기본 ON). 복원: 시드+진행은 `SphereMapNetwork` SyncVar/SyncList로 전 클라이언트 전파, 프로필은 `GenerateGamePlayer`에서 SteamID 매칭 적용(새 파티원·캐릭터 변경 시 신규 초기화). **정식 메뉴 개편(싱글/멀티 4버튼)은 UI 작업에서**
+- [ ] 5-4. 싱글 플레이 모드 — **결정 대기: 1인이 3캐릭터 전원 조작 권장** (전투 밸런스를 3인 고정으로 통일, 호스트 단독 세션으로 기존 네트워크 구조 재사용)
+- [ ] 5-5. 사망 처리 — **결정 대기**. 현재는 사망 → 세션 종료 → '이어서 하기'로 마지막 저장 시점 재개가 사실상의 패널티로 동작
+- [x] 5-6. 씬 전환 시 상태 보존 — 저장이 이동/전투 종료 시점에 즉시 파일로 내려가므로 DDOL 파괴 전 flush가 불필요해짐 (설계로 해소)
 
-**완료 기준**: 종료 후 "이어서 하기"로 같은 월드·같은 성장 상태가 복원된다 (호스트/게스트 각각).
+**완료 기준**: 종료 후 "이어서 하기"로 같은 월드·같은 성장 상태가 복원된다 (호스트/게스트 각각). → 구현 완료, 에디터 검증 필요.
 
 ---
 
@@ -144,8 +144,8 @@
 
 1. **에리스 기본 스킬** — 기획서 공란 (제안: HP 소모 → TP 가속 "피의 가속")
 2. **싱글 조작 범위** — 1인 3캐릭 조작 여부 (5-4)
-3. **민첩 다회 턴 상한** — 무제한이면 민첩이 지배 스탯이 됨 (2A-1)
-4. **필살기 리스크 규칙** (3-3)
+3. ~~민첩 다회 턴 상한~~ — **확정: 상한 없음, 민첩 수치로 밸런싱** (2A-1 반영)
+4. ~~필살기 리스크 규칙~~ — **1차 확정: 사용 후 자신의 TP -50** (3-3 반영, 밸런스 조정 여지)
 5. **사망 패널티** (5-5)
 6. **탐험 스텝 행동비용 소모 + 보스 타이머 존치 여부** (Phase 0 잔여)
 7. **특수타일 리스폰 규칙** (6-5)

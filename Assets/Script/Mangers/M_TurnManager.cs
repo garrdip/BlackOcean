@@ -597,7 +597,11 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
             gamePlayerItem.InvokeItemEffects(ItemEffectTime.STARTBATTLE, player);
             gamePlayerItem.InvokeEffects(teamArtifacts, ItemEffectTime.STARTBATTLE, player);
         }
-        phase = BattleTurn.BATTLE_STANDBY;
+        if(UseTpBattle){
+            StartTpBattle(); // RPG 전환: TP 턴제 전투 (카드 페이즈 대체 — M_TurnManager.TpBattle.cs)
+        }else{
+            phase = BattleTurn.BATTLE_STANDBY; // 기존 카드 전투
+        }
     }
 
     [Server]

@@ -11,6 +11,16 @@ namespace ProjectD
     public enum PlayOrder { FIRST = 0, SECOND = 1, THIRD = 2 }
     public enum GameLevel { EASY = 0, NORMAL = 1, HARD = 2 }
     public enum RoomType { START_LOCATION, MONSTER, ELITE, EVENT_POSITIIVE, EVENT_NEGATIVE, CAMP, ITEM_NPC, CARD_NPC, UNDEFINED, COMPLETE, RUINS, BOSS, ROAD, OBSTACLE } // ROAD/OBSTACLE은 3D 지형 전용 — 기존 값 뒤에만 추가할 것 (직렬화 호환)
+    /// <summary>공격 속성 (RPG 전환) — 참격/타격/관통/마법/공명/무속성. NONE은 약점 공격 불가 대신 속성 방어의 영향도 받지 않는다</summary>
+    public enum AttackAttribute { NONE, SLASH, STRIKE, PIERCE, MAGIC, RESONANCE }
+    /// <summary>캐릭터별 전투 자원 종류 (RPG 전환) — 게오르크: 분노(피해를 주고받으며 충전), 홍단향: MP, 에리스: HP 소모</summary>
+    public enum BattleResourceType { NONE, RAGE, MP, HP }
+    /// <summary>TP 턴제 전투의 플레이어 액션 (RPG 전환 — 1턴 1액션)</summary>
+    public enum TpAction { ATTACK, DEFEND, SKILL, ITEM, MOVE }
+    /// <summary>장비 슬롯 (RPG 전환) — 무기(캐릭터 고정) + 방어구 4종. ACCESSORY는 2개까지 장착 가능</summary>
+    public enum EquipSlot { WEAPON, ARMOR, HELMET, BOOTS, ACCESSORY }
+    /// <summary>소모품 효과 종류 (RPG 전환) — HP 회복 / 전투 자원(MP·분노) 회복</summary>
+    public enum ConsumableType { HEAL_HP, RESTORE_RESOURCE }
     public enum BattleTurn { NONE_BATTLE_SCENE, NONE_BATTLE_END,BATTLE_INITIALIZE ,BATTLE_STANDBY, PLAYER_PREEFFECT, PLAYER_DRAW, PLAYER_ACTIVE, PLAYER_ACTIVE_DONE, PLAYER_END_TURN_EFFECT, PLAYER_END, MONSTER_ORDERSELECT, MONSTER_PREEFFECT, MONSTER_ACTIVE, BATTLE_END}
     public enum CardType { BLESS, ATTACK, STRATEGY, CURSE, HERO }
     public enum CardCharacteristic { GOOWON, YOUNGWON, GEUNWON, CHALNA, HEBANG, JOONGREUK, SOOKREON, BOONGGUI, SOIRAK, FORWARD, BACKWARD ,GOHENG, GISADO, EUNHASOO, HWAHAP, NON_CHALNA, BYULMOORI }
@@ -61,6 +71,8 @@ namespace ProjectD
     }
 
     public delegate IEnumerator ExecuteCard(Card card,List<TargetObject> target);
+    /// <summary>스킬 실행 델리게이트 (RPG 전환) — SkillDB.csv의 SkillNo와 동명의 SkillData 정적 메서드에 리플렉션 바인딩된다</summary>
+    public delegate IEnumerator ExecuteSkill(SkillData.SkillDef skill, TargetObject user, List<TargetObject> targets);
     public delegate IEnumerator CurssEffect(TargetObject target);
     // owner: 아이템 소유 플레이어(전투 밖에서도 유효), sender: 전투 중 해당 플레이어의 타겟오브젝트(비전투 시점 발동이면 null)
     public delegate void ItemEventHanddler(GamePlayerItem owner, TargetObject sender, Item item);

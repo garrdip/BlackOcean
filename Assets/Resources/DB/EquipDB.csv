@@ -1,0 +1,17 @@
+EquipNo,Name,Slot,Character,RequireLevel,Grade,Attack,Agility,Defense,MagicDefense,MaxHP,MaxResource,SkillLevel,Price,Description
+GW1,낡은 검,WEAPON,GEORK,1,NORMAL,3,0,0,0,0,0,0,50,게오르크 기본 무기
+GW2,대장군의 검,WEAPON,GEORK,5,RARE,7,0,1,0,0,0,0,200,공격력이 높은 상급 검
+HW1,낡은 지팡이,WEAPON,HONGDANHYANG,1,NORMAL,3,0,0,0,0,0,0,50,홍단향 기본 무기
+HW2,개화 지팡이,WEAPON,HONGDANHYANG,5,RARE,6,0,0,1,0,5,0,200,MP가 늘어나는 상급 지팡이
+EW1,흠집 난 코어,WEAPON,ERIS,1,NORMAL,3,0,0,0,0,0,0,50,에리스 기본 무기
+EW2,공명 코어,WEAPON,ERIS,5,RARE,6,2,0,0,0,0,0,200,민첩이 붙은 상급 코어
+AR1,가죽 갑옷,ARMOR,NONE,1,NORMAL,0,0,2,1,5,0,0,60,기본 갑옷
+AR2,철 갑옷,ARMOR,NONE,4,RARE,0,-1,5,2,10,0,0,220,무겁지만 튼튼한 갑옷 (민첩 -1)
+HE1,가죽 투구,HELMET,NONE,1,NORMAL,0,0,1,1,3,0,0,40,기본 투구
+HE2,현자의 관,HELMET,NONE,4,RARE,0,0,1,4,0,10,0,200,마법방어와 자원이 늘어나는 관
+BO1,여행자 신발,BOOTS,NONE,1,NORMAL,0,1,0,0,0,0,0,40,민첩 +1
+BO2,질풍의 신발,BOOTS,NONE,4,RARE,0,3,0,0,0,0,0,220,민첩 +3
+AC1,생명의 반지,ACCESSORY,NONE,2,NORMAL,0,0,0,0,15,0,0,120,최대 HP +15
+AC2,마력의 목걸이,ACCESSORY,NONE,2,NORMAL,0,0,0,0,0,10,0,120,자원 최대치 +10
+AC3,숙련의 부적,ACCESSORY,NONE,6,UNIQUE,0,0,0,0,0,0,1,400,모든 스킬 강화 레벨 +1
+AC4,수호의 팔찌,ACCESSORY,NONE,3,NORMAL,0,0,2,2,0,0,0,150,방어력·마법방어 +2

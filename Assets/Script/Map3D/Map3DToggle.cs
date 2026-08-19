@@ -41,17 +41,8 @@ namespace ProjectD
             M_MapManager.instance.BattleScene.SetActive(false);
         }
 
-        void OnGUI()
-        {
-            // 테스트용 임시 버튼 (우상단). 구체 입력이 이 영역을 무시하도록 등록
-            var rect = new Rect(Screen.width - 180f, 10f, 170f, 44f);
-            Map3DGuiArea.Register(rect);
-            if (GUI.Button(rect, _showing3D ? "2D 맵 보기 (테스트)" : "3D 맵 보기 (테스트)"))
-            {
-                Toggle();
-            }
-        }
-
+        // 우상단 "3D 맵 보기 (테스트)" OnGUI 버튼은 제거됨 — 3D 맵이 기본(startWith3D)이 되었고
+        // 해당 자리를 스킬트리 버튼이 사용한다. 2D 복귀가 필요하면 인스펙터에서 Toggle()을 직접 호출할 것.
         public void Toggle()
         {
             if (_showing3D)

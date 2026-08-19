@@ -128,8 +128,31 @@ public class PlayerInterface : NetworkBehaviour
         gamePlayer.objectOwner = this;
         gamePlayer.character = character;
         gamePlayer.selectOrder = selectOrder;
-        gamePlayer.HP = BalanceData.Get("PLAYER_INIT_HP", 50);
-        gamePlayer.MaxHP = gamePlayer.HP;
+        // RPG 스탯 초기화 — CharacterStatDB의 캐릭터별 기본치. 테이블 누락 시 기존 BalanceDB 초기값으로 폴백
+        CharacterStatData.Entry stat = CharacterStatData.Get(character);
+        if(stat != null){
+            gamePlayer.level = 1;
+            gamePlayer.exp = 0;
+            gamePlayer.strength = stat.baseStr;
+            gamePlayer.agility = stat.baseAgi;
+            gamePlayer.vitality = stat.baseVit;
+            gamePlayer.intelligence = stat.baseInt;
+            gamePlayer.defense = stat.baseDef;
+            gamePlayer.magicDefense = stat.baseMdef;
+            gamePlayer.MaxHP = GamePlayer.GetMaxHPByVitality(stat.baseVit);
+            gamePlayer.maxResource = stat.baseResource;
+            gamePlayer.currentResource = (stat.resource == ProjectD.BattleResourceType.MP) ? stat.baseResource : 0; // MP는 가득, 분노는 0에서 시작
+            gamePlayer.skillPoints = BalanceData.Get("STARTING_SKILL_POINTS", 1); // 시작 포인트 — 첫 스킬을 바로 찍을 수 있게
+            gamePlayer.ServerGrantInitialGear(); // 기본 무기 장착 + HP 물약 2개 (스폰 전이라 SyncList 초기 상태로 전달)
+
+            // 이어서 하기: 저장된 프로필이 있으면 기본 초기화를 덮어쓴다 (SteamID 매칭 — 새 파티원은 신규 초기화 유지)
+            GameSaveService.ProfileData profile = GameSaveService.FindProfile(steamID);
+            if(profile != null && profile.character == character)
+                GameSaveService.ApplyProfile(gamePlayer, profile);
+        }else{
+            gamePlayer.MaxHP = BalanceData.Get("PLAYER_INIT_HP", 50);
+        }
+        gamePlayer.HP = gamePlayer.MaxHP;
         gamePlayer.recoveryValue = BalanceData.Get("PLAYER_INIT_RECOVERY", 15);
         gamePlayer.gold = BalanceData.Get("PLAYER_INIT_GOLD", 100);
         NetworkServer.Spawn(gamePlayerObject, connectionToClient);

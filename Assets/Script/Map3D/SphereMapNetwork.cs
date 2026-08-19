@@ -25,6 +25,12 @@ namespace ProjectD
         [SyncVar(hook = nameof(OnChangedBossTile))]
         public int bossTileIndex = -1; // 보스가 위치한 타일 (-1 = 미출현)
 
+        // ---------------- 이어서 하기 (GameSaveService — 시드 결정적 생성 + 진행 상태만 동기화) ----------------
+        [SyncVar]
+        public int restoredCurrentTile = -1; // -1 = 새 게임
+        public readonly SyncList<int> restoredCompletedTiles = new SyncList<int>();
+        public readonly SyncList<int> restoredActiveTiles = new SyncList<int>();
+
         // PlayerInterface netId → 투표한 타일 인덱스
         public readonly SyncDictionary<uint, int> votes = new SyncDictionary<uint, int>();
 
@@ -54,9 +60,25 @@ namespace ProjectD
         public override void OnStartServer()
         {
             base.OnStartServer();
-            mapSeed = Random.Range(1, int.MaxValue);
+            // 이어서 하기: 저장된 시드/진행 상태로 시작 — 클라이언트에는 SyncVar/SyncList로 전파된다
+            if (GameSaveService.pendingLoad && GameSaveService.TryLoad() && GameSaveService.Loaded.currentTileIndex >= 0)
+            {
+                GameSaveService.RpgSaveData saved = GameSaveService.Loaded;
+                mapSeed = saved.mapSeed;
+                restoredCurrentTile = saved.currentTileIndex;
+                foreach (int index in saved.completedTiles) restoredCompletedTiles.Add(index);
+                foreach (int index in saved.activeTiles) restoredActiveTiles.Add(index);
+            }
+            else
+            {
+                GameSaveService.ClearPending(); // 파일 없음/로드 실패 → 일반 시작
+                mapSeed = Random.Range(1, int.MaxValue);
+            }
             if (system != null)
+            {
                 system.SetNetworkSeed(mapSeed);
+                ApplyRestoredProgress();
+            }
         }
 
         public override void OnStartClient()
@@ -66,13 +88,40 @@ namespace ProjectD
             warpCampTiles.Callback += OnWarpCampTilesChanged;
             revealedTiles.Callback += OnWarpCampTilesChanged; // 표시 갱신 동작이 동일하므로 콜백 공유
             if (mapSeed != 0 && system != null)
+            {
                 system.SetNetworkSeed(mapSeed);
+                ApplyRestoredProgress();
+            }
         }
 
         void OnChangedSeed(int oldVal, int newVal)
         {
             if (system != null)
+            {
                 system.SetNetworkSeed(newVal);
+                ApplyRestoredProgress();
+            }
+        }
+
+        // 저장된 진행 상태(방문/시야/현재 위치)를 맵에 반영 — 시드로 맵을 만든 직후 호출
+        void ApplyRestoredProgress()
+        {
+            if (restoredCurrentTile < 0 || system == null || !system.HasState)
+                return;
+            system.RestoreProgress(restoredCurrentTile, new List<int>(restoredCompletedTiles), new List<int>(restoredActiveTiles));
+        }
+
+        /// <summary>지연 저장 — 이동/전투 종료 직후 호출. RPC 반영이 끝난 뒤(1.5초) 서버 상태를 저장한다</summary>
+        [Server]
+        public void ScheduleSave()
+        {
+            StartCoroutine(DelayedSave());
+        }
+
+        System.Collections.IEnumerator DelayedSave()
+        {
+            yield return new WaitForSeconds(1.5f);
+            GameSaveService.SaveGame();
         }
 
         void OnChangedBossTile(int oldVal, int newVal)
@@ -231,6 +280,8 @@ namespace ProjectD
             M_MapManager.instance.DecreaseTotalActionCost(1);
             if (bossTileIndex >= 0 && bossTileIndex != tileIndex)
                 bossTileIndex = system.GetBossApproachTile(bossTileIndex, tileIndex, 2);
+
+            ScheduleSave(); // 자동 저장 — 탐험 스텝 확정
         }
 
         // ------------------------------------------------------------ 서버: 전원 레디 시 이동 --------------------------------------------------------------- //
@@ -309,6 +360,8 @@ namespace ProjectD
             // 이동/시야 확장 반영은 전투 클리어 후 맵 복귀 시점으로 보류 (딤 처리와 자연스럽게 이어지도록)
             bool entersBattle = !(destType == RoomType.COMPLETE || destType == RoomType.START_LOCATION || destType == RoomType.ROAD);
             RpcMoveParty(chosen, !entersBattle); // 모든 클라이언트(호스트 포함)에 이동 전달
+            if (!entersBattle)
+                ScheduleSave(); // 자동 저장 — 전투 없는 이동 확정 (전투 진입은 종료 시점에 저장)
             votes.Clear();
             // 전초기지 도착(워프 도착 포함)이면 새 위치 기준으로 워프 후보 재계산, 그 외 이동이면 워프 기회 종료.
             // 호스트 클라이언트의 이동 RPC 처리 시점에 의존하지 않도록 서버가 확정한 목적지(chosen)를 직접 기준으로 삼는다.

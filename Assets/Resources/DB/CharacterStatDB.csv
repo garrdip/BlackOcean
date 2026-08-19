@@ -1,0 +1,4 @@
+Character,BaseStr,BaseAgi,BaseVit,BaseInt,BaseDef,BaseMdef,GrowStr,GrowAgi,GrowVit,GrowInt,GrowDef,GrowMdef,Weakness,Resist,Resource,BaseResource,AttackStat,BasicAttackAttribute,Description
+GEORK,40,5,10,3,8,4,15,1,3,1,2,1,MAGIC,SLASH,RAGE,100,STR,SLASH,힘·체력·방어 위주 성장. 분노: 피해를 주거나 받을 때 충전. 기본 공격: 검(참격). ※힘 5배 상향(1인 테스트 밸런스 — 기본8/성장3이 원래 값)
+HONGDANHYANG,4,6,7,10,4,8,1,1,2,3,1,2,PIERCE,MAGIC,MP,30,INT,MAGIC,지능·마법방어 위주 성장. MP 자원. 기본 공격: 지팡이(마법)
+ERIS,7,10,6,4,5,5,2,3,1,1,1,1,STRIKE,RESONANCE,HP,0,STR,RESONANCE,힘·민첩 위주 성장. 스킬 코스트로 자신의 HP를 소모. 기본 공격: 크리스털 코어(공명)
