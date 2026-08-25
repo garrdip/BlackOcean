@@ -194,7 +194,6 @@ public partial class GamePlayer
     void DrawEquipmentGUI()
     {
         Rect toggleRect = new Rect(Screen.width - 150f, 45f, 140f, 30f);
-        ProjectD.Map3DGuiArea.Register(toggleRect);
         if (GUI.Button(toggleRect, guiEquipOpen ? "장비 닫기" : $"장비 ({inventoryEquips.Count + inventoryConsumables.Count})"))
         {
             guiEquipOpen = !guiEquipOpen;
@@ -205,7 +204,6 @@ public partial class GamePlayer
         float windowWidth = 560f;
         float windowHeight = 430f;
         Rect windowRect = new Rect(Screen.width - windowWidth - 10f, 85f, windowWidth, windowHeight);
-        ProjectD.Map3DGuiArea.Register(windowRect);
         GUI.Box(windowRect, $"{character} 장비  |  힘{TotalStrength} 민첩{TotalAgility} 지능{TotalIntelligence} 방어{TotalDefense} 마방{TotalMagicDefense}");
 
         guiEquipScroll = GUI.BeginScrollView(

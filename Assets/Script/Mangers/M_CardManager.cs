@@ -337,7 +337,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void CardOnHandThrowAwaySequence(CardOnHand cardOnHand)
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GameUIManager.instance.buttonEndTurn.interactable = false;        
+            GameUIManager.instance.SetEndTurnInteractable(false);        
             cardOnHand.isMoving = true;
             cardOnHand.isUsed = true;
             float duration = 0.5f;
@@ -364,7 +364,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             {
                 // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행
                 if(gamePlayerDeck.isOwned){
-                    GameUIManager.instance.buttonEndTurn.interactable = true;
+                    GameUIManager.instance.SetEndTurnInteractable(true);
                     sequence.Kill();
                     cardOnHand.isUsed = true;
                     NetworkClient.connection.identity.GetComponent<PlayerInterface>().destroyCards.Add(cardOnHand);
@@ -378,7 +378,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     public void CardOnHandThrowAwaySequenceToForgotenDeck(CardOnHand cardOnHand)
     {
         if(NetworkClient.connection != null && NetworkClient.active){
-            GameUIManager.instance.buttonEndTurn.interactable = false;        
+            GameUIManager.instance.SetEndTurnInteractable(false);        
             cardOnHand.isMoving = true;
             cardOnHand.isUsed = true;
             float duration = 0.5f;
@@ -404,7 +404,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
             {
                 // 애니매이션 시퀀스 모두 종료 시 카드 삭제 로직 수행
                 if(gamePlayerDeck.isOwned){
-                    GameUIManager.instance.buttonEndTurn.interactable = true;
+                    GameUIManager.instance.SetEndTurnInteractable(true);
                     sequence.Kill();
                     cardOnHand.isUsed = true;
                     NetworkClient.connection.identity.GetComponent<PlayerInterface>().destroyCards.Add(cardOnHand);
@@ -417,7 +417,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
     // CardOnHand 모두 trashDeck으로 버리는 애니매이션(턴 종료시 호출)
     public void CardOnHandAllThrowAwaySequence(CardOnHand cardOnHand, GamePlayerDeck gamePlayerDeck)
     {
-        GameUIManager.instance.buttonEndTurn.interactable = false;
+        GameUIManager.instance.SetEndTurnInteractable(false);
         float duration = 0.5f;
         float delay = (gamePlayerDeck.cardOnHands.Count - cardOnHand.sortingGroup.sortingOrder) * 0.1f;
         Vector3 position = GameUIManager.instance.buttonTrashDeck.GetComponent<RectTransform>().position;
@@ -436,7 +436,7 @@ public class M_CardManager : NetworkSingletonD<M_CardManager>
         sequence.Join(cardOnHand.transform.DORotate(new Vector3(0f, 0f, -90f), duration));
         sequence.Join(cardOnHand.transform.DOMove(position, duration).SetEase(Ease.OutCirc).SetDelay(delay));
         sequence.OnComplete(() => {
-                    GameUIManager.instance.buttonEndTurn.interactable = true;
+                    GameUIManager.instance.SetEndTurnInteractable(true);
                     gamePlayerDeck.CmdDestroyCardOnHandToTrash(cardOnHand);
                     ChangeCurrentPlayerCardOnHandState(false);
                     sequence.Kill();

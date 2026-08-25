@@ -253,7 +253,7 @@ public class PlayerInterface : NetworkBehaviour
     // 전원 상태 집계와 흐름 전이는 상태머신 소유자인 M_TurnManager가 판정한다 (순환 참조 축소).
     public void OnEndTurnStateChanged(bool oldVal, bool newVal)
     {
-        if(isLocalPlayer){
+        if(isLocalPlayer && GameUIManager.instance.buttonEndTurn != null){ // 카드 전투 UI(턴 종료 버튼)는 씬에서 제거됨
             EndTurnButton endTurnButton = GameUIManager.instance.buttonEndTurn.GetComponent<EndTurnButton>();
             endTurnButton.SetEndTurnButtonActiveState(newVal);
         }
@@ -270,15 +270,10 @@ public class PlayerInterface : NetworkBehaviour
         }
     }
 
+    // 맵 이동 레디는 맵 시스템 제거로 사용처가 없음 — 스테이지 진입 합의 UI가 생기면 재활용
     public void OnReadyStateChanged(bool oldVal, bool newVal)
     {
-        if(isLocalPlayer){
-            ReadyButtonOnMap readyButtonOnMap = MapUI.instance.readyButton.GetComponent<ReadyButtonOnMap>();
-            readyButtonOnMap.SetReadyButtonViewByReadyState(newVal);
-        }
         onChangeReady?.Invoke(newVal);
-        if(isServer)
-            M_TurnManager.instance.CheckAllPlayersReadyForMapMove();
     }
 
 
@@ -296,17 +291,18 @@ public class PlayerInterface : NetworkBehaviour
             sequence.Append(prevCardPocket.transform.DOMoveY(-100f, 0.5f));
             sequence.Join(currentCardPocket.transform.DOMoveY(-8f, 0.5f));
 
-            // 현재 선택한 플레이어의 PrefareDeck, TrashDeck, ForgottenDeck 카운트 텍스트 설정
+            // 현재 선택한 플레이어의 PrefareDeck, TrashDeck, ForgottenDeck 카운트 텍스트 설정 (카드 전투 UI가 씬에 있을 때만 — 거점 전환으로 제거됨)
             GamePlayerDeck currentGamePlayerDeck = NetLookup.Server<GamePlayerDeck>(newVal);
-            
-            GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
-            GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
-            GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);
-            GameUIManager.instance.textPrefareDeckCount.text = currentGamePlayerDeck.prefareDeck.Count.ToString();
-            GameUIManager.instance.textTrashDeckCount.text = currentGamePlayerDeck.trashDeck.Count.ToString();
-            GameUIManager.instance.textForgottenDeckCount.text = currentGamePlayerDeck.forgottenDeck.Count.ToString();
-            GameUIManager.instance.currentIchiText.text = currentGamePlayerDeck.currentIchi.ToString();
-            GameUIManager.instance.maxIchiText.text = currentGamePlayerDeck.maxIchi.ToString();
+            if(GameUIManager.instance.HasCardUI){
+                GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
+                GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
+                GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);
+                GameUIManager.instance.textPrefareDeckCount.text = currentGamePlayerDeck.prefareDeck.Count.ToString();
+                GameUIManager.instance.textTrashDeckCount.text = currentGamePlayerDeck.trashDeck.Count.ToString();
+                GameUIManager.instance.textForgottenDeckCount.text = currentGamePlayerDeck.forgottenDeck.Count.ToString();
+                GameUIManager.instance.currentIchiText.text = currentGamePlayerDeck.currentIchi.ToString();
+                GameUIManager.instance.maxIchiText.text = currentGamePlayerDeck.maxIchi.ToString();
+            }
 
             // 현재 선택한 플레이어의 어빌리티 버튼만 활성화
             foreach(GamePlayer gamePlayer in ownedPlayers){

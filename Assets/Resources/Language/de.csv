@@ -89,6 +89,8 @@ ui.msg.battle_elite,Kampf : Elitemonster,전투 : 엘리트 몬스터
 ui.msg.event_positive,Günstiges Ereignis,긍정적 이벤트
 ui.msg.event_negative,Ungünstiges Ereignis,부정적 이벤트
 ui.msg.camp,Vorposten,전초기지
+ui.msg.hub,Stützpunkt,거점
+ui.msg.hub_healed,HP wiederhergestellt.,체력을 회복했습니다.
 ui.msg.card_shop,Kartenladen,카드 상점
 ui.msg.item_shop,Gegenstandsladen,아이템 상점
 ui.msg.map_boss_appeared,Auf der Karte ist ein Boss erschienen.,맵에 보스가 출현 했습니다.

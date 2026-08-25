@@ -136,6 +136,7 @@ public class PlayerOrder : NetworkBehaviour
 
         // 현재 선택한 플레이어의 PrefareDeck, TrashDeck, ForgottenDeck 카운트 텍스트 설정
         GamePlayerDeck currentGamePlayerDeck = NetLookup.Client<GamePlayerDeck>(targetNetId);
+        if(!GameUIManager.instance.HasCardUI) return; // 카드 전투 UI(덱 버튼/이치 표시)는 씬에서 제거됨
         GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
         GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
         GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);

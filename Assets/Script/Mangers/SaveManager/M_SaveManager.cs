@@ -31,14 +31,6 @@ public class M_SaveManager : NetworkSingletonD<M_SaveManager>
             }
         }
 
-        // [3D 맵 리뉴얼 테스트] 2D 맵 미생성 상태에서는 currentRoom이 null일 수 있음
-        data.map.currentRoom = M_MapManager.instance.currentRoom != null
-            ? M_MapManager.instance.currentRoom.coordinate
-            : Vector2Int.zero;
-
-        foreach(HexagonMapRoom mapRoom in M_MapManager.instance.hexagonMapRooms)
-            data.map.hexagonMapRooms.Add(new SaveDataMapRoom(mapRoom));
-
         File.WriteAllText(FilePath, JsonUtility.ToJson(data, true));
         Debug.Log(FilePath + " Save Done");
     }

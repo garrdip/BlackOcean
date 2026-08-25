@@ -103,6 +103,10 @@ public partial class GamePlayerDeck
     // 뽑을 덱 리스트 콜백
     void OnPrefareDeckUpdated(SyncList<Card>.Operation op, int index, Card oldPrefareDeck, Card newPrefareDeck)
     {
+        if(!GameUIManager.instance.HasCardUI){ // 카드 전투 UI(덱 버튼/카운트)는 씬에서 제거됨 — 저주 카드 집계만 유지 (2B-5 카드 제거 시 함께 정리)
+            if(op == SyncList<Card>.Operation.OP_ADD && newPrefareDeck.baseCard.cardType == CardType.CURSE) gainCurseCardCount++;
+            return;
+        }
         uint currentGamePlayerNetId = PlayerRegistry.Local.currentGamePlayerNetId;
         switch (op)
         {
@@ -148,6 +152,7 @@ public partial class GamePlayerDeck
     // 버린 덱 리스트 콜백
     void OnTrashDeckUpdated(SyncList<Card>.Operation op, int index, Card oldTrashDeck, Card newTrashDeck)
     {
+        if(!GameUIManager.instance.HasCardUI) return; // 카드 전투 UI 제거됨
         uint currentGamePlayerNetId = PlayerRegistry.Local.currentGamePlayerNetId;
         switch (op)
         {
@@ -184,6 +189,7 @@ public partial class GamePlayerDeck
     // 잊혀진 덱 리스트 콜백
     void OnForgottenDeckUpdated(SyncList<Card>.Operation op, int index, Card oldVal, Card newVal)
     {
+        if(!GameUIManager.instance.HasCardUI) return; // 카드 전투 UI 제거됨
         uint currentGamePlayerNetId = PlayerRegistry.Local.currentGamePlayerNetId;
         switch (op)
         {

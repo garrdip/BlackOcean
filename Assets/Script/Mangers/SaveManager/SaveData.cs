@@ -8,7 +8,6 @@ using ProjectD;
 public class SaveData
 {
     public SaveDataPlayer[] players = new SaveDataPlayer[3];
-    public SaveDataMap map = new SaveDataMap();
 }
 
 [System.Serializable]
@@ -19,31 +18,4 @@ public class SaveDataPlayer
     public Character character = new Character();
     public int HP, MaxHP;
     public List<Card> cards = new List<Card>();
-}
-
-[System.Serializable]
-public class SaveDataMap
-{
-    public List<SaveDataMapRoom> hexagonMapRooms = new List<SaveDataMapRoom>();
-    public Vector2Int currentRoom;
-}
-
-[System.Serializable]
-public class SaveDataMapRoom
-{
-    public RoomType roomType = RoomType.UNDEFINED; // 방 타입
-    public Vector2Int coordinate; // 각 방의 고유 좌표계 값
-    public Vector3 position; // 인게임 좌표계 값
-    public bool isActive = false; // 방 활성화 상태 구분값
-
-
-    public SaveDataMapRoom(HexagonMapRoom hexagonMapRoom)
-    {
-        roomType = hexagonMapRoom.roomType;
-        coordinate = hexagonMapRoom.coordinate;
-        position = hexagonMapRoom.position;
-        isActive = hexagonMapRoom.isActive;
-    }
-
-    public SaveDataMapRoom(){} // JsonUtility 역직렬화용 기본 생성자
 }

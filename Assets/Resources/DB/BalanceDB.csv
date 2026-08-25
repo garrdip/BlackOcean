@@ -14,7 +14,7 @@ REMOVE_CARD_MAX,3,패 제거 팝업 선택 가능 수
 HERO_DURATION_TURN,3,게오르크 영웅 변신 지속 턴 수 (변신한 턴 포함)
 HERO_BONUS_PER_CARD,3,영웅 상태 턴 시작 보너스 — 소유 영웅 카드당 힘의이치/방어 증가량 (기획 확정 2026-07-10)
 HP_PER_VITALITY,2,체력 스탯 1당 최대 HP 증가량 (MaxHP = PLAYER_INIT_HP + 체력 x 이 값)
-BATTLE_REWARD_EXP,20,전투 승리 경험치 보상 (기본치)
+BATTLE_REWARD_EXP,20,전투 승리 경험치 폴백 — 처치 몬스터 경험치(MonsterStatDB Exp) 합이 0일 때만 사용
 EXP_MULTIPLAYER_PERCENT,150,멀티플레이(2인 이상) 경험치 배율 %  — 기획: 1.5배
 USE_TP_BATTLE,1,TP 턴제 전투 사용 (1) / 기존 카드 전투 (0) — RPG 전환 토글
 BASIC_ATTACK_POWER,100,기본 공격 계수 % (공격 스탯 x 이 값 / 100)
@@ -37,5 +37,3 @@ EQUIP_DROP_PERCENT,30,전투 승리 시 장비 드랍 확률 %
 POTION_DROP_PERCENT,40,전투 승리 시 소모품 드랍 확률 %
 SKILL_LEVEL_BONUS_PERCENT,20,스킬트리 강화(SKILL_LEVEL) 노드당 스킬 피해 증가 %
 ULTIMATE_TP_PENALTY,50,필살기 사용 후 자신의 TP 감소량 (하이리스크)
-USE_3D_MAP,0,3D 구체 맵 사용 여부 (1=3D 구체 맵, 0=기존 2D 육각형 맵)
-MAP_SPECIAL_TILE_PERCENT,12,맵 타일이 특수 타일일 확률 % (나머지는 빈땅 ROAD)

@@ -214,6 +214,7 @@ public partial class TargetObject : NetworkBehaviour
         monsterName.text = monster.monsterName;
         playerNamePlate.SetActive(false);
         nextActionIndicator.gameObject.SetActive(false);
+        if(M_HubManager.instance != null) M_HubManager.instance.AttachNpcToHouse(this); // 거점 NPC → 자신의 집 오브젝트 아래로
     }
 
     // 몬스터 타입의 타겟오브젝트 초기화

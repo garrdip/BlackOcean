@@ -20,7 +20,7 @@ public class CharactorSelector : MonoBehaviour
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player;
         if(IsServerAuthorityPlayer() && !IsOpenedPopUpExist()){
             skeletonRendererCustomMaterials.enabled = true;
-        }else if(M_MapManager.instance.currentRoom.roomType == RoomType.CAMP && targetPlayer.isSelectable){
+        }else if(IsInHub() && targetPlayer.isSelectable){
             skeletonRendererCustomMaterials.enabled = true;
         }
     }
@@ -30,7 +30,7 @@ public class CharactorSelector : MonoBehaviour
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player;
         if(IsServerAuthorityPlayer() && !IsOpenedPopUpExist()){
             skeletonRendererCustomMaterials.enabled = false;
-        }else if(M_MapManager.instance.currentRoom.roomType == RoomType.CAMP && targetPlayer.isSelectable){
+        }else if(IsInHub() && targetPlayer.isSelectable){
             skeletonRendererCustomMaterials.enabled = false;
         }
     }
@@ -40,9 +40,9 @@ public class CharactorSelector : MonoBehaviour
         PlayerInterface playerInterface = PlayerRegistry.Local;
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player; // 클릭한 캐릭터의 GamePlayer 인스턴스
         GamePlayer localPlayer = playerInterface.currentGamePlayer; // 로컬 플레이어의 GamePlayer 인스턴스
-        if(IsServerAuthorityPlayer() && IsBattleRoomType() && !IsOpenedPopUpExist() && !targetPlayer.isSelectable){ 
+        if(IsServerAuthorityPlayer() && IsInBattle() && !IsOpenedPopUpExist() && !targetPlayer.isSelectable){
             playerInterface.currentGamePlayerNetId = targetPlayer.netId; // // 클라이언트 나간 경우 서버권한 유저는 다른 플레이어 클릭해서 선택한 플레이어를 제어
-        }else if(M_MapManager.instance.currentRoom.roomType == RoomType.CAMP && targetPlayer.isSelectable){
+        }else if(IsInHub() && targetPlayer.isSelectable){
             CampPopUp campPopUp = PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>();
             switch(campPopUp.campAction){
                 case CampAction.Heal:
@@ -86,23 +86,15 @@ public class CharactorSelector : MonoBehaviour
         return false;
     }
 
-    // 전투가 이루어지는 방 타입인지 체크
-    private bool IsBattleRoomType()
-    { 
-        if(M_MapManager.instance.currentRoom.roomType == RoomType.MONSTER || M_MapManager.instance.currentRoom.roomType == RoomType.ELITE || M_MapManager.instance.currentRoom.roomType == RoomType.BOSS)
-        {
-            return true;
-        }
-        return false;
+    // 거점(NPC 상주 화면) 상태인지 — 류진솔/소피아의 치유·골드 전달 대상 선택은 거점에서만
+    private bool IsInHub()
+    {
+        return M_HubManager.instance != null && M_HubManager.instance.isInHub && M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE;
     }
 
-    // 전초기지, 카드 상점, 아이템 상점 방 타입인지 체크
-    private bool IsNPCRoomType()
+    // 스테이지 전투 중인지
+    private bool IsInBattle()
     {
-        if(M_MapManager.instance.currentRoom.roomType == RoomType.CAMP || M_MapManager.instance.currentRoom.roomType == RoomType.CARD_NPC || M_MapManager.instance.currentRoom.roomType == RoomType.ITEM_NPC)
-        {
-            return true;
-        }
-        return false; 
+        return M_HubManager.instance != null && !M_HubManager.instance.isInHub;
     }
 }

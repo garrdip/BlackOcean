@@ -1,19 +1,19 @@
-Monster_Name,Weakness,AttackAttribute,TPShield,Agility,Description
-Soldier_Axe,SLASH,SLASH,3,6,도끼병 — 참격 약점
-Soldier_Shield,STRIKE,STRIKE,5,4,방패병 — 갑옷형은 타격에 약함
-Soldier_Spear,SLASH,PIERCE,3,7,창병
-WacherA,MAGIC,MAGIC,4,6,감시자A
-WacherB,MAGIC,MAGIC,4,6,감시자B
-Devourer,PIERCE,STRIKE,4,5,포식자 — 연체형은 관통에 약함
-GiantSoldier,STRIKE,STRIKE,6,3,거인병 — 느리지만 강함
-SpearManA,SLASH,PIERCE,3,8,창잡이A — 빠름
-SpearManB,SLASH,PIERCE,3,8,창잡이B — 빠름
-Guardian,PIERCE|MAGIC,STRIKE,6,4,수호자 — 방패형은 관통에 약함
-치유사,STRIKE,MAGIC,3,7,치유사
-Happy,RESONANCE,MAGIC,4,7,해피
-Saddy,RESONANCE,MAGIC,4,7,새디
-E3,MAGIC,SLASH,4,6,정예3
-E4,MAGIC,PIERCE,4,6,정예4
-Boss_Momos,RESONANCE,MAGIC,10,7,보스 모모스
-Boss_Apates,SLASH|MAGIC,STRIKE,10,6,보스 아파테스
-Boss_Geras,PIERCE,RESONANCE,12,8,보스 게라스
+Monster_Name,Weakness,AttackAttribute,TPShield,Agility,Exp,Description
+Soldier_Axe,SLASH,SLASH,3,6,30,도끼병 — 참격 약점
+Soldier_Shield,STRIKE,STRIKE,5,4,40,방패병 — 갑옷형은 타격에 약함
+Soldier_Spear,SLASH,PIERCE,3,7,50,창병
+WacherA,MAGIC,MAGIC,4,6,16,감시자A
+WacherB,MAGIC,MAGIC,4,6,16,감시자B
+Devourer,PIERCE,STRIKE,4,5,22,포식자 — 연체형은 관통에 약함
+GiantSoldier,STRIKE,STRIKE,6,3,26,거인병 — 느리지만 강함
+SpearManA,SLASH,PIERCE,3,8,14,창잡이A — 빠름
+SpearManB,SLASH,PIERCE,3,8,14,창잡이B — 빠름
+Guardian,PIERCE|MAGIC,STRIKE,6,4,24,수호자 — 방패형은 관통에 약함
+치유사,STRIKE,MAGIC,3,7,18,치유사
+Happy,RESONANCE,MAGIC,4,7,60,해피 (엘리트)
+Saddy,RESONANCE,MAGIC,4,7,60,새디 (엘리트)
+E3,MAGIC,SLASH,4,6,50,정예3
+E4,MAGIC,PIERCE,4,6,50,정예4
+Boss_Momos,RESONANCE,MAGIC,10,7,200,보스 모모스
+Boss_Apates,SLASH|MAGIC,STRIKE,10,6,200,보스 아파테스
+Boss_Geras,PIERCE,RESONANCE,12,8,220,보스 게라스

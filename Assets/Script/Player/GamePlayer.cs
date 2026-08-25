@@ -68,9 +68,6 @@ public partial class GamePlayer : NetworkBehaviour
     [SyncVar]
     public Character character;
 
-    [SyncVar]
-    public uint mapPlayerNetId;
-
     public ParticleSystem recoverParticle; // 체력 회복 파티클 이펙트
 
     public bool isSelectable = false; // CharacterSelector 클래스에서 사용되는 플래그 변수(캐릭터 오브젝트의 마우스 오버 및 클릭 가능 상태 변경 용도)
@@ -100,16 +97,18 @@ public partial class GamePlayer : NetworkBehaviour
     {
         if(NetworkServer.spawned.TryGetValue(targetPlayerNetId, out NetworkIdentity networkIdentity)){
             GamePlayer targetPlayer = networkIdentity.GetComponent<GamePlayer>();
-            TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(targetPlayer);
-            if(targetObject.player != null){
-                if(recoveryLimitCount > 0){
-                    targetObject.playerHP += recoveryValue;
-                    recoveryLimitCount--;
-                    RpcHpRecovery(targetPlayerNetId);
-                }else{
-                    TargetErrorMessage(Const.ERR_RECOVERY_COUNT_LIMITED);
-                }
+            if(recoveryLimitCount <= 0){
+                TargetErrorMessage(Const.ERR_RECOVERY_COUNT_LIMITED);
+                return;
             }
+            TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(targetPlayer);
+            if(targetObject != null && targetObject.player != null){
+                targetObject.playerHP += recoveryValue; // 전투 아바타가 있으면 아바타 HP 경유 (GamePlayer.HP로 동기화됨)
+            }else{
+                targetPlayer.HP = Mathf.Min(targetPlayer.HP + recoveryValue, targetPlayer.MaxHP); // 거점(아바타 없음): GamePlayer HP 직접 회복
+            }
+            recoveryLimitCount--;
+            RpcHpRecovery(targetPlayerNetId);
         }
     }
 
@@ -142,15 +141,41 @@ public partial class GamePlayer : NetworkBehaviour
     public void AddExp(int amount)
     {
         if(amount <= 0) return;
-        exp += amount;
         int required = LevelData.GetRequiredExp(level);
+        if(required <= 0) return; // 최대 레벨(LevelDB RequiredExp 0) — 더 이상 쌓지 않음
+        exp += amount;
+        int startLevel = level;
+        int gainedPoints = 0;
+        CharacterStatData.Entry stat = CharacterStatData.Get(character);
         while(required > 0 && exp >= required){ // required 0 = 최대 레벨
             exp -= required;
             level++;
-            skillPoints++; // 레벨업당 스킬 포인트 1 (스킬트리 습득 재화)
+            int points = stat != null ? stat.GetSkillPointsForLevel(level) : 1; // 레벨업당 스킬 포인트 + N레벨 보너스 (CharacterStatDB)
+            skillPoints += points;
+            gainedPoints += points;
             ApplyLevelUpGrowth();
             required = LevelData.GetRequiredExp(level);
         }
+        if(required <= 0) exp = 0; // 최대 레벨 도달 — 잔여 경험치 정리
+        if(level > startLevel) RpcLevelUp(startLevel, level, gainedPoints);
+    }
+
+    // 레벨업 알림 — 소유자 화면에 토스트
+    [ClientRpc]
+    void RpcLevelUp(int fromLevel, int toLevel, int gainedPoints)
+    {
+        if(!isOwned) return;
+        string text = M_LanguageManager.Get("ui.msg.level_up", "레벨 업! Lv.{0} → Lv.{1} (스킬 포인트 +{2})")
+            .Replace("{0}", fromLevel.ToString()).Replace("{1}", toLevel.ToString()).Replace("{2}", gainedPoints.ToString());
+        M_MessageManager.instance
+            .MakeToast()
+            .Position(ToastPosition.Top)
+            .MessageBoxColor(ProjectD.ColorUtils.HexToColor("#DAA520"))
+            .TextColor(Color.white)
+            .Text(text)
+            .FadeInTime(1f)
+            .FadeOutTime(1.5f)
+            .Show();
     }
 
     // 레벨업 1회분 성장치 반영. 체력 스탯이 오르면 최대 HP를 다시 계산하고 늘어난 만큼 현재 HP도 회복시킨다
@@ -240,9 +265,22 @@ public partial class GamePlayer : NetworkBehaviour
         if(NetworkClient.spawned.TryGetValue(targetPlayerNetId, out NetworkIdentity networkIdentity)){
             GamePlayer targetPlayer = networkIdentity.GetComponent<GamePlayer>();
             TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(targetPlayer);
-            ParticleSystem particleSystem = Instantiate(recoverParticle, targetObject.transform.position, Quaternion.identity);
-            ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
-            renderer.sortingLayerName = "Effect";
+            if(targetObject != null){ // 거점(아바타 없음)에서는 파티클 생략
+                ParticleSystem particleSystem = Instantiate(recoverParticle, targetObject.transform.position, Quaternion.identity);
+                ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
+                renderer.sortingLayerName = "Effect";
+            }
+            if(targetPlayer.isOwned){
+                M_MessageManager.instance
+                    .MakeToast()
+                    .Position(ToastPosition.Bottom)
+                    .MessageBoxColor(Color.green)
+                    .TextColor(Color.white)
+                    .Text(M_LanguageManager.Get("ui.msg.hub_healed", "체력을 회복했습니다."))
+                    .FadeInTime(1f)
+                    .FadeOutTime(1f)
+                    .Show();
+            }
         }
     }
 

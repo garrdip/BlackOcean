@@ -29,7 +29,7 @@ There is no CLI build or test pipeline; development happens through the Unity Ed
 
 ### Managers (`Assets/Script/Mangers/` — note the folder name misspelling)
 
-All prefixed `M_`: `M_TurnManager` (battle phase state machine via the `BattleTurn` enum SyncVar — phases like `PLAYER_DRAW`, `PLAYER_ACTIVE`, `MONSTER_ACTIVE`), `M_CardManager`, `M_MapManager`, `M_LobbyMananger`, `M_SaveManager`, plus UI managers under `Mangers/UIManager/` (`PopUpUIManager`, `GameUIManager`, `M_LanguageManager`, `M_SoundManager`, etc.).
+All prefixed `M_`: `M_TurnManager` (battle phase state machine via the `BattleTurn` enum SyncVar — phases like `PLAYER_DRAW`, `PLAYER_ACTIVE`, `MONSTER_ACTIVE`; `NONE_BATTLE_SCENE` = hub), `M_CardManager`, `M_HubManager`, `M_LobbyMananger`, `M_SaveManager`, plus UI managers under `Mangers/UIManager/` (`PopUpUIManager`, `GameUIManager`, `M_LanguageManager`, `M_SoundManager`, etc.).
 
 ### Data / DB Layer (CSV-driven)
 
@@ -43,12 +43,12 @@ All prefixed `M_`: `M_TurnManager` (battle phase state machine via the `BattleTu
 
 ### Player Composition
 
-Each player is a set of NetworkBehaviours: `PlayerInterface` (persistent identity/Steam data carried from room to game), `GamePlayer`, and split-responsibility components `GamePlayerDeck` (partial, with `GamePlayerDeck_IchiPart.cs`), `GamePlayerItem`, `GamePlayerMap`, `GamePlayerTarget`.
+Each player is a set of NetworkBehaviours: `PlayerInterface` (persistent identity/Steam data carried from room to game), `GamePlayer`, and split-responsibility components `GamePlayerDeck` (partial, with `GamePlayerDeck_IchiPart.cs`), `GamePlayerItem`, `GamePlayerTarget`.
 
 ### Other Structure
 
 - `Assets/Script/Monster/` — `Monster` base with subclasses under `Normal/`, `Elite/`, `Boss/`; monsters use Spine animations.
-- `Assets/Script/Map/` — hexagonal room-based map progression (`HexagonMapRoom`, `Region`, `MapPlayer`).
+- 거점(Hub): `Assets/Script/Mangers/M_HubManager.cs` — the GameScene has two view roots — `Hub` (background + `House_*` anchors, 4 NPCs parented under their houses, no party avatars) and `Game` (battle). `SetHubViewActive(bool)` toggles them like the old map/battle switch; `EnterHub()` spawns NPCs, `StartStageBattle(roomType, hazard)` clears them and spawns the battle; battle end returns via `M_TurnManager.NoneBattleEnd()`. The old hexagonal/sphere map systems were removed (2026-08-25).
 - `Assets/Script/UI/PopUpComponent/` — popup windows managed by `PopUpUIManager`.
 - Localization: key-based string tables at `Assets/Resources/Language/` (`Locales.csv` + one CSV per locale), loaded by `M_LanguageManager`. Korean is the base/fallback language and its source text stays in the DB CSVs (`CardDB.csv` etc.) — other locales override by key (`card.<no>.desc`, `buff.<enum>.name`, `ui.*`). Adding a language = one CSV + one row in `Locales.csv`. Card descriptions use brace-delimited markup (`@{용어}`, `!{15}`, `${4}{3}`) parsed by `CardMarkup`. See `Document/LOCALIZATION.md`.
 

@@ -65,7 +65,7 @@ public class CampPopUp : SingletonD<CampPopUp>
              if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
                 GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
                 TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
-                M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
+                if(targetObject != null) M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp"); // 거점에는 파티 아바타가 없음
             }
         }
         TargetIndicatorController.instance.SetPlayerSelectable(true);
@@ -86,7 +86,7 @@ public class CampPopUp : SingletonD<CampPopUp>
              if(NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
                 GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
                 TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
-                M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "BackLayer");
+                if(targetObject != null) M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "BackLayer");
             }
         }
         TargetIndicatorController.instance.SetPlayerSelectable(false);

@@ -1066,6 +1066,16 @@ ui.msg.battle_elite,Battle : Elite Monsters,전투 : 엘리트 몬스터
 ui.msg.event_positive,Positive Event,긍정적 이벤트
 ui.msg.event_negative,Negative Event,부정적 이벤트
 ui.msg.camp,Outpost,전초기지
+ui.msg.hub,Hub,거점
+ui.msg.hub_healed,HP restored.,체력을 회복했습니다.
+ui.msg.stage_retreat,Returning to the hub,거점으로 귀환합니다
+ui.msg.room_empty,Empty room — nothing here,빈 방 — 아무것도 없습니다
+ui.msg.room_locked,You can only move to an adjacent room,인접한 방으로만 이동할 수 있습니다
+ui.msg.level_up,Level up! Lv.{0} → Lv.{1} (skill points +{2}),레벨 업! Lv.{0} → Lv.{1} (스킬 포인트 +{2})
+ui.msg.stage_clear,{0} cleared — returning to the hub,{0} 클리어 — 거점으로 귀환합니다
+ui.msg.room_event_stub,Event (not implemented) — passing through,이벤트 (미구현) — 통과합니다
+ui.msg.room_camp,Outpost — party HP restored,전초기지 — 파티의 체력을 회복했습니다
+ui.msg.stage_enter,Entered {0} — pick a room to move,{0} 진입 — 방을 선택해 이동하세요
 ui.msg.card_shop,Card Shop,카드 상점
 ui.msg.item_shop,Item Shop,아이템 상점
 ui.msg.map_boss_appeared,A boss has appeared on the map.,맵에 보스가 출현 했습니다.

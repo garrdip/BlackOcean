@@ -18,6 +18,13 @@ public class RewardService : InstanceD<RewardService>
     public void DistributeBattleRewards()
     {
         if(!NetworkServer.active) return;
+        // 경험치 = 이번 전투에서 처치한 몬스터의 경험치 합(MonsterStatDB Exp, M_TurnManager.battleExpPool). 합이 0이면 BalanceDB 폴백.
+        // 파티원 각자에게 전액 지급(분배 아님), 멀티(2인 이상 접속) 시 배율 적용 (기획: 1.5배)
+        int battleExp = M_TurnManager.instance.ConsumeBattleExp();
+        if(battleExp <= 0) battleExp = BalanceData.Get("BATTLE_REWARD_EXP", 20);
+        if(NetworkServer.connections.Count > 1)
+            battleExp = battleExp * BalanceData.Get("EXP_MULTIPLAYER_PERCENT", 150) / 100;
+
         foreach(NetworkConnectionToClient conn in NetworkServer.connections.Values){
             PlayerInterface playerInterface = NetLookup.Server<PlayerInterface>(conn.identity.netId);
             if(playerInterface == null) continue;
@@ -29,13 +36,9 @@ public class RewardService : InstanceD<RewardService>
                 gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = cardRewardGuid, reward_Type = Reward_Type.Card });
                 gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold, rewardGold = BalanceData.Get("BATTLE_REWARD_GOLD", 10) });
 
-                // 경험치 보상 — 선택 없이 서버가 즉시 지급. 멀티(2인 이상 접속) 시 배율 적용 (기획: 1.5배)
+                // 경험치 보상 — 선택 없이 서버가 즉시 지급 (레벨업/스킬 포인트는 GamePlayer.AddExp)
                 // TODO(Phase 2): 보상 목록 UI에 EXP 항목 표시 (Reward_Type.Exp)
-                int expReward = BalanceData.Get("BATTLE_REWARD_EXP", 20);
-                if(NetworkServer.connections.Count > 1){
-                    expReward = expReward * BalanceData.Get("EXP_MULTIPLAYER_PERCENT", 150) / 100;
-                }
-                gamePlayer.AddExp(expReward);
+                gamePlayer.AddExp(battleExp);
 
                 // 장비/소모품 드랍 — 확률 지급, 인벤토리로 직행 (Phase 4)
                 if(Random.Range(0, 100) < BalanceData.Get("EQUIP_DROP_PERCENT", 30))

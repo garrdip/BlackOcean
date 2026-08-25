@@ -8,8 +8,8 @@ using ProjectD;
 /// RPG 영속 저장 서비스 (Phase 5) — 네트워크 오브젝트가 아닌 정적 서비스라 메뉴에서도 동작한다.
 /// 구조: 호스트가 단일 파일(rpg_save.json)을 소유하고, 파티원 프로필은 SteamID 키로 전원분 저장한다.
 /// - PlayerProfile: 레벨/EXP/스탯/스킬트리/장비/소모품/골드/HP/자원 (캐릭터별)
-/// - WorldState: 맵 시드 + 방문 완료 타일 + 밝혀진 타일 + 현재 위치 (시드 결정적 생성이라 이것만으로 월드 복원)
-/// 저장 시점: 이동 확정/전투 종료 (SphereMapNetwork.ScheduleSave). 로드: 메뉴 '이어서 하기' → pendingLoad.
+/// 맵 타일 시스템 제거(거점 전환)로 월드 상태 저장은 없다 — 거점은 항상 같은 화면이므로 프로필만 복원하면 된다.
+/// 저장 시점: 전투 종료 후 거점 복귀(M_TurnManager.NoneBattleEnd). 로드: 메뉴 '이어서 하기' → pendingLoad → M_HubManager.OnStartServer.
 /// 기존 M_SaveManager(카드 런 스냅샷)와는 독립 — 구 시스템은 카드 제거와 함께 정리 예정.
 /// </summary>
 public static class GameSaveService
@@ -35,14 +35,11 @@ public static class GameSaveService
     [System.Serializable]
     public class RpgSaveData
     {
-        public int mapSeed;
-        public int currentTileIndex = -1;
-        public List<int> completedTiles = new List<int>();
-        public List<int> activeTiles = new List<int>();
+        public int unlockedStageCount = 1; // 해금된 스테이지 수 (StageDB 행 순서) — 파티 공용 진행도, 호스트 저장
         public List<ProfileData> profiles = new List<ProfileData>();
     }
 
-    /// <summary>메뉴에서 '이어서 하기'로 시작 — 서버 시작(SphereMapNetwork/GenerateGamePlayer)이 소비한다</summary>
+    /// <summary>메뉴에서 '이어서 하기'로 시작 — 서버 시작(M_HubManager.OnStartServer → TryLoad, PlayerInterface.GenerateGamePlayer → FindProfile)이 소비한다</summary>
     public static bool pendingLoad;
 
     static RpgSaveData loaded;
@@ -77,24 +74,13 @@ public static class GameSaveService
         return loaded.profiles.Find(profile => profile.steamId == key);
     }
 
-    /// <summary>현재 서버 상태를 파일로 저장 (호스트 전용). 이동 확정/전투 종료 시점에 호출된다</summary>
+    /// <summary>현재 서버 상태를 파일로 저장 (호스트 전용). 전투 종료 후 거점 복귀 시점에 호출된다</summary>
     public static void SaveGame()
     {
         if (!NetworkServer.active) return;
 
         var data = new RpgSaveData();
-        // 월드(구체 맵) 상태는 3D 맵 모드에서만 저장 — 2D 육각형 맵 모드에서는 프로필만 저장하고
-        // 맵은 매 세션 새로 생성된다 (currentTileIndex=-1 = 월드 복원 없음)
-        if (SphereMapNetwork.Use3DMap)
-        {
-            if (SphereMapNetwork.instance == null || SphereMapNetwork.instance.system == null || !SphereMapNetwork.instance.system.HasState)
-                return; // 3D 모드인데 맵 상태가 없으면 저장 보류 (기존 세이브를 빈 월드로 덮지 않도록)
-            SphereMapSystem system = SphereMapNetwork.instance.system;
-            data.mapSeed = system.Seed;
-            data.currentTileIndex = system.currentTileIndex;
-            system.ExportProgress(data.completedTiles, data.activeTiles);
-        }
-
+        data.unlockedStageCount = M_HubManager.instance != null ? M_HubManager.instance.unlockedStageCount : 1;
         foreach (PlayerInterface playerInterface in PlayerRegistry.All)
         {
             foreach (GamePlayer gamePlayer in playerInterface.ownedPlayers)
@@ -130,7 +116,7 @@ public static class GameSaveService
         try
         {
             File.WriteAllText(FilePath, JsonUtility.ToJson(data, true));
-            Debug.Log($"[GameSaveService] 저장 완료 — 타일 {data.currentTileIndex}, 프로필 {data.profiles.Count}명");
+            Debug.Log($"[GameSaveService] 저장 완료 — 프로필 {data.profiles.Count}명");
         }
         catch (System.Exception e)
         {

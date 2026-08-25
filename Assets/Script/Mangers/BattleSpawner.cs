@@ -1,15 +1,12 @@
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using ProjectD;
 
-// 전투 오브젝트 스폰 팩토리 (플레이어 유닛/몬스터/보스/NPC).
+// 전투/거점 오브젝트 스폰 팩토리 (플레이어 유닛/몬스터/보스/거점 NPC).
 // M_TurnManager에서 분리된 서버 전용 로직 — NetworkBehaviour가 아니므로 [Server] 대신 수동 가드 사용.
-// 전투 진입 오케스트레이션(RPC 연출 포함)은 M_TurnManager.GenerateBattleObject가 담당.
+// 전투 진입 오케스트레이션(RPC 연출 포함)은 M_TurnManager.GenerateBattleObject / GenerateHubObject가 담당.
 public class BattleSpawner : InstanceD<BattleSpawner>
 {
-    static readonly Vector3 npcSpawnPosition = new Vector3(11, -3, 0); // NPC 공통 스폰 위치 (전투 슬롯 4번과 동일 지점)
-
     public void GeneratePlayerUnit()
     {
         if(!NetworkServer.active) return;
@@ -39,12 +36,13 @@ public class BattleSpawner : InstanceD<BattleSpawner>
         }
     }
 
-    public void GenerateMonster(HexagonMapRoom currentRoom)
+    // 위험도(hazard)에 맞는 MonsterGroupDB 그룹을 뽑아 몬스터 스폰
+    public void GenerateMonster(int hazard)
     {
         if(!NetworkServer.active) return;
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         M_TurnManager turnManager = M_TurnManager.instance;
-        MonsterGroup selectedMonsterGroup = MonsterData.instance.GetMonsterGroup(currentRoom.hazard);
+        MonsterGroup selectedMonsterGroup = MonsterData.instance.GetMonsterGroup(hazard);
         for(int i = 0 ; i < selectedMonsterGroup.monsters.Count ; i ++)
         {
             Vector3 position = turnManager.targetObjectPosition[i + 3];
@@ -67,72 +65,15 @@ public class BattleSpawner : InstanceD<BattleSpawner>
         }
     }
 
-    // 방타입에 따라 NPC 생성
-    public void GnenrateNPCByRoomTpye(RoomType roomType)
+    // 거점 NPC 4종 스폰 (M_HubManager.HubNpcNames 순서, positions 인덱스와 1:1)
+    public void GenerateHubNPCs(Vector3[] positions)
     {
         if(!NetworkServer.active) return;
-        switch(roomType){
-            case RoomType.CAMP:
-                GenerateCampNPC();
-                break;
-            case RoomType.CARD_NPC:
-                GenerateCardShopNPC();
-                break;
-            case RoomType.ITEM_NPC:
-                GenerateItemNPC();
-                break;
+        for(int i = 0; i < M_HubManager.HubNpcNames.Length; i++)
+        {
+            Vector3 position = (positions != null && i < positions.Length) ? positions[i] : M_TurnManager.instance.targetObjectPosition[4];
+            SpawnMonsterWithAvatar(M_HubManager.HubNpcNames[i], position, ObjectType.NPC, false);
         }
-    }
-
-    // 전초기지 NPC 생성
-    public void GenerateCampNPC()
-    {
-        if(!NetworkServer.active) return;
-        // RyuJinSol 또는 Sophia 중 랜덤 생성
-        string npcName = Random.Range(0, 2) == 0 ? "NPC_RyuJinSol" : "NPC_Sophia";
-        SpawnMonsterWithAvatar(npcName, npcSpawnPosition, ObjectType.NPC, false);
-
-        // 각 플레이어별 체력 회복 횟수 제한을 1로 설정
-        M_TurnManager turnManager = M_TurnManager.instance;
-        for(int i=0; i<turnManager.playerOrder.Count; i++){
-            if(NetworkClient.spawned.TryGetValue(turnManager.playerOrder[i], out NetworkIdentity networkIdentity)){
-                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
-                gamePlayer.recoveryLimitCount = 1;
-            }
-        }
-    }
-
-    // 아이템상점 NPC 생성
-    public void GenerateItemNPC()
-    {
-        if(!NetworkServer.active) return;
-        SpawnMonsterWithAvatar("NPC_ShadowMan", npcSpawnPosition, ObjectType.NPC, false);
-    }
-
-    // 카드상점 NPC 생성
-    public void GenerateCardShopNPC()
-    {
-        if(!NetworkServer.active) return;
-        // 상점판매용 캐릭터별 카드 추출해서 각 플레이어의 shopCards Synclist에 추가
-        foreach(uint netId in M_TurnManager.instance.playerOrder){
-            if(netId != 0 && NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
-                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
-                int shopCardCount = gamePlayerDeck.maxShopCardCount; // 플레이어별로 설정된 구매가능한 상점카드 최대 갯수
-                List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
-                if(cardsByCharacter.Count > 0){
-                    for(int i = 0; i < shopCardCount; i++){
-                        int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                        Card shopCard = cardsByCharacter[randomIndex].CardDeepCopy(false);
-                        shopCard.guid = System.Guid.NewGuid().ToString();
-                        shopCard.cardPrice = BalanceData.Get("SHOP_CARD_PRICE", 1); // 가격표 확정 시 BalanceDB에서 갱신
-                        cardsByCharacter.RemoveAt(randomIndex);
-                        gamePlayerDeck.shopCards.Add(shopCard); // 각 플레이어의 shopCards synclist에 상점카드 데이터 추가
-                    }
-                }
-            }
-        }
-        SpawnMonsterWithAvatar("NPC_Mercurius", npcSpawnPosition, ObjectType.NPC, false);
     }
 
     public void GenerateBossMonster()
@@ -159,6 +100,7 @@ public class BattleSpawner : InstanceD<BattleSpawner>
         }
 
         var spawned = Instantiate(monsterPrefab, position, Quaternion.identity).GetComponent<SpawnedMonster>();
+        spawned.monster = monsterData; // MonsterDB/MonsterStatDB 데이터 참조 (처치 경험치 등)
         spawned.MAXHP = monsterData.MAXHP;
         spawned.HP = monsterData.MAXHP;
         spawned.monsterName = monsterData.name;

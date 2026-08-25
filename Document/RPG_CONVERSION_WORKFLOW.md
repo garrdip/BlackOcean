@@ -5,29 +5,30 @@
 
 ---
 
-## Phase 0 — 월드맵 지형 기반 ✅ (완료) → ⏸ 보류 (2026-08-20)
+## Phase 0 — 월드맵 지형 기반 → ❌ 폐기 → **거점(Hub) 전환 ✅ (2026-08-25)**
 
-> **맵 방향 변경**: 맵 에셋 부재로 3D 구체 맵의 비주얼 퀄리티가 전투 에셋 대비 크게 떨어져,
-> `USE_3D_MAP=0`(BalanceDB)으로 **기존 2D 육각형 맵을 복원**하고 3D 구체 맵은 비활성 보존.
-> 2D 모드에서는 RPG 저장이 프로필만 복원하고 맵은 매 세션 새로 생성된다 (월드 저장은 3D 전용).
+> **맵 타일 시스템 전면 제거**: 기획서(`RPG_CONVERSION_DESIGN.md` "맵" 절)의 Darkest Dungeon 방식
+> — "거점에서 할일하고, 스테이지 진입" — 에 맞춰 2D 육각형 맵·3D 구체 맵을 모두 삭제하고
+> GameScene을 **거점 화면**으로 바꿨다. 거점에는 NPC 4종(류진솔·소피아·메르크리우스·그림자꾼)만
+> 화면 가로 전체에 넓게 상주하고(파티 아바타 없음 — 기획 확정), 스테이지 진입 시 같은 화면(BattleScene 루트)에서 전투로 전환된다.
+> 류진솔/소피아 치유는 아바타 클릭 대상 선택 대신 자신의 캐릭터 즉시 회복(거점 방문당 1회)으로 변경. 골드 전달은 대상 선택 불가로 사실상 비활성 (6-2 NPC 개편 대상).
 >
-> **2D 맵 탐험 개편 (2026-08-20)**: Region(거점지역) 시스템 완전 삭제.
-> 대부분의 타일은 빈땅(`RoomType.ROAD`, result.png 기반 `Resources/Map/EmptyLandTile` 텍스처)이고,
-> 낮은 확률(BalanceDB `MAP_SPECIAL_TILE_PERCENT`=12%)로만 특수 타일(전투/정예/상인/이벤트/캠프)이 등장.
-> 빈땅 클릭 = 레디 없이 즉시 파티 이동(`M_MapManager.CmdInstantMoveRoom`, 1턴 소모) + 주변 시야 확장.
-> 특수 타일은 기존 투표·레디 흐름 유지. CARD_NPC는 생성 제외(카드 정리 2B-5 예정).
+> - **화면 루트 2층 구조**: 거점 루트 `Hub`(배경 + 집 앵커 `House_RyuJinSol/Sophia/Mercurius/ShadowMan`) ↔ 전투 루트 `Game`.
+>   옛 맵의 MapScene/BattleScene 토글과 같은 구조로 `M_HubManager.SetHubViewActive(bool)`이 거점→전투→거점 전환 시 루트를 바꾼다.
+>   NPC는 스폰 후 자기 집 앵커 아래로 들어간다(`AttachNpcToHouse`) — 추후 "집에 들어가서 수행" 방식(집 클릭 → 실내)은 이 앵커 기준으로 확장
+> - 신규 `Mangers/M_HubManager.cs` (씬 오브젝트 `M_HubManager`, 구 `M_MapManager` 자리):
+>   `EnterHub()` 거점 진입(NPC 스폰, `NONE_BATTLE_SCENE`), `StartStageBattle(roomType, hazard)` 전투 진입,
+>   집 앵커 `houses`(인스펙터, NPC 스폰 위치), `hubCameraSize`, 임시 OnGUI 스테이지 진입 버튼(호스트, 우하단 — 정식 스테이지 선택 UI 전까지)
+> - 흐름: 로딩 `HUB_SCENE` → `EnterHub` → (임시 버튼) `StartStageBattle` → 전투 → 보상 → `NoneBattleEnd`(자동 저장) → `EnterHub`
+> - `M_TurnManager.GenerateBattleObject(RoomType, hazard)` / `GenerateHubObject`, `BattleSpawner.GenerateMonster(hazard)` / `GenerateHubNPCs`
+> - `playerOrder` 등록은 `MapPlayer.OnStartServer` → `PlayerInterfaceServer.GenerateGamePlayerOwnedObjects`(`M_TurnManager.RegisterPlayerOrder`)로 이관
+> - 삭제: `Script/Map`, `Script/Map3D`, `Script/Mesh`, `M_MapManager`, `GamePlayerMap`, `ReadyButtonOnMap`, `Prefabs/Map`, `MapPlayer.prefab`,
+>   `Resources/Map`, `GeneratedMeshes`, 맵 셰이더 2종, BalanceDB `USE_3D_MAP`/`MAP_SPECIAL_TILE_PERCENT`, `RoomType`의 타일 전용 값
+> - 저장(`GameSaveService`)은 프로필만 (월드 상태 없음). 로드는 `M_HubManager.OnStartServer`가 수행
+> - 잔여: NPC의 워프 버튼(폐기, Awake에서 숨김) → 프리팹 정리, 메르크리우스는 카드 상점 잔재(빈 상점) → Phase 6-2 상점 개편에서 아티팩트 상점으로
+> - 행동비용 타이머/보스 추격/타일 리스폰 등 맵 탐험 규칙은 모두 소멸 — 위험도(hazard)는 스테이지 진입 파라미터로만 남음
 
-| 작업 | 상태 |
-|---|---|
-| 구체 4배 확장 (subdivision 16, radius 10) | ✅ |
-| 지형 생성: 특수타일 노드 + 길(녹색) + 장애물(적색), 가중 경로로 구불구불한 길 | ✅ |
-| Region(거점지역) 제거 | ✅ |
-| 시야: 시작지점 주변만 밝힘, 이동 시 한 칸씩 확장 | ✅ |
-| 길/클리어 타일 클릭 시 레디 없이 즉시 이동, 특수타일만 투표·레디 | ✅ |
-| 이동 시 현재 위치 화면 중앙 정렬 | ✅ |
-| 맵 UI 캔버스 가려짐 수정 (planeDistance 1) | ✅ |
-
-**잔여 후속 (Phase 6에서 처리)**: 탐험 스텝의 행동비용 소모 정책 결정, 보스 추격 규칙, `MonsterGroupDB.csv` hazard 범위 확장, EVENT 타일 콘텐츠.
+**후속 (Phase 6에서 처리)**: 스테이지 선택 UI(1-1/1-2/1-3 → hazard 매핑), 던전(연속 전투), `MonsterGroupDB.csv` hazard 범위 확장, EVENT 콘텐츠.
 
 ---
 
@@ -37,7 +38,10 @@
 
 - [x] 1-1. 스탯 6종 — `GamePlayer`에 SyncVar 추가: level/exp + 힘/민첩/체력/지능/방어력/마법방어. `AddExp()` 레벨업 루프 + 성장치 반영, MaxHP = `PLAYER_INIT_HP` + 체력×`HP_PER_VITALITY`
 - [x] 1-2. 속성 enum — `AttackAttribute { NONE, SLASH, STRIKE, PIERCE, MAGIC, RESONANCE }` + `BattleResourceType { NONE, RAGE, MP, HP }` (`Common/ProjectD.cs`)
-- [x] 1-3. `LevelDB.csv`(레벨 1~30 필요 EXP) + `CharacterStatDB.csv`(기본치/성장치/약점·내성/자원) 신설. 로더: `DB/LevelData.cs`, `DB/CharacterStatData.cs` (BalanceData 패턴)
+- [x] 1-3. `LevelDB.csv` + `CharacterStatDB.csv`(기본치/성장치/약점·내성/자원) 신설. 로더: `DB/LevelData.cs`, `DB/CharacterStatData.cs` (BalanceData 패턴)
+      **레벨업 시스템 확장 (2026-08-25)**: `LevelDB.csv` 1~99 (필요 EXP = 80×L + 20×L², 99 = 최대; 누적 약 676만) / `CharacterStatDB.csv`에 `SkillPointPerLevel`(1) + `BonusSkillPointEvery`(10 — 10레벨마다 +1) —
+      레벨업 시 성장치(GrowX) 반영 + 포인트 지급 + 소유자 토스트(`ui.msg.level_up`), 최대 레벨이면 EXP 미적립 / `MonsterStatDB.csv`에 `Exp`(일반 12~26, 엘리트 50~60, 보스 200~220) —
+      처치 시 `M_TurnManager.battleExpPool` 적립 → 전투 종료 시 파티원 각자 전액 지급(멀티 1.5배). 합 0이면 `BATTLE_REWARD_EXP` 폴백. 보스/NPC 스폰 경로도 `SpawnedMonster.monster` 참조 설정
 - [x] 1-4. 몬스터 확장 스탯 — **`MonsterDB.csv` 직접 확장 대신 별도 `MonsterStatDB.csv`** (위치 기반 포맷 보호). 약점(복수 `|` 구분)/공격 속성/TP 실드. `MonsterData.LoadMonsterStatFromDB()`로 병합, 미등록 몬스터는 기본값
 - [x] 1-5. 캐릭터 약점/내성 — `CharacterStatDB.csv`에 포함 (게오르크 약점MAGIC/내성SLASH, 홍단향 약점PIERCE/내성MAGIC, 에리스 약점STRIKE/내성RESONANCE)
 - [x] 1-6. 자원 구조 — `GamePlayer.currentResource/maxResource` SyncVar + `BattleResourceType`. 초기값: 분노 0에서 시작, MP 가득, HP형은 max 0(자신의 HP 소모). **소모/충전 로직과 이치 대체는 Phase 2B에서** (전투가 아직 카드 기반이므로 이치는 그대로 둠)
@@ -122,12 +126,24 @@
 
 ## Phase 6 — 월드 콘텐츠
 
-- [ ] 6-1. 던전 — 특수타일 진입 → 연속 전투(전투 사이 이탈 가능), 최종 전투 엘리트. 전투 간 MP/물약 비회복 규칙
-- [ ] 6-2. 상인 — 장비/소모품 상점 (기존 NPC 에셋 재활용)
-- [ ] 6-3. 보스 — 단일 전투. 현행 행동비용 타이머+추격 보스는 제거 또는 개조 (Phase 0 잔여 결정과 함께)
-- [ ] 6-4. 스테이지 세분화 검토 — 1-1/1-2/1-3: 구체 존 분할 vs 복수 구체. hazard→몬스터 레벨 매핑(`MonsterGroupDB.csv` 범위 확장 필수)
-- [ ] 6-5. 특수타일 리스폰 — COMPLETE 소모 모델 유지 여부 결정 (영구 성장 RPG면 재출현 규칙 필요)
-- [ ] 6-6. EVENT 타일 콘텐츠 (현재 미구현 빈 방)
+- [x] 6-0. 출정/스테이지 선택 (1차) — 류진솔 메뉴 "출정"(구 체력 회복 자리) → `M_HubManager.OpenStageSelect()` 스테이지 선택 패널(임시 OnGUI) → `CmdStartStage(stageNo)`.
+      `StageDB.csv`(1-1~3-3: 전투 종류/위험도) + `DB/StageData.cs`. 해금은 `unlockedStageCount`(SyncVar, 처음 1 = 1-1만) — 가장 높은 해금 스테이지 클리어 시 +1(`OnStageCleared`), `rpg_save.json`에 저장/복원. **정식 팝업 UI는 UI 정리 단계에서**
+- [x] 6-1. 던전(방 진행) 1차 — 스테이지 진입 시 바로 전투가 아니라 **스테이지 화면**(세 번째 화면 루트 `Stage`: 배경 + 우측하단 방 패널 `StageRoomPanel`)으로 들어간다.
+      **미로 구조(Isaac/Darkest Dungeon식)** — 입장할 때마다 서버가 격자 위에 랜덤 생성(`StageData.Entry.GenerateLayout`: 입구(0,0)에서 랜덤 확장, 트리 위주·25% 고리,
+      입구에서 가장 먼 막다른 방 = 출구(EXIT)/보스(BOSS)) → `M_HubManager.stageRooms`(SyncList<StageRoomInfo>: 격자 좌표/종류/클리어).
+      규칙은 `StageDB.csv`의 `RoomCount(입구·출구 제외 내용 방 수) / EliteCount(막다른 방 우선) / EmptyPercent / Type(BOSS)`: 1-1 = 5방(몬스터 또는 빈방)+출구, 1-3 = 6방(엘리트 1)+보스 … **기획서 "방 개수 규칙" 절 확정 시 CSV 수치만 수정**.
+      이동 규칙: 파티는 입구에서 시작, **현재 방의 인접(상하좌우) 방만 보이고 이동 가능**(`CmdEnterRoom`, 서버 `IsAdjacent` 검증). 방문한 방은 계속 보이고 자유 왕복.
+      미니맵(`StageRoomPanel`, 우측하단 640×440): 옛 맵 `UI_Map/Top Icon` 재활용 — 프레임(`Based`) + 종류 아이콘 + 연결선(`Line`) + 현재 위치 핀(`PIN`), 입구는 전용 프레임(`Base C Based`) + "입구" 라벨.
+      **표시 = 현재 방 + 바로 옆(상하좌우) 방만** (`showVisitedRooms`를 켜면 방문한 방도 어둡게 유지). 첫 프레임에 영역 크기가 0이면 다음 프레임에 재시도(초기 미표시 버그 가드).
+      전투 방 → 전투 → 승리(`OnBattleVictory`) → 방 화면 복귀 / CAMP 방 → 파티 회복 즉시 처리 / EVENT·상점 방 → 통과 스텁(6-5). 마지막 방 클리어 → 해금 + 거점.
+      "귀환"(`CmdRetreat`)으로 전투 사이 이탈 가능(진행도 폐기). **잔여**: 전투 간 MP/물약 비회복 규칙, EVENT 콘텐츠, 정식 UI
+- [x] 6-1b. 화면 전환 일원화 (2026-08-25) — 거점/스테이지/전투 전환은 모두 `M_TurnManager.Spawner`의 서버 코루틴이 **페이드 아웃(`M_DimmingManager.RpcFadeOut`, screenFade 이미지 0.8s) → 검은 화면 뒤에서 이전 타겟오브젝트 정리·루트 전환(`RpcSetView`)·새 오브젝트 스폰 → 스폰 반영 대기 0.35s → 페이드 인** 순서로 수행.
+      스폰/파괴가 화면에 노출되지 않아 과도현상 없음. 전환 중 `isSceneTransitioning`으로 출정/방 이동/귀환 입력 차단. `NoneBattleEnd`는 더 이상 타겟오브젝트를 직접 지우지 않는다.
+      GameCanvas의 카드 전투 UI(`CostMenu`: 이치 표시·뽑을덱 / `TurnMenu`: 턴 종료·버린덱·잊혀진덱) 삭제 — 카드 잔재 코드는 `GameUIManager.HasCardUI`/`SetEndTurnInteractable`로 가드 (2B-5에서 함께 제거)
+- [ ] 6-2. 상인 — 거점 NPC 4종 역할 개편 (류진솔 아이템 / 소피아 장비 / 메르크리우스 아티팩트 / 그림자꾼 스킬 초기화). 기존 캠프·아이템상점·카드상점 팝업 골격 재활용
+- [ ] 6-3. 보스 — 스테이지 마지막 단일 전투 (맵 추격 보스는 맵 제거로 소멸)
+- [ ] 6-4. 스테이지 세분화 — 1-1/1-2/1-3 → hazard 매핑 (`MonsterGroupDB.csv` 범위 확장 필수)
+- [ ] 6-5. EVENT 콘텐츠 — 던전 진행 중 이벤트 (`RoomType.EVENT_*` + `RpcStartNoneBattleEvent` 재활용)
 
 ---
 

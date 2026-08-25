@@ -10,7 +10,7 @@ namespace ProjectD
     public enum ActionTarget {UNDEFINED ,FRONT, MIDDLE, BACK, FRONT_MIDDLE, FRONT_BACK, MIDDLE_BACK, WHOLE, WHOLE_ALLY, FIXEDPLAYER, RANDOM, NONE, RANDOM_FRONT_MIDDLE, RANDOM_FRONT_BACK, RANDOM_MIDDLE_BACK, RANDOM_SINGLE, RANDOM_DOUBLE, ENEMY_SINGLE}
     public enum PlayOrder { FIRST = 0, SECOND = 1, THIRD = 2 }
     public enum GameLevel { EASY = 0, NORMAL = 1, HARD = 2 }
-    public enum RoomType { START_LOCATION, MONSTER, ELITE, EVENT_POSITIIVE, EVENT_NEGATIVE, CAMP, ITEM_NPC, CARD_NPC, UNDEFINED, COMPLETE, RUINS, BOSS, ROAD, OBSTACLE } // ROAD/OBSTACLE은 3D 지형 전용 — 기존 값 뒤에만 추가할 것 (직렬화 호환)
+    public enum RoomType { MONSTER, ELITE, EVENT_POSITIIVE, EVENT_NEGATIVE, CAMP, ITEM_NPC, CARD_NPC, BOSS, EMPTY, EXIT } // 스테이지 방 종류. EMPTY = 빈 방(입구 포함), EXIT = 출구(비보스 스테이지의 종료 방)
     /// <summary>공격 속성 (RPG 전환) — 참격/타격/관통/마법/공명/무속성. NONE은 약점 공격 불가 대신 속성 방어의 영향도 받지 않는다</summary>
     public enum AttackAttribute { NONE, SLASH, STRIKE, PIERCE, MAGIC, RESONANCE }
     /// <summary>캐릭터별 전투 자원 종류 (RPG 전환) — 게오르크: 분노(피해를 주고받으며 충전), 홍단향: MP, 에리스: HP 소모</summary>
@@ -38,7 +38,7 @@ namespace ProjectD
     public enum ValidTarget { NONE, ENEMY, ENEMY_ALL, MEMBER, TEAM , ALL}
     public enum ErisMode {NORMAL, ANGER, MAD}
     public enum MonsterGrade {NORMAL, ELITE, BOSS} // 처치 집계용 몬스터 등급 (G56 전리품 수집 / H60 홍씨 가문의 명예)
-    public enum LOADING_STATE { ROOM_SCENE = 0, SCENE_LOADING, MAP_GENERATE, GAMEPLAYER_COMPONENT_GEN, UPLOAD_AVATAR, MAP_SCENE, LOADING_GAME_SCENE, GAME_SCENE }
+    public enum LOADING_STATE { ROOM_SCENE = 0, SCENE_LOADING, HUB_PREPARE, GAMEPLAYER_COMPONENT_GEN, UPLOAD_AVATAR, HUB_SCENE, LOADING_GAME_SCENE, GAME_SCENE }
 
     public enum MoveDirection {FORWARD, BACKWARD}
     public static class StringUtils{

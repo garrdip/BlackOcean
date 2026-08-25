@@ -444,15 +444,9 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
             GamePlayer gamePlayer = user.currentGamePlayer; // 스폰 타이밍에 따라 null 가능
             if(!user.endTurnActive && gamePlayer != null && gamePlayer.HP > 0)return;
         }
-        switch(phase)
-        {
-            case BattleTurn.PLAYER_ACTIVE :
-                phase = BattleTurn.PLAYER_ACTIVE_DONE;
-                break;
-            case BattleTurn.NONE_BATTLE_SCENE :
-                phase = BattleTurn.NONE_BATTLE_END;
-                break;
-        }
+        // 거점(NONE_BATTLE_SCENE)은 상주 화면이라 턴 종료로 빠져나가지 않는다 — 전투 중에만 전이
+        if(phase == BattleTurn.PLAYER_ACTIVE)
+            phase = BattleTurn.PLAYER_ACTIVE_DONE;
     }
 
     // 모든 플레이어가 보상을 받았으면 비전투 종료 처리
@@ -467,29 +461,15 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         NoneBattleEnd();
     }
 
-    // 모든 플레이어가 레디 상태면 투표 결과 방으로 이동
+    // 플레이어 오더 슬롯 등록 — 게임플레이어 소유 오브젝트 생성 시(PlayerInterfaceServer) 룸에서 정한 오더 인덱스에 netId를 기록
+    // (기존에는 맵 플레이어(MapPlayer.OnStartServer)가 담당했으나 맵 시스템 제거로 이관)
     [Server]
-    public void CheckAllPlayersReadyForMapMove()
+    public void RegisterPlayerOrder(int index, uint gamePlayerNetId)
     {
-        foreach(PlayerInterface player in PlayerRegistry.All)
-        {
-            if(!player.isReady) return;
-        }
-        // 플레이어들이 투표한 결과 선택된 맵 위치로 이동
-        HexagonMapRoom hexagonMapRoom = M_MapManager.instance.GetVoteHexagonMapRoomResult();
-        if(hexagonMapRoom != null){
-            if(hexagonMapRoom == M_MapManager.instance.currentRoom){
-                if(hexagonMapRoom.roomType == RoomType.BOSS || hexagonMapRoom.roomType == RoomType.RUINS){
-                    EnterTheRoom(hexagonMapRoom); // 보스방은 현재 위치한 방이어도 방 진입
-                }
-            }else{
-                EnterTheRoom(hexagonMapRoom);
-            }
-        }
-        // 3D 구체 맵 모드(USE_3D_MAP): 2D 투표 결과가 없으면 3D 구체 맵 투표 결과로 이동
-        else if(SphereMapNetwork.Use3DMap && SphereMapNetwork.instance != null){
-            SphereMapNetwork.instance.TryMoveByVotes();
-        }
+        if(index < 0 || index >= playerOrder.Count) return;
+        // RemoveAt+Insert: OP_SET 콜백(오더 스왑 연출/인디케이터 갱신)을 등록 시점에 태우지 않기 위해 기존 AddMapPlayer와 동일한 방식 유지
+        playerOrder.RemoveAt(index);
+        playerOrder.Insert(index, gamePlayerNetId);
     }
 
     [Server]
@@ -517,6 +497,17 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
             targets.Remove(removeItem);
             NetworkServer.Destroy(removeItem.gameObject);
         }
+    }
+
+    public int battleExpPool = 0; // 이번 전투에서 처치한 몬스터의 경험치 합 (서버 전용) — 전투 시작 시 0, 종료 시 RewardService가 소비
+
+    // 전투 종료 보상용 경험치 인출 (처치 몬스터 경험치 합, 0이면 BalanceDB 폴백은 호출부에서)
+    [Server]
+    public int ConsumeBattleExp()
+    {
+        int exp = battleExpPool;
+        battleExpPool = 0;
+        return exp;
     }
 
     public int eliteKillCountOnGame = 0; // 이번 게임 동안 처치한 엘리트 수 (서버 전용 — G56 전리품 수집)
@@ -563,6 +554,9 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     foreach(TargetObject target in spawnedPlayerList)
                         target.player.GetComponent<GamePlayerDeck>().IncreaseLootCollectionStack();
                 }
+                // 처치 경험치 적립 (MonsterStatDB Exp) — 전투 종료 시 파티 전원에게 합산 지급
+                if(monster.monster != null && monster.monster.monster != null)
+                    battleExpPool += monster.monster.monster.exp;
                 // 실제 오브젝트 삭제 과정
                 spawnedMonsterList.Remove(monster);
                 spawnedMonsterSyncList.Remove(monster.netId);
@@ -686,51 +680,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         yield return null;
     }
 
-    [Server]
-    public void EnterTheRoom(HexagonMapRoom hexagonMapRoom)
-    {
-        int actionCost = M_MapManager.instance.FindPath(M_MapManager.instance.currentRoom, hexagonMapRoom).Count;
-        if(actionCost > M_MapManager.instance.currentActionCost){
-            Debug.Log($"[행동 비용이 모자랍니다] 총 비용 : {M_MapManager.instance.currentActionCost} / 남은 비용 : {actionCost}");
-        }else{
-            // 맵 플레이어들 위치 이동
-            foreach(GameObject mapPlayerPieceObject in M_MapManager.instance.mapPlayerPieces){
-                MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
-                mapPlayerPiece.RpcChangeMapPlayerPiecePosition(hexagonMapRoom.transform.position);
-                M_MapManager.instance.SetDirection(hexagonMapRoom);
-            }
-            M_MapManager.instance.MoveToRoom();
-        }
-    }
-
-    IEnumerator WaitingForPlayer(HexagonMapRoom hexagonMapRoom)
-    {
-        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        int cnt = 0;
-        while(true)
-        {
-            cnt = 0;
-            yield return new WaitForSeconds(0.1f);
-            IReadOnlyList<PlayerInterface> users = PlayerRegistry.All;
-            foreach(PlayerInterface user in users)
-                if(user.isTargetObjectInitDone) cnt++;
-            if(cnt != netManager.roomSlots.Count) continue;
-
-            if(hexagonMapRoom.roomType == RoomType.MONSTER || hexagonMapRoom.roomType == RoomType.ELITE || hexagonMapRoom.roomType == RoomType.BOSS)
-                phase = BattleTurn.BATTLE_INITIALIZE;
-            else
-                phase = BattleTurn.NONE_BATTLE_SCENE;
-            break;
-        }
-        ClearTargetObjectInitFlag();
-    }
-
-    [ClientRpc]
-    void ClearTargetObjectInitFlag()
-    {
-        NetworkClient.connection.identity.GetComponent<PlayerInterface>().isTargetObjectInitDone = false;
-    }
-
+    // 전투/거점 진입 대기(WaitingForPlayer)와 진입 연출 RPC는 M_TurnManager.Spawner.cs 참조
 
     [ClientRpc]
     public void EachPlayerCardDraw()

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7240602821872156436}
   - component: {fileID: 4891119633565535031}
   - component: {fileID: -5967311515642577051}
-  - component: {fileID: 102687483241659189}
   - component: {fileID: -7450075196787643413}
   - component: {fileID: 6025991267508357502}
   m_Layer: 0
@@ -75,6 +74,17 @@ MonoBehaviour:
   MaxHP: 0
   recoveryValue: 0
   recoveryLimitCount: 0
+  level: 1
+  exp: 0
+  strength: 0
+  agility: 0
+  vitality: 0
+  intelligence: 0
+  defense: 0
+  magicDefense: 0
+  currentResource: 0
+  maxResource: 0
+  skillPoints: 0
   objectOwner: {fileID: 0}
   selectOrder: 0
   character: 0
@@ -122,24 +132,6 @@ MonoBehaviour:
   maxIchi: 0
   limitiChi: 0
   bonusMaxIchi: 0
---- !u!114 &102687483241659189
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 354743714609597316}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9dbdd873f76c4404fbfa6d6f018205c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  currentMapPlayerPiece: {fileID: 0}
-  currentMapPlayerDestination: {fileID: 0}
-  currentMapPlayerDestinationPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &-7450075196787643413
 MonoBehaviour:
   m_ObjectHideFlags: 0

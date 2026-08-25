@@ -19,30 +19,21 @@ public partial class M_TurnManager
     }
 
 
+    // 전투/보상 정리 후 거점 또는 스테이지(미로) 화면 복귀
+    // 타겟오브젝트(아바타/몬스터) 정리는 화면이 검어진 뒤 전환 코루틴(M_TurnManager.Spawner)이 수행한다 — 여기서 지우면 페이드 전에 사라지는 과도현상이 생김
     [Server]
     public void NoneBattleEnd()
     {
-        ClearTargetObject(); // 타겟오브젝트 정리
-        M_MapManager.instance.ClearPlayerVoteHexagonMapRooms(); // 방 투표 목록 비움
-        M_MapManager.instance.SetRoomStateComplete(); // 방 완료상태로 변경
-        M_MapManager.instance.DecreaseTotalActionCost(); // 행동비용 감소
-        M_MapManager.instance.ApproachBossToPlayer(); // 보스가 플레이어에게로 이동
-        StopCoroutine(ProcessMonsterDeathCoroutine());
         foreach(PlayerInterface player in PlayerRegistry.All){
-            player.SetIsReadyStateDefault(); // 레디 상태 모두 확인후 다시 false 되돌림 (여러군데서 사용 예정)
             player.SetEndTurnActiveStateDefault(); // 앤드 턴 상태 모두 확인후 다시 false 되돌림
             player.SetCompleteRewardStateDefault();
-        }
-        foreach(HexagonMapRoom hexagonMapRoom in M_MapManager.instance.hexagonMapRooms){
-            hexagonMapRoom.isSelected = false; // 맵 선택상태 모두 false 초기화
         }
         foreach(GamePlayer gamePlayer in FindObjectsByType<GamePlayer>(FindObjectsSortMode.None)){
             gamePlayer.GetComponent<GamePlayerDeck>().rewards.Clear();
             gamePlayer.GetComponent<GamePlayerDeck>().rewardCards.Clear();
         }
         EachPlayerNoneBattleEnd();
-        if(SphereMapNetwork.instance != null)
-            SphereMapNetwork.instance.ScheduleSave(); // 자동 저장 — 전투/방 정리 완료 (맵 복귀·이동 반영 후 저장되도록 지연 저장)
+        M_HubManager.instance.OnBattleVictory(); // 스테이지 진행 중이면 방 클리어(다음 방/스테이지 클리어 판정 + 저장), 아니면 저장 후 거점 복귀
     }
 
 
@@ -76,35 +67,12 @@ public partial class M_TurnManager
     }
 
 
+    // 전투 종료 시 클라이언트 카드 잔재 정리 (화면 전환 연출은 M_TurnManager.Spawner 전환 코루틴이 담당)
     [ClientRpc]
     public void EachPlayerNoneBattleEnd()
     {
         M_CardManager.instance.RemoveAllCurrentPlayerCardOnHandsWithOutTrashDeck(); // 현재 플레이어 손에 있던 카드들을 삭제, 삭제 시 Trash Deck에 추가하지 않음.
         M_CardManager.instance.RemoveAllCurrentPlayerPrefareDeckAndTrashDeck(); // 플레이어의 PrefareDeck, TrashDeck 삭제
         M_CardManager.instance.ChangeAbilityButtonActiveState(false); // 어빌리티 버튼 비활성화
-        ReturnToMap();
-    }
-
-
-    public void ReturnToMap()
-    {
-        string audioName = M_MapManager.instance.mapBoss == null ? "Stage_1_Map" : "Stage_1_Map_Boss_Spawn";
-        AudioClip audioClip_map = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Map, audioName);
-        M_SoundManager.instance.PlayBGM(audioClip_map, MusicTransition.CrossFade, 2f);
-        GameUIManager.instance.DoScreenChangeIn(() => {
-            // 카메라 위치 리셋
-            Camera.main.orthographicSize = GameUIManager.mapSceneCameraSize;
-
-            // UI 활성화 상태 변경
-            M_MapManager.instance.MapScene.SetActive(true);
-            M_MapManager.instance.BattleScene.SetActive(false);
-            M_MapManager.instance.BackgroundLight.GetComponent<MeshRenderer>().sortingLayerName = "Default"; // 배경 플레어 정렬 오더 변경
-
-            // Dim배경 상태 변경
-            MapUI.instance.ChangeMapDimBackground(false);
-            MapUI.instance.RemoveAllMapInfoPopUps();
-
-            GameUIManager.instance.DoScreenChangeOut();
-        });
     }
 }

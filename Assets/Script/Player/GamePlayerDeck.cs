@@ -121,7 +121,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
         rewards.Callback += OnRewardUpdated;
         rewardCards.Callback += OnRewardCardUpdated;
         shopCards.Callback += OnShopCardUpdated;
-        if(isOwned){
+        if(isOwned && GameUIManager.instance.HasCardUI){ // 카드 전투 UI는 씬에서 제거됨 (거점 전환) — 잔재 코드 가드
             GameUIManager.instance.currentIchiText.text = currentIchi.ToString(); // 현재 이치값 초기 뷰 세팅
             GameUIManager.instance.maxIchiText.text = maxIchi.ToString(); // 최대 이치값 초기 뷰 세팅
             GameUIManager.instance.textPrefareDeckCount.text = prefareDeck.Count.ToString();

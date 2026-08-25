@@ -89,6 +89,8 @@ ui.msg.battle_elite,战斗 : 精英怪物,전투 : 엘리트 몬스터
 ui.msg.event_positive,正面事件,긍정적 이벤트
 ui.msg.event_negative,负面事件,부정적 이벤트
 ui.msg.camp,前哨基地,전초기지
+ui.msg.hub,据点,거점
+ui.msg.hub_healed,已恢复生命值。,체력을 회복했습니다.
 ui.msg.card_shop,卡牌商店,카드 상점
 ui.msg.item_shop,道具商店,아이템 상점
 ui.msg.map_boss_appeared,首领已在地图上出现。,맵에 보스가 출현 했습니다.

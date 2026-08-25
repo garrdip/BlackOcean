@@ -58,19 +58,20 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
                 case LOADING_STATE.SCENE_LOADING :
                     break;
 
-                case LOADING_STATE.MAP_GENERATE :
-                    GenerateRooms();
+                case LOADING_STATE.HUB_PREPARE :
+                    PrepareHub();
                     break;
-                    
+
                 case LOADING_STATE.GAMEPLAYER_COMPONENT_GEN :
                     GenetateGamePlayerDeck();
                     break;
-                
+
                 case LOADING_STATE.UPLOAD_AVATAR :
                     UploadAvatar();
                     break;
-                
-                case LOADING_STATE.MAP_SCENE :
+
+                case LOADING_STATE.HUB_SCENE :
+                    M_HubManager.instance.EnterHub(false); // 로딩 완료 → 거점 진입 (NPC 4종 스폰, 페이드 연출 없음 — 로딩 화면 뒤에 거점이 이미 준비되어 있음)
                     M_LoadingManager.instance.SetLoadingScreen(false);
                     break;
                 
@@ -101,15 +102,9 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
         }            
     }
 
-    void GenerateRooms()
+    // 맵 타일 시스템 제거 — 거점(M_HubManager)은 별도 생성 작업이 없으므로 바로 다음 단계로 진행
+    void PrepareHub()
     {
-        // USE_3D_MAP=0(BalanceDB)이면 기존 2D 육각형 맵 생성, 1이면 3D 구체 맵(SphereMapNetwork)이 대체.
-        // 거점지역(Region) 시스템은 제거됨 — 빈땅(ROAD) 위주 + 희소 특수타일 세계 (GetRoomType 참조).
-        // RPG 저장(GameSaveService)은 프로필만 복원하고 2D 맵은 매 세션 새로 생성된다.
-        if(!SphereMapNetwork.Use3DMap)
-        {
-            M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성
-        }
         state++;
         OnChangedState(state,state);
     }

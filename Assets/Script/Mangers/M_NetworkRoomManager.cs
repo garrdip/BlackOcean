@@ -108,7 +108,6 @@ public class M_NetworkRoomManager : NetworkRoomManager
                 HashSet<NetworkIdentity> copyHashSet = new HashSet<NetworkIdentity>(conn.owned);
                 foreach(NetworkIdentity networkIdentity in copyHashSet){
                     if(networkIdentity.GetComponent<RoomPlayer>() == null && networkIdentity.GetComponent<PlayerInterface>() == null){
-                        AssignMapPlayerInterfaceNetId(networkIdentity);
                         networkIdentity.RemoveClientAuthority();
                         networkIdentity.AssignClientAuthority(NetworkClient.connection.identity.connectionToClient);
                     }
@@ -144,17 +143,6 @@ public class M_NetworkRoomManager : NetworkRoomManager
     private void OnClientDisconnectFromServer(PlayerInterface playerInterface, GamePlayer gamePlayer)
     {
         onClientDisconnected?.Invoke(playerInterface, gamePlayer);
-    }
-
-    // MapPlayerPiece와 MapPlayerDestination에 SyncVar 참조변수로 있는 playerIntefaceNetId값을 서버의 NetId로 변경
-    private void AssignMapPlayerInterfaceNetId(NetworkIdentity networkIdentity)
-    {
-        if(networkIdentity.GetComponent<MapPlayerPiece>() != null){
-            networkIdentity.GetComponent<MapPlayerPiece>().playerIntefaceNetId = NetworkClient.connection.identity.netId;
-        }
-        if(networkIdentity.GetComponent<MapPlayerDestination>() != null){
-            networkIdentity.GetComponent<MapPlayerDestination>().playerIntefaceNetId = NetworkClient.connection.identity.netId;
-        }
     }
 
     // 씬 전환 이벤트(Offline Scene에서도 씬 전환 이벤트 수신 가능)

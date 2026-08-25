@@ -237,6 +237,24 @@ public partial class M_TurnManager
     }
 
 
+    // 거점 진입 수신 이벤트 — 토스트 + 거점 배경음 (전초기지 BGM 재사용)
+    [ClientRpc]
+    public void RpcStartHubEvent()
+    {
+        M_MessageManager.instance
+            .MakeToast()
+            .Position(ToastPosition.Top)
+            .FadeInTime(1f)
+            .FadeOutTime(1f)
+            .MessageBoxColor(Color.green)
+            .TextColor(Color.white)
+            .Text(M_LanguageManager.Get("ui.msg.hub", "거점"))
+            .Show();
+        AudioClip audioClip_hub = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Base_Camp");
+        M_SoundManager.instance.PlayBGM(audioClip_hub, MusicTransition.CrossFade, 2f);
+    }
+
+
     [ClientRpc]
     public void StartAnimation(TargetObject tar, int trackIndex,string animationName, bool loop )
     {

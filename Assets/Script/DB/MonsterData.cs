@@ -95,6 +95,7 @@ public class MonsterData : SingletonD<MonsterData>
                 monster.attackAttribute = (attribute.Length == 0) ? AttackAttribute.NONE : GetEnumData<AttackAttribute>(attribute);
                 monster.tpShield = row.GetInt("TPShield");
                 monster.agility = row.GetInt("Agility");
+                monster.exp = row.GetInt("Exp");
             }
             catch (Exception e)
             {

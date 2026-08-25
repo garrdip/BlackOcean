@@ -109,7 +109,6 @@ public partial class GamePlayer
         DrawEquipmentGUI(); // 장비/인벤토리 창 (GamePlayer.Equipment.cs — 같은 컴포넌트라 OnGUI는 여기 하나로 합친다)
 
         Rect toggleRect = new Rect(Screen.width - 150f, 10f, 140f, 30f);
-        ProjectD.Map3DGuiArea.Register(toggleRect); // 3D 구체 맵 입력이 버튼 영역을 무시하도록 등록
         if (GUI.Button(toggleRect, guiTreeOpen ? "스킬트리 닫기" : $"스킬트리 (P:{skillPoints})"))
         {
             guiTreeOpen = !guiTreeOpen;
@@ -120,7 +119,6 @@ public partial class GamePlayer
         float windowWidth = 560f;
         float windowHeight = 420f;
         Rect windowRect = new Rect(Screen.width - windowWidth - 10f, 85f, windowWidth, windowHeight);
-        ProjectD.Map3DGuiArea.Register(windowRect); // 창 영역도 구체 클릭/회전에서 제외
         GUI.Box(windowRect, $"{character} 스킬트리  |  Lv.{level}  포인트 {skillPoints}");
 
         guiTreeScroll = GUI.BeginScrollView(

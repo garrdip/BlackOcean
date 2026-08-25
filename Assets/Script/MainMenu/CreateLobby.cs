@@ -23,7 +23,7 @@ public class CreateLobby : MonoBehaviour
     {
         AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-        // '이어서 하기' — 호스트가 저장 파일 소유. 세계/프로필 복원은 SphereMapNetwork/GenerateGamePlayer가 소비
+        // '이어서 하기' — 호스트가 저장 파일 소유. 프로필 복원은 M_HubManager.OnStartServer(TryLoad) → GenerateGamePlayer(FindProfile)가 소비
         GameSaveService.pendingLoad = continueFromSave && GameSaveService.HasSaveFile();
         M_SteamManager.instance.HostLobby(lobbyName.text,StringUtils.RemoveZWSP(password.text));
     }

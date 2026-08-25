@@ -11,7 +11,7 @@ public class PlayerInterfaceServer : NetworkBehaviour
 
     // ------------------------------------------------------------- Command Method ------------------------------------------------------------------//
 
-    // 현재 선택된 플레이어 소유의 오브젝트들 생성(CardPocket, CardArrow, AbilityButton, AbilityArrow, MapPlayerPiece, MapPlayerDestination)
+    // 현재 선택된 플레이어 소유의 오브젝트들 생성(CardPocket, CardArrow, AbilityButton, AbilityArrow) + 플레이어 오더 등록
     [Command]
     public void GenerateGamePlayerOwnedObjects(GamePlayer gamePlayer)
     {
@@ -62,43 +62,8 @@ public class PlayerInterfaceServer : NetworkBehaviour
             gamePlayerDeck.abilityCtrlArrow = abilityArrowObject.GetComponent<AbilityCtrlArrow>();
         }
 
-        // 맵 플레이어 오브젝트 생성
-        GameObject mapPlayerObject = Instantiate(networkRoomManager.spawnPrefabs.Find(pref => pref.name == "MapPlayer"));
-        MapPlayer mapPlayer = mapPlayerObject.GetComponent<MapPlayer>();
-        mapPlayer.gamePlayer = gamePlayer;
-        NetworkServer.Spawn(mapPlayerObject, connectionToClient);
-        gamePlayer.mapPlayerNetId = mapPlayer.netId;
-
-        // MapPlayerPiece 오브젝트 생성
-        // [3D 맵 리뉴얼 테스트] 2D 맵 생성이 비활성화된 동안에는 currentRoom이 null이므로 원점에서 생성
-        GamePlayerMap gamePlayerMap = gamePlayer.GetComponent<GamePlayerMap>();
-        Vector3 mapPlayerPieceSpawnPosition = M_MapManager.instance.currentRoom != null
-            ? M_MapManager.instance.currentRoom.position
-            : Vector3.zero;
-        GameObject mapPlayerPieceObject = Instantiate(
-            networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerPiece"),
-            mapPlayerPieceSpawnPosition,
-            Quaternion.identity
-        );
-        MapPlayerPiece mapPlayerPiece = mapPlayerPieceObject.GetComponent<MapPlayerPiece>();
-        mapPlayerPiece.steamId = SteamFriends.GetFriendPersonaName((CSteamID)GetComponent<PlayerInterface>().steamID); // 스팀아이디 값 세팅
-        mapPlayerPiece.playerIntefaceNetId = GetComponent<PlayerInterface>().netId; // 게임 플레이어 참조값 세팅
-        NetworkServer.Spawn(mapPlayerPieceObject, connectionToClient);
-      
-        M_MapManager.instance.mapPlayerPieces.Add(mapPlayerPieceObject); // 매니저의 리스트에 생성된 맵 플레이어 추가
-        gamePlayerMap.currentMapPlayerPiece = mapPlayerPiece; // 자신소유의 mapPlayerPiece 참조값 세팅
-
-        // MapPlayerDestination 오브젝트 생성
-        GameObject mapPlayerDestinationObject = Instantiate(
-            networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "MapPlayerDestination"),
-            Vector3.zero,
-            Quaternion.identity
-        );
-        MapPlayerDestination mapPlayerDestination = mapPlayerDestinationObject.GetComponent<MapPlayerDestination>();
-        mapPlayerDestination.playerIntefaceNetId = GetComponent<PlayerInterface>().netId; // 게임 플레이어 참조값 세팅
-        NetworkServer.Spawn(mapPlayerDestinationObject, connectionToClient);
-        
-        gamePlayerMap.currentMapPlayerDestination = mapPlayerDestination; // 자신소유의 currentMapPlayerDestination 참조값 세팅
+        // 플레이어 오더 슬롯 등록 (룸에서 정한 selectOrder 인덱스에 netId) — 맵 시스템 제거로 MapPlayer.OnStartServer 역할을 이관
+        M_TurnManager.instance.RegisterPlayerOrder(gamePlayer.selectOrder, gamePlayer.netId);
     }
 
 

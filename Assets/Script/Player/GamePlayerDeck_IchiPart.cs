@@ -46,7 +46,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     void OnChangedCurrentIchi(int oldVal, int newVal)
     {
-        if(isOwned){
+        if(isOwned && GameUIManager.instance.HasCardUI){ // 카드 전투 UI 제거됨 — 잔재 코드 가드
             SetCardOnHandCostTextState(newVal);
             GameUIManager.instance.currentIchiText.text = newVal.ToString();
             if(newVal > oldVal){
@@ -59,7 +59,7 @@ public partial class GamePlayerDeck : NetworkBehaviour
 
     void OnChangedMaxIchi(int oldVal, int newVal)
     {
-        if(isOwned){
+        if(isOwned && GameUIManager.instance.HasCardUI){ // 카드 전투 UI 제거됨 — 잔재 코드 가드
             GameUIManager.instance.maxIchiText.text = newVal.ToString();
             if(newVal > oldVal){
                 CreateMaxItchIcon(newVal - oldVal); // 증가수치만큼 최대 이치 아이콘 생성

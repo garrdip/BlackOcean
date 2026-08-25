@@ -14,8 +14,7 @@ public class GameUIManager : SingletonD<GameUIManager>
     public GameObject TestUI;
 
     [Header("카메라 사이즈값")]
-    public static float battelSceneCameraSize = 10.8f; // 전투씬에서 카메라 크기값
-    public static float mapSceneCameraSize = 6.0f; // 맵씬에서 카메라 크기값
+    public static float battelSceneCameraSize = 10.8f; // 거점/전투 화면 카메라 크기값
 
     [Header("화면 전환 UI")]
     public Image screenTransition;
@@ -36,6 +35,14 @@ public class GameUIManager : SingletonD<GameUIManager>
     public List<GameObject> maxIchiIcons = new List<GameObject>();
     public Button buttonEndTurn;
 
+    // 카드 전투 UI(CostMenu/TurnMenu — 이치 표시·턴 종료 버튼·덱 버튼)는 씬에서 제거됨. 카드 잔재 코드는 이 플래그로 접근을 막는다 (2B-5 카드 제거 시 함께 정리)
+    public bool HasCardUI => currentIchiText != null && buttonEndTurn != null;
+
+    public void SetEndTurnInteractable(bool interactable)
+    {
+        if(buttonEndTurn != null) buttonEndTurn.interactable = interactable;
+    }
+
     public GameObject PrefareDeck;
     public Button buttonPrefareDeck;
     public GameObject iconPrefareDeckLight;
@@ -51,8 +58,6 @@ public class GameUIManager : SingletonD<GameUIManager>
     public GameObject iconForgottenDeckLight;
     public Text textForgottenDeckCount;
 
-    public TextMeshProUGUI textCurrentActionCost;
-    public TextMeshProUGUI textMaxActionCost;
     public TextMeshProUGUI textCurrentPhase;
     public TextMeshProUGUI currentIchiText;
     public TextMeshProUGUI maxIchiText;
