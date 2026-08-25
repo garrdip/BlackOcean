@@ -39,17 +39,6 @@ public class M_SaveManager : NetworkSingletonD<M_SaveManager>
         foreach(HexagonMapRoom mapRoom in M_MapManager.instance.hexagonMapRooms)
             data.map.hexagonMapRooms.Add(new SaveDataMapRoom(mapRoom));
 
-        foreach(Region region in M_MapManager.instance.regions)
-        {
-            SaveDataRegion saveDataRegion = new SaveDataRegion();
-            saveDataRegion.regionGrade = region.regionGrade;
-            foreach(Tile tile in region.tiles)
-            {
-                saveDataRegion.tiles.Add(new SaveDataTile(tile));
-            }
-            data.map.regions.Add(saveDataRegion);
-        }
-
         File.WriteAllText(FilePath, JsonUtility.ToJson(data, true));
         Debug.Log(FilePath + " Save Done");
     }

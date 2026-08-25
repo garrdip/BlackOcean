@@ -71,7 +71,6 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
                     break;
                 
                 case LOADING_STATE.MAP_SCENE :
-                    M_MapManager.instance.SetRegionWithColorRPC();
                     M_LoadingManager.instance.SetLoadingScreen(false);
                     break;
                 
@@ -104,18 +103,13 @@ public class M_LoadingManager : NetworkSingletonD<M_LoadingManager>
 
     void GenerateRooms()
     {
-        // [3D 맵 리뉴얼 테스트] 2D 육각형 맵 생성 비활성화 — 3D 구체 맵(SphereMapView/SphereMapSystem)으로 대체 진행 중
-        // 복구하려면 아래 주석을 해제하면 된다.
-        // if(M_SaveManager.instance.isSaveGame)
-        // {
-        //     M_MapManager.instance.RegenerateStartHexsagonRoom(M_SaveManager.instance.loadData); // 세이브 데이터로 육각형 방 재생성
-        //     M_MapManager.instance.RegenerateColorRegion(M_SaveManager.instance.loadData); // 세이브 데이터로 거점지역 재생성
-        // }
-        // else
-        // {
-        //     M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성
-        //     M_MapManager.instance.GenerateColorRegion(); // 거점지역 생성
-        // }
+        // USE_3D_MAP=0(BalanceDB)이면 기존 2D 육각형 맵 생성, 1이면 3D 구체 맵(SphereMapNetwork)이 대체.
+        // 거점지역(Region) 시스템은 제거됨 — 빈땅(ROAD) 위주 + 희소 특수타일 세계 (GetRoomType 참조).
+        // RPG 저장(GameSaveService)은 프로필만 복원하고 2D 맵은 매 세션 새로 생성된다.
+        if(!SphereMapNetwork.Use3DMap)
+        {
+            M_MapManager.instance.GenerateStartHexagonRoom(); // 육각형 방 생성
+        }
         state++;
         OnChangedState(state,state);
     }

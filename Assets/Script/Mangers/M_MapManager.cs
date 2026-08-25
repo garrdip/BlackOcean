@@ -14,8 +14,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     public readonly SyncList<uint> hexagonMapRoomNetIds = new SyncList<uint>(); // hexagonMapRoom 오브젝트 NetId 리스트
 
-    public readonly SyncList<Region> regions = new SyncList<Region>(); // 거점지역 리스트
-
     [SyncVar(hook = nameof(OnChangeCurrentRoom))]
     public HexagonMapRoom currentRoom;
 
@@ -57,10 +55,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     [Header("그리드 부모 오브젝트")]
     public Transform gridParent;
-
-    [Header("거점 지역 표시 오브젝트")]
-    public GameObject regionIndicatorPrefab;
-    public List<RegionIndicator> regionsIndicators = new List<RegionIndicator>();
 
     [Header("맵에서 플레이어가 컨트롤하는 오브젝트 리스트")]
     public List<GameObject> mapPlayerPieces;
@@ -137,6 +131,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
     public override void OnStartClient()
     {
         base.OnStartClient();
+
+        MapCharacter.EnsureExists(); // 맵 탐험 캐릭터 비주얼 생성 (클라이언트 전용 — 걷는 중이 아니면 currentRoom에 스냅)
 
         playerVoteHexagonMapRoom.Callback += OnChangePlayerVoteHexagonMapRoom;
         // Process initial SyncDictionary payload
@@ -225,6 +221,69 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         }
     }
 
+
+    // 빈땅(ROAD)/방문완료/시작지점 클릭 시 레디 합의 없이 즉시 파티 전체 이동 (탐험 스텝).
+    // 특수타일(전투/상점 등)은 기존 투표·레디 흐름으로만 진입한다. 이동 후 주변 타일이 밝혀진다.
+    [Command (requiresAuthority = false)]
+    public void CmdInstantMoveRoom(HexagonMapRoom target, NetworkConnectionToClient sender = null)
+    {
+        if(partyWalking) return; // 걷기 연출이 끝나기 전에는 다음 이동 불가
+        if(target == null || currentRoom == null || target == currentRoom) return;
+        if(!target.isActive) return; // 밝혀지지 않은 타일
+        if(target.roomType != RoomType.ROAD && target.roomType != RoomType.COMPLETE && target.roomType != RoomType.START_LOCATION) return;
+        if(target.mapBoss != null) return; // 보스가 올라탄 타일은 투표(보스전)로만 진입
+        List<HexagonMapRoom> path;
+        if(mapBoss != null){
+            if(GetDistanceFromCurrentCoordinate(currentRoom.coordinate, target.coordinate) > 1) return; // 보스 출현 시 1칸 제한
+            path = new List<HexagonMapRoom> { target };
+        }else{
+            path = FindPath(currentRoom, target);
+            if(path.Count == 0 || path[path.Count - 1] != target) return; // 경로 없음 또는 행동비용으로 잘림 → 이동 불가
+        }
+
+        // 걷기 연출 소요 시간 계산 (경로 거리/속도 + 타일별 정지 시간) — 이 시간 동안 추가 이동 잠금
+        float walkDuration = 0.3f; // 네트워크/연출 여유 마진
+        Vector3 fromPosition = currentRoom.transform.position;
+        foreach(HexagonMapRoom step in path){
+            walkDuration += Vector3.Distance(fromPosition, step.transform.position) / MapCharacter.MoveSpeed + MapCharacter.StepPause;
+            fromPosition = step.transform.position;
+        }
+
+        RpcMovePartyAlongPath(path.ToArray()); // 맵 캐릭터가 경로를 따라 걸어가고, 말은 도착지로 이동
+        currentRoom = target;
+        ClearAllVotesForServer();    // 파티 위치가 바뀌었으므로 기존 투표/레디 무효
+        MoveWithoutBattle();         // 경로 라인/도착 마커 정리 (RPC)
+        DecreaseTotalActionCost(1);  // 탐험 스텝은 거리와 무관하게 1턴 소모
+        ApproachBossToPlayer();
+        StartCoroutine(FinishPartyWalk(target, walkDuration));
+    }
+
+    bool partyWalking; // 서버: 맵 캐릭터 걷기 연출 중 — 완료 전 추가 즉시 이동 잠금
+
+    // 걷기 연출이 끝나는 시점에 시야 확장/자동 저장을 수행하고 이동 잠금을 해제
+    [Server]
+    IEnumerator FinishPartyWalk(HexagonMapRoom destination, float walkDuration)
+    {
+        partyWalking = true;
+        yield return new WaitForSeconds(walkDuration);
+        partyWalking = false;
+        GenerateHexagonRoom(destination); // 도착 시 주변 시야 확장 (mapSight)
+        if(SphereMapNetwork.instance != null)
+            SphereMapNetwork.instance.ScheduleSave(); // 자동 저장 (프로필)
+    }
+
+    // 모든 투표/선택 상태와 레디를 초기화 — 즉시 이동으로 파티 위치가 바뀐 직후 호출
+    [Server]
+    void ClearAllVotesForServer()
+    {
+        foreach(KeyValuePair<NetworkIdentity, HexagonMapRoom> vote in playerVoteHexagonMapRoom){
+            vote.Value.isSelected = false;
+            vote.Value.votePlyers.Remove(vote.Key.netId);
+        }
+        playerVoteHexagonMapRoom.Clear();
+        foreach(PlayerInterface player in PlayerRegistry.All)
+            player.isReady = false;
+    }
 
     // 플레이어 슬롯(0~2)만 스왑 대상 — 몬스터 슬롯 조작 및 범위 밖 인덱스 방어
     private bool IsValidPlayerSlotIndex(int index)
@@ -413,43 +472,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         }
     }
 
-    [Server]
-    public void RegenerateStartHexsagonRoom(SaveData saveData)
-    {
-        var networkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-        
-        foreach(SaveDataMapRoom saveDataMapRoom in saveData.map.hexagonMapRooms)
-        {
-            Vector3 position = saveDataMapRoom.position;
-            GameObject aroundRoomObject = Instantiate(
-                networkRoomManager.spawnPrefabs.Find(prefab => prefab.name == "HexagonMapRoom"),
-                position,
-                Quaternion.identity
-            );
-            HexagonMapRoom aroundRoom = aroundRoomObject.GetComponent<HexagonMapRoom>();
-            // 방 타입 설정
-            aroundRoom.roomType = saveDataMapRoom.roomType;
-            // 인게임 좌표계 값 설정
-            aroundRoom.position = position;
-            // 방 활성화 상태 설정
-            aroundRoom.isActive = saveDataMapRoom.isActive;
-            aroundRoom.isRegion = saveDataMapRoom.isRegion;
-            
-            // 고유 좌표계 값 설정
-            aroundRoom.coordinate = saveDataMapRoom.coordinate;
-            NetworkServer.Spawn(aroundRoomObject);
-
-            // 육각형 위치 및 오브젝트 클래스 리스트에 추가
-            hexagonMapRooms.Add(aroundRoom);
-            hexagonMapRoomNetIds.Add(aroundRoom.GetComponent<NetworkIdentity>().netId);
-            
-            if(saveData.map.currentRoom == saveDataMapRoom.coordinate){
-                currentRoom = aroundRoom;
-                GenerateHexagonMapWorld(maxHexagonGridRange, currentRoom);
-            }
-        }
-    }
-
     // 현재 위치를 중심으로 주변 육각형 생성 : mapSight 값에 따라 생성되는 범위 동적으로 변경
     [Server]
     public void GenerateHexagonRoom(HexagonMapRoom currentHexagonMapRoom)
@@ -465,104 +487,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
                 HexagonMapRoom hexagonMapRoom = hexagonMapRooms.Find(room => room.position == position);
                 if(hexagonMapRoom != null){
                     hexagonMapRoom.isActive = true;
-                }
-            }
-        }
-    }
-
-    // 거점지역 생성
-    [Server]
-    public void GenerateColorRegion()
-    {
-        int totalTry = 0;
-        int numberOfRegion = Random.Range(6,9); // 총 구역의 수
-        for(int i = 0 ;i < numberOfRegion ; i ++)
-        {
-            Region newRegion = new Region();
-            newRegion.GetRegionGrade();
-            regions.Add(newRegion);
-
-            int numberOfTiles = (newRegion.regionGrade == RegionGrade.NORMAL) ? Random.Range(4,6) :
-                                (newRegion.regionGrade == RegionGrade.RARE) ? Random.Range(5,8) :
-                                (newRegion.regionGrade == RegionGrade.UNIQUE) ? Random.Range(6,10) : Random.Range(7,12);
-                                                                        
-            // 거리와 각도를 이용하여 좌표를 계산
-            Vector3 centerPos = new Vector3(0,0,0);
-            do{
-                if(totalTry >= 100){ // 새로운 지역 생성 불가시 생성 종료
-                    regions.Remove(newRegion);
-                    return;
-                }
-                int distance = Random.Range(7,9);
-                float angle = Random.Range(0,2*Mathf.PI);
-                centerPos.x = (int)(distance * Mathf.Cos(angle));
-                centerPos.y = (int)(distance * Mathf.Sin(angle));
-                totalTry++;
-            }while(regions.Find(x => x.tiles.Exists(tile => tile.coordinate == centerPos)) != null);
-            newRegion.tiles.Add(new Tile(centerPos));
-            totalTry = 0;
-            //각각의 타일의 위치를 정의하는 곳.
-            for(int j = 0 ; j < numberOfTiles - 1 ; j++)
-            {
-                Vector3 newPos = MoveRandomDirection(centerPos); //랜덤 좌표 선택
-                if(regions.Find(x => x.tiles.Exists(tile => tile.coordinate == newPos)) != null || newPos == new Vector3(0,0,0))
-                {
-                    if(totalTry >= 6)break; // 6면이 모두 막혔을경우 종료 (작은 지역으로 생성됨 TBD)
-                    j--;
-                    totalTry++;
-                    continue;
-                }
-                newRegion.tiles.Add(new Tile(newPos));
-                centerPos = newPos;
-            }
-        }
-        GenerateHexagonRoomOnRegion();
-    }
-
-    [Server]
-    public void RegenerateColorRegion(SaveData saveData)
-    {
-        foreach(SaveDataRegion saveDataRegion in saveData.map.regions)
-        {
-            Region newRegion = new Region();
-            newRegion.regionGrade = saveDataRegion.regionGrade;
-            regions.Add(newRegion);
-
-            //각각의 타일의 위치를 정의하는 곳.
-            foreach(SaveDataTile saveDataTile in saveDataRegion.tiles)
-            {
-                Tile newTile = new Tile(new Vector3(saveDataTile.coordinate.x,saveDataTile.coordinate.y,0));
-                newRegion.tiles.Add(newTile);
-            }
-        }
-        GenerateHexagonRoomOnRegion();
-    }
-
-    // 거점지역으로 결정된 위치에 생성된 HexagonMapRoom에 region 설정값 부여
-    [Server]
-    public void GenerateHexagonRoomOnRegion()
-    {
-        foreach(Region region in regions){
-            foreach(Tile loc in region.tiles){
-                Vector2Int coordinate = new Vector2Int((int)loc.coordinate.x, (int)loc.coordinate.y);
-                foreach(HexagonMapRoom hexagonMapRoom in hexagonMapRooms){
-                    if(hexagonMapRoom.coordinate == coordinate){
-                        // 방 타입 설정
-                        hexagonMapRoom.roomType = GetRoomType();
-                        // 거점지역 데이터 설정
-                        hexagonMapRoom.region = region;
-                        // 거점지역 구분 변수값 설정
-                        hexagonMapRoom.isRegion = true;
-                        // 방 활성화 상태 변수값 false 설정(거점지역의 오브젝트는 그 지역에 도달하기 전까지는 비활성화 상태여야 하므로)
-                        hexagonMapRoom.isActive = false;
-
-                        // 거점지역이 시작지점에 생긴경우는 활성화상태 true로 설정
-                        foreach(Vector2Int startRoomCoordinate in M_MapManager.instance.offSets){
-                            if(startRoomCoordinate == hexagonMapRoom.coordinate){
-                               hexagonMapRoom.isActive = true;
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -661,8 +585,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
             if(reduceActionCost <= currentActionCost){
                 currentActionCost = Mathf.Max(0, currentActionCost - reduceActionCost);
                 if(currentActionCost == 0 && mapBoss == null){
-                    // [3D 맵 리뉴얼 테스트] 3D 구체 맵 사용 시 보스를 3D 맵 타일 위에 출현
-                    if(SphereMapNetwork.instance != null){
+                    // 3D 구체 맵 사용 시(USE_3D_MAP) 보스를 3D 맵 타일 위에 출현, 2D 맵이면 기존 방식
+                    if(SphereMapNetwork.Use3DMap && SphereMapNetwork.instance != null){
                         SphereMapNetwork.instance.SpawnBoss();
                     }else{
                         GenreateMapBoss(); // 코스트값이 0이면 서버에서 보스 생성
@@ -825,11 +749,19 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         ChangeAllMapPlayerDestinationState(false);
     }
 
+    // 빈땅 즉시 이동 — 맵 캐릭터가 경로를 따라 타일을 하나씩 걸어가고, 플레이어 말은 도착지로 이동
     [ClientRpc]
-    public void SetRegionWithColorRPC()
+    void RpcMovePartyAlongPath(HexagonMapRoom[] pathRooms)
     {
-        foreach(Region region in regions)
-            SetRegionWithColor(region);
+        List<Vector3> waypoints = new List<Vector3>();
+        foreach(HexagonMapRoom pathRoom in pathRooms){
+            if(pathRoom != null) waypoints.Add(pathRoom.transform.position);
+        }
+        if(waypoints.Count == 0) return;
+        MapCharacter.EnsureExists().MoveAlong(waypoints);
+        foreach(MapPlayerPiece mapPlayerPiece in FindObjectsByType<MapPlayerPiece>(FindObjectsSortMode.None)){
+            mapPlayerPiece.transform.position = waypoints[waypoints.Count - 1];
+        }
     }
 
     // ------------------------------------------------------------ Syncvar Hook --------------------------------------------------------------- //
@@ -916,16 +848,20 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
 
     // ------------------------------------------------------------ Normal Method -------------------------------------------------------------- //
 
-    // 가중치 랜덤 수행으로 방 타입 결정하여 반환
+    // 가중치 랜덤 수행으로 방 타입 결정하여 반환.
+    // 대부분은 빈땅(ROAD)이고, 낮은 확률(BalanceDB: MAP_SPECIAL_TILE_PERCENT)로만 특수 타일이 등장한다.
+    // CARD_NPC(카드 상점)는 카드 시스템 정리(2B-5) 대상이라 생성에서 제외.
     private RoomType GetRoomType()
     {
+        if(Random.Range(0,100) >= BalanceData.Get("MAP_SPECIAL_TILE_PERCENT", 12)){
+            return RoomType.ROAD; // 빈땅
+        }
         int ramdomValue = Random.Range(0,100);
-        if(ramdomValue < 10) return RoomType.CAMP;
-        if(ramdomValue < 20) return RoomType.EVENT_POSITIIVE;
-        if(ramdomValue < 30) return RoomType.EVENT_NEGATIVE;
-        if(ramdomValue < 40) return RoomType.ITEM_NPC;
-        if(ramdomValue < 50) return RoomType.CARD_NPC;
-        if(ramdomValue < 60) return RoomType.ELITE;
+        if(ramdomValue < 12) return RoomType.CAMP;
+        if(ramdomValue < 24) return RoomType.EVENT_POSITIIVE;
+        if(ramdomValue < 36) return RoomType.EVENT_NEGATIVE;
+        if(ramdomValue < 50) return RoomType.ITEM_NPC;
+        if(ramdomValue < 65) return RoomType.ELITE;
         else return RoomType.MONSTER;
     }
 
@@ -950,94 +886,6 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         retVal.y = (-y * yOffset) - (x * yOffset * 0.5f);
         return retVal;
     } 
-
-    Vector3 MoveRandomDirection(Vector3 loc)
-    {
-        Vector3 retVal = loc;
-        switch(Random.Range(0,6))
-        {
-            case 0: // 12시
-                retVal += new Vector3(0,-1,0);
-                break;
-            case 1: // 2시
-                retVal += new Vector3(1,-1,0);
-                break;
-            case 2: // 4시
-                retVal += new Vector3(1,0,0);
-                break;
-            case 3: // 6시
-                retVal += new Vector3(0,1,0);
-                break;
-            case 4: // 8시
-                retVal += new Vector3(-1,1,0);
-                break;
-            case 5: // 10시
-                retVal += new Vector3(-1,0,0);
-                break;
-        }
-        return retVal;
-    }
-
-    public void SetRegionWithColor(Region region)
-    {
-        foreach(Tile loc in region.tiles)
-        {
-            for(int i = 0;  i < 6 ; i ++)
-            {
-                switch(i)
-                {
-                    case 0 : // 12시
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x,loc.coordinate.y-1,0)))
-                            continue;
-                        break;
-                    case 1 : // 2시
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x+1,loc.coordinate.y-1,0)))
-                            continue;
-                        break;
-                    case 2 : // 4시
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x+1,loc.coordinate.y,0)))
-                            continue;
-                        break;
-                    case 3 :// 6시
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x,loc.coordinate.y+1,0)))
-                            continue;
-                        break;
-                    case 4 :// 8시
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x-1,loc.coordinate.y+1,0)))
-                            continue;
-                        break;
-                    case 5 :// 10시
-                        if(region.tiles.Exists(pos => pos.coordinate == new Vector3(loc.coordinate.x-1,loc.coordinate.y,0)))
-                            continue;
-                        break;
-                }
-                GameObject newRegion = Instantiate(regionIndicatorPrefab, GetPosition((int)loc.coordinate.x,(int)loc.coordinate.y), Quaternion.identity,gridParent);
-                RegionIndicator regionIndicator = newRegion.GetComponent<RegionIndicator>();
-                regionIndicator.coordinate = new Vector2Int((int)loc.coordinate.x,(int)loc.coordinate.y);
-                regionIndicator.index = i;
-                newRegion.transform.localPosition = newRegion.transform.position;
-                Color regionColor = new Color(0,0,0);
-                switch(region.regionGrade)
-                {
-                    case RegionGrade.NORMAL :
-                        regionColor = new Color(1,0,0);
-                        break;
-                    case RegionGrade.RARE :
-                        regionColor = new Color(0,1,0);
-                        break;
-                    case RegionGrade.UNIQUE :
-                        regionColor = new Color(0,0,1);
-                        break;
-                    case RegionGrade.LEGEND :
-                        regionColor = new Color(1,0.8f,0);
-                        break;
-                        
-                }
-                newRegion.GetComponent<SpriteRenderer>().color = regionColor;
-                regionsIndicators.Add(regionIndicator);
-            }
-        }
-    }
 
     // Axial 좌표계를 이용한 시스템에서 현재 좌표에서 목표 좌표까지의 거리를 반환
     public int GetDistanceFromCurrentCoordinate(Vector2Int startAt, Vector2Int endAt)
@@ -1172,7 +1020,8 @@ public class M_MapManager : NetworkSingletonD<M_MapManager>
         for(int i = 0; i < 6; i++)
         {
             HexagonMapRoom neighbour = isServer ? FindNeighboursForServer(i, currentHexagonRoom) : FindNeighboursForClient(i, currentHexagonRoom); // 서버, 클라 분기 처리하여 이웃방 검색
-            if(neighbour != null && (neighbour.roomType == RoomType.COMPLETE || neighbour.roomType == RoomType.START_LOCATION || neighbour.coordinate == destinationCoord)){
+            // 통행 가능 = 밝혀진(isActive) 빈땅(ROAD)/방문완료/시작지점. 목적지 자신은 타입 무관(특수타일 진입용)
+            if(neighbour != null && neighbour.isActive && (neighbour.roomType == RoomType.COMPLETE || neighbour.roomType == RoomType.START_LOCATION || neighbour.roomType == RoomType.ROAD || neighbour.coordinate == destinationCoord)){
                 neighbours.Add(neighbour);
             }
         }

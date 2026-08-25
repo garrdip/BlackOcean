@@ -21,25 +21,34 @@ public class GamePlayerMap : NetworkBehaviour
     [Command]
     public void CmdChangeMapPlayerDestinationPosition(HexagonMapRoom endAt, Vector3 position, NetworkIdentity networkIdentity)
     {
-        if(currentMapPlayerDestination != null && M_MapManager.instance.currentRoom != null){
+        if(currentMapPlayerDestination == null || M_MapManager.instance.currentRoom == null){
+            Debug.LogWarning($"[GamePlayerMap] 방 투표 불가 — destination={(currentMapPlayerDestination != null)}, currentRoom={(M_MapManager.instance.currentRoom != null)}");
+            return;
+        }
+        {
             // 맵에 보스 출현 시 1칸 이상 이동 불가
             if(M_MapManager.instance.mapBoss != null && M_MapManager.instance.GetDistanceFromCurrentCoordinate(M_MapManager.instance.currentRoom.coordinate, endAt.coordinate) > 1){
+                Debug.LogWarning($"[GamePlayerMap] 방 투표 거부 — 보스 출현 중 1칸 제한 (목적지 {endAt.coordinate})");
                 return;
             }
 
             // 비활성화 상태면 이동 불가
             if(!endAt.isActive){
+                Debug.LogWarning($"[GamePlayerMap] 방 투표 거부 — 밝혀지지 않은 타일 {endAt.coordinate}({endAt.roomType})");
                 return;
             }
-            
+
             // 시작지점은 CurretnRoom 또는 StartPosition
             HexagonMapRoom startAt = M_MapManager.instance.currentRoom != null ? M_MapManager.instance.currentRoom : M_MapManager.instance.hexagonMapRooms[0];
-     
+
             // MapPlayerDestination 초기 위치 설정
             currentMapPlayerDestinationPosition = position;
-                    
+
             // 경로검색(현재 행동비용값을 기반으로 경로 검색)
             List<HexagonMapRoom> findPath = M_MapManager.instance.FindPath(startAt, endAt);
+            if(findPath.Count == 0 && M_MapManager.instance.mapBoss == null){
+                Debug.LogWarning($"[GamePlayerMap] 방 투표 실패 — {startAt.coordinate} → {endAt.coordinate}({endAt.roomType}) 경로 없음");
+            }
             if(findPath.Count > 0){
                 currentMapPlayerDestinationPosition = findPath[findPath.Count-1].transform.position; // MapPlayerDestination 위치는 findPath 마지막 노드 위치
                 RpcVisualizePath(startAt, findPath, networkIdentity.netId); // 경로표시

@@ -81,14 +81,19 @@ public static class GameSaveService
     public static void SaveGame()
     {
         if (!NetworkServer.active) return;
-        if (SphereMapNetwork.instance == null || SphereMapNetwork.instance.system == null || !SphereMapNetwork.instance.system.HasState)
-            return;
 
         var data = new RpgSaveData();
-        SphereMapSystem system = SphereMapNetwork.instance.system;
-        data.mapSeed = system.Seed;
-        data.currentTileIndex = system.currentTileIndex;
-        system.ExportProgress(data.completedTiles, data.activeTiles);
+        // 월드(구체 맵) 상태는 3D 맵 모드에서만 저장 — 2D 육각형 맵 모드에서는 프로필만 저장하고
+        // 맵은 매 세션 새로 생성된다 (currentTileIndex=-1 = 월드 복원 없음)
+        if (SphereMapNetwork.Use3DMap)
+        {
+            if (SphereMapNetwork.instance == null || SphereMapNetwork.instance.system == null || !SphereMapNetwork.instance.system.HasState)
+                return; // 3D 모드인데 맵 상태가 없으면 저장 보류 (기존 세이브를 빈 월드로 덮지 않도록)
+            SphereMapSystem system = SphereMapNetwork.instance.system;
+            data.mapSeed = system.Seed;
+            data.currentTileIndex = system.currentTileIndex;
+            system.ExportProgress(data.completedTiles, data.activeTiles);
+        }
 
         foreach (PlayerInterface playerInterface in PlayerRegistry.All)
         {

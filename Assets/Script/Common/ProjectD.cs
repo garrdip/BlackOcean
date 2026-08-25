@@ -31,7 +31,6 @@ namespace ProjectD
                             }
     public enum GOHENGType {GOHENG1, GOHENG2, GOHENG3}
     public enum DeckListType { NONE, PREFARE_DECK, TRASH_DECK, FORGOTTEN_DECK }
-    public enum RegionGrade{ NONE, NORMAL, RARE, UNIQUE, LEGEND }
     public enum ItemEffectTime { STARTBATTLE, CHANGEPOSITION, DEAD, ENDBATTLE, KILLMONSTER, ALWAYS, MOVETOROOM, STARTTURN, GETCARD, HOOKHP, ONCEGET, GETICHI }
     // ITEM: 개인 아이템(상인·이벤트 보상, 소유자에게만 효과) / ARTIFACT: 공용 아티팩트(지역거점 클리어 보상, 전원에게 효과)
     public enum ItemType {ITEM, ARTIFACT, LEGACY}

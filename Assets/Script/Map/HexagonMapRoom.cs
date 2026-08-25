@@ -24,12 +24,6 @@ public class HexagonMapRoom : NetworkBehaviour
     [SyncVar (hook = nameof(OnChangeMapBoss))]
     public MapBoss mapBoss;
 
-    [SyncVar]
-    public bool isRegion = false; // 거점지역 구분값
-
-    [SyncVar]
-    public Region region;
-
     [SyncVar (hook = nameof(OnChangedIsActive))]
     public bool isActive = false; // 방 활성화 상태 구분값
 
@@ -99,6 +93,19 @@ public class HexagonMapRoom : NetworkBehaviour
     private readonly List<SpriteRenderer> voteIconRenderersAnother = new List<SpriteRenderer>();
     private SpriteMask mapTileSpriteMask;
 
+    // 빈땅(ROAD) 타일 스프라이트 — result.png 기반 (Resources/Map/EmptyLandTile, 반복 사용)
+    private static Sprite emptyLandSprite;
+    private static Sprite EmptyLandSprite
+    {
+        get
+        {
+            if(emptyLandSprite == null){
+                emptyLandSprite = Resources.Load<Sprite>("Map/EmptyLandTile");
+            }
+            return emptyLandSprite;
+        }
+    }
+
     void Awake()
     {
         foreach(GameObject voteIcon in mapVoteIconsMine){
@@ -150,7 +157,42 @@ public class HexagonMapRoom : NetworkBehaviour
 
     private void OnMouseDown()
     {
+        // 슬랩 스프라이트/콜라이더가 화면상 아래(앞) 타일의 면을 덮고 있어 OnMouseDown이 뒤쪽 타일로 갈 수 있다.
+        // 클릭 지점에 겹친 타일들 중 실제로 화면에 보이는(정렬순서 최상단 = y가 가장 낮은) 타일로 보정한다.
+        HexagonMapRoom clicked = ResolveClickedRoom();
+        (clicked != null ? clicked : this).HandleClick();
+    }
+
+    // 마우스 위치에 겹쳐 있는 타일 중 화면 앞에 그려지는 타일 반환
+    private HexagonMapRoom ResolveClickedRoom()
+    {
+        Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        HexagonMapRoom frontMost = null;
+        foreach(Collider2D overlapped in Physics2D.OverlapPointAll(worldPoint)){
+            HexagonMapRoom room = overlapped.GetComponentInParent<HexagonMapRoom>();
+            if(room == null || !room.isActive) continue; // 밝혀지지 않은(안 보이는) 타일은 클릭 대상이 아님
+            if(frontMost == null || room.transform.position.y < frontMost.transform.position.y)
+                frontMost = room; // sortingOrder = -(y*10) 이므로 y가 낮을수록 앞에 그려진다
+        }
+        return frontMost;
+    }
+
+    private void HandleClick()
+    {
         if(PlayerRegistry.Local.currentGamePlayerNetId != 0){
+            if(!isActive) return; // 밝혀지지 않은 타일은 선택 불가
+
+            // 빈땅(ROAD)/방문완료/시작지점 클릭 = 탐험 이동 — 레디 없이 즉시 파티 이동.
+            // 보스가 올라탄 타일은 예외로 투표 흐름(보스전 진입)을 태운다. (서버가 동일 규칙으로 재검증)
+            bool isFreeMoveTile = (roomType == RoomType.ROAD || roomType == RoomType.COMPLETE || roomType == RoomType.START_LOCATION);
+            if(isFreeMoveTile && mapBoss == null){
+                if(MapCharacter.instance != null && MapCharacter.instance.IsWalking)
+                    return; // 이동(걷기)이 완료된 후에만 다음 이동 가능
+                if(M_MapManager.instance.currentRoom != this)
+                    M_MapManager.instance.CmdInstantMoveRoom(this);
+                return;
+            }
+
             GamePlayerMap gamePlayerMap = PlayerRegistry.Local.currentGamePlayer.GetComponent<GamePlayerMap>();
             // 맵 플레이어가 이동할 방에 표시 및 이동 경로 표시(서버 요청)
             gamePlayerMap.CmdChangeMapPlayerDestinationPosition(this, transform.position, NetworkClient.localPlayer);
@@ -159,19 +201,11 @@ public class HexagonMapRoom : NetworkBehaviour
 
     private void OnMouseEnter()
     {
-        // 거점지역 정보 팝업 활성화
-        if(isRegion && region != null){
-            MapUI.instance.RegionPopUpShow(region);
-        }
         ChangeMapTileByMouseOver(true, roomType);
     }
 
     private void OnMouseExit()
     {
-        // 거점지역 정보 팝업 비활성화
-        if(isRegion && region != null){
-            MapUI.instance.RegionPopUpHide();
-        }
         ChangeMapTileByMouseOver(false, roomType);
     }
  
@@ -279,6 +313,14 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileIconSelectRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_Complete);
                 mapTileIconSelectLightRenderer.sprite = M_MapManager.instance.mapTileIconAtlas.GetSprite(Const.M_I_Complete_Light);
                 break;
+            case RoomType.ROAD : // 빈땅 — 갈라진 대지 텍스처, 아이콘/캡 없음
+                mapTileBaseRenderer.sprite = EmptyLandSprite;
+                mapTileBaseSelectRenderer.sprite = EmptyLandSprite;
+                mapTileCapSelectRenderer.sprite = null;
+                mapTileCapSelectLightRenderer.sprite = null;
+                mapTileIconSelectRenderer.sprite = null;
+                mapTileIconSelectLightRenderer.sprite = null;
+                break;
             case RoomType.RUINS :
                 mapTileBaseRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
                 mapTileCapSelectRenderer.color = ProjectD.ColorUtils.HexToColor("#E700FF");
@@ -315,11 +357,7 @@ public class HexagonMapRoom : NetworkBehaviour
     void OnChangeMapBoss(MapBoss oldValue, MapBoss newValue)
     {
         if(isServer && newValue != null){
-            if(!isActive && isRegion){
-                return; // 활성화 되지 않은 거점지역은 보스룸 변화에서 제외
-            }else{
-                M_MapManager.instance.SetRoomTypeBossRoom(this);
-            }
+            M_MapManager.instance.SetRoomTypeBossRoom(this);
         }
     }
 
@@ -424,7 +462,6 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileMask.transform.localPosition.z
             );
             hexagonMapRoomUI.SetActive(true);
-            ChangeSelectRoomRegionIndicatorMask(coordinate, SpriteMaskInteraction.None);
             M_TurnManager.instance.playerOrder.Callback += OnUpdatedPlayerOrder; // 방 선택 상태가 되면 오더 변경 이벤트 등록
         }else{
             mapTileSelect.SetActive(false);
@@ -438,7 +475,6 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapTileMask.transform.localPosition.z
             );  
             hexagonMapRoomUI.SetActive(false);
-            ChangeSelectRoomRegionIndicatorMask(coordinate, SpriteMaskInteraction.VisibleOutsideMask);
             M_TurnManager.instance.playerOrder.Callback -= OnUpdatedPlayerOrder; // 방 해제 상태가 되면 오더 변경 이벤트 해제
         }
         AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "ingame_menu_stage_mouseclick");
@@ -470,19 +506,6 @@ public class HexagonMapRoom : NetworkBehaviour
                 mapBoss.transform.DOMoveY(transform.position.y + 0.35f, expandDuration);
             }else{
                 mapBoss.transform.DOMoveY(transform.position.y + 0.15f, expandDuration);
-            }
-        }
-    }
-
-    // 현재 선택된 방 주위의 거점지역 인디케이터를 조회하여 인덱스값이 2(4시), 3(6시), 4(8시) 인 인디케이터는 maskInteraction을 변경하여 expand된 방에 의해 가려지지 않도록 설정
-    private void ChangeSelectRoomRegionIndicatorMask(Vector2Int selectRoomCoordinate, SpriteMaskInteraction spriteMaskInteraction)
-    {
-        foreach(RegionIndicator regionIndicator in M_MapManager.instance.regionsIndicators){
-            if(regionIndicator.coordinate == selectRoomCoordinate){
-                if(regionIndicator.index == 2 || regionIndicator.index == 3 || regionIndicator.index == 4){
-                    SpriteRenderer spriteRenderer = regionIndicator.GetComponent<SpriteRenderer>();
-                    spriteRenderer.maskInteraction = spriteMaskInteraction;
-                }
             }
         }
     }
@@ -536,6 +559,9 @@ public class HexagonMapRoom : NetworkBehaviour
                 break;
             case RoomType.COMPLETE :
                 mapTileBaseRenderer.sprite = isMouseOver ? M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Complete_Light) : M_MapManager.instance.mapTileBaseAtlas.GetSprite(Const.M_B_Complete);
+                break;
+            case RoomType.ROAD : // 빈땅 — 마우스 오버 시 옅은 하이라이트 틴트
+                mapTileBaseRenderer.color = isMouseOver ? new Color(0.75f, 0.85f, 1f) : Color.white;
                 break;
             case RoomType.RUINS :
                 mapTileBaseRenderer.color = isMouseOver ? ProjectD.ColorUtils.HexToColor("#E700FF") : Color.white;

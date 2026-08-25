@@ -25,6 +25,9 @@ namespace ProjectD
 
         IEnumerator Start()
         {
+            // USE_3D_MAP=0(BalanceDB)이면 씬 설정과 무관하게 2D 육각형 맵으로 시작
+            if (!SphereMapNetwork.Use3DMap)
+                startWith3D = false;
             if (sphereView != null && !startWith3D)
                 sphereView.gameObject.SetActive(false);
             if (startWith3D)

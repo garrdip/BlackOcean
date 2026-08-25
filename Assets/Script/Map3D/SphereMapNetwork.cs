@@ -16,6 +16,9 @@ namespace ProjectD
     {
         public static SphereMapNetwork instance;
 
+        /// <summary>3D 구체 맵 사용 여부 (BalanceDB) — 0이면 기존 2D 육각형 맵으로 동작하고 이 오브젝트는 저장 중계만 담당한다</summary>
+        public static bool Use3DMap => BalanceData.Get("USE_3D_MAP", 1) == 1;
+
         [Tooltip("3D 구체 맵 로직 (SphereMapView3D의 SphereMapSystem)")]
         public SphereMapSystem system;
 
@@ -60,6 +63,14 @@ namespace ProjectD
         public override void OnStartServer()
         {
             base.OnStartServer();
+            // 2D 육각형 맵 모드: 월드(구체) 생성/복원 없이 프로필 로드만 준비한다.
+            // 프로필 복원(PlayerInterface.GenerateGamePlayer → FindProfile)이 Loaded를 읽으므로 TryLoad는 수행해야 한다
+            if (!Use3DMap)
+            {
+                if (!(GameSaveService.pendingLoad && GameSaveService.TryLoad()))
+                    GameSaveService.ClearPending();
+                return;
+            }
             // 이어서 하기: 저장된 시드/진행 상태로 시작 — 클라이언트에는 SyncVar/SyncList로 전파된다
             if (GameSaveService.pendingLoad && GameSaveService.TryLoad() && GameSaveService.Loaded.currentTileIndex >= 0)
             {
@@ -84,6 +95,8 @@ namespace ProjectD
         public override void OnStartClient()
         {
             base.OnStartClient();
+            if (!Use3DMap)
+                return; // 2D 맵 모드 — 구체 맵 생성/표시 없음
             votes.Callback += OnVotesChanged;
             warpCampTiles.Callback += OnWarpCampTilesChanged;
             revealedTiles.Callback += OnWarpCampTilesChanged; // 표시 갱신 동작이 동일하므로 콜백 공유
@@ -96,7 +109,7 @@ namespace ProjectD
 
         void OnChangedSeed(int oldVal, int newVal)
         {
-            if (system != null)
+            if (Use3DMap && system != null)
             {
                 system.SetNetworkSeed(newVal);
                 ApplyRestoredProgress();

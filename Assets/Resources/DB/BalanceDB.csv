@@ -37,3 +37,5 @@ EQUIP_DROP_PERCENT,30,전투 승리 시 장비 드랍 확률 %
 POTION_DROP_PERCENT,40,전투 승리 시 소모품 드랍 확률 %
 SKILL_LEVEL_BONUS_PERCENT,20,스킬트리 강화(SKILL_LEVEL) 노드당 스킬 피해 증가 %
 ULTIMATE_TP_PENALTY,50,필살기 사용 후 자신의 TP 감소량 (하이리스크)
+USE_3D_MAP,0,3D 구체 맵 사용 여부 (1=3D 구체 맵, 0=기존 2D 육각형 맵)
+MAP_SPECIAL_TILE_PERCENT,12,맵 타일이 특수 타일일 확률 % (나머지는 빈땅 ROAD)

@@ -10,11 +10,6 @@ using DG.Tweening;
 
 public class MapUI : InstanceD<MapUI>
 {
-    [Header("거점지역 팝업")]
-    public GameObject regionPopUp;
-    public TextMeshProUGUI textRegionGradeInfo;
-    public TextMeshProUGUI textRegionDesc;
-
     [Header("보유한 덱 정보 팝업")]
     public GameObject deckInfoPopUp;
     public GridLayoutGroup gridLayoutGroup;
@@ -214,43 +209,6 @@ public class MapUI : InstanceD<MapUI>
         PlayerRegistry.Local.isReady = !PlayerRegistry.Local.isReady;
     }
 
-
-    // 거점지역 정보 팝업 활성화 및 팝업에 표시될 데이터 세팅
-    public void RegionPopUpShow(Region region)
-    {
-        RegionPopUpShow(region.regionGrade);
-    }
-
-    // 등급값만으로 팝업 표시 — 2D Region 객체가 없는 3D 구체 맵(SphereMapSystem)에서 사용
-    public void RegionPopUpShow(RegionGrade regionGrade)
-    {
-        regionPopUp.SetActive(true);
-        regionPopUp.transform.position = Input.mousePosition; // 팝업 위치는 마우스 위치로
-        textRegionGradeInfo.text = regionGrade.ToString();
-        // 등급별 팝업 헤더이미지 및 텍스트 색상 변경
-        switch(regionGrade){
-            case RegionGrade.NORMAL :
-                textRegionGradeInfo.color = new Color(1f, 0f, 0f);
-                break;
-            case RegionGrade.RARE :
-                textRegionGradeInfo.color = new Color(0f, 1f, 0f);
-                break;
-            case RegionGrade.UNIQUE :
-                textRegionGradeInfo.color = new Color(0f, 0f, 1f);
-                break;
-            case RegionGrade.LEGEND :
-                textRegionGradeInfo.color = new Color(1f, 0.8f, 0f);
-                break;      
-        }
-    }
-
-    // 거점지역 정보 팝업 비활성화
-    public void RegionPopUpHide()
-    {
-        regionPopUp.SetActive(false);
-        textRegionGradeInfo.text = string.Empty;
-        textRegionDesc.text = string.Empty;
-    }
 
     // 맵 보스 출현시 맵정보 UI 상태 변경
     public void SetMapInfoStateMapBossApperance()
