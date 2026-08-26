@@ -1,5 +1,5 @@
 Key,Value,Description
-PLAYER_INIT_HP,50,플레이어 초기 체력(최대 체력 동일)
+PLAYER_INIT_HP,50,플레이어 기본 체력 폴백 — 정식 값은 CharacterStatDB BaseHP (테이블 누락 시에만 사용)
 PLAYER_INIT_RECOVERY,15,전초기지(캠프) 회복량
 PLAYER_INIT_GOLD,100,플레이어 초기 골드
 ICHI_INIT_DEFAULT,3,기본 캐릭터 초기/최대 이치
@@ -17,8 +17,13 @@ HP_PER_VITALITY,2,체력 스탯 1당 최대 HP 증가량 (MaxHP = PLAYER_INIT_HP
 BATTLE_REWARD_EXP,20,전투 승리 경험치 폴백 — 처치 몬스터 경험치(MonsterStatDB Exp) 합이 0일 때만 사용
 EXP_MULTIPLAYER_PERCENT,150,멀티플레이(2인 이상) 경험치 배율 %  — 기획: 1.5배
 USE_TP_BATTLE,1,TP 턴제 전투 사용 (1) / 기존 카드 전투 (0) — RPG 전환 토글
+TP_GAIN_BASE,50,TP 획득 오프셋 — 획득량 = 이 값 + 민첩 (RPG_CONVERSION_BATTLE, 비공개 밸런스 값)
+DMG_FLAT_REDUCE_DIVISOR,10,데미지 절대감소 상수 — 절대감소 = 방어력/이 값 (소수 버림)
+DMG_RELATIVE_REDUCE_DIVISOR,100,데미지 상대감소 상수 — 최종 = (데미지-절대감소)/(1+방어력/이 값)
+RAGE_CONTROL_OFFSET,50,변환제어 상수 — 변환제어 = 제어 + 이 값 (분노 생성 공식)
+MP_REGEN_CONTROL_DIVISOR,2,홍단향 매턴 MP 회복 = 제어/이 값 (전투 종료 후에는 제어 전량)
 BASIC_ATTACK_POWER,100,기본 공격 계수 % (공격 스탯 x 이 값 / 100)
-DEFEND_BASE_VALUE,5,방어 액션 기본 실드량 (+ 방어력 스탯)
+DEFEND_BASE_VALUE,5,방어 액션 기본 실드량 (+ 방어력 스탯). 실드 소모는 방어력 공식 미적용 — 원 데미지 그대로 깎임
 WEAKNESS_DAMAGE_PERCENT,120,약점 속성 피격 시 피해 배율 %
 TP_BREAK_BASE,30,약점 피격 시 대상 TP 감소량 (첫 타)
 TP_BREAK_MIN,5,TP 감소량 하한 (반복 피격 시 절반씩 체감)
@@ -27,13 +32,20 @@ ROW_BACK_ATTACK_PERCENT,80,후열 가하는 피해 배율 %
 ROW_FRONT_TAKEN_PERCENT,120,전열 받는 피해 배율 % (방어력 하락)
 ROW_BACK_TAKEN_PERCENT,80,후열 받는 피해 배율 % (방어력 증가)
 ES2_TP_GAIN,30,에리스 '피의 가속' TP 증가량
-RAGE_GAIN_ON_DEAL,5,게오르크 분노 충전량 — 피해를 줄 때
-RAGE_GAIN_ON_TAKEN,10,게오르크 분노 충전량 — 피해를 입을 때
-MP_REGEN_PER_TURN,5,홍단향 MP 자기 턴 시작 시 자연 회복량
 GS1_HP_COST,8,게오르크 '고행길' HP 소모량
 GS1_RAGE_GAIN,40,게오르크 '고행길' 분노 획득량
 STARTING_SKILL_POINTS,1,캐릭터 생성 시 시작 스킬 포인트
+SKILL_POINTS_PER_LEVEL,3,레벨업당 스킬 포인트 (고정)
 EQUIP_DROP_PERCENT,30,전투 승리 시 장비 드랍 확률 %
 POTION_DROP_PERCENT,40,전투 승리 시 소모품 드랍 확률 %
-SKILL_LEVEL_BONUS_PERCENT,20,스킬트리 강화(SKILL_LEVEL) 노드당 스킬 피해 증가 %
+SKILL_LEVEL_BONUS_PERCENT,20,스킬트리 강화(SKILL_LEVEL) 노드당 스킬 피해 증가 % — PowerPerLevel 미정의 스킬만 (구 방식)
+GEORK_SOIRAK_ATTACK_DOWN,15,게오르크 '약점 찌르기'가 부여하는 쇠락 — 적 공격력 저하량 (투사 트리 쇠락 Lv1 기준)
+GEORK_SOIRAK_DURATION,3,게오르크 쇠락 지속 턴 수 (대상 몬스터의 턴 기준)
 ULTIMATE_TP_PENALTY,50,필살기 사용 후 자신의 TP 감소량 (하이리스크)
+HAZARD_RISE_STAGE_CLEAR,1,일반(비보스) 스테이지 클리어 시 전역 위험도 상승량 (위험도 시스템)
+HAZARD_RISE_ELITE_KILL,3,엘리트 몬스터 처치 시 전역 위험도 상승량 (위험도 시스템)
+HAZARD_RISE_BOSS_KILL,5,보스 처치 시 전역 위험도 상승량 (위험도 시스템)
+HAZARD_REWARD_PERCENT_PER_LEVEL,5,유효 위험도 1당 전투 보상(경험치/골드) 증가 % (위험도 시스템)
+HAZARD_REDUCE_COST_BASE,30,소피아 위험도 하향 기본 비용 (골드 — 총비용 = 기본 + 현재 위험도 x 레벨당 비용)
+HAZARD_REDUCE_COST_PER_LEVEL,10,소피아 위험도 하향 레벨당 추가 비용 (골드)
+EQUIP_DROP_MIN_HAZARD,0,장비 드랍 위험도 하한선 — 이번 전투 유효 위험도가 이 값 미만이면 장비가 드랍되지 않음 (파고들기 요소)

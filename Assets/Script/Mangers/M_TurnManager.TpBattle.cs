@@ -25,6 +25,17 @@ public partial class M_TurnManager
     readonly List<TpUnit> tpUnits = new List<TpUnit>();
     readonly Dictionary<TargetObject, int> tpWeaknessHits = new Dictionary<TargetObject, int>(); // 대상별 약점 피격 횟수 (TP 브레이크 체감용)
 
+    // 지속 턴 디버프 (쇠락 등 — 서버 전용). 대상의 턴이 끝날 때마다 남은 턴이 줄고, 0이 되면 버프를 상쇄 제거한다.
+    // 버프 규칙 (RPG_CONVERSION_SKILLS): 중첩되지 않으며 지속 턴만 갱신, 효과는 강한 쪽으로 남는다
+    class TpTimedDebuff
+    {
+        public TargetObject target;
+        public BuffType type;
+        public int value;
+        public int turnsLeft;
+    }
+    readonly List<TpTimedDebuff> tpTimedDebuffs = new List<TpTimedDebuff>();
+
     [SyncVar]
     public bool tpBattleActive;
 
@@ -62,10 +73,11 @@ public partial class M_TurnManager
         tpCurrentUnitNetId = 0;
         tpUnits.Clear();
         tpWeaknessHits.Clear();
+        tpTimedDebuffs.Clear();
 
         foreach (TargetObject player in spawnedPlayerList)
         {
-            tpUnits.Add(new TpUnit { target = player, tp = GetUnitAgility(player) }); // 민첩만큼 선충전 (첫 턴 순서에 반영)
+            tpUnits.Add(new TpUnit { target = player, tp = GetUnitTpGain(player) }); // 1회 획득량만큼 선충전 (첫 턴 순서에 반영)
             // 분노(게오르크)는 매 전투 0에서 시작 — 전투 중 피해를 주고받으며 충전
             CharacterStatData.Entry stat = CharacterStatData.Get(player.player.character);
             if (stat != null && stat.resource == BattleResourceType.RAGE)
@@ -74,7 +86,7 @@ public partial class M_TurnManager
         foreach (TargetObject monster in spawnedMonsterList)
         {
             if (monster.objectType != ObjectType.ENEMY) continue; // NPC 제외
-            tpUnits.Add(new TpUnit { target = monster, tp = GetUnitAgility(monster) });
+            tpUnits.Add(new TpUnit { target = monster, tp = GetUnitTpGain(monster) });
             monster.monster.SetNextAction(); // 행동 예고 표시
         }
         SyncTpGauges();
@@ -94,12 +106,13 @@ public partial class M_TurnManager
                 continue;
             }
 
-            // TP 게이지 진행 — 가장 먼저 100에 도달하는 유닛까지의 시간만큼 일괄 충전
+            // TP 게이지 진행 — 가장 먼저 100에 도달하는 유닛까지의 시간만큼 일괄 충전.
+            // 획득량 = TP_GAIN_BASE(오프셋, 비공개) + 민첩 (RPG_CONVERSION_BATTLE)
             TpUnit next = null;
             float minTime = float.MaxValue;
             foreach (TpUnit unit in tpUnits)
             {
-                float time = (100f - unit.tp) / Mathf.Max(1, GetUnitAgility(unit.target));
+                float time = (100f - unit.tp) / Mathf.Max(1, GetUnitTpGain(unit.target));
                 if (time < minTime)
                 {
                     minTime = time;
@@ -108,7 +121,7 @@ public partial class M_TurnManager
             }
             if (minTime > 0f)
                 foreach (TpUnit unit in tpUnits)
-                    unit.tp += GetUnitAgility(unit.target) * minTime;
+                    unit.tp += GetUnitTpGain(unit.target) * minTime;
 
             // 턴 실행 — 넘친 TP는 이월된다 (민첩이 높으면 자연히 다회 턴)
             next.tp -= 100f;
@@ -121,6 +134,16 @@ public partial class M_TurnManager
             SyncTpGauges(); // 턴 중 TP 변동(브레이크/피의 가속/필살기 페널티) 반영
 
             yield return wait;
+        }
+
+        // 전투 종료 후 MP 회복 — 제어만큼 (RPG_CONVERSION_BATTLE MP 회복 공식)
+        foreach (TargetObject playerTarget in spawnedPlayerList)
+        {
+            if (playerTarget == null || playerTarget.player == null) continue;
+            CharacterStatData.Entry endStat = CharacterStatData.Get(playerTarget.player.character);
+            if (endStat != null && endStat.resource == BattleResourceType.MP)
+                playerTarget.player.currentResource = Mathf.Min(playerTarget.player.maxResource,
+                    playerTarget.player.currentResource + playerTarget.player.control);
         }
 
         tpBattleActive = false;
@@ -149,18 +172,54 @@ public partial class M_TurnManager
         StartCoroutine(monster.DoAction()); // 기존 몬스터 AI 그대로 (MonsterActionSeuqence와 동일한 대기 규약)
         while (monster != null && monster.isActive)
             yield return null;
+        TickTimedDebuffs(unit.target); // 쇠락 등 지속 디버프 턴 감소 (대상의 턴 종료 기준)
         if (monster != null && IsUnitAlive(unit.target))
             monster.SetNextAction(); // 다음 행동 예고 갱신
+    }
+
+    /// <summary>지속 턴 디버프 부여 (쇠락 등) — 같은 종류가 있으면 지속 턴만 갱신하고 효과는 강한 쪽으로 유지</summary>
+    [Server]
+    public void ApplyTimedDebuffTo(TargetObject target, BuffType type, int value, int turns, TargetObject from)
+    {
+        if (target == null || turns <= 0) return;
+        TpTimedDebuff existing = tpTimedDebuffs.Find(debuff => debuff.target == target && debuff.type == type);
+        if (existing != null)
+        {
+            existing.turnsLeft = Mathf.Max(existing.turnsLeft, turns);
+            if (Mathf.Abs(value) > Mathf.Abs(existing.value))
+            {
+                target.GainBuff(type, value - existing.value, true, false, false, false, from, null); // 강한 효과로 교체 (차액 반영)
+                existing.value = value;
+            }
+            return;
+        }
+        target.GainBuff(type, value, true, false, false, false, from, null);
+        tpTimedDebuffs.Add(new TpTimedDebuff { target = target, type = type, value = value, turnsLeft = turns });
+    }
+
+    // 대상의 턴 종료 시 지속 디버프 감소 — 만료되면 버프를 상쇄 제거
+    [Server]
+    void TickTimedDebuffs(TargetObject target)
+    {
+        for (int i = tpTimedDebuffs.Count - 1; i >= 0; i--)
+        {
+            TpTimedDebuff debuff = tpTimedDebuffs[i];
+            if (debuff.target != target) continue;
+            if (--debuff.turnsLeft > 0) continue;
+            if (debuff.target != null && !debuff.target.isDying)
+                debuff.target.GainBuff(debuff.type, -debuff.value, true, false, false, false, debuff.target, null); // 상쇄 → 값 0이 되며 제거
+            tpTimedDebuffs.RemoveAt(i);
+        }
     }
 
     [Server]
     IEnumerator ExecutePlayerTpTurn(TpUnit unit)
     {
-        // MP(홍단향)는 자기 턴 시작 시 소량 자연 회복 (물약/휴식 회복은 Phase 4)
+        // MP(홍단향) 자기 턴 시작 회복 = 제어/2 (RPG_CONVERSION_BATTLE MP 회복 공식 — 전투 종료 후에는 제어 전량)
         CharacterStatData.Entry statEntry = CharacterStatData.Get(unit.target.player.character);
         if (statEntry != null && statEntry.resource == BattleResourceType.MP)
             unit.target.player.currentResource = Mathf.Min(unit.target.player.maxResource,
-                unit.target.player.currentResource + BalanceData.Get("MP_REGEN_PER_TURN", 5));
+                unit.target.player.currentResource + unit.target.player.control / Mathf.Max(1, BalanceData.Get("MP_REGEN_CONTROL_DIVISOR", 2)));
 
         tpActionSubmitted = false;
         tpCurrentUnitNetId = unit.target.netId;
@@ -193,6 +252,7 @@ public partial class M_TurnManager
             case TpAction.DEFEND:
             {
                 // 방어: 방어력 스탯(장비 합산) + 기본치만큼 실드 획득 (자기 다음 턴 시작까지 유지)
+                // ※실드가 깎일 때는 방어력 공식 미적용 — 대열 보정된 원 데미지 그대로 소모된다 (TargetObject.DamageToPlayer)
                 unit.target.GainDefense(gamePlayer.TotalDefense + BalanceData.Get("DEFEND_BASE_VALUE", 5));
                 break;
             }
@@ -351,6 +411,12 @@ public partial class M_TurnManager
         return 5;
     }
 
+    // TP 획득량 = 오프셋(BalanceDB TP_GAIN_BASE — 비공개 밸런스 값) + 민첩 (RPG_CONVERSION_BATTLE)
+    int GetUnitTpGain(TargetObject target)
+    {
+        return BalanceData.Get("TP_GAIN_BASE", 50) + GetUnitAgility(target);
+    }
+
     bool IsUnitAlive(TargetObject target)
     {
         if (target == null || target.isDying) return false;
@@ -468,12 +534,13 @@ public partial class M_TurnManager
                 }
                 buttonX += 135f;
             }
-            // 이동 (전열/중열/후열) + 아이템
+            // 이동 (전열/중열/후열) + 아이템 — 전열 = playerOrder[2] (몬스터와 가까운 위치)
             string[] rowNames = { "전열", "중열", "후열" };
+            int[] rowTargetIndex = { 2, 1, 0 };
             for (int row = 0; row < rowNames.Length; row++)
             {
                 if (GUI.Button(new Rect(x + row * 65f, y + lineHeight + 4f, 60f, lineHeight - 6f), rowNames[row]))
-                    CmdSubmitTpAction(myPlayer.netId, (int)TpAction.MOVE, "", 0, row);
+                    CmdSubmitTpAction(myPlayer.netId, (int)TpAction.MOVE, "", 0, rowTargetIndex[row]);
             }
             if (myPlayer.inventoryConsumables.Count > 0
                 && GUI.Button(new Rect(x + rowNames.Length * 65f + 10f, y + lineHeight + 4f, 100f, lineHeight - 6f), $"아이템({myPlayer.inventoryConsumables.Count})"))

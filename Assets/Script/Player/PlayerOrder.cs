@@ -41,6 +41,12 @@ public class PlayerOrder : NetworkBehaviour
 
     public TextMeshProUGUI textGold;
 
+    // 임시 스탯 표시 (공격력/방어력) — 정식 UI 전까지. TextGold를 복제해 골드 아래 줄에 배치
+    TextMeshProUGUI textStats;
+    GamePlayer statGamePlayer;
+    int lastShownAttack = int.MinValue;
+    int lastShownDefense = int.MinValue;
+
     [SyncVar]
     public uint gamePlayerNetId;
 
@@ -157,7 +163,34 @@ public class PlayerOrder : NetworkBehaviour
             SetParentAndPostion(gamePlayer.selectOrder);
             SetOwnedViewComponent();
             textGold.text = gamePlayer.gold.ToString();
+            CreateStatsText(gamePlayer);
         }
+    }
+
+    // 임시 — 공격력/방어력 수치 표시. 스탯 변경 델리게이트가 없어 Update에서 값이 바뀔 때만 텍스트 갱신
+    void CreateStatsText(GamePlayer gamePlayer)
+    {
+        statGamePlayer = gamePlayer;
+        if(textGold == null) return;
+        textStats = Instantiate(textGold, textGold.canvas.transform); // 같은 월드 캔버스 아래
+        textStats.name = "TextStats";
+        textStats.rectTransform.anchoredPosition = new Vector2(0f, 0.2f); // 골드 줄 아래
+        textStats.rectTransform.sizeDelta = new Vector2(2f, 0.5f);
+        textStats.fontSize = 0.25f;
+        textStats.alignment = TextAlignmentOptions.Center;
+        textStats.text = "";
+    }
+
+    void Update()
+    {
+        if(textStats == null || statGamePlayer == null) return;
+        CharacterStatData.Entry stat = CharacterStatData.Get(statGamePlayer.character);
+        int attack = (stat != null && stat.attackScalesWithInt) ? statGamePlayer.TotalIntelligence : statGamePlayer.TotalStrength; // 캐릭터 공격 계수 스탯 (장비 합산)
+        int defenseValue = statGamePlayer.TotalDefense;
+        if(attack == lastShownAttack && defenseValue == lastShownDefense) return;
+        lastShownAttack = attack;
+        lastShownDefense = defenseValue;
+        textStats.text = $"공격 {attack}  방어 {defenseValue}";
     }
 
     public override void OnStopClient()

@@ -115,6 +115,9 @@ public partial class TargetObject
 
     public void GainDefense(int value)
     {
+        // 위험도 가중치 — 몬스터의 방어 획득량 보정 (몬스터별 MonsterStatDB HazardDef x 위험도, 위험도 시스템)
+        if(objectType == ObjectType.ENEMY && monster != null)
+            value = monster.ScaledDefense(value);
         defense += value;
     }
 

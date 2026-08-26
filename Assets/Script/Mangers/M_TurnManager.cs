@@ -546,11 +546,19 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                             StartCoroutine(IronDemonReturnProcess(target));
                         }
                 }
-                // 엘리트/보스 처치 집계 (게임 지속) — G56 전리품 수집 스택 증가, H60 보스 수 가산용
+                // 엘리트/보스 처치 집계 (게임 지속) — G56 전리품 수집 스택 증가, H60 보스 수 가산용 + 전역 위험도 상승 (위험도 시스템)
                 if(monster.monster != null && monster.monster.monsterGrade != MonsterGrade.NORMAL)
                 {
-                    if(monster.monster.monsterGrade == MonsterGrade.ELITE)eliteKillCountOnGame++;
-                    else bossKillCountOnGame++;
+                    if(monster.monster.monsterGrade == MonsterGrade.ELITE)
+                    {
+                        eliteKillCountOnGame++;
+                        M_HubManager.instance.RaiseHazard(BalanceData.Get("HAZARD_RISE_ELITE_KILL", 3));
+                    }
+                    else
+                    {
+                        bossKillCountOnGame++;
+                        M_HubManager.instance.RaiseHazard(BalanceData.Get("HAZARD_RISE_BOSS_KILL", 5));
+                    }
                     foreach(TargetObject target in spawnedPlayerList)
                         target.player.GetComponent<GamePlayerDeck>().IncreaseLootCollectionStack();
                 }

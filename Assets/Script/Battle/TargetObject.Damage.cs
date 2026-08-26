@@ -18,8 +18,15 @@ public partial class TargetObject
     private int tempestosoHpLost; // 템페스토소 — 이번 전투에서 잃은 체력 누적(10마다 드로우)
     public int cardDamageDealt; // 별무리 — 현재 실행 중인 카드가 넣은 피해 누적 (파이프라인이 카드 실행 전 리셋)
 
+    // 과잉 피해 표시 — 피해가 잔여 HP를 넘으면 HP 감소량 대신 실제 피해량을 띄운다.
+    // 서버가 HP를 깎기 직전 overkillDamageDisplay SyncVar(HP보다 먼저 선언 — 같은 배치에서 훅보다 앞서 적용)를 설정하고,
+    // 과잉이 아니면 0으로 리셋한다. HP 변화 훅이 이 값을 읽어 표시량을 정한다.
+    // (주의: ClientRpc는 호스트에서 다음 프레임에 실행돼 훅보다 늦으므로 사용할 수 없다)
+
     // ----------------------------------------------           Damage 관련 함수        ---------------------------------------------------//
-    public void DamageToPlayer(int damage)
+    // attribute: 공격 속성 — MAGIC이면 마법방어, 그 외는 방어력 스탯으로 경감 (RPG_CONVERSION_BATTLE 데미지 공식)
+    // 반환: HP에 실제로 가해진 피해량. 실드 흡수/완전 경감은 0 — 호출부(GeneralAttack)는 피격 모션을 생략한다
+    public int DamageToPlayer(int damage, AttackAttribute attribute = AttackAttribute.NONE)
     {
         // 웃는 인형의 단말마: 받는 (일반)피해 +1배. 고정피해(StaticDamage)는 증폭하지 않는다.
         if(HasBuff(BuffType.DEATHTHROES))
@@ -33,23 +40,39 @@ public partial class TargetObject
         // 개화꽃 적용
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
             damage -= GetBuffValue(BuffType.FLOWER,target);
-        // RPG 스탯 방어 (TP 전투): 대열 보정(전열 피해 증가/후열 감소) 후 방어력 스탯의 절반만큼 경감
+        // RPG 스탯 방어 (TP 전투): 대열 보정(전열 피해 증가/후열 감소) → 실드 소모 → 남은 피해에만 방어력 감소 공식
+        int shieldConsumed = 0; // TP 전투에서 실드가 흡수한 양 (유효 타격량 집계)
         if(M_TurnManager.instance.tpBattleActive && player != null)
         {
             damage = damage * BattleActions.RowIncomingDamagePercent(player) / 100;
-            damage -= player.TotalDefense / 2; // 장비 합산 방어력
+            // 맞을때 분노 — 방어력을 제외한 데미지 기준: (데미지/자신의 최대HP) x 변환제어 (RPG_CONVERSION_DESIGN 자원 규칙)
+            if(isServer) BattleActions.GainRageByDamage(player, damage, playerMaxHP);
+            if(damage <= 0) return 0;
+            // 실드 소모 — 방어력 스탯의 영향을 받지 않는다: 대열 보정된 원 데미지 그대로 깎인다 (RPG_CONVERSION_BATTLE)
+            if(defense >= damage){ defense -= damage; return 0; } // 실드 전량 흡수 — 실제 피격 아님 (피격 모션 없음)
+            if(defense > 0){ shieldConsumed = defense; damage -= defense; defense = 0; }
+            // 실드를 뚫고 남은 피해에만 방어력 감소 공식 적용 (MAGIC이면 마법방어, 그 외 방어력 — 장비 합산치)
+            int defenseStat = (attribute == AttackAttribute.MAGIC) ? player.TotalMagicDefense : player.TotalDefense;
+            damage = BattleActions.ApplyDefenseFormula(damage, defenseStat);
+            if(damage <= 0)
+            {
+                if(shieldConsumed == 0 && isServer) RpcDisplayZeroDamage(); // 완전 경감 — 숫자 "0"만 표시 (피격 모션/파티클/셰이크 없음)
+                return 0; // 실드 일부 흡수 포함 — HP 피해 없음 (피격 모션 없음)
+            }
         }
-        if(damage <= 0) return;
+        if(damage <= 0) return 0;
         // 방어력 적용
         if(defense >= damage)
         {
             defense -= damage;
+            return 0; // 실드 전량 흡수 (카드 전투 경로) — 실제 피격 아님
         }
         else
         {
             int remind = damage - defense;
             defense = 0;
             int hpBefore = playerHP;
+            if(isServer) overkillDamageDisplay = (remind > playerHP) ? remind : 0; // 과잉 피해 — 실제 피해량 표시 (HP 대입 전에 설정)
             playerHP -= remind;
             if(playerHP <= 0){
                 if(player.character == Character.ERIS && erisMode != ErisMode.MAD)
@@ -62,10 +85,16 @@ public partial class TargetObject
             }
             player.HP = playerHP;
             AccumulateTempestosoHpLost(hpBefore - playerHP);
-            // 분노 충전 (TP 전투): 게오르크가 피해를 입으면 분노 획득
-            if(isServer && M_TurnManager.instance.tpBattleActive)
-                BattleActions.GainRage(player, BalanceData.Get("RAGE_GAIN_ON_TAKEN", 10));
+            // (피격 분노는 방어력 적용 전 데미지 기준으로 위에서 처리 — GainRageByDamage)
         }
+        return damage; // HP에 실제로 가해진 피해 (실드 관통분)
+    }
+
+    // 완전 경감(최종 데미지 0) 표시 — 숫자 "0"만 띄운다 (DisPlayeDamage가 0일 때 피격 파티클/셰이크를 생략)
+    [ClientRpc]
+    void RpcDisplayZeroDamage()
+    {
+        M_EffectManager.instance.DisPlayeDamage(this, 0);
     }
 
 
@@ -75,6 +104,7 @@ public partial class TargetObject
     {
         if(value <= 0) return;
         int hpBefore = playerHP;
+        if(isServer) overkillDamageDisplay = (value > playerHP) ? value : 0; // 과잉 손실도 실제 수치 표시 (스테일 방지 겸)
         playerHP -= value; // SetPlayerHP가 0~최대치 클램프 및 GamePlayer.HP 동기화 처리
         if(playerHP <= 0)
         {
@@ -99,6 +129,7 @@ public partial class TargetObject
             int remind = damage - defense;
             defense = 0;
             int hpBefore = playerHP;
+            if(isServer) overkillDamageDisplay = (remind > playerHP) ? remind : 0; // 과잉 피해 — 실제 피해량 표시 (HP 대입 전에 설정)
             playerHP -= remind;
             if(playerHP <= 0){
                 if(player.character == Character.ERIS && erisMode != ErisMode.MAD)
@@ -173,6 +204,7 @@ public partial class TargetObject
         {
             int remind = damage - defense;
             defense = 0;
+            if(isServer) monster.overkillDamageDisplay = (remind > monster.HP) ? remind : 0; // 과잉 피해 — 실제 피해량 표시 (HP 대입 전에 설정)
             if(isServer && monster.HP <= remind){
                 isDying = true;
                 RpcMonsterDissolve();
@@ -193,6 +225,7 @@ public partial class TargetObject
         {
             int remind = damage - defense;
             defense = 0;
+            if(isServer) monster.overkillDamageDisplay = (remind > monster.HP) ? remind : 0; // 과잉 피해 — 실제 피해량 표시 (HP 대입 전에 설정)
             if(isServer && monster.HP <= remind){
                 isDying = true;
                 RpcMonsterDissolve();

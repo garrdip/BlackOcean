@@ -96,6 +96,10 @@ public class MonsterData : SingletonD<MonsterData>
                 monster.tpShield = row.GetInt("TPShield");
                 monster.agility = row.GetInt("Agility");
                 monster.exp = row.GetInt("Exp");
+                // 위험도 보너스 스탯 (위험도 시스템) — 컬럼이 없거나 비어 있으면 0 (위험도에 영향받지 않음)
+                monster.hazardAtkBonus = GetFloat(row, "HazardAtk");
+                monster.hazardDefBonus = GetFloat(row, "HazardDef");
+                monster.hazardHpBonus = GetFloat(row, "HazardHp");
             }
             catch (Exception e)
             {
@@ -132,6 +136,12 @@ public class MonsterData : SingletonD<MonsterData>
     T GetEnumData<T>(string data)
     {
         return (T)Enum.Parse(typeof(T),data);
+    }
+
+    // 선택 컬럼의 실수 파싱 — 컬럼 없음/빈 값/파싱 실패는 0
+    static float GetFloat(CsvTable.Row row, string column)
+    {
+        return float.TryParse(row.Get(column), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float value) ? value : 0f;
     }
 
     public MonsterGroup GetMonsterGroup(int hazard)

@@ -52,6 +52,10 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
     [SyncVar]
     public int unlockedStageCount = 1; // 해금된 스테이지 수 (StageDB 행 순서 기준) — 처음엔 1-1만. 저장/복원 대상
 
+    [SyncVar]
+    public int hazardLevel; // 전역 위험도 (위험도 시스템) — 일반 스테이지 클리어 +1 / 엘리트 처치 +3 / 보스 처치 +5 (BalanceDB), 소피아에게 골드를 주고 하향. 저장/복원 대상.
+                            // 전투의 유효 위험도 = 스테이지 기본 위험도(StageDB Hazard) + 전역 위험도 → 몬스터별 보너스 스탯(MonsterStatDB Hazard*) x 위험도 / 보상 배율(BalanceDB)
+
     // ---- 스테이지 진행 상태 (서버 권위, 클라 미니맵 표시용으로 동기화) ----
     [SyncVar]
     public bool isInStage; // 스테이지 진행 중 (미로 화면 또는 방 전투)
@@ -87,9 +91,10 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         base.OnStartServer();
         // 이어서 하기: 프로필 복원(PlayerInterface.GenerateGamePlayer → GameSaveService.FindProfile)이 Loaded를 읽으므로
         // 플레이어 오브젝트가 스폰되기 전(씬 오브젝트 OnStartServer)에 파일을 로드해 둔다. 파일 없음/실패 → 일반 시작
-        if(GameSaveService.pendingLoad && GameSaveService.TryLoad())
+        if(GameSaveService.pendingLoad && GameSaveService.TryLoad()){
             unlockedStageCount = Mathf.Clamp(GameSaveService.Loaded.unlockedStageCount, 1, Mathf.Max(1, StageData.Count)); // 구 세이브(필드 없음=0)는 1-1만
-        else
+            hazardLevel = Mathf.Max(0, GameSaveService.Loaded.hazardLevel); // 구 세이브(필드 없음)는 0. 상한 없음
+        }else
             GameSaveService.ClearPending();
     }
 
@@ -213,7 +218,7 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         }
 
         StageData.Entry stage = StageData.Get(currentStageNo);
-        int hazard = stage != null ? stage.hazard : 0;
+        int hazard = GetEffectiveHazard(stage); // 스테이지 기본 위험도 + 전역 위험도
         battleRoomIndex = index;
         stageVersion++;
 
@@ -290,7 +295,7 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         }
     }
 
-    // 가장 높은 해금 스테이지를 클리어하면 다음 스테이지 해금
+    // 가장 높은 해금 스테이지를 클리어하면 다음 스테이지 해금 + 전역 위험도 상승 (위험도 시스템)
     [Server]
     void OnStageCleared()
     {
@@ -298,6 +303,62 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         int index = StageData.IndexOf(currentStageNo);
         if(index == unlockedStageCount - 1 && unlockedStageCount < StageData.Count)
             unlockedStageCount++;
+
+        // 위험도 상승 — 일반(비보스) 스테이지 클리어 +1. 보스 스테이지는 보스 처치 시점에 +5 (M_TurnManager.ProcessMonsterDeathCoroutine)
+        StageData.Entry stage = StageData.Get(currentStageNo);
+        if(stage != null && !stage.IsBossStage)
+            RaiseHazard(BalanceData.Get("HAZARD_RISE_STAGE_CLEAR", 1));
+    }
+
+    // ------------------------------------------------------------ 위험도 제어 (위험도 시스템 / 소피아) --------------------------------------- //
+
+    // 전역 위험도 상승 — 일반 스테이지 클리어 +1 / 엘리트 처치 +3 / 보스 처치 +5 (BalanceDB, 소피아에게 골드를 주고 낮출 수 있음). 상한 없음
+    [Server]
+    public void RaiseHazard(int amount)
+    {
+        if(amount <= 0) return;
+        hazardLevel += amount;
+        RpcNotice("ui.msg.hazard_rise", "위험도가 {0}(으)로 상승했습니다", hazardLevel.ToString(), "#B22222");
+    }
+
+    /// <summary>스테이지의 유효 위험도 = 스테이지 기본 위험도 + 전역 위험도</summary>
+    public int GetEffectiveHazard(StageData.Entry stage)
+    {
+        return Mathf.Max(0, (stage != null ? stage.hazard : 0) + hazardLevel);
+    }
+
+    /// <summary>현재 전역 위험도를 1 낮추는 비용 (BalanceDB — 기본비용 + 현재 위험도 x 레벨당 비용). 더 낮출 수 없으면 0</summary>
+    public int GetHazardReduceCost()
+    {
+        if(hazardLevel <= 0) return 0;
+        return BalanceData.Get("HAZARD_REDUCE_COST_BASE", 30) + hazardLevel * BalanceData.Get("HAZARD_REDUCE_COST_PER_LEVEL", 10);
+    }
+
+    // 디버그 — 전역 위험도 +1 (우상단 OnGUI 버튼, 테스트 전용. GamePlayer.SkillTree의 디버그 버튼이 호출)
+    [Command(requiresAuthority = false)]
+    public void CmdDebugRaiseHazard()
+    {
+        RaiseHazard(1);
+    }
+
+    // 소피아 "위험도 낮추기" — 요청한 플레이어의 골드를 지불하고 전역 위험도 1 하향 (거점에서만)
+    [Command(requiresAuthority = false)]
+    public void CmdReduceHazard(uint gamePlayerNetId)
+    {
+        ReduceHazard(gamePlayerNetId);
+    }
+
+    [Server]
+    public void ReduceHazard(uint gamePlayerNetId)
+    {
+        if(!isInHub || hazardLevel <= 0 || M_TurnManager.instance.isSceneTransitioning || M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;
+        GamePlayer gamePlayer = NetLookup.Server<GamePlayer>(gamePlayerNetId);
+        int cost = GetHazardReduceCost();
+        if(gamePlayer == null || gamePlayer.gold < cost) return;
+        gamePlayer.gold -= cost;
+        hazardLevel--;
+        GameSaveService.SaveGame();
+        RpcNotice("ui.msg.hazard_reduced", "위험도를 {0}(으)로 낮췄습니다", hazardLevel.ToString(), "#2E8B57");
     }
 
     [Server]
@@ -365,14 +426,20 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
             .Show();
     }
 
-    // ------------------------------------------------------------ 임시 UI (스테이지 선택 패널) -------------------------------------------------- //
-    // 정식 출정 UI(팝업 프리팹) 전까지 OnGUI로 표시 — 해금된 스테이지 버튼만 나열 (처음엔 1-1만)
+    // ------------------------------------------------------------ 임시 UI (스테이지 선택 / 위험도 패널) ------------------------------------------ //
+    // 정식 출정/소피아 UI(팝업 프리팹) 전까지 OnGUI로 표시
 
+    // 위험도 숫자 표시는 거점 우상단 HazardLayout(HubHazardUI), 위험도 하향은 소피아 "기도" 팝업(CampPopUp.prayLayout)이 담당
     void OnGUI()
     {
-        if(!stageSelectOpen || !isInHub) return;
+        if(!isInHub) return;
         if(M_TurnManager.instance == null || M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;
+        if(stageSelectOpen) DrawStageSelect();
+    }
 
+    // 출정 — 해금된 스테이지 버튼만 나열 (처음엔 1-1만). 유효 위험도(기본 + 전역)를 함께 표시
+    void DrawStageSelect()
+    {
         float width = 380f;
         float height = 70f + unlockedStageCount * 34f;
         Rect windowRect = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f, width, height);
@@ -381,7 +448,7 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         for(int i = 0; i < unlockedStageCount && i < StageData.Count; i++)
         {
             StageData.Entry stage = StageData.Stages[i];
-            string label = $"{stage.name}  (방 {stage.roomCount}개{(stage.eliteCount > 0 ? $", 엘리트 {stage.eliteCount}" : "")}{(stage.IsBossStage ? ", 보스" : ", 출구")})";
+            string label = $"{stage.name}  (위험도 {GetEffectiveHazard(stage)}, 방 {stage.roomCount}개{(stage.eliteCount > 0 ? $", 엘리트 {stage.eliteCount}" : "")}{(stage.IsBossStage ? ", 보스" : ", 출구")})";
             if(GUILayout.Button(label, GUILayout.Height(30f)))
             {
                 stageSelectOpen = false;

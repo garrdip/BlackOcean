@@ -115,17 +115,17 @@ public class GiantSoldier : SpawnedMonster
         Debug.Log("Changed Next Target");
         switch(currentLevel)
         {
-            case 0 : 
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"10");
+            case 0 :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,ScaledDefense(10).ToString());
                 break;
-            case 1 : 
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"15");
+            case 1 :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,ScaledDefense(15).ToString());
                 break;
-            case 2 : 
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"20");
+            case 2 :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,ScaledDefense(20).ToString());
                 break;
             case 3 :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,ActionTarget.FRONT,"30");
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,ActionTarget.FRONT,ScaledAttack(nextAction.actionValue).ToString());
                 break;
         }
     }

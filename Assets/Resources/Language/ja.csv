@@ -23,16 +23,16 @@ ui.Room_Placeholder,メッセージを入力してください。,메세지를 �
 markup.multi_hit,{damage}ダメージを{hits}回,{damage} {hits}번
 ui.MapInfoPopUpItem.TextRewardTitle,報酬,보상
 ui.MapInfoPopUpItem.TextRewardDetail,報酬内容,보상 내용
-ui.NPC_Mercurius.ButtonCardShop_Label,カードショップ\n,카드 상점\n
-ui.NPC_Mercurius.ButtonCardEnhance_Label,カード強化,카드 강화
-ui.NPC_Mercurius.ButtonCardRemove_Label,カード除去,카드 제거
-ui.NPC_RyuJinSol.ButtonHeal_Label,体力回復,체력 회복
+ui.NPC_Mercurius.ButtonConsumable_Label,消耗品,소모품
+ui.NPC_Mercurius.ButtonEquipment_Label,装備,장비
+ui.NPC_Mercurius.ButtonCraft_Label,合成,합성
+ui.NPC_RyuJinSol.ButtonSortie_Label,出征,출정
 ui.NPC_RyuJinSol.ButtonGiveGold_Label,ゴールドを渡す\n,골드 전달\n
-ui.NPC_ShadowMan.ButtonItemShop_Label,アイテムショップ,아이템 상점
+ui.NPC_ShadowMan.ButtonSkillReset_Label,スキルリセット,스킬 초기화
 ui.NPC_ShadowMan.Button1_Label,ボタン,버튼
 ui.NPC_ShadowMan.Button2_Label,ボタン,버튼
 ui.NPC_Sophia.ButtonHeal_Label,体力回復,체력 회복
-ui.NPC_Sophia.ButtonGiveGold_Label,ゴールドを渡す,골드 전달
+ui.NPC_Sophia.ButtonPray_Label,祈り,기도
 ui.MapPlayer.TextSwap,位置変更,위치 변경
 ui.MapPlayer.ButtonDeckInfo_Label,デッキ情報,덱 정보
 ui.ForgottenDeckListPopUp.TextDeckListTitle,忘却札,잊혀진 덱
@@ -1091,3 +1091,10 @@ ui.msg.warp_select,マップでワープ先の前哨基地を選び、全プレ�
 ui.msg.warp_no_target,5マス以内にワープできる前哨基地がありません。,5칸 이내에 워프 가능한 전초기지가 없습니다.
 ui.msg.warp_no_gold,ゴールドが不足しているためワープできません。1マスごとに10ゴールドが必要です。,골드가 부족하여 워프할 수 없습니다. 1칸당 10골드가 필요합니다.
 ui.msg.warp_prompt,ワープ先の前哨基地を選んでください,워프할 전초기지를 선택하세요
+ui.pray.title,祈り,기도
+ui.pray.confirm,危険度を{0}から{1}に下げますか？,위험도를 {0} → {1}(으)로 낮추시겠습니까?
+ui.pray.cost,費用：ゴールド{0}（所持{1}）,비용: {0} 골드 (보유 {1})
+ui.pray.min_hazard,危険度はすでに最低です,위험도가 이미 최저 상태입니다
+ui.pray.accept,承諾,수락
+ui.pray.cancel,拒否,거절
+ui.pray.close,閉じる,닫기

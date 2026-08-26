@@ -200,7 +200,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uACE8\uB4DC \uC804\uB2EC"
+  m_text: "\uAE30\uB3C4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ab232065684e218499710c892389edd0, type: 2}
   m_sharedMaterial: {fileID: 8134970826649821829, guid: ab232065684e218499710c892389edd0, type: 2}
@@ -284,7 +284,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ecd846b096d234db652576e6b7de1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextUpdater
-  key: ui.NPC_Sophia.ButtonGiveGold_Label
+  key: ui.NPC_Sophia.ButtonPray_Label
   thisText: {fileID: 8879322659592144542}
 --- !u!1 &3453680500310891658
 GameObject:
@@ -300,7 +300,7 @@ GameObject:
   - component: {fileID: 3709472974382185439}
   - component: {fileID: 3097360160847522252}
   m_Layer: 5
-  m_Name: ButtonGiveGold
+  m_Name: ButtonPray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

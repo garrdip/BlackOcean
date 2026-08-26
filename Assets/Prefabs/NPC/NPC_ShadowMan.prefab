@@ -121,7 +121,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC544\uC774\uD15C \uC0C1\uC810"
+  m_text: "\uC2A4\uD0AC \uCD08\uAE30\uD654"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ab232065684e218499710c892389edd0, type: 2}
   m_sharedMaterial: {fileID: 8134970826649821829, guid: ab232065684e218499710c892389edd0, type: 2}
@@ -205,7 +205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ecd846b096d234db652576e6b7de1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextUpdater
-  key: ui.NPC_ShadowMan.ButtonItemShop_Label
+  key: ui.NPC_ShadowMan.ButtonSkillReset_Label
   thisText: {fileID: 4011865452131253296}
 --- !u!1 &2795979603194817313
 GameObject:

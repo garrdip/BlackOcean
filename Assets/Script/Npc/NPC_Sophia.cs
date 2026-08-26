@@ -17,7 +17,8 @@ public class NPC_Sophia : SpawnedMonster
     public ExpandableButtonGroup expandableButtonGroup;
     private bool isOpenExpandableButtons = false;
     public Button buttonHeal;
-    public Button butonGiveGold;
+    [UnityEngine.Serialization.FormerlySerializedAs("butonGiveGold")]
+    public Button buttonPray; // 구 "골드 전달" 버튼 — 기도(위험도 하향)로 용도 변경 (위험도 시스템)
     public Button buttonWarp;
 
 
@@ -25,7 +26,7 @@ public class NPC_Sophia : SpawnedMonster
     {
         AddEventTrigger();
         buttonHeal.onClick.AddListener(() => OnClickHealButton());
-        butonGiveGold.onClick.AddListener(() => OnClickGiveGoldButton());
+        buttonPray.onClick.AddListener(() => OnClickPrayButton());
         buttonWarp.onClick.AddListener(() => OnClickWarpButton());
         buttonWarp.gameObject.SetActive(false); // 워프 폐기 (맵 시스템 제거)
         PopUpUIManager.instance.onCampPopUpShow += OnCampPopUpShow;
@@ -82,10 +83,13 @@ public class NPC_Sophia : SpawnedMonster
         localPlayer.CmdHpRecovery(localPlayer.netId);
     }
 
-    public void OnClickGiveGoldButton()
+    // 기도 — 소피아에게 골드를 바쳐 전역 위험도를 1 낮추는 확인 팝업 (위험도 시스템)
+    public void OnClickPrayButton()
     {
-        PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>().giveGoldLayout.SetActive(true);
-        PopUpUIManager.instance.HandleCampPopUpShow(CampAction.Gold);
+        CampPopUp campPopUp = PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>();
+        campPopUp.prayLayout.SetActive(true);
+        PopUpUIManager.instance.HandleCampPopUpShow(CampAction.Pray);
+        campPopUp.RefreshPrayInfo();
     }
 
     // 워프는 맵 타일 시스템 제거(거점 전환)로 폐기 — 버튼은 프리팹 정리 전까지 Awake에서 숨긴다
@@ -207,9 +211,11 @@ public class NPC_Sophia : SpawnedMonster
 
     public void OnCampPopUpShow(CampAction campAction)
     {
-        // 전초기지 팝업 활성화 시 NPC 캐릭터 레이어 팝업 위로 보이도록 변경
-        TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
-        M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
+        // 자신이 연 팝업(기도)일 때만 캐릭터를 팝업 위로 올린다 — 다른 NPC의 팝업(류진솔 골드 전달 등)에서는 배경과 함께 어두워진다
+        if(campAction == CampAction.Pray){
+            TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
+            M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
+        }
         expandableButtonGroupCanvas.sortingLayerName = "NPC";
         foreach(Button button in expandableButtonGroup.expandableButtons){
             button.interactable = false;

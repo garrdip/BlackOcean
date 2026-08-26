@@ -15,6 +15,8 @@ public partial class M_TurnManager
 
     public bool isSceneTransitioning { get; private set; } // 서버: 전환 코루틴 진행 중 (M_HubManager가 입력을 막는 데 사용)
 
+    public int currentBattleHazard; // 서버: 이번 전투의 유효 위험도 (스테이지 기본 + 전역 위험도) — RewardService가 보상 배율(BalanceDB HAZARD_REWARD_PERCENT_PER_LEVEL)에 사용
+
     Coroutine monsterDeathRoutine; // 클라이언트: 몬스터 사망 처리 코루틴 핸들 (전투마다 중복 시작 방지)
 
     // ------------------------------------------------------------ 전투 진입 ------------------------------------------------------------------ //
@@ -34,9 +36,10 @@ public partial class M_TurnManager
 
         ClearTargetObject();                                                      // 2) 검은 화면 뒤 — 거점/스테이지 잔여 오브젝트 정리, 전투 루트로 전환, 오브젝트 로딩
         battleExpPool = 0;                                                        //    이번 전투 처치 경험치 적립 시작
+        currentBattleHazard = hazard;                                             //    이번 전투 위험도 기록 (보상 배율용)
         RpcSetView(HubView.Battle);
         BattleSpawner.instance.GeneratePlayerUnit();
-        if(roomType == RoomType.BOSS) BattleSpawner.instance.GenerateBossMonster();
+        if(roomType == RoomType.BOSS) BattleSpawner.instance.GenerateBossMonster(hazard);
         else BattleSpawner.instance.GenerateMonster(hazard);
         RpcCardPrefareForBattle();
         SpawnAbilityCards();

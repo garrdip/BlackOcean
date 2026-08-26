@@ -1000,16 +1000,16 @@ characteristic.NON_CHALNA.name,To the Discard Pile,버린덱으로보내짐
 characteristic.BYULMOORI.name,Starcluster,별무리
 ui.MapInfoPopUpItem.TextRewardTitle,Reward,보상
 ui.MapInfoPopUpItem.TextRewardDetail,Reward Details,보상 내용
-ui.NPC_Mercurius.ButtonCardShop_Label,Card Shop\n,카드 상점\n
-ui.NPC_Mercurius.ButtonCardEnhance_Label,Upgrade Card,카드 강화
-ui.NPC_Mercurius.ButtonCardRemove_Label,Remove Card,카드 제거
-ui.NPC_RyuJinSol.ButtonHeal_Label,Heal,체력 회복
+ui.NPC_Mercurius.ButtonConsumable_Label,Consumables,소모품
+ui.NPC_Mercurius.ButtonEquipment_Label,Equipment,장비
+ui.NPC_Mercurius.ButtonCraft_Label,Synthesis,합성
+ui.NPC_RyuJinSol.ButtonSortie_Label,Sortie,출정
 ui.NPC_RyuJinSol.ButtonGiveGold_Label,Give Gold\n,골드 전달\n
-ui.NPC_ShadowMan.ButtonItemShop_Label,Item Shop,아이템 상점
+ui.NPC_ShadowMan.ButtonSkillReset_Label,Skill Reset,스킬 초기화
 ui.NPC_ShadowMan.Button1_Label,Button,버튼
 ui.NPC_ShadowMan.Button2_Label,Button,버튼
 ui.NPC_Sophia.ButtonHeal_Label,Heal,체력 회복
-ui.NPC_Sophia.ButtonGiveGold_Label,Give Gold,골드 전달
+ui.NPC_Sophia.ButtonPray_Label,Pray,기도
 ui.MapPlayer.TextSwap,Swap Position,위치 변경
 ui.MapPlayer.ButtonDeckInfo_Label,Deck Info,덱 정보
 ui.ForgottenDeckListPopUp.TextDeckListTitle,Forgotten Pile,잊혀진 덱
@@ -1099,3 +1099,10 @@ ui.msg.warp_select,Select an outpost on the map to warp to. The party moves when
 ui.msg.warp_no_target,No outpost within 5 tiles to warp to.,5칸 이내에 워프 가능한 전초기지가 없습니다.
 ui.msg.warp_no_gold,Not enough gold to warp. Each tile costs 10 gold.,골드가 부족하여 워프할 수 없습니다. 1칸당 10골드가 필요합니다.
 ui.msg.warp_prompt,Select an outpost to warp to,워프할 전초기지를 선택하세요
+ui.pray.title,Pray,기도
+ui.pray.confirm,Lower the hazard from {0} to {1}?,위험도를 {0} → {1}(으)로 낮추시겠습니까?
+ui.pray.cost,Cost: {0} gold (you have {1}),비용: {0} 골드 (보유 {1})
+ui.pray.min_hazard,The hazard is already at its lowest,위험도가 이미 최저 상태입니다
+ui.pray.accept,Accept,수락
+ui.pray.cancel,Decline,거절
+ui.pray.close,Close,닫기

@@ -56,9 +56,11 @@ public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
                     hpRecoverText.transform.DOKill();
                     Destroy(hpRecoverText);
                 });
-        }else{ // 데미지가 양수 이면 데미지 텍스트
-            OnHitEffectParticle(targetObject.transform.position + new Vector3(0f, 3f, 0f)); // 피격 파티클
-            Camera.main.GetComponent<Shake>().Shaking();
+        }else{ // 데미지가 양수(또는 0) 이면 데미지 텍스트
+            if(damage > 0){ // 0 데미지(완전 경감)는 숫자만 표시 — 피격 파티클/카메라 셰이크 없음
+                OnHitEffectParticle(targetObject.transform.position + new Vector3(0f, 3f, 0f)); // 피격 파티클
+                Camera.main.GetComponent<Shake>().Shaking();
+            }
             GameObject floatingDamage = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
             floatingDamage.transform.SetParent(EffectCanvas.transform);
             floatingDamage.transform.position = targetObject.transform.position + new Vector3(0f, 6f, 0f);

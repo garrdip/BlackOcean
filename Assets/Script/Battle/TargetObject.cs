@@ -73,6 +73,10 @@ public partial class TargetObject : NetworkBehaviour
     [SyncVar]
     public GamePlayer player;
 
+    // 과잉 피해 표시 — 서버가 HP를 깎기 직전 설정 (0 = 없음). 같은 배치에서 훅보다 먼저 적용되도록 반드시 _playerHP보다 먼저 선언
+    [SyncVar]
+    public int overkillDamageDisplay;
+
     [SyncVar (hook = nameof(OnChangedPlayerHP))]
     public int _playerHP;
     public int playerHP{
@@ -312,7 +316,9 @@ public partial class TargetObject : NetworkBehaviour
     void OnChangedPlayerHP(int oldVal, int newVal)
     {
         if(oldVal > 0){
-            M_EffectManager.instance.DisPlayeDamage(this, (oldVal - newVal)); // 데미지 or 회복 표시 이펙트 생성
+            int hpLoss = oldVal - newVal;
+            int shown = (hpLoss > 0 && overkillDamageDisplay > hpLoss) ? overkillDamageDisplay : hpLoss; // 과잉 피해는 실제 피해량 표시
+            M_EffectManager.instance.DisPlayeDamage(this, shown); // 데미지 or 회복 표시 이펙트 생성
             if(newVal > 0){
                 selectedNamePlate.SetHpValue(newVal, playerMaxHP, this);
                 if((oldVal - newVal) > 0){

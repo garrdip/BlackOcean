@@ -23,6 +23,7 @@ public static class GameSaveService
         public int exp;
         public int skillPoints;
         public int strength, agility, vitality, intelligence, defense, magicDefense;
+        public int control; // 제어 — MP 회복·분노 생성 스탯 (스킬트리 CTRL 노드). 구 세이브(필드 없음)는 0
         public int HP, MaxHP;
         public int currentResource, maxResource;
         public int gold;
@@ -36,6 +37,7 @@ public static class GameSaveService
     public class RpgSaveData
     {
         public int unlockedStageCount = 1; // 해금된 스테이지 수 (StageDB 행 순서) — 파티 공용 진행도, 호스트 저장
+        public int hazardLevel = 0; // 전역 위험도 (위험도 시스템) — 파티 공용, 호스트 저장. 구 세이브(필드 없음)는 0
         public List<ProfileData> profiles = new List<ProfileData>();
     }
 
@@ -81,6 +83,7 @@ public static class GameSaveService
 
         var data = new RpgSaveData();
         data.unlockedStageCount = M_HubManager.instance != null ? M_HubManager.instance.unlockedStageCount : 1;
+        data.hazardLevel = M_HubManager.instance != null ? M_HubManager.instance.hazardLevel : 0;
         foreach (PlayerInterface playerInterface in PlayerRegistry.All)
         {
             foreach (GamePlayer gamePlayer in playerInterface.ownedPlayers)
@@ -99,6 +102,7 @@ public static class GameSaveService
                     intelligence = gamePlayer.intelligence,
                     defense = gamePlayer.defense,
                     magicDefense = gamePlayer.magicDefense,
+                    control = gamePlayer.control,
                     HP = gamePlayer.HP,
                     MaxHP = gamePlayer.MaxHP,
                     currentResource = gamePlayer.currentResource,
@@ -136,6 +140,7 @@ public static class GameSaveService
         gamePlayer.intelligence = profile.intelligence;
         gamePlayer.defense = profile.defense;
         gamePlayer.magicDefense = profile.magicDefense;
+        gamePlayer.control = profile.control;
         gamePlayer.MaxHP = profile.MaxHP;
         gamePlayer.HP = Mathf.Clamp(profile.HP, 1, profile.MaxHP); // 빈사 저장이어도 1로 복원
         gamePlayer.currentResource = profile.currentResource;

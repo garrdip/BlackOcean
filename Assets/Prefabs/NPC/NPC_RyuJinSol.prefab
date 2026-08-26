@@ -500,7 +500,7 @@ MonoBehaviour:
   skeletonDataAsset: {fileID: 11400000, guid: 1391685d6f22e614d9df0f80936aeea8, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
-  initialFlipX: 0
+  initialFlipX: 1
   initialFlipY: 0
   updateWhenInvisible: 3
   separatorSlotNames: []
@@ -1338,5 +1338,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ecd846b096d234db652576e6b7de1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextUpdater
-  key: ui.NPC_RyuJinSol.ButtonHeal_Label
+  key: ui.NPC_RyuJinSol.ButtonSortie_Label
   thisText: {fileID: 8573395821982461824}

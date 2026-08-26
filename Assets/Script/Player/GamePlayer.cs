@@ -40,13 +40,15 @@ public partial class GamePlayer : NetworkBehaviour
     [SyncVar]
     public int agility;        // 민첩 — TP(턴 게이지) 충전 속도
     [SyncVar]
-    public int vitality;       // 체력 — 최대 HP 결정 (MaxHP = PLAYER_INIT_HP + vitality * HP_PER_VITALITY)
+    public int vitality;       // 체력 — 최대 HP 결정 (MaxHP = CharacterStatDB BaseHP + vitality * HP_PER_VITALITY)
     [SyncVar]
     public int intelligence;   // 지능 — 마법 공격력
     [SyncVar]
     public int defense;        // 방어력
     [SyncVar]
     public int magicDefense;   // 마법방어
+    [SyncVar]
+    public int control;        // 제어 — MP 회복(매턴 제어/2, 전투 종료 후 제어)·분노 생성(변환제어 = 제어 + RAGE_CONTROL_OFFSET)에 영향 (RPG_CONVERSION_BATTLE)
 
     // ---- 전투 자원 (게오르크: 분노 / 홍단향: MP / 에리스: HP 소모 — CharacterStatDB의 Resource) ----
     [SyncVar]
@@ -56,7 +58,7 @@ public partial class GamePlayer : NetworkBehaviour
 
     // ---- 스킬트리 (SkillTreeDB — 습득/검증은 GamePlayer.SkillTree.cs) ----
     [SyncVar]
-    public int skillPoints;     // 레벨업당 +1
+    public int skillPoints;     // 레벨업당 +3 (BalanceDB SKILL_POINTS_PER_LEVEL)
     public readonly SyncList<string> learnedNodes = new SyncList<string>(); // 습득한 트리 노드 id 목록
 
     [SyncVar (hook = nameof(OnChangedObjectOwner))]
@@ -150,7 +152,7 @@ public partial class GamePlayer : NetworkBehaviour
         while(required > 0 && exp >= required){ // required 0 = 최대 레벨
             exp -= required;
             level++;
-            int points = stat != null ? stat.GetSkillPointsForLevel(level) : 1; // 레벨업당 스킬 포인트 + N레벨 보너스 (CharacterStatDB)
+            int points = BalanceData.Get("SKILL_POINTS_PER_LEVEL", 3); // 레벨업당 고정 3 포인트 (RPG_CONVERSION_SKILLS — 구 CharacterStatDB 방식 대체)
             skillPoints += points;
             gainedPoints += points;
             ApplyLevelUpGrowth();
@@ -190,17 +192,20 @@ public partial class GamePlayer : NetworkBehaviour
         intelligence += stat.growInt;
         defense += stat.growDef;
         magicDefense += stat.growMdef;
+        control += stat.growCtrl;
 
-        int newMaxHP = GetMaxHPByVitality(vitality);
+        int newMaxHP = GetMaxHPByVitality(character, vitality);
         HP += Mathf.Max(0, newMaxHP - MaxHP);
         MaxHP = newMaxHP;
-        Debug.Log($"[GamePlayer] {character} 레벨업 → Lv.{level} (힘{strength}/민첩{agility}/체력{vitality}/지능{intelligence}/방어{defense}/마방{magicDefense}, MaxHP {MaxHP})");
+        Debug.Log($"[GamePlayer] {character} 레벨업 → Lv.{level} (힘{strength}/민첩{agility}/체력{vitality}/지능{intelligence}/방어{defense}/마방{magicDefense}/제어{control}, MaxHP {MaxHP})");
     }
 
-    /// <summary>체력 스탯 기준 최대 HP 계산식 — 초기화(PlayerInterface)와 레벨업이 공유한다</summary>
-    public static int GetMaxHPByVitality(int vitality)
+    /// <summary>체력 스탯 기준 최대 HP 계산식 — 기본치는 CharacterStatDB BaseHP (테이블 누락 시 BalanceDB 폴백). 초기화(PlayerInterface)/레벨업/스킬트리 VIT 노드가 공유</summary>
+    public static int GetMaxHPByVitality(Character character, int vitality)
     {
-        return BalanceData.Get("PLAYER_INIT_HP", 50) + vitality * BalanceData.Get("HP_PER_VITALITY", 2);
+        CharacterStatData.Entry stat = CharacterStatData.Get(character);
+        int baseHP = stat != null ? stat.baseHP : BalanceData.Get("PLAYER_INIT_HP", 50);
+        return baseHP + vitality * BalanceData.Get("HP_PER_VITALITY", 2);
     }
 
     [Server]

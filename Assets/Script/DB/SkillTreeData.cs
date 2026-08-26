@@ -21,9 +21,9 @@ public static class SkillTreeData
         public string parent;    // 선행 노드 id (빈 문자열 = 루트)
         public NodeType nodeType;
         public string skillNo;   // SKILL/SKILL_LEVEL/ULTIMATE의 대상 스킬
-        public string stat;      // STAT 노드의 대상 (STR/AGI/VIT/INT/DEF/MDEF)
+        public string stat;      // STAT 노드의 대상 (STR/AGI/VIT/INT/DEF/MDEF/CTRL)
         public int statValue;
-        public int cost;         // 소모 스킬 포인트
+        public int cost;         // 소모 스킬 포인트 (RPG_CONVERSION_SKILLS의 [N] — 레벨업당 3포인트 획득)
         public string description;
     }
 

@@ -210,9 +210,11 @@ public class NPC_RyuJinSol : SpawnedMonster
 
     public void OnCampPopUpShow(CampAction campAction)
     {
-        // 전초기지 팝업 활성화 시 NPC 캐릭터 레이어 팝업 위로 보이도록 변경
-        TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
-        M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
+        // 자신이 연 팝업(골드 전달)일 때만 캐릭터를 팝업 위로 올린다 — 다른 NPC의 팝업(소피아 기도 등)에서는 배경과 함께 어두워진다
+        if(campAction == CampAction.Gold){
+            TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
+            M_DimmingManager.instance.SetTargetObjectLayer(targetObject, "CardOnHandOverPopUp");
+        }
         expandableButtonGroupCanvas.sortingLayerName = "NPC";
         foreach(Button button in expandableButtonGroup.expandableButtons){
             button.interactable = false;

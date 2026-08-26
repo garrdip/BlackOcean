@@ -255,7 +255,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uCE74\uB4DC \uC0C1\uC810\n"
+  m_text: "\uC18C\uBAA8\uD488"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ab232065684e218499710c892389edd0, type: 2}
   m_sharedMaterial: {fileID: 8134970826649821829, guid: ab232065684e218499710c892389edd0, type: 2}
@@ -339,7 +339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ecd846b096d234db652576e6b7de1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextUpdater
-  key: ui.NPC_Mercurius.ButtonCardShop_Label
+  key: ui.NPC_Mercurius.ButtonConsumable_Label
   thisText: {fileID: 3808196599968910540}
 --- !u!1 &4280085385255446000
 GameObject:
@@ -1474,7 +1474,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uCE74\uB4DC \uAC15\uD654"
+  m_text: "\uC7A5\uBE44"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ab232065684e218499710c892389edd0, type: 2}
   m_sharedMaterial: {fileID: 8134970826649821829, guid: ab232065684e218499710c892389edd0, type: 2}
@@ -1558,7 +1558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ecd846b096d234db652576e6b7de1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextUpdater
-  key: ui.NPC_Mercurius.ButtonCardEnhance_Label
+  key: ui.NPC_Mercurius.ButtonEquipment_Label
   thisText: {fileID: 1751145060665013088}
 --- !u!1 &5519462404657146228
 GameObject:
@@ -2048,7 +2048,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uCE74\uB4DC \uC81C\uAC70"
+  m_text: "\uD569\uC131"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ab232065684e218499710c892389edd0, type: 2}
   m_sharedMaterial: {fileID: 8134970826649821829, guid: ab232065684e218499710c892389edd0, type: 2}
@@ -2132,5 +2132,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ecd846b096d234db652576e6b7de1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextUpdater
-  key: ui.NPC_Mercurius.ButtonCardRemove_Label
+  key: ui.NPC_Mercurius.ButtonCraft_Label
   thisText: {fileID: 2664908165370106284}

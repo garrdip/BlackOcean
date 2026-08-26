@@ -25,6 +25,12 @@ public class RewardService : InstanceD<RewardService>
         if(NetworkServer.connections.Count > 1)
             battleExp = battleExp * BalanceData.Get("EXP_MULTIPLAYER_PERCENT", 150) / 100;
 
+        // 위험도 보상 배율 (위험도 시스템) — 이번 전투 유효 위험도 1당 보상 % 증가 (BalanceDB), 경험치/골드에 적용
+        int battleHazard = M_TurnManager.instance.currentBattleHazard;
+        int rewardPercent = 100 + battleHazard * BalanceData.Get("HAZARD_REWARD_PERCENT_PER_LEVEL", 5);
+        battleExp = battleExp * rewardPercent / 100;
+        int rewardGold = BalanceData.Get("BATTLE_REWARD_GOLD", 10) * rewardPercent / 100;
+
         foreach(NetworkConnectionToClient conn in NetworkServer.connections.Values){
             PlayerInterface playerInterface = NetLookup.Server<PlayerInterface>(conn.identity.netId);
             if(playerInterface == null) continue;
@@ -34,14 +40,16 @@ public class RewardService : InstanceD<RewardService>
                 // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅(임시로 골드 + 카드 보상)
                 string cardRewardGuid = System.Guid.NewGuid().ToString();
                 gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = cardRewardGuid, reward_Type = Reward_Type.Card });
-                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold, rewardGold = BalanceData.Get("BATTLE_REWARD_GOLD", 10) });
+                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold, rewardGold = rewardGold });
 
                 // 경험치 보상 — 선택 없이 서버가 즉시 지급 (레벨업/스킬 포인트는 GamePlayer.AddExp)
                 // TODO(Phase 2): 보상 목록 UI에 EXP 항목 표시 (Reward_Type.Exp)
                 gamePlayer.AddExp(battleExp);
 
                 // 장비/소모품 드랍 — 확률 지급, 인벤토리로 직행 (Phase 4)
-                if(Random.Range(0, 100) < BalanceData.Get("EQUIP_DROP_PERCENT", 30))
+                // 장비는 위험도 하한선(EQUIP_DROP_MIN_HAZARD) 이상에서만 드랍 (위험도 시스템 — 파고들기 요소)
+                if(battleHazard >= BalanceData.Get("EQUIP_DROP_MIN_HAZARD", 0)
+                    && Random.Range(0, 100) < BalanceData.Get("EQUIP_DROP_PERCENT", 30))
                     gamePlayer.ServerAddRandomEquip();
                 if(Random.Range(0, 100) < BalanceData.Get("POTION_DROP_PERCENT", 40))
                     gamePlayer.ServerAddRandomConsumable();

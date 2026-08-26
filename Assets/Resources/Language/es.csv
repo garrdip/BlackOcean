@@ -23,16 +23,16 @@ ui.Room_Placeholder,Escribe un mensaje.,메세지를 입력하세요.
 markup.multi_hit,{damage} ×{hits},{damage} {hits}번
 ui.MapInfoPopUpItem.TextRewardTitle,Recompensa,보상
 ui.MapInfoPopUpItem.TextRewardDetail,Detalles,보상 내용
-ui.NPC_Mercurius.ButtonCardShop_Label,Tienda\n,카드 상점\n
-ui.NPC_Mercurius.ButtonCardEnhance_Label,Mejorar carta,카드 강화
-ui.NPC_Mercurius.ButtonCardRemove_Label,Quitar carta,카드 제거
-ui.NPC_RyuJinSol.ButtonHeal_Label,Curar,체력 회복
+ui.NPC_Mercurius.ButtonConsumable_Label,Consumibles,소모품
+ui.NPC_Mercurius.ButtonEquipment_Label,Equipo,장비
+ui.NPC_Mercurius.ButtonCraft_Label,Síntesis,합성
+ui.NPC_RyuJinSol.ButtonSortie_Label,Salida,출정
 ui.NPC_RyuJinSol.ButtonGiveGold_Label,Dar oro\n,골드 전달\n
-ui.NPC_ShadowMan.ButtonItemShop_Label,Objetos,아이템 상점
+ui.NPC_ShadowMan.ButtonSkillReset_Label,Reiniciar habilidades,스킬 초기화
 ui.NPC_ShadowMan.Button1_Label,Botón,버튼
 ui.NPC_ShadowMan.Button2_Label,Botón,버튼
 ui.NPC_Sophia.ButtonHeal_Label,Curar,체력 회복
-ui.NPC_Sophia.ButtonGiveGold_Label,Dar oro,골드 전달
+ui.NPC_Sophia.ButtonPray_Label,Rezar,기도
 ui.MapPlayer.TextSwap,Cambiar puesto,위치 변경
 ui.MapPlayer.ButtonDeckInfo_Label,Mazo,덱 정보
 ui.ForgottenDeckListPopUp.TextDeckListTitle,Pila de Olvido,잊혀진 덱
@@ -1091,3 +1091,10 @@ ui.msg.warp_select,Selecciona un puesto avanzado en el mapa para teletransportar
 ui.msg.warp_no_target,No hay puestos avanzados a menos de 5 casillas.,5칸 이내에 워프 가능한 전초기지가 없습니다.
 ui.msg.warp_no_gold,No hay suficiente oro para el teletransporte. Cada casilla cuesta 10 de oro.,골드가 부족하여 워프할 수 없습니다. 1칸당 10골드가 필요합니다.
 ui.msg.warp_prompt,Selecciona un puesto avanzado para teletransportarte,워프할 전초기지를 선택하세요
+ui.pray.title,Rezar,기도
+ui.pray.confirm,¿Reducir el riesgo de {0} a {1}?,위험도를 {0} → {1}(으)로 낮추시겠습니까?
+ui.pray.cost,Coste: {0} de oro (tienes {1}),비용: {0} 골드 (보유 {1})
+ui.pray.min_hazard,El riesgo ya está al mínimo,위험도가 이미 최저 상태입니다
+ui.pray.accept,Aceptar,수락
+ui.pray.cancel,Rechazar,거절
+ui.pray.close,Cerrar,닫기

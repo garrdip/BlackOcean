@@ -33,7 +33,16 @@
 
 ## 위험도 시스템
 - 위험도가 올라가면, 몬스터가 강해지고, 보상이 늘어남. 특정 보상의 경우 위험도 하한선이 존재 함. (파고들기 요소)
+- 일반 스테이지 클리어시 +1, 엘리트 몹 처치시 +3, 보스 처치시 +5
 - 소피아에게 돈을 주고 위험도를 낮출 수 있음.
+- 구현 (2026-08-26):
+    - 유효 위험도 = 스테이지 기본 위험도(StageDB Hazard) + 전역 위험도(M_HubManager.hazardLevel, SyncVar, 세이브 저장/복원, 상한 없음).
+    - 전역 위험도 상승: 일반(비보스) 스테이지 클리어 +1(M_HubManager.OnStageCleared), 엘리트 처치 +3 / 보스 처치 +5(M_TurnManager.ProcessMonsterDeathCoroutine). 수치는 BalanceDB(HAZARD_RISE_*).
+    - 하향: 소피아 "기도" 버튼(구 골드 전달) → CampPopUp 기도 레이아웃(화면 중앙 확인 팝업 — 현재 위험도/비용/보유 골드 표시, 골드 부족 시 수락 비활성) → 수락 시 M_HubManager.CmdReduceHazard로 1 하향. 비용 = HAZARD_REDUCE_COST_BASE + 현재 위험도 x HAZARD_REDUCE_COST_PER_LEVEL. 로컬라이즈 키 ui.pray.* (전 로케일 등록).
+    - 위험도 표시: 거점 우상단 Hub/HubCanvas/HazardLayout — 옛 육각형 맵 시절의 MapDangerLayout UI(전투 캔버스 잔존분 복제 + MapDangerIcon 복원)를 재사용, HubHazardUI가 hazardLevel을 표시.
+    - 몬스터 강화: **각 몬스터별 위험도 보너스 스탯** — MonsterStatDB.csv의 HazardAtk/HazardDef/HazardHp 컬럼(소수 허용). 유효 위험도 1당 공격 피해/방어 획득량/최대체력이 해당 수치만큼 플랫 증가 (적용 시 반올림, 컬럼 없거나 0이면 영향 없음).
+    - 적용 지점: 스폰 시 최대체력(BattleSpawner), 공격 피해·인디케이터 표시(SpawnedMonster.ScaledAttack, hazard SyncVar), 방어 획득량(TargetObject.GainDefense → ScaledDefense). 몬스터 그룹 선택(MonsterGroupDB)도 유효 위험도 기준.
+    - 보상: 전투 경험치/골드에 위험도 1당 +5% 배율(BalanceDB HAZARD_REWARD_PERCENT_PER_LEVEL, RewardService). 장비 드랍은 위험도 하한선(BalanceDB EQUIP_DROP_MIN_HAZARD) 미만이면 드랍되지 않음 — 위험도 하한선 보상의 첫 사례.
 
 ## 스텟
 - 힘 ( 물리 공격력 )

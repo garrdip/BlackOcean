@@ -139,7 +139,8 @@ public class PlayerInterface : NetworkBehaviour
             gamePlayer.intelligence = stat.baseInt;
             gamePlayer.defense = stat.baseDef;
             gamePlayer.magicDefense = stat.baseMdef;
-            gamePlayer.MaxHP = GamePlayer.GetMaxHPByVitality(stat.baseVit);
+            gamePlayer.control = stat.baseCtrl;
+            gamePlayer.MaxHP = GamePlayer.GetMaxHPByVitality(character, stat.baseVit);
             gamePlayer.maxResource = stat.baseResource;
             gamePlayer.currentResource = (stat.resource == ProjectD.BattleResourceType.MP) ? stat.baseResource : 0; // MP는 가득, 분노는 0에서 시작
             gamePlayer.skillPoints = BalanceData.Get("STARTING_SKILL_POINTS", 1); // 시작 포인트 — 첫 스킬을 바로 찍을 수 있게

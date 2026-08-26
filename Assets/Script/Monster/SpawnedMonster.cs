@@ -20,6 +20,15 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar]
     public int MAXHP;
 
+    // 이번 전투의 유효 위험도 (위험도 시스템 — 스폰 시 BattleSpawner가 설정, 0 = 가중치 없음).
+    // 몬스터별 보너스 스탯(MonsterStatDB HazardAtk/HazardDef/HazardHp) x 위험도만큼 스탯이 증가한다
+    [SyncVar]
+    public int hazard;
+
+    // 과잉 피해 표시 — 서버가 HP를 깎기 직전 설정 (0 = 없음). 같은 배치에서 훅보다 먼저 적용되도록 반드시 _HP보다 먼저 선언
+    [SyncVar]
+    public int overkillDamageDisplay;
+
     [SyncVar (hook = nameof(OnChangedHpValue))]
     public int _HP;
     public int HP{
@@ -384,7 +393,9 @@ public class SpawnedMonster : NetworkBehaviour
         if(transform.parent != null){
             TargetObject targetObject = transform.parent.GetComponent<TargetObject>();
             M_EffectManager.instance.OnHitEffectParticle(transform.position + new Vector3(0f, 3f, 0f));
-            M_EffectManager.instance.DisPlayeDamage(targetObject, (oldHpValue - newHpValue));
+            int hpLoss = oldHpValue - newHpValue;
+            int shown = (hpLoss > 0 && overkillDamageDisplay > hpLoss) ? overkillDamageDisplay : hpLoss; // 과잉 피해는 실제 피해량 표시
+            M_EffectManager.instance.DisPlayeDamage(targetObject, shown);
             targetObject.selectedNamePlate.SetHpValue(newHpValue, MAXHP, targetObject);
         }
     }
@@ -402,12 +413,20 @@ public class SpawnedMonster : NetworkBehaviour
     }
     
     //-------------------------------------- Battle Method ----------------------------------//
+
+    /// <summary>위험도 공격력 가중치 적용 (몬스터별 MonsterStatDB HazardAtk x 위험도) — 공격 피해와 인디케이터 표시가 공용</summary>
+    public int ScaledAttack(int value) => value + Mathf.RoundToInt(hazard * (monster != null ? monster.hazardAtkBonus : 0f));
+
+    /// <summary>위험도 방어력 가중치 적용 (몬스터별 MonsterStatDB HazardDef x 위험도) — 방어 획득량과 인디케이터 표시가 공용</summary>
+    public int ScaledDefense(int value) => value + Mathf.RoundToInt(hazard * (monster != null ? monster.hazardDefBonus : 0f));
+
     public void GeneralAttack()
     {
         if(nextTarget == ActionTarget.FIXEDPLAYER)
         {
             // 고정 상대일경우 수정 필요!!//
-            nextTargetObject.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
+            int dealt = nextTargetObject.DamageToPlayer(ScaledAttack(nextAction.actionValue) + parent.GetBuffValue(BuffType.ICHI_ATTACK), monster.attackAttribute);
+            if(dealt <= 0) return; // 완전 경감(0 데미지) — 피격 모션 생략 (숫자 "0"만 표시)
             M_TurnManager.instance.StartAnimation(nextTargetObject,0,"Defense",false);
             if(nextTargetObject.player.character == Character.HONGDANHYANG && nextTargetObject.ironDemonLocation == nextTargetObject)
                 nextTargetObject.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
@@ -418,6 +437,10 @@ public class SpawnedMonster : NetworkBehaviour
             {
                 if(tar == null) return;
                 else if(tar.playerHP == 0)return;
+
+                // 피해를 먼저 적용하고 유효 타격일 때만 피격 모션 재생 — 완전 경감(0)은 숫자 "0"만 표시
+                int dealt = tar.DamageToPlayer(ScaledAttack(nextAction.actionValue) + parent.GetBuffValue(BuffType.ICHI_ATTACK), monster.attackAttribute);
+                if(dealt <= 0) continue;
 
                 switch(tar.player.character)
                 {
@@ -434,11 +457,9 @@ public class SpawnedMonster : NetworkBehaviour
                         M_TurnManager.instance.StartAnimation(tar,0,"Defense",false);
                         break;
                 }
-                
+
                 if(tar.player.character == Character.HONGDANHYANG && tar.ironDemonLocation == tar)
                     tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
-
-                tar.DamageToPlayer(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK));
             }
         }
     }

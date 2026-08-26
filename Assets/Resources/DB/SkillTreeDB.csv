@@ -1,13 +1,13 @@
 NodeId,Character,Tree,Tier,Parent,NodeType,SkillNo,Stat,StatValue,Cost,Description
-GA0,GEORK,연격,0,,SKILL,GS2,,0,1,강타 습득
-GA1,GEORK,연격,1,GA0,STAT,,STR,3,1,힘 +3
-GA2,GEORK,연격,2,GA1,SKILL_LEVEL,GS2,,0,1,강타 강화 (피해 +20%)
-GA2B,GEORK,연격,2,GA1,SKILL,GS5,,0,1,대지 가르기 습득 (분기)
-GA3,GEORK,연격,3,GA2,ULTIMATE,GU1,,0,3,필살기: 대장군의 일격
-GD0,GEORK,수호,0,,SKILL,GS4,,0,1,수호의 맹세 습득
-GD1,GEORK,수호,1,GD0,STAT,,DEF,3,1,방어력 +3
-GD2,GEORK,수호,2,GD1,SKILL,GS3,,0,1,방패치기 습득
-GD3,GEORK,수호,3,GD2,STAT,,VIT,5,2,체력 +5
+GKA1,GEORK,공격,0,,SKILL,GS6,,0,3,연속 베기 습득 (70% x2회)
+GKA2,GEORK,공격,1,GKA1,STAT,,STR,3,5,힘 상승 (+3)
+GKA3,GEORK,공격,2,GKA2,SKILL,GS7,,0,6,기사도 습득 — 패시브 (자신을 노리는 적에게 피해 +20%)
+GKA4,GEORK,공격,3,GKA3,STAT,,AGI,3,5,민첩 상승 (+3)
+GKA5,GEORK,공격,4,GKA4,SKILL,GS8,,0,9,약점 찌르기 습득 (100% + 쇠락)
+GKA6,GEORK,공격,5,GKA5,STAT,,STR,5,10,힘 상승2 (+5)
+GKA7,GEORK,공격,6,GKA6,SKILL,GS9,,0,12,풍차 베기 습득 (전체 40% x2회)
+GKA8,GEORK,공격,7,GKA7,STAT,,CTRL,3,10,제어 상승 (+3)
+GKA9,GEORK,공격,8,GKA8,SKILL,GS10,,0,15,범접할 수 없는 힘 습득 (120%)
 HA0,HONGDANHYANG,개화,0,,SKILL,HS1,,0,1,화염구 습득
 HA1,HONGDANHYANG,개화,1,HA0,STAT,,INT,3,1,지능 +3
 HA2,HONGDANHYANG,개화,2,HA1,SKILL,HS3,,0,1,마력 폭풍 습득

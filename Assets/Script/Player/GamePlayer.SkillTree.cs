@@ -39,12 +39,12 @@ public partial class GamePlayer
         return count;
     }
 
-    /// <summary>현재 사용 가능한 액티브 스킬 목록 (기본 스킬 + 습득 스킬) — 전투 UI가 사용</summary>
+    /// <summary>현재 사용 가능한 액티브 스킬 목록 (기본 스킬 + 습득 스킬) — 전투 UI가 사용. 패시브(기사도 등)는 제외</summary>
     public List<SkillData.SkillDef> GetUsableSkills()
     {
         var result = new List<SkillData.SkillDef>();
         foreach (SkillData.SkillDef skill in SkillData.GetSkillsByCharacter(character))
-            if (KnowsSkill(skill.skillNo)) result.Add(skill);
+            if (KnowsSkill(skill.skillNo) && !skill.passive) result.Add(skill);
         return result;
     }
 
@@ -74,6 +74,15 @@ public partial class GamePlayer
         Debug.Log($"[SkillTree] {character} 노드 습득: {node.nodeId} ({node.description}) — 잔여 포인트 {skillPoints}");
     }
 
+    // 디버그 — 다음 레벨까지 남은 경험치를 즉시 지급해 레벨업 (테스트 전용, 우상단 OnGUI 버튼)
+    [Command]
+    public void CmdDebugLevelUp()
+    {
+        int required = LevelData.GetRequiredExp(level);
+        if (required <= 0) return; // 최대 레벨
+        AddExp(Mathf.Max(1, required - exp));
+    }
+
     [Server]
     private void ApplyStatNode(SkillTreeData.Node node)
     {
@@ -84,9 +93,10 @@ public partial class GamePlayer
             case "INT": intelligence += node.statValue; break;
             case "DEF": defense += node.statValue; break;
             case "MDEF": magicDefense += node.statValue; break;
+            case "CTRL": control += node.statValue; break; // 제어 — MP 자연 회복·분노 생성량 증가
             case "VIT":
                 vitality += node.statValue;
-                int newMaxHP = GetMaxHPByVitality(vitality); // 레벨업과 동일 규칙 — 증가분만큼 현재 HP도 회복
+                int newMaxHP = GetMaxHPByVitality(character, vitality); // 레벨업과 동일 규칙 — 증가분만큼 현재 HP도 회복
                 HP += Mathf.Max(0, newMaxHP - MaxHP);
                 MaxHP = newMaxHP;
                 break;
@@ -107,6 +117,15 @@ public partial class GamePlayer
         if (PlayerRegistry.Local == null || PlayerRegistry.Local.currentGamePlayer != this) return;
 
         DrawEquipmentGUI(); // 장비/인벤토리 창 (GamePlayer.Equipment.cs — 같은 컴포넌트라 OnGUI는 여기 하나로 합친다)
+
+        // 디버그 위험도 상승 버튼 — 전역 위험도 +1 (레벨업 버튼 왼쪽)
+        if (M_HubManager.instance != null
+            && GUI.Button(new Rect(Screen.width - 450f, 10f, 140f, 30f), $"위험도 +1 ({M_HubManager.instance.hazardLevel})"))
+            M_HubManager.instance.CmdDebugRaiseHazard();
+
+        // 디버그 레벨업 버튼 — 다음 레벨까지 경험치 즉시 지급 (스킬트리 버튼 왼쪽)
+        if (GUI.Button(new Rect(Screen.width - 300f, 10f, 140f, 30f), $"레벨업 (Lv.{level})"))
+            CmdDebugLevelUp();
 
         Rect toggleRect = new Rect(Screen.width - 150f, 10f, 140f, 30f);
         if (GUI.Button(toggleRect, guiTreeOpen ? "스킬트리 닫기" : $"스킬트리 (P:{skillPoints})"))
@@ -138,7 +157,7 @@ public partial class GamePlayer
 
             bool learned = HasLearnedNode(node.nodeId);
             bool canLearn = CanLearnNode(node);
-            string label = $"[T{node.tier}] {node.description} (비용 {node.cost})";
+            string label = $"{node.description} (비용 {node.cost}P)";
             if (learned)
             {
                 GUI.Label(new Rect(20f, y, 480f, 24f), $"✔ {label}");
