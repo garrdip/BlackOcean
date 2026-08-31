@@ -626,6 +626,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                     if(target.monster.isActive == false) break;
                     yield return loopWait;
                 }
+                target.monster.OnActionFinished(); // 모으기 배율 소모 등 행동 종료 정리 (TP 전투 경로와 동일)
             }
         }
         phase = BattleTurn.BATTLE_STANDBY;

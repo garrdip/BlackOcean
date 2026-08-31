@@ -49,3 +49,4 @@ HAZARD_REDUCE_COST_BASE,30,소피아 위험도 하향 기본 비용 (골드 — 
 HAZARD_REDUCE_COST_PER_LEVEL,10,소피아 위험도 하향 레벨당 추가 비용 (골드)
 EQUIP_DROP_MIN_HAZARD,0,장비 드랍 위험도 하한선 — 이번 전투 유효 위험도가 이 값 미만이면 장비가 드랍되지 않음 (파고들기 요소)
 LEVEL_GROWTH_VARIANCE_PERCENT,50,레벨업 성장치 랜덤 편차 % — 레벨별 상승량은 평균의 (1±이 값/100)배 가중치로 시드 분배 (LevelGrowthTable). 만렙 총합은 CharacterStatDB GrowX로 고정. 0이면 균등 분배
+HUB_HEAL_COST,20,류진솔 회복 비용 (골드) — 요청자가 지불하고 파티 전원 HP 전량 회복 (거점 전용)

@@ -40,6 +40,12 @@ public class SpawnedMonster : NetworkBehaviour
         }
     }
 
+    // 모으기(충전) 배율 — '모으기' 행동이 세팅하고 다음 공격(GeneralAttack)에 곱해진 뒤 소모된다. 인디케이터 표시에도 쓰이므로 SyncVar.
+    // nextAction/nextTarget 훅이 이 값을 읽으므로 반드시 그보다 먼저 선언 (Mirror는 선언 순서로 역직렬화)
+    [SyncVar]
+    public int chargeMultiplier = 1;
+    bool chargeArmedThisTurn; // 이번 행동이 모으기 자체였는지 — 행동 종료 시 배율을 소모할지 판단 (서버)
+
     [SyncVar (hook = nameof(OnChanedNextAction))]
     public MonsterAction nextAction;
 
@@ -333,6 +339,30 @@ public class SpawnedMonster : NetworkBehaviour
         nextAction = sturnedAction;
     }
 
+    // ------------------------------------------------------------------ 모으기(충전) ------------------------------------------------------------------//
+
+    /// <summary>
+    /// 모으기 — 다음 공격의 피해 배율을 예약한다 (MonsterDB ActionValue = 배율). '다음 턴 무조건 공격'은 MonsterDB의 시퀀스 행동
+    /// (모으기,배율,, 공격,값,대상)으로 보장되고, 배율은 그 공격의 GeneralAttack에서 곱해진 뒤 행동 종료(OnActionFinished) 시 소모된다.
+    /// </summary>
+    [Server]
+    public void ChargeNextAttack(int multiplier)
+    {
+        chargeMultiplier = Mathf.Max(1, multiplier);
+        chargeArmedThisTurn = true;
+    }
+
+    /// <summary>행동 1회 종료 후 정리 (턴 매니저가 DoAction 완료 뒤 호출) — 모으기 배율은 다음 행동까지만 유지</summary>
+    [Server]
+    public void OnActionFinished()
+    {
+        if (chargeArmedThisTurn) { chargeArmedThisTurn = false; return; } // 이번 행동이 모으기 → 배율은 다음 행동에 쓴다
+        if (chargeMultiplier != 1) chargeMultiplier = 1;
+    }
+
+    /// <summary>현재 예고된 공격 1타의 표시/적용 피해 = (위험도 보정 공격력 + 힘 버프) x 모으기 배율. 인디케이터와 GeneralAttack이 공용</summary>
+    public int CurrentAttackDamage(int actionValue) => (ScaledAttack(actionValue) + parent.GetBuffValue(BuffType.ICHI_ATTACK)) * chargeMultiplier;
+
     // ------------------------------------------------------------------ Rpc Method ------------------------------------------------------------------------//
     
     [ClientRpc]
@@ -449,7 +479,7 @@ public class SpawnedMonster : NetworkBehaviour
         if(nextTarget == ActionTarget.FIXEDPLAYER)
         {
             // 고정 상대일경우 수정 필요!!//
-            int dealt = nextTargetObject.DamageToPlayer(ScaledAttack(nextAction.actionValue) + parent.GetBuffValue(BuffType.ICHI_ATTACK), monster.attackAttribute);
+            int dealt = nextTargetObject.DamageToPlayer(CurrentAttackDamage(nextAction.actionValue), monster.attackAttribute);
             if(dealt <= 0) return; // 완전 경감(0 데미지) — 피격 모션 생략 (숫자 "0"만 표시)
             M_TurnManager.instance.StartAnimation(nextTargetObject,0,"Defense",false);
             if(nextTargetObject.player.character == Character.HONGDANHYANG && nextTargetObject.ironDemonLocation == nextTargetObject)
@@ -463,7 +493,7 @@ public class SpawnedMonster : NetworkBehaviour
                 else if(tar.playerHP == 0)return;
 
                 // 피해를 먼저 적용하고 유효 타격일 때만 피격 모션 재생 — 완전 경감(0)은 숫자 "0"만 표시
-                int dealt = tar.DamageToPlayer(ScaledAttack(nextAction.actionValue) + parent.GetBuffValue(BuffType.ICHI_ATTACK), monster.attackAttribute);
+                int dealt = tar.DamageToPlayer(CurrentAttackDamage(nextAction.actionValue), monster.attackAttribute);
                 if(dealt <= 0) continue;
 
                 switch(tar.player.character)

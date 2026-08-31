@@ -172,6 +172,7 @@ public partial class M_TurnManager
         StartCoroutine(monster.DoAction()); // 기존 몬스터 AI 그대로 (MonsterActionSeuqence와 동일한 대기 규약)
         while (monster != null && monster.isActive)
             yield return null;
+        if (monster != null) monster.OnActionFinished(); // 모으기 배율 소모 등 행동 종료 정리
         TickTimedDebuffs(unit.target); // 쇠락 등 지속 디버프 턴 감소 (대상의 턴 종료 기준)
         if (monster != null && IsUnitAlive(unit.target))
             monster.SetNextAction(); // 다음 행동 예고 갱신

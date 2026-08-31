@@ -518,7 +518,7 @@ TargetObject 리스트 규약: `[0]`=시전자, `[1]`=지정 타겟(논타겟이
 
 ### 9-2. 몬스터 22엔트리 (스테이지 1)
 
-**일반 10종**: 도끼병사(HP 40, 두번찍기 8) / 방패병사(HP 70, 팀방어) / 창병사(HP 40) / WacherA(HP 15, 순수 디버퍼) / WacherB(HP 15, 순수 버퍼) / Devourer(HP 50, 흡혈·붕괴) / GiantSoldier(HP 100, 단일 30) / SpearManA(HP 30, 예고 후 강공 20×2 시퀀스형) / SpearManB(HP 30) / Guardian(HP 50)
+**일반 10종**: 도끼병사(HP 40, 두번찍기 8 / 20%: 모으기 → 다음 턴 무조건 두번찍기 x2배 — 구 힘증가 대체, 2026-08-31) / 방패병사(HP 70, 팀방어) / 창병사(HP 40, 찌르기 10 / 50%: 모으기 → 다음 턴 무조건 찌르기 x2배 — 구 방어 대체, 2026-08-31) / WacherA(HP 15, 순수 디버퍼) / WacherB(HP 15, 순수 버퍼) / Devourer(HP 50, 흡혈·붕괴) / GiantSoldier(HP 100, 단일 30) / SpearManA(HP 30, 예고 후 강공 20×2 시퀀스형) / SpearManB(HP 30) / Guardian(HP 50, 단일공격 20 / 광역방어 10 — 2026-08-31 DB 행동명으로 재작성). 엘리트 Twins: Happy(HP 200, 공격후붕괴 50 / 방어 50), Saddy(HP 200, 두번공격 20 / 힘버프 5 / 방어 100) — 2026-08-31 스텁에서 구현. 모든 수치는 MonsterDB ActionValue 원본
 
 **엘리트 4종**: Happy·Saddy(HP 200) / E3·E4(HP 200) — ⚠ Saddy는 frequency 합 150(버그)
 

@@ -28,8 +28,8 @@ public class Soldier_Axe : SpawnedMonster
                 yield return new WaitForSeconds(0.4f);
                 ReturnToIdleAnimation();
                 break;
-            case "힘증가" :
-                parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent.GetComponent<TargetObject>(),null);
+            case "모으기" : // 다음 턴 두번찍기(MonsterDB 시퀀스로 보장)의 피해 x ActionValue(2) — 구 '힘증가'(힘 버프) 대체
+                ChargeNextAttack(nextAction.actionValue);
                 DoAnimation("Buff0");
                 RpcStartSkillEffect(1, "Eff04_Buff", parent.transform.position, SFX_TYPE.Normal_Axe, 5, "Effect");
                 RpcStartSkillParticle(0, parent.transform.position + new Vector3(0f, 2.5f, 0f));
@@ -52,10 +52,10 @@ public class Soldier_Axe : SpawnedMonster
     {
         switch(nextAction.actionName){
             case "두번찍기" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKX2,true,nextTarget,(ScaledAttack(nextAction.actionValue) + parent.GetComponent<TargetObject>().GetBuffValue(BuffType.ICHI_ATTACK)).ToString()  + " X 2");
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACKX2,true,nextTarget,CurrentAttackDamage(nextAction.actionValue).ToString() + " X 2"); // 모으기 직후면 배율 반영된 값
                 break;
-            case "힘증가" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,nextAction.actionValue.ToString());
+            case "모으기" :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"x" + nextAction.actionValue.ToString());
                 break;
         }
     }

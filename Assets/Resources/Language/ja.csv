@@ -1123,3 +1123,6 @@ ui.save.confirm_overwrite,本当に上書きしますか？ もう一度クリ�
 ui.save.delete,削除,삭제
 ui.save.confirm_delete,本当に削除しますか？ もう一度クリック,정말 삭제할까요? 다시 클릭
 ui.save.back,戻る,돌아가기
+ui.NPC_RyuJinSol.ButtonHeal_Label,回復,회복
+ui.msg.hub_heal_paid,{0} ゴールドを支払い、パーティのHPを全回復しました,{0} 골드를 내고 파티의 체력을 모두 회복했습니다
+ui.msg.hub_heal_no_gold,ゴールドが足りません（回復費用 {0} ゴールド）,골드가 부족합니다 (회복 비용 {0} 골드)

@@ -54,13 +54,20 @@ public class NextActionIndicator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 행동 예고 수치 표시 여부 — false(기획 2026-08-31): 플레이어가 피해량을 알 수 없어야 하므로 아이콘·대상만 보여주고 숫자는 숨긴다.
+    /// 몬스터 스크립트들이 넘기는 value 문자열은 그대로 두고(호출부 수정 없음) 여기서만 무시한다. 디버그로 다시 보려면 true.
+    /// </summary>
+    public const bool ShowActionValue = false;
+
     public void SetNextTargetAction(ActionType type, bool isTargetable, ActionTarget tar, string value)
     {
         //Action Type
         actionIcon.SetActive(true);
         nextActionBackground.SetActive(true);
         actionIcon.GetComponent<SpriteRenderer>().sprite = actionIcons[(int)type];
-        actionValue.text = value.ToString();
+        actionValue.text = ShowActionValue ? value.ToString() : "";
+        actionValue.gameObject.SetActive(ShowActionValue);
         if(isTargetable)
         {
             actionTarget.SetActive(true);

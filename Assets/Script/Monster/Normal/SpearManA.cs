@@ -50,12 +50,12 @@ public class SpearManA : SpawnedMonster
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
     {
-        switch(nextAction.actionName){
-            case "단일딜후붕괴" or "공격후흡혈":
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,ScaledAttack(nextAction.actionValue).ToString());
+        switch(nextAction.actionName){ // MonsterDB 행동명과 일치시킴 (Devourer에서 복사된 잘못된 케이스였음 — 예고가 표시되지 않던 버그)
+            case "준비상태돌입" :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,"");
                 break;
-            case "광역붕괴" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,nextAction.actionValue.ToString());
+            case "강공격" :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,CurrentAttackDamage(nextAction.actionValue).ToString());
                 break;
         }
     }

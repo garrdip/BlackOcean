@@ -137,6 +137,8 @@
 ## Phase 6 — 월드 콘텐츠
 
 - [x] 6-0. 출정/스테이지 선택 (1차) — 류진솔 메뉴 "출정"(구 체력 회복 자리) → `M_HubManager.OpenStageSelect()` 스테이지 선택 패널(임시 OnGUI) → `CmdStartStage(stageNo)`.
+      **류진솔 "회복" (2026-08-31)**: 구 '골드 전달' 버튼을 회복으로 용도 변경 — `NPC_RyuJinSol.OnClickHealButton` → `M_HubManager.CmdHealPartyFull(요청자 netId)`: 요청자 골드 `HUB_HEAL_COST`(20) 차감 후 파티 전원 HP = MaxHP, 자동 저장, 토스트(`ui.msg.hub_heal_paid` / 부족 시 `ui.msg.hub_heal_no_gold`).
+      라벨은 프리팹 수정 없이 코드에서 TextUpdater 키를 `ui.NPC_RyuJinSol.ButtonHeal_Label`로 교체. 골드 전달 팝업(CampAction.Gold)은 미사용 상태로 남음
       `StageDB.csv`(1-1~3-3: 전투 종류/위험도) + `DB/StageData.cs`. 해금은 `unlockedStageCount`(SyncVar, 처음 1 = 1-1만) — 가장 높은 해금 스테이지 클리어 시 +1(`OnStageCleared`), `rpg_save.json`에 저장/복원. **정식 팝업 UI는 UI 정리 단계에서**
 - [x] 6-1. 던전(방 진행) 1차 — 스테이지 진입 시 바로 전투가 아니라 **스테이지 화면**(세 번째 화면 루트 `Stage`: 배경 + 우측하단 방 패널 `StageRoomPanel`)으로 들어간다.
       **미로 구조(Isaac/Darkest Dungeon식)** — 입장할 때마다 서버가 격자 위에 랜덤 생성(`StageData.Entry.GenerateLayout`: 입구(0,0)에서 랜덤 확장, 트리 위주·25% 고리,

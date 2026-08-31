@@ -38,3 +38,18 @@
 ## 버프 디버프의 스택이 깍이는 시점.
 - 시전자의 턴이 돌아올때.
 
+
+## 몬스터 모으기(충전) — 2026-08-31
+- `SpawnedMonster.chargeMultiplier`(SyncVar) — '모으기' 행동이 `ChargeNextAttack(배율)`로 세팅, 다음 공격의 `GeneralAttack`이 `CurrentAttackDamage = (위험도 보정 공격력 + 힘 버프) x 배율`로 적용, 행동 종료 시 `OnActionFinished()`가 소모 (턴 매니저가 DoAction 완료 뒤 호출 — TP/구 경로 공통).
+- "다음 턴 무조건 공격"은 MonsterDB의 **시퀀스 행동**으로 보장한다: 한 행에 `모으기,배율,, 공격,값,대상`처럼 행동을 이어 쓰면 `GetNextAction`이 순서대로 실행한다.
+- 적용: `Soldier_Axe` 20% 행동 `힘증가(힘 버프 +2)` → `모으기(x2) → 두번찍기 8 FRONT`. 인디케이터는 모으기 직후 두번찍기 예고에 배율 반영된 피해(예: 16 X 2)를 표시.
+- 적용: `Soldier_Spear` 50% 행동 `방어(실드 +5)` → `모으기(x2) → 찌르기 10 RANDOM_MIDDLE_BACK` (예고 20).
+
+## 몬스터 수치는 MonsterDB ActionValue가 원본 — 2026-08-31 점검
+- 공격 피해: 모든 몬스터가 `SpawnedMonster.GeneralAttack()` → `CurrentAttackDamage(nextAction.actionValue)` = `(ActionValue + round(위험도 x HazardAtk) + 힘 버프) x 모으기 배율`. 최종 피해는 `TargetObject.DamageToPlayer`가 대열 보정(전열 120%/후열 80%) → 실드 → 방어력 공식을 적용하므로 표기값과 다를 수 있음(의도).
+- 버프/디버프/실드 수치도 ActionValue로 통일: WacherA(쇠락/붕괴/힘감소/방어감소), WacherB(힘증가/방어/광역힘증가), Devourer 광역붕괴, Guardian 광역방어, Happy 방어, Saddy 힘버프/방어. 기존엔 리터럴(DB와 같은 값)이 박혀 있어 CSV를 바꿔도 반영되지 않았다.
+- 부가 효과(주 행동에 딸린 붕괴 1, 버프 +2 등)는 DB에 컬럼이 없어 리터럴 유지: Devourer/Happy 공격후붕괴의 붕괴 1, SpearManB 버프 +2, GiantSoldier SinglePattern의 실드 10/15/20.
+- 행동명 불일치 수정: Guardian(DB 단일공격/광역방어인데 코드는 Devourer 케이스 → 무행동), SpearManA/B 예고 케이스, Happy/Saddy(스텁 → 구현). 미구현: Boss_Apates/Boss_Geras(DoAction 없음 — DB SingleAction/Enrage 미대응), Assassin/Executioner/Elder(base, DB 행 없음), E3/E4/치유사(DB 행만 존재).
+
+## 몬스터 행동 예고 수치 숨김 — 2026-08-31
+- 플레이어는 몬스터의 다음 행동 **종류(아이콘)와 대상(열)**만 알 수 있고 피해량은 알 수 없어야 한다. `NextActionIndicator.ShowActionValue = false`로 숫자 텍스트를 숨김 (몬스터 스크립트가 넘기는 value는 무시 — 호출부 미수정, 디버그 시 true로 되돌릴 수 있음).

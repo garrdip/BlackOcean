@@ -4,46 +4,31 @@ using UnityEngine;
 using ProjectD;
 using Mirror;
 
+// 가디언 — MonsterDB: 단일공격(20, FRONT) / 광역방어(10, WHOLE_ALLY) / 상시 버프 SUHOJA.
+// 2026-08-31: Devourer에서 복사된 케이스(단일딜후붕괴/광역붕괴/공격후흡혈)가 DB 행동명과 달라 아무 행동도 하지 않던 것을 DB 기준으로 재작성. 수치는 모두 ActionValue.
 public class Guardian : SpawnedMonster
 {
     public override IEnumerator DoAction()
     {
         switch(nextAction.actionName){
-            case "단일딜후붕괴" :
+            case "단일공격" :
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.5f);
-                GeneralAttack();
+                GeneralAttack(); // 피해 = ActionValue(위험도 보정) + 힘 버프
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
                     RpcStartSkillEffect(0, "Eff3_MagicAttack", tar.transform.position, SFX_TYPE.Elite_Devourer, 0, "Effect");
-                    RpcStartSkillParticle(0, tar.transform.position + new Vector3(0f, 3.5f, 0f));
                 }
-                yield return new WaitForSeconds(0.5f);
-                foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
-                    RpcStartSkillEffect(1, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Devourer, 2, "Effect");
-                    tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,parent,null);
-                }  
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
                 break;
-            case "광역붕괴" :
+            case "광역방어" :
                 DoAnimation("Buff0");
                 yield return new WaitForSeconds(0.867f);
-                foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList){
+                foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList){
                     RpcStartSkillEffect(1, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Devourer, 2, "Effect");
-                    tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,parent,null);
+                    tar.GainDefense(ScaledDefense(nextAction.actionValue)); // 실드 = ActionValue(위험도 보정)
                 }
                 yield return new WaitForSeconds(0.8f);
-                ReturnToIdleAnimation();
-                break;
-            case "공격후흡혈" :
-                DoAnimation("Attack0");
-                yield return new WaitForSeconds(0.5f);
-                GeneralAttack();
-                if(HP + nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK) > MAXHP)
-                    HP = MAXHP;
-                else
-                    HP += nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_ATTACK);
-                yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
                 break;
             case "APDO" :
@@ -56,8 +41,7 @@ public class Guardian : SpawnedMonster
     public override void OnStartClient()
     {
         base.OnStartClient();
-        Debug.Log("위치 조정!");
-        parent.nextActionIndicator.GetComponent<Transform>().position += new Vector3(0,3,0);
+        parent.nextActionIndicator.GetComponent<Transform>().position += new Vector3(0,3,0); // 키가 커서 예고 표시를 위로
     }
 
     [Server]
@@ -69,11 +53,11 @@ public class Guardian : SpawnedMonster
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
     {
         switch(nextAction.actionName){
-            case "단일딜후붕괴" or "공격후흡혈":
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,ScaledAttack(nextAction.actionValue).ToString());
+            case "단일공격" :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,CurrentAttackDamage(nextAction.actionValue).ToString());
                 break;
-            case "광역붕괴" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,nextAction.actionValue.ToString());
+            case "광역방어" :
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,true,ActionTarget.WHOLE_ALLY,ScaledDefense(nextAction.actionValue).ToString());
                 break;
         }
     }

@@ -366,6 +366,32 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         RpcNotice("ui.msg.hazard_reduced", "위험도를 {0}(으)로 낮췄습니다", hazardLevel.ToString(), "#2E8B57");
     }
 
+    // 류진솔 "회복" — 요청한 플레이어가 골드(BalanceDB HUB_HEAL_COST)를 내고 파티 전원의 HP를 최대치로 회복 (거점에서만). 구 '골드 전달' 메뉴 대체 (2026-08-31)
+    [Command(requiresAuthority = false)]
+    public void CmdHealPartyFull(uint gamePlayerNetId)
+    {
+        HealPartyFull(gamePlayerNetId);
+    }
+
+    [Server]
+    public void HealPartyFull(uint gamePlayerNetId)
+    {
+        if(!isInHub || M_TurnManager.instance.isSceneTransitioning || M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;
+        GamePlayer payer = NetLookup.Server<GamePlayer>(gamePlayerNetId);
+        if(payer == null) return;
+        int cost = BalanceData.Get("HUB_HEAL_COST", 20);
+        if(payer.gold < cost){
+            RpcNotice("ui.msg.hub_heal_no_gold", "골드가 부족합니다 (회복 비용 {0} 골드)", cost.ToString(), "#B22222");
+            return;
+        }
+        payer.gold -= cost;
+        foreach(PlayerInterface playerInterface in PlayerRegistry.All)
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers)
+                if(gamePlayer != null) gamePlayer.HP = gamePlayer.MaxHP;
+        GameSaveService.SaveGame();
+        RpcNotice("ui.msg.hub_heal_paid", "{0} 골드를 내고 파티의 체력을 모두 회복했습니다", cost.ToString(), "#2E8B57");
+    }
+
     [Server]
     void EndStage()
     {

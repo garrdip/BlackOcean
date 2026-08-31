@@ -19,7 +19,7 @@ public class NPC_RyuJinSol : SpawnedMonster
     private bool isOpenExpandableButtons = false;
     [UnityEngine.Serialization.FormerlySerializedAs("buttonHeal")]
     public Button buttonSortie; // 출정 — 스테이지 선택 (구 체력 회복 버튼 자리)
-    public Button butonGiveGold;
+    public Button butonGiveGold; // 회복 — 골드(BalanceDB HUB_HEAL_COST)를 내고 파티 전원 HP 전량 회복 (구 '골드 전달' 버튼 자리, 2026-08-31 용도 변경 — 프리팹 필드명은 유지)
     public Button buttonWarp;
 
 
@@ -27,7 +27,8 @@ public class NPC_RyuJinSol : SpawnedMonster
     {
         AddEventTrigger();
         buttonSortie.onClick.AddListener(() => OnClickSortieButton());
-        butonGiveGold.onClick.AddListener(() => OnClickGiveGoldButton());
+        butonGiveGold.onClick.AddListener(() => OnClickHealButton());
+        RelabelButton(butonGiveGold, "ui.NPC_RyuJinSol.ButtonHeal_Label", "회복"); // 프리팹의 '골드 전달' 라벨/번역 키를 코드에서 교체
         buttonWarp.onClick.AddListener(() => OnClickWarpButton());
         buttonWarp.gameObject.SetActive(false); // 워프 폐기 (맵 시스템 제거)
         PopUpUIManager.instance.onCampPopUpShow += OnCampPopUpShow;
@@ -85,10 +86,25 @@ public class NPC_RyuJinSol : SpawnedMonster
         isOpenExpandableButtons = false;
     }
 
-    public void OnClickGiveGoldButton()
+    // 회복 — 서버(M_HubManager.HealPartyFull)가 요청자의 골드를 차감하고 파티 전원 HP를 최대치로. 골드 부족/거점 외 상태는 서버가 거부하고 토스트로 알린다
+    public void OnClickHealButton()
     {
-        PopUpUIManager.instance.campPopUp.GetComponent<CampPopUp>().giveGoldLayout.SetActive(true);
-        PopUpUIManager.instance.HandleCampPopUpShow(CampAction.Gold);
+        if(M_HubManager.instance == null || M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;
+        GamePlayer localPlayer = PlayerRegistry.Local != null ? PlayerRegistry.Local.currentGamePlayer : null;
+        if(localPlayer == null) return;
+        M_HubManager.instance.CmdHealPartyFull(localPlayer.netId);
+        expandableButtonGroup.HideExpandableButtonGroup();
+        isOpenExpandableButtons = false;
+    }
+
+    // 버튼 라벨 교체 — TextUpdater 키까지 바꿔 언어 변경 시에도 유지 (MenuUI.SetButtonLabel과 같은 방식)
+    static void RelabelButton(Button button, string key, string fallback)
+    {
+        TMPro.TMP_Text label = button.GetComponentInChildren<TMPro.TMP_Text>(true);
+        if(label == null) return;
+        TextUpdater updater = label.GetComponent<TextUpdater>();
+        if(updater != null) updater.key = key;
+        label.text = M_LanguageManager.Get(key, fallback);
     }
 
     // 워프는 맵 타일 시스템 제거(거점 전환)로 폐기 — 버튼은 프리팹 정리 전까지 Awake에서 숨긴다
