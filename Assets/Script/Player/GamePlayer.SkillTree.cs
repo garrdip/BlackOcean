@@ -115,6 +115,7 @@ public partial class GamePlayer
         if (PlayerRegistry.Local == null || PlayerRegistry.Local.currentGamePlayer != this) return;
 
         DrawEquipmentGUI(); // 장비/인벤토리 창 (GamePlayer.Equipment.cs — 같은 컴포넌트라 OnGUI는 여기 하나로 합친다)
+        DrawStatsGUI();     // 디버그 스탯 창 (GamePlayer.DebugStats.cs — 위험도 버튼 왼쪽 '스탯' 버튼)
 
         // 디버그 위험도 상승 버튼 — 전역 위험도 +1 (레벨업 버튼 왼쪽)
         if (M_HubManager.instance != null
@@ -129,7 +130,7 @@ public partial class GamePlayer
         if (GUI.Button(toggleRect, guiTreeOpen ? "스킬트리 닫기" : $"스킬트리 (P:{skillPoints})"))
         {
             guiTreeOpen = !guiTreeOpen;
-            if (guiTreeOpen) guiEquipOpen = false; // 장비 창과 상호 배타 (같은 자리 사용)
+            if (guiTreeOpen) { guiEquipOpen = false; guiStatsOpen = false; } // 장비/스탯 창과 상호 배타 (같은 자리 사용)
         }
         if (!guiTreeOpen) return;
 

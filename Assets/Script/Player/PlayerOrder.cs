@@ -160,7 +160,7 @@ public class PlayerOrder : NetworkBehaviour
             GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
             gamePlayer.onChangePlayerOrder += OnChangePlayerOrder;
             gamePlayer.onChangeGold += OnChangeGold;
-            SetParentAndPostion(gamePlayer.selectOrder);
+            SetParentAndPostion(gamePlayer.selectOrder, animate: false); // 초기 배치는 즉시 — 스폰 위치(원점)에서 미끄러지는 연출 방지
             SetOwnedViewComponent();
             textGold.text = gamePlayer.gold.ToString();
             CreateStatsText(gamePlayer);
@@ -238,9 +238,13 @@ public class PlayerOrder : NetworkBehaviour
     }
 
     // 참조된 게임플레이어 클래스로부터 오더값 조회하여 값에 맞춰 뷰 컴포넌트 세팅
-    private void SetParentAndPostion(int order)
+    // animate: 오더 변경(파티원 이탈 등)은 슬라이드 연출, 최초 배치(OnStartClient)는 즉시 배치
+    private void SetParentAndPostion(int order, bool animate = true)
     {
-        transform.DOMove(new Vector3(M_TurnManager.instance.targetObjectPosition[order].x, 8f, 0f), 0.5f);
+        Vector3 target = new Vector3(M_TurnManager.instance.targetObjectPosition[order].x, 8f, 0f);
+        transform.DOKill();
+        if(animate) transform.DOMove(target, 0.5f);
+        else transform.position = target;
         transform.localScale = new Vector3(1f, 1f, 1f);
     }
 

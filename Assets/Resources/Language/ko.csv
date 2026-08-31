@@ -143,3 +143,14 @@ ui.stat.int,지능
 ui.stat.def,방어력
 ui.stat.mdef,마법방어
 ui.stat.ctrl,제어
+ui.save.title_new,새 게임 — 저장할 슬롯을 선택하세요
+ui.save.title_continue,이어하기 — 불러올 슬롯을 선택하세요
+ui.save.slot,슬롯 {0}
+ui.save.empty,빈 슬롯
+ui.save.summary,저장 {0}  |  해금 스테이지 {1}  |  위험도 {2}
+ui.save.select,선택
+ui.save.overwrite,덮어쓰기
+ui.save.confirm_overwrite,정말 덮어쓸까요? 다시 클릭
+ui.save.delete,삭제
+ui.save.confirm_delete,정말 삭제할까요? 다시 클릭
+ui.save.back,돌아가기

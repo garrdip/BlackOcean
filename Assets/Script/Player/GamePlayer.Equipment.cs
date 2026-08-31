@@ -197,7 +197,7 @@ public partial class GamePlayer
         if (GUI.Button(toggleRect, guiEquipOpen ? "장비 닫기" : $"장비 ({inventoryEquips.Count + inventoryConsumables.Count})"))
         {
             guiEquipOpen = !guiEquipOpen;
-            if (guiEquipOpen) guiTreeOpen = false; // 스킬트리 창과 상호 배타 (같은 자리 사용)
+            if (guiEquipOpen) { guiTreeOpen = false; guiStatsOpen = false; } // 스킬트리/스탯 창과 상호 배타 (같은 자리 사용)
         }
         if (!guiEquipOpen) return;
 

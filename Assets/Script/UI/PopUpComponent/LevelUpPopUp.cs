@@ -175,16 +175,7 @@ public class LevelUpPopUp : MonoBehaviour
         gain.rectTransform.localScale = Vector3.one;
     }
 
-    static string CharacterName(Character character)
-    {
-        switch (character)
-        {
-            case Character.GEORK: return M_LanguageManager.Get("ui.LabelGeork", "게오르크");
-            case Character.HONGDANHYANG: return M_LanguageManager.Get("ui.LabelDanhyang", "홍단향");
-            case Character.ERIS: return M_LanguageManager.Get("ui.LabelEris", "에리스");
-        }
-        return character.ToString();
-    }
+    static string CharacterName(Character character) => M_LanguageManager.GetCharacterName(character);
 
     // ------------------------------------------------------------------ UI 구성 (런타임) ------------------------------------------------------------------ //
 

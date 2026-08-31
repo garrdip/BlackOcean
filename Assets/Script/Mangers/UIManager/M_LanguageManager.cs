@@ -93,6 +93,18 @@ public class M_LanguageManager : SingletonD<M_LanguageManager>
         return key;
     }
 
+    /// <summary>캐릭터 표시 이름 (ui.Label* 키) — 레벨업 팝업/세이브 슬롯 요약 등 UI 공용</summary>
+    public static string GetCharacterName(ProjectD.Character character)
+    {
+        switch (character)
+        {
+            case ProjectD.Character.GEORK: return Get("ui.LabelGeork", "게오르크");
+            case ProjectD.Character.HONGDANHYANG: return Get("ui.LabelDanhyang", "홍단향");
+            case ProjectD.Character.ERIS: return Get("ui.LabelEris", "에리스");
+        }
+        return character.ToString();
+    }
+
     public static bool TryGet(string key, out string text)
     {
         EnsureInitialized();

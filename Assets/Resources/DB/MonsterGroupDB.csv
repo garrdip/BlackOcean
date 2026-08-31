@@ -1,6 +1,6 @@
 Group_Name,Name,,
 BasicSoldiers1,Soldier_Axe,,
-BasicSoldiers2,Soldier_Axe,Soldier_Shield,
+BasicSoldiers2,Soldier_Axe,Soldier_Spear,
 SoldierWithWacher1,Soldier_Axe,Soldier_Shield,WacherA
 SoldierWithWacher2,Soldier_Axe,Soldier_Spear,WacherA
 SoldierWithWacher3,Soldier_Axe,Soldier_Shield,WacherB

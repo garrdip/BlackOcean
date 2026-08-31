@@ -8,6 +8,7 @@ using TMPro;
 
 // 메인 메뉴 — 싱글 플레이를 누르면 메뉴 전체가 "처음부터 시작 / 이어하기" 두 선택지로 바뀐다 (RPG_CONVERSION_DESIGN 메뉴 변경).
 // 처음부터 = 기존 싱글 시작 루틴(호스트 시작), 이어하기 = 저장 파일 로드 예약(GameSaveService.pendingLoad) 후 같은 루틴. Esc로 메인 메뉴 복귀
+// 세이브 슬롯(2026-08-31): 둘 다 SaveSlotPanel로 슬롯(3개)을 먼저 고른다 — 처음부터 = BeginNewGame(슬롯), 이어하기 = BeginContinue(슬롯)
 public class MenuUI : MonoBehaviour
 {
     public GameObject multiplayCanvas;
@@ -36,7 +37,7 @@ public class MenuUI : MonoBehaviour
 
     void Update()
     {
-        if(singleModeOpen && Input.GetKeyDown(KeyCode.Escape)) ExitSingleMode(); // 하위 메뉴에서 Esc → 메인 메뉴
+        if(singleModeOpen && !SaveSlotPanel.IsOpen && Input.GetKeyDown(KeyCode.Escape)) ExitSingleMode(); // 하위 메뉴에서 Esc → 메인 메뉴 (슬롯 패널이 열려 있으면 패널이 Esc를 소비)
     }
 
     // ---------------------------------------------------------------- 싱글 플레이 하위 메뉴 ---------------------------------------------------------------- //
@@ -48,7 +49,7 @@ public class MenuUI : MonoBehaviour
         singleModeOpen = true;
         SetButtonLabel(buttonSinglePlay, "ui.Main_New_Game", "처음부터 시작");
         SetButtonLabel(buttonMultiPlay, "ui.Main_Continue", "이어하기");
-        buttonMultiPlay.interactable = GameSaveService.HasSaveFile();
+        buttonMultiPlay.interactable = GameSaveService.HasAnySaveFile(); // 슬롯 중 하나라도 저장이 있으면 이어하기 가능
         buttonDeckBook.gameObject.SetActive(false);
         buttonSettings.gameObject.SetActive(false);
         buttonQuit.gameObject.SetActive(false);
@@ -75,12 +76,20 @@ public class MenuUI : MonoBehaviour
         label.text = M_LanguageManager.Get(key, fallback);
     }
 
-    // 처음부터 시작(continueFromSave=false) / 이어하기(true) — 둘 다 기존 싱글 시작 루틴(HandleSinglePlay)을 탄다.
-    // 이어하기: 저장 파일 로드 예약 → M_HubManager.OnStartServer(TryLoad) → GenerateGamePlayer(FindProfile)가 프로필 복원
+    // 처음부터 시작(continueFromSave=false) / 이어하기(true) — 슬롯 패널에서 슬롯을 고른 뒤 둘 다 기존 싱글 시작 루틴(HandleSinglePlay)을 탄다.
+    // 이어하기: 슬롯 로드 예약 → M_HubManager.OnStartServer(TryLoad) → GenerateGamePlayer(FindProfile)가 프로필 복원
     void StartSingle(bool continueFromSave)
     {
-        GameSaveService.pendingLoad = continueFromSave && GameSaveService.HasSaveFile();
-        HandleSinglePlay();
+        PlayClickSfx();
+        SaveSlotPanel.Open(continueFromSave ? SaveSlotPanel.Mode.Continue : SaveSlotPanel.Mode.NewGame, slot =>
+        {
+            if(continueFromSave){
+                if(!GameSaveService.BeginContinue(slot)) return; // 파일이 사라졌으면 무시
+            }else{
+                GameSaveService.BeginNewGame(slot);
+            }
+            HandleSinglePlay();
+        });
     }
 
     public void HandleSinglePlay()

@@ -1,6 +1,6 @@
 Monster_Name,Weakness,AttackAttribute,TPShield,Agility,Exp,HazardAtk,HazardDef,HazardHp,Description
-Soldier_Axe,SLASH,SLASH,3,6,30,0.3,0,2,도끼병 — 참격 약점
-Soldier_Shield,STRIKE,STRIKE,5,4,40,0,0.5,3.5,방패병 — 갑옷형은 타격에 약함
+Soldier_Axe,SLASH,SLASH,3,6,50,0.3,0,2,도끼병 — 참격 약점
+Soldier_Shield,STRIKE,STRIKE,5,4,50,0,0.5,3.5,방패병 — 갑옷형은 타격에 약함
 Soldier_Spear,SLASH,PIERCE,3,7,50,0.4,0.3,2,창병
 WacherA,MAGIC,MAGIC,4,6,16,0,0,1,감시자A
 WacherB,MAGIC,MAGIC,4,6,16,0,0.5,1,감시자B

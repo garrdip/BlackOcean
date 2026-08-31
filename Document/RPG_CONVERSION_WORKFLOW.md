@@ -96,6 +96,7 @@
 - [x] 3-2. 노드 타입 — SKILL(액티브 습득) / SKILL_LEVEL(강화 — 노드당 피해 +20%) / STAT(스탯 상승, 체력은 MaxHP 재계산) / ULTIMATE. 미습득 스킬은 전투 UI 미표시 + 서버 `KnowsSkill` 재검증 (기본 스킬 고행길/피의 가속은 innate)
 - [x] 3-3. 필살기 3종 — 대장군의 일격(단일 300%)/만개(전원 회복+실드)/초신성(전체 180%). **리스크 규칙: 사용 후 자신의 TP -50** (`ULTIMATE_TP_PENALTY`)
 - [x] 3-4. 스킬트리 UI — OnGUI 임시 창 (우상단 버튼 토글, 트리별 노드 목록 + 습득/잠김 상태). 정식 팝업(`PopUpUIManager`)은 UI 정리 단계에서
+      우상단 디버그 버튼 줄(2026-08-31): `스탯`(`GamePlayer.DebugStats.cs` — 레벨/EXP/HP/자원/스탯 6종 기본·장비·합계/다음 레벨 성장치/성장 시드) · `위험도 +1` · `레벨업` · `스킬트리` / 아래 `장비`. 창 3종은 같은 자리라 상호 배타
 
 **완료 기준**: 레벨업 → 포인트 획득 → 트리 습득 → 전투에서 사용까지 루프가 돈다. → 구현 완료, 에디터 검증 필요.
 
@@ -121,6 +122,9 @@
 
 - [x] 5-1. 저장 계층 신설 — **`GameSaveService`(정적 서비스, 네트워크 독립)**: `ProfileData`(레벨/EXP/스탯/스킬트리/장비/소모품/골드/HP — SteamID 키, 전원분) + 월드 상태(맵 시드/방문 완료/시야/현재 위치). 호스트가 `rpg_save.json` 단일 파일 소유. 구 `M_SaveManager`(카드 런 스냅샷)는 비활성 (카드 제거 시 삭제)
 - [x] 5-2. 자동 저장 — 탐험 스텝 확정(`CmdInstantMove`)/전투 없는 투표 이동/전투·방 정리 완료(`NoneBattleEnd`) 시 지연 저장(`ScheduleSave`). 장비·트리 변경은 다음 이동/전투 저장에 포함됨
+- [x] 5-4. 세이브 슬롯 3개 (2026-08-31) — `GameSaveService.SlotCount=3`, 파일 `rpg_save_{1..3}.json` (구 `rpg_save.json`은 최초 접근 시 슬롯 1로 이관). `CurrentSlot`(PlayerPrefs `rpg_save_slot`에 마지막 사용 기억)에 모든 자동/수동 저장.
+      `BeginNewGame(slot)`(기존 데이터 삭제 + 로드 예약 해제) / `BeginContinue(slot)`(로드 예약) / `Peek(slot)`(요약) / `DeleteSlot(slot)`. UI: `UI/PopUpComponent/SaveSlotPanel.cs`(런타임 구성, 씬 참조 없음) —
+      메뉴 '처음부터/이어하기'(MenuUI)와 멀티 '방 만들기'(CreateLobby) 공용. 슬롯마다 저장 시각(`savedAt`)/해금 스테이지/위험도/캐릭터·레벨 요약, 덮어쓰기·삭제는 두 번 클릭 확정, Esc/바깥 클릭 취소. 키 `ui.save.*`
 - [x] 5-3. 로드 진입 — 방 만들기 화면에 '이어서 하기 ON/OFF' 임시 토글 (저장 파일 있을 때만, 기본 ON). 복원: 시드+진행은 `SphereMapNetwork` SyncVar/SyncList로 전 클라이언트 전파, 프로필은 `GenerateGamePlayer`에서 SteamID 매칭 적용(새 파티원·캐릭터 변경 시 신규 초기화). **정식 메뉴 개편(싱글/멀티 4버튼)은 UI 작업에서**
 - [ ] 5-4. 싱글 플레이 모드 — **결정 대기: 1인이 3캐릭터 전원 조작 권장** (전투 밸런스를 3인 고정으로 통일, 호스트 단독 세션으로 기존 네트워크 구조 재사용)
 - [ ] 5-5. 사망 처리 — **결정 대기**. 현재는 사망 → 세션 종료 → '이어서 하기'로 마지막 저장 시점 재개가 사실상의 패널티로 동작

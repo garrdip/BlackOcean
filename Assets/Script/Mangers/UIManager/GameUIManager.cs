@@ -11,7 +11,6 @@ public class GameUIManager : SingletonD<GameUIManager>
 {
     [Header("게임 오브젝트")]
     public GameObject RootGameObject;
-    public GameObject TestUI;
 
     [Header("카메라 사이즈값")]
     public static float battelSceneCameraSize = 10.8f; // 거점/전투 화면 카메라 크기값
