@@ -130,17 +130,18 @@ public class PlayerInterface : NetworkBehaviour
         gamePlayer.selectOrder = selectOrder;
         // RPG 스탯 초기화 — CharacterStatDB의 캐릭터별 기본치. 테이블 누락 시 기존 BalanceDB 초기값으로 폴백
         CharacterStatData.Entry stat = CharacterStatData.Get(character);
+        bool profileRestored = false; // 이어하기 — 저장 프로필 적용 여부
         if(stat != null){
             gamePlayer.level = 1;
             gamePlayer.exp = 0;
             gamePlayer.strength = stat.baseStr;
             gamePlayer.agility = stat.baseAgi;
-            gamePlayer.vitality = stat.baseVit;
             gamePlayer.intelligence = stat.baseInt;
             gamePlayer.defense = stat.baseDef;
             gamePlayer.magicDefense = stat.baseMdef;
             gamePlayer.control = stat.baseCtrl;
-            gamePlayer.MaxHP = GamePlayer.GetMaxHPByVitality(character, stat.baseVit);
+            gamePlayer.growthSeed = System.Guid.NewGuid().GetHashCode(); // 레벨업 성장치 분배 시드 — 캐릭터마다 다른 성장 곡선 (만렙 총합은 동일). 이어하기면 아래 프로필이 덮어쓴다
+            gamePlayer.MaxHP = stat.baseHP; // 1레벨 최대 HP — 레벨업(GrowHP)/스킬트리 HP 노드로 직접 성장
             gamePlayer.maxResource = stat.baseResource;
             gamePlayer.currentResource = (stat.resource == ProjectD.BattleResourceType.MP) ? stat.baseResource : 0; // MP는 가득, 분노는 0에서 시작
             gamePlayer.skillPoints = BalanceData.Get("STARTING_SKILL_POINTS", 1); // 시작 포인트 — 첫 스킬을 바로 찍을 수 있게
@@ -148,14 +149,19 @@ public class PlayerInterface : NetworkBehaviour
 
             // 이어서 하기: 저장된 프로필이 있으면 기본 초기화를 덮어쓴다 (SteamID 매칭 — 새 파티원은 신규 초기화 유지)
             GameSaveService.ProfileData profile = GameSaveService.FindProfile(steamID);
-            if(profile != null && profile.character == character)
+            if(profile != null && profile.character == character){
                 GameSaveService.ApplyProfile(gamePlayer, profile);
+                profileRestored = true;
+            }
         }else{
             gamePlayer.MaxHP = BalanceData.Get("PLAYER_INIT_HP", 50);
         }
-        gamePlayer.HP = gamePlayer.MaxHP;
+        // 신규 시작 기본값 — 프로필을 복원한 경우 저장된 HP/골드를 덮어쓰지 않는다
+        if(!profileRestored){
+            gamePlayer.HP = gamePlayer.MaxHP;
+            gamePlayer.gold = BalanceData.Get("PLAYER_INIT_GOLD", 100);
+        }
         gamePlayer.recoveryValue = BalanceData.Get("PLAYER_INIT_RECOVERY", 15);
-        gamePlayer.gold = BalanceData.Get("PLAYER_INIT_GOLD", 100);
         NetworkServer.Spawn(gamePlayerObject, connectionToClient);
 
         // 게임씬에서 플레이어 오더 및 정보들을 보여주는 PlayerOrder 오브젝트 생성

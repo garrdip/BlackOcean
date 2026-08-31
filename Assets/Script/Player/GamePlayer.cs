@@ -31,6 +31,14 @@ public partial class GamePlayer : NetworkBehaviour
     public int recoveryLimitCount; // 체력 회복 횟수 제한
 
     // ---- RPG 스탯 (CharacterStatDB 기반, 레벨업으로 성장) ----
+    /// <summary>레벨업 연출용 스탯 스냅샷 (RpcLevelUp 전/후 값 전달 — Mirror가 구조체 직렬화 자동 생성)</summary>
+    public struct LevelUpStats
+    {
+        public int maxHP, str, agi, intel, def, mdef, ctrl;
+        /// <summary>LevelUpPopUp 행 순서: HP / 힘 / 민첩 / 지능 / 방어력 / 마법방어 / 제어</summary>
+        public int[] ToArray() => new[]{ maxHP, str, agi, intel, def, mdef, ctrl };
+    }
+
     [SyncVar (hook = nameof(OnChangedLevel))]
     public int level = 1;      // 레벨
     [SyncVar]
@@ -40,8 +48,6 @@ public partial class GamePlayer : NetworkBehaviour
     [SyncVar]
     public int agility;        // 민첩 — TP(턴 게이지) 충전 속도
     [SyncVar]
-    public int vitality;       // 체력 — 최대 HP 결정 (MaxHP = CharacterStatDB BaseHP + vitality * HP_PER_VITALITY)
-    [SyncVar]
     public int intelligence;   // 지능 — 마법 공격력
     [SyncVar]
     public int defense;        // 방어력
@@ -49,6 +55,8 @@ public partial class GamePlayer : NetworkBehaviour
     public int magicDefense;   // 마법방어
     [SyncVar]
     public int control;        // 제어 — MP 회복(매턴 제어/2, 전투 종료 후 제어)·분노 생성(변환제어 = 제어 + RAGE_CONTROL_OFFSET)에 영향 (RPG_CONVERSION_BATTLE)
+    [SyncVar]
+    public int growthSeed;     // 레벨업 성장치 랜덤 분배 시드 (LevelGrowthTable) — 생성 시 서버가 부여, 세이브에 보존. 레벨별 상승량은 시드마다 다르지만 만렙 총합은 CharacterStatDB GrowX로 동일
 
     // ---- 전투 자원 (게오르크: 분노 / 홍단향: MP / 에리스: HP 소모 — CharacterStatDB의 Resource) ----
     [SyncVar]
@@ -148,7 +156,7 @@ public partial class GamePlayer : NetworkBehaviour
         exp += amount;
         int startLevel = level;
         int gainedPoints = 0;
-        CharacterStatData.Entry stat = CharacterStatData.Get(character);
+        LevelUpStats before = CaptureLevelUpStats(); // 연출용 — 레벨업 전 스탯 스냅샷
         while(required > 0 && exp >= required){ // required 0 = 최대 레벨
             exp -= required;
             level++;
@@ -159,53 +167,47 @@ public partial class GamePlayer : NetworkBehaviour
             required = LevelData.GetRequiredExp(level);
         }
         if(required <= 0) exp = 0; // 최대 레벨 도달 — 잔여 경험치 정리
-        if(level > startLevel) RpcLevelUp(startLevel, level, gainedPoints);
+        if(level > startLevel) RpcLevelUp(startLevel, level, gainedPoints, before, CaptureLevelUpStats());
     }
 
-    // 레벨업 알림 — 소유자 화면에 토스트
+    // 레벨업 연출용 스탯 스냅샷 (최대 HP + 7종 스탯)
+    LevelUpStats CaptureLevelUpStats()
+    {
+        return new LevelUpStats{ maxHP = MaxHP, str = strength, agi = agility, intel = intelligence, def = defense, mdef = magicDefense, ctrl = control };
+    }
+
+    // 레벨업 알림 — 소유자 화면에 스탯 변화 팝업 (LevelUpPopUp). SyncVar보다 RPC가 먼저 도착하므로 전/후 값을 명시적으로 전달한다
     [ClientRpc]
-    void RpcLevelUp(int fromLevel, int toLevel, int gainedPoints)
+    void RpcLevelUp(int fromLevel, int toLevel, int gainedPoints, LevelUpStats before, LevelUpStats after)
     {
         if(!isOwned) return;
-        string text = M_LanguageManager.Get("ui.msg.level_up", "레벨 업! Lv.{0} → Lv.{1} (스킬 포인트 +{2})")
-            .Replace("{0}", fromLevel.ToString()).Replace("{1}", toLevel.ToString()).Replace("{2}", gainedPoints.ToString());
-        M_MessageManager.instance
-            .MakeToast()
-            .Position(ToastPosition.Top)
-            .MessageBoxColor(ProjectD.ColorUtils.HexToColor("#DAA520"))
-            .TextColor(Color.white)
-            .Text(text)
-            .FadeInTime(1f)
-            .FadeOutTime(1.5f)
-            .Show();
+        LevelUpPopUp.Show(character, fromLevel, toLevel, gainedPoints, before, after);
     }
 
-    // 레벨업 1회분 성장치 반영. 체력 스탯이 오르면 최대 HP를 다시 계산하고 늘어난 만큼 현재 HP도 회복시킨다
+    // 레벨업 1회분 성장치 반영 — 도달한 레벨(level)의 칸을 LevelGrowthTable(시드 기반 랜덤 분배)에서 읽는다.
+    // 레벨마다 오르는 양은 growthSeed에 따라 다르지만 만렙까지의 합은 CharacterStatDB GrowX로 항상 같다.
+    // 최대 HP가 오르면 늘어난 만큼 현재 HP도 회복시킨다
     [Server]
     private void ApplyLevelUpGrowth()
     {
-        CharacterStatData.Entry stat = CharacterStatData.Get(character);
-        if(stat == null) return;
-        strength += stat.growStr;
-        agility += stat.growAgi;
-        vitality += stat.growVit;
-        intelligence += stat.growInt;
-        defense += stat.growDef;
-        magicDefense += stat.growMdef;
-        control += stat.growCtrl;
-
-        int newMaxHP = GetMaxHPByVitality(character, vitality);
-        HP += Mathf.Max(0, newMaxHP - MaxHP);
-        MaxHP = newMaxHP;
-        Debug.Log($"[GamePlayer] {character} 레벨업 → Lv.{level} (힘{strength}/민첩{agility}/체력{vitality}/지능{intelligence}/방어{defense}/마방{magicDefense}/제어{control}, MaxHP {MaxHP})");
+        if(CharacterStatData.Get(character) == null) return;
+        AddMaxHP(LevelGrowthTable.GetGrowth(growthSeed, character, LevelGrowthTable.Stat.HP, level));
+        strength += LevelGrowthTable.GetGrowth(growthSeed, character, LevelGrowthTable.Stat.STR, level);
+        agility += LevelGrowthTable.GetGrowth(growthSeed, character, LevelGrowthTable.Stat.AGI, level);
+        intelligence += LevelGrowthTable.GetGrowth(growthSeed, character, LevelGrowthTable.Stat.INT, level);
+        defense += LevelGrowthTable.GetGrowth(growthSeed, character, LevelGrowthTable.Stat.DEF, level);
+        magicDefense += LevelGrowthTable.GetGrowth(growthSeed, character, LevelGrowthTable.Stat.MDEF, level);
+        control += LevelGrowthTable.GetGrowth(growthSeed, character, LevelGrowthTable.Stat.CTRL, level);
+        Debug.Log($"[GamePlayer] {character} 레벨업 → Lv.{level} (HP{MaxHP}/힘{strength}/민첩{agility}/지능{intelligence}/방어{defense}/마방{magicDefense}/제어{control})");
     }
 
-    /// <summary>체력 스탯 기준 최대 HP 계산식 — 기본치는 CharacterStatDB BaseHP (테이블 누락 시 BalanceDB 폴백). 초기화(PlayerInterface)/레벨업/스킬트리 VIT 노드가 공유</summary>
-    public static int GetMaxHPByVitality(Character character, int vitality)
+    /// <summary>최대 HP 증가 — 레벨업 성장/스킬트리 HP 노드가 공유. 늘어난 만큼 현재 HP도 회복 (감소는 현재 HP를 최대치로 클램프)</summary>
+    [Server]
+    public void AddMaxHP(int amount)
     {
-        CharacterStatData.Entry stat = CharacterStatData.Get(character);
-        int baseHP = stat != null ? stat.baseHP : BalanceData.Get("PLAYER_INIT_HP", 50);
-        return baseHP + vitality * BalanceData.Get("HP_PER_VITALITY", 2);
+        if(amount == 0) return;
+        MaxHP += amount;
+        HP = amount > 0 ? HP + amount : Mathf.Min(HP, MaxHP);
     }
 
     [Server]

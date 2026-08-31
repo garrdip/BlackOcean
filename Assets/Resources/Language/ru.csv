@@ -1,6 +1,8 @@
 key,text,source_ko
 ui.Main_Single_Play,Одиночная игра,싱글 플레이
 ui.Main_Multi_Play,Сетевая игра,멀티 플레이
+ui.Main_New_Game,Новая игра,처음부터 시작
+ui.Main_Continue,Продолжить,이어하기
 ui.Main_Multi_CreateRoom,Создать комнату,방 만들기
 ui.Main_Encyclopedia,Энциклопедия,백과사전
 ui.Main_Settings,Настройки,환경설정
@@ -31,7 +33,7 @@ ui.NPC_RyuJinSol.ButtonGiveGold_Label,Передать золото\n,골드 전
 ui.NPC_ShadowMan.ButtonSkillReset_Label,Сброс навыков,스킬 초기화
 ui.NPC_ShadowMan.Button1_Label,Кнопка,버튼
 ui.NPC_ShadowMan.Button2_Label,Кнопка,버튼
-ui.NPC_Sophia.ButtonHeal_Label,Лечение,체력 회복
+ui.NPC_Sophia.ButtonSave_Label,Сохранить,저장
 ui.NPC_Sophia.ButtonPray_Label,Молитва,기도
 ui.MapPlayer.TextSwap,Смена позиции,위치 변경
 ui.MapPlayer.ButtonDeckInfo_Label,Колода,덱 정보
@@ -1098,3 +1100,15 @@ ui.pray.min_hazard,Уровень опасности уже минимальны
 ui.pray.accept,Принять,수락
 ui.pray.cancel,Отказаться,거절
 ui.pray.close,Закрыть,닫기
+ui.msg.game_saved,Сохранено,저장했습니다
+ui.levelup.title,{0}: новый уровень!,{0} 레벨 업!
+ui.levelup.level,Ур.{0} → Ур.{1},Lv.{0} → Lv.{1}
+ui.levelup.skill_points,Очки навыков +{0},스킬 포인트 +{0}
+ui.levelup.confirm,ОК,확인
+ui.stat.hp,ОЗ,HP
+ui.stat.str,Сила,힘
+ui.stat.agi,Ловкость,민첩
+ui.stat.int,Интеллект,지능
+ui.stat.def,Защита,방어력
+ui.stat.mdef,Магическая защита,마법방어
+ui.stat.ctrl,Контроль,제어

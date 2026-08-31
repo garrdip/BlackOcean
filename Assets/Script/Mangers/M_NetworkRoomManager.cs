@@ -62,9 +62,17 @@ public class M_NetworkRoomManager : NetworkRoomManager
         }
         roomPlayer.GetComponent<RoomPlayer>().color = colors[NetworkServer.connections.Count - 1];
         roomPlayer.GetComponent<RoomPlayer>().steamID = (ulong)SteamMatchmaking.GetLobbyMemberByIndex(M_SteamManager.enteredLobby, NetworkServer.connections.Count - 1);
+        // 이어하기: 저장 프로필(SteamID 매칭)의 캐릭터를 자동 선택 — 게임 씬의 프로필 복원(GenerateGamePlayer)은 캐릭터가 일치할 때만 적용된다.
+        // 싱글 플레이는 스팀 로비 없이 호스트를 시작하므로 로비 멤버 SteamID가 0 → 호스트 본인의 SteamID로 대체
+        if(GameSaveService.pendingLoad && GameSaveService.EnsureLoaded()){
+            ulong saveSteamId = roomPlayer.GetComponent<RoomPlayer>().steamID;
+            if(saveSteamId == 0) saveSteamId = (ulong)SteamUser.GetSteamID();
+            GameSaveService.ProfileData profile = GameSaveService.FindProfile(saveSteamId);
+            if(profile != null) roomPlayer.GetComponent<RoomPlayer>().character = profile.character; // 스폰 전 설정 → 초기 상태로 동기화 (로비 UI 초기화가 읽는다)
+        }
         NetworkServer.Spawn(roomPlayer, conn);
 
-        // RoomPlayer 정보를 참조하는 LobbyPlayer 오브젝트 생성 
+        // RoomPlayer 정보를 참조하는 LobbyPlayer 오브젝트 생성
         GameObject lobbyPlayerObject = Instantiate(netManger.spawnPrefabs.Find(pref => pref.name == "LobbyPlayer"));
 
         // LobbyPlayer에 RoomPlayer SyncVar 변수 설정
@@ -81,7 +89,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
         M_LobbyMananger.instance.AddLobbyPlayer(lobbyPlayer.netId);
         return roomPlayer;
     }
-    
+
     // 서버에서 클라이언트가 연결해제 되었을때 호출
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
@@ -148,7 +156,7 @@ public class M_NetworkRoomManager : NetworkRoomManager
     // 씬 전환 이벤트(Offline Scene에서도 씬 전환 이벤트 수신 가능)
     private void OnChangedActiveScene(Scene current, Scene next)
     {
-        // 메뉴씬 갈때 managers에 할당되었던 DDOL 매니저 오브젝트들 + 뷰 컴포넌트들 모두 제거 
+        // 메뉴씬 갈때 managers에 할당되었던 DDOL 매니저 오브젝트들 + 뷰 컴포넌트들 모두 제거
         if(next.name.Equals("MenuScene")){
             foreach(GameObject manager in persistentManagers.Values){
                 Destroy(manager.gameObject);

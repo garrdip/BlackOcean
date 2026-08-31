@@ -37,11 +37,17 @@
 **목표**: 기획서의 스탯/속성/레벨 체계를 데이터로 정의한다. 기존 CSV+리플렉션 파이프라인(`DB/CsvTable.cs`) 재사용.
 
 - [x] 1-1. 스탯 6종 — `GamePlayer`에 SyncVar 추가: level/exp + 힘/민첩/체력/지능/방어력/마법방어. `AddExp()` 레벨업 루프 + 성장치 반영, MaxHP = `PLAYER_INIT_HP` + 체력×`HP_PER_VITALITY`
+      **체력(Vit) 스탯 폐기 (2026-08-31)**: 최대 HP 외 용도가 없어 제거. `GamePlayer.vitality`/`GetMaxHPByVitality`/`HP_PER_VITALITY`/세이브 `vitality` 삭제, `CharacterStatDB` BaseVit 컬럼 제거·GrowVit → `GrowHP`(×2 환산, HP 총 성장치).
+      `GamePlayer.AddMaxHP()`를 레벨업(`LevelGrowthTable.Stat.HP`)/스킬트리 `HP` 노드(구 VIT)가 공유. 레벨업 팝업 7행(HP+6스탯)
 - [x] 1-2. 속성 enum — `AttackAttribute { NONE, SLASH, STRIKE, PIERCE, MAGIC, RESONANCE }` + `BattleResourceType { NONE, RAGE, MP, HP }` (`Common/ProjectD.cs`)
 - [x] 1-3. `LevelDB.csv` + `CharacterStatDB.csv`(기본치/성장치/약점·내성/자원) 신설. 로더: `DB/LevelData.cs`, `DB/CharacterStatData.cs` (BalanceData 패턴)
       **레벨업 시스템 확장 (2026-08-25)**: `LevelDB.csv` 1~99 (필요 EXP = 80×L + 20×L², 99 = 최대; 누적 약 676만) / `CharacterStatDB.csv`에 `SkillPointPerLevel`(1) + `BonusSkillPointEvery`(10 — 10레벨마다 +1) —
       레벨업 시 성장치(GrowX) 반영 + 포인트 지급 + 소유자 토스트(`ui.msg.level_up`), 최대 레벨이면 EXP 미적립 / `MonsterStatDB.csv`에 `Exp`(일반 12~26, 엘리트 50~60, 보스 200~220) —
       처치 시 `M_TurnManager.battleExpPool` 적립 → 전투 종료 시 파티원 각자 전액 지급(멀티 1.5배). 합 0이면 `BATTLE_REWARD_EXP` 폴백. 보스/NPC 스폰 경로도 `SpawnedMonster.monster` 참조 설정
+      **성장치 랜덤 분배 (2026-08-31)**: `GrowX`를 "레벨당"에서 "만렙까지 총량"으로 변경. `DB/LevelGrowthTable.cs`가 `GamePlayer.growthSeed`(생성 시 부여, 세이브 `growthSeed`) 기준으로 총량을 98칸에 가중치 비례(정수 최대 나머지법) 분배 —
+      레벨별 상승량은 랜덤, 만렙 합은 고정. 편차 `BalanceDB LEVEL_GROWTH_VARIANCE_PERCENT`. `ApplyLevelUpGrowth()`가 도달 레벨 칸을 읽음
+      **레벨업 연출 (2026-08-31)**: `UI/PopUpComponent/LevelUpPopUp.cs` — 런타임 구성 팝업(씬/프리팹 참조 없음, 정식 프리팹으로 교체 가능). `RpcLevelUp`이 전/후 스탯 스냅샷(`GamePlayer.LevelUpStats`)을 전달 →
+      소유자 화면에 "현재 값 (+N)" 스탯표(HP+7종)를 행별 시차로 표시, 확인/Enter로 닫음. 다중 캐릭터 레벨업은 큐로 순차 표시. 구 토스트(`ui.msg.level_up`)는 팝업으로 대체. 키: `ui.levelup.*`, `ui.stat.*`
 - [x] 1-4. 몬스터 확장 스탯 — **`MonsterDB.csv` 직접 확장 대신 별도 `MonsterStatDB.csv`** (위치 기반 포맷 보호). 약점(복수 `|` 구분)/공격 속성/TP 실드. `MonsterData.LoadMonsterStatFromDB()`로 병합, 미등록 몬스터는 기본값
 - [x] 1-5. 캐릭터 약점/내성 — `CharacterStatDB.csv`에 포함 (게오르크 약점MAGIC/내성SLASH, 홍단향 약점PIERCE/내성MAGIC, 에리스 약점STRIKE/내성RESONANCE)
 - [x] 1-6. 자원 구조 — `GamePlayer.currentResource/maxResource` SyncVar + `BattleResourceType`. 초기값: 분노 0에서 시작, MP 가득, HP형은 max 0(자신의 HP 소모). **소모/충전 로직과 이치 대체는 Phase 2B에서** (전투가 아직 카드 기반이므로 이치는 그대로 둠)

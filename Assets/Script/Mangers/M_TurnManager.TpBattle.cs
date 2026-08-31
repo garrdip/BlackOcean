@@ -442,8 +442,36 @@ public partial class M_TurnManager
 
     // ------------------------------------------------------------- 클라이언트: 임시 전투 UI (OnGUI) -------------------------------------------------------------//
 
-    int guiSelectedAction = -1;      // -1 없음 / 0 공격 / 1 스킬 (대상 선택 대기)
+    int guiSelectedAction = -1;      // -1 없음 / 0 공격 / 1 스킬 (적 대상 선택 대기 — 몬스터 클릭) / 2 아군 선택 / 3 아이템
     string guiSelectedSkillNo;
+
+    /// <summary>클라이언트: 적 대상 선택 대기 중인지 (내 턴에 공격/적 단일 스킬을 고른 상태) — SpawnedMonster가 마우스 오버 아웃라인·클릭 판정에 사용</summary>
+    public bool IsSelectingEnemyTarget()
+    {
+        if (!tpBattleActive || !NetworkClient.active) return false;
+        if (guiSelectedAction != 0 && guiSelectedAction != 1) return false;
+        return IsLocalPlayerTurn();
+    }
+
+    bool IsLocalPlayerTurn()
+    {
+        if (tpCurrentUnitNetId == 0 || !NetworkClient.spawned.TryGetValue(tpCurrentUnitNetId, out NetworkIdentity identity) || identity == null) return false;
+        TargetObject currentUnit = identity.GetComponent<TargetObject>();
+        return currentUnit != null && currentUnit.player != null && currentUnit.player.isOwned;
+    }
+
+    /// <summary>클라이언트: 몬스터 클릭으로 대상 확정 (SpawnedMonster.OnMouseDown) — 선택 중이던 공격/스킬을 서버에 제출</summary>
+    public void SubmitEnemyTarget(uint monsterNetId)
+    {
+        if (!IsSelectingEnemyTarget()) return;
+        GamePlayer myPlayer = PlayerRegistry.Local != null ? PlayerRegistry.Local.currentGamePlayer : null;
+        if (myPlayer == null) return;
+        if (guiSelectedAction == 0)
+            CmdSubmitTpAction(myPlayer.netId, (int)TpAction.ATTACK, "", monsterNetId, 0);
+        else
+            CmdSubmitTpAction(myPlayer.netId, (int)TpAction.SKILL, guiSelectedSkillNo, monsterNetId, 0);
+        guiSelectedAction = -1;
+    }
     GUIStyle guiTpLabelStyle;        // TP 숫자 스타일 (가운데 정렬 + 굵게, OnGUI에서 지연 생성)
 
     // 모든 유닛(플레이어·몬스터) 머리 위에 현재 TP를 숫자로 표시. 현재 턴 유닛은 ▶ 표시
@@ -594,34 +622,10 @@ public partial class M_TurnManager
         }
         else
         {
-            // 2단계: 적 대상 선택 (공격/단일 스킬) — 약점 속성 힌트 표시 (MonsterStatDB 기반, 클라이언트 로컬 조회)
-            GUI.Label(new Rect(x, y - lineHeight * 2f, 400f, lineHeight), "대상을 선택하세요:");
-            float buttonX = x;
-            foreach (uint monsterNetId in spawnedMonsterSyncList)
-            {
-                if (!NetworkClient.spawned.TryGetValue(monsterNetId, out NetworkIdentity monsterIdentity) || monsterIdentity == null) continue;
-                TargetObject monster = monsterIdentity.GetComponent<TargetObject>();
-                if (monster == null || monster.objectType != ObjectType.ENEMY || monster.isDying || monster.monster == null) continue;
-                string weaknessHint = "";
-                Monster monsterData = MonsterData.instance.monsterDataList.Find(m => m.name == monster.monster.monsterName);
-                if (monsterData != null && monsterData.weaknesses.Count > 0)
-                {
-                    var names = new List<string>();
-                    foreach (AttackAttribute weakness in monsterData.weaknesses)
-                        names.Add(BattleActions.AttributeName(weakness));
-                    weaknessHint = $" 약점:{string.Join("/", names)}";
-                }
-                if (GUI.Button(new Rect(buttonX, y, 190f, lineHeight), $"{monster.monster.monsterName} ({monster.monster.HP}){weaknessHint}"))
-                {
-                    if (guiSelectedAction == 0)
-                        CmdSubmitTpAction(myPlayer.netId, (int)TpAction.ATTACK, "", monsterNetId, 0);
-                    else
-                        CmdSubmitTpAction(myPlayer.netId, (int)TpAction.SKILL, guiSelectedSkillNo, monsterNetId, 0);
-                    guiSelectedAction = -1;
-                }
-                buttonX += 195f;
-            }
-            if (GUI.Button(new Rect(buttonX, y, 70f, lineHeight), "취소"))
+            // 2단계: 적 대상 선택 (공격/단일 스킬) — 몬스터를 직접 클릭해 확정 (SpawnedMonster.OnMouseDown → SubmitEnemyTarget). 마우스 오버 시 아웃라인 표시
+            string actionName = guiSelectedAction == 0 ? "공격" : (SkillData.Get(guiSelectedSkillNo)?.skillName ?? "스킬");
+            GUI.Label(new Rect(x, y - lineHeight * 2f, 500f, lineHeight), $"[{actionName}] 대상 몬스터를 클릭하세요");
+            if (GUI.Button(new Rect(x, y, 70f, lineHeight), "취소"))
                 guiSelectedAction = -1;
         }
     }

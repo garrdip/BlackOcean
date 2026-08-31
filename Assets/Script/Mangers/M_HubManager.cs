@@ -54,7 +54,7 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
 
     [SyncVar]
     public int hazardLevel; // 전역 위험도 (위험도 시스템) — 일반 스테이지 클리어 +1 / 엘리트 처치 +3 / 보스 처치 +5 (BalanceDB), 소피아에게 골드를 주고 하향. 저장/복원 대상.
-                            // 전투의 유효 위험도 = 스테이지 기본 위험도(StageDB Hazard) + 전역 위험도 → 몬스터별 보너스 스탯(MonsterStatDB Hazard*) x 위험도 / 보상 배율(BalanceDB)
+                            // 스테이지 자체에 위험도는 없다 — 전투 위험도 = 이 값 → 몬스터별 보너스 스탯(MonsterStatDB Hazard*) x 위험도 / 보상 배율(BalanceDB)
 
     // ---- 스테이지 진행 상태 (서버 권위, 클라 미니맵 표시용으로 동기화) ----
     [SyncVar]
@@ -218,7 +218,6 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         }
 
         StageData.Entry stage = StageData.Get(currentStageNo);
-        int hazard = GetEffectiveHazard(stage); // 스테이지 기본 위험도 + 전역 위험도
         battleRoomIndex = index;
         stageVersion++;
 
@@ -227,8 +226,11 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
             case RoomType.MONSTER:
             case RoomType.ELITE:
             case RoomType.BOSS:
-                M_TurnManager.instance.GenerateBattleObject(room.RoomType, hazard); // 아바타+몬스터 스폰, 전투 루트로 전환
+            {
+                string monsterGroup = stage != null ? stage.PickMonsterGroup(room.RoomType) : ""; // StageDB 등장 그룹 리스트에서 랜덤
+                M_TurnManager.instance.GenerateBattleObject(room.RoomType, hazardLevel, monsterGroup); // 아바타+몬스터 스폰, 전투 루트로 전환 (위험도 = 전역 위험도)
                 break;
+            }
             case RoomType.EMPTY:
                 RpcNotice("ui.msg.room_empty", "빈 방 — 아무것도 없습니다", "", "#555555");
                 OnRoomCleared(false);
@@ -321,17 +323,20 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         RpcNotice("ui.msg.hazard_rise", "위험도가 {0}(으)로 상승했습니다", hazardLevel.ToString(), "#B22222");
     }
 
-    /// <summary>스테이지의 유효 위험도 = 스테이지 기본 위험도 + 전역 위험도</summary>
-    public int GetEffectiveHazard(StageData.Entry stage)
-    {
-        return Mathf.Max(0, (stage != null ? stage.hazard : 0) + hazardLevel);
-    }
-
     /// <summary>현재 전역 위험도를 1 낮추는 비용 (BalanceDB — 기본비용 + 현재 위험도 x 레벨당 비용). 더 낮출 수 없으면 0</summary>
     public int GetHazardReduceCost()
     {
         if(hazardLevel <= 0) return 0;
         return BalanceData.Get("HAZARD_REDUCE_COST_BASE", 30) + hazardLevel * BalanceData.Get("HAZARD_REDUCE_COST_PER_LEVEL", 10);
+    }
+
+    // 소피아 "저장" — 파티원 누구나 요청 가능, 거점에서만 (스테이지/전투 중 저장은 상태 정합성 문제). 자동 저장(전투·방 클리어)과 별개의 수동 저장
+    [Command(requiresAuthority = false)]
+    public void CmdSaveGame()
+    {
+        if(!isInHub || M_TurnManager.instance.isSceneTransitioning || M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;
+        GameSaveService.SaveGame();
+        RpcNotice("ui.msg.game_saved", "저장했습니다", "", "#2E8B57");
     }
 
     // 디버그 — 전역 위험도 +1 (우상단 OnGUI 버튼, 테스트 전용. GamePlayer.SkillTree의 디버그 버튼이 호출)
@@ -437,18 +442,19 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         if(stageSelectOpen) DrawStageSelect();
     }
 
-    // 출정 — 해금된 스테이지 버튼만 나열 (처음엔 1-1만). 유효 위험도(기본 + 전역)를 함께 표시
+    // 출정 — 해금된 스테이지 버튼만 나열 (처음엔 1-1만). 위험도는 전역값 하나뿐이라 창 제목에 표시
     void DrawStageSelect()
     {
         float width = 380f;
         float height = 70f + unlockedStageCount * 34f;
         Rect windowRect = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f, width, height);
-        GUI.Box(windowRect, "출정 — 스테이지 선택");
+        GUI.Box(windowRect, $"출정 — 스테이지 선택 (위험도 {hazardLevel})");
         GUILayout.BeginArea(new Rect(windowRect.x + 10f, windowRect.y + 28f, width - 20f, height - 36f));
         for(int i = 0; i < unlockedStageCount && i < StageData.Count; i++)
         {
             StageData.Entry stage = StageData.Stages[i];
-            string label = $"{stage.name}  (위험도 {GetEffectiveHazard(stage)}, 방 {stage.roomCount}개{(stage.eliteCount > 0 ? $", 엘리트 {stage.eliteCount}" : "")}{(stage.IsBossStage ? ", 보스" : ", 출구")})";
+            string typeText = stage.IsBossStage ? "보스" : (stage.roomType == RoomType.ELITE ? "엘리트" : "일반");
+            string label = $"{stage.name}  ({typeText}, 방 {stage.roomCount}개{(stage.eliteCount > 0 ? $", 엘리트 방 {stage.eliteCount}" : "")})";
             if(GUILayout.Button(label, GUILayout.Height(30f)))
             {
                 stageSelectOpen = false;

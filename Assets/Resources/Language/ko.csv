@@ -1,6 +1,8 @@
 key,text
 ui.Main_Single_Play,싱글 플레이
 ui.Main_Multi_Play,멀티 플레이
+ui.Main_New_Game,처음부터 시작
+ui.Main_Continue,이어하기
 ui.Main_Multi_CreateRoom,방 만들기
 ui.Main_Encyclopedia,백과사전
 ui.Main_Settings,환경설정
@@ -31,7 +33,7 @@ ui.NPC_RyuJinSol.ButtonGiveGold_Label,골드 전달\n
 ui.NPC_ShadowMan.ButtonSkillReset_Label,스킬 초기화
 ui.NPC_ShadowMan.Button1_Label,버튼
 ui.NPC_ShadowMan.Button2_Label,버튼
-ui.NPC_Sophia.ButtonHeal_Label,체력 회복
+ui.NPC_Sophia.ButtonSave_Label,저장
 ui.NPC_Sophia.ButtonPray_Label,기도
 ui.MapPlayer.TextSwap,위치 변경
 ui.MapPlayer.ButtonDeckInfo_Label,덱 정보
@@ -129,3 +131,15 @@ ui.pray.min_hazard,위험도가 이미 최저 상태입니다
 ui.pray.accept,수락
 ui.pray.cancel,거절
 ui.pray.close,닫기
+ui.msg.game_saved,저장했습니다
+ui.levelup.title,{0} 레벨 업!
+ui.levelup.level,Lv.{0} → Lv.{1}
+ui.levelup.skill_points,스킬 포인트 +{0}
+ui.levelup.confirm,확인
+ui.stat.hp,HP
+ui.stat.str,힘
+ui.stat.agi,민첩
+ui.stat.int,지능
+ui.stat.def,방어력
+ui.stat.mdef,마법방어
+ui.stat.ctrl,제어

@@ -30,7 +30,9 @@ public class NetworkSingletonD<T> : NetworkBehaviour where T : NetworkBehaviour
         // 1. 동적으로 생성되는 네트워크 싱글톤(Loading, Save 매니저등) : 동적으로 생성되므로 정상적으로 새로운 인스턴스가 할당되고 싱글톤 객체로 확정.
         // 2. Scene내에 이미 생성되어있는 네트워크 싱글톤(Lobby, Map, Card, Turn 매니저등) : Scene내에 이미 존재하기때문에 else조건에 의해 삭제됨. 
         // 따라서 삭제 방지를 위해 Start함수 오버라이딩 후 base를 호출하지않고 DDOL를 설정한 뒤 네트워크 매니저에 해당 매니저 관리 리스트에 추가하여 Scene전환에 따라 생성 및 삭제를 관리.
-        if (Instance == null)
+        // instance 게터(FindFirstObjectByType)가 Start보다 먼저 호출돼 이미 자기 자신을 캐시한 경우도 정상 등록으로 취급 —
+        // 그렇지 않으면 방금 스폰된 매니저가 중복으로 오판돼 파괴된다 (룸 이어하기 자동 시작에서 발생)
+        if (Instance == null || Instance == this)
         {
             Instance = this as T;
             DontDestroyOnLoad(gameObject);

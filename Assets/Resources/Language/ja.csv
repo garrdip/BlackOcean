@@ -1,6 +1,8 @@
 key,text,source_ko
 ui.Main_Single_Play,シングルプレイ,싱글 플레이
 ui.Main_Multi_Play,マルチプレイ,멀티 플레이
+ui.Main_New_Game,最初から,처음부터 시작
+ui.Main_Continue,続きから,이어하기
 ui.Main_Multi_CreateRoom,部屋を作る,방 만들기
 ui.Main_Encyclopedia,図鑑,백과사전
 ui.Main_Settings,設定,환경설정
@@ -31,7 +33,7 @@ ui.NPC_RyuJinSol.ButtonGiveGold_Label,ゴールドを渡す\n,골드 전달\n
 ui.NPC_ShadowMan.ButtonSkillReset_Label,スキルリセット,스킬 초기화
 ui.NPC_ShadowMan.Button1_Label,ボタン,버튼
 ui.NPC_ShadowMan.Button2_Label,ボタン,버튼
-ui.NPC_Sophia.ButtonHeal_Label,体力回復,체력 회복
+ui.NPC_Sophia.ButtonSave_Label,セーブ,저장
 ui.NPC_Sophia.ButtonPray_Label,祈り,기도
 ui.MapPlayer.TextSwap,位置変更,위치 변경
 ui.MapPlayer.ButtonDeckInfo_Label,デッキ情報,덱 정보
@@ -1098,3 +1100,15 @@ ui.pray.min_hazard,危険度はすでに最低です,위험도가 이미 최저 
 ui.pray.accept,承諾,수락
 ui.pray.cancel,拒否,거절
 ui.pray.close,閉じる,닫기
+ui.msg.game_saved,セーブしました,저장했습니다
+ui.levelup.title,{0} レベルアップ！,{0} 레벨 업!
+ui.levelup.level,Lv.{0} → Lv.{1},Lv.{0} → Lv.{1}
+ui.levelup.skill_points,スキルポイント +{0},스킬 포인트 +{0}
+ui.levelup.confirm,確認,확인
+ui.stat.hp,HP,HP
+ui.stat.str,力,힘
+ui.stat.agi,敏捷,민첩
+ui.stat.int,知力,지능
+ui.stat.def,防御力,방어력
+ui.stat.mdef,魔法防御,마법방어
+ui.stat.ctrl,制御,제어

@@ -115,10 +115,10 @@ public class MonsterData : SingletonD<MonsterData>
             try
             {
                 MonsterGroup monsterGroup = new MonsterGroup();
-                monsterGroup.groupName = row.Get("Group_Name");
-                monsterGroup.minHazard = row.GetInt("Minimum_Hazard");
-                monsterGroup.maxHazard = row.GetInt("Maximum_Hazard");
-                for(int i = 3 ; i < row.Count ; i++)
+                monsterGroup.groupName = row.Get("Group_Name").Trim();
+                if(monsterGroups.Exists(g => g.groupName == monsterGroup.groupName))
+                    Debug.LogError($"[MonsterData] MonsterGroupDB {row.lineNumber}행 — 그룹 이름 중복: '{monsterGroup.groupName}' (StageDB에서 이름으로 참조하므로 고유해야 함)");
+                for(int i = 1 ; i < row.Count ; i++) // Group_Name 이후 컬럼 = 몬스터 이름 목록
                 {
                     if(row[i] == "") continue;
                     Monster monster = monsterDataList.Find(m => m.name == row[i]);
@@ -144,18 +144,13 @@ public class MonsterData : SingletonD<MonsterData>
         return float.TryParse(row.Get(column), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float value) ? value : 0f;
     }
 
-    public MonsterGroup GetMonsterGroup(int hazard)
+    /// <summary>이름으로 몬스터 그룹 조회 — 등장 그룹은 StageDB(MonsterGroups/EliteGroups)가 스테이지별 리스트로 정한다. 없으면 에러 로그 후 첫 그룹 폴백</summary>
+    public MonsterGroup GetMonsterGroupByName(string groupName)
     {
-        List<MonsterGroup> listOfMonsterGroup = new List<MonsterGroup>();
-        foreach(MonsterGroup monsterGroup in monsterGroups)
-        {
-            if(monsterGroup.minHazard <= hazard && hazard <= monsterGroup.maxHazard)
-                listOfMonsterGroup.Add(monsterGroup);
-        }
-        if(listOfMonsterGroup.Count == 0)return monsterGroups[0];
-
-        int index = UnityEngine.Random.Range(0, listOfMonsterGroup.Count);
-        return listOfMonsterGroup[index];
+        MonsterGroup found = monsterGroups.Find(g => g.groupName == groupName);
+        if(found != null) return found;
+        Debug.LogError($"[MonsterData] MonsterGroupDB에 없는 그룹 이름: '{groupName}' — 첫 그룹으로 폴백 (StageDB MonsterGroups/EliteGroups 확인)");
+        return monsterGroups.Count > 0 ? monsterGroups[0] : null;
     }
 
 }

@@ -36,13 +36,14 @@ public class BattleSpawner : InstanceD<BattleSpawner>
         }
     }
 
-    // 위험도(hazard)에 맞는 MonsterGroupDB 그룹을 뽑아 몬스터 스폰 — 몬스터별 위험도 보너스 스탯(MonsterStatDB) x 위험도로 체력/공격/방어를 보정
-    public void GenerateMonster(int hazard)
+    // StageDB가 고른 MonsterGroupDB 그룹(monsterGroupName)을 스폰 — 몬스터별 위험도 보너스 스탯(MonsterStatDB) x 전역 위험도로 체력/공격/방어를 보정
+    public void GenerateMonster(int hazard, string monsterGroupName)
     {
         if(!NetworkServer.active) return;
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         M_TurnManager turnManager = M_TurnManager.instance;
-        MonsterGroup selectedMonsterGroup = MonsterData.instance.GetMonsterGroup(hazard);
+        MonsterGroup selectedMonsterGroup = MonsterData.instance.GetMonsterGroupByName(monsterGroupName);
+        if(selectedMonsterGroup == null) return;
         for(int i = 0 ; i < selectedMonsterGroup.monsters.Count ; i ++)
         {
             Vector3 position = turnManager.targetObjectPosition[i + 3];

@@ -143,6 +143,7 @@ public class SpawnedMonster : NetworkBehaviour
         if(!M_CardManager.instance.isArrowActive && !M_CardManager.instance.IsDragCardExist()){
             TargetIndicatorController.instance.EnalbleTargetIndicatorByMonster(nextTarget, parent.netId);
         }
+        if(IsSelectableEnemyTarget()) SetTargetOutline(true); // TP 전투 대상 선택 중 — 마우스 오버 아웃라인
     }
 
     void OnMouseExit()
@@ -150,6 +151,29 @@ public class SpawnedMonster : NetworkBehaviour
         if(!M_CardManager.instance.isArrowActive && !M_CardManager.instance.IsDragCardExist()){
             TargetIndicatorController.instance.DisableTargetIndicator();
         }
+        SetTargetOutline(false);
+    }
+
+    // TP 전투 대상 선택 중 몬스터를 직접 클릭해 공격/스킬 대상 확정 (클라이언트 — 적 버튼 목록 대신)
+    void OnMouseDown()
+    {
+        if(!IsSelectableEnemyTarget()) return;
+        SetTargetOutline(false);
+        M_TurnManager.instance.SubmitEnemyTarget(parent.netId);
+    }
+
+    // 지금 이 몬스터를 클릭해 대상으로 고를 수 있는지 — 내 턴에 공격/적 단일 스킬을 고른 상태이고 살아있는 적일 때
+    bool IsSelectableEnemyTarget()
+    {
+        if(M_TurnManager.instance == null || parent == null) return false;
+        if(parent.objectType != ObjectType.ENEMY || parent.isDying || HP <= 0) return false;
+        return M_TurnManager.instance.IsSelectingEnemyTarget();
+    }
+
+    // 대상 후보 아웃라인 — 스파인 커스텀 머티리얼(외곽선) 토글. 거점 NPC 호버·카드 화살표 하이라이트와 같은 컴포넌트
+    void SetTargetOutline(bool on)
+    {
+        if(TryGetComponent(out SkeletonRendererCustomMaterials outline)) outline.enabled = on;
     }
 
     // 몬스터 스킬 이펙트 오브젝트 동적 생성

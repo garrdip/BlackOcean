@@ -32,7 +32,7 @@ public class RoomPlayer : NetworkRoomPlayer
     [SyncVar]
     public string steamPersonaName;
 
-    
+
 
     public override void OnStartLocalPlayer()
     {
@@ -41,7 +41,31 @@ public class RoomPlayer : NetworkRoomPlayer
         RoomUI.instance.SetReadyButton(!isServer ? "READY" : "");
         if(isServer){
             GenerateManagers();
+            // 싱글 이어하기: 저장 캐릭터가 자동 선택돼 있으면 룸 대기 없이 바로 게임 씬으로 (멀티는 호스트가 START)
+            M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+            if(GameSaveService.pendingLoad && netManager != null && netManager.maxConnections == 1 && character != Character.NONE)
+                StartCoroutine(AutoStartContinue());
         }
+    }
+
+    // 싱글 이어하기 자동 시작 — 캐릭터 선택 화면을 거치지 않고 로딩 화면을 띄운 채 바로 게임 씬으로 (START 버튼의 ChangeGameScene과 같은 절차, 룸 UI 비의존)
+    IEnumerator AutoStartContinue()
+    {
+        yield return null; // GenerateManagers로 스폰한 매니저의 Start(싱글톤 등록)가 먼저 돌도록 한 프레임 대기
+        float waited = 0f;
+        while(M_LoadingManager.instance == null && waited < 3f){
+            yield return new WaitForSeconds(0.1f);
+            waited += 0.1f;
+        }
+        if(!NetworkServer.active || character == Character.NONE) yield break;
+        if(M_LoadingManager.instance == null){
+            Debug.LogError("[RoomPlayer] 이어하기 자동 시작 실패 — M_LoadingManager가 없어 룸 화면에서 수동 시작이 필요합니다");
+            yield break;
+        }
+        M_LoadingManager.instance.SetLoadingScreen(true);
+        M_LoadingManager.instance.state = LOADING_STATE.SCENE_LOADING;
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        netManager.ServerChangeScene(netManager.GameplayScene);
     }
 
     // 방에 다른 유저 들어오면 로컬플레이어의 레디상태 해제
@@ -60,7 +84,7 @@ public class RoomPlayer : NetworkRoomPlayer
     public void GenerateManagers()
     {
         M_NetworkRoomManager M_NetworkRoomManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-       
+
         GameObject loadingManager = Instantiate(
                 M_NetworkRoomManager.spawnPrefabs.Find(prefab => prefab.name.Equals("M_LoadingManager")),
                 Vector3.zero,
@@ -96,7 +120,7 @@ public class RoomPlayer : NetworkRoomPlayer
         }
         if(isServer){
             M_LobbyMananger.instance.RoomPlayerReadyCheck();
-        } 
+        }
         onChangeReadyState?.Invoke(newVal);
     }
 

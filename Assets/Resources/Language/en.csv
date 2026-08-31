@@ -1,6 +1,8 @@
 key,text,source_ko
 ui.Main_Single_Play,Single Play,싱글 플레이
 ui.Main_Multi_Play,Multiplayer,멀티 플레이
+ui.Main_New_Game,New Game,처음부터 시작
+ui.Main_Continue,Continue,이어하기
 ui.Main_Multi_CreateRoom,Create Room,방 만들기
 ui.Main_Encyclopedia,Encyclopedia,백과사전
 ui.Main_Settings,Settings,환경설정
@@ -1008,7 +1010,7 @@ ui.NPC_RyuJinSol.ButtonGiveGold_Label,Give Gold\n,골드 전달\n
 ui.NPC_ShadowMan.ButtonSkillReset_Label,Skill Reset,스킬 초기화
 ui.NPC_ShadowMan.Button1_Label,Button,버튼
 ui.NPC_ShadowMan.Button2_Label,Button,버튼
-ui.NPC_Sophia.ButtonHeal_Label,Heal,체력 회복
+ui.NPC_Sophia.ButtonSave_Label,Save,저장
 ui.NPC_Sophia.ButtonPray_Label,Pray,기도
 ui.MapPlayer.TextSwap,Swap Position,위치 변경
 ui.MapPlayer.ButtonDeckInfo_Label,Deck Info,덱 정보
@@ -1106,3 +1108,15 @@ ui.pray.min_hazard,The hazard is already at its lowest,위험도가 이미 최�
 ui.pray.accept,Accept,수락
 ui.pray.cancel,Decline,거절
 ui.pray.close,Close,닫기
+ui.msg.game_saved,Saved,저장했습니다
+ui.levelup.title,{0} Level Up!,{0} 레벨 업!
+ui.levelup.level,Lv.{0} → Lv.{1},Lv.{0} → Lv.{1}
+ui.levelup.skill_points,Skill points +{0},스킬 포인트 +{0}
+ui.levelup.confirm,OK,확인
+ui.stat.hp,HP,HP
+ui.stat.str,Strength,힘
+ui.stat.agi,Agility,민첩
+ui.stat.int,Intelligence,지능
+ui.stat.def,Defense,방어력
+ui.stat.mdef,Magic Defense,마법방어
+ui.stat.ctrl,Control,제어

@@ -16,7 +16,8 @@ public class NPC_Sophia : SpawnedMonster
     public Canvas expandableButtonGroupCanvas;
     public ExpandableButtonGroup expandableButtonGroup;
     private bool isOpenExpandableButtons = false;
-    public Button buttonHeal;
+    [UnityEngine.Serialization.FormerlySerializedAs("buttonHeal")]
+    public Button buttonSave; // 구 "체력 회복" 버튼 — 저장으로 용도 변경 (거점 수동 저장)
     [UnityEngine.Serialization.FormerlySerializedAs("butonGiveGold")]
     public Button buttonPray; // 구 "골드 전달" 버튼 — 기도(위험도 하향)로 용도 변경 (위험도 시스템)
     public Button buttonWarp;
@@ -25,7 +26,7 @@ public class NPC_Sophia : SpawnedMonster
     void Awake()
     {
         AddEventTrigger();
-        buttonHeal.onClick.AddListener(() => OnClickHealButton());
+        buttonSave.onClick.AddListener(() => OnClickSaveButton());
         buttonPray.onClick.AddListener(() => OnClickPrayButton());
         buttonWarp.onClick.AddListener(() => OnClickWarpButton());
         buttonWarp.gameObject.SetActive(false); // 워프 폐기 (맵 시스템 제거)
@@ -75,12 +76,13 @@ public class NPC_Sophia : SpawnedMonster
         }
     }
 
-    // 거점에는 파티 아바타가 없어 대상 선택(아바타 클릭) 대신 자신의 캐릭터를 즉시 회복한다 (거점 방문당 1회 — GamePlayer.recoveryLimitCount)
-    public void OnClickHealButton()
+    // 저장 — 호스트가 파티 전원의 프로필과 진행도(해금 스테이지/위험도)를 파일로 저장 (M_HubManager.CmdSaveGame → GameSaveService.SaveGame)
+    public void OnClickSaveButton()
     {
-        GamePlayer localPlayer = PlayerRegistry.Local.currentGamePlayer;
-        if(localPlayer == null) return;
-        localPlayer.CmdHpRecovery(localPlayer.netId);
+        if(M_HubManager.instance == null) return;
+        M_HubManager.instance.CmdSaveGame();
+        expandableButtonGroup.HideExpandableButtonGroup();
+        isOpenExpandableButtons = false;
     }
 
     // 기도 — 소피아에게 골드를 바쳐 전역 위험도를 1 낮추는 확인 팝업 (위험도 시스템)
@@ -123,7 +125,7 @@ public class NPC_Sophia : SpawnedMonster
         if (randomValue < 95) return 1; // Act1
         else return 0; // Act0
     }
-  
+
     // 애니매이션 리스트들중 하나 랜덤으로 재생 : 재생 완료 콜백에서 재귀호출하는 방식으로 무한 재생
     private void PlayRandomAnimation()
     {
@@ -170,7 +172,7 @@ public class NPC_Sophia : SpawnedMonster
         pointerExitEntry.callback.AddListener((data) => { OnPointerExitRyuJinSol((PointerEventData)data); });
         eventTrigger.triggers.Add(pointerExitEntry);
     }
-    
+
     // Sofia 음성 리스트 추출해서 랜덤재생
     private void PlayNPCVoice(System.Action callback = null)
     {

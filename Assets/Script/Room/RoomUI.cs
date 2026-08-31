@@ -27,6 +27,29 @@ public class RoomUI : InstanceD<RoomUI>
             swapButtons[i].onClick.AddListener(() => HandleLobbyPlayerSwap(buttonIndex));
         }
         //ExitButton.onClick.AddListener(() => HandleBackToMainScene());
+        if(IsSingleContinueAutoStart()) ShowContinueCover(); // 이어하기: 로딩 화면이 뜨기 전 프레임까지 캐릭터 선택 화면이 보이지 않게 즉시 가린다
+    }
+
+    // 싱글 이어하기 자동 시작 조건 — RoomPlayer.AutoStartContinue와 동일 (호스트, 1인 방, 저장 프로필 존재)
+    static bool IsSingleContinueAutoStart()
+    {
+        if(!GameSaveService.pendingLoad || !NetworkServer.active) return false;
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        if(netManager == null || netManager.maxConnections != 1) return false;
+        if(!GameSaveService.EnsureLoaded()) return false;
+        return GameSaveService.FindProfile((ulong)Steamworks.SteamUser.GetSteamID()) != null;
+    }
+
+    // 전체 화면 검은 커버 (최상위 오버레이 캔버스) — 룸 씬 소속이라 게임 씬 전환 시 함께 사라진다
+    void ShowContinueCover()
+    {
+        GameObject cover = new GameObject("ContinueCover", typeof(Canvas), typeof(Image));
+        Canvas canvas = cover.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 32767;
+        Image image = cover.GetComponent<Image>();
+        image.color = Color.black;
+        image.raycastTarget = true; // 아래 UI 클릭 차단
     }
 
     void OnDestroy()

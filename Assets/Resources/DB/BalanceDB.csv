@@ -13,7 +13,6 @@ REWARD_CARD_MAX,3,전투 보상 선택지 카드 수
 REMOVE_CARD_MAX,3,패 제거 팝업 선택 가능 수
 HERO_DURATION_TURN,3,게오르크 영웅 변신 지속 턴 수 (변신한 턴 포함)
 HERO_BONUS_PER_CARD,3,영웅 상태 턴 시작 보너스 — 소유 영웅 카드당 힘의이치/방어 증가량 (기획 확정 2026-07-10)
-HP_PER_VITALITY,2,체력 스탯 1당 최대 HP 증가량 (MaxHP = PLAYER_INIT_HP + 체력 x 이 값)
 BATTLE_REWARD_EXP,20,전투 승리 경험치 폴백 — 처치 몬스터 경험치(MonsterStatDB Exp) 합이 0일 때만 사용
 EXP_MULTIPLAYER_PERCENT,150,멀티플레이(2인 이상) 경험치 배율 %  — 기획: 1.5배
 USE_TP_BATTLE,1,TP 턴제 전투 사용 (1) / 기존 카드 전투 (0) — RPG 전환 토글
@@ -49,3 +48,4 @@ HAZARD_REWARD_PERCENT_PER_LEVEL,5,유효 위험도 1당 전투 보상(경험치/
 HAZARD_REDUCE_COST_BASE,30,소피아 위험도 하향 기본 비용 (골드 — 총비용 = 기본 + 현재 위험도 x 레벨당 비용)
 HAZARD_REDUCE_COST_PER_LEVEL,10,소피아 위험도 하향 레벨당 추가 비용 (골드)
 EQUIP_DROP_MIN_HAZARD,0,장비 드랍 위험도 하한선 — 이번 전투 유효 위험도가 이 값 미만이면 장비가 드랍되지 않음 (파고들기 요소)
+LEVEL_GROWTH_VARIANCE_PERCENT,50,레벨업 성장치 랜덤 편차 % — 레벨별 상승량은 평균의 (1±이 값/100)배 가중치로 시드 분배 (LevelGrowthTable). 만렙 총합은 CharacterStatDB GrowX로 고정. 0이면 균등 분배

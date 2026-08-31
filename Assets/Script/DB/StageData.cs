@@ -7,7 +7,9 @@ using ProjectD;
 /// 행 순서 = 해금 순서 (1-1 → 1-2 → …). 방 배치는 미리 정해져 있지 않고 **입장할 때마다 GenerateLayout으로 랜덤 생성**한다.
 /// 미로: 입구(0,0)에서 격자를 랜덤 확장(트리 위주, 가끔 고리) → 입구에서 가장 먼 막다른 방 = 출구(EXIT) 또는 보스(BOSS, Type=BOSS일 때).
 /// - RoomCount: 입구/출구(보스)를 제외한 내용 방 개수 / EliteCount: 엘리트 방 개수(막다른 방 우선) / EmptyPercent: 나머지 방이 빈 방일 확률 %
-/// - Hazard: 전투 방(MONSTER/ELITE/BOSS)의 MonsterGroupDB 선택 위험도
+/// - Type: MONSTER(일반) / ELITE(일반과 같되 엘리트 방 딱 1개) / BOSS(가장 먼 방이 보스)
+/// - MonsterGroups / EliteGroups: 이 스테이지의 몬스터 방 / 엘리트 방에 등장하는 MonsterGroupDB 그룹 이름 목록('|' 구분, 랜덤 선택).
+///   스테이지 자체에 위험도는 없다 — 몬스터 강화는 전역 위험도(M_HubManager.hazardLevel)만 반영
 /// LevelData와 같은 정적 로더 패턴 — 파일/행 오류 시 에러 로그 후 해당 행만 건너뛴다.
 /// </summary>
 public static class StageData
@@ -16,14 +18,22 @@ public static class StageData
     {
         public string stageNo;
         public string name;
-        public RoomType roomType;   // BOSS = 보스 스테이지 (가장 먼 방이 보스), 그 외 = 출구(EXIT)
-        public int hazard;
+        public RoomType roomType;   // BOSS = 보스 스테이지 (가장 먼 방이 보스), ELITE = 엘리트 방 1개 + 출구, 그 외 = 출구(EXIT)
+        public List<string> monsterGroups = new List<string>(); // 몬스터 방 등장 그룹 (MonsterGroupDB 이름)
+        public List<string> eliteGroups = new List<string>();   // 엘리트 방 등장 그룹 (비어 있으면 monsterGroups 사용)
         public int roomCount = 5;
         public int eliteCount = 0;
         public int emptyPercent = 40;
         public string description;
 
         public bool IsBossStage => roomType == RoomType.BOSS;
+
+        /// <summary>방 종류에 맞는 등장 그룹 이름을 랜덤 선택 (서버). 목록이 비어 있으면 빈 문자열 — 스폰 측이 폴백 처리</summary>
+        public string PickMonsterGroup(RoomType room)
+        {
+            List<string> pool = (room == RoomType.ELITE && eliteGroups.Count > 0) ? eliteGroups : monsterGroups;
+            return pool.Count > 0 ? pool[Random.Range(0, pool.Count)] : "";
+        }
 
         const int GridHalfWidth = 4;  // 격자 범위 제한 (미니맵에 맞추기 위해)
         const int GridHalfHeight = 3;
@@ -134,21 +144,22 @@ public static class StageData
                 Debug.LogError($"[StageData] {stageNo}: Type이 RoomType 이름이 아닙니다 ({row.lineNumber}행)");
                 continue;
             }
-            if (!int.TryParse(row.Get("Hazard"), out int hazard))
-            {
-                Debug.LogError($"[StageData] {stageNo}: Hazard가 정수가 아닙니다 ({row.lineNumber}행)");
-                continue;
-            }
             Entry entry = new Entry {
                 stageNo = stageNo,
                 name = row.Get("Name"),
                 roomType = roomType,
-                hazard = hazard,
                 description = row.Get("Description"),
             };
             if (table.HasColumn("RoomCount") && int.TryParse(row.Get("RoomCount"), out int roomCount)) entry.roomCount = roomCount;
             if (table.HasColumn("EliteCount") && int.TryParse(row.Get("EliteCount"), out int eliteCount)) entry.eliteCount = eliteCount;
             if (table.HasColumn("EmptyPercent") && int.TryParse(row.Get("EmptyPercent"), out int emptyPercent)) entry.emptyPercent = emptyPercent;
+            if (roomType == RoomType.ELITE) entry.eliteCount = Mathf.Max(1, entry.eliteCount); // ELITE 스테이지 = 엘리트 방 최소 1개
+            foreach (string group in row.Get("MonsterGroups").Split('|'))
+                if (group.Trim().Length > 0) entry.monsterGroups.Add(group.Trim());
+            foreach (string group in row.Get("EliteGroups").Split('|'))
+                if (group.Trim().Length > 0) entry.eliteGroups.Add(group.Trim());
+            if (entry.monsterGroups.Count == 0)
+                Debug.LogError($"[StageData] {stageNo}: MonsterGroups가 비어 있습니다 ({row.lineNumber}행) — 몬스터 방 스폰 시 첫 그룹으로 폴백");
             stages.Add(entry);
         }
         if (stages.Count == 0)

@@ -72,6 +72,9 @@ public partial class GamePlayer
         if (node.nodeType == SkillTreeData.NodeType.STAT)
             ApplyStatNode(node);
         Debug.Log($"[SkillTree] {character} 노드 습득: {node.nodeId} ({node.description}) — 잔여 포인트 {skillPoints}");
+        // 거점에서의 습득은 전투 없이 종료해도 유실되지 않도록 즉시 자동 저장 (전투 중 습득은 전투 종료 자동 저장이 담당)
+        if (M_HubManager.instance != null && M_HubManager.instance.isInHub)
+            GameSaveService.SaveGame();
     }
 
     // 디버그 — 다음 레벨까지 남은 경험치를 즉시 지급해 레벨업 (테스트 전용, 우상단 OnGUI 버튼)
@@ -94,12 +97,7 @@ public partial class GamePlayer
             case "DEF": defense += node.statValue; break;
             case "MDEF": magicDefense += node.statValue; break;
             case "CTRL": control += node.statValue; break; // 제어 — MP 자연 회복·분노 생성량 증가
-            case "VIT":
-                vitality += node.statValue;
-                int newMaxHP = GetMaxHPByVitality(character, vitality); // 레벨업과 동일 규칙 — 증가분만큼 현재 HP도 회복
-                HP += Mathf.Max(0, newMaxHP - MaxHP);
-                MaxHP = newMaxHP;
-                break;
+            case "HP": AddMaxHP(node.statValue); break; // 최대 HP — 레벨업과 동일 규칙(증가분만큼 현재 HP도 회복). 구 VIT 노드 대체
             default:
                 Debug.LogError($"[SkillTree] 알 수 없는 스탯: {node.stat} ({node.nodeId})");
                 break;

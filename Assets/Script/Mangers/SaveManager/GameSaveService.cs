@@ -22,8 +22,9 @@ public static class GameSaveService
         public int level;
         public int exp;
         public int skillPoints;
-        public int strength, agility, vitality, intelligence, defense, magicDefense;
+        public int strength, agility, intelligence, defense, magicDefense; // (구 vitality 필드 폐기 — 최대 HP는 MaxHP로 직접 저장)
         public int control; // 제어 — MP 회복·분노 생성 스탯 (스킬트리 CTRL 노드). 구 세이브(필드 없음)는 0
+        public int growthSeed; // 레벨업 성장치 분배 시드 (LevelGrowthTable). 구 세이브(필드 없음)는 0 — 0도 유효한 시드라 그대로 사용
         public int HP, MaxHP;
         public int currentResource, maxResource;
         public int gold;
@@ -69,6 +70,12 @@ public static class GameSaveService
         }
     }
 
+    /// <summary>로드 보장 — 이미 로드된 데이터가 있으면 재사용, 없으면 TryLoad. 룸 씬(캐릭터 자동 선택)과 게임 씬(프로필 복원)이 공유</summary>
+    public static bool EnsureLoaded()
+    {
+        return loaded != null || TryLoad();
+    }
+
     public static ProfileData FindProfile(ulong steamId)
     {
         if (loaded == null) return null;
@@ -98,11 +105,11 @@ public static class GameSaveService
                     skillPoints = gamePlayer.skillPoints,
                     strength = gamePlayer.strength,
                     agility = gamePlayer.agility,
-                    vitality = gamePlayer.vitality,
                     intelligence = gamePlayer.intelligence,
                     defense = gamePlayer.defense,
                     magicDefense = gamePlayer.magicDefense,
                     control = gamePlayer.control,
+                    growthSeed = gamePlayer.growthSeed,
                     HP = gamePlayer.HP,
                     MaxHP = gamePlayer.MaxHP,
                     currentResource = gamePlayer.currentResource,
@@ -136,11 +143,11 @@ public static class GameSaveService
         gamePlayer.skillPoints = profile.skillPoints;
         gamePlayer.strength = profile.strength;
         gamePlayer.agility = profile.agility;
-        gamePlayer.vitality = profile.vitality;
         gamePlayer.intelligence = profile.intelligence;
         gamePlayer.defense = profile.defense;
         gamePlayer.magicDefense = profile.magicDefense;
         gamePlayer.control = profile.control;
+        gamePlayer.growthSeed = profile.growthSeed;
         gamePlayer.MaxHP = profile.MaxHP;
         gamePlayer.HP = Mathf.Clamp(profile.HP, 1, profile.MaxHP); // 빈사 저장이어도 1로 복원
         gamePlayer.currentResource = profile.currentResource;

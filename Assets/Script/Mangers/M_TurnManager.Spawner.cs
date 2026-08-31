@@ -15,20 +15,20 @@ public partial class M_TurnManager
 
     public bool isSceneTransitioning { get; private set; } // 서버: 전환 코루틴 진행 중 (M_HubManager가 입력을 막는 데 사용)
 
-    public int currentBattleHazard; // 서버: 이번 전투의 유효 위험도 (스테이지 기본 + 전역 위험도) — RewardService가 보상 배율(BalanceDB HAZARD_REWARD_PERCENT_PER_LEVEL)에 사용
+    public int currentBattleHazard; // 서버: 이번 전투의 위험도 (= 전역 위험도 M_HubManager.hazardLevel) — RewardService가 보상 배율(BalanceDB HAZARD_REWARD_PERCENT_PER_LEVEL)에 사용
 
     Coroutine monsterDeathRoutine; // 클라이언트: 몬스터 사망 처리 코루틴 핸들 (전투마다 중복 시작 방지)
 
     // ------------------------------------------------------------ 전투 진입 ------------------------------------------------------------------ //
 
-    // 스테이지 전투 진입 — roomType: MONSTER/ELITE/BOSS, hazard: MonsterGroupDB 선택 위험도
+    // 스테이지 전투 진입 — roomType: MONSTER/ELITE/BOSS, hazard: 전역 위험도(몬스터 가중치/보상), monsterGroupName: StageDB에서 고른 MonsterGroupDB 그룹 (BOSS는 미사용)
     [Server]
-    public void GenerateBattleObject(RoomType roomType, int hazard)
+    public void GenerateBattleObject(RoomType roomType, int hazard, string monsterGroupName)
     {
-        StartCoroutine(EnterBattleSequence(roomType, hazard));
+        StartCoroutine(EnterBattleSequence(roomType, hazard, monsterGroupName));
     }
 
-    IEnumerator EnterBattleSequence(RoomType roomType, int hazard)
+    IEnumerator EnterBattleSequence(RoomType roomType, int hazard, string monsterGroupName)
     {
         isSceneTransitioning = true;
         M_DimmingManager.instance.RpcFadeOut();                                   // 1) 페이드 아웃
@@ -40,7 +40,7 @@ public partial class M_TurnManager
         RpcSetView(HubView.Battle);
         BattleSpawner.instance.GeneratePlayerUnit();
         if(roomType == RoomType.BOSS) BattleSpawner.instance.GenerateBossMonster(hazard);
-        else BattleSpawner.instance.GenerateMonster(hazard);
+        else BattleSpawner.instance.GenerateMonster(hazard, monsterGroupName);
         RpcCardPrefareForBattle();
         SpawnAbilityCards();
         yield return new WaitForSeconds(SpawnSettleTime);

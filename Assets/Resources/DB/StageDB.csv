@@ -1,10 +1,10 @@
-StageNo,Name,Type,Hazard,RoomCount,EliteCount,EmptyPercent,Description
-1-1,스테이지 1-1,MONSTER,3,5,0,40,첫 출정 — 몬스터/빈방 5개 + 출구
-1-2,스테이지 1-2,MONSTER,8,5,0,35,
-1-3,스테이지 1-3,BOSS,10,6,1,30,엘리트 1 + 보스 (DEMO 종료 지점)
-2-1,스테이지 2-1,MONSTER,12,6,1,35,
-2-2,스테이지 2-2,MONSTER,16,6,1,30,
-2-3,스테이지 2-3,BOSS,18,7,1,30,보스 2
-3-1,스테이지 3-1,MONSTER,20,7,1,30,
-3-2,스테이지 3-2,MONSTER,23,7,2,25,
-3-3,스테이지 3-3,BOSS,25,8,2,25,보스 3 (Early Access 종료 지점)
+StageNo,Name,Type,RoomCount,EliteCount,EmptyPercent,MonsterGroups,EliteGroups,Description
+1-1,스테이지 1-1,MONSTER,5,0,40,BasicSoldiers1|BasicSoldiers2,,첫 출정 — 몬스터/빈방 5개 + 출구
+1-2,스테이지 1-2,MONSTER,5,0,35,BasicSoldiers1|BasicSoldiers2|SoldierWithWacher1|SoldierWithWacher2,,
+1-3,스테이지 1-3,ELITE,6,1,30,SoldierWithWacher1|SoldierWithWacher2|SoldierWithWacher3|SoldierWithWacher4,Twins,엘리트 방 1개 + 출구 (DEMO 종료 지점)
+2-1,스테이지 2-1,MONSTER,6,0,35,SoldierWithWacher3|SoldierWithWacher4|StrongSoldier1|StrongSoldier2,,
+2-2,스테이지 2-2,MONSTER,6,0,30,StrongSoldier1|StrongSoldier2|StrongSoldier3|StrongSoldier4,,
+2-3,스테이지 2-3,ELITE,7,1,30,StrongSoldier2|StrongSoldier3|StrongSoldier4|DangerSoldier1,Twins,엘리트 방 1개 + 출구
+3-1,스테이지 3-1,MONSTER,7,0,30,StrongSoldier4|DangerSoldier1|DangerSoldier2,,
+3-2,스테이지 3-2,MONSTER,7,0,25,DangerSoldier2|DangerSoldier3|DangerSoldier4,,
+3-3,스테이지 3-3,BOSS,8,1,25,DangerSoldier3|DangerSoldier4,Twins,엘리트 방 1개 + 보스 3 (Early Access 종료 지점)
