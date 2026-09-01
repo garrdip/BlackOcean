@@ -24,7 +24,14 @@ public static class BattleActions
         int damage = Mathf.Max(1, stat * power / 100);
         if (skill.powerPerLevel == 0 && skillLevel > 0)
             damage = damage * (100 + skillLevel * BalanceData.Get("SKILL_LEVEL_BONUS_PERCENT", 20)) / 100;
-        return ScaleByRow(user, damage);
+        return ScaleByErisMode(user, ScaleByRow(user, damage));
+    }
+
+    /// <summary>에리스 변신 배율 — 1차 변신(ANGER) +20% / 광기(MAD) +50% (BalanceDB ERIS_*_ATTACK_PERCENT). 다른 캐릭터는 그대로 (RPG_CONVERSION_DESIGN 에리스 변신 매커니즘)</summary>
+    public static int ScaleByErisMode(TargetObject user, int damage)
+    {
+        if (user == null) return damage;
+        return damage * user.ErisAttackPercent() / 100;
     }
 
     /// <summary>기본 공격 데미지 = 캐릭터 공격 스탯 x BASIC_ATTACK_POWER% x 대열 보정</summary>
@@ -33,7 +40,7 @@ public static class BattleActions
         if (user == null || user.player == null) return 0;
         CharacterStatData.Entry stat = CharacterStatData.Get(user.player.character);
         int attackStat = (stat != null && stat.attackScalesWithInt) ? user.player.TotalIntelligence : user.player.TotalStrength; // 장비 합산치
-        return ScaleByRow(user, Mathf.Max(1, attackStat * BalanceData.Get("BASIC_ATTACK_POWER", 100) / 100));
+        return ScaleByErisMode(user, ScaleByRow(user, Mathf.Max(1, attackStat * BalanceData.Get("BASIC_ATTACK_POWER", 100) / 100)));
     }
 
     /// <summary>시전자 대열에 따른 가하는 피해 보정 — 전열 증가/후열 감소 (RPG_CONVERSION_DESIGN 포지션 규칙)</summary>

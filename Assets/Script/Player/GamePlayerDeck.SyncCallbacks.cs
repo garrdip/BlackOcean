@@ -242,9 +242,10 @@ public partial class GamePlayerDeck
                 break;
             case SyncList<Reward>.Operation.OP_REMOVEAT:
                 if(isOwned && rewards.Count <= 0){
-                    // 더 보상받을 데이터 없는 경우 보상완료상태 세팅
+                    // 더 보상받을 데이터 없는 경우 보상완료상태 세팅 — 다른 소유 파티원(3인 파티)의 보상이 남았으면 그 탭으로 전환
                     RewardService.instance.playerRewardedDic[GetComponent<GamePlayer>()] = true;
                     RewardService.instance.CheckAllPlayerRewarded(GetComponent<GamePlayer>());
+                    PopUpUIManager.instance.battleResultPopUp.GetComponent<BattleResultPopUp>().ShowNextPendingTab();
                 }
                 break;
         }

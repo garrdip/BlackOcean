@@ -53,23 +53,51 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         ChangeTab(index);
     }
 
-    // 전투 보상 스킵
+    // 전투 보상 스킵 — 탭 index는 대열 슬롯(playerOrder 인덱스)이므로 해당 슬롯의 GamePlayer를 스킵 처리한다.
+    // 팝업 닫기는 여기서 하지 않는다: 소유 파티원 전원의 보상이 끝나면 isRewardDone → PlayerInterface.OnCompleteReward가 닫는다.
+    // (종전에는 스킵 즉시 닫아 3인 파티(싱글)에서 나머지 파티원 보상이 영영 완료되지 않아 방/거점 복귀가 멈췄음 — 2026-09-01 수정)
     private void SkipReward(int index)
     {
         skipButtons[index].interactable = false;
         skipButtons[index].image.color = new Color32(255, 255, 255, 255);
-        PlayerInterface playerInterface = PlayerRegistry.Local;
-        List<GamePlayer> players = new List<GamePlayer>(playerInterface.ownedPlayers);
-        int idx = players.Count == 1 ? 0 : index;
-        GamePlayer gamePlayer = players[idx];
+        GamePlayer gamePlayer = GetOwnedPlayerAtOrder(index);
         if(gamePlayer != null){
             gamePlayer.GetComponent<GamePlayerDeck>().CmdRewardClear();
             RewardService.instance.playerRewardedDic[gamePlayer] = true;
             RewardService.instance.CheckAllPlayerRewarded(gamePlayer);
-            PopUpUIManager.instance.HandleHideBattleResultPopUp(); // 전투 결과 팝업 비활성화
+            ShowNextPendingTab();
         }
         AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
+    }
+
+    // 대열 슬롯(playerOrder 인덱스)의 GamePlayer — 내가 소유한 경우에만. 소유 플레이어가 1명이면 슬롯과 무관하게 그 플레이어
+    GamePlayer GetOwnedPlayerAtOrder(int orderIndex)
+    {
+        PlayerInterface playerInterface = PlayerRegistry.Local;
+        if(playerInterface == null) return null;
+        if(playerInterface.ownedPlayers.Count == 1) return playerInterface.ownedPlayers[0];
+        if(orderIndex < 0 || orderIndex >= M_TurnManager.instance.playerOrder.Count) return null;
+        uint netId = M_TurnManager.instance.playerOrder[orderIndex];
+        foreach(GamePlayer owned in playerInterface.ownedPlayers)
+            if(owned != null && owned.netId == netId) return owned;
+        return null;
+    }
+
+    // 아직 보상이 남은 소유 파티원의 탭으로 전환 (3인 파티 — 한 명 처리 후 다음 파티원 보상으로 안내). 남은 파티원이 없으면 아무 것도 하지 않는다
+    public void ShowNextPendingTab()
+    {
+        if(!PopUpUIManager.instance.isBattleResultPopUpOpen) return;
+        PlayerInterface playerInterface = PlayerRegistry.Local;
+        if(playerInterface == null) return;
+        for(int orderIndex = M_TurnManager.instance.playerOrder.Count - 1; orderIndex >= 0; orderIndex--){ // 전열 → 후열 순
+            GamePlayer owned = GetOwnedPlayerAtOrder(orderIndex);
+            if(owned == null) continue;
+            if(RewardService.instance.playerRewardedDic.TryGetValue(owned, out bool rewarded) && rewarded) continue;
+            if(owned.GetComponent<GamePlayerDeck>().rewards.Count == 0) continue;
+            ChangeTab(orderIndex);
+            return;
+        }
     }
 
     // 클라이언트 연결 해제 이벤트 수신

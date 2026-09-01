@@ -22,6 +22,18 @@ public class M_NetworkRoomManager : NetworkRoomManager
     [SerializedDictionary("Name", "Component")]
     public SerializedDictionary<string, GameObject> persistentComponents = new SerializedDictionary<string, GameObject>(); // 네트워크 매니저에서 관리할 뷰 컴포넌트 오브젝트 목록
 
+    // 싱글 플레이 판정 — 메뉴 '싱글 플레이'(MenuUI.HandleSinglePlay)가 maxConnections를 1로 두고 호스트를 시작한다
+    public bool isSinglePlay => maxConnections == 1;
+
+    // 싱글 플레이 고정 파티 (2026-09-01) — 캐릭터 선택 없이 3인 전원으로 시작. selectOrder = 대열 슬롯(playerOrder 인덱스): 2 = 전열(몬스터와 가까움) / 1 = 중열 / 0 = 후열
+    // [0]이 대표 캐릭터 — 룸플레이어/PlayerInterface.character 및 게임 씬 진입 시 currentGamePlayer
+    public static readonly (Character character, int selectOrder)[] SinglePlayParty =
+    {
+        (Character.GEORK, 2),
+        (Character.ERIS, 1),
+        (Character.HONGDANHYANG, 0),
+    };
+
     public override void Awake()
     {
         base.Awake(); // 부모클래스인 NetworkRoomManager의 Awake로직은 유지
@@ -62,9 +74,12 @@ public class M_NetworkRoomManager : NetworkRoomManager
         }
         roomPlayer.GetComponent<RoomPlayer>().color = colors[NetworkServer.connections.Count - 1];
         roomPlayer.GetComponent<RoomPlayer>().steamID = (ulong)SteamMatchmaking.GetLobbyMemberByIndex(M_SteamManager.enteredLobby, NetworkServer.connections.Count - 1);
-        // 이어하기: 저장 프로필(SteamID 매칭)의 캐릭터를 자동 선택 — 게임 씬의 프로필 복원(GenerateGamePlayer)은 캐릭터가 일치할 때만 적용된다.
-        // 싱글 플레이는 스팀 로비 없이 호스트를 시작하므로 로비 멤버 SteamID가 0 → 호스트 본인의 SteamID로 대체
-        if(GameSaveService.pendingLoad && GameSaveService.EnsureLoaded()){
+        if(isSinglePlay){
+            // 싱글 플레이: 캐릭터 선택 없이 고정 파티(SinglePlayParty) 3인으로 시작 — 대표 캐릭터만 룸플레이어에 기록하고 게임 씬 GenerateGamePlayer가 3인을 모두 생성.
+            // 처음부터/이어하기 공통 (이어하기는 캐릭터별 프로필을 GenerateGamePlayer가 복원). 캐릭터가 정해져 있으므로 RoomPlayer가 룸 대기 없이 자동 시작한다
+            roomPlayer.GetComponent<RoomPlayer>().character = SinglePlayParty[0].character;
+        }else if(GameSaveService.pendingLoad && GameSaveService.EnsureLoaded()){
+            // 멀티 이어하기: 저장 프로필(SteamID 매칭)의 캐릭터를 자동 선택 — 게임 씬의 프로필 복원(GenerateGamePlayer)은 캐릭터가 일치할 때만 적용된다.
             ulong saveSteamId = roomPlayer.GetComponent<RoomPlayer>().steamID;
             if(saveSteamId == 0) saveSteamId = (ulong)SteamUser.GetSteamID();
             GameSaveService.ProfileData profile = GameSaveService.FindProfile(saveSteamId);

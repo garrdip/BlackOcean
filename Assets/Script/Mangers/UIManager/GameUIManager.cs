@@ -98,13 +98,14 @@ public class GameUIManager : SingletonD<GameUIManager>
         ConfigScreenChangeMode(screenTransitionMode);
         screenTransition.material =  new Material(screenTransition.material); // 머티리얼 인스턴스 복사본을 생성하여 이미지의 머티리얼값에 할당(원본대신 복사본을 사용해 프로퍼티값 변경)
         scrollSpeed = 500f;
-        buttonPrefareDeck.onClick.AddListener(() => {
+        // 카드 전투 UI(덱 버튼)는 씬에서 제거될 수 있음 — 참조가 없으면 건너뛴다 (NRE로 Start가 중단되던 문제)
+        if(buttonPrefareDeck != null) buttonPrefareDeck.onClick.AddListener(() => {
             PopUpUIManager.instance.HandleShowPrefareDeckListPopUp(PlayerRegistry.Local.currentGamePlayerNetId);
         });
-        buttonTrashDeck.onClick.AddListener(() => {
+        if(buttonTrashDeck != null) buttonTrashDeck.onClick.AddListener(() => {
             PopUpUIManager.instance.HandleShowTrashDeckListPopUp(PlayerRegistry.Local.currentGamePlayerNetId);
         });
-        buttonForgottenDeck.onClick.AddListener(() => {
+        if(buttonForgottenDeck != null) buttonForgottenDeck.onClick.AddListener(() => {
             PopUpUIManager.instance.HandShowForgottenDeckListPopUp(PlayerRegistry.Local.currentGamePlayerNetId);
         });
     }

@@ -118,8 +118,23 @@ public class PlayerInterface : NetworkBehaviour
 
     // ------------------------------------------------------------- Command Method ------------------------------------------------------------------//
 
+    // 싱글 플레이: 고정 파티 3인(M_NetworkRoomManager.SinglePlayParty — 전열 게오르크/중열 에리스/후열 홍단향)을 이 인터페이스 소유로 모두 생성 (2026-09-01)
+    // 멀티: 룸에서 고른 캐릭터 1명(character/selectOrder)
     [Command]
     void GenerateGamePlayer()
+    {
+        M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
+        if(netManager != null && netManager.isSinglePlay){
+            foreach((Character partyCharacter, int partyOrder) in M_NetworkRoomManager.SinglePlayParty)
+                ServerSpawnGamePlayer(partyCharacter, partyOrder);
+        }else{
+            ServerSpawnGamePlayer(character, selectOrder);
+        }
+    }
+
+    // GamePlayer 1명 생성 + 스탯 초기화(이어하기면 캐릭터별 프로필 복원) + PlayerOrder 오브젝트 생성 — 소유권은 이 인터페이스의 연결
+    [Server]
+    void ServerSpawnGamePlayer(Character character, int selectOrder)
     {
         M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
         // GamePlayer 오브젝트 생성
@@ -147,9 +162,9 @@ public class PlayerInterface : NetworkBehaviour
             gamePlayer.skillPoints = BalanceData.Get("STARTING_SKILL_POINTS", 1); // 시작 포인트 — 첫 스킬을 바로 찍을 수 있게
             gamePlayer.ServerGrantInitialGear(); // 기본 무기 장착 + HP 물약 2개 (스폰 전이라 SyncList 초기 상태로 전달)
 
-            // 이어서 하기: 저장된 프로필이 있으면 기본 초기화를 덮어쓴다 (SteamID 매칭 — 새 파티원은 신규 초기화 유지)
-            GameSaveService.ProfileData profile = GameSaveService.FindProfile(steamID);
-            if(profile != null && profile.character == character){
+            // 이어서 하기: 저장된 프로필이 있으면 기본 초기화를 덮어쓴다 (SteamID + 캐릭터 매칭 — 싱글은 같은 SteamID로 3인을 저장하므로 캐릭터까지 맞춘다. 새 파티원은 신규 초기화 유지)
+            GameSaveService.ProfileData profile = GameSaveService.FindProfile(steamID, character);
+            if(profile != null){
                 GameSaveService.ApplyProfile(gamePlayer, profile);
                 profileRestored = true;
             }
@@ -173,19 +188,27 @@ public class PlayerInterface : NetworkBehaviour
 
     // ---------------------------------------------------------------- ClientRpc Method -------------------------------------------------------------//
 
+    // 소유한 GamePlayer 전원을 ownedPlayers에 등록하고 각자의 소유 오브젝트(카드포켓/화살표/오더 슬롯)를 생성.
+    // 멀티는 1명, 싱글은 고정 파티 3인 — currentGamePlayer는 인터페이스의 대표 캐릭터(character)와 같은 GamePlayer, 없으면 첫 번째
     [ClientRpc]
     public void GenerateGamePlayerDeck()
     {
         if(isLocalPlayer)
         {
+            List<GamePlayer> owned = new List<GamePlayer>();
             foreach(GamePlayer gamePlayer in FindObjectsByType<GamePlayer>(FindObjectsSortMode.None))
+                if(gamePlayer.isOwned) owned.Add(gamePlayer);
+            owned.Sort((a, b) => b.selectOrder.CompareTo(a.selectOrder)); // 전열(2) → 중열(1) → 후열(0) 순 (FindObjectsByType 순서는 비결정적)
+
+            GamePlayer representative = owned.Find(gamePlayer => gamePlayer.character == character);
+            if(representative == null && owned.Count > 0) representative = owned[0];
+            if(representative != null) currentGamePlayerNetId = representative.netId;
+
+            foreach(GamePlayer gamePlayer in owned)
             {
-                if(gamePlayer.isOwned){
-                    currentGamePlayerNetId = gamePlayer.netId;
-                }
+                ownedPlayers.Add(gamePlayer);
+                GetComponent<PlayerInterfaceServer>().GenerateGamePlayerOwnedObjects(gamePlayer);
             }
-            ownedPlayers.Add(currentGamePlayer);
-            GetComponent<PlayerInterfaceServer>().GenerateGamePlayerOwnedObjects(currentGamePlayer);
         }
         SetUserStatusUI();
         workDone = true;

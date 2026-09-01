@@ -6,6 +6,7 @@
     - 처음부터 시작
     - 이어서 하기
 - 구현 (2026-08-27): 싱글 플레이 클릭 시 메뉴 전체가 "처음부터 시작 / 이어하기"로 전환(MenuUI — 기존 버튼 2개 라벨 교체·나머지 숨김, Esc로 복귀). 처음부터 = 기존 싱글 시작 루틴(호스트 시작), 이어하기 = GameSaveService.pendingLoad 예약 후 동일 루틴(저장 파일 없으면 비활성). 이어하기 시 룸 씬에서 저장 프로필(SteamID 매칭)의 캐릭터가 자동 선택되고 싱글은 룸 대기 없이 바로 게임 씬으로 진입, 게임 씬에서 프로필(레벨/스탯/스킬/장비/골드/HP)과 진행도(해금 스테이지/위험도)를 복원. 멀티의 처음부터/이어서는 방 만들기 화면 임시 토글(CreateLobby) 유지 — 정식 개편은 후속.
+- 싱글 고정 파티 (2026-09-01): 싱글 플레이는 캐릭터 선택 없이 3인 전원(전열 게오르크 / 중열 에리스 / 후열 홍단향 — `M_NetworkRoomManager.SinglePlayParty`)으로 시작. 처음부터/이어하기 모두 룸 대기 없이 자동 진입하고, 호스트의 PlayerInterface가 3명의 GamePlayer를 소유(`ownedPlayers`) — 탭(TabLayout)으로 제어 캐릭터 전환, 이어하기는 SteamID+캐릭터로 프로필을 각각 복원. 골드는 GamePlayer별 보유(류진솔 회복 등은 현재 선택 캐릭터가 지불).
 
 ## 멀티플레이어 변경점
 - 획득 경험치량, 아이템 드랍 1.5배.
@@ -97,6 +98,13 @@
 - 게오르크 : 고행길 ( 자신에게 디버프 부여, 분노 상승 )
 - 홍단향 : 철귀 이동 ( 자신의 턴 종료시, 공격 및 방어력 제공(방어력 버프개념) )
 - 에리스 : 자해 ( 자신의 HP 소모 )
+
+## 에리스 변신 매커니즘
+- 체력 40% 이하 : 1차 변신 - 공격력 20% 증가
+- 체력 10% 이하 : 광기 변신 - 공격력 50% 증가
+- 구현 (2026-09-01): 상태는 HP 비율로만 정해진다 — `TargetObject.UpdateErisMode`(서버)가 HP가 바뀌는 모든 경로(`SetPlayerHP` — 피해/회복/스킬 코스트)와 전투 시작 시 재판정. `ErisMode` NORMAL / ANGER(≤`ERIS_ANGER_HP_PERCENT` 40%) / MAD(≤`ERIS_MAD_HP_PERCENT` 10%), 회복으로 비율이 오르면 되돌아간다.
+  가하는 피해 배율은 `BattleActions.ScaleByErisMode`(기본 공격·스킬 공통, `ERIS_ANGER_ATTACK_PERCENT` 20 / `ERIS_MAD_ATTACK_PERCENT` 50 — BalanceDB). 연출(전이별 모션 1회, 기획 확정): 기본→1차 `Change0` / 1차→광기 `Change1` / 기본→광기 `Change2` / 광기→기본 `RChange2` / 광기→1차 `RChange1` / 1차→기본 `RChange0` (`TargetObject.GetErisTransitionMotion`). 완료 시 해당 상태 Idle(Idle/ChIdle/VIdle) 전환은 `TargetObject.OnAnimationComplete`가 상태 프리픽스로 처리. 광기 해제 시 트랙 1의 광기 추가 모션(VAni*)은 `OnChangedErisMode`가 비운다.
+  치사 피해 시 HP 1 생존(꿈을 본 인형)은 **한 전투에 한 번**(`TargetObject.erisReviveUsed`)으로 정리 — 종전 "광기가 아니면 무제한 생존" 규칙은 회복으로 광기가 풀리는 새 구조에서 무한 생존이 되므로 폐기. 전멸 판정(`GamePlayer.CanErisRevive`)도 같은 플래그를 본다.
 
 ## 전투
 - 턴제 ( 민첩기반, 순서만 정하는게 아닌, 여러번 턴이 돌아올 수 있음 )

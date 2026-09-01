@@ -311,6 +311,10 @@ public partial class TargetObject : NetworkBehaviour
         {
             StartCoroutine(ErisAdditionalMadAnimation());
         }
+        else if(oldVal == ErisMode.MAD && anim != null)
+        {
+            anim.state.SetEmptyAnimation(1, 0.2f); // 광기 해제(회복) — 트랙 1의 광기 추가 모션(VAni*, Add 블렌드) 잔여 포즈를 섞어 지운다
+        }
     }
 
     void OnChangedPlayerHP(int oldVal, int newVal)

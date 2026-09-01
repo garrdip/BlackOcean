@@ -50,3 +50,7 @@ HAZARD_REDUCE_COST_PER_LEVEL,10,소피아 위험도 하향 레벨당 추가 비�
 EQUIP_DROP_MIN_HAZARD,0,장비 드랍 위험도 하한선 — 이번 전투 유효 위험도가 이 값 미만이면 장비가 드랍되지 않음 (파고들기 요소)
 LEVEL_GROWTH_VARIANCE_PERCENT,50,레벨업 성장치 랜덤 편차 % — 레벨별 상승량은 평균의 (1±이 값/100)배 가중치로 시드 분배 (LevelGrowthTable). 만렙 총합은 CharacterStatDB GrowX로 고정. 0이면 균등 분배
 HUB_HEAL_COST,20,류진솔 회복 비용 (골드) — 요청자가 지불하고 파티 전원 HP 전량 회복 (거점 전용)
+ERIS_ANGER_HP_PERCENT,40,에리스 1차 변신(ANGER) 진입 HP 비율 % — 현재 HP가 최대 HP의 이 비율 이하면 1차 변신 (RPG_CONVERSION_DESIGN 에리스 변신 매커니즘)
+ERIS_MAD_HP_PERCENT,10,에리스 광기 변신(MAD) 진입 HP 비율 % — 이 비율 이하면 광기 (1차 변신보다 우선)
+ERIS_ANGER_ATTACK_PERCENT,20,에리스 1차 변신 중 가하는 피해 증가 % (기본 공격/스킬)
+ERIS_MAD_ATTACK_PERCENT,50,에리스 광기 변신 중 가하는 피해 증가 % (기본 공격/스킬)

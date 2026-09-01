@@ -41,15 +41,15 @@ public class RoomPlayer : NetworkRoomPlayer
         RoomUI.instance.SetReadyButton(!isServer ? "READY" : "");
         if(isServer){
             GenerateManagers();
-            // 싱글 이어하기: 저장 캐릭터가 자동 선택돼 있으면 룸 대기 없이 바로 게임 씬으로 (멀티는 호스트가 START)
+            // 싱글 플레이(처음부터/이어하기 공통): 고정 파티의 대표 캐릭터가 룸플레이어 생성 시 정해지므로(M_NetworkRoomManager.SinglePlayParty) 룸 대기 없이 바로 게임 씬으로 (멀티는 호스트가 START)
             M_NetworkRoomManager netManager = NetworkRoomManager.singleton as M_NetworkRoomManager;
-            if(GameSaveService.pendingLoad && netManager != null && netManager.maxConnections == 1 && character != Character.NONE)
-                StartCoroutine(AutoStartContinue());
+            if(netManager != null && netManager.isSinglePlay && character != Character.NONE)
+                StartCoroutine(AutoStartSingle());
         }
     }
 
-    // 싱글 이어하기 자동 시작 — 캐릭터 선택 화면을 거치지 않고 로딩 화면을 띄운 채 바로 게임 씬으로 (START 버튼의 ChangeGameScene과 같은 절차, 룸 UI 비의존)
-    IEnumerator AutoStartContinue()
+    // 싱글 플레이 자동 시작 — 캐릭터 선택 화면을 거치지 않고 로딩 화면을 띄운 채 바로 게임 씬으로 (START 버튼의 ChangeGameScene과 같은 절차, 룸 UI 비의존)
+    IEnumerator AutoStartSingle()
     {
         yield return null; // GenerateManagers로 스폰한 매니저의 Start(싱글톤 등록)가 먼저 돌도록 한 프레임 대기
         float waited = 0f;

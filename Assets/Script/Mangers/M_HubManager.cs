@@ -366,7 +366,8 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         RpcNotice("ui.msg.hazard_reduced", "위험도를 {0}(으)로 낮췄습니다", hazardLevel.ToString(), "#2E8B57");
     }
 
-    // 류진솔 "회복" — 요청한 플레이어가 골드(BalanceDB HUB_HEAL_COST)를 내고 파티 전원의 HP를 최대치로 회복 (거점에서만). 구 '골드 전달' 메뉴 대체 (2026-08-31)
+    // 류진솔 "회복" — 요청한 플레이어가 골드(BalanceDB HUB_HEAL_COST)를 내고 파티 전원의 HP·MP를 최대치로 회복 (거점에서만). 구 '골드 전달' 메뉴 대체 (2026-08-31)
+    // 파티 전원의 HP와 MP가 이미 최대이면 골드를 받지 않고 거절한다 (2026-09-01). 분노(게오르크)는 0이 기본값이라 회복 대상도, 거절 판정 대상도 아니다
     [Command(requiresAuthority = false)]
     public void CmdHealPartyFull(uint gamePlayerNetId)
     {
@@ -379,6 +380,14 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         if(!isInHub || M_TurnManager.instance.isSceneTransitioning || M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;
         GamePlayer payer = NetLookup.Server<GamePlayer>(gamePlayerNetId);
         if(payer == null) return;
+        bool anyoneNeedsHeal = false;
+        foreach(PlayerInterface playerInterface in PlayerRegistry.All)
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers)
+                if(gamePlayer != null && (gamePlayer.HP < gamePlayer.MaxHP || NeedsMpRestore(gamePlayer))) anyoneNeedsHeal = true;
+        if(!anyoneNeedsHeal){
+            RpcNotice("ui.msg.hub_heal_not_needed", "파티의 체력과 MP가 모두 최대입니다 — 회복이 필요하지 않습니다", "", "#B22222");
+            return;
+        }
         int cost = BalanceData.Get("HUB_HEAL_COST", 20);
         if(payer.gold < cost){
             RpcNotice("ui.msg.hub_heal_no_gold", "골드가 부족합니다 (회복 비용 {0} 골드)", cost.ToString(), "#B22222");
@@ -386,10 +395,25 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         }
         payer.gold -= cost;
         foreach(PlayerInterface playerInterface in PlayerRegistry.All)
-            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers)
-                if(gamePlayer != null) gamePlayer.HP = gamePlayer.MaxHP;
+            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
+                if(gamePlayer == null) continue;
+                gamePlayer.HP = gamePlayer.MaxHP;
+                if(IsMpCharacter(gamePlayer)) gamePlayer.currentResource = gamePlayer.maxResource;
+            }
         GameSaveService.SaveGame();
         RpcNotice("ui.msg.hub_heal_paid", "{0} 골드를 내고 파티의 체력을 모두 회복했습니다", cost.ToString(), "#2E8B57");
+    }
+
+    // MP형 캐릭터(홍단향)인지 — 분노형(게오르크)은 0이 기본값, HP형(에리스)은 자원이 없으므로 회복 대상이 아니다
+    static bool IsMpCharacter(GamePlayer gamePlayer)
+    {
+        CharacterStatData.Entry stat = CharacterStatData.Get(gamePlayer.character);
+        return stat != null && stat.resource == BattleResourceType.MP;
+    }
+
+    static bool NeedsMpRestore(GamePlayer gamePlayer)
+    {
+        return IsMpCharacter(gamePlayer) && gamePlayer.currentResource < gamePlayer.maxResource;
     }
 
     [Server]

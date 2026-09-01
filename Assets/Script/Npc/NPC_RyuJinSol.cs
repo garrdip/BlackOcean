@@ -86,7 +86,7 @@ public class NPC_RyuJinSol : SpawnedMonster
         isOpenExpandableButtons = false;
     }
 
-    // 회복 — 서버(M_HubManager.HealPartyFull)가 요청자의 골드를 차감하고 파티 전원 HP를 최대치로. 골드 부족/거점 외 상태는 서버가 거부하고 토스트로 알린다
+    // 회복 — 서버(M_HubManager.HealPartyFull)가 요청자의 골드를 차감하고 파티 전원 HP·MP를 최대치로. 골드 부족/거점 외 상태/전원 HP·MP 최대(회복 불필요)는 서버가 거부하고 토스트로 알린다
     public void OnClickHealButton()
     {
         if(M_HubManager.instance == null || M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;

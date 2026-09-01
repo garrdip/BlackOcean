@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using Mirror;
+using TMPro;
 using ProjectD;
 
 // M_TurnManager partial — TP 기반 턴제 커맨드 전투 (RPG 전환 수직 슬라이스).
@@ -82,6 +84,7 @@ public partial class M_TurnManager
             CharacterStatData.Entry stat = CharacterStatData.Get(player.player.character);
             if (stat != null && stat.resource == BattleResourceType.RAGE)
                 player.player.currentResource = 0;
+            player.UpdateErisMode(); // 에리스 — 저체력으로 전투에 들어오면 시작부터 변신 상태 (스폰 전 HP 대입은 판정에서 제외되므로 여기서 1회)
         }
         foreach (TargetObject monster in spawnedMonsterList)
         {
@@ -260,8 +263,13 @@ public partial class M_TurnManager
             case TpAction.SKILL:
             {
                 SkillData.SkillDef skill = SkillData.Get(skillNo);
-                if (skill != null && gamePlayer.KnowsSkill(skillNo) && PayCost(unit.target, skill)) // 스킬트리 습득 여부 서버 검증
-                    yield return skill.execute(skill, unit.target, ResolveSkillTargets(skill, targetNetId));
+                if (skill != null && gamePlayer.KnowsSkill(skillNo)) // 스킬트리 습득 여부 서버 검증
+                {
+                    if (PayCost(unit.target, skill))
+                        yield return skill.execute(skill, unit.target, ResolveSkillTargets(skill, targetNetId));
+                    else
+                        TargetSkillCostRefused(gamePlayer.connectionToClient, skill.skillName); // 자원 부족 — 침묵 대신 요청자에게 토스트 (턴은 소비됨)
+                }
                 break;
             }
             case TpAction.MOVE:
@@ -293,26 +301,58 @@ public partial class M_TurnManager
         }
     }
 
-    // 스킬 코스트 지불. 실패(자원 부족) 시 false — 액션은 소모되지 않은 것으로 하고 싶지만
-    // 슬라이스에서는 이미 턴이 확정된 뒤라 아무 일도 하지 않고 턴이 지나간다 (클라이언트가 사전 검증)
+    // 스킬 코스트 지불 가능 여부 — 서버(PayCost)와 클라이언트(OnGUI 버튼 비활성)가 같은 규칙을 쓴다. playerHP/currentResource는 SyncVar
+    // HP형(에리스): HP가 1이라도 남아 있으면 사용 가능 — 코스트는 HP 1까지만 깎이고 그 밑으로는 내려가지 않는다 (파괴의권능과 같은 '1 미만 불가' 규칙).
+    //   종전 'HP ≤ 코스트면 거절' 규칙은 광기 변신 직후(HP 1) 흡혈 베기를 포함한 모든 스킬을 막아 버렸음 (2026-09-01 수정)
+    public static bool CanPayCost(TargetObject user, SkillData.SkillDef skill)
+    {
+        if (user == null || user.player == null || skill == null) return false;
+        switch (skill.costType)
+        {
+            case BattleResourceType.HP:
+                return user.playerHP > 0;
+            case BattleResourceType.MP:
+            case BattleResourceType.RAGE:
+                return user.player.currentResource >= skill.cost;
+            default:
+                return true;
+        }
+    }
+
+    // 스킬 코스트 지불. 실패(자원 부족) 시 false — 이미 턴이 확정된 뒤라 행동은 소비되고, 호출부가 요청자에게 토스트로 알린다
     [Server]
     bool PayCost(TargetObject user, SkillData.SkillDef skill)
     {
+        if (!CanPayCost(user, skill)) return false;
         GamePlayer gamePlayer = user.player;
         switch (skill.costType)
         {
-            case BattleResourceType.HP: // 에리스 — 자신의 HP 소모. 코스트로는 빈사(HP 1 이하)까지 내려갈 수 없다
-                if (user.playerHP <= skill.cost) return false;
-                user.LosePlayerHP(skill.cost);
+            case BattleResourceType.HP: // 에리스 — HP 1은 남기고 소모 (HP 1이면 실제 소모 0)
+                user.LosePlayerHP(Mathf.Min(skill.cost, user.playerHP - 1));
                 return true;
             case BattleResourceType.MP:
             case BattleResourceType.RAGE:
-                if (gamePlayer.currentResource < skill.cost) return false;
                 gamePlayer.currentResource -= skill.cost;
                 return true;
             default:
                 return true;
         }
+    }
+
+    // 스킬 코스트 지불 실패 안내 — 요청한 플레이어에게만 토스트
+    [TargetRpc]
+    void TargetSkillCostRefused(NetworkConnectionToClient conn, string skillName)
+    {
+        string text = M_LanguageManager.Get("ui.msg.skill_cost_short", "{0} — 자원이 부족해 사용할 수 없습니다").Replace("{0}", skillName);
+        M_MessageManager.instance
+            .MakeToast()
+            .Position(ToastPosition.Top)
+            .FadeInTime(1f)
+            .FadeOutTime(1f)
+            .MessageBoxColor(ColorUtils.HexToColor("#B22222"))
+            .TextColor(Color.white)
+            .Text(text)
+            .Show();
     }
 
     [Server]
@@ -408,7 +448,13 @@ public partial class M_TurnManager
     int GetUnitAgility(TargetObject target)
     {
         if (target.player != null) return Mathf.Max(1, target.player.TotalAgility); // 장비 합산 민첩
-        if (target.monster != null && target.monster.monster != null) return Mathf.Max(1, target.monster.monster.agility);
+        if (target.monster != null)
+        {
+            if (target.monster.monster != null) return Mathf.Max(1, target.monster.monster.agility);
+            // 원격 클라이언트는 SpawnedMonster.monster(데이터 참조)가 비어 있으므로 monsterName(SyncVar)으로 MonsterDB에서 찾는다 — 턴 순서 예측(클라) 용
+            Monster data = MonsterData.instance != null ? MonsterData.instance.monsterDataList.Find(m => m.name == target.monster.monsterName) : null;
+            if (data != null) return Mathf.Max(1, data.agility);
+        }
         return 5;
     }
 
@@ -423,6 +469,124 @@ public partial class M_TurnManager
         if (target == null || target.isDying) return false;
         if (target.objectType == ObjectType.PLAYER) return target.player != null && target.playerHP > 0;
         return target.monster != null && target.monster.HP > 0;
+    }
+
+    // ------------------------------------------------------------- 클라이언트: 턴 순서 텍스트 (MapInfo 하단) -------------------------------------------------------------//
+    // tpGauges 스냅샷(유닛별 TP)에서 서버와 같은 규칙(가장 먼저 100에 도달하는 유닛, 넘친 TP 이월)으로 앞으로의 턴 순서를 시뮬레이션해
+    // "[현재 턴] -> 다음 -> ..." 형태로 표시한다. 텍스트 오브젝트는 GameUIManager.textCurrentPhase(MapInfo/CurrentPhaseBG/TextCurrentPhase)를 본떠 런타임에 MapInfo 하단에 생성
+
+    TextMeshProUGUI tpTurnOrderText;        // 런타임 생성 텍스트 (씬 편집 없이 MapInfo 하단에 부착)
+    const int TurnOrderPreviewCount = 8;    // 미리 보여줄 턴 수
+
+    void LateUpdate()
+    {
+        if (!NetworkClient.active) return;
+        UpdateTurnOrderText();
+    }
+
+    void UpdateTurnOrderText()
+    {
+        if (tpTurnOrderText == null && !TryCreateTurnOrderText()) return;
+        bool show = tpBattleActive && tpGauges.Count > 0;
+        GameObject panel = tpTurnOrderText.transform.parent.gameObject; // 배경 패널(부모)째로 켜고 끈다
+        if (panel.activeSelf != show) panel.SetActive(show);
+        if (show) tpTurnOrderText.text = BuildTurnOrderText();
+    }
+
+    bool TryCreateTurnOrderText()
+    {
+        if (GameUIManager.instance == null || GameUIManager.instance.textCurrentPhase == null) return false;
+        TextMeshProUGUI source = GameUIManager.instance.textCurrentPhase;
+        Transform mapInfo = source.transform;
+        while (mapInfo != null && mapInfo.name != "MapInfo") mapInfo = mapInfo.parent;
+        if (mapInfo == null) mapInfo = source.transform.parent;
+
+        // 배경 패널 — MapInfo 하단은 배경 이미지(MapInfoBaseLayout, 중앙 221x246)가 덮지 않는 빈 영역이라 전투 배경 위에 바로 그려진다.
+        // 페이즈 텍스트 색(검정)을 그대로 쓰면 어두운 전투 배경에 묻혀 보이지 않으므로 반투명 검은 패널 + 흰 글자로 표시
+        GameObject panelObject = new GameObject("TurnOrderPanel", typeof(RectTransform));
+        panelObject.transform.SetParent(mapInfo, false);
+        RectTransform panelRect = panelObject.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0f); // MapInfo 하단 중앙
+        panelRect.anchorMax = new Vector2(0.5f, 0f);
+        panelRect.pivot = new Vector2(0.5f, 0f);
+        panelRect.anchoredPosition = new Vector2(0f, 8f);
+        panelRect.sizeDelta = new Vector2(1100f, 44f);
+        UnityEngine.UI.Image panelImage = panelObject.AddComponent<UnityEngine.UI.Image>();
+        panelImage.color = new Color(0f, 0f, 0f, 0.6f);
+        panelImage.raycastTarget = false;
+
+        GameObject textObject = new GameObject("TextTurnOrder", typeof(RectTransform));
+        textObject.transform.SetParent(panelObject.transform, false);
+        RectTransform rect = textObject.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero; // 패널 전체를 채움
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = new Vector2(12f, 0f);
+        rect.offsetMax = new Vector2(-12f, 0f);
+
+        tpTurnOrderText = textObject.AddComponent<TextMeshProUGUI>();
+        tpTurnOrderText.font = source.font;
+        tpTurnOrderText.fontSharedMaterial = source.fontSharedMaterial;
+        tpTurnOrderText.fontSize = Mathf.Max(18f, source.fontSize * 0.6f);
+        tpTurnOrderText.color = Color.white;
+        tpTurnOrderText.alignment = TextAlignmentOptions.Center;
+        tpTurnOrderText.overflowMode = TextOverflowModes.Ellipsis;
+        tpTurnOrderText.raycastTarget = false;
+        panelObject.SetActive(false);
+        return true;
+    }
+
+    string BuildTurnOrderText()
+    {
+        // 스냅샷 → 살아있는 유닛만 (서버 tpUnits와 같은 집합)
+        List<TargetObject> targets = new List<TargetObject>();
+        List<float> tps = new List<float>();
+        foreach (TpGaugeSnapshot snapshot in tpGauges)
+        {
+            if (!NetworkClient.spawned.TryGetValue(snapshot.netId, out NetworkIdentity identity) || identity == null) continue;
+            TargetObject target = identity.GetComponent<TargetObject>();
+            if (target == null || target.isDying) continue;
+            targets.Add(target);
+            tps.Add(snapshot.tp);
+        }
+        if (targets.Count == 0) return "";
+
+        StringBuilder builder = new StringBuilder();
+        // 현재 행동 중인 유닛 — 스냅샷은 이미 100을 뺀 뒤라 시뮬레이션에는 다음 턴부터 나온다
+        if (tpCurrentUnitNetId != 0 && NetworkClient.spawned.TryGetValue(tpCurrentUnitNetId, out NetworkIdentity currentIdentity) && currentIdentity != null)
+        {
+            TargetObject current = currentIdentity.GetComponent<TargetObject>();
+            if (current != null) builder.Append('[').Append(GetUnitDisplayName(current)).Append(']');
+        }
+
+        for (int step = 0; step < TurnOrderPreviewCount; step++)
+        {
+            int nextIndex = -1;
+            float minTime = float.MaxValue;
+            for (int i = 0; i < targets.Count; i++)
+            {
+                float time = (100f - tps[i]) / Mathf.Max(1, GetUnitTpGain(targets[i]));
+                if (time < minTime) { minTime = time; nextIndex = i; }
+            }
+            if (nextIndex < 0) break;
+            if (minTime > 0f)
+                for (int i = 0; i < targets.Count; i++) tps[i] += GetUnitTpGain(targets[i]) * minTime;
+            tps[nextIndex] -= 100f;
+            if (builder.Length > 0) builder.Append(" -> ");
+            builder.Append(GetUnitDisplayName(targets[nextIndex]));
+        }
+        return builder.ToString();
+    }
+
+    // 표시 이름 — 플레이어는 캐릭터 enum(첫 글자만 대문자: Geork/Eris/Hongdanhyang), 몬스터는 MonsterDB 이름(Soldier_Axe 등)
+    static string GetUnitDisplayName(TargetObject target)
+    {
+        if (target.player != null)
+        {
+            string name = target.player.character.ToString();
+            return name.Length > 1 ? char.ToUpper(name[0]) + name.Substring(1).ToLower() : name;
+        }
+        if (target.monster != null && !string.IsNullOrEmpty(target.monster.monsterName)) return target.monster.monsterName;
+        return "?";
     }
 
     // ------------------------------------------------------------- 클라이언트: 액션 제출 -------------------------------------------------------------//
@@ -456,16 +620,25 @@ public partial class M_TurnManager
 
     bool IsLocalPlayerTurn()
     {
-        if (tpCurrentUnitNetId == 0 || !NetworkClient.spawned.TryGetValue(tpCurrentUnitNetId, out NetworkIdentity identity) || identity == null) return false;
+        return GetActingOwnedPlayer() != null;
+    }
+
+    // 클라이언트: 지금 턴인 유닛의 GamePlayer — 내가 소유한 경우에만 (아니면 null).
+    // 액션 제출은 반드시 이 플레이어의 netId로 보낸다 — 서버(CmdSubmitTpAction)가 현재 턴 유닛과 대조하므로, 3인 파티(싱글)에서
+    // PlayerRegistry.Local.currentGamePlayer(대표 캐릭터)로 보내면 다른 파티원 턴의 액션이 전부 무시된다 (2026-09-01 수정)
+    GamePlayer GetActingOwnedPlayer()
+    {
+        if (tpCurrentUnitNetId == 0 || !NetworkClient.spawned.TryGetValue(tpCurrentUnitNetId, out NetworkIdentity identity) || identity == null) return null;
         TargetObject currentUnit = identity.GetComponent<TargetObject>();
-        return currentUnit != null && currentUnit.player != null && currentUnit.player.isOwned;
+        if (currentUnit == null || currentUnit.player == null || !currentUnit.player.isOwned) return null;
+        return currentUnit.player;
     }
 
     /// <summary>클라이언트: 몬스터 클릭으로 대상 확정 (SpawnedMonster.OnMouseDown) — 선택 중이던 공격/스킬을 서버에 제출</summary>
     public void SubmitEnemyTarget(uint monsterNetId)
     {
         if (!IsSelectingEnemyTarget()) return;
-        GamePlayer myPlayer = PlayerRegistry.Local != null ? PlayerRegistry.Local.currentGamePlayer : null;
+        GamePlayer myPlayer = GetActingOwnedPlayer();
         if (myPlayer == null) return;
         if (guiSelectedAction == 0)
             CmdSubmitTpAction(myPlayer.netId, (int)TpAction.ATTACK, "", monsterNetId, 0);
@@ -521,12 +694,15 @@ public partial class M_TurnManager
             currentUnit = identity.GetComponent<TargetObject>();
         string turnOwner = currentUnit == null ? "게이지 진행 중..."
             : (currentUnit.player != null ? $"{currentUnit.player.character} 턴" : "몬스터 턴");
+        // 내 턴이면 행동하는 파티원(현재 턴 유닛)을 기준으로 상태/스킬/아이템/제출을 처리 — 3인 파티(싱글)에서 대표 캐릭터가 아닌 파티원 턴도 정상 동작
+        GamePlayer actingPlayer = GetActingOwnedPlayer();
+        if (actingPlayer != null) myPlayer = actingPlayer;
         GUI.Label(new Rect(x, y - lineHeight, 640f, lineHeight),
-            $"[TP 전투] {turnOwner}  |  내 HP {myPlayer.HP}/{myPlayer.MaxHP}  자원 {myPlayer.currentResource}/{myPlayer.maxResource}");
+            $"[TP 전투] {turnOwner}  |  {myPlayer.character} HP {myPlayer.HP}/{myPlayer.MaxHP}  자원 {myPlayer.currentResource}/{myPlayer.maxResource}");
 
         DrawTpGaugeLabels(); // 유닛(플레이어·몬스터) 머리 위 TP 숫자
 
-        bool isMyTurn = currentUnit != null && currentUnit.player != null && currentUnit.player.isOwned;
+        bool isMyTurn = actingPlayer != null;
         if (!isMyTurn)
         {
             guiSelectedAction = -1;
@@ -544,7 +720,10 @@ public partial class M_TurnManager
             buttonX += 95f;
             foreach (SkillData.SkillDef skill in myPlayer.GetUsableSkills()) // 기본 스킬 + 스킬트리 습득분만 표시
             {
-                if (GUI.Button(new Rect(buttonX, y, 130f, lineHeight), $"{skill.skillName}({skill.cost})"))
+                GUI.enabled = CanPayCost(currentUnit, skill); // 자원 부족 스킬은 비활성 (서버 PayCost와 같은 규칙)
+                bool pressed = GUI.Button(new Rect(buttonX, y, 130f, lineHeight), $"{skill.skillName}({skill.cost})");
+                GUI.enabled = true;
+                if (pressed)
                 {
                     if (skill.validTarget == ValidTarget.ENEMY)
                     {

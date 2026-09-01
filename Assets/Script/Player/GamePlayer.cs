@@ -236,7 +236,7 @@ public partial class GamePlayer : NetworkBehaviour
         return false;
     }
 
-    // 에리스가 아직 광기 변신으로 사망을 회피할 수 있는 상태면 true — 광기(MAD) 상태에서 죽었거나 타겟오브젝트가 이미 소멸했으면 false (전멸 집계에 포함)
+    // 에리스가 아직 부활(꿈을 본 인형 — 한 전투에 한 번 HP 1 생존)을 쓸 수 있으면 true — 이미 썼거나 타겟오브젝트가 소멸했으면 false (전멸 집계에 포함)
     [Server]
     private bool CanErisRevive(uint netId)
     {
@@ -244,7 +244,7 @@ public partial class GamePlayer : NetworkBehaviour
             GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
             if(gamePlayer.character != Character.ERIS) return false;
             TargetObject targetObject = M_TurnManager.instance.GetCurrentPlayerTargetObject(gamePlayer);
-            return targetObject != null && targetObject.erisMode != ErisMode.MAD;
+            return targetObject != null && !targetObject.erisReviveUsed;
         }
         return false;
     }

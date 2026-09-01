@@ -200,6 +200,14 @@ public static class GameSaveService
         return loaded.profiles.Find(profile => profile.steamId == key);
     }
 
+    /// <summary>SteamID + 캐릭터로 프로필 조회 — 싱글 플레이는 한 PlayerInterface(같은 SteamID)가 파티 3인을 모두 소유하므로 캐릭터까지 맞춰야 한다</summary>
+    public static ProfileData FindProfile(ulong steamId, Character character)
+    {
+        if (loaded == null) return null;
+        string key = steamId.ToString();
+        return loaded.profiles.Find(profile => profile.steamId == key && profile.character == character);
+    }
+
     /// <summary>현재 서버 상태를 파일로 저장 (호스트 전용). 전투 종료 후 거점 복귀 시점에 호출된다</summary>
     public static void SaveGame()
     {

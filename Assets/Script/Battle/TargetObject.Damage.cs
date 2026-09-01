@@ -75,13 +75,7 @@ public partial class TargetObject
             if(isServer) overkillDamageDisplay = (remind > playerHP) ? remind : 0; // 과잉 피해 — 실제 피해량 표시 (HP 대입 전에 설정)
             playerHP -= remind;
             if(playerHP <= 0){
-                if(player.character == Character.ERIS && erisMode != ErisMode.MAD)
-                {
-                    playerHP = 1;
-                    StartCoroutine(ErisTransform());
-                }
-                else
-                    playerHP = 0;
+                playerHP = TryErisRevive() ? 1 : 0; // 에리스 — 한 전투에 한 번 HP 1로 생존 (광기 진입은 SetPlayerHP → UpdateErisMode)
             }
             player.HP = playerHP;
             AccumulateTempestosoHpLost(hpBefore - playerHP);
@@ -106,14 +100,7 @@ public partial class TargetObject
         int hpBefore = playerHP;
         if(isServer) overkillDamageDisplay = (value > playerHP) ? value : 0; // 과잉 손실도 실제 수치 표시 (스테일 방지 겸)
         playerHP -= value; // SetPlayerHP가 0~최대치 클램프 및 GamePlayer.HP 동기화 처리
-        if(playerHP <= 0)
-        {
-            if(player.character == Character.ERIS && erisMode != ErisMode.MAD)
-            {
-                playerHP = 1;
-                StartCoroutine(ErisTransform());
-            }
-        }
+        if(playerHP <= 0 && TryErisRevive()) playerHP = 1; // 에리스 — 한 전투에 한 번 HP 1로 생존 (광기 진입은 SetPlayerHP → UpdateErisMode)
         AccumulateTempestosoHpLost(hpBefore - playerHP);
     }
 
@@ -132,13 +119,7 @@ public partial class TargetObject
             if(isServer) overkillDamageDisplay = (remind > playerHP) ? remind : 0; // 과잉 피해 — 실제 피해량 표시 (HP 대입 전에 설정)
             playerHP -= remind;
             if(playerHP <= 0){
-                if(player.character == Character.ERIS && erisMode != ErisMode.MAD)
-                {
-                    playerHP = 1;
-                    StartCoroutine(ErisTransform());
-                }
-                else
-                    playerHP = 0;
+                playerHP = TryErisRevive() ? 1 : 0; // 에리스 — 한 전투에 한 번 HP 1로 생존 (광기 진입은 SetPlayerHP → UpdateErisMode)
             }
             player.HP = playerHP;
             AccumulateTempestosoHpLost(hpBefore - playerHP);
@@ -272,6 +253,7 @@ public partial class TargetObject
     {
         _playerHP = Mathf.Clamp(newHp, 0, playerMaxHP); // 플레이어 Hp값을 최소 0, 최대 MaxHp 사이로 값 제한
         player.HP = _playerHP; // 타겟오브젝트의 체력 값과 GamePlayer의 체력 값 동기화
+        if(isServer) UpdateErisMode(); // 에리스 변신 — HP 비율 변화(피해/회복/코스트)마다 상태 재판정 (스폰 전 초기 대입은 isServer가 false라 제외)
     }
 
 

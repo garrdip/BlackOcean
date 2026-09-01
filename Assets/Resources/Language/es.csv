@@ -1126,3 +1126,5 @@ ui.save.back,Volver,돌아가기
 ui.NPC_RyuJinSol.ButtonHeal_Label,Curar,회복
 ui.msg.hub_heal_paid,Pagaste {0} de oro: los PV del grupo se han restaurado por completo,{0} 골드를 내고 파티의 체력을 모두 회복했습니다
 ui.msg.hub_heal_no_gold,Oro insuficiente (la curación cuesta {0} de oro),골드가 부족합니다 (회복 비용 {0} 골드)
+ui.msg.hub_heal_not_needed,Los PV y PM del grupo ya están al máximo: no hace falta curación,파티의 체력과 MP가 모두 최대입니다 — 회복이 필요하지 않습니다
+ui.msg.skill_cost_short,{0}: recursos insuficientes para usarla,{0} — 자원이 부족해 사용할 수 없습니다
