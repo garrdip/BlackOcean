@@ -6,9 +6,14 @@ using UnityEngine.EventSystems;
 using Mirror;
 using DG.Tweening;
 using TMPro;
+using ProjectD;
 
 public class PlayerOrder : NetworkBehaviour
 {
+    // 활성(선택) 배너 — 클라이언트 로컬. 소유 배너를 클릭하면 활성화되며 그 캐릭터가 제어 대상(currentGamePlayer — 스킬트리/장비/스탯 창)이 된다.
+    // 활성 상태에서 다른 소유 배너를 클릭하면 두 캐릭터의 대열 위치를 서로 바꾼다 (거점 전용, 서버 M_TurnManager.CmdSwapPlayerOrderInHub) (2026-09-01)
+    static PlayerOrder activeBanner;
+    Collider2D bannerCollider; // BaseLayout의 PolygonCollider2D — Update 클릭 판정용
     [Header("Layout")]
     public GameObject BaseLayout;
     public GameObject TopLayout;
@@ -63,7 +68,11 @@ public class PlayerOrder : NetworkBehaviour
         EventTrigger.Entry baseExitEntry = new EventTrigger.Entry();
         baseExitEntry.eventID = EventTriggerType.PointerExit;
         baseExitEntry.callback.AddListener((data) => { OnPointerExitBase((PointerEventData)data); });
-        baseEventTrigger.triggers.Add(baseExitEntry); 
+        baseEventTrigger.triggers.Add(baseExitEntry);
+
+        // 클릭 판정용 콜라이더 — BaseLayout(레이어 5 UI)의 PolygonCollider2D. 카메라 Physics2DRaycaster의 eventMask가 UI 레이어를 제외해
+        // EventTrigger/OnMouseDown 경로로는 배너에 포인터 이벤트가 오지 않으므로, Update에서 마우스 클릭 시 OverlapPoint로 직접 판정한다
+        bannerCollider = BaseLayout.GetComponent<Collider2D>();
 
         EventTrigger cardPeekEventTrigger = cardPeekButton.gameObject.AddComponent<EventTrigger>();
         
@@ -183,6 +192,13 @@ public class PlayerOrder : NetworkBehaviour
 
     void Update()
     {
+        // 배너 클릭 판정 — 마우스 왼쪽 버튼을 누른 프레임에 배너 콜라이더가 마우스 월드 위치를 덮고 있으면 클릭으로 처리
+        if(Input.GetMouseButtonDown(0) && bannerCollider != null && Camera.main != null)
+        {
+            Vector2 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            if(bannerCollider.OverlapPoint(mouseWorld)) OnClickBanner();
+        }
+
         if(textStats == null || statGamePlayer == null) return;
         CharacterStatData.Entry stat = CharacterStatData.Get(statGamePlayer.character);
         int attack = (stat != null && stat.attackScalesWithInt) ? statGamePlayer.TotalIntelligence : statGamePlayer.TotalStrength; // 캐릭터 공격 계수 스탯 (장비 합산)
@@ -196,6 +212,7 @@ public class PlayerOrder : NetworkBehaviour
     public override void OnStopClient()
     {
         base.OnStopClient();
+        if(activeBanner == this) activeBanner = null; // 활성 배너가 사라지면 선택 해제
         if(NetworkClient.spawned.TryGetValue(gamePlayerNetId, out NetworkIdentity networkIdentity)){
             GamePlayer gamePlayer = networkIdentity.GetComponent<GamePlayer>();
             gamePlayer.onChangePlayerOrder -= OnChangePlayerOrder;
@@ -225,6 +242,34 @@ public class PlayerOrder : NetworkBehaviour
         topBaseLight.SetActive(false);
         topSeeLight.SetActive(false);
         lastCardBaseLingLight.SetActive(false);
+    }
+
+    // 배너 클릭(BaseLayout EventTrigger PointerClick) — 활성 배너가 없으면(또는 자신이면) 활성 토글 + 제어 캐릭터 전환, 다른 배너가 활성이면 그 캐릭터와 대열 위치 교환
+    void OnClickBanner()
+    {
+        if(!isOwned || PlayerRegistry.Local == null) return;
+        if(M_CardManager.instance != null && M_CardManager.instance.isArrowActive) return; // 카드 화살표 조작 중에는 무시
+        if(activeBanner == null || activeBanner == this)
+        {
+            bool select = activeBanner != this;
+            SetSelected(select);
+            if(select) PlayerRegistry.Local.currentGamePlayerNetId = gamePlayerNetId; // 스킬트리/장비/스탯 창(GamePlayer.OnGUI)이 이 캐릭터로 바뀐다
+            return;
+        }
+        PlayerOrder other = activeBanner;
+        other.SetSelected(false);
+        bool inHub = M_HubManager.instance != null && M_HubManager.instance.isInHub
+            && M_TurnManager.instance != null && M_TurnManager.instance.phase == BattleTurn.NONE_BATTLE_SCENE;
+        if(inHub) M_TurnManager.instance.CmdSwapPlayerOrderInHub(other.gamePlayerNetId, gamePlayerNetId); // 전투 중 대열 이동은 TP 행동 '이동'으로만
+    }
+
+    // 활성 표시 — 기본 비활성인 Ready 라이트(topReadyLight)를 선택 표시로 재사용 (topReady 본체는 프리팹 기본이 활성이라 건드리지 않는다)
+    void SetSelected(bool selected)
+    {
+        if(selected) activeBanner = this;
+        else if(activeBanner == this) activeBanner = null;
+        if(topReadyLight != null) topReadyLight.SetActive(selected);
+        Debug.Log($"[PlayerOrder] 배너 {(selected ? "활성" : "해제")} — GamePlayer {gamePlayerNetId}");
     }
 
     public void OnChangePlayerOrder(int order)

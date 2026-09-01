@@ -249,6 +249,7 @@ public partial class M_TurnManager
                 {
                     CharacterStatData.Entry stat = CharacterStatData.Get(gamePlayer.character);
                     AttackAttribute attribute = stat != null ? stat.basicAttack : AttackAttribute.NONE;
+                    PlayPlayerActionAnimation(unit.target, "Attack0"); // 기본 공격 모션
                     yield return BattleActions.AttackTarget(unit.target, target, BattleActions.BasicAttackDamage(unit.target), attribute);
                 }
                 break;
@@ -266,7 +267,10 @@ public partial class M_TurnManager
                 if (skill != null && gamePlayer.KnowsSkill(skillNo)) // 스킬트리 습득 여부 서버 검증
                 {
                     if (PayCost(unit.target, skill))
+                    {
+                        PlayPlayerActionAnimation(unit.target, SkillData.GetMotion(skill)); // 스킬 모션 — 기본 Attack1(임시 공용), 예외는 SkillData.skillMotions (고행길 Defense0 등)
                         yield return skill.execute(skill, unit.target, ResolveSkillTargets(skill, targetNetId));
+                    }
                     else
                         TargetSkillCostRefused(gamePlayer.connectionToClient, skill.skillName); // 자원 부족 — 침묵 대신 요청자에게 토스트 (턴은 소비됨)
                 }
@@ -443,6 +447,22 @@ public partial class M_TurnManager
     {
         TpUnit unit = tpUnits.Find(u => u.target == target);
         if (unit != null) unit.tp += amount;
+    }
+
+    // 플레이어 행동 모션 — 기본 공격 "Attack0", 스킬 "Attack1"(임시 공용). 에리스는 변신 상태 프리픽스(""/"Ch"/"V")를 붙인다 (GetErisMode).
+    // 모션 완료 후 Idle 복귀는 TargetObject.OnAnimationComplete가 처리
+    // 다타 스킬(연속 베기 등)은 첫 타 이후의 타마다 SkillData에서 다시 호출한다
+    [Server]
+    public void PlayPlayerActionAnimation(TargetObject user, string animationName)
+    {
+        if (user == null || user.player == null) return;
+        string prefix = user.player.character == Character.ERIS ? user.GetErisMode() : "";
+        StartAnimation(user, 0, prefix + animationName, false);
+        // 피격 시점 지연 — 모션 시작 후 첫 피해까지 대기. 모션별 키({캐릭터}_{모션}_HIT_DELAY_MS, 예 GEORK_ATTACK0 600 / GEORK_ATTACK1 500)가 있으면 우선,
+        // 없으면 캐릭터 공통 키({캐릭터}_ATTACK_HIT_DELAY_MS, 예 ERIS 1000), 둘 다 없으면 0. 모션 뒤 첫 타격(BattleActions.AttackTarget)이 소비한다
+        int delayMs = BalanceData.Get($"{user.player.character}_{animationName.ToUpperInvariant()}_HIT_DELAY_MS", -1);
+        if (delayMs < 0) delayMs = BalanceData.Get($"{user.player.character}_ATTACK_HIT_DELAY_MS", 0);
+        user.pendingHitDelay = delayMs / 1000f;
     }
 
     int GetUnitAgility(TargetObject target)

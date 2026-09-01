@@ -16,11 +16,11 @@ HH0,HONGDANHYANG,회복,0,,SKILL,HS2,,0,1,치유의 빛 습득
 HH1,HONGDANHYANG,회복,1,HH0,STAT,,MDEF,3,1,마법방어 +3
 HH2,HONGDANHYANG,회복,2,HH1,SKILL,HS4,,0,1,수호 축복 습득
 HH3,HONGDANHYANG,회복,3,HH2,SKILL_LEVEL,HS2,,0,1,치유의 빛 강화 (+20%)
-EA0,ERIS,은하수,0,,SKILL,ES1,,0,1,흡혈 베기 습득
-EA1,ERIS,은하수,1,EA0,STAT,,STR,3,1,힘 +3
-EA2,ERIS,은하수,2,EA1,SKILL,ES4,,0,1,은하수 일격 습득
-EA3,ERIS,은하수,3,EA2,ULTIMATE,EU1,,0,3,필살기: 초신성
-EB0,ERIS,별무리,0,,SKILL,ES3,,0,1,별무리 파편 습득
-EB1,ERIS,별무리,1,EB0,STAT,,AGI,3,1,민첩 +3
-EB2,ERIS,별무리,2,EB1,SKILL_LEVEL,ES1,,0,1,흡혈 베기 강화 (+20%)
-EB3,ERIS,별무리,3,EB2,STAT,,AGI,5,2,민첩 +5
+EKA1,ERIS,공격,0,,SKILL,ES5,,0,3,권능 : 찌르기 습득 (130%)
+EKA2,ERIS,공격,1,EKA1,STAT,,STR,3,5,힘 상승 (+3)
+EKA3,ERIS,공격,2,EKA2,SKILL,ES6,,0,8,부서지세요 습득 (90% + 방어 -10 3턴)
+EKA4,ERIS,공격,3,EKA3,SKILL,ES7,,0,10,권능 : 파괴 습득 (50%, 사용마다 +30%)
+EKA5,ERIS,공격,4,EKA4,STAT,,AGI,3,8,민첩 상승 (+3)
+EKA6,ERIS,공격,5,EKA5,SKILL,ES8,,0,12,얼마나 버틸까요 습득 (방어 -50 후 100%)
+EKA7,ERIS,공격,6,EKA6,SKILL,ES9,,0,15,압력 분출 습득 (전체 50%, 처치 시 반복)
+EKA8,ERIS,공격,7,EKA7,SKILL,ES10,,0,20,찢어 줄게요 습득 (150%, 변신 2회/광기 3회)

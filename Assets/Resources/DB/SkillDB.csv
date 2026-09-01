@@ -1,9 +1,4 @@
 SkillNo,Character,Name,CostType,Cost,Attribute,ValidTarget,Power,ScaleStat,Innate,PowerPerLevel,Passive,Description
-ES1,ERIS,흡혈 베기,HP,5,RESONANCE,ENEMY,120,STR,0,0,0,적 하나에게 힘의 120% 공명 피해를 주고 가한 피해의 50%만큼 HP를 회복한다
-ES2,ERIS,피의 가속,HP,8,NONE,NONE,0,STR,1,0,0,자신의 TP를 30 증가시킨다 (기본 스킬)
-ES3,ERIS,별무리 파편,HP,10,RESONANCE,ENEMY_ALL,70,STR,0,0,0,모든 적에게 힘의 70% 공명 피해를 준다
-ES4,ERIS,은하수 일격,HP,15,RESONANCE,ENEMY,220,STR,0,0,0,적 하나에게 힘의 220% 공명 피해를 준다
-EU1,ERIS,초신성,HP,25,RESONANCE,ENEMY_ALL,180,STR,0,0,0,모든 적에게 힘의 180% 공명 피해. 사용 후 자신의 TP가 50 감소한다 (필살기)
 GS1,GEORK,고행길,NONE,0,NONE,NONE,0,STR,1,0,0,자신의 HP를 8 잃고 분노를 40 얻는다 (기본 스킬)
 GS6,GEORK,연속 베기,RAGE,15,SLASH,ENEMY,70,STR,0,10,0,적 하나를 힘의 70%(강화 시 80/90%) 참격으로 두 번 벤다
 GS7,GEORK,기사도,NONE,0,NONE,NONE,20,STR,0,10,1,(패시브) 자신을 노리는 적에게 주는 피해가 20%(강화 시 30/40%) 증가한다
@@ -15,3 +10,9 @@ HS2,HONGDANHYANG,치유의 빛,MP,8,NONE,MEMBER,120,INT,0,0,0,아군 하나의 H
 HS3,HONGDANHYANG,마력 폭풍,MP,12,MAGIC,ENEMY_ALL,80,INT,0,0,0,모든 적에게 지능의 80% 마법 피해를 준다
 HS4,HONGDANHYANG,수호 축복,MP,8,NONE,MEMBER,100,INT,0,0,0,아군 하나에게 지능의 100%만큼 실드를 부여한다
 HU1,HONGDANHYANG,만개,MP,20,NONE,TEAM,150,INT,0,0,0,아군 전원의 HP를 지능의 150% 회복시키고 그 절반만큼 실드를 부여한다. 사용 후 자신의 TP가 50 감소한다 (필살기)
+ES5,ERIS,권능 : 찌르기,HP,4,RESONANCE,ENEMY,130,STR,0,20,0,적 하나에게 힘의 130%(강화 시 150/170%) 공명 피해를 준다
+ES6,ERIS,부서지세요,HP,5,RESONANCE,ENEMY,90,STR,0,10,0,적 하나에게 힘의 90%(강화 시 100/110%) 공명 피해를 주고 방어력을 10(강화 시 15/20) 낮춘다 (3턴)
+ES7,ERIS,권능 : 파괴,HP,5,RESONANCE,ENEMY,50,STR,0,10,0,적 하나에게 힘의 50%(강화 시 60/70%) 공명 피해를 준다. 전투 중 사용할 때마다 이 스킬의 계수가 30%씩 오른다
+ES8,ERIS,얼마나 버틸까요,HP,6,RESONANCE,ENEMY,100,STR,0,0,0,적 하나의 방어력을 50(강화 시 100/150) 낮춘 뒤 힘의 100% 공명 피해를 준다 (1턴)
+ES9,ERIS,압력 분출,HP,8,RESONANCE,ENEMY_ALL,50,STR,0,10,0,모든 적에게 힘의 50%(강화 시 60/70%) 공명 피해를 준다. 이 공격으로 적이 사망하면 반복한다
+ES10,ERIS,찢어 줄게요,HP,10,RESONANCE,ENEMY,150,STR,0,50,0,적 하나에게 힘의 150%(강화 시 200/250%) 공명 피해를 준다. 1차 변신 상태에서 2회, 광기 상태에서 3회 반복한다

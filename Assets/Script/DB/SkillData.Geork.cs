@@ -24,6 +24,7 @@ public static partial class SkillData
         for (int hit = 0; hit < 2; hit++)
         {
             if (targets[0] == null || targets[0].isDying) yield break; // 첫 타로 사망하면 종료
+            if (hit > 0) M_TurnManager.instance.PlayPlayerActionAnimation(user, "Attack1"); // 2타 — 공격 모션 다시 재생 (1타 모션은 스킬 시작 시 M_TurnManager가 건다)
             yield return BattleActions.AttackTarget(user, targets[0], BattleActions.SkillDamage(user, skill), skill.attribute);
         }
     }
@@ -52,6 +53,7 @@ public static partial class SkillData
     {
         for (int wave = 0; wave < 2; wave++)
         {
+            if (wave > 0) M_TurnManager.instance.PlayPlayerActionAnimation(user, "Attack1"); // 2회째 회전 — 공격 모션 다시 재생 (1회째는 스킬 시작 시 M_TurnManager가 건다)
             foreach (TargetObject target in targets)
             {
                 if (target == null || target.isDying) continue;

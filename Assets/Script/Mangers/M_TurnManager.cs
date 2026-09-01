@@ -199,6 +199,23 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         playerOrder[newIndex] = temp;
     }
 
+    // 거점 대열 교환 — 좌상단 오더 배너(PlayerOrder) 클릭: 활성 배너와 다른 배너를 클릭하면 두 캐릭터의 위치를 서로 바꾼다 (2026-09-01).
+    // 두 GamePlayer가 모두 요청자 소유(싱글 3인 파티)일 때만, 거점(비전투)에서만 — 전투 중 대열 이동은 TP 행동 '이동'이 담당
+    [Command(requiresAuthority = false)]
+    public void CmdSwapPlayerOrderInHub(uint netIdA, uint netIdB, NetworkConnectionToClient sender = null)
+    {
+        if(phase != BattleTurn.NONE_BATTLE_SCENE || isSceneTransitioning) return;
+        if(M_HubManager.instance == null || !M_HubManager.instance.isInHub) return;
+        GamePlayer playerA = NetLookup.Server<GamePlayer>(netIdA);
+        GamePlayer playerB = NetLookup.Server<GamePlayer>(netIdB);
+        if(playerA == null || playerB == null || playerA == playerB) return;
+        if(sender != null && (playerA.connectionToClient != sender || playerB.connectionToClient != sender)) return;
+        int indexA = playerOrder.IndexOf(netIdA);
+        int indexB = playerOrder.IndexOf(netIdB);
+        if(indexA < 0 || indexB < 0) return;
+        SwapPlayerOrder(indexA, indexB);
+    }
+
     [Server]
     public void OnChangedPhase()
     {

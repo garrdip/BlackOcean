@@ -122,9 +122,10 @@ public partial class GamePlayer
             && GUI.Button(new Rect(Screen.width - 450f, 10f, 140f, 30f), $"위험도 +1 ({M_HubManager.instance.hazardLevel})"))
             M_HubManager.instance.CmdDebugRaiseHazard();
 
-        // 디버그 레벨업 버튼 — 다음 레벨까지 경험치 즉시 지급 (스킬트리 버튼 왼쪽)
-        if (GUI.Button(new Rect(Screen.width - 300f, 10f, 140f, 30f), $"레벨업 (Lv.{level})"))
-            CmdDebugLevelUp();
+        // 디버그 레벨업 버튼 — 소유한 모든 캐릭터(싱글 3인 파티)를 한 번에 다음 레벨로 (스킬트리 버튼 왼쪽). 표시 레벨은 현재 제어 캐릭터
+        if (GUI.Button(new Rect(Screen.width - 300f, 10f, 140f, 30f), $"레벨업 전원 (Lv.{level})"))
+            foreach (GamePlayer owned in PlayerRegistry.Local.ownedPlayers)
+                if (owned != null) owned.CmdDebugLevelUp();
 
         Rect toggleRect = new Rect(Screen.width - 150f, 10f, 140f, 30f);
         if (GUI.Button(toggleRect, guiTreeOpen ? "스킬트리 닫기" : $"스킬트리 (P:{skillPoints})"))

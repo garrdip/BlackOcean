@@ -86,6 +86,14 @@ public static class BattleActions
     public static IEnumerator AttackTarget(TargetObject from, TargetObject to, int damage, AttackAttribute attribute)
     {
         if (from == null || to == null || to.isDying) yield break;
+        // 피격 시점 지연 — 공격 모션 시작 후 첫 타격을 늦춘다 (에리스 0.5초, M_TurnManager.PlayPlayerActionAnimation이 설정). 한 모션당 한 번만 소비
+        if (from.pendingHitDelay > 0f)
+        {
+            float hitDelay = from.pendingHitDelay;
+            from.pendingHitDelay = 0f;
+            yield return new WaitForSeconds(hitDelay);
+            if (to == null || to.isDying) yield break; // 기다리는 사이 대상이 사라졌으면 중단
+        }
         // 기사도 (게오르크 공격트리 패시브 GS7) — 자신을 노리는 적에게 주는 피해 증가 (레벨당 20/30/40%)
         int chivalryPercent = ChivalryBonusPercent(from, to);
         if (chivalryPercent > 0)

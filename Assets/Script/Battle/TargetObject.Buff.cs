@@ -118,6 +118,10 @@ public partial class TargetObject
         // 위험도 가중치 — 몬스터의 방어 획득량 보정 (몬스터별 MonsterStatDB HazardDef x 위험도, 위험도 시스템)
         if(objectType == ObjectType.ENEMY && monster != null)
             value = monster.ScaledDefense(value);
+        // 방어력 저하 디버프(ICHI_DEFENSE 음수 — 에리스 '부서지세요'/'얼마나 버틸까요', 감시자의 방어 저하)는 획득량에서 차감.
+        // 양수(방어 상승 버프)는 기존처럼 호출부가 직접 더하므로(창병 등) 여기서는 음수만 반영해 이중 계산을 피한다
+        int defenseDown = Mathf.Min(0, GetBuffValue(BuffType.ICHI_DEFENSE));
+        value = Mathf.Max(0, value + defenseDown);
         defense += value;
     }
 

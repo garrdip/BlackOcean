@@ -81,6 +81,18 @@ public static partial class SkillData
     }
 
     /// <summary>해당 캐릭터의 스킬 목록. 스킬트리(Phase 3) 도입 전까지는 캐릭터의 전체 스킬을 보유한 것으로 취급한다</summary>
+    // 스킬 실행 시 재생할 플레이어 모션 — 기본은 공격 모션 "Attack1"(임시 공용), 예외만 등록 (에리스는 M_TurnManager가 변신 프리픽스를 붙인다)
+    static readonly Dictionary<string, string> skillMotions = new Dictionary<string, string>
+    {
+        { "GS1", "Defense0" }, // 고행길 — 자해·분노 충전이라 방어 자세
+    };
+
+    public static string GetMotion(SkillDef skill)
+    {
+        if (skill != null && skillMotions.TryGetValue(skill.skillNo, out string motion)) return motion;
+        return "Attack1";
+    }
+
     public static List<SkillDef> GetSkillsByCharacter(Character character)
     {
         EnsureLoaded();

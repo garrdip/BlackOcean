@@ -126,6 +126,8 @@ public partial class TargetObject
     // 애니메이션: 1차 변신 "Change1" → 완료 시 "ChIdle", 광기 "Change2" → "VIdle", 하향은 "RChange2"(광기→1차) / "RChange1"(1차→기본).
     // 변신 모션이 끝나면 OnAnimationComplete(TargetObject.cs)가 현재 erisMode 프리픽스(GetErisMode) + "Idle"을 재생하므로 여기서는 모션만 건다
     public bool erisReviveUsed = false; // 꿈을 본 인형 — 치사 피해를 HP 1로 버티는 부활은 한 전투에 한 번 (TargetObject는 전투마다 새로 스폰되므로 자연 리셋)
+    public int erisDestroyUses = 0;     // '권능 : 파괴'(ES7) 이번 전투 사용 횟수 — 사용마다 계수 +30%p (SkillData.Eris), 전투마다 자연 리셋
+    public float pendingHitDelay = 0f;  // 공격 모션 시작 후 첫 타격까지의 지연(초) — M_TurnManager.PlayPlayerActionAnimation이 설정(BalanceDB {캐릭터}_{모션}_HIT_DELAY_MS 우선, 없으면 {캐릭터}_ATTACK_HIT_DELAY_MS — 에리스 1.0 / 게오르크 Attack0 0.6·Attack1 0.5), BattleActions.AttackTarget이 소비
 
     [Server]
     public void UpdateErisMode()
