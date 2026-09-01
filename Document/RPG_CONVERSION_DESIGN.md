@@ -97,7 +97,10 @@
 ## 기본 스킬 (턴소모 하지 않음)
 - 게오르크 : 고행길 ( 자신에게 디버프 부여, 분노 상승 )
 - 홍단향 : 철귀 이동 ( 자신의 턴 종료시, 공격 및 방어력 제공(방어력 버프개념) )
-- 에리스 : 자해 ( 자신의 HP 소모 )
+- 에리스 : 자해(적절한 이름으로 변경) ( 자신의 HP 소모하고 TP를 50 회복 )
+- 구현 (2026-09-01): SkillDB `Innate=1` 스킬(GS1 고행길 / HS0 철귀 이동 / ES1 피의 질주)은 **턴을 소모하지 않는다** — `M_TurnManager.ExecutePlayerTpTurn`이 기본 스킬 실행 후 다시 입력을 기다린다. 턴당 1회(`tpUsedInnateSkillNo`, 재사용 시 토스트·버튼 비활성, 로컬라이즈 `ui.msg.skill_innate_used`).
+  철귀 이동(HS0, MEMBER 대상, MP 0): 철귀를 아군에게 텔레포트(`ironDemonLocation`, 카드 전투 철귀 연출 재사용). 홍단향의 턴이 끝날 때마다 철귀가 붙은 아군(기본 자신)이 실드 `HS0_DEFENSE`(10) + 공격력 `HS0_ATTACK`(3, ICHI_ATTACK — 그 아군의 다음 턴 종료까지)을 얻는다(`ApplyPlayerTurnEndEffects`).
+  피의 질주(ES1 — '자해'의 임시 이름, SkillDB에서 변경 가능): 최대 HP의 `ERIS_SELF_HARM_PERCENT`(10)%를 잃고(HP 1 미만 불가) TP `ES1_TP_GAIN`(50) 회복. 플레이어의 공격력 버프/디버프(ICHI_ATTACK)는 `BattleActions`가 계수 스탯에 플랫 가감하도록 추가(감시자의 공격 저하도 이제 TP 전투에서 유효). 수치는 임시.
 
 ## 에리스 변신 매커니즘
 - 체력 40% 이하 : 1차 변신 - 공격력 20% 증가

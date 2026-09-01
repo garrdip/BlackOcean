@@ -1136,3 +1136,4 @@ ui.msg.hub_heal_paid,Paid {0} gold — the party's HP is fully restored,{0} 골�
 ui.msg.hub_heal_no_gold,Not enough gold (healing costs {0} gold),골드가 부족합니다 (회복 비용 {0} 골드)
 ui.msg.hub_heal_not_needed,The party's HP and MP are already full — no healing needed,파티의 체력과 MP가 모두 최대입니다 — 회복이 필요하지 않습니다
 ui.msg.skill_cost_short,{0} — not enough resources to use,{0} — 자원이 부족해 사용할 수 없습니다
+ui.msg.skill_innate_used,{0} — already used this turn,{0} — 이번 턴에 이미 사용했습니다

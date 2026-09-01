@@ -159,3 +159,4 @@ ui.msg.hub_heal_paid,{0} 골드를 내고 파티의 체력을 모두 회복했�
 ui.msg.hub_heal_no_gold,골드가 부족합니다 (회복 비용 {0} 골드)
 ui.msg.hub_heal_not_needed,파티의 체력과 MP가 모두 최대입니다 — 회복이 필요하지 않습니다
 ui.msg.skill_cost_short,{0} — 자원이 부족해 사용할 수 없습니다
+ui.msg.skill_innate_used,{0} — 이번 턴에 이미 사용했습니다

@@ -1128,3 +1128,4 @@ ui.msg.hub_heal_paid,{0} Gold bezahlt — die LP der Gruppe sind vollständig wi
 ui.msg.hub_heal_no_gold,Nicht genug Gold (Heilung kostet {0} Gold),골드가 부족합니다 (회복 비용 {0} 골드)
 ui.msg.hub_heal_not_needed,LP und MP der Gruppe sind bereits voll — keine Heilung nötig,파티의 체력과 MP가 모두 최대입니다 — 회복이 필요하지 않습니다
 ui.msg.skill_cost_short,{0} — nicht genug Ressourcen zum Einsatz,{0} — 자원이 부족해 사용할 수 없습니다
+ui.msg.skill_innate_used,{0} — in diesem Zug bereits eingesetzt,{0} — 이번 턴에 이미 사용했습니다

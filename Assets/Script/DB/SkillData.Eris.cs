@@ -9,6 +9,17 @@ using ProjectD;
 // 변신 배율(1차 +20% / 광기 +50%)은 BattleActions.SkillDamage가 상시 적용한다.
 public static partial class SkillData
 {
+    // 피의 질주 (기본 스킬 '자해', 턴 소모 없음) — 최대 HP의 ERIS_SELF_HARM_PERCENT(10)%만큼 HP를 잃고 TP를 ES1_TP_GAIN(50) 회복한다.
+    // HP 1 미만 불가(HP 1이면 HP 소모 없이 TP만). 변신(40%/10%) 진입과 턴 가속을 겸한다. 이름은 SkillDB에서 변경 가능
+    public static IEnumerator ES1(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        int amount = Mathf.Max(1, user.playerMaxHP * BalanceData.Get("ERIS_SELF_HARM_PERCENT", 10) / 100);
+        amount = Mathf.Min(amount, user.playerHP - 1);
+        if (amount > 0) user.LosePlayerHP(amount); // SetPlayerHP → UpdateErisMode가 변신 판정
+        M_TurnManager.instance.AddTpTo(user, BalanceData.Get("ES1_TP_GAIN", 50));
+        yield break;
+    }
+
     // 권능 : 찌르기 — 힘의 (130/150/170)% 공명 피해
     public static IEnumerator ES5(SkillDef skill, TargetObject user, List<TargetObject> targets)
     {

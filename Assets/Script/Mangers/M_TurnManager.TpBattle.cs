@@ -44,6 +44,9 @@ public partial class M_TurnManager
     [SyncVar]
     public uint tpCurrentUnitNetId; // 액션 입력을 기다리는 플레이어 유닛(TargetObject)의 netId. 0 = 대기 없음
 
+    [SyncVar]
+    public string tpUsedInnateSkillNo = ""; // 이번 턴에 이미 사용한 기본 스킬(innate) — 턴당 1회 제한 (서버가 판정, 클라 GUI는 버튼 비활성)
+
     /// <summary>클라이언트 표시용 TP 스냅샷 (유닛 netId + 현재 TP). 게이지 진행/턴/브레이크 시점마다 서버가 갱신</summary>
     public struct TpGaugeSnapshot
     {
@@ -225,6 +228,9 @@ public partial class M_TurnManager
             unit.target.player.currentResource = Mathf.Min(unit.target.player.maxResource,
                 unit.target.player.currentResource + unit.target.player.control / Mathf.Max(1, BalanceData.Get("MP_REGEN_CONTROL_DIVISOR", 2)));
 
+        tpUsedInnateSkillNo = "";
+        while (true) // 기본 스킬(innate — 고행길/철귀 이동/자해)은 턴을 소모하지 않는다: 사용 후 다시 입력을 기다린다 (턴당 1회)
+        {
         tpActionSubmitted = false;
         tpCurrentUnitNetId = unit.target.netId;
         while (!tpActionSubmitted)
@@ -240,6 +246,7 @@ public partial class M_TurnManager
 
         (TpAction action, string skillNo, uint targetNetId, int row) = tpSubmittedAction;
         GamePlayer gamePlayer = unit.target.player;
+        bool freeAction = false; // true면 턴을 소모하지 않고 다시 입력 대기
         switch (action)
         {
             case TpAction.ATTACK:
@@ -266,14 +273,18 @@ public partial class M_TurnManager
                 SkillData.SkillDef skill = SkillData.Get(skillNo);
                 if (skill != null && gamePlayer.KnowsSkill(skillNo)) // 스킬트리 습득 여부 서버 검증
                 {
-                    if (PayCost(unit.target, skill))
+                    if (skill.innate && tpUsedInnateSkillNo == skill.skillNo)
+                        TargetInnateSkillAlreadyUsed(gamePlayer.connectionToClient, skill.skillName); // 기본 스킬은 턴당 1회
+                    else if (PayCost(unit.target, skill))
                     {
                         PlayPlayerActionAnimation(unit.target, SkillData.GetMotion(skill)); // 스킬 모션 — 기본 Attack1(임시 공용), 예외는 SkillData.skillMotions (고행길 Defense0 등)
                         yield return skill.execute(skill, unit.target, ResolveSkillTargets(skill, targetNetId));
+                        if (skill.innate) tpUsedInnateSkillNo = skill.skillNo;
                     }
                     else
-                        TargetSkillCostRefused(gamePlayer.connectionToClient, skill.skillName); // 자원 부족 — 침묵 대신 요청자에게 토스트 (턴은 소비됨)
+                        TargetSkillCostRefused(gamePlayer.connectionToClient, skill.skillName); // 자원 부족 — 침묵 대신 요청자에게 토스트
                 }
+                if (skill != null && skill.innate) freeAction = true; // 기본 스킬은 성공/거부와 무관하게 턴을 소모하지 않는다
                 break;
             }
             case TpAction.MOVE:
@@ -303,6 +314,39 @@ public partial class M_TurnManager
                 break;
             }
         }
+        if (!freeAction) break; // 일반 행동 → 턴 종료. 기본 스킬이었으면 다시 입력 대기
+        }
+        ApplyPlayerTurnEndEffects(unit.target);
+    }
+
+    // 턴 종료 효과 — 홍단향 철귀: 자기 턴이 끝날 때 철귀가 붙어 있는 아군(기본은 자신)에게 실드(HS0_DEFENSE)와
+    // 공격력 버프(HS0_ATTACK, ICHI_ATTACK — 그 아군의 다음 턴 종료까지)를 준다. 철귀 위치는 기본 스킬 '철귀 이동'(HS0)이 바꾼다
+    [Server]
+    void ApplyPlayerTurnEndEffects(TargetObject user)
+    {
+        if (user == null || user.player == null || user.player.character != Character.HONGDANHYANG) return;
+        TargetObject holder = user.ironDemonLocation != null ? user.ironDemonLocation : user;
+        if (holder.isDying || holder.objectType != ObjectType.PLAYER || holder.playerHP <= 0) return;
+        holder.GainDefense(BalanceData.Get("HS0_DEFENSE", 10));
+        ApplyTimedDebuffTo(holder, BuffType.ICHI_ATTACK, BalanceData.Get("HS0_ATTACK", 3), 1, user);
+        AnimIronDemon("Buff0", user);
+    }
+
+    // 기본 스킬 턴당 1회 제한 안내 — 요청한 플레이어에게만 토스트
+    // (이름 주의: 'TargetInnateAlreadyUsed'는 SpawnedMonster.RpcPlayHitAnimation과 Mirror 16비트 RPC 해시가 충돌해 몬스터 피격 RPC가 유실됐음 — 2026-09-01 개명)
+    [TargetRpc]
+    void TargetInnateSkillAlreadyUsed(NetworkConnectionToClient conn, string skillName)
+    {
+        string text = M_LanguageManager.Get("ui.msg.skill_innate_used", "{0} — 이번 턴에 이미 사용했습니다").Replace("{0}", skillName);
+        M_MessageManager.instance
+            .MakeToast()
+            .Position(ToastPosition.Top)
+            .FadeInTime(1f)
+            .FadeOutTime(1f)
+            .MessageBoxColor(ColorUtils.HexToColor("#B22222"))
+            .TextColor(Color.white)
+            .Text(text)
+            .Show();
     }
 
     // 스킬 코스트 지불 가능 여부 — 서버(PayCost)와 클라이언트(OnGUI 버튼 비활성)가 같은 규칙을 쓴다. playerHP/currentResource는 SyncVar
@@ -460,8 +504,10 @@ public partial class M_TurnManager
         StartAnimation(user, 0, prefix + animationName, false);
         // 피격 시점 지연 — 모션 시작 후 첫 피해까지 대기. 모션별 키({캐릭터}_{모션}_HIT_DELAY_MS, 예 GEORK_ATTACK0 600 / GEORK_ATTACK1 500)가 있으면 우선,
         // 없으면 캐릭터 공통 키({캐릭터}_ATTACK_HIT_DELAY_MS, 예 ERIS 1000), 둘 다 없으면 0. 모션 뒤 첫 타격(BattleActions.AttackTarget)이 소비한다
-        int delayMs = BalanceData.Get($"{user.player.character}_{animationName.ToUpperInvariant()}_HIT_DELAY_MS", -1);
-        if (delayMs < 0) delayMs = BalanceData.Get($"{user.player.character}_ATTACK_HIT_DELAY_MS", 0);
+        // 키는 선택적이라 TryGet(로그 없음)으로 조회 — 홍단향처럼 키가 없는 캐릭터/모션은 조용히 0
+        if (!BalanceData.TryGet($"{user.player.character}_{animationName.ToUpperInvariant()}_HIT_DELAY_MS", out int delayMs)
+            && !BalanceData.TryGet($"{user.player.character}_ATTACK_HIT_DELAY_MS", out delayMs))
+            delayMs = 0;
         user.pendingHitDelay = delayMs / 1000f;
     }
 
@@ -740,7 +786,7 @@ public partial class M_TurnManager
             buttonX += 95f;
             foreach (SkillData.SkillDef skill in myPlayer.GetUsableSkills()) // 기본 스킬 + 스킬트리 습득분만 표시
             {
-                GUI.enabled = CanPayCost(currentUnit, skill); // 자원 부족 스킬은 비활성 (서버 PayCost와 같은 규칙)
+                GUI.enabled = CanPayCost(currentUnit, skill) && !(skill.innate && tpUsedInnateSkillNo == skill.skillNo); // 자원 부족·이번 턴에 이미 쓴 기본 스킬은 비활성 (서버와 같은 규칙)
                 bool pressed = GUI.Button(new Rect(buttonX, y, 130f, lineHeight), $"{skill.skillName}({skill.cost})");
                 GUI.enabled = true;
                 if (pressed)

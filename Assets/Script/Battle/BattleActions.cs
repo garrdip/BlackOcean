@@ -17,6 +17,7 @@ public static class BattleActions
     {
         if (user == null || user.player == null) return 0;
         int stat = skill.scalesWithInt ? user.player.TotalIntelligence : user.player.TotalStrength; // 장비 합산치
+        stat = Mathf.Max(0, stat + user.GetBuffValue(BuffType.ICHI_ATTACK)); // 공격력 버프/디버프 (철귀 +3, 감시자의 공격 저하 등) — 계수 스탯에 플랫 가감
         int skillLevel = user.player.GetSkillLevel(skill.skillNo); // 스킬트리 SKILL_LEVEL 노드 + 장비 스킬레벨 옵션
         int power = skill.power;
         if (skill.powerPerLevel > 0)
@@ -40,6 +41,7 @@ public static class BattleActions
         if (user == null || user.player == null) return 0;
         CharacterStatData.Entry stat = CharacterStatData.Get(user.player.character);
         int attackStat = (stat != null && stat.attackScalesWithInt) ? user.player.TotalIntelligence : user.player.TotalStrength; // 장비 합산치
+        attackStat = Mathf.Max(0, attackStat + user.GetBuffValue(BuffType.ICHI_ATTACK)); // 공격력 버프/디버프 (철귀 +3, 감시자의 공격 저하 등)
         return ScaleByErisMode(user, ScaleByRow(user, Mathf.Max(1, attackStat * BalanceData.Get("BASIC_ATTACK_POWER", 100) / 100)));
     }
 

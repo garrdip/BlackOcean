@@ -5,9 +5,25 @@ using ProjectD;
 
 // SkillData partial — 홍단향 스킬 효과 구현 (MP 자원 — 자기 턴 시작 시 소량 회복, 물약은 Phase 4).
 // 메서드명 = SkillDB.csv의 SkillNo. 서버 코루틴에서만 실행된다.
-// 기본 스킬 '철귀 이동'(턴 종료 시 공·방 버프)은 철귀 시스템 재설계와 함께 후속 작업.
+// 기본 스킬 '철귀 이동'(HS0, 턴 소모 없음): 철귀를 아군에게 붙이고, 턴 종료 효과(M_TurnManager.ApplyPlayerTurnEndEffects)가 그 아군에게 실드·공격 버프를 준다 (2026-09-01).
 public static partial class SkillData
 {
+    // 철귀 이동 (기본 스킬, 턴 소모 없음) — 철귀를 아군 하나에게 보낸다 (자신 포함). 연출은 카드 전투의 IronDemonReturnProcess와 같은 텔레포트 순서.
+    // 효과: 자기 턴 종료마다 철귀가 붙은 아군이 실드 HS0_DEFENSE + 공격력 HS0_ATTACK(다음 자기 턴 종료까지) — BalanceDB
+    public static IEnumerator HS0(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        if (targets.Count == 0) yield break;
+        TargetObject target = targets[0];
+        if (target == null || target.isDying || target == user.ironDemonLocation) yield break; // 이미 그곳에 있으면 이동 없음
+        M_TurnManager.instance.AnimIronDemon("TeleportGo", user);
+        yield return new WaitForSeconds(0.333f); // 철귀가 완전히 사라지는 시간
+        user.ironDemonLocation = target;
+        M_TurnManager.instance.MoveIronDemon(user, target);
+        M_TurnManager.instance.AnimIronDemon("TeleportBack", user);
+        yield return new WaitForSeconds(0.2f);
+        M_TurnManager.instance.AnimIronDemon("Idle", user);
+    }
+
     // 화염구 — 단일 마법 피해
     public static IEnumerator HS1(SkillDef skill, TargetObject user, List<TargetObject> targets)
     {

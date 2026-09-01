@@ -34,4 +34,11 @@ public static class BalanceData
         Debug.LogError($"[BalanceData] BalanceDB에 없는 키: {key} — 기본값 {fallback} 사용");
         return fallback;
     }
+
+    /// <summary>선택적 키 조회 — 없어도 정상인 키(캐릭터/모션별 피격 지연 등)용. 로그 없이 존재 여부만 반환.</summary>
+    public static bool TryGet(string key, out int value)
+    {
+        EnsureLoaded();
+        return values.TryGetValue(key, out value);
+    }
 }

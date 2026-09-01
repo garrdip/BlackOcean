@@ -37,9 +37,8 @@ public class RewardService : InstanceD<RewardService>
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
 
-                // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅(임시로 골드 + 카드 보상)
-                string cardRewardGuid = System.Guid.NewGuid().ToString();
-                gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = cardRewardGuid, reward_Type = Reward_Type.Card });
+                // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅 (임시로 골드 보상만).
+                // 카드 보상(Reward_Type.Card + 선택지 카드)은 RPG 전환으로 폐기 — 더 이상 카드 게임이 아님 (2026-09-01)
                 gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold, rewardGold = rewardGold });
 
                 // 경험치 보상 — 선택 없이 서버가 즉시 지급 (레벨업/스킬 포인트는 GamePlayer.AddExp)
@@ -54,18 +53,7 @@ public class RewardService : InstanceD<RewardService>
                 if(Random.Range(0, 100) < BalanceData.Get("POTION_DROP_PERCENT", 40))
                     gamePlayer.ServerAddRandomConsumable();
 
-                // 카드 보상 데이터 세팅
-                int rewardCardCount = gamePlayerDeck.maxRewardCardCount; // 플레이어별로 설정된 보상 카드 최대 갯수
-                List<Card> cardsByCharacter = M_CardManager.instance.cards.FindAll(card => card.baseCard.character == gamePlayer.character); // 카드매니저의 카드데이터 Synclist로부터 캐릭터별 카드 목록 추출
-                if(cardsByCharacter.Count > 0){
-                    for(int i = 0; i < rewardCardCount; i++){
-                        int randomIndex = Random.Range(0, cardsByCharacter.Count);
-                        Card rewardCard = cardsByCharacter[randomIndex].CardDeepCopy(false);
-                        rewardCard.guid = cardRewardGuid;
-                        gamePlayerDeck.rewardCards.Add(rewardCard);
-                        cardsByCharacter.RemoveAt(randomIndex);
-                    }
-                }
+                // (선택지 카드 rewardCards 세팅은 카드 보상 폐기로 제거 — 보상 팝업은 골드 항목만 표시하고, 수령/스킵 시 완료 처리된다)
                 // 플레이어 보상 상태 데이터 세팅
                 gamePlayerDeck.TargetPlayerRewarded(gamePlayerDeck.GetComponent<NetworkIdentity>().connectionToClient);
 

@@ -64,3 +64,7 @@ ERIS_DESTROY_RAMP_PERCENT,30,에리스 '권능 : 파괴' 전투 중 사용 1회�
 ERIS_ATTACK_HIT_DELAY_MS,1000,에리스 공격 모션 시작 후 피격(피해 적용)까지의 지연 ms — 기본 공격/스킬 공통, 모션당 첫 타격에만 적용
 GEORK_ATTACK0_HIT_DELAY_MS,600,게오르크 일반 공격(Attack0) 모션 시작 후 피격까지의 지연 ms
 GEORK_ATTACK1_HIT_DELAY_MS,500,게오르크 스킬 공격(Attack1 — 찌르기 계열) 모션 시작 후 피격까지의 지연 ms (모션별 키가 없는 캐릭터는 {캐릭터}_ATTACK_HIT_DELAY_MS 공통 키 사용)
+HS0_DEFENSE,10,홍단향 철귀 — 자기 턴 종료 시 철귀가 붙은 아군이 얻는 실드
+HS0_ATTACK,3,홍단향 철귀 — 자기 턴 종료 시 철귀가 붙은 아군이 얻는 공격력(다음 자기 턴 종료까지, ICHI_ATTACK)
+ERIS_SELF_HARM_PERCENT,10,에리스 자해(기본 스킬) — 최대 HP 대비 잃는 HP % (HP 1 미만 불가)
+ES1_TP_GAIN,50,에리스 피의 질주(기본 스킬 자해) — 사용 시 회복하는 TP

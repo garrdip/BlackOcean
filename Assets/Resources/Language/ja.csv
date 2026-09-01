@@ -1128,3 +1128,4 @@ ui.msg.hub_heal_paid,{0} ゴールドを支払い、パーティのHPを全回�
 ui.msg.hub_heal_no_gold,ゴールドが足りません（回復費用 {0} ゴールド）,골드가 부족합니다 (회복 비용 {0} 골드)
 ui.msg.hub_heal_not_needed,パーティのHPとMPはすでに最大です — 回復は必要ありません,파티의 체력과 MP가 모두 최대입니다 — 회복이 필요하지 않습니다
 ui.msg.skill_cost_short,{0} — リソースが足りず使用できません,{0} — 자원이 부족해 사용할 수 없습니다
+ui.msg.skill_innate_used,{0} — このターンはすでに使用しました,{0} — 이번 턴에 이미 사용했습니다

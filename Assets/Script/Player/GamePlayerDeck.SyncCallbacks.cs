@@ -239,6 +239,13 @@ public partial class GamePlayerDeck
                 rewardListItem.transform.SetParent(battleResultPopUp.rewardLayoutGroups[orderIndex].transform);
                 rewardListItem.transform.localScale = new Vector3(1, 1, 1);
                 RewardService.instance.rewardObjects.Add(rewardListItemObject);
+                // 탭 활성화 — 종전에는 선택지 카드 추가 콜백(OnRewardCardUpdated)이 담당했으나 카드 보상 폐기로 여기서 처리 (2026-09-01).
+                // 소유 파티원의 탭 버튼을 켜고, 아직 열린 탭이 없으면 이 탭을 연다 (3인 파티는 첫 파티원 탭, 나머지는 버튼만)
+                if(isOwned && orderIndex >= 0){
+                    battleResultPopUp.SetTabButtonIconByClass(gamePlayer.character, orderIndex);
+                    battleResultPopUp.tabButtons[orderIndex].gameObject.SetActive(true);
+                    if(battleResultPopUp.tabs.FindIndex(tab => tab.activeSelf) < 0) battleResultPopUp.ChangeTab(orderIndex);
+                }
                 break;
             case SyncList<Reward>.Operation.OP_REMOVEAT:
                 if(isOwned && rewards.Count <= 0){
