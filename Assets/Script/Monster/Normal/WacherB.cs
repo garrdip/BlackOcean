@@ -14,7 +14,7 @@ public class WacherB : SpawnedMonster
             case "힘증가" :
                 DoAnimation("Attack0");
                 yield return new WaitForSeconds(0.5f);
-                nextTargetObject.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent,null); // 수치 = MonsterDB ActionValue
+                nextTargetObject.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent); // 수치 = MonsterDB ActionValue
                 RpcStartSkillEffect(0, "Eff04_Buff", parent.transform.position, SFX_TYPE.Normal_Axe, 5, "Effect");
                 RpcStartSkillParticle(0, parent.transform.position + new Vector3(0f, 2.5f, 0f));
                 yield return new WaitForSeconds(0.833f);
@@ -33,7 +33,7 @@ public class WacherB : SpawnedMonster
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList){
                     RpcStartSkillEffect(0, "Eff04_Buff", tar.transform.position, SFX_TYPE.Normal_Axe, 5, "Effect");
-                    tar.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent,null); // 수치 = MonsterDB ActionValue
+                    tar.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent); // 수치 = MonsterDB ActionValue
                 }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();

@@ -5,8 +5,9 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using Mirror;
-using Gpm.Ui;
 
+// 게임 씬 공용 UI — 화면 전환(페이드/블록 트랜지션)과 페이즈 텍스트.
+// 카드 전투 UI(패 패널/이치/덱 버튼/카드 큐/턴 종료 버튼)는 카드 시스템 제거로 삭제됨 (2026-09-01).
 public class GameUIManager : SingletonD<GameUIManager>
 {
     [Header("게임 오브젝트")]
@@ -24,63 +25,8 @@ public class GameUIManager : SingletonD<GameUIManager>
     }
     public ScreenTransitionMode screenTransitionMode; // 스크린 전환 모드(페이드 인 아웃, 블록트랜지션 인 아웃)
 
-    [Header("카드 전투 UI")]
-    public GameObject CardOnHandsPanel;
-    public HorizontalLayoutGroup CurrentItchIconLayout;
-    public HorizontalLayoutGroup MaxItchIconLayout;
-    public GameObject CurrentItchPrefab;
-    public GameObject MaxItchPrefab;
-    public List<GameObject> currentIchiIcons = new List<GameObject>();
-    public List<GameObject> maxIchiIcons = new List<GameObject>();
-    public Button buttonEndTurn;
-
-    // 카드 전투 UI(CostMenu/TurnMenu — 이치 표시·턴 종료 버튼·덱 버튼)는 씬에서 제거됨. 카드 잔재 코드는 이 플래그로 접근을 막는다 (2B-5 카드 제거 시 함께 정리)
-    public bool HasCardUI => currentIchiText != null && buttonEndTurn != null;
-
-    public void SetEndTurnInteractable(bool interactable)
-    {
-        if(buttonEndTurn != null) buttonEndTurn.interactable = interactable;
-    }
-
-    public GameObject PrefareDeck;
-    public Button buttonPrefareDeck;
-    public GameObject iconPrefareDeckLight;
-    public Text textPrefareDeckCount;
-
-    public GameObject TrashDeck;
-    public Button buttonTrashDeck;
-    public GameObject iconTrashDeckLight;
-    public Text textTrashDeckCount;
-
-    public GameObject ForgottenDeck;
-    public Button buttonForgottenDeck;
-    public GameObject iconForgottenDeckLight;
-    public Text textForgottenDeckCount;
-
-    public TextMeshProUGUI textCurrentPhase;
-    public TextMeshProUGUI currentIchiText;
-    public TextMeshProUGUI maxIchiText;
-
-    [Header("카드 큐 UI")]
-    public InfiniteScroll infiniteScroll;
-    public ScrollRect cardQueueScrollRect;
-    public GameObject cardQueuePopUp;
-    public TextMeshProUGUI textCardQueueName;
-    public TextMeshProUGUI textCardQueueType;
-    public TextMeshProUGUI textCardQueueDesc;
-    public TextMeshProUGUI textCardOwnerName;
-    private Coroutine cardQueueScrollCoroutine;
-    public ScrollButtonDirection direction;
-    public Button leftScrollButton;
-    public Button rightScrollButton;
-    public float scrollSpeed;
-    private bool isPointerDown = false;
-    public enum ScrollButtonDirection
-    {
-        NONE,
-        LEFT,
-        RIGHT
-    }
+    [Header("전투 정보 UI")]
+    public TextMeshProUGUI textCurrentPhase; // MapInfo/CurrentPhaseBG/TextCurrentPhase — 페이즈 표시. TP 전투 턴 순서 텍스트(M_TurnManager.TpBattle)가 스타일을 복제한다
 
 
     void Start()
@@ -97,123 +43,6 @@ public class GameUIManager : SingletonD<GameUIManager>
 
         ConfigScreenChangeMode(screenTransitionMode);
         screenTransition.material =  new Material(screenTransition.material); // 머티리얼 인스턴스 복사본을 생성하여 이미지의 머티리얼값에 할당(원본대신 복사본을 사용해 프로퍼티값 변경)
-        scrollSpeed = 500f;
-        // 카드 전투 UI(덱 버튼)는 씬에서 제거될 수 있음 — 참조가 없으면 건너뛴다 (NRE로 Start가 중단되던 문제)
-        if(buttonPrefareDeck != null) buttonPrefareDeck.onClick.AddListener(() => {
-            PopUpUIManager.instance.HandleShowPrefareDeckListPopUp(PlayerRegistry.Local.currentGamePlayerNetId);
-        });
-        if(buttonTrashDeck != null) buttonTrashDeck.onClick.AddListener(() => {
-            PopUpUIManager.instance.HandleShowTrashDeckListPopUp(PlayerRegistry.Local.currentGamePlayerNetId);
-        });
-        if(buttonForgottenDeck != null) buttonForgottenDeck.onClick.AddListener(() => {
-            PopUpUIManager.instance.HandShowForgottenDeckListPopUp(PlayerRegistry.Local.currentGamePlayerNetId);
-        });
-    }
-
-    void Update()
-    {
-        UpdateCardQueueScrollButtonVisibility();
-        HandleCardQueueScrollViewByButton();   
-    }
-
-    // 버튼으로 스크롤 뷰 제어
-    private void HandleCardQueueScrollViewByButton()
-    {
-        if(isPointerDown && cardQueueScrollRect != null){
-            float contentWidth = cardQueueScrollRect.content.rect.width;
-            float viewportWidth = cardQueueScrollRect.viewport.rect.width;
-            float maxScrollWidth = contentWidth - viewportWidth;
-            if(maxScrollWidth <= 0){
-                return;
-            }
-            float scrollAmount = (scrollSpeed / maxScrollWidth) * Time.deltaTime;
-            if(direction == ScrollButtonDirection.LEFT){
-                cardQueueScrollRect.horizontalNormalizedPosition = Mathf.Clamp01(cardQueueScrollRect.horizontalNormalizedPosition - scrollAmount);
-            }else{
-                cardQueueScrollRect.horizontalNormalizedPosition = Mathf.Clamp01(cardQueueScrollRect.horizontalNormalizedPosition + scrollAmount);
-            }
-        }
-    }
-
-    // 스크롤 뷰 내부 컨텐츠요소의 길이에 따라 스크롤 버튼의 활성화 상태 변경 (상태가 바뀔 때만 SetActive 호출)
-    private void UpdateCardQueueScrollButtonVisibility()
-    {
-        if(cardQueueScrollRect != null){
-            float contentWidth = cardQueueScrollRect.content.rect.width;
-            float viewportWidth = cardQueueScrollRect.viewport.rect.width;
-            bool leftVisible;
-            bool rightVisible;
-            if(contentWidth <= viewportWidth){
-                leftVisible = false;
-                rightVisible = false;
-            }else{
-                float scrollPosition = cardQueueScrollRect.horizontalNormalizedPosition;
-                leftVisible = scrollPosition > 0.01f;
-                rightVisible = scrollPosition < 0.99f;
-            }
-            if(leftScrollButton.gameObject.activeSelf != leftVisible){
-                leftScrollButton.gameObject.SetActive(leftVisible);
-            }
-            if(rightScrollButton.gameObject.activeSelf != rightVisible){
-                rightScrollButton.gameObject.SetActive(rightVisible);
-            }
-        }
-    }
-
-    // 뽑을덱, 버린덱, 잊혀진덱 버튼의 크기 변경 애니매이션
-    public void DeckButtonScaleAnimation(Button button)
-    {
-        Vector3 chagenScale = new Vector3(1.5f, 1.5f, 1.5f);
-        Vector3 originScale = new Vector3(1f, 1f, 1f);
-        button.GetComponent<RectTransform>().DOScale(chagenScale, 0.1f).OnComplete(() => {
-            button.GetComponent<RectTransform>().DOScale(originScale, 0.1f);
-        });
-    }
-
-    public void CardQueueScrollToEnd()
-    {
-        if(cardQueueScrollCoroutine != null){
-            StopCoroutine(cardQueueScrollCoroutine);
-        }
-        cardQueueScrollCoroutine = StartCoroutine(MoveScrollToEnd());
-    }
-
-    private IEnumerator MoveScrollToEnd()
-    {
-        yield return null;
-        float startPosition = cardQueueScrollRect.horizontalNormalizedPosition;
-        float targetPosition = 1f;
-        float elapsedTime = 0f;
-        float scrollDuration = 0.5f;
-        while (elapsedTime < scrollDuration)
-        {
-            cardQueueScrollRect.horizontalNormalizedPosition = Mathf.Lerp(startPosition, targetPosition, elapsedTime / scrollDuration);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-    }
-
-    public void HandleCardQueuePopUp(CardQueue cardQueue, bool isOpen)
-    {
-        if(isOpen){
-            GamePlayerDeck gamePlayerDeck = NetLookup.Client<GamePlayerDeck>(cardQueue.cardOwnerNetId);
-            string playerName = gamePlayerDeck.GetComponent<GamePlayer>().objectOwner.steamPersonaName;
-            textCardOwnerName.text = playerName;
-            Card card = cardQueue.card;
-            // 다른 플레이어가 낸 카드도 각자의 언어로 보이도록 로컬 카드 데이터를 거친다
-            textCardQueueName.text = CardData.instance.GetLocalizedName(card.baseCard);
-            textCardQueueType.text = card.baseCard.cardType.ToString();
-            textCardQueueDesc.text = CardData.instance.ReplaceDescription(CardData.instance.GetLocalizedDescription(card.baseCard));
-            cardQueuePopUp.gameObject.SetActive(true);
-            cardQueuePopUp.GetComponent<CanvasGroup>().DOFade(1f, 0.25f);
-        }else{
-            textCardOwnerName.text = string.Empty;
-            textCardQueueName.text = string.Empty;
-            textCardQueueType.text = string.Empty;
-            textCardQueueDesc.text = string.Empty;
-            cardQueuePopUp.GetComponent<CanvasGroup>().alpha = 0f;
-            cardQueuePopUp.gameObject.SetActive(false);
-        }
     }
 
     // 화면 전환 모드에 따라 사용할 오브젝트 활성화 설정
@@ -257,7 +86,7 @@ public class GameUIManager : SingletonD<GameUIManager>
         }
     }
 
-    // 스크린 Fade In 시퀀스 
+    // 스크린 Fade In 시퀀스
     private void DoScreenFadeIn(System.Action callback = null)
     {
         screenFade.DOFade(1f, 1.0f).OnComplete(() => {
@@ -296,7 +125,7 @@ public class GameUIManager : SingletonD<GameUIManager>
         float elapsedTime = 0f;
 
         float initialScroll = 2.5f; // 진행상태 프로퍼티값의 초기값
-        float finalScroll = 0f;     // 진행상태 프로퍼티값의 최종값      
+        float finalScroll = 0f;     // 진행상태 프로퍼티값의 최종값
 
         while (elapsedTime < duration){
             elapsedTime += Time.deltaTime;
@@ -322,7 +151,7 @@ public class GameUIManager : SingletonD<GameUIManager>
         float elapsedTime = 0f;
 
         float initialScroll = 0f;     // TransitionIn에서 최종적으로 설정된 값
-        float finalScroll = 2.5f; // TransitionOut에서 되돌아갈 초기값      
+        float finalScroll = 2.5f; // TransitionOut에서 되돌아갈 초기값
 
         while (elapsedTime < duration){
             elapsedTime += Time.deltaTime;
@@ -337,66 +166,5 @@ public class GameUIManager : SingletonD<GameUIManager>
         }
         screenTransition.material.SetFloat("_Progress", finalScroll);
         screenTransition.enabled = false;
-    }
-
-    // ------------------------------------ 스크롤 버튼 이벤트 트리거 컴포넌트에 할당된 함수 -------------------------------------//
-    public void OnPointerEnterScrollView()
-    {
-        isPointerDown = false;
-        direction = ScrollButtonDirection.NONE;
-    }
-    
-    public void OnPointerDownLeftScrollButton()
-    {
-        isPointerDown = true;
-        direction = ScrollButtonDirection.LEFT;
-    }
-
-    public void OnPointerUpLeftScrollButton()
-    {
-        isPointerDown = false;
-        direction = ScrollButtonDirection.NONE;
-    }
-
-    public void OnPointerDownRightScrollButton()
-    {
-        isPointerDown = true;
-        direction = ScrollButtonDirection.RIGHT;
-    }
-
-    public void OnPointerUpRightScrollButton()
-    {
-        isPointerDown = false;
-        direction = ScrollButtonDirection.NONE;
-    }
-
-    public void OnPointerEnterButtonPrefareDeck()
-    {
-        iconPrefareDeckLight.SetActive(true);
-    }
-
-    public void OnPointerExitButtonPrefareDeck()
-    {
-        iconPrefareDeckLight.SetActive(false);
-    }
-
-    public void OnPointerEnterButtonTrashDeck()
-    {
-        iconTrashDeckLight.SetActive(true);
-    }
-
-    public void OnPointerExitButtonTrashDeck()
-    {
-        iconTrashDeckLight.SetActive(false);
-    }
-     
-    public void OnPointerEnterButtonForgottenDeck()
-    {
-        iconForgottenDeckLight.SetActive(true);
-    }
-
-    public void OnPointerExitButtonForgottenDeck()
-    {
-        iconForgottenDeckLight.SetActive(false);
     }
 }

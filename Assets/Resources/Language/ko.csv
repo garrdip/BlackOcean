@@ -22,7 +22,6 @@ ui.Room_Select_Cancel,취소
 ui.Room_Start,시작
 ui.Room_Send,전송
 ui.Room_Placeholder,메세지를 입력하세요.
-markup.multi_hit,{damage} {hits}번
 ui.MapInfoPopUpItem.TextRewardTitle,보상
 ui.MapInfoPopUpItem.TextRewardDetail,보상 내용
 ui.NPC_Mercurius.ButtonConsumable_Label,소모품

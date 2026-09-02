@@ -1,5 +1,4 @@
 Name,Number,Grade,EffectTime,Value,Description
 맹공의 문장,I0,NORMAL,STARTBATTLE,1,전투 시작 시 힘의 이치를 1 얻습니다.
 수호의 문장,I1,NORMAL,STARTBATTLE,1,전투 시작 시 방어의 이치를 1 얻습니다.
-심연의 그릇,I2,RARE,ONCEGET,1,최대 이치가 1 증가합니다.
 낡은 방패,I3,NORMAL,STARTTURN,3,턴 시작 시 방어도를 3 얻습니다.

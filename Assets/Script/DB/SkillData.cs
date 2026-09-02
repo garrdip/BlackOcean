@@ -87,6 +87,10 @@ public static partial class SkillData
         { "GS1", "Defense0" }, // 고행길 — 자해·분노 충전이라 방어 자세
         { "HS0", "Buff0" },    // 철귀 이동 — 소환수 지시
         { "ES1", "Buff0" },    // 자해 — 자기 HP 소모 (임시 — 전용 모션 확정 전)
+        { "GS17", "Buff1" },   // 쇠락 — 적 약화 (버프 모션)
+        { "GS18", "Attack2" }, // 압도의 일격 — 전용 공격 모션 (피격 지연 GEORK_ATTACK2_HIT_DELAY_MS)
+        { "GS19", "Buff1" },   // 북방의 위대한 투사 — 자기 강화
+        { "GS20", "Buff0" },   // 기도 — 아군 강화
     };
 
     public static string GetMotion(SkillDef skill)

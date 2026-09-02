@@ -15,7 +15,6 @@ public class Reward
 
 public enum Reward_Type{
     Item,
-    Card,
     Gold,
     Exp, // 경험치 (RPG 전환 — 전투 종료 시 서버가 즉시 지급, 목록 표시용)
 }

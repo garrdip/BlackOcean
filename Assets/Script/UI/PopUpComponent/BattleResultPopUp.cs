@@ -12,7 +12,6 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     public CanvasGroup canvasGroup;
     public List<GameObject> titles = new List<GameObject>();
     public List<GameObject> tabs = new List<GameObject>();
-    public List<HorizontalLayoutGroup> rewardCardLayoutGroups = new List<HorizontalLayoutGroup>(); // 카드 보상 레이아웃 리스트
     public List<VerticalLayoutGroup> rewardLayoutGroups = new List<VerticalLayoutGroup>(); // 전체 보상 목록 레이아웃 리스트
     public List<Button> tabButtons = new List<Button>();
     public List<Button> skipButtons = new List<Button>();
@@ -131,10 +130,9 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
                 int index = M_TurnManager.instance.playerOrder.FindIndex((netId) => netId == gamePlayer.netId);
                 tabButtons[index].gameObject.SetActive(true);
             }else{
-                RewardService.instance.ClearRewardCardAndPlayer();
                 RewardService.instance.ClearRewardListItem();
                 M_TurnManager.instance.NoneBattleEnd();
-            } 
+            }
         }
     }
 
@@ -167,14 +165,6 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
         }
     }
 
-    // 카드 보상 레이아웃 상태 변경
-    public void HidAllRewardCardLayouts(bool isActive)
-    {
-        foreach(HorizontalLayoutGroup horizontalLayoutGroup in rewardCardLayoutGroups){
-            horizontalLayoutGroup.gameObject.SetActive(isActive);
-        }
-    }
-
     // 스킵 버튼 상태 변경
     public void ChangeAllSkipButtonState(bool isActive)
     {
@@ -182,14 +172,6 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
             skipButton.interactable = isActive;
             skipButton.image.color = isActive ? new Color32(255, 255, 255, 255) : new Color32(255, 255, 255, 70);
         }
-    }
-
-    // 보상팝업 레이아웃 상태 변경(전체보상 목록, 카드보상 목록, 제목)
-    public void ChangeRewardLayoutState(int index, bool isActive)
-    {
-        rewardCardLayoutGroups[index].gameObject.SetActive(isActive);
-        titles[index].gameObject.SetActive(isActive);
-        rewardLayoutGroups[index].gameObject.SetActive(!isActive);
     }
 
     // 탭 버튼 아이콘 현재 캐릭터의 클래스 이미지로 세팅
@@ -215,22 +197,18 @@ public class BattleResultPopUp : SingletonD<BattleResultPopUp>
     public void OnChangeBattleResultPopUpShow()
     {
         canvasGroup.DOFade(1.0f, 0.5f);
-        M_CardManager.instance.RemoveAllCurrentPlayerArrow(); // 화살표 제거
-        M_CardManager.instance.ChangeCurrentPlayerCardOnHandState(false); // 남아있는 CardOnHand 오브젝트들의 상태값 초기화
     }
-    
+
     // BattleResultPopUp 비활성화 콜백
     public void OnChangeBattleResultPopUpHide()
     {
         RewardService.instance.ClearRewardListItem();
-        RewardService.instance.ClearRewardCardAndPlayer();
         RewardService.instance.playerRewardedDic.Clear();
         canvasGroup.DOFade(0.0f, 0.5f).OnComplete(() => {
             gameObject.SetActive(false);
         });
         HideAllTabs(false);
         HideAllTabButtons(false);
-        HidAllRewardCardLayouts(false);
         ChangeAllSkipButtonState(true);
-    } 
+    }
 }

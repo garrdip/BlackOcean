@@ -25,10 +25,6 @@ public class M_SaveManager : NetworkSingletonD<M_SaveManager>
             data.players[i].HP = games[i].HP;
             data.players[i].MaxHP = games[i].MaxHP;
             data.players[i].ownerSteamId = games[i].objectOwner.steamID;
-            foreach(Card card in games[i].GetComponent<GamePlayerDeck>().deck)
-            {
-                data.players[i].cards.Add(card);
-            }
         }
 
         File.WriteAllText(FilePath, JsonUtility.ToJson(data, true));

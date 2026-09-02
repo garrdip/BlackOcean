@@ -15,7 +15,7 @@ public class WacherA : SpawnedMonster
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
                     RpcStartSkillEffect(0, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Watcher, 0, "Effect");
-                    tar.GainBuff(BuffType.SOIRAK,nextAction.actionValue,true,false,true,false,parent,null); // 수치 = MonsterDB ActionValue
+                    tar.GainBuff(BuffType.SOIRAK,nextAction.actionValue,true,false,true,false,parent); // 수치 = MonsterDB ActionValue
                 }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
@@ -25,7 +25,7 @@ public class WacherA : SpawnedMonster
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
                     RpcStartSkillEffect(0, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Watcher, 1, "Effect");
-                    tar.GainBuff(BuffType.BOONGGUI,nextAction.actionValue,true,false,true,false,parent,null); // 수치 = MonsterDB ActionValue
+                    tar.GainBuff(BuffType.BOONGGUI,nextAction.actionValue,true,false,true,false,parent); // 수치 = MonsterDB ActionValue
                 }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
@@ -35,7 +35,7 @@ public class WacherA : SpawnedMonster
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
                     RpcStartSkillEffect(0, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Watcher, 2, "Effect");
-                    tar.GainBuff(BuffType.ICHI_ATTACK,-nextAction.actionValue,true,false,false,false,parent,null); // 감소량 = MonsterDB ActionValue
+                    tar.GainBuff(BuffType.ICHI_ATTACK,-nextAction.actionValue,true,false,false,false,parent); // 감소량 = MonsterDB ActionValue
                 }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
@@ -45,7 +45,7 @@ public class WacherA : SpawnedMonster
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
                     RpcStartSkillEffect(0, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Watcher, 3, "Effect");
-                    tar.GainBuff(BuffType.ICHI_DEFENSE,-nextAction.actionValue,true,false,false,false,parent,null); // 감소량 = MonsterDB ActionValue
+                    tar.GainBuff(BuffType.ICHI_DEFENSE,-nextAction.actionValue,true,false,false,false,parent); // 감소량 = MonsterDB ActionValue
                 }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();

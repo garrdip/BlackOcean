@@ -195,12 +195,12 @@ public partial class M_TurnManager
             existing.turnsLeft = Mathf.Max(existing.turnsLeft, turns);
             if (Mathf.Abs(value) > Mathf.Abs(existing.value))
             {
-                target.GainBuff(type, value - existing.value, true, false, false, false, from, null); // 강한 효과로 교체 (차액 반영)
+                target.GainBuff(type, value - existing.value, true, false, false, false, from); // 강한 효과로 교체 (차액 반영)
                 existing.value = value;
             }
             return;
         }
-        target.GainBuff(type, value, true, false, false, false, from, null);
+        target.GainBuff(type, value, true, false, false, false, from);
         tpTimedDebuffs.Add(new TpTimedDebuff { target = target, type = type, value = value, turnsLeft = turns });
     }
 
@@ -214,7 +214,7 @@ public partial class M_TurnManager
             if (debuff.target != target) continue;
             if (--debuff.turnsLeft > 0) continue;
             if (debuff.target != null && !debuff.target.isDying)
-                debuff.target.GainBuff(debuff.type, -debuff.value, true, false, false, false, debuff.target, null); // 상쇄 → 값 0이 되며 제거
+                debuff.target.GainBuff(debuff.type, -debuff.value, true, false, false, false, debuff.target); // 상쇄 → 값 0이 되며 제거
             tpTimedDebuffs.RemoveAt(i);
         }
     }
@@ -227,6 +227,7 @@ public partial class M_TurnManager
         if (statEntry != null && statEntry.resource == BattleResourceType.MP)
             unit.target.player.currentResource = Mathf.Min(unit.target.player.maxResource,
                 unit.target.player.currentResource + unit.target.player.control / Mathf.Max(1, BalanceData.Get("MP_REGEN_CONTROL_DIVISOR", 2)));
+        ApplyPlayerTurnStartEffects(unit.target); // 북방의 위대한 투사 스택 누적 등
 
         tpUsedInnateSkillNo = "";
         while (true) // 기본 스킬(innate — 고행길/철귀 이동/자해)은 턴을 소모하지 않는다: 사용 후 다시 입력을 기다린다 (턴당 1회)
@@ -316,7 +317,16 @@ public partial class M_TurnManager
         }
         if (!freeAction) break; // 일반 행동 → 턴 종료. 기본 스킬이었으면 다시 입력 대기
         }
+        TickTimedDebuffs(unit.target); // 자신에게 걸린 지속 버프/디버프(기도·철귀 공격력 등) 턴 감소 — 몬스터와 같이 자기 턴 종료 기준. 철귀 재부여보다 먼저
         ApplyPlayerTurnEndEffects(unit.target);
+    }
+
+    // 턴 시작 효과 — 게오르크 북방의 위대한 투사(GS19): 버프가 켜져 있으면 자기 턴 시작마다 공격력 스택 누적 (절대자 GS21이면 2배). 수치는 SkillData.Geork
+    [Server]
+    void ApplyPlayerTurnStartEffects(TargetObject user)
+    {
+        if (user == null || user.player == null || user.isDying) return;
+        if (user.HasBuff(BuffType.BOOKBANG)) SkillData.GainNorthWarriorStack(user);
     }
 
     // 턴 종료 효과 — 홍단향 철귀: 자기 턴이 끝날 때 철귀가 붙어 있는 아군(기본은 자신)에게 실드(HS0_DEFENSE)와
@@ -491,6 +501,15 @@ public partial class M_TurnManager
     {
         TpUnit unit = tpUnits.Find(u => u.target == target);
         if (unit != null) unit.tp += amount;
+    }
+
+    /// <summary>TP 즉시 감소 (게오르크 압도의 일격 등 스킬 효과용) — 0 미만으로는 내려가지 않는다. 약점 브레이크(ApplyTpBreakTo)와 달리 반복 체감 없음</summary>
+    [Server]
+    public void DamageTpTo(TargetObject target, int amount)
+    {
+        TpUnit unit = tpUnits.Find(u => u.target == target);
+        if (unit == null || amount <= 0) return;
+        unit.tp = Mathf.Max(0f, unit.tp - amount);
     }
 
     // 플레이어 행동 모션 — 기본 공격 "Attack0", 스킬 "Attack1"(임시 공용). 에리스는 변신 상태 프리픽스(""/"Ch"/"V")를 붙인다 (GetErisMode).

@@ -8,6 +8,8 @@ using DG.Tweening;
 using TMPro;
 using ProjectD;
 
+// 좌상단 오더(대열) 배너 — 파티원별 골드/스탯 표시, 클릭으로 제어 캐릭터 전환·거점 대열 교환.
+// 구 '다른 플레이어 패 보기'(카드포켓 스왑) 기능은 카드 시스템 제거로 삭제됨 (2026-09-01) — 프리팹의 LastCardLayout은 항상 숨긴다.
 public class PlayerOrder : NetworkBehaviour
 {
     // 활성(선택) 배너 — 클라이언트 로컬. 소유 배너를 클릭하면 활성화되며 그 캐릭터가 제어 대상(currentGamePlayer — 스킬트리/장비/스탯 창)이 된다.
@@ -17,7 +19,7 @@ public class PlayerOrder : NetworkBehaviour
     [Header("Layout")]
     public GameObject BaseLayout;
     public GameObject TopLayout;
-    public GameObject LastCardLayout;
+    public GameObject LastCardLayout; // (구 패 보기 레이아웃 — 항상 숨김)
 
     [Header("BaseLayout Components")]
     public GameObject uLight;
@@ -38,12 +40,6 @@ public class PlayerOrder : NetworkBehaviour
     public GameObject topReady;
     public GameObject topReadyLight;
 
-    [Header("LastCardLayout Components")]
-    public Button cardPeekButton;
-    public GameObject lastCardBaseLine;
-    public GameObject lastCardBaseLingLight;
-    public bool isCardPeekLocked = false;
-
     public TextMeshProUGUI textGold;
 
     // 임시 스탯 표시 (공격력/방어력) — 정식 UI 전까지. TextGold를 복제해 골드 아래 줄에 배치
@@ -58,8 +54,8 @@ public class PlayerOrder : NetworkBehaviour
 
     void Awake()
     {
-        EventTrigger baseEventTrigger = BaseLayout.AddComponent<EventTrigger>();   
-        
+        EventTrigger baseEventTrigger = BaseLayout.AddComponent<EventTrigger>();
+
         EventTrigger.Entry baseEnterEntry = new EventTrigger.Entry();
         baseEnterEntry.eventID = EventTriggerType.PointerEnter;
         baseEnterEntry.callback.AddListener((data) => { OnPointerEnterBase((PointerEventData)data); });
@@ -73,20 +69,6 @@ public class PlayerOrder : NetworkBehaviour
         // 클릭 판정용 콜라이더 — BaseLayout(레이어 5 UI)의 PolygonCollider2D. 카메라 Physics2DRaycaster의 eventMask가 UI 레이어를 제외해
         // EventTrigger/OnMouseDown 경로로는 배너에 포인터 이벤트가 오지 않으므로, Update에서 마우스 클릭 시 OverlapPoint로 직접 판정한다
         bannerCollider = BaseLayout.GetComponent<Collider2D>();
-
-        EventTrigger cardPeekEventTrigger = cardPeekButton.gameObject.AddComponent<EventTrigger>();
-        
-        EventTrigger.Entry cardPeekEnterEntry = new EventTrigger.Entry();
-        cardPeekEnterEntry.eventID = EventTriggerType.PointerEnter;
-        cardPeekEnterEntry.callback.AddListener((data) => { OnPointerEnterCardPeekIcon((PointerEventData)data); });
-        cardPeekEventTrigger.triggers.Add(cardPeekEnterEntry);
-
-        EventTrigger.Entry cardPeekExitEntry = new EventTrigger.Entry();
-        cardPeekExitEntry.eventID = EventTriggerType.PointerExit;
-        cardPeekExitEntry.callback.AddListener((data) => { OnPointerExitCardPeekIcon((PointerEventData)data); });
-        cardPeekEventTrigger.triggers.Add(cardPeekExitEntry); 
-
-        cardPeekButton.onClick.AddListener(() => { OnPointerClickCardPeekButton(); });
     }
 
     public void OnPointerEnterBase(PointerEventData eventData)
@@ -103,63 +85,6 @@ public class PlayerOrder : NetworkBehaviour
         topMyLight.SetActive(false);
         uLineLight.SetActive(false);
         topBaseLight.SetActive(false);
-    }
-
-    public void OnPointerEnterCardPeekIcon(PointerEventData eventData)
-    {
-        lastCardBaseLingLight.SetActive(true);
-        if(!isCardPeekLocked){
-            uint originNetId = PlayerRegistry.Local.currentGamePlayerNetId;
-            topSeeLight.SetActive(true);
-            SwapCardPocket(originNetId, gamePlayerNetId);
-        }
-    }
-
-    public void OnPointerExitCardPeekIcon(PointerEventData eventData)
-    {
-        lastCardBaseLingLight.SetActive(false);
-        if(!isCardPeekLocked){
-            uint originNetId = PlayerRegistry.Local.currentGamePlayerNetId;
-            topSeeLight.SetActive(false);
-            SwapCardPocket(gamePlayerNetId, originNetId);
-        }
-    }
-
-    public void OnPointerClickCardPeekButton()
-    {
-        uint originNetId = PlayerRegistry.Local.currentGamePlayerNetId;
-        isCardPeekLocked = !isCardPeekLocked;
-        if(isCardPeekLocked){
-            topSeeLight.GetComponent<SpriteRenderer>().color = Color.red;
-            SwapCardPocket(originNetId, gamePlayerNetId);
-        }else{
-            topSeeLight.GetComponent<SpriteRenderer>().color = Color.white;
-            SwapCardPocket(gamePlayerNetId, originNetId);
-        }
-    }
-
-    // 카드포켓 위치 스왑
-    private void SwapCardPocket(uint originNetId, uint targetNetId)
-    {
-        CardPocket originCardPocket = NetLookup.Client<GamePlayerDeck>(originNetId).cardPocket;
-        CardPocket targetCardPocket = NetLookup.Client<GamePlayerDeck>(targetNetId).cardPocket ;
-
-        // 위치 스왑
-        Sequence sequence = DOTween.Sequence();
-        sequence.Append(originCardPocket.transform.DOMoveY(-100f, 0.5f));
-        sequence.Join(targetCardPocket.transform.DOMoveY(-8f, 0.5f));
-
-        // 현재 선택한 플레이어의 PrefareDeck, TrashDeck, ForgottenDeck 카운트 텍스트 설정
-        GamePlayerDeck currentGamePlayerDeck = NetLookup.Client<GamePlayerDeck>(targetNetId);
-        if(!GameUIManager.instance.HasCardUI) return; // 카드 전투 UI(덱 버튼/이치 표시)는 씬에서 제거됨
-        GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
-        GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
-        GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);
-        GameUIManager.instance.textPrefareDeckCount.text = currentGamePlayerDeck.prefareDeck.Count.ToString();
-        GameUIManager.instance.textTrashDeckCount.text = currentGamePlayerDeck.trashDeck.Count.ToString();
-        GameUIManager.instance.textForgottenDeckCount.text = currentGamePlayerDeck.forgottenDeck.Count.ToString();
-        GameUIManager.instance.currentIchiText.text = currentGamePlayerDeck.currentIchi.ToString();
-        GameUIManager.instance.maxIchiText.text = currentGamePlayerDeck.maxIchi.ToString();
     }
 
     public override void OnStartClient()
@@ -224,31 +149,10 @@ public class PlayerOrder : NetworkBehaviour
         transform.DOKill();
     }
 
-    void OnMouseEnter()
-    {
-        uMyLineLight.SetActive(isOwned);
-        topMyLight.SetActive(isOwned);
-        uLineLight.SetActive(true);
-        topBaseLight.SetActive(true);
-        topSeeLight.SetActive(true);
-        lastCardBaseLingLight.SetActive(true);
-    }
-
-    void OnMouseExit()
-    {
-        uMyLineLight.SetActive(false);
-        topMyLight.SetActive(false);
-        uLineLight.SetActive(false);
-        topBaseLight.SetActive(false);
-        topSeeLight.SetActive(false);
-        lastCardBaseLingLight.SetActive(false);
-    }
-
-    // 배너 클릭(BaseLayout EventTrigger PointerClick) — 활성 배너가 없으면(또는 자신이면) 활성 토글 + 제어 캐릭터 전환, 다른 배너가 활성이면 그 캐릭터와 대열 위치 교환
+    // 배너 클릭 — 활성 배너가 없으면(또는 자신이면) 활성 토글 + 제어 캐릭터 전환, 다른 배너가 활성이면 그 캐릭터와 대열 위치 교환
     void OnClickBanner()
     {
         if(!isOwned || PlayerRegistry.Local == null) return;
-        if(M_CardManager.instance != null && M_CardManager.instance.isArrowActive) return; // 카드 화살표 조작 중에는 무시
         if(activeBanner == null || activeBanner == this)
         {
             bool select = activeBanner != this;
@@ -269,7 +173,6 @@ public class PlayerOrder : NetworkBehaviour
         if(selected) activeBanner = this;
         else if(activeBanner == this) activeBanner = null;
         if(topReadyLight != null) topReadyLight.SetActive(selected);
-        Debug.Log($"[PlayerOrder] 배너 {(selected ? "활성" : "해제")} — GamePlayer {gamePlayerNetId}");
     }
 
     public void OnChangePlayerOrder(int order)
@@ -300,8 +203,7 @@ public class PlayerOrder : NetworkBehaviour
         uMyLine.SetActive(isOwned);
         topMy.SetActive(isOwned);
         topSee.SetActive(!isOwned);
-        topSeeLight.SetActive(!isOwned);
-        LastCardLayout.SetActive(!isOwned);
-        cardPeekButton.gameObject.SetActive(!isOwned); 
+        topSeeLight.SetActive(false);
+        if(LastCardLayout != null) LastCardLayout.SetActive(false); // 패 보기 기능 폐기
     }
 }

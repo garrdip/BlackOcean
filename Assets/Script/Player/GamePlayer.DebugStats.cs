@@ -13,7 +13,7 @@ public partial class GamePlayer
         if (GUI.Button(new Rect(Screen.width - 600f, 10f, 140f, 30f), guiStatsOpen ? "스탯 닫기" : "스탯"))
         {
             guiStatsOpen = !guiStatsOpen;
-            if (guiStatsOpen) { guiTreeOpen = false; guiEquipOpen = false; } // 같은 자리 — 상호 배타
+            if (guiStatsOpen) { SkillTreeUIManager.instance?.Show(false); guiEquipOpen = false; } // 같은 자리 — 상호 배타 (스킬트리는 캔버스 팝업)
         }
         if (!guiStatsOpen) return;
 

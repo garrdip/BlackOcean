@@ -41,8 +41,6 @@ public partial class M_TurnManager
         BattleSpawner.instance.GeneratePlayerUnit();
         if(roomType == RoomType.BOSS) BattleSpawner.instance.GenerateBossMonster(hazard);
         else BattleSpawner.instance.GenerateMonster(hazard, monsterGroupName);
-        RpcCardPrefareForBattle();
-        SpawnAbilityCards();
         yield return new WaitForSeconds(SpawnSettleTime);
 
         if(roomType == RoomType.BOSS) RpcStartBossBattleEvent();                  // 3) 전투 시작 연출(토스트/BGM) + 페이드 인
@@ -112,16 +110,6 @@ public partial class M_TurnManager
     }
 
     // ------------------------------------------------------------ 공용 ----------------------------------------------------------------------- //
-
-    // 어빌리티 카드 생성 (카드 시스템 잔재 — 2B-5 카드 제거 시 함께 정리)
-    [Server]
-    void SpawnAbilityCards()
-    {
-        foreach(GamePlayerDeck gamePlayerDeck in FindObjectsByType<GamePlayerDeck>(FindObjectsSortMode.None))
-        {
-            if(gamePlayerDeck.abilityCard == null)gamePlayerDeck.SpawnAbilityCardRPC();
-        }
-    }
 
     // 모든 플레이어의 타겟오브젝트 초기화가 끝나면 전투 페이즈 진입
     IEnumerator WaitingForPlayer()

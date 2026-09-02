@@ -19,10 +19,6 @@ public partial class TargetObject : NetworkBehaviour
     public NamePlate selectedNamePlate;
     public BuffIndicatorController buffIndicator;
     public NextActionIndicator nextActionIndicator;
-    public Dictionary<int,CardBlessEffect> buffTrunBeginEffect = new Dictionary<int, CardBlessEffect>();
-    public Dictionary<int,CardBlessEffect> buffCardDrowEffect = new Dictionary<int, CardBlessEffect>();
-    public Dictionary<int,CardBlessEffect> buffTurnEndEffect = new Dictionary<int, CardBlessEffect>();
-    public Dictionary<int,CardBlessEffect> buffCardUseEffect = new Dictionary<int, CardBlessEffect>();
 
 
     [Header("플레이어용 참조값")]
@@ -38,21 +34,6 @@ public partial class TargetObject : NetworkBehaviour
     public SkeletonDataAsset[] ironDemonData = new SkeletonDataAsset[2];
     public GameObject ironDemon; // 철귀
     public bool isIronDemonMoving = false;
-    public int sizeOfIronDemon
-    {
-        get
-        {
-            Buff ironDemonBuff = buffs.Find(x => x.type == BuffType.IRONDEMON); // 철귀 버프가 제거된 상태에서 접근 시 NRE 방지
-            return ironDemonBuff != null ? ironDemonBuff.value : 0;
-        }
-        set
-        {
-            Buff ironDemonBuff = buffs.Find(x => x.type == BuffType.IRONDEMON);
-            if(ironDemonBuff != null) ironDemonBuff.value = value;
-        }
-    }
-    public bool usingGOHENG = false;
-    public List<int> usedGOHENG = new List<int>();
 
 
     [Header("몬스터용 참조값")]
@@ -93,9 +74,6 @@ public partial class TargetObject : NetworkBehaviour
 
     [SyncVar (hook = nameof(OnChangedIronDemonLocation))]
     public TargetObject ironDemonLocation;
-
-    [SyncVar]
-    public bool isTransformed = false;
 
     [SyncVar (hook = nameof(OnChangedErisMode))]
     public ErisMode erisMode = ErisMode.NORMAL;

@@ -20,7 +20,7 @@ public class Devourer : SpawnedMonster
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
                     RpcStartSkillEffect(1, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Devourer, 1, "Effect");
-                    tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,parent,null);
+                    tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,parent);
                 }  
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
@@ -30,7 +30,7 @@ public class Devourer : SpawnedMonster
                 yield return new WaitForSeconds(0.867f);
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedPlayerList){
                     RpcStartSkillEffect(1, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Devourer, 1, "Effect");
-                    tar.GainBuff(BuffType.BOONGGUI,nextAction.actionValue,true,false,true,false,parent,null); // 붕괴 수치 = MonsterDB ActionValue
+                    tar.GainBuff(BuffType.BOONGGUI,nextAction.actionValue,true,false,true,false,parent); // 붕괴 수치 = MonsterDB ActionValue
                 }
                 yield return new WaitForSeconds(0.8f);
                 ReturnToIdleAnimation();

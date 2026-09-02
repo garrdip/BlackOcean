@@ -110,53 +110,17 @@ public class SpawnedMonster : NetworkBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collider)
-    {
-        if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
-            if(TryGetComponent(out SkeletonRendererCustomMaterials skeletonRendererCustomMaterials)){
-                skeletonRendererCustomMaterials.enabled = true;
-            }
-            if(TryGetComponent(out MeshRenderer meshRenderer)){
-                meshRenderer.sortingLayerName = "FrontLayer";
-            }
-            parent.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "FrontLayer";
-            parent.monsterHpCanvas.sortingLayerName = "FrontLayer";
-            parent.monsterNameCanvas.sortingLayerName = "FrontLayer";
-            parent.monsterShieldCanvas.sortingLayerName = "FrontLayer";
-            parent.nextActionCanvas.sortingLayerName = "FrontLayer";
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collider)
-    {
-        if(collider != null && collider.tag.Equals("CardArrowHead") && HP > 0){
-            if(TryGetComponent(out SkeletonRendererCustomMaterials skeletonRendererCustomMaterials)){
-                skeletonRendererCustomMaterials.enabled = false;
-            }
-            if(TryGetComponent(out MeshRenderer meshRenderer)){
-                meshRenderer.sortingLayerName = "BackLayer";
-            }
-            parent.targetObjectUI.GetComponent<SortingGroup>().sortingLayerName = "BackLayer";
-            parent.monsterHpCanvas.sortingLayerName = "BackLayer";
-            parent.monsterNameCanvas.sortingLayerName = "BackLayer";
-            parent.monsterShieldCanvas.sortingLayerName = "BackLayer";
-            parent.nextActionCanvas.sortingLayerName = "BackLayer";
-        }
-    }
+    // (카드 화살표(CardArrowHead) 트리거 하이라이트는 카드 시스템 제거로 삭제 — 2026-09-01)
 
     void OnMouseEnter()
     {
-        if(!M_CardManager.instance.isArrowActive && !M_CardManager.instance.IsDragCardExist()){
-            TargetIndicatorController.instance.EnalbleTargetIndicatorByMonster(nextTarget, parent.netId);
-        }
+        TargetIndicatorController.instance.EnalbleTargetIndicatorByMonster(nextTarget, parent.netId);
         if(IsSelectableEnemyTarget()) SetTargetOutline(true); // TP 전투 대상 선택 중 — 마우스 오버 아웃라인
     }
 
     void OnMouseExit()
     {
-        if(!M_CardManager.instance.isArrowActive && !M_CardManager.instance.IsDragCardExist()){
-            TargetIndicatorController.instance.DisableTargetIndicator();
-        }
+        TargetIndicatorController.instance.DisableTargetIndicator();
         SetTargetOutline(false);
     }
 
@@ -499,10 +463,7 @@ public class SpawnedMonster : NetworkBehaviour
                 switch(tar.player.character)
                 {
                     case Character.GEORK :
-                        if(tar.isTransformed)
-                            M_TurnManager.instance.StartAnimation(tar,0,"HDefense0",false);
-                        else
-                            M_TurnManager.instance.StartAnimation(tar,0,"Defense0",false);
+                        M_TurnManager.instance.StartAnimation(tar,0,"Defense0",false);
                         break;
                     case Character.ERIS :
                         M_TurnManager.instance.StartAnimation(tar,0,tar.GetErisMode() + "Defense0",false);

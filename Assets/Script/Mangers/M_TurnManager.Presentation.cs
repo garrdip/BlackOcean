@@ -45,15 +45,6 @@ public partial class M_TurnManager
     }
 
 
-    // 전투에 필요한 카드 준비 요청
-    [ClientRpc]
-    void RpcCardPrefareForBattle()
-    {
-        M_CardManager.instance.PrefareCardWithSuffle(); // 카드데이터 셔플 수행후 PrefareDeck에 추가
-        M_CardManager.instance.ChangeAbilityButtonActiveState(true); // 어빌리티 버튼 활성화
-    }
-
- 
     // 보스전 시작 수신 이벤트
     [ClientRpc]
     public void RpcStartBossBattleEvent()
@@ -204,20 +195,6 @@ public partial class M_TurnManager
                 // 전초기지 배경음 재생
                 AudioClip audioClip_base_camp = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Base_Camp");
                 M_SoundManager.instance.PlayBGM(audioClip_base_camp, MusicTransition.Swift, 1.5f);
-                break;
-            case RoomType.CARD_NPC:
-                M_MessageManager.instance
-                    .MakeToast()
-                    .Position(ToastPosition.Top)
-                    .FadeInTime(1f)
-                    .FadeOutTime(1f)
-                    .MessageBoxColor(Color.magenta)
-                    .TextColor(Color.white)
-                    .Text(M_LanguageManager.Get("ui.msg.card_shop", "카드 상점"))
-                    .Show();
-                // 카드 상점 배경음 재생                    
-                AudioClip audioClip_card_hop = M_SoundManager.instance.GetBGMClip(BGM_TYPE.Event, "Card_Shop");
-                M_SoundManager.instance.PlayBGM(audioClip_card_hop, MusicTransition.Swift, 1.5f);
                 break;
             case RoomType.ITEM_NPC:
                 M_MessageManager.instance

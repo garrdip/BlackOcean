@@ -65,19 +65,7 @@ public class BackButton : MonoBehaviour
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
     }
 
-    public void OnPointerClickBackButtonOnCardEnhancePopUp()
-    {
-        PopUpUIManager.instance.HandleCardEnhancePopUp(false);
-        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-    }
-
-    public void OnPointerClickBackButtonOnCardRemovePopUp()
-    {
-        PopUpUIManager.instance.HandleCardRemovePopUp(false);
-        AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
-        M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-    }
+    // (카드 강화/제거 팝업 뒤로가기는 카드 시스템 제거로 삭제 — 2026-09-01)
 
     public void OnPointerClickBackButtonOnCampPopUp()
     {

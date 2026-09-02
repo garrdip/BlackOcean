@@ -56,7 +56,13 @@ public partial class GamePlayer
         if (node == null || node.character != character) return false;
         if (HasLearnedNode(node.nodeId)) return false;
         if (skillPoints < node.cost) return false;
-        if (node.parent.Length > 0 && !HasLearnedNode(node.parent)) return false;
+        if (node.parents.Length > 0) // 다중 선행('|')은 어느 한쪽만 습득해도 열린다 (다이아몬드 합류)
+        {
+            bool anyParentLearned = false;
+            foreach (string parentId in node.parents)
+                if (HasLearnedNode(parentId)) { anyParentLearned = true; break; }
+            if (!anyParentLearned) return false;
+        }
         return true;
     }
 
@@ -106,9 +112,6 @@ public partial class GamePlayer
 
     // ------------------------------------------------------------- 임시 UI (OnGUI — 정식 팝업 전까지) -------------------------------------------------------------//
 
-    bool guiTreeOpen;
-    Vector2 guiTreeScroll;
-
     void OnGUI()
     {
         if (!Application.isPlaying || !isOwned) return;
@@ -127,50 +130,15 @@ public partial class GamePlayer
             foreach (GamePlayer owned in PlayerRegistry.Local.ownedPlayers)
                 if (owned != null) owned.CmdDebugLevelUp();
 
+        // 스킬트리 버튼 — 정식 UI 전까지 빈 캔버스 팝업(SkillTreeUIManager, 옵션창과 같은 방식)을 토글한다
+        SkillTreeUIManager treeUI = SkillTreeUIManager.instance;
+        bool treeOpen = treeUI != null && treeUI.IsOpen;
         Rect toggleRect = new Rect(Screen.width - 150f, 10f, 140f, 30f);
-        if (GUI.Button(toggleRect, guiTreeOpen ? "스킬트리 닫기" : $"스킬트리 (P:{skillPoints})"))
+        if (GUI.Button(toggleRect, treeOpen ? "스킬트리 닫기" : $"스킬트리 (P:{skillPoints})"))
         {
-            guiTreeOpen = !guiTreeOpen;
-            if (guiTreeOpen) { guiEquipOpen = false; guiStatsOpen = false; } // 장비/스탯 창과 상호 배타 (같은 자리 사용)
+            treeOpen = !treeOpen;
+            treeUI?.Show(treeOpen);
+            if (treeOpen) { guiEquipOpen = false; guiStatsOpen = false; } // 장비/스탯 창과 상호 배타 (같은 자리 사용)
         }
-        if (!guiTreeOpen) return;
-
-        float windowWidth = 560f;
-        float windowHeight = 420f;
-        Rect windowRect = new Rect(Screen.width - windowWidth - 10f, 85f, windowWidth, windowHeight);
-        GUI.Box(windowRect, $"{character} 스킬트리  |  Lv.{level}  포인트 {skillPoints}");
-
-        guiTreeScroll = GUI.BeginScrollView(
-            new Rect(windowRect.x + 10f, windowRect.y + 30f, windowWidth - 20f, windowHeight - 40f),
-            guiTreeScroll, new Rect(0, 0, windowWidth - 40f, 800f));
-
-        float y = 0f;
-        string currentTree = null;
-        foreach (SkillTreeData.Node node in SkillTreeData.GetNodesByCharacter(character))
-        {
-            if (node.tree != currentTree)
-            {
-                currentTree = node.tree;
-                GUI.Label(new Rect(0, y, 200f, 24f), $"◆ {currentTree} 트리");
-                y += 26f;
-            }
-
-            bool learned = HasLearnedNode(node.nodeId);
-            bool canLearn = CanLearnNode(node);
-            string label = $"{node.description} (비용 {node.cost}P)";
-            if (learned)
-            {
-                GUI.Label(new Rect(20f, y, 480f, 24f), $"✔ {label}");
-            }
-            else
-            {
-                GUI.enabled = canLearn;
-                if (GUI.Button(new Rect(20f, y, 480f, 24f), canLearn ? label : $"{label} — 잠김"))
-                    CmdLearnNode(node.nodeId);
-                GUI.enabled = true;
-            }
-            y += 28f;
-        }
-        GUI.EndScrollView();
     }
 }

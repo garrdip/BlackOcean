@@ -10,7 +10,7 @@ using UnityEngine;
 /// - 번역 스켈레톤 내보내기: 게임 안의 모든 번역 키를 한국어 원문과 함께 CSV로 뽑는다.
 ///   번역가에게는 이 파일 한 장만 전달하면 되고, 채워진 파일을 Assets/Resources/Language/에 넣으면 끝난다.
 /// - 번역 누락 리포트: 언어별로 비어 있는 키를 집계한다.
-/// - 마크업 검증: CardDB 설명문의 중괄호 짝과 @{용어} 키가 Description.csv에 있는지 확인한다.
+/// (카드 설명문 마크업 검증은 카드 시스템 제거로 폐기 — 2026-09-01)
 /// </summary>
 public class LocalizationTools : EditorWindow
 {
@@ -44,7 +44,6 @@ public class LocalizationTools : EditorWindow
         using (new EditorGUILayout.HorizontalScope())
         {
             if (GUILayout.Button("번역 누락 리포트")) report = BuildMissingReport();
-            if (GUILayout.Button("마크업 검증")) report = BuildMarkupReport();
             if (GUILayout.Button("언어 다시 읽기"))
             {
                 // 번역 테이블은 최초 1회만 로드된다 — CSV를 고쳤거나 언어를 추가했으면 눌러서 반영
@@ -62,7 +61,7 @@ public class LocalizationTools : EditorWindow
 
     // ------------------------------------------------------------ 키 수집 -------------------------------------------------------------- //
 
-    /// <summary>번역 키 → 한국어 원문. DB CSV(카드/버프/용어/특성) + ko.csv(UI)를 모두 훑는다.</summary>
+    /// <summary>번역 키 → 한국어 원문. DB CSV(버프) + ko.csv(UI)를 훑는다.</summary>
     static List<KeyValuePair<string, string>> CollectKeys()
     {
         List<KeyValuePair<string, string>> keys = new List<KeyValuePair<string, string>>();
@@ -73,35 +72,12 @@ public class LocalizationTools : EditorWindow
             if (!string.IsNullOrEmpty(key)) keys.Add(new KeyValuePair<string, string>(key, row.Get("text")));
         }
 
-        foreach (CsvTable.Row row in CsvTable.LoadFromResources("DB/CardDB").rows)
-        {
-            string cardNo = row.Get("CardNo");
-            if (string.IsNullOrEmpty(cardNo)) continue;
-            keys.Add(new KeyValuePair<string, string>(LocKey.CardName(cardNo), row.Get("Name")));
-            keys.Add(new KeyValuePair<string, string>(LocKey.CardDesc(cardNo), row.Get("Description")));
-        }
-
         foreach (CsvTable.Row row in CsvTable.LoadFromResources("DB/BuffDB").rows)
         {
             string buffEnum = row.Get("enum");
             if (string.IsNullOrEmpty(buffEnum)) continue;
             keys.Add(new KeyValuePair<string, string>(LocKey.BuffName(buffEnum), row.Get("name")));
             keys.Add(new KeyValuePair<string, string>(LocKey.BuffDesc(buffEnum), row.Get("description")));
-        }
-
-        foreach (CsvTable.Row row in CsvTable.LoadFromResources("DB/Description").rows)
-        {
-            string term = row.Get("info");
-            if (string.IsNullOrEmpty(term)) continue;
-            keys.Add(new KeyValuePair<string, string>(LocKey.TermName(term), row.Get("name")));
-            keys.Add(new KeyValuePair<string, string>(LocKey.TermDesc(term), row.Get("description")));
-        }
-
-        foreach (CsvTable.Row row in CsvTable.LoadFromResources("DB/CardCharacteristic").rows)
-        {
-            string characteristic = row.Get("enum");
-            if (string.IsNullOrEmpty(characteristic)) continue;
-            keys.Add(new KeyValuePair<string, string>(LocKey.Characteristic(characteristic), row.Get("name")));
         }
 
         return keys;
@@ -121,7 +97,7 @@ public class LocalizationTools : EditorWindow
         Dictionary<string, string> existing = new Dictionary<string, string>();
         if (File.Exists(path))
         {
-            // 이미 번역한 내용은 보존한다 (카드가 추가되어 다시 뽑을 때 덮어쓰지 않도록)
+            // 이미 번역한 내용은 보존한다 (키가 추가되어 다시 뽑을 때 덮어쓰지 않도록)
             foreach (CsvTable.Row row in CsvTable.LoadFromResources("Language/" + localeCode).rows)
             {
                 string key = row.Get("key");
@@ -188,95 +164,5 @@ public class LocalizationTools : EditorWindow
             builder.Append('\n');
         }
         return builder.ToString();
-    }
-
-    static string BuildMarkupReport()
-    {
-        HashSet<string> terms = new HashSet<string>();
-        foreach (CsvTable.Row row in CsvTable.LoadFromResources("DB/Description").rows)
-        {
-            string term = row.Get("info");
-            if (!string.IsNullOrEmpty(term)) terms.Add(term);
-        }
-        HashSet<string> cardNumbers = new HashSet<string>();
-        foreach (CsvTable.Row row in CsvTable.LoadFromResources("DB/CardDB").rows)
-        {
-            string cardNo = row.Get("CardNo");
-            if (!string.IsNullOrEmpty(cardNo)) cardNumbers.Add(cardNo);
-        }
-
-        StringBuilder builder = new StringBuilder();
-        int problems = 0;
-
-        // 검사 대상: 한국어 원문(CardDB) + 각 언어 CSV의 card.*.desc
-        problems += CheckMarkupSource(builder, "DB/CardDB(한국어 원문)", CollectCardDescriptions(), terms, cardNumbers);
-        foreach (CsvTable.Row localeRow in CsvTable.LoadFromResources("Language/Locales").rows)
-        {
-            string code = localeRow.Get("code");
-            if (string.IsNullOrEmpty(code) || code == M_LanguageManager.FallbackLocaleCode) continue;
-
-            List<KeyValuePair<string, string>> descriptions = new List<KeyValuePair<string, string>>();
-            foreach (CsvTable.Row row in CsvTable.LoadFromResources("Language/" + code).rows)
-            {
-                string key = row.Get("key");
-                if (!string.IsNullOrEmpty(key) && key.EndsWith(".desc") && !string.IsNullOrEmpty(row.Get("text")))
-                    descriptions.Add(new KeyValuePair<string, string>(key, row.Get("text")));
-            }
-            problems += CheckMarkupSource(builder, "Language/" + code, descriptions, terms, cardNumbers);
-        }
-
-        if (problems == 0) builder.Append("문제 없음 — 중괄호 짝·용어 키·카드 참조 모두 정상\n");
-        return builder.ToString();
-    }
-
-    static List<KeyValuePair<string, string>> CollectCardDescriptions()
-    {
-        List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
-        foreach (CsvTable.Row row in CsvTable.LoadFromResources("DB/CardDB").rows)
-        {
-            string cardNo = row.Get("CardNo");
-            if (!string.IsNullOrEmpty(cardNo)) result.Add(new KeyValuePair<string, string>(cardNo, row.Get("Description")));
-        }
-        return result;
-    }
-
-    static int CheckMarkupSource(StringBuilder builder, string label,
-                                 List<KeyValuePair<string, string>> entries, HashSet<string> terms, HashSet<string> cardNumbers)
-    {
-        int problems = 0;
-        foreach (KeyValuePair<string, string> entry in entries)
-        {
-            string text = entry.Value;
-            if (string.IsNullOrEmpty(text)) continue;
-
-            int open = 0, close = 0;
-            foreach (char c in text) { if (c == '{') open++; else if (c == '}') close++; }
-            if (open != close)
-            {
-                builder.Append($"[{label}] {entry.Key} — 중괄호 짝 불일치 ({open}/{close}): {text}\n");
-                problems++;
-            }
-
-            foreach (System.Text.RegularExpressions.Match match in
-                     System.Text.RegularExpressions.Regex.Matches(text, @"@\{([^{}]*)\}"))
-            {
-                if (!terms.Contains(match.Groups[1].Value))
-                {
-                    builder.Append($"[{label}] {entry.Key} — Description.csv에 없는 용어 '{match.Groups[1].Value}'\n");
-                    problems++;
-                }
-            }
-
-            foreach (System.Text.RegularExpressions.Match match in
-                     System.Text.RegularExpressions.Regex.Matches(text, @"\*\{([^{}]*)\}"))
-            {
-                if (!cardNumbers.Contains(match.Groups[1].Value))
-                {
-                    builder.Append($"[{label}] {entry.Key} — 존재하지 않는 카드 참조 '{match.Groups[1].Value}'\n");
-                    problems++;
-                }
-            }
-        }
-        return problems;
     }
 }

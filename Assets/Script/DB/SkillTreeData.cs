@@ -18,7 +18,7 @@ public static class SkillTreeData
         public Character character;
         public string tree;      // 트리 이름 (연격/수호/개화/회복/은하수/별무리)
         public int tier;         // 0부터 시작하는 깊이
-        public string parent;    // 선행 노드 id (빈 문자열 = 루트)
+        public string[] parents; // 선행 노드 id 목록 ('|' 구분 — 하나라도 습득하면 조건 충족. 빈 배열 = 루트)
         public NodeType nodeType;
         public string skillNo;   // SKILL/SKILL_LEVEL/ULTIMATE의 대상 스킬
         public string stat;      // STAT 노드의 대상 (STR/AGI/VIT/INT/DEF/MDEF/CTRL)
@@ -28,6 +28,13 @@ public static class SkillTreeData
     }
 
     static Dictionary<string, Node> nodes;
+
+    // Parent 열: 빈 값 = 루트, '|' 구분 = 다중 선행 (다이아몬드 합류 지점 — 어느 한쪽만 습득해도 열린다)
+    static string[] ParseParents(string raw)
+    {
+        raw = raw.Trim();
+        return raw.Length == 0 ? new string[0] : raw.Split('|');
+    }
 
     static void EnsureLoaded()
     {
@@ -44,7 +51,7 @@ public static class SkillTreeData
                     character = (Character)Enum.Parse(typeof(Character), row.Get("Character").Trim()),
                     tree = row.Get("Tree").Trim(),
                     tier = row.GetInt("Tier"),
-                    parent = row.Get("Parent").Trim(),
+                    parents = ParseParents(row.Get("Parent")),
                     nodeType = (NodeType)Enum.Parse(typeof(NodeType), row.Get("NodeType").Trim()),
                     skillNo = row.Get("SkillNo").Trim(),
                     stat = row.Get("Stat").Trim(),

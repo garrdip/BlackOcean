@@ -20,7 +20,7 @@ public class Happy : SpawnedMonster
                 GeneralAttack(); // 피해 = ActionValue(위험도 보정) + 힘 버프
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
                     if(tar == null || tar.playerHP == 0) continue;
-                    tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,parent,null); // 부가 효과 붕괴 1 (DB에 별도 컬럼 없음 — 고정)
+                    tar.GainBuff(BuffType.BOONGGUI,1,true,false,true,false,parent); // 부가 효과 붕괴 1 (DB에 별도 컬럼 없음 — 고정)
                 }
                 yield return new WaitForSeconds(0.733f);
                 ReturnToIdleAnimation();

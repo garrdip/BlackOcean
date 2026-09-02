@@ -15,7 +15,7 @@ public class SpearManB : SpawnedMonster
                 GeneralAttack();
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList){
                     RpcStartSkillEffect(0, "Eff0_Sting", tar.transform.position, SFX_TYPE.Normal_Spear, 3, "Effect");
-                    tar.GainBuff(BuffType.ICHI_ATTACK,2,false,false,false,false,parent,null);
+                    tar.GainBuff(BuffType.ICHI_ATTACK,2,false,false,false,false,parent);
                 }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();
@@ -27,7 +27,7 @@ public class SpearManB : SpawnedMonster
                 {
                     RpcStartSkillEffect(0, "Eff05_Shield", tar.transform.position, SFX_TYPE.Normal_Axe, 6, "Effect");
                     tar.GainDefense(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_DEFENSE));
-                    tar.GainBuff(BuffType.ICHI_DEFENSE,2,false,false,false,false,parent,null);
+                    tar.GainBuff(BuffType.ICHI_DEFENSE,2,false,false,false,false,parent);
                 }
                 yield return new WaitForSeconds(0.8f);
                 ReturnToIdleAnimation();

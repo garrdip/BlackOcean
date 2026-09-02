@@ -8,13 +8,12 @@ using AYellowpaper.SerializedCollections;
 // M_TurnManager에서 분리됨. 전투 종료 흐름 제어(BattleEnd/NoneBattleEnd)와 RPC는 M_TurnManager에 유지.
 public class RewardService : InstanceD<RewardService>
 {
-    [SerializedDictionary("게임플레이어", "보상카드선택유무")]
+    [SerializedDictionary("게임플레이어", "보상수령완료유무")]
     public SerializedDictionary<GamePlayer, bool> playerRewardedDic = new SerializedDictionary<GamePlayer, bool>();
 
     public List<GameObject> rewardObjects = new List<GameObject>(); // 보상목록 오브젝트 리스트
-    public List<GameObject> rewardCardObjects = new List<GameObject>(); // 보상카드 오브젝트 리스트
 
-    // 전투 종료시 플레이어들의 캐릭터별 보상카드 랜덤추출하여 각 플레이어들에게 전달 (서버 전용)
+    // 전투 종료시 각 플레이어에게 보상(골드·경험치·드랍) 지급 (서버 전용)
     public void DistributeBattleRewards()
     {
         if(!NetworkServer.active) return;
@@ -37,8 +36,7 @@ public class RewardService : InstanceD<RewardService>
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
 
-                // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅 (임시로 골드 보상만).
-                // 카드 보상(Reward_Type.Card + 선택지 카드)은 RPG 전환으로 폐기 — 더 이상 카드 게임이 아님 (2026-09-01)
+                // TODO : 보상테이블 데이터 DB에서 조회해서 보상아이템 세팅 (임시로 골드 보상만)
                 gamePlayerDeck.rewards.Add(new Reward(){ netId = gamePlayer.netId, guid = System.Guid.NewGuid().ToString(), reward_Type = Reward_Type.Gold, rewardGold = rewardGold });
 
                 // 경험치 보상 — 선택 없이 서버가 즉시 지급 (레벨업/스킬 포인트는 GamePlayer.AddExp)
@@ -53,45 +51,17 @@ public class RewardService : InstanceD<RewardService>
                 if(Random.Range(0, 100) < BalanceData.Get("POTION_DROP_PERCENT", 40))
                     gamePlayer.ServerAddRandomConsumable();
 
-                // (선택지 카드 rewardCards 세팅은 카드 보상 폐기로 제거 — 보상 팝업은 골드 항목만 표시하고, 수령/스킵 시 완료 처리된다)
                 // 플레이어 보상 상태 데이터 세팅
                 gamePlayerDeck.TargetPlayerRewarded(gamePlayerDeck.GetComponent<NetworkIdentity>().connectionToClient);
-
-                // 플레이어의 모든 카드 데이터 제거
-                gamePlayerDeck.trashDeck.Clear();
-                gamePlayerDeck.prefareDeck.Clear();
-                gamePlayerDeck.forgottenDeck.Clear();
-
-                //코스트 리셋 — 캐릭터 기본값(BalanceDB)으로 복귀. H5/H6의 최대 이치 증가는 해당 전투 한정 효과 (기획 확정 2026-07-29)
-                gamePlayerDeck.SetInitialIchi();
-
-                //해방 카드를 위한 카드 카운팅 종료
-                gamePlayerDeck.numOfUsedCard = 0;
-
-                //공격 카드 카운팅 종료 — 턴 단위(E54)·전투 단위(E15) 모두 리셋
-                gamePlayerDeck.numOfUsedAttackCardOnTurn = 0;
-                gamePlayerDeck.numOfUsedAttackCardOnBattle = 0;
-
-                //헤일로(E46) 피해 누적 종료 — 전투 단위
-                gamePlayerDeck.e46DamageBonus = 0;
-
-                //저주카드 획득량 제거
-                gamePlayerDeck.gainCurseCardCount = 0;
-
-                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands){
-                    NetworkServer.Destroy(cardOnHand.gameObject);
-                }
-                gamePlayerDeck.cardOnHands.Clear();
             }
         }
     }
 
-    // 소유한 모든 플레이어가 보상 카드 받았는지 체크
+    // 소유한 모든 플레이어가 보상을 받았는지 체크
     public void CheckAllPlayerRewarded(GamePlayer gamePlayer)
     {
         if(!playerRewardedDic.ContainsValue(false) && gamePlayer.isOwned){ // 소유한 모든 플레이어 보상받았으면 종료
             PlayerRegistry.Local.isRewardDone = true;
-            gamePlayer.GetComponent<GamePlayerDeck>().CmdClearRewardCards();
         }
     }
 
@@ -109,14 +79,5 @@ public class RewardService : InstanceD<RewardService>
     {
         rewardObjects.Remove(rewardObject);
         Destroy(rewardObject);
-    }
-
-    // 보상 카드 오브젝트 제거 및 플레이어 보상 상태 데이터 정리
-    public void ClearRewardCardAndPlayer()
-    {
-        foreach(GameObject rewardCardObject in rewardCardObjects){
-            Destroy(rewardCardObject);
-        }
-        rewardCardObjects.Clear();
     }
 }

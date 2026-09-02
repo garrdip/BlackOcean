@@ -15,8 +15,6 @@ using System.Linq;
 public partial class TargetObject
 {
 
-    private int tempestosoHpLost; // 템페스토소 — 이번 전투에서 잃은 체력 누적(10마다 드로우)
-    public int cardDamageDealt; // 별무리 — 현재 실행 중인 카드가 넣은 피해 누적 (파이프라인이 카드 실행 전 리셋)
 
     // 과잉 피해 표시 — 피해가 잔여 HP를 넘으면 HP 감소량 대신 실제 피해량을 띄운다.
     // 서버가 HP를 깎기 직전 overkillDamageDisplay SyncVar(HP보다 먼저 선언 — 같은 배치에서 훅보다 앞서 적용)를 설정하고,
@@ -78,7 +76,6 @@ public partial class TargetObject
                 playerHP = TryErisRevive() ? 1 : 0; // 에리스 — 한 전투에 한 번 HP 1로 생존 (광기 진입은 SetPlayerHP → UpdateErisMode)
             }
             player.HP = playerHP;
-            AccumulateTempestosoHpLost(hpBefore - playerHP);
             // (피격 분노는 방어력 적용 전 데미지 기준으로 위에서 처리 — GainRageByDamage)
         }
         return damage; // HP에 실제로 가해진 피해 (실드 관통분)
@@ -101,7 +98,6 @@ public partial class TargetObject
         if(isServer) overkillDamageDisplay = (value > playerHP) ? value : 0; // 과잉 손실도 실제 수치 표시 (스테일 방지 겸)
         playerHP -= value; // SetPlayerHP가 0~최대치 클램프 및 GamePlayer.HP 동기화 처리
         if(playerHP <= 0 && TryErisRevive()) playerHP = 1; // 에리스 — 한 전투에 한 번 HP 1로 생존 (광기 진입은 SetPlayerHP → UpdateErisMode)
-        AccumulateTempestosoHpLost(hpBefore - playerHP);
     }
 
 
@@ -122,20 +118,6 @@ public partial class TargetObject
                 playerHP = TryErisRevive() ? 1 : 0; // 에리스 — 한 전투에 한 번 HP 1로 생존 (광기 진입은 SetPlayerHP → UpdateErisMode)
             }
             player.HP = playerHP;
-            AccumulateTempestosoHpLost(hpBefore - playerHP);
-        }
-    }
-
-
-    // 템페스토소: 이번 전투에서 체력을 10 잃을 때마다 카드 1장 드로우
-    private void AccumulateTempestosoHpLost(int lost)
-    {
-        if(!isServer || lost <= 0 || !HasBuff(BuffType.TEMPESTOSO)) return;
-        tempestosoHpLost += lost;
-        while(tempestosoHpLost >= 10)
-        {
-            tempestosoHpLost -= 10;
-            player.GetComponent<GamePlayerDeck>().ServerSpawnCardOnHand(1);
         }
     }
 
@@ -158,9 +140,6 @@ public partial class TargetObject
 
     public void DamageToMonster(int damage, TargetObject from)
     {
-        // 파괴의권능: 시전자(에리스)가 실행 중인 공격 카드의 피해 배수 (기본 1)
-        if(from != null && from != this && from.objectType == ObjectType.PLAYER)
-            damage *= from.destructionMultiplier;
         // 붕괴 적용
         if(GetBuffValue(BuffType.BOONGGUI,null) > 0)
         {
@@ -169,13 +148,6 @@ public partial class TargetObject
         // 개화꽃 적용
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
             damage += GetBuffValue(BuffType.FLOWER,target);
-        // 월식: 시전 플레이어가 이번 턴에 넣은 피해만큼 방어 획득
-        if(from != null && from != this && from.objectType == ObjectType.PLAYER)
-        {
-            if(from.HasBuff(BuffType.ECLIPSE))
-                from.defense += damage;
-            from.cardDamageDealt += damage; // 별무리(공격 카드 강화)용 피해 누적
-        }
         // 방어력 적용
         if(defense >= damage)
         {
@@ -231,9 +203,6 @@ public partial class TargetObject
                 }
             }
         }
-        foreach(CardOnHand cardOnHand in player.GetComponent<GamePlayerDeck>().cardOnHands)
-            NetworkServer.Destroy(cardOnHand.gameObject);
-        player.GetComponent<GamePlayerDeck>().cardOnHands.Clear();
         M_TurnManager.instance.spawnedPlayerList.Remove(this);
         NetworkServer.Destroy(this.gameObject);
     }

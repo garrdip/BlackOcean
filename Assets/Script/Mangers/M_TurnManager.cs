@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using ProjectD;
-using Spine.Unity;
-using Spine.Unity.Examples;
-using Gpm.Ui;
-using AYellowpaper.SerializedCollections;
-using System.Linq;
 
 
+// 전투 상태 머신 소유자 — 페이즈(BattleTurn), 대열(playerOrder), 스폰 목록, 몬스터 사망 처리, 파티 공용 아티팩트.
+// 실제 전투 진행은 TP 턴제 루프(M_TurnManager.TpBattle.cs). 구 카드 전투 페이즈 머신(드로우/카드 큐/턴 종료 효과)은 카드 시스템 제거와 함께 삭제됨 (2026-09-01).
 public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
 {
     // Turn 관리는 서버
@@ -33,20 +30,8 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     // 각 클라이언트에서 참조할 현재 전투에 생성된 몬스터들의 타겟오브젝트 목록
     public readonly SyncList<uint> spawnedMonsterSyncList = new SyncList<uint>();
 
-    // 카드 큐 데이터 저장할 Synclist
-    public readonly SyncList<CardQueue> cardQueueList = new SyncList<CardQueue>();
-
     // 파티 공용 아티팩트 목록 — 지역거점 클리어 보상으로 획득하며, 발동 시점마다 모든 플레이어에게 효과가 적용된다
     public readonly SyncList<Item> teamArtifacts = new SyncList<Item>();
-
-    [Header("카드 큐")]
-    public System.Action<int> onCurrentCardQueueUpdated; // 현재 카드 큐 변경 이벤트
-    public int currentCardQueueIndex; // 현재 카드 큐 인덱스
-    private const int currentCardQueueInitalValue = -1; // 현재 카드 큐 인덱스 초기값 (리스트 인덱스와 맞추기 위해 초기값 -1)
-    public enum INDEX_OPERATION {
-        INCREASE,
-        DECREASE
-    }
 
     public Vector3[] targetObjectPosition = {
         new Vector3(-15,-3,0),
@@ -57,27 +42,13 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         new Vector3(15,-3,0)
     };
 
-    public bool isCardQueueOperating = false;
-
 
     public List<TargetObject> spawnedPlayerList = new List<TargetObject>();
     public List<TargetObject> spawnedMonsterList = new List<TargetObject>();
-    List<TargetObject> monsterOrderList = new List<TargetObject>();
-    
-    public bool monsterDeathOperating = false;
-    public bool preEffcetOperating = false;
-    public bool monsterShieldInitialize = false;
-    public List<TargetObject> dyingMonsers = new List<TargetObject>();
 
-    // 카드와 타겟을 한쌍으로 저장하는 큐
-    // TargetObject List 구조 : 
-    /*
-    Index : 내용
-    0 : 카드 사용한 Player 
-    1 : Target Monster
-    이후 : 모든 플레이어 및 몬스터
-    */
-    public Queue<(GamePlayerDeck, int , CardOnHand, List<TargetObject>)> cardTargetPairQueue = new Queue<(GamePlayerDeck, int, CardOnHand, List<TargetObject>)>();
+    public bool monsterDeathOperating = false;
+    public bool monsterShieldInitialize = false; // 몬스터 실드 일괄 초기화 중 — TargetObject.OnChangedDefense가 실드 파괴 연출을 생략하는 데 사용 (TP 전투는 턴 시작에 개별 리셋)
+    public List<TargetObject> dyingMonsers = new List<TargetObject>();
 
 
     protected override void Start()
@@ -87,33 +58,14 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         networkRoomManager.persistentManagers.Add(gameObject.name, gameObject);
     }
 
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-        currentCardQueueIndex = currentCardQueueInitalValue;
-        StartCoroutine(ProcessCardQueue());
-    }
-
     public override void OnStartClient()
     {
         playerOrder.Callback += OnPlayerOrderUpdated;
-        cardQueueList.Callback += OnCardQueueUpdated;
         spawnedPlayerSyncList.Callback += OnChangeSpawnedPlayerUpdated;
         spawnedMonsterSyncList.Callback += OnChangeSpawnedMonsterUpdated;
     }
 
     // -------------------------------------------------------------------- Normal Method ---------------------------------------------------------------------//
-
-    public TargetObject GetPlayer(GamePlayerDeck conn)
-    {     
-        foreach(TargetObject tar in spawnedPlayerList)
-        {
-            if(tar.player.GetComponent<GamePlayerDeck>() == conn){
-                return tar;
-            }
-        }
-        return null;
-    }
 
     public List<TargetObject> GetPlayerObjects()
     {
@@ -155,12 +107,6 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         return null;
     }
 
-    // 현재 페이즈가 PLAYER_ACTIVE 상태인지 체크
-    public bool IsActivePhase()
-    {
-        return phase == BattleTurn.PLAYER_ACTIVE ? true : false;
-    }
-
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
 
     // 공용 아티팩트 지급 (서버) — 지역거점 클리어 보상 지점에서 호출. ONCEGET 효과는 즉시 모든 플레이어에게 발동한다.
@@ -179,21 +125,10 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
-    // 플레이어 오더 스왑
+    // 플레이어 오더 스왑 — TP 행동 '이동'(전투)과 거점 배너 교환(CmdSwapPlayerOrderInHub)이 사용
     [Server]
     public void SwapPlayerOrder(int oldIndex, int newIndex)
     {
-        if(M_TurnManager.instance.phase == BattleTurn.PLAYER_ACTIVE) // 노병의 지혜
-        {
-            if(NetworkServer.spawned.ContainsKey(playerOrder[oldIndex]))
-            if(NetLookup.Server<GamePlayerTarget>(playerOrder[oldIndex]).GetTargetObject().HasBuff(BuffType.WISDOMOFOLDSOLDIER))
-                foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
-                    CardData.instance.GeneralGetDefense(NetLookup.Server<GamePlayerTarget>(playerOrder[oldIndex]).GetTargetObject(),target,5,null);
-            if(NetworkServer.spawned.ContainsKey(playerOrder[newIndex]))
-            if(NetLookup.Server<GamePlayerTarget>(playerOrder[newIndex]).GetTargetObject().HasBuff(BuffType.WISDOMOFOLDSOLDIER))
-                foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
-                    CardData.instance.GeneralGetDefense(NetLookup.Server<GamePlayerTarget>(playerOrder[newIndex]).GetTargetObject(),target,5,null);          
-        }
         uint temp = playerOrder[oldIndex];
         playerOrder[oldIndex] = playerOrder[newIndex];
         playerOrder[newIndex] = temp;
@@ -228,37 +163,6 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
             case BattleTurn.BATTLE_INITIALIZE :
                 BattleInitialize();
                 break;
-            case BattleTurn.BATTLE_STANDBY :
-                BattleStandby();
-                break;
-            case BattleTurn.PLAYER_PREEFFECT :
-                StartCoroutine(PlayerPreEffect());
-                break;
-            case BattleTurn.PLAYER_DRAW :
-                StartCoroutine(PlayerCardDraw());
-                break;
-            case BattleTurn.PLAYER_ACTIVE :
-                break;
-            case BattleTurn.PLAYER_ACTIVE_DONE :
-                StartWaitCardQueue();
-                break;
-            case BattleTurn.PLAYER_END_TURN_EFFECT :
-                StartCoroutine(PlayerEndTurnEffect());
-                break;
-            case BattleTurn.PLAYER_END :
-                PlayerEndTurn();
-                break;
-            case BattleTurn.MONSTER_ORDERSELECT :
-                PlayerCardThrowAwaySetDefault();
-                MonsterSetOrder();
-                phase = BattleTurn.MONSTER_PREEFFECT;
-                break;
-            case BattleTurn.MONSTER_PREEFFECT :
-                StartCoroutine(MonsterPreEffect());
-                break;
-            case BattleTurn.MONSTER_ACTIVE :
-                MonsterActive();
-                break;
             case BattleTurn.BATTLE_END :
                 BattleEnd();
                 break;
@@ -268,203 +172,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
-    [Server]
-    void PlayerCardThrowAwaySetDefault()
-    {
-        foreach(PlayerInterface pi in PlayerRegistry.All)
-            pi.SetDefaultStateofCardThrowDone();
-    }
-
-    [Server]
-    IEnumerator MonsterPreEffect()
-    {
-        WaitForSeconds loopTime = new WaitForSeconds(0.01f);
-        // 몬스터 방어도 초기화
-        preEffcetOperating =true;
-        yield return DebuffPreEffect();
-        preEffcetOperating =false;
-        while(monsterDeathOperating)
-            yield return loopTime;
-        monsterShieldInitialize = true;
-        foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList)
-        {
-            tar.defense = 0;
-        }
-        monsterShieldInitialize = false;
-        phase = BattleTurn.MONSTER_ACTIVE;
-    }
-
-    IEnumerator DebuffPreEffect()
-    {
-        foreach(TargetObject tar in spawnedMonsterList)
-        {
-            List<int> currentKeys = tar.buffTrunBeginEffect.Keys.ToList();
-            foreach(int buffIndex in currentKeys)
-            { 
-                yield return tar.buffTrunBeginEffect[buffIndex](tar,buffIndex,null);
-            }
-        }
-    }
-
-    IEnumerator IronDemonPreEffect()
-    {
-        foreach(TargetObject tar in spawnedPlayerList)
-        {
-            if(tar.player.character == Character.HONGDANHYANG)
-            {
-                while(true)
-                {
-                    yield return new WaitForSeconds(0.01f);
-                    if(monsterDeathOperating) continue;
-                    break;
-                }
-                if(tar.ironDemonLocation.objectType == ObjectType.PLAYER) // 플레이어의 경우 방어력 
-                {
-                    AnimIronDemon("Buff0",tar);
-                    tar.ironDemonLocation.defense += tar.GetBuffValue(BuffType.IRONDEMON);
-                    yield return new WaitForSeconds(1.33f);
-                }
-                else // 몬스터의 경우 데미지
-                {
-                    while(true)
-                    {
-                        yield return new WaitForSeconds(0.01f);
-                        if(monsterDeathOperating) continue;
-                        break;
-                    }
-                    if(Random.Range(0,2) == 0)AnimIronDemon("Attack0",tar);
-                    else AnimIronDemon("Attack1",tar);
-                    yield return new WaitForSeconds(0.4f);
-                    StartCoroutine(tar.ironDemonLocation.monster.OnHitAnimation()); // 실제 피격 애니메이션
-                    tar.ironDemonLocation.DamageToMonster(tar.GetBuffValue(BuffType.IRONDEMON), tar);
-                    yield return new WaitForSeconds(0.6f);
-                }
-                AnimIronDemon("Idle",tar);
-                yield return new WaitForSeconds(0.1f);
-            }
-        }
-    }
-
-    [Server]
-    public IEnumerator PlayerCardDraw()
-    {
-        foreach(uint netId in playerOrder){
-            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                GamePlayer player = networkIdentity.GetComponent<GamePlayer>();
-                player.GetComponent<GamePlayerDeck>().currentIchi = player.GetComponent<GamePlayerDeck>().maxIchi; 
-            }
-        }
-        foreach(TargetObject tar in spawnedPlayerList) // 고행2 카드를 이미 가지고 있으면 쇠락 부여 
-        {
-            if(tar.player.GetComponent<GamePlayerDeck>().cardOnHands.FindIndex(cardOnhand => cardOnhand.card.baseCard.cardNumber ==  "G1") != -1)
-                tar.GainBuff(BuffType.SOIRAK,1,true,false,true,false,tar,null);
-        }
-        EachPlayerCardDraw();
-        foreach(TargetObject tar in spawnedPlayerList)
-        {
-            foreach(int buffIndex in tar.buffCardDrowEffect.Keys)
-            { 
-                yield return tar.buffCardDrowEffect[buffIndex](tar,buffIndex,null);
-            }
-        }
-        phase = BattleTurn.PLAYER_ACTIVE;
-    }
-
-    [Server]
-    public IEnumerator PlayerPreEffect()
-    {
-        foreach(TargetObject tar in spawnedPlayerList)
-        {
-            tar.defense = 0;
-            // 턴 시작 시점 효과 발동 (개인 아이템 + 공용 아티팩트) — 방어도 초기화 직후에 적용해야 아이템 방어도가 남는다
-            GamePlayerItem gamePlayerItem = tar.player.GetComponent<GamePlayerItem>();
-            gamePlayerItem.InvokeItemEffects(ItemEffectTime.STARTTURN, tar);
-            gamePlayerItem.InvokeEffects(teamArtifacts, ItemEffectTime.STARTTURN, tar);
-            tar.player.GetComponent<GamePlayerDeck>().numOfUsedIronTeeth = 0;
-            tar.player.GetComponent<GamePlayerDeck>().numOfUsedAttackCardOnTurn = 0; // E54용 턴 단위 공격 카드 카운터 리셋
-            List<int> currentKeys = tar.buffTrunBeginEffect.Keys.ToList();
-            foreach(int buffIndex in currentKeys)
-            { 
-                yield return tar.buffTrunBeginEffect[buffIndex](tar,buffIndex,null);
-            }   
-            int indexOfOldItem = tar.buffs.Count;
-            for(int i = indexOfOldItem -1 ; i >= 0 ; i--)
-            {
-                if(tar.buffs[i].type == BuffType.FLOWER)
-                {
-                    tar.buffs.RemoveAt(i);
-                    continue;
-                }
-                if(tar.buffs[i].isDecrease)
-                {
-                    Buff modItem = new Buff(tar.buffs[i]);
-                    modItem.value -= 1;
-                    if(modItem.value == 0)
-                        tar.buffs.RemoveAt(i);
-                    else
-                        tar.buffs[i] = modItem;
-                }
-            }
-        }
-        foreach(TargetObject tar in spawnedMonsterList) // 몬스터 디버프 스택 감소
-        {
-            int indexOfOldItem = tar.buffs.Count;
-            for(int i = indexOfOldItem -1 ; i >= 0 ; i--)
-            {
-                if(tar.buffs[i].type == BuffType.FLOWER)
-                {
-                    tar.buffs.RemoveAt(i);
-                    continue;
-                }
-                if(tar.buffs[i].isDecrease)
-                {
-                    Buff modItem = new Buff(tar.buffs[i]);
-                    modItem.value -= 1;
-                    if(modItem.value == 0)
-                        tar.buffs.RemoveAt(i);
-                    else
-                        tar.buffs[i] = modItem;
-                }
-            }
-        }
-        phase = BattleTurn.PLAYER_DRAW;
-        yield return null;
-    }
-
-    
-    [Server]
-    public void PlayerEndTurn()
-    {
-        ResetEndTurnState();
-        EachPlayerEndTurn();
-    }
-
-    [Server]
-    public void ResetEndTurnState()
-    {
-        foreach(TargetObject user in spawnedPlayerList)
-        {
-            user.player.objectOwner.SetEndTurnActiveStateDefault();
-            user.usingGOHENG = false; // 고행 사용 초기화
-        }
-    }
-
     // ---------------- 전원 상태 집계 판정 (PlayerInterface SyncVar 훅에서 알림 수신) ----------------
-    // 흐름 전이 판정을 상태머신 소유자인 이곳에 모으고, 씬 전수 스캔 대신 PlayerRegistry를 사용한다.
-
-    // 모든 플레이어가 턴 종료했으면 다음 페이즈로 전이
-    [Server]
-    public void CheckAllPlayersEndTurn()
-    {
-        foreach(PlayerInterface user in PlayerRegistry.All)
-        {
-            GamePlayer gamePlayer = user.currentGamePlayer; // 스폰 타이밍에 따라 null 가능
-            if(!user.endTurnActive && gamePlayer != null && gamePlayer.HP > 0)return;
-        }
-        // 거점(NONE_BATTLE_SCENE)은 상주 화면이라 턴 종료로 빠져나가지 않는다 — 전투 중에만 전이
-        if(phase == BattleTurn.PLAYER_ACTIVE)
-            phase = BattleTurn.PLAYER_ACTIVE_DONE;
-    }
 
     // 모든 플레이어가 보상을 받았으면 비전투 종료 처리
     [Server]
@@ -479,12 +187,11 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     }
 
     // 플레이어 오더 슬롯 등록 — 게임플레이어 소유 오브젝트 생성 시(PlayerInterfaceServer) 룸에서 정한 오더 인덱스에 netId를 기록
-    // (기존에는 맵 플레이어(MapPlayer.OnStartServer)가 담당했으나 맵 시스템 제거로 이관)
     [Server]
     public void RegisterPlayerOrder(int index, uint gamePlayerNetId)
     {
         if(index < 0 || index >= playerOrder.Count) return;
-        // RemoveAt+Insert: OP_SET 콜백(오더 스왑 연출/인디케이터 갱신)을 등록 시점에 태우지 않기 위해 기존 AddMapPlayer와 동일한 방식 유지
+        // RemoveAt+Insert: OP_SET 콜백(오더 스왑 연출/인디케이터 갱신)을 등록 시점에 태우지 않기 위해 기존 방식 유지
         playerOrder.RemoveAt(index);
         playerOrder.Insert(index, gamePlayerNetId);
     }
@@ -527,9 +234,9 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         return exp;
     }
 
-    public int eliteKillCountOnGame = 0; // 이번 게임 동안 처치한 엘리트 수 (서버 전용 — G56 전리품 수집)
+    public int eliteKillCountOnGame = 0; // 이번 게임 동안 처치한 엘리트 수 (서버 전용)
 
-    public int bossKillCountOnGame = 0; // 이번 게임 동안 처치한 보스 수 (서버 전용 — H60 홍씨 가문의 명예)
+    public int bossKillCountOnGame = 0; // 이번 게임 동안 처치한 보스 수 (서버 전용)
 
     public void ProcessMonsterDeath(TargetObject tar)
     {
@@ -545,13 +252,6 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
             foreach(TargetObject monster in dyingMonsers)
                 if(monster.gameObject.activeSelf)monster.gameObject.SetActive(false);//우선 사망한 적 비활성화
 
-            if(CardData.instance.isCardOperating || preEffcetOperating)
-            {   
-                foreach(TargetObject monster in dyingMonsers)
-                    if(monster.isActiveAndEnabled)monster.gameObject.SetActive(false);
-                continue; // 카드 사용이 끝날때까지 기다림
-            }
-
             foreach(TargetObject monster in dyingMonsers) // 사망 몬스터 순차 처리
             {
                 foreach(TargetObject target in spawnedPlayerList) // 철귀가 붙은 몬스터일경우 철귀 복귀
@@ -563,7 +263,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                             StartCoroutine(IronDemonReturnProcess(target));
                         }
                 }
-                // 엘리트/보스 처치 집계 (게임 지속) — G56 전리품 수집 스택 증가, H60 보스 수 가산용 + 전역 위험도 상승 (위험도 시스템)
+                // 엘리트/보스 처치 집계 (게임 지속) + 전역 위험도 상승 (위험도 시스템)
                 if(monster.monster != null && monster.monster.monsterGrade != MonsterGrade.NORMAL)
                 {
                     if(monster.monster.monsterGrade == MonsterGrade.ELITE)
@@ -576,13 +276,11 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         bossKillCountOnGame++;
                         M_HubManager.instance.RaiseHazard(BalanceData.Get("HAZARD_RISE_BOSS_KILL", 5));
                     }
-                    foreach(TargetObject target in spawnedPlayerList)
-                        target.player.GetComponent<GamePlayerDeck>().IncreaseLootCollectionStack();
                 }
                 // 처치 경험치 적립 (MonsterStatDB Exp) — 전투 종료 시 파티 전원에게 합산 지급
                 if(monster.monster != null && monster.monster.monster != null)
                     battleExpPool += monster.monster.monster.exp;
-                // 실제 오브젝트 삭제 과정
+                // 실제 오브젙트 삭제 과정
                 spawnedMonsterList.Remove(monster);
                 spawnedMonsterSyncList.Remove(monster.netId);
                 NetworkServer.Destroy(monster.gameObject);
@@ -593,143 +291,20 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
-    [Server]
-    public void BattleStandby()
-    {
-        foreach(TargetObject monster in spawnedMonsterList)
-        {
-            monster.monster.SetNextAction();
-        }
-        phase = BattleTurn.PLAYER_PREEFFECT;
-    }
-
+    // 전투 시작 — 시작 시점 아이템/아티팩트 효과 발동 후 TP 턴제 루프 진입 (M_TurnManager.TpBattle.cs)
     public void BattleInitialize()
     {
         foreach(TargetObject player in spawnedPlayerList)
         {
-            if(player.player.character == Character.HONGDANHYANG)
-            {
-                player.GainBuff(BuffType.IRONDEMON, 4 + player.player.GetComponent<GamePlayerDeck>().AdditionalSizeOfIromDemon, false, false, false, false, player, null);
-            }
             // 전투 시작 시점 효과 발동 — 개인 아이템은 소유자에게, 공용 아티팩트는 모든 플레이어에게
             GamePlayerItem gamePlayerItem = player.player.GetComponent<GamePlayerItem>();
             gamePlayerItem.InvokeItemEffects(ItemEffectTime.STARTBATTLE, player);
             gamePlayerItem.InvokeEffects(teamArtifacts, ItemEffectTime.STARTBATTLE, player);
         }
-        if(UseTpBattle){
-            StartTpBattle(); // RPG 전환: TP 턴제 전투 (카드 페이즈 대체 — M_TurnManager.TpBattle.cs)
-        }else{
-            phase = BattleTurn.BATTLE_STANDBY; // 기존 카드 전투
-        }
-    }
-
-    [Server]
-    public void MonsterActive()
-    {
-        StartCoroutine(MonsterActionSeuqence());
-    }
-
-    IEnumerator MonsterActionSeuqence()
-    {
-        WaitForSeconds loopWait = new WaitForSeconds(0.01f);
-        for(int i=0; i<spawnedMonsterList.Count; i++)
-        {
-            TargetObject target = spawnedMonsterList[i];
-            target.monster.isActive = true;
-            if(!target.isDying){
-                StartCoroutine(target.monster.DoAction());
-                while(true)
-                {
-                    if(target.monster.isActive == false) break;
-                    yield return loopWait;
-                }
-                target.monster.OnActionFinished(); // 모으기 배율 소모 등 행동 종료 정리 (TP 전투 경로와 동일)
-            }
-        }
-        phase = BattleTurn.BATTLE_STANDBY;
-    }
-
-    [Server]
-    public void MonsterSetOrder()
-    {
-        monsterOrderList.Clear();
-        // 일반적으로 전열의 몬스터먼저 행동 // 다른경우 이부분 수정
-        for(int i = 0 ;i < spawnedMonsterList.Count ; i ++)
-        {
-            monsterOrderList.Add(spawnedMonsterList[i]);
-        }
-    }
-
-    [Server]
-    public void StartWaitCardQueue()
-    {
-        StartCoroutine(WaitCardQueue());
-    }
-
-    IEnumerator WaitCardQueue()
-    {
-        WaitForSeconds loopWait = new WaitForSeconds(0.01f);
-        while(true)
-        {
-            if(!isCardQueueOperating && cardTargetPairQueue.Count == 0)
-            {
-                break;
-            }
-            yield return loopWait;
-        }
-
-        if(phase == BattleTurn.PLAYER_ACTIVE_DONE) // 아무때나 동작하지 않음 (광클방지)
-        {
-            phase = BattleTurn.PLAYER_END_TURN_EFFECT;
-        }
-    }
-
-    public IEnumerator PlayerEndTurnEffect()
-    {
-        foreach(TargetObject tar in spawnedPlayerList) // 턴종료시 버프 효과들
-        {
-            // End Turn Card Effect
-            List<int> currentKeys = tar.buffTurnEndEffect.Keys.ToList();
-            foreach(int buffIndex in currentKeys)
-            {
-                yield return tar.buffTurnEndEffect[buffIndex](tar,buffIndex,null);
-            }
-            // 영웅 상태(게오르크 변신) 지속 턴 감소 — 0이 되면 해제 (버프 제거 시 등록된 훅도 함께 정리됨)
-            if(tar.isTransformed && tar.HasBuff(BuffType.HERO))
-            {
-                tar.GainBuff(BuffType.HERO, -1, false, false, false, false, tar, null);
-                if(!tar.HasBuff(BuffType.HERO))tar.RevertGeorkTransform();
-            }
-        }
-        yield return IronDemonPreEffect();
-        phase = BattleTurn.PLAYER_END;
-        yield return null;
+        StartTpBattle();
     }
 
     // 전투/거점 진입 대기(WaitingForPlayer)와 진입 연출 RPC는 M_TurnManager.Spawner.cs 참조
-
-    [ClientRpc]
-    public void EachPlayerCardDraw()
-    {
-        if(NetworkClient.connection != null && NetworkClient.active){
-            PlayerInterface playerInterface = PlayerRegistry.Local;
-            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
-                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
-                foreach(CardOnHand cardOnHand in gamePlayerDeck.cardOnHands) // 영원 카드의 경우도 변경된 정보 제공
-                    cardOnHand.OnChangeCardData(cardOnHand.card,cardOnHand.card);
-                if(NetworkClient.spawned.ContainsKey(gamePlayer.GetComponent<GamePlayerTarget>().targetObject))
-                    gamePlayerDeck.CmdSpawnCardOnHand();
-            }
-        }
-    }
-
-    [ClientRpc]
-    public void EachPlayerEndTurn()
-    {
-        // 각 플레이어들의 모든 카드와 화살표 제거
-        M_CardManager.instance.RemoveAllCurrentPlayerArrow();
-        M_CardManager.instance.RemoveAllCurrentPlayerCardOnHands();
-    }
 
     public TargetObject[] GetTargetObjectFromActionTarget(ActionTarget target)
     {
@@ -801,7 +376,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         List<TargetObject> retVal = new List<TargetObject>();
         foreach(TargetObject tar in spawnedPlayerList)
         {
-            if( target == ActionTarget.WHOLE || 
+            if( target == ActionTarget.WHOLE ||
                 (target == ActionTarget.FRONT && tar.player.selectOrder == 2) ||
                 (target == ActionTarget.MIDDLE && tar.player.selectOrder == 1) ||
                 (target == ActionTarget.BACK && tar.player.selectOrder == 0) ||
@@ -836,9 +411,9 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
-    
+
     // ---------------------------------------------------------------SyncList Callback -----------------------------------------------------------------//
-    
+
     private void OnPlayerOrderUpdated(SyncList<uint>.Operation op, int index, uint oldVal, uint newVal)
     {
         switch (op)
@@ -873,7 +448,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         {
             case SyncList<uint>.Operation.OP_ADD:
                 TargetObject targetObject = isServer ? NetLookup.Server<TargetObject>(newVal) :  NetLookup.Client<TargetObject>(newVal);
-                // SyncList 델타가 스폰 메시지보다 먼저 도착한 경우 타겟오브젝트가 아직 없을 수 있음 — 인디케이터는 생성하고 위치는 이후 갱신에 맡긴다
+                // SyncList 델타가 스폰 메시지보다 먼저 도착한 경우 타겟오브젙트가 아직 없을 수 있음 — 인디케이터는 생성하고 위치는 이후 갱신에 맡긴다
                 Vector3 monsterIndicatorPosition = targetObject != null ? targetObject.transform.position : Vector3.zero;
                 TargetIndicatorController.instance.CreateIndicator(newVal, monsterIndicatorPosition);
                 break;

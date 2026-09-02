@@ -41,9 +41,6 @@ public class PlayerInterface : NetworkBehaviour
     [SyncVar]
     public string steamPersonaName;
 
-    [SyncVar (hook = nameof(OnEndTurnStateChanged))]
-    public bool endTurnActive = false;
-
     [SyncVar]
     public bool isTargetObjectInitDone = false;
 
@@ -55,13 +52,8 @@ public class PlayerInterface : NetworkBehaviour
     [SyncVar]
     public bool isAvatarUploadDone = false;
 
-    public readonly SyncList<CardOnHand> destroyCards = new SyncList<CardOnHand>();
-
     [SyncVar (hook = nameof(OnChangedWorkDoneState))]
     public bool workDone = false;
-
-    [SyncVar (hook = nameof(OnChangedCardThroAwayDone))]
-    public bool cardThrowAwayDone = false;
 
     [ClientRpc]
     public void ClearWorkDone()
@@ -214,14 +206,6 @@ public class PlayerInterface : NetworkBehaviour
         workDone = true;
     }
 
-    [ClientRpc]
-    public void RemoveDestroyCardList(CardOnHand cardOnHand)
-    {
-        if(isOwned)
-        {
-            destroyCards.Remove(cardOnHand);
-        }
-    }
 
     [ClientRpc]
     public void UploadAvatar()
@@ -253,15 +237,6 @@ public class PlayerInterface : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void SetEndTurnActiveStateDefault()
-    {
-        if(isOwned){
-            endTurnActive = false;
-            OnEndTurnStateChanged(false, false);
-        }
-    }
-
-    [ClientRpc]
     public void SetCompleteRewardStateDefault()
     {
         if(isOwned){
@@ -270,27 +245,10 @@ public class PlayerInterface : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void SetDefaultStateofCardThrowDone()
-    {
-        if(isOwned)
-            cardThrowAwayDone = false;
-    }
-
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
-    
+
     // 훅은 로컬 UI 갱신 + 서버에 "상태 변경됨" 알림만 담당하고,
     // 전원 상태 집계와 흐름 전이는 상태머신 소유자인 M_TurnManager가 판정한다 (순환 참조 축소).
-    public void OnEndTurnStateChanged(bool oldVal, bool newVal)
-    {
-        if(isLocalPlayer && GameUIManager.instance.buttonEndTurn != null){ // 카드 전투 UI(턴 종료 버튼)는 씬에서 제거됨
-            EndTurnButton endTurnButton = GameUIManager.instance.buttonEndTurn.GetComponent<EndTurnButton>();
-            endTurnButton.SetEndTurnButtonActiveState(newVal);
-        }
-        if(isServer)
-            M_TurnManager.instance.CheckAllPlayersEndTurn();
-    }
-
     public void OnCompleteReward(bool oldVal, bool newVal)
     {
         if(isServer)
@@ -307,44 +265,9 @@ public class PlayerInterface : NetworkBehaviour
     }
 
 
+    // 제어 캐릭터 변경 훅 — 카드포켓 스왑/덱 카운트/어빌리티 버튼 갱신은 카드 시스템 제거로 삭제됨. currentGamePlayer 기반 UI(스킬트리/장비 OnGUI 등)는 각자 매 프레임 참조한다
     void OnChangeCurrentGamePlayerNetId(uint oldVal, uint newVal)
     {
-        if(isServer && oldVal != 0 && newVal != 0){
-            // 이전에 선택한 플레이어 카드포켓
-            CardPocket prevCardPocket = NetLookup.Server<GamePlayerDeck>(oldVal).cardPocket;
-            
-            // 현재 선택한 플레이어 카드포켓
-            CardPocket currentCardPocket = NetLookup.Server<GamePlayerDeck>(newVal).cardPocket ;
-
-            // 위치 스왑
-            Sequence sequence = DOTween.Sequence();
-            sequence.Append(prevCardPocket.transform.DOMoveY(-100f, 0.5f));
-            sequence.Join(currentCardPocket.transform.DOMoveY(-8f, 0.5f));
-
-            // 현재 선택한 플레이어의 PrefareDeck, TrashDeck, ForgottenDeck 카운트 텍스트 설정 (카드 전투 UI가 씬에 있을 때만 — 거점 전환으로 제거됨)
-            GamePlayerDeck currentGamePlayerDeck = NetLookup.Server<GamePlayerDeck>(newVal);
-            if(GameUIManager.instance.HasCardUI){
-                GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonPrefareDeck);
-                GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonTrashDeck);
-                GameUIManager.instance.DeckButtonScaleAnimation(GameUIManager.instance.buttonForgottenDeck);
-                GameUIManager.instance.textPrefareDeckCount.text = currentGamePlayerDeck.prefareDeck.Count.ToString();
-                GameUIManager.instance.textTrashDeckCount.text = currentGamePlayerDeck.trashDeck.Count.ToString();
-                GameUIManager.instance.textForgottenDeckCount.text = currentGamePlayerDeck.forgottenDeck.Count.ToString();
-                GameUIManager.instance.currentIchiText.text = currentGamePlayerDeck.currentIchi.ToString();
-                GameUIManager.instance.maxIchiText.text = currentGamePlayerDeck.maxIchi.ToString();
-            }
-
-            // 현재 선택한 플레이어의 어빌리티 버튼만 활성화
-            foreach(GamePlayer gamePlayer in ownedPlayers){
-                GamePlayerDeck gamePlayerDeck = gamePlayer.GetComponent<GamePlayerDeck>();
-                if(gamePlayerDeck.abilityButton != null){
-                    gamePlayerDeck.abilityButton.gameObject.SetActive(gamePlayerDeck.netId == newVal);
-                }
-            }
-
-            // 현재 선택한 플레이어의 패 제거 카드 배열값 설정
-            currentGamePlayerDeck.choosedCardOnHands = new CardOnHand[currentGamePlayerDeck.maxRemoveCardCount];
-        }
     }
 
     void OnChangedWorkDoneState(bool oldVal, bool newVal)
@@ -358,18 +281,4 @@ public class PlayerInterface : NetworkBehaviour
         }       
     }
 
-    void OnChangedCardThroAwayDone(bool oldVal,bool newVal)
-    {
-        if(isServer)
-        {
-            foreach(PlayerInterface pi in PlayerRegistry.All)
-            {
-                if(!pi.cardThrowAwayDone)
-                    return;
-            }
-            StartCoroutine(M_CardManager.instance.CurseCardOperation());
-        }
-    }
-
-    
 }

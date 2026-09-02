@@ -14,8 +14,7 @@ public partial class ItemData : SingletonD<ItemData>
     // 수호자의 성소 — 전투 시작 시 모든 플레이어 방어의 이치 증가
     public void A1(GamePlayerItem owner, TargetObject sender, Item item) => EffectGainIchiDefense(sender, item.value);
 
-    // 심연의 제단 — 모든 플레이어 최대 이치 영구 증가
-    public void A2(GamePlayerItem owner, TargetObject sender, Item item) => EffectIncreaseMaxIchi(owner, item.value);
+    // (A2 심연의 제단 — 최대 이치 증가는 카드 이치 시스템 제거로 폐기, ArtifactDB 행도 삭제 2026-09-01)
 
     // 불침의 성벽 — 턴 시작 시 모든 플레이어 방어도 획득
     public void A3(GamePlayerItem owner, TargetObject sender, Item item) => EffectGainDefense(sender, item.value);

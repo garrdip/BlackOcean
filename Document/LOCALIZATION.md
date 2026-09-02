@@ -3,6 +3,11 @@
 > 작성일: 2026-08-04 · 방식: **키 기반 스트링 테이블**
 > 기준 언어는 **한국어(ko)**. 번역이 없는 항목은 자동으로 한국어로 표시된다.
 
+> **2026-09-01 카드 시스템 제거**: `card.*`(카드 이름·설명) · `characteristic.*`(카드 특성) · `term.*`(툴팁 용어) · `markup.*` 키와
+> 원문 CSV(`CardDB.csv`/`CardCharacteristic.csv`/`Description.csv`), 파서(`CardData`/`CardMarkup`)가 모두 삭제됐다.
+> 현재 살아 있는 키 체계는 `ui.*`(ko.csv)와 `buff.*`(BuffDB.csv) 두 가지다. 아래 본문의 카드 관련 절(2절 카드 용어표, 3절 카드 설명문 마크업,
+> `CardData.GetLocalizedName` 예시 등)은 **폐기된 내용의 기록**으로만 남긴다. 현지화 도구(`Tools/현지화`)의 마크업 검증 버튼도 함께 제거됨.
+
 ---
 
 ## 1. 한눈에 보기

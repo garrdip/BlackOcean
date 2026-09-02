@@ -15,8 +15,7 @@ public partial class ItemData : SingletonD<ItemData>
     // 수호의 문장 — 전투 시작 시 방어의 이치 증가
     public void I1(GamePlayerItem owner, TargetObject sender, Item item) => EffectGainIchiDefense(sender, item.value);
 
-    // 심연의 그릇 — 최대 이치 영구 증가
-    public void I2(GamePlayerItem owner, TargetObject sender, Item item) => EffectIncreaseMaxIchi(owner, item.value);
+    // (I2 심연의 그릇 — 최대 이치 증가는 카드 이치 시스템 제거로 폐기, ItemDB 행도 삭제 2026-09-01)
 
     // 낡은 방패 — 턴 시작 시 방어도 획득
     public void I3(GamePlayerItem owner, TargetObject sender, Item item) => EffectGainDefense(sender, item.value);
@@ -27,21 +26,13 @@ public partial class ItemData : SingletonD<ItemData>
     void EffectGainIchiAttack(TargetObject sender, int value)
     {
         if(sender == null) return;
-        sender.GainBuff(BuffType.ICHI_ATTACK, value, false, false, false, false, sender, null);
+        sender.GainBuff(BuffType.ICHI_ATTACK, value, false, false, false, false, sender);
     }
 
     void EffectGainIchiDefense(TargetObject sender, int value)
     {
         if(sender == null) return;
-        sender.GainBuff(BuffType.ICHI_DEFENSE, value, false, false, false, false, sender, null);
-    }
-
-    // 최대 이치 영구 증가 — 전투 종료 시 SetInitialIchi 리셋에도 유지되도록 bonusMaxIchi에 기록
-    void EffectIncreaseMaxIchi(GamePlayerItem owner, int value)
-    {
-        GamePlayerDeck deck = owner.GetComponent<GamePlayerDeck>();
-        deck.bonusMaxIchi += value;
-        deck.IncreaseMaxIchi(value);
+        sender.GainBuff(BuffType.ICHI_DEFENSE, value, false, false, false, false, sender);
     }
 
     // 턴 시작 방어도 — PLAYER_PREEFFECT의 방어도 초기화 직후 호출되는 것을 전제로 한다

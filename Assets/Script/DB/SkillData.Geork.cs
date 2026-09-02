@@ -5,7 +5,8 @@ using ProjectD;
 
 // SkillData partial — 게오르크 스킬 효과 구현 (분노 자원 — 피해를 주고받으며 충전, BattleActions.GainRage).
 // 메서드명 = SkillDB.csv의 SkillNo. 서버 코루틴에서만 실행된다.
-// RPG_CONVERSION_SKILLS '게오르크 - 공격' 트리 (GS6~GS10). 구 테스트 스킬(강타 GS2 등)은 제거됨 (2026-08-26).
+// RPG_CONVERSION_SKILLS '게오르크 - 공격' 트리 (GS6~GS10, 2026-08-26) + '게오르크 - 투사' 트리 (GS17~GS21, 2026-09-02).
+// 구 테스트 스킬(강타 GS2 등)은 제거됨.
 public static partial class SkillData
 {
     // 고행길 (기본 스킬) — 자신의 HP를 잃고 분노 획득
@@ -16,6 +17,8 @@ public static partial class SkillData
         user.LosePlayerHP(hpCost);
         BattleActions.GainRage(user.player, BalanceData.Get("GS1_RAGE_GAIN", 40));
     }
+
+    // ------------------------------------------------------------- 공격 트리 (GS6~GS10) -------------------------------------------------------------//
 
     // 연속 베기 — 기본공격력의 (70/80/90)% 참격으로 같은 대상을 두 번 공격
     public static IEnumerator GS6(SkillDef skill, TargetObject user, List<TargetObject> targets)
@@ -36,16 +39,14 @@ public static partial class SkillData
         yield break;
     }
 
-    // 약점 찌르기 — 기본공격력의 (100/120/140)% 참격 피해 + 쇠락(공격력 저하) 부여.
-    // 쇠락 수치는 투사 트리 '쇠락' 스킬 레벨1 기준 (BalanceDB) — TODO(투사 트리): 습득한 쇠락 레벨(15/20/25) 연동
+    // 약점 찌르기 — 기본공격력의 (100/120/140)% 참격 피해 + 자신의 쇠락(공격력 저하) 부여.
+    // 저하량은 투사 트리 '쇠락'(GS17)의 습득 레벨을 따른다 — 쇠락을 배우지 않았으면 Lv1 수치(15)
     public static IEnumerator GS8(SkillDef skill, TargetObject user, List<TargetObject> targets)
     {
         if (targets.Count == 0) yield break;
         TargetObject target = targets[0];
         yield return BattleActions.AttackTarget(user, target, BattleActions.SkillDamage(user, skill), skill.attribute);
-        if (target != null && !target.isDying && target.monster != null)
-            M_TurnManager.instance.ApplyTimedDebuffTo(target, BuffType.ICHI_ATTACK,
-                -BalanceData.Get("GEORK_SOIRAK_ATTACK_DOWN", 15), BalanceData.Get("GEORK_SOIRAK_DURATION", 3), user);
+        ApplySoirak(user, target);
     }
 
     // 풍차 베기 — 기본공격력의 (40/50/60)% 참격으로 적 전체를 두 번 공격
@@ -63,10 +64,89 @@ public static partial class SkillData
     }
 
     // 범접할 수 없는 힘 — 기본공격력의 (120/140/160)% 참격 피해.
-    // TODO(투사 트리): '북방의 위대한 투사' 스택으로 상승한 공격력의 효과를 2배로 적용
+    // '북방의 위대한 투사'(BOOKBANG 버프)로 상승한 공격력을 2배로 받는다 — 스택 수치를 계수 스탯에 한 번 더 더한다
     public static IEnumerator GS10(SkillDef skill, TargetObject user, List<TargetObject> targets)
     {
         if (targets.Count == 0) yield break;
-        yield return BattleActions.AttackTarget(user, targets[0], BattleActions.SkillDamage(user, skill), skill.attribute);
+        int damage = BattleActions.SkillDamage(user, skill, user.GetBuffValue(BuffType.BOOKBANG));
+        yield return BattleActions.AttackTarget(user, targets[0], damage, skill.attribute);
+    }
+
+    // ------------------------------------------------------------- 투사 트리 (GS17~GS21) -------------------------------------------------------------//
+
+    // 쇠락 — 적 하나의 공격력을 (15/20/25) 낮춘다 (3턴). 약점 찌르기(GS8)도 이 수치를 쓴다
+    public static IEnumerator GS17(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        if (targets.Count == 0) yield break;
+        ApplySoirak(user, targets[0]);
+        yield return new WaitForSeconds(0.4f); // 연출 템포 (피해 없는 스킬 — 모션이 보이도록 잠시 대기)
+    }
+
+    // 압도의 일격 — 기본공격력의 (90/100/110)% 참격 피해 + 대상 TP (10/20/30) 감소 (BalanceDB GEORK_OVERWHELM_TP_DAMAGE*)
+    public static IEnumerator GS18(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        if (targets.Count == 0) yield break;
+        TargetObject target = targets[0];
+        yield return BattleActions.AttackTarget(user, target, BattleActions.SkillDamage(user, skill), skill.attribute);
+        if (target == null || target.isDying) yield break;
+        int level = Mathf.Min(2, user.player.GetSkillLevel(skill.skillNo));
+        int tpDamage = BalanceData.Get("GEORK_OVERWHELM_TP_DAMAGE", 10) + BalanceData.Get("GEORK_OVERWHELM_TP_DAMAGE_PER_LEVEL", 10) * level;
+        M_TurnManager.instance.DamageTpTo(target, tpDamage);
+    }
+
+    // 북방의 위대한 투사 — 이번 전투 동안 자기 턴이 시작할 때마다 공격력이 (2/4/6)씩 누적 상승 (BOOKBANG 버프 값 = 누적 공격력).
+    // 사용한 턴에도 1회 적용해 턴 소모가 헛되지 않게 한다. 이후 턴 시작 누적은 M_TurnManager.ApplyPlayerTurnStartEffects가 담당.
+    // 절대자(GS21)를 알면 상승량 2배. 버프는 TargetObject가 전투마다 새로 스폰되므로 자연 리셋
+    public static IEnumerator GS19(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        GainNorthWarriorStack(user);
+        yield return new WaitForSeconds(0.4f);
+    }
+
+    // 기도 — 아군 하나의 공격력을 (10/15/20) 올린다 (3턴, 대상 아군의 턴 종료 기준 — ICHI_ATTACK 양수 지속 버프)
+    public static IEnumerator GS20(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        if (targets.Count == 0) yield break;
+        TargetObject ally = targets[0];
+        if (ally == null || ally.isDying || ally.playerHP <= 0) yield break;
+        M_TurnManager.instance.ApplyTimedDebuffTo(ally, BuffType.ICHI_ATTACK, SkillLevelValue(user, skill.skillNo),
+            BalanceData.Get("GEORK_PRAYER_DURATION", 3), user);
+        yield return new WaitForSeconds(0.4f);
+    }
+
+    // 절대자 (패시브) — 북방의 위대한 투사의 턴당 상승량 2배. GainNorthWarriorStack이 KnowsSkill로 상시 판정한다 (Passive=1 — 직접 실행되지 않음)
+    public static IEnumerator GS21(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        yield break;
+    }
+
+    // ------------------------------------------------------------- 공용 헬퍼 -------------------------------------------------------------//
+
+    /// <summary>북방의 위대한 투사 스택 1회 누적 — GS19 사용 시와 이후 자기 턴 시작마다(M_TurnManager) 호출. 절대자(GS21) 습득 시 2배</summary>
+    public static void GainNorthWarriorStack(TargetObject user)
+    {
+        if (user == null || user.player == null) return;
+        int gain = SkillLevelValue(user, "GS19");
+        if (user.player.KnowsSkill("GS21")) gain *= 2; // 절대자
+        if (gain > 0) user.GainBuff(BuffType.BOOKBANG, gain, false, false, false, false, user);
+    }
+
+    // 쇠락 부여 — 저하량 = 쇠락(GS17)의 Power + 레벨 보너스(15/20/25). 몬스터 대상만 (ICHI_ATTACK 음수, 대상 턴 종료 기준 지속)
+    static void ApplySoirak(TargetObject user, TargetObject target)
+    {
+        if (target == null || target.isDying || target.monster == null) return;
+        M_TurnManager.instance.ApplyTimedDebuffTo(target, BuffType.ICHI_ATTACK, -SkillLevelValue(user, "GS17"),
+            BalanceData.Get("GEORK_SOIRAK_DURATION", 3), user);
+    }
+
+    /// <summary>스킬의 Power + PowerPerLevel x 강화 레벨(최대 2) — 피해 계수가 아닌 수치형 효과(저하량/상승량)에 사용.
+    /// 해당 스킬을 습득하지 않았으면(약점 찌르기만 배운 상태의 쇠락 등) Lv1 수치</summary>
+    static int SkillLevelValue(TargetObject user, string skillNo)
+    {
+        SkillDef def = Get(skillNo);
+        if (def == null) return 0;
+        bool knows = user != null && user.player != null && user.player.KnowsSkill(skillNo);
+        int level = knows ? Mathf.Min(2, user.player.GetSkillLevel(skillNo)) : 0;
+        return def.power + def.powerPerLevel * level;
     }
 }

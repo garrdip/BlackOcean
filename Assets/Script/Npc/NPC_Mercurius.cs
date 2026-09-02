@@ -8,10 +8,10 @@ using Mirror;
 using Spine.Unity;
 
 
+// 거점 NPC 메르크리우스 상단 — 기획: 장비 제작 (RPG_CONVERSION_DESIGN). 구 카드 상점/카드 강화/카드 제거 메뉴는 카드 시스템 제거로 삭제됨 (2026-09-01).
+// 프리팹의 메뉴 버튼 3개는 장비 제작 UI가 생기기 전까지 Awake에서 숨긴다.
 public class NPC_Mercurius : SpawnedMonster
 {
-    public MercuriusPopUp mercuriusPopUp;
-    public List<GameObject> shopCardObjectList = new List<GameObject>();
     private IEnumerator minionVoiceCoroutine;
     private SkeletonAnimation toddAnim;
     private SkeletonAnimation backAnim;
@@ -21,14 +21,13 @@ public class NPC_Mercurius : SpawnedMonster
     private SkeletonAnimation todYellowAnim;
     public ExpandableButtonGroup expandableButtonGroup;
     private bool isOpenExpandableButtons = false;
-    public Button buttonCardShop;
-    public Button buttonCardEnhance;
-    public Button buttonCardRemove;
+    public Button buttonCardShop;    // (구 카드 상점 — 장비 제작 UI 자리, 현재 숨김)
+    public Button buttonCardEnhance; // (구 카드 강화 — 현재 숨김)
+    public Button buttonCardRemove;  // (구 카드 제거 — 현재 숨김)
 
 
     void Awake()
     {
-        mercuriusPopUp = PopUpUIManager.instance.mercuriusPopUp.GetComponent<MercuriusPopUp>();
         toddAnim = transform.GetChild(0).GetComponent<SkeletonAnimation>();
         todBlueAnim = transform.GetChild(1).GetComponent<SkeletonAnimation>();
         todGreenAnim = transform.GetChild(2).GetComponent<SkeletonAnimation>();
@@ -37,9 +36,9 @@ public class NPC_Mercurius : SpawnedMonster
         StartCoroutine(ToddAnimationBlend());
         AddEventTrigger();
         minionVoiceCoroutine = PlayMinionsVoice();
-        buttonCardShop.onClick.AddListener(() => OnClickCardShopButton());
-        buttonCardEnhance.onClick.AddListener(() => OnClickCardEnhanceButton());
-        buttonCardRemove.onClick.AddListener(() => OnClickCardRemoveButton());
+        if(buttonCardShop != null) buttonCardShop.gameObject.SetActive(false);
+        if(buttonCardEnhance != null) buttonCardEnhance.gameObject.SetActive(false);
+        if(buttonCardRemove != null) buttonCardRemove.gameObject.SetActive(false);
     }
 
     public override void Start()
@@ -50,27 +49,13 @@ public class NPC_Mercurius : SpawnedMonster
         }
     }
 
-    public override void OnStopServer()
-    {
-        base.OnStopServer();
-        // OnStopServer 시점에 각 플레이어들의 shopCard 리스트 데이터 제거
-        foreach(uint netId in M_TurnManager.instance.playerOrder){
-            if(NetworkServer.spawned.TryGetValue(netId, out NetworkIdentity networkIdentity)){
-                GamePlayerDeck gamePlayerDeck = networkIdentity.GetComponent<GamePlayerDeck>();
-                gamePlayerDeck.shopCards.Clear();
-            }
-        }
-    }
-
     public override void OnStartClient()
     {
-        if(mercuriusPopUp != null){
-            // Todd -> 플레이어 -> 미니언즈 순서로 음성 재생
-            PlayToddVoice(() => {
-                PlayCharacterVoiceOnCardShop();
-            });
-            StartCoroutine(minionVoiceCoroutine); // 미니언 음성 재생
-        }
+        // Todd -> 플레이어 -> 미니언즈 순서로 음성 재생
+        PlayToddVoice(() => {
+            PlayCharacterVoiceOnMeet();
+        });
+        StartCoroutine(minionVoiceCoroutine); // 미니언 음성 재생
     }
 
     public override void OnStopClient()
@@ -94,27 +79,27 @@ public class NPC_Mercurius : SpawnedMonster
         });
     }
 
-    // 카드 상인에 대한 캐릭터들 상호작용 음성 재생
-    private void PlayCharacterVoiceOnCardShop()
+    // 상인을 만났을 때 캐릭터들 상호작용 음성 재생
+    private void PlayCharacterVoiceOnMeet()
     {
         if(NetworkClient.localPlayer != null){
-            AudioClip meetCardNpcVoice = null;
+            AudioClip meetNpcVoice = null;
             Character character = PlayerRegistry.Local.currentGamePlayer.character;
             switch(character){
                 case Character.HONGDANHYANG:
                     List<AudioClip> danhyangVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.HongDanHyang, 77, 3);
-                    meetCardNpcVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
+                    meetNpcVoice = danhyangVoices[Random.Range(0, danhyangVoices.Count)];
                     break;
                 case Character.GEORK:
                     List<AudioClip> georkVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Geork, 89, 3);
-                    meetCardNpcVoice = georkVoices[Random.Range(0, georkVoices.Count)];
+                    meetNpcVoice = georkVoices[Random.Range(0, georkVoices.Count)];
                     break;
                 case Character.ERIS:
                     List<AudioClip> erisVoices = M_SoundManager.instance.GetVoiceClipsByVoiceType(VOICE_TYPE.Eris, 135, 3);
-                    meetCardNpcVoice = erisVoices[Random.Range(0, erisVoices.Count)];
+                    meetNpcVoice = erisVoices[Random.Range(0, erisVoices.Count)];
                     break;
             }
-            M_SoundManager.instance.PlayVoice(meetCardNpcVoice, meetCardNpcVoice.length);
+            M_SoundManager.instance.PlayVoice(meetNpcVoice, meetNpcVoice.length);
         }
     }
 
@@ -158,21 +143,6 @@ public class NPC_Mercurius : SpawnedMonster
         }
     }
 
-    public void OnClickCardShopButton()
-    {
-        PopUpUIManager.instance.HandleMercuriusPopUp(true);
-    }
-
-    public void OnClickCardEnhanceButton()
-    {
-        PopUpUIManager.instance.HandleCardEnhancePopUp(true);
-    }
-
-    public void OnClickCardRemoveButton()
-    {
-        PopUpUIManager.instance.HandleCardRemovePopUp(true);
-    }
-
     // EventTrigger를 이용한 동적 클릭 이벤트 할당
     private void AddEventTrigger()
     {
@@ -199,7 +169,7 @@ public class NPC_Mercurius : SpawnedMonster
 
     public override void OnChanedNextAction(MonsterAction oldVal, MonsterAction newVal)
     {
-        
+
     }
 
     private IEnumerator ToddAnimationBlend()

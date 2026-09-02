@@ -28,7 +28,7 @@ public class Saddy : SpawnedMonster
             case "힘버프" :
                 DoAnimation("Beff0");
                 yield return new WaitForSeconds(0.8f);
-                parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent,null); // 힘 +ActionValue
+                parent.GainBuff(BuffType.ICHI_ATTACK,nextAction.actionValue,false,false,false,false,parent); // 힘 +ActionValue
                 yield return new WaitForSeconds(0.867f);
                 ReturnToIdleAnimation();
                 break;

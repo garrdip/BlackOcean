@@ -1,5 +1,4 @@
 Name,Number,Grade,EffectTime,Value,Description
 군단의 깃발,A0,NORMAL,STARTBATTLE,1,전투 시작 시 모든 플레이어가 힘의 이치를 1 얻습니다.
 수호자의 성소,A1,NORMAL,STARTBATTLE,1,전투 시작 시 모든 플레이어가 방어의 이치를 1 얻습니다.
-심연의 제단,A2,UNIQUE,ONCEGET,1,모든 플레이어의 최대 이치가 1 증가합니다.
 불침의 성벽,A3,RARE,STARTTURN,2,턴 시작 시 모든 플레이어가 방어도를 2 얻습니다.

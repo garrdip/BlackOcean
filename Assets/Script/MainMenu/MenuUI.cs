@@ -18,19 +18,17 @@ public class MenuUI : MonoBehaviour
 
     public Button buttonSinglePlay;
     public Button buttonMultiPlay;
-    public Button buttonDeckBook;
+    public Button buttonDeckBook; // (구 덱북 — 카드 시스템 제거로 폐기, 버튼은 Start에서 숨긴다)
     public Button buttonSettings;
     public Button buttonQuit;
-    public Button buttonCloseDeckBook;
 
     bool singleModeOpen; // 싱글 플레이 하위 메뉴(처음부터 시작 / 이어하기) 표시 중 — 기존 버튼 2개를 라벨만 바꿔 재사용
 
     void Start()
     {
-        DeckBookUI.instance.onChangeDeckBookOpenState += OnChangeDeckBookOpenState;
         buttonSinglePlay.onClick.AddListener(() => { if(singleModeOpen) StartSingle(false); else EnterSingleMode(); });
         buttonMultiPlay.onClick.AddListener(() => { if(singleModeOpen) StartSingle(true); else HandleMultiPlay(); });
-        buttonDeckBook.onClick.AddListener(() => HandleOpenDeckBook());
+        if(buttonDeckBook != null) buttonDeckBook.gameObject.SetActive(false);
         buttonSettings.onClick.AddListener(() => HandleSettings());
         buttonQuit.onClick.AddListener(() => HandleQuit());
     }
@@ -50,7 +48,6 @@ public class MenuUI : MonoBehaviour
         SetButtonLabel(buttonSinglePlay, "ui.Main_New_Game", "처음부터 시작");
         SetButtonLabel(buttonMultiPlay, "ui.Main_Continue", "이어하기");
         buttonMultiPlay.interactable = GameSaveService.HasAnySaveFile(); // 슬롯 중 하나라도 저장이 있으면 이어하기 가능
-        buttonDeckBook.gameObject.SetActive(false);
         buttonSettings.gameObject.SetActive(false);
         buttonQuit.gameObject.SetActive(false);
     }
@@ -61,7 +58,6 @@ public class MenuUI : MonoBehaviour
         SetButtonLabel(buttonSinglePlay, "ui.Main_Single_Play", "싱글 플레이");
         SetButtonLabel(buttonMultiPlay, "ui.Main_Multi_Play", "멀티 플레이");
         buttonMultiPlay.interactable = true;
-        buttonDeckBook.gameObject.SetActive(true);
         buttonSettings.gameObject.SetActive(true);
         buttonQuit.gameObject.SetActive(true);
     }
@@ -111,20 +107,6 @@ public class MenuUI : MonoBehaviour
     {
         AudioClip audioClip = M_SoundManager.instance.GetSFXClip(SFX_TYPE.MainUI, "main_menu_mouseclick");
         M_SoundManager.instance.PlaySFX(audioClip, audioClip.length);
-    }
-
-    public void HandleOpenDeckBook()
-    {
-        DeckBookUI.instance.HandleOpenDeckBook();
-    }
-
-    public void OnChangeDeckBookOpenState(bool isOpen)
-    {
-        if(menuCanvas != null && debris != null && logoGroup != null){
-            menuCanvas.SetActive(!isOpen);
-            debris.SetActive(!isOpen);
-            logoGroup.SetActive(!isOpen);
-        }
     }
 
     public void HandleSettings()

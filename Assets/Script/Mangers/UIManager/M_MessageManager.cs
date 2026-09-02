@@ -121,7 +121,7 @@ public class M_MessageManager : NetworkSingletonD<M_MessageManager>
     // 채팅창 Visible 상태 변경(이벤트는 인스펙터에 할당되어 있음)
     public void ChangeChatBoxVisibileState()
     {
-        if(!DeckBookUI.instance.dekcBookMenu.activeSelf){
+        { // (구 덱북 열림 중 채팅 토글 차단은 카드 시스템 제거로 폐기)
             isChatBoxVisible = !isChatBoxVisible;
             if(isChatBoxVisible){
                 chatMessageBoxTween = chatMessageBoxRect.DOAnchorPosX(chatMessageBoxRect.rect.width / 2, 0.5f);

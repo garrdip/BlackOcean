@@ -9,7 +9,6 @@ public partial class ItemData : SingletonD<ItemData>
 {
     public List<Item> items = new List<Item>();      // 개인 아이템 (상인·이벤트 보상, 소유자에게만 효과)
     public List<Item> artifacts = new List<Item>();  // 공용 아티팩트 (지역거점 클리어 보상, 전원에게 효과)
-    public List<Item> legacies = new List<Item>();
 
     // 아이템 번호(=효과 메서드명)를 키값으로 가지는 Dictionary
     public Dictionary<string, ItemEventHanddler> itemEffects = new Dictionary<string, ItemEventHanddler>();
@@ -19,7 +18,6 @@ public partial class ItemData : SingletonD<ItemData>
     {
         LoadItemData();
         LoadArtifactData();
-        LoadLegacyData();
     }
 
     //Version 4
@@ -31,11 +29,6 @@ public partial class ItemData : SingletonD<ItemData>
     public void LoadArtifactData()
     {
         LoadItemTable("DB/ArtifactDB", artifacts);
-    }
-
-    public void LoadLegacyData()
-    {
-        LoadItemTable("DB/LegacyDB", legacies);
     }
 
     // 지역거점 클리어 보상용 — 거점 등급(RegionGrade)과 동일한 등급의 아티팩트 중 랜덤 추출. 해당 등급이 없으면 전체에서 추출.

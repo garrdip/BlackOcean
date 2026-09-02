@@ -17,5 +17,4 @@ public class SaveDataPlayer
     public bool isActive; // JSON 역직렬화 시 빈 슬롯도 기본 인스턴스로 채워지므로, 실제 저장된 플레이어인지 이 플래그로 구분
     public Character character = new Character();
     public int HP, MaxHP;
-    public List<Card> cards = new List<Card>();
 }

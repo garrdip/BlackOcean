@@ -247,7 +247,6 @@ public class StageRoomPanel : MonoBehaviour
             case RoomType.EXIT: return iconExit != null ? iconExit : (light && iconEventLight != null ? iconEventLight : iconEvent);
             case RoomType.CAMP: return light && iconCampLight != null ? iconCampLight : iconCamp;
             case RoomType.ITEM_NPC:
-            case RoomType.CARD_NPC: return light && iconItemLight != null ? iconItemLight : iconItem;
             default: return light && iconEventLight != null ? iconEventLight : iconEvent; // EVENT_POSITIIVE / EVENT_NEGATIVE
         }
     }

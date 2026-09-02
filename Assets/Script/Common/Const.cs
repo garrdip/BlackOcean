@@ -11,7 +11,6 @@ public static class Const
     public const string RoomType_Elite = "앨리트";
     public const string RoomType_Camp = "캠프";
     public const string RoomType_ItemNpc = "아이템상인";
-    public const string RoomType_CardNpc = "카드상인";
     public const string RoomType_Ruins = "폐허";
     public const string RoomType_Boss = "보스전";
 
@@ -28,10 +27,6 @@ public static class Const
     public const string Hong_68 = "못 하겠다.";
 
     // CardData Sprite Dictionary Key
-    public const string ATTACK_CARD_BG = "AttackCardBG";
-    public const string BLESS_CARD_BG = "BlessCardBG";
-    public const string STRATEGY_CARD_BG = "StrategyCardBG";
-    public const string HERO_CARD_BG = "HeroCardBG";
     public const string ATTACK_IMAGE_FRAME = "AttackImageFrame";
     public const string BLESS_IMAGE_FRAME = "BlessImageFrame";
     public const string STRATEGY_IMAGE_FRAME = "StrategyImageFrame";
@@ -48,7 +43,6 @@ public static class Const
     public const string HERO_EMBLEM = "HeroEmblem";
     public const string EXP_BAR_ACTIVE = "ExpBarActive";
     public const string EXP_BAR_INACTIVE = "ExpBarInActive";
-    public const string CURSE_CARD_BG = "CurseCardBG";
     public const string CURSE_IMAGE_FRAME = "CurseImageFrame";
     public const string CURSE_GRADE_FRAME = "CurseGradeFrame";
     public const string CURSE_EMBLEM = "CurseEmblem";
@@ -64,7 +58,6 @@ public static class Const
     public const string ERR_RECOVERY_COUNT_LIMITED = "체력 회복 제한 횟수를 초과하였습니다.";
     public const string ERR_DENIED_GIVE_GOLD_LOCAL_PLAYER = "본인에게는 골드를 전달할 수 없습니다.";
     public const string ERR_NOT_ENOUGH_GOLD = "보유한 골드가 부족합니다.";
-    public const string ERR_NO_MORE_SELECTABLE_CARD = "더 이상 카드를 선택할 수 없습니다.";
 
     
     // MapTileBase 스프라이트 아틀라스
@@ -74,9 +67,6 @@ public static class Const
     public const string M_B_EliteMonster = "M_B_EliteMonster";
     public const string M_B_EliteMonster_Light = "M_B_EliteMonster_Light";
 
-    public const string M_B_CardShop = "M_B_CardShop";
-    public const string M_B_CardShop_Default = "M_B_CardShop_Default";
-    public const string M_B_CardShop_Light = "M_B_CardShop_Light";
 
     public const string M_B_ItemShop = "M_B_ItemShop";
     public const string M_B_ItemShop_Default = "M_B_ItemShop_Default";
@@ -103,8 +93,6 @@ public static class Const
     public const string M_C_Monster = "M_C_Monster";
     public const string M_C_Monster_Light = "M_C_Monster_Light";
     
-    public const string M_C_CardShop = "M_C_CardShop";
-    public const string M_C_CardShop_Light = "M_C_CardShop_Light";
 
     public const string M_C_ItemShop = "M_C_ItemShop";
     public const string M_C_ItemShop_Light = "M_C_ItemShop_Light";
@@ -126,8 +114,6 @@ public static class Const
     public const string M_I_EliteMonster = "M_I_EliteMonster";
     public const string M_I_EliteMonster_Light = "M_I_EliteMonster_Light";
 
-    public const string M_I_CardShop = "M_I_CardShop";
-    public const string M_I_CardShop_Light = "M_I_CardShop_Light";
 
     public const string M_I_ItemShop = "M_I_ItemShop";
     public const string M_I_ItemShop_Light = "M_I_ItemShop_Light";

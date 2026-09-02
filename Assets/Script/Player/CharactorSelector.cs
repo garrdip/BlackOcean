@@ -62,7 +62,7 @@ public class CharactorSelector : MonoBehaviour
     // 팝업 UI에 등록된 팝업목록들중 활성화된 팝업이 있으면 캐릭터 클릭되지 않도록 조건 체크
     private bool IsOpenedPopUpExist()
     {
-        int index = PopUpUIManager.instance.popUpList.FindIndex((popUp) => popUp.activeSelf);
+        int index = PopUpUIManager.instance.popUpList.FindIndex((popUp) => popUp != null && popUp.activeSelf); // 씬에서 제거된 팝업 참조(null) 무시
         if(index == -1){
             return false;
         }
@@ -78,7 +78,6 @@ public class CharactorSelector : MonoBehaviour
             playerInterface.isServer // 서버 권한인 경우
             && gamePlayer.isOwned // 선택하려는 플레이어가 소유권이 있는 경우
             && playerInterface.ownedPlayers.Count > 1 // 소유권한이 있는 플레이어수가 2명 이상인 경우
-            && !M_CardManager.instance.isArrowActive // 화살표가 비활성화 상태인 경우
             && !PopUpUIManager.instance.battleResultPopUp.activeSelf // 전투보상팝업이 비활성화인 경우
         ){
             return true;

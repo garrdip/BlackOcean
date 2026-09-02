@@ -69,6 +69,16 @@ public class SteamManager : MonoBehaviour {
 	}
 #endif
 
+	// BlackOcean Steam 앱 ID — 프로젝트 루트 steam_appid.txt(에디터/개발용)와 같은 값. 빌드 전 Assets/Editor/SteamAppIdBuildCheck가 일치 여부를 검사한다.
+	// 배포 빌드에는 steam_appid.txt를 넣지 않는다(Valve 지침). 대신 Init 전에 SteamAppId/SteamGameId 환경 변수로 앱 ID를 주입한다 —
+	// steam_api.dll이 steam_appid.txt를 읽어 만드는 것과 같은 변수라 파일 없이도 Init이 앱 ID를 찾고, RestartAppIfNecessary도 파일이 있을 때처럼 false를 돌려준다 (Facepunch.Steamworks SteamClient.Init과 같은 방식, 2026-09-02).
+	public const uint AppId = 2359700;
+
+	static void ApplyEmbeddedAppId() {
+		System.Environment.SetEnvironmentVariable("SteamAppId", AppId.ToString());
+		System.Environment.SetEnvironmentVariable("SteamGameId", AppId.ToString());
+	}
+
 	protected virtual void Awake() {
 		// Only one instance of SteamManager at a time!
 		if (s_instance != null) {
@@ -97,6 +107,8 @@ public class SteamManager : MonoBehaviour {
 		if (!DllCheck.Test()) {
 			Debug.LogError("[Steamworks.NET] DllCheck Test returned false, One or more of the Steamworks binaries seems to be the wrong version.", this);
 		}
+
+		ApplyEmbeddedAppId(); // steam_appid.txt 없이 앱 ID 내장 — RestartAppIfNecessary/Init보다 먼저
 
 		try {
 			// If Steam is not running or the game wasn't started through Steam, SteamAPI_RestartAppIfNecessary starts the
