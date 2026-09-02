@@ -91,6 +91,10 @@ public static partial class SkillData
         { "GS18", "Attack2" }, // 압도의 일격 — 전용 공격 모션 (피격 지연 GEORK_ATTACK2_HIT_DELAY_MS)
         { "GS19", "Buff1" },   // 북방의 위대한 투사 — 자기 강화
         { "GS20", "Buff0" },   // 기도 — 아군 강화
+        { "GS11", "Buff0" },   // 보호 — 아군 강화
+        { "GS12", "Buff1" },   // 도발 — 적 도발
+        { "GS14", "Defense1" }, // 빈틈없는 자세 — 방어 자세
+        { "GS16", "Attack2" }, // 고통 수집 — 전체 공격 모션 (피격 지연 GEORK_ATTACK2_HIT_DELAY_MS)
     };
 
     public static string GetMotion(SkillDef skill)

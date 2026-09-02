@@ -114,9 +114,9 @@ buff.BOONGGUI.desc,受到攻击伤害时额外承受50%(向下取整)。,공격 
 buff.SOIRAK.name,衰败,쇠락
 buff.SOIRAK.desc,造成攻击伤害时减少25%(向下取整)。,공격 피해를 입힐 때 25%(소수점 버림) 만큼 줄어듭니다.
 buff.ICHI_ATTACK.name,力之理,힘의 이치
-buff.ICHI_ATTACK.desc,卡牌造成的伤害按此数值增减。,카드로 주는 피해량이 힘의 이치의 수치 만큼 증가/ 감소 합니다.
+buff.ICHI_ATTACK.desc,"攻击力按显示数值增减(适用于普通攻击与技能)。",공격력이 표시 수치만큼 증가/감소합니다 (기본 공격과 스킬 피해에 적용).
 buff.ICHI_DEFENSE.name,防御之理,방어의 이치
-buff.ICHI_DEFENSE.desc,卡牌提供的格挡按此数值增减。,카드로 주는 방어량이 방어의 이치의 수치 만큼 증가/ 감소 합니다.
+buff.ICHI_DEFENSE.desc,"防御力按显示数值增减(正值计入伤害减免与防御行动的护盾，负值减少护盾获得量)。",방어력이 표시 수치만큼 증가/감소합니다 (양수는 받는 피해 계산과 방어 행동 실드량에 가산되고 음수는 방어 획득량을 줄입니다).
 buff.IRONDEMON.name,尺寸,크기
 buff.IRONDEMON.desc,铁鬼的尺寸可以升降(最小值1)，与丹香的增益相关联，也可以用卡牌为精灵本身赋予效果。,철귀는 크기 버프를 올리거나 내릴 수 있으며 (최솟값 1) 단향의 버프와 연결되며 정령 자체에 효과를 카드로 부여 할 수 있습니다.
 buff.FLOWERPOWDER.name,花粉,꽃가루
@@ -153,8 +153,8 @@ buff.ABSOLUTEDOMINATOR.name,绝对强者,절대 강자
 buff.ABSOLUTEDOMINATOR.desc,本场战斗中，骑士道每次成功时获得1点力之理。此牌使用后进入弃牌堆。,이번 전투에서 기사도 성공시 힘의 이치 1 을 얻습니다. 이 카드는 사용후 버린 덱으로 갑니다.
 buff.THEREISNOJABI.name,绝无慈悲,자비란 없다
 buff.THEREISNOJABI.desc,本场战斗中，对敌人施加压倒时消耗压倒，每层造成3点伤害。此牌使用后进入弃牌堆。,이번 전투에서 적에게 압도 부여 시 압도를 제거후 압도 1당 피해 3 을 줍니다. 이 카드는 사용후 버린 덱으로 갑니다.
-buff.WRAPWINGS.name,敛翼,날개 감싸기
-buff.WRAPWINGS.desc,本回合获得双倍格挡。刹那,이번 턴에 방어를 2배 얻습니다. 찰나
+buff.WRAPWINGS.name,"保护",보호
+buff.WRAPWINGS.desc,"格奥尔克代替承受该目标所受伤害的显示百分比。",게오르크가 이 대상이 받는 피해의 표시 수치%를 대신 받습니다.
 buff.CLOSEPOSE.name,无隙之姿,빈틈없는 자세
 buff.CLOSEPOSE.desc,本回合每次攻击获得3点格挡。,이번턴에 공격할 때마다 방어 3을 얻습니다
 buff.WISDOMOFOLDSOLDIER.name,老兵的智慧,노병의 지혜

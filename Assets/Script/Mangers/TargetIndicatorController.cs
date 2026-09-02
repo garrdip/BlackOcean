@@ -240,6 +240,19 @@ public class TargetIndicatorController : InstanceD<TargetIndicatorController>
                     }
                 }
                 break;
+            case ActionTarget.FIXEDPLAYER:
+            {
+                // 고정 대상 (도발 등) — 몬스터의 nextTargetObject가 있는 대열의 인디케이터 활성화 (인덱스 0 = 후열 / 1 = 중열 / 2 = 전열 = playerOrder 순서)
+                TargetObject fixedTarget = null;
+                if(Mirror.NetworkClient.spawned.TryGetValue(targetNetId, out Mirror.NetworkIdentity identity) && identity != null)
+                {
+                    TargetObject monsterTarget = identity.GetComponent<TargetObject>();
+                    if(monsterTarget != null && monsterTarget.monster != null) fixedTarget = monsterTarget.monster.nextTargetObject;
+                }
+                int row = (fixedTarget != null && fixedTarget.player != null && M_TurnManager.instance != null) ? M_TurnManager.instance.playerOrder.IndexOf(fixedTarget.player.netId) : -1;
+                if(row >= 0 && row < 3 && row < targetIndicators.Count) targetIndicators[row].GetComponent<TargetIndicator>().OnTargetEnable();
+                break;
+            }
             case ActionTarget.WHOLE_ALLY:
                 // 몬스터 전체 타겟 인디케이터 활성화
                 for(int i=0; i<targetIndicators.Count; i++){

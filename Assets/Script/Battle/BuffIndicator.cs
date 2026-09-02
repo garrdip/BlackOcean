@@ -14,9 +14,18 @@ public class BuffIndicator : MonoBehaviour
 
     void Start()
     {
-        buffIcon.sprite = BuffData.instance.buffIcons[buff.type];
-        textBuffName.text = BuffData.instance.buffDB[buff.type].name;
-        textBuffDescription.text = BuffData.instance.buffDB[buff.type].description;
+        // 아이콘/설명 미등록 버프(SUHOJA 등)로 인한 KeyNotFoundException 방지 — 아이콘은 기본값 유지, 이름은 enum명
+        if (BuffData.instance.buffIcons.TryGetValue(buff.type, out Sprite icon)) buffIcon.sprite = icon;
+        if (BuffData.instance.buffDB.TryGetValue(buff.type, out BuffInformation info))
+        {
+            textBuffName.text = info.name;
+            textBuffDescription.text = info.description;
+        }
+        else
+        {
+            textBuffName.text = buff.type.ToString();
+            textBuffDescription.text = "";
+        }
     }
 
     void OnMouseEnter()

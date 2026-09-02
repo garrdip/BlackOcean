@@ -60,3 +60,8 @@ GEORK_ATTACK2_HIT_DELAY_MS,500,게오르크 스킬 공격(Attack2 — 압도의 
 GEORK_OVERWHELM_TP_DAMAGE,10,게오르크 '압도의 일격' 대상 TP 감소량 (Lv1),
 GEORK_OVERWHELM_TP_DAMAGE_PER_LEVEL,10,게오르크 '압도의 일격' 스킬 레벨당 TP 감소 증가량 (10/20/30),
 GEORK_PRAYER_DURATION,3,게오르크 '기도' 공격력 상승 지속 턴 (대상 아군의 턴 기준),
+GEORK_GUARD_DURATION,3,게오르크 '보호' 지속 턴 (보호받는 아군의 턴 기준),
+GEORK_STANCE_DURATION,3,게오르크 '빈틈없는 자세' 방어력 상승 지속 턴 (자기 턴 기준),
+GEORK_PARRY_DEFENSE_UP,15,게오르크 '찌르고 막기'/'고통 수집' 방어력 상승량 (Lv1),
+GEORK_PARRY_DEFENSE_UP_PER_LEVEL,5,게오르크 '찌르고 막기'/'고통 수집' 스킬 레벨당 방어력 상승 증가량 (15/20/25),
+GEORK_PARRY_DURATION,1,게오르크 '찌르고 막기'/'고통 수집' 방어력 상승 지속 턴 (자기 턴 기준),

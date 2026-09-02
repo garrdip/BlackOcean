@@ -16,6 +16,13 @@
     민첩 상승 (0/3)[8] - 게오르크의 민첩을 (3,6,9)만큼 상승 시킨다.
     찌르고 막기(0/3)[13] - Active 기본공격력의 (80%,100%,120%)만큼 피해를 주고 자신의 방어력을 한턴동안 (15,20,25)만큼 증가 시킴.
     고통 수집(0/3)[15] - Active 전 전체에게 (50%,60%,70%)만큼 피해를 주고 자신의 방어력을 한턴동안 (15,20,25)만큼 증가.
+    - 구현 (2026-09-02): SkillDB GS11~GS16 (SkillTreeDB 방어 트리 GKD1~GKD9는 기존, 서쪽 배치). 분노 코스트(15/10/-/15/20/30)는 문서에 수치가 없어 임시 배정.
+      보호 = 아군에게 WRAPWINGS 버프(카드 시대 '날개 감싸기'를 '보호'로 개명 — 값 = 분담 %, user = 게오르크) 3턴(GEORK_GUARD_DURATION, 보호받는 아군 턴 기준).
+      TargetObject.DamageToPlayer → RedirectToGuardian이 대열 보정 전 피해의 N%를 게오르크의 DamageToPlayer로 보낸다 (게오르크 쪽 대열/실드/방어력 적용).
+      도발 = SpawnedMonster.TauntBy — 예고 행동이 플레이어 공격이면 nextTarget을 FIXEDPLAYER(대상 = 게오르크)로 바꾼다. 다음 행동 1회, 방어/모으기 예고에는 효과 없음. 타겟 인디케이터에 FIXEDPLAYER 표시 추가.
+      반격 = 패시브. HP 피해를 입을 때 지금 행동 중인 몬스터(M_TurnManager.tpActingUnit)에게 기본 공격력 x (10/20/30)% (TargetObject.CounterAttack, 실드 전량 흡수 시 미발동).
+      빈틈없는 자세/찌르고 막기/고통 수집 = 자신에게 ICHI_DEFENSE 양수 지속 버프 (3턴 / 1턴 / 1턴, GEORK_STANCE_DURATION·GEORK_PARRY_*). 플레이어의 ICHI_DEFENSE 양수는 받는 피해 방어 공식과 방어 행동 실드량에 가산 (음수는 기존대로 방어 획득량 감소).
+      자기 턴 중에 스스로 건 지속 버프는 이번 턴 종료 감소를 건너뛴다 (TpTimedDebuff.skipFirstTick) — 1턴 버프가 즉시 사라지는 문제 방지.
 
 - 투사
     쇠락 (0/3)[3] - Active 적 1체의 공격력을 저하시킴 (15,20,25) 3턴 지속

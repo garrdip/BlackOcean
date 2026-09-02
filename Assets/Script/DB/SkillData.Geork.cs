@@ -5,7 +5,7 @@ using ProjectD;
 
 // SkillData partial — 게오르크 스킬 효과 구현 (분노 자원 — 피해를 주고받으며 충전, BattleActions.GainRage).
 // 메서드명 = SkillDB.csv의 SkillNo. 서버 코루틴에서만 실행된다.
-// RPG_CONVERSION_SKILLS '게오르크 - 공격' 트리 (GS6~GS10, 2026-08-26) + '게오르크 - 투사' 트리 (GS17~GS21, 2026-09-02).
+// RPG_CONVERSION_SKILLS '게오르크 - 공격' 트리 (GS6~GS10, 2026-08-26) + '게오르크 - 투사' 트리 (GS17~GS21, 2026-09-02) + '게오르크 - 방어' 트리 (GS11~GS16, 2026-09-02).
 // 구 테스트 스킬(강타 GS2 등)은 제거됨.
 public static partial class SkillData
 {
@@ -118,6 +118,80 @@ public static partial class SkillData
     public static IEnumerator GS21(SkillDef skill, TargetObject user, List<TargetObject> targets)
     {
         yield break;
+    }
+
+    // ------------------------------------------------------------- 방어 트리 (GS11~GS16) -------------------------------------------------------------//
+
+    // 보호 — 아군 하나가 받는 피해의 (20/40/60)%를 대신 받는다 (3턴, 보호받는 아군의 턴 종료 기준).
+    // 아군에게 WRAPWINGS 버프(값 = 분담 %, user = 게오르크)를 걸고, TargetObject.DamageToPlayer → RedirectToGuardian이 피해를 나눠 게오르크에게 보낸다
+    public static IEnumerator GS11(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        if (targets.Count == 0) yield break;
+        TargetObject ally = targets[0];
+        if (ally == null || ally.isDying || ally.playerHP <= 0 || ally == user) yield break; // 자신은 보호 대상이 될 수 없다
+        M_TurnManager.instance.ApplyTimedDebuffTo(ally, BuffType.WRAPWINGS, SkillLevelValue(user, skill.skillNo),
+            BalanceData.Get("GEORK_GUARD_DURATION", 3), user);
+        yield return new WaitForSeconds(0.4f);
+    }
+
+    // 도발 — 적 하나의 예고된 공격 대상을 자신으로 고정한다 (1턴 = 그 적의 다음 행동. 행동 후 SetNextAction이 다시 정한다).
+    // 예고 행동이 플레이어 공격이 아니면(방어/모으기 등) 효과가 없다 — SpawnedMonster.TauntBy
+    public static IEnumerator GS12(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        if (targets.Count == 0) yield break;
+        TargetObject target = targets[0];
+        if (target != null && !target.isDying && target.monster != null) target.monster.TauntBy(user);
+        yield return new WaitForSeconds(0.4f);
+    }
+
+    // 반격 (패시브) — HP 피해를 입으면 자신을 공격한 적(현재 행동 중인 몬스터)에게 기본 공격력의 (10/20/30)% 반사.
+    // TargetObject.DamageToPlayer → CounterAttack이 CounterDamage로 상시 판정한다 (Passive=1 — 직접 실행되지 않음)
+    public static IEnumerator GS13(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        yield break;
+    }
+
+    // 빈틈없는 자세 — 자신의 방어력 +(10/20/30) 3턴 (ICHI_DEFENSE 양수 — 받는 피해 방어 공식과 방어 행동 실드량에 가산)
+    public static IEnumerator GS14(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        M_TurnManager.instance.ApplyTimedDebuffTo(user, BuffType.ICHI_DEFENSE, SkillLevelValue(user, skill.skillNo),
+            BalanceData.Get("GEORK_STANCE_DURATION", 3), user);
+        yield return new WaitForSeconds(0.4f);
+    }
+
+    // 찌르고 막기 — 힘의 (80/100/120)% 관통 피해 + 자신의 방어력 +(15/20/25) 1턴
+    public static IEnumerator GS15(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        if (targets.Count == 0) yield break;
+        yield return BattleActions.AttackTarget(user, targets[0], BattleActions.SkillDamage(user, skill), skill.attribute);
+        GainParryDefense(user, skill);
+    }
+
+    // 고통 수집 — 모든 적에게 힘의 (50/60/70)% 참격 피해 + 자신의 방어력 +(15/20/25) 1턴
+    public static IEnumerator GS16(SkillDef skill, TargetObject user, List<TargetObject> targets)
+    {
+        foreach (TargetObject target in targets)
+        {
+            if (target == null || target.isDying) continue;
+            yield return BattleActions.AttackTarget(user, target, BattleActions.SkillDamage(user, skill), skill.attribute);
+        }
+        GainParryDefense(user, skill);
+    }
+
+    // 찌르고 막기/고통 수집 공통 — 방어력 +(15/20/25) 1턴 (BalanceDB GEORK_PARRY_*). 자기 턴 중 건 버프라 이번 턴 종료 감소는 건너뛴다 (M_TurnManager skipFirstTick)
+    static void GainParryDefense(TargetObject user, SkillDef skill)
+    {
+        if (user == null || user.player == null || user.isDying) return;
+        int level = Mathf.Min(2, user.player.GetSkillLevel(skill.skillNo));
+        int amount = BalanceData.Get("GEORK_PARRY_DEFENSE_UP", 15) + BalanceData.Get("GEORK_PARRY_DEFENSE_UP_PER_LEVEL", 5) * level;
+        M_TurnManager.instance.ApplyTimedDebuffTo(user, BuffType.ICHI_DEFENSE, amount, BalanceData.Get("GEORK_PARRY_DURATION", 1), user);
+    }
+
+    /// <summary>반격(GS13) 반사 피해량 = 기본 공격력 x (10/20/30)%. 반격을 모르면 0 — TargetObject.CounterAttack이 호출</summary>
+    public static int CounterDamage(TargetObject user)
+    {
+        if (user == null || user.player == null || !user.player.KnowsSkill("GS13")) return 0;
+        return BattleActions.BasicAttackDamage(user) * SkillLevelValue(user, "GS13") / 100;
     }
 
     // ------------------------------------------------------------- 공용 헬퍼 -------------------------------------------------------------//

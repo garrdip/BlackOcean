@@ -438,6 +438,24 @@ public class SpawnedMonster : NetworkBehaviour
     /// <summary>위험도 방어력 가중치 적용 (몬스터별 MonsterStatDB HazardDef x 위험도) — 방어 획득량과 인디케이터 표시가 공용</summary>
     public int ScaledDefense(int value) => value + Mathf.RoundToInt(hazard * (monster != null ? monster.hazardDefBonus : 0f));
 
+    /// <summary>도발 (게오르크 GS12) — 예고된 행동이 플레이어 공격이면 대상을 도발자로 고정한다. 다음 행동 1회 — 행동 후 SetNextAction이 다시 정한다.
+    /// 방어/모으기 등 공격이 아닌 예고에는 효과 없음</summary>
+    [Server]
+    public void TauntBy(TargetObject taunter)
+    {
+        if(taunter == null) return;
+        switch(nextTarget)
+        {
+            case ActionTarget.FRONT: case ActionTarget.MIDDLE: case ActionTarget.BACK:
+            case ActionTarget.FRONT_MIDDLE: case ActionTarget.FRONT_BACK: case ActionTarget.MIDDLE_BACK:
+            case ActionTarget.WHOLE: case ActionTarget.FIXEDPLAYER:
+                nextTargetObject = taunter;
+                nextTarget = ActionTarget.UNDEFINED; // 이미 FIXEDPLAYER여도 훅(인디케이터 갱신)이 다시 돌도록 값을 바꿨다가 확정
+                nextTarget = ActionTarget.FIXEDPLAYER;
+                break;
+        }
+    }
+
     public void GeneralAttack()
     {
         if(nextTarget == ActionTarget.FIXEDPLAYER)

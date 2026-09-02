@@ -35,8 +35,12 @@ public partial class M_TurnManager
         public BuffType type;
         public int value;
         public int turnsLeft;
+        public bool skipFirstTick; // 대상이 자기 턴 중에 스스로 건 버프(빈틈없는 자세 등) — 이번 턴 종료 감소는 건너뛰어 "N턴"이 온전히 남게 한다
     }
     readonly List<TpTimedDebuff> tpTimedDebuffs = new List<TpTimedDebuff>();
+
+    /// <summary>지금 행동 중인 유닛 (서버) — 반격의 공격자 판정, 자기 턴 중 자가 버프의 첫 감소 건너뛰기에 사용. 턴 밖에서는 null</summary>
+    public TargetObject tpActingUnit;
 
     [SyncVar]
     public bool tpBattleActive;
@@ -133,10 +137,12 @@ public partial class M_TurnManager
             next.tp -= 100f;
             next.target.defense = 0; // 방어(실드)는 자기 다음 턴까지 유지 — 자기 턴 시작에 리셋
             SyncTpGauges();
+            tpActingUnit = next.target;
             if (next.target.objectType == ObjectType.PLAYER)
                 yield return ExecutePlayerTpTurn(next);
             else
                 yield return ExecuteMonsterTpTurn(next);
+            tpActingUnit = null;
             SyncTpGauges(); // 턴 중 TP 변동(브레이크/피의 가속/필살기 페널티) 반영
 
             yield return wait;
@@ -193,6 +199,7 @@ public partial class M_TurnManager
         if (existing != null)
         {
             existing.turnsLeft = Mathf.Max(existing.turnsLeft, turns);
+            if (target == tpActingUnit) existing.skipFirstTick = true; // 자기 턴 중 갱신 — 이번 턴 종료 감소 건너뜀
             if (Mathf.Abs(value) > Mathf.Abs(existing.value))
             {
                 target.GainBuff(type, value - existing.value, true, false, false, false, from); // 강한 효과로 교체 (차액 반영)
@@ -201,7 +208,7 @@ public partial class M_TurnManager
             return;
         }
         target.GainBuff(type, value, true, false, false, false, from);
-        tpTimedDebuffs.Add(new TpTimedDebuff { target = target, type = type, value = value, turnsLeft = turns });
+        tpTimedDebuffs.Add(new TpTimedDebuff { target = target, type = type, value = value, turnsLeft = turns, skipFirstTick = target == tpActingUnit });
     }
 
     // 대상의 턴 종료 시 지속 디버프 감소 — 만료되면 버프를 상쇄 제거
@@ -212,6 +219,7 @@ public partial class M_TurnManager
         {
             TpTimedDebuff debuff = tpTimedDebuffs[i];
             if (debuff.target != target) continue;
+            if (debuff.skipFirstTick) { debuff.skipFirstTick = false; continue; } // 자기 턴 중 건 버프는 이번 턴 종료를 세지 않는다
             if (--debuff.turnsLeft > 0) continue;
             if (debuff.target != null && !debuff.target.isDying)
                 debuff.target.GainBuff(debuff.type, -debuff.value, true, false, false, false, debuff.target); // 상쇄 → 값 0이 되며 제거
@@ -266,7 +274,7 @@ public partial class M_TurnManager
             {
                 // 방어: 방어력 스탯(장비 합산) + 기본치만큼 실드 획득 (자기 다음 턴 시작까지 유지)
                 // ※실드가 깎일 때는 방어력 공식 미적용 — 대열 보정된 원 데미지 그대로 소모된다 (TargetObject.DamageToPlayer)
-                unit.target.GainDefense(gamePlayer.TotalDefense + BalanceData.Get("DEFEND_BASE_VALUE", 5));
+                unit.target.GainDefense(gamePlayer.TotalDefense + Mathf.Max(0, unit.target.GetBuffValue(BuffType.ICHI_DEFENSE)) + BalanceData.Get("DEFEND_BASE_VALUE", 5)); // 방어력 상승 버프(빈틈없는 자세 등 ICHI_DEFENSE 양수)도 실드량에 가산
                 break;
             }
             case TpAction.SKILL:
@@ -318,6 +326,7 @@ public partial class M_TurnManager
         if (!freeAction) break; // 일반 행동 → 턴 종료. 기본 스킬이었으면 다시 입력 대기
         }
         TickTimedDebuffs(unit.target); // 자신에게 걸린 지속 버프/디버프(기도·철귀 공격력 등) 턴 감소 — 몬스터와 같이 자기 턴 종료 기준. 철귀 재부여보다 먼저
+        tpActingUnit = null; // 턴 종료 효과(철귀 재부여)는 "자기 턴 중"으로 치지 않는다 — 다음 자기 턴 종료에 정상 감소
         ApplyPlayerTurnEndEffects(unit.target);
     }
 
