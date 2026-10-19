@@ -237,3 +237,41 @@ ui.msg.hub_heal_no_gold,Недостаточно золота (исцелени�
 ui.msg.hub_heal_not_needed,ОЗ и ОМ отряда уже полны — исцеление не требуется,파티의 체력과 MP가 모두 최대입니다 — 회복이 필요하지 않습니다
 ui.msg.skill_cost_short,{0} — недостаточно ресурсов для использования,{0} — 자원이 부족해 사용할 수 없습니다
 ui.msg.skill_innate_used,{0} — уже использовано в этом ходу,{0} — 이번 턴에 이미 사용했습니다
+ui.msg.miss,ПРОМАХ,MISS
+attr.NONE,Нейтральный,무속성
+attr.SLASH,Рубящий,참격
+attr.STRIKE,Дробящий,타격
+attr.PIERCE,Колющий,관통
+attr.ICHI,Ичи,이치
+attr.SIMSANG,Симсан,심상
+attr.RESONANCE,Резонанс,공명
+buff.STAT_ATTACK.name,Атака ±,공격력 변화
+buff.STAT_ATTACK.desc,Атака меняется на указанное значение (действует на базовую атаку и урон навыков).,공격력이 표시 수치만큼 증가/감소합니다 (기본 공격과 스킬 피해에 적용).
+buff.STAT_STRENGTH.name,Сила ±,힘 변화
+buff.STAT_STRENGTH.desc,Сила меняется на указанное значение (учитывается в требовании силы для брони).,힘이 표시 수치만큼 증가/감소합니다 (방어구 힘 요구치 판정에 포함).
+buff.STAT_DEFENSE.name,Защита ±,방어력 변화
+buff.STAT_DEFENSE.desc,Физическая защита меняется на указанное значение (эффекты Защиты и Железного демона спадают в начале вашего следующего хода).,물리 방어력이 표시 수치만큼 증가/감소합니다 (방어 행동·철귀는 다음 자기 턴 시작에 사라집니다).
+buff.STAT_MAGIC_DEFENSE.name,Магическая защита ±,마법방어 변화
+buff.STAT_MAGIC_DEFENSE.desc,Магическая защита меняется на указанное значение.,마법 방어력이 표시 수치만큼 증가/감소합니다.
+buff.STAT_CRIT_RATE.name,Шанс крита ±,치명타율 변화
+buff.STAT_CRIT_RATE.desc,Шанс критического удара меняется на указанные %-пункты.,치명타율이 표시 수치%p만큼 증가/감소합니다.
+buff.STAT_EVADE.name,Уклонение ±,회피율 변화
+buff.STAT_EVADE.desc,Уклонение меняется на указанные %-пункты.,회피율이 표시 수치%p만큼 증가/감소합니다.
+buff.STAT_ACCURACY.name,Точность ±,명중률 변화
+buff.STAT_ACCURACY.desc,Точность меняется на указанные %-пункты.,명중률이 표시 수치%p만큼 증가/감소합니다.
+ui.msg.potion_battle_only,{0} — можно использовать только в бою,{0} — 전투 중에만 사용할 수 있습니다
+ui.msg.potion_resource_mismatch,{0} — этот персонаж не может это использовать (другой тип ресурса),{0} — 이 캐릭터는 사용할 수 없습니다 (자원 종류가 다름)
+ui.msg.potion_battle_only_short,Только в бою,전투 전용
+ui.msg.potion_resource_mismatch_short,Другой ресурс,자원 불일치
+ui.NPC_Mercurius.ButtonShop_Label,Лавка,상점
+ui.shop.title,Торговый пост Меркурия,메르크리우스 상단
+ui.shop.gold,Золото {0},보유 골드 {0}
+ui.shop.tab_buy,Купить,구매
+ui.shop.tab_sell,Продать,판매
+ui.shop.close,Закрыть,닫기
+ui.shop.row_price,{0} золота,{0} 골드
+ui.shop.empty_buy,Товаров нет,판매 중인 물품이 없습니다
+ui.shop.empty_sell,Нет снаряжения для продажи (надетое продать нельзя),팔 수 있는 장비가 없습니다 (장착 중인 장비는 팔 수 없음)
+ui.msg.shop_bought,Куплено: {0},{0} 구매 완료
+ui.msg.shop_sold,Продано: {0},{0} 판매 완료
+ui.msg.shop_no_gold,Недостаточно золота (цена {0}),골드가 부족합니다 (가격 {0} 골드)

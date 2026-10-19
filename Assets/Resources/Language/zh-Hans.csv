@@ -237,3 +237,41 @@ ui.msg.hub_heal_no_gold,金币不足（治疗费用 {0} 金币）,골드가 부�
 ui.msg.hub_heal_not_needed,队伍的生命值和MP均已满 — 无需治疗,파티의 체력과 MP가 모두 최대입니다 — 회복이 필요하지 않습니다
 ui.msg.skill_cost_short,{0} — 资源不足，无法使用,{0} — 자원이 부족해 사용할 수 없습니다
 ui.msg.skill_innate_used,{0} — 本回合已使用,{0} — 이번 턴에 이미 사용했습니다
+ui.msg.miss,未命中,MISS
+attr.NONE,无属性,무속성
+attr.SLASH,斩击,참격
+attr.STRIKE,打击,타격
+attr.PIERCE,贯穿,관통
+attr.ICHI,理,이치
+attr.SIMSANG,心象,심상
+attr.RESONANCE,共鸣,공명
+buff.STAT_ATTACK.name,攻击力变化,공격력 변화
+buff.STAT_ATTACK.desc,攻击力按显示数值增减(作用于基础攻击与技能伤害)。,공격력이 표시 수치만큼 증가/감소합니다 (기본 공격과 스킬 피해에 적용).
+buff.STAT_STRENGTH.name,力量变化,힘 변화
+buff.STAT_STRENGTH.desc,力量按显示数值增减(计入防具的力量需求判定)。,힘이 표시 수치만큼 증가/감소합니다 (방어구 힘 요구치 판정에 포함).
+buff.STAT_DEFENSE.name,防御力变化,방어력 변화
+buff.STAT_DEFENSE.desc,物理防御力按显示数值增减(防御行动与铁鬼的效果在你下一回合开始时消失)。,물리 방어력이 표시 수치만큼 증가/감소합니다 (방어 행동·철귀는 다음 자기 턴 시작에 사라집니다).
+buff.STAT_MAGIC_DEFENSE.name,魔法防御变化,마법방어 변화
+buff.STAT_MAGIC_DEFENSE.desc,魔法防御力按显示数值增减。,마법 방어력이 표시 수치만큼 증가/감소합니다.
+buff.STAT_CRIT_RATE.name,暴击率变化,치명타율 변화
+buff.STAT_CRIT_RATE.desc,暴击率按显示的百分点增减。,치명타율이 표시 수치%p만큼 증가/감소합니다.
+buff.STAT_EVADE.name,闪避率变化,회피율 변화
+buff.STAT_EVADE.desc,闪避率按显示的百分点增减。,회피율이 표시 수치%p만큼 증가/감소합니다.
+buff.STAT_ACCURACY.name,命中率变化,명중률 변화
+buff.STAT_ACCURACY.desc,命中率按显示的百分点增减。,명중률이 표시 수치%p만큼 증가/감소합니다.
+ui.msg.potion_battle_only,{0} — 仅能在战斗中使用,{0} — 전투 중에만 사용할 수 있습니다
+ui.msg.potion_resource_mismatch,{0} — 该角色无法使用(资源类型不同),{0} — 이 캐릭터는 사용할 수 없습니다 (자원 종류가 다름)
+ui.msg.potion_battle_only_short,仅限战斗,전투 전용
+ui.msg.potion_resource_mismatch_short,资源不符,자원 불일치
+ui.NPC_Mercurius.ButtonShop_Label,商店,상점
+ui.shop.title,墨丘利商会,메르크리우스 상단
+ui.shop.gold,持有金币 {0},보유 골드 {0}
+ui.shop.tab_buy,购买,구매
+ui.shop.tab_sell,出售,판매
+ui.shop.close,关闭,닫기
+ui.shop.row_price,{0} 金币,{0} 골드
+ui.shop.empty_buy,暂无出售的物品,판매 중인 물품이 없습니다
+ui.shop.empty_sell,没有可出售的装备(已装备的物品不能出售),팔 수 있는 장비가 없습니다 (장착 중인 장비는 팔 수 없음)
+ui.msg.shop_bought,已购买 {0},{0} 구매 완료
+ui.msg.shop_sold,已出售 {0},{0} 판매 완료
+ui.msg.shop_no_gold,金币不足(价格 {0} 金币),골드가 부족합니다 (가격 {0} 골드)

@@ -473,7 +473,7 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 
 **목표**: OnGUI 임시 창을 정식 인벤토리·장비·상점 팝업으로 교체하고, 옵션·소모품·속성·방어구 문자열을 로컬라이즈한다.
 
-- [ ] 8-1. 로컬라이즈 키 — 전 로케일 CSV에 등록 (`Document/LOCALIZATION.md`)
+- [x] 8-1. 로컬라이즈 키 — 전 로케일 CSV에 등록 (`Document/LOCALIZATION.md`). **구현 (2026-10-19)**: 코드가 지금 읽는 키(`buff.STAT_*`, `attr.*`, `ui.msg.miss/potion_*/shop_*`, `ui.shop.*`, `ui.NPC_Mercurius.ButtonShop_Label`)를 ko·en + de·es·fr·ja·ru·zh-Hans 8개 로케일에 등록. 장비·등급·옵션·물약 **이름** 키(`equip.*`, `potion.*`)는 코드가 아직 CSV 한국어를 직접 쓰므로 8-2 툴팁과 함께
       - `equip.<EquipNo>.name/.desc`, `equip.option.<EquipOptionType>.name` / `.format`("{0}%", 약점 상쇄는 "약점 상쇄 : {attr}"), `equip.grade.<EquipGrade>`
       - `equip.weapontype.<WeaponType>`, `equip.armortype.<ArmorType>`, `attr.<AttackAttribute>`
       - `potion.<PotionNo>.name/.desc`, `buff.STAT_*.name`, `ui.msg.miss`, `ui.msg.potion_battle_only`, `ui.shop.*`

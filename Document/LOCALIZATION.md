@@ -40,6 +40,9 @@ Español(es) · Deutsch(de) · Русский(ru) · Français(fr)
 |---|---|---|
 | 카드 이름·설명 | `Assets/Resources/DB/CardDB.csv` | `card.<카드번호>.name` / `.desc` |
 | 버프 | `DB/BuffDB.csv` | `buff.<enum>.name` / `.desc` |
+| 공격 속성 (아이템 개편) | 코드 `BattleActions.AttributeName` 기본값 | `attr.<AttackAttribute>` (ko.csv에도 등록) |
+| 장비·등급·옵션·물약 이름 (아이템 개편) | `DB/EquipDB.csv`·`EquipGradeDB.csv`·`EquipOptionDB.csv`·`ConsumableDB.csv` | `equip.<EquipNo>.name`, `equip.grade.<enum>`, `equip.option.<enum>.name`, `potion.<PotionNo>.name` — **키만 예약, 코드 연결은 정식 UI(ToDo_RPG_ITEM 8-2)에서** |
+| 상점·물약 메시지 | `Language/ko.csv` | `ui.shop.*`, `ui.msg.potion_*`, `ui.msg.shop_*`, `ui.NPC_Mercurius.ButtonShop_Label` |
 | 툴팁 용어 | `DB/Description.csv` | `term.<용어키>.name` / `.desc` |
 | 카드 특성 | `DB/CardCharacteristic.csv` | `characteristic.<enum>.name` |
 | UI 문자열 | `Language/ko.csv` (다른 곳에 원문이 없으므로) | `ui.<이름>` |
