@@ -66,6 +66,7 @@ public partial class GamePlayer
         StatRow("명중률 %", subStat != null ? subStat.baseAccuracy : 95, TotalAccuracy);
         StatRow("치명타율 %", subStat != null ? subStat.baseCrit : 5, TotalCritRate);
         StatRow("치명 배수 %", BalanceData.Get("CRIT_DAMAGE_PERCENT", 150), TotalCritDamage);
+        Line($"현재 약점: {WeaknessSummary()}    힘 요구치: {(IsStrengthRequirementUnmet ? $"미달 (현재 힘 {CurrentStrengthForRequirement()}) — 민첩 ½" : "충족")}");
         y += 8f;
         // 전투 판정 치트 (호스트 서버에서만 효과 — BattleActions 정적 플래그)
         GUI.Label(new Rect(x, y, 110f, lineHeight), "판정 치트");

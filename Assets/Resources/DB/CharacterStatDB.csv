@@ -1,4 +1,4 @@
-Character,BaseHP,BaseStr,BaseAgi,BaseInt,BaseDef,BaseMdef,BaseCtrl,GrowStr,GrowAgi,GrowHP,GrowInt,GrowDef,GrowMdef,GrowCtrl,Weakness,Resist,Resource,BaseResource,AttackStat,BasicAttackAttribute,Description,BaseEvade,BaseAccuracy,BaseCrit
-GEORK,50,10,5,3,10,4,5,130,60,660,50,50,20,75,MAGIC,SLASH,RAGE,100,STR,SLASH,힘·체력·방어 위주 성장. 분노: 피해를 주거나 받을 때 충전 (제어로 획득량 증가). 기본 공격: 검(참격). ※힘 5배 상향(1인 테스트 밸런스 — 기본8/성장3이 원래 값),5,95,5
-HONGDANHYANG,40,4,6,10,4,8,5,30,60,500,100,30,60,100,PIERCE,MAGIC,MP,30,INT,MAGIC,지능·마법방어 위주 성장. MP 자원 (제어로 턴당 회복량 증가). 기본 공격: 지팡이(마법),5,95,5
-ERIS,35,7,10,4,5,5,5,70,100,400,50,20,30,50,STRIKE,RESONANCE,HP,0,STR,RESONANCE,힘·민첩 위주 성장. 스킬 코스트로 자신의 HP를 소모. 기본 공격: 크리스털 코어(공명),10,95,10
+Character,BaseHP,BaseStr,BaseAgi,BaseInt,BaseDef,BaseMdef,BaseCtrl,GrowStr,GrowAgi,GrowHP,GrowInt,GrowDef,GrowMdef,GrowCtrl,Resource,BaseResource,BaseEvade,BaseAccuracy,BaseCrit,Description
+GEORK,50,10,5,3,10,4,5,130,60,660,50,50,20,75,RAGE,100,5,95,5,힘·체력·방어 위주 성장. 분노: 피해를 주거나 받을 때 충전 (제어로 획득량 증가). 기본 공격 속성·계수는 장착 무기가 정한다 (초기 대검·참격). ※힘 5배 상향(1인 테스트 밸런스 — 기본8/성장3이 원래 값)
+HONGDANHYANG,40,4,6,10,4,8,5,30,60,500,100,30,60,100,MP,30,5,95,5,지능·마법방어 위주 성장. MP 자원 (제어로 턴당 회복량 증가). 초기 무기 지팡이(이치)
+ERIS,35,7,10,4,5,5,5,70,100,400,50,20,30,50,HP,0,10,95,10,힘·민첩 위주 성장. 스킬 코스트로 자신의 HP를 소모. 초기 무기 핵(공명 — 힘 + 마법공격력). 회피·치명 10

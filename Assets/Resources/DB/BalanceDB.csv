@@ -54,6 +54,7 @@ ERIS_MAD_ATTACK_PERCENT,50,에리스 광기 변신 중 가하는 피해 증가 %
 ERIS_BREAK_DEF_DOWN,10,에리스 '부서지세요' 방어력 저하량 (Lv1) — 몬스터 방어력 스탯 디버프 (STAT_DEFENSE 음수 — Phase 2),
 GIANTSOLDIER_DEFENSE_UP_BASE,10,거인병 SinglePattern 1단계 방어력 상승량 (3턴 버프 — 구 실드 10/15/20),
 GIANTSOLDIER_DEFENSE_UP_PER_STEP,5,거인병 방어 단계당 상승량 증가 (10 → 15 → 20),
+ARMOR_STR_PENALTY_AGI_PERCENT,50,방어구 힘 요구치 미달 시 민첩 비율 % (미달 부위가 하나라도 있으면 1회 — Q16·Q42),
 ERIS_BREAK_DEF_DOWN_PER_LEVEL,5,에리스 '부서지세요' 스킬 레벨당 방어력 저하 증가량 (10/15/20),
 ERIS_BREAK_DURATION,3,에리스 '부서지세요' 방어력 저하 지속 턴 (대상 턴 기준),
 ERIS_ENDURE_DEF_DOWN,50,에리스 '얼마나 버틸까요' 방어력 저하량 (Lv1) — 피해 전에 적용,

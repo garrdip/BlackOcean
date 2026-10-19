@@ -342,19 +342,27 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 
 **목표**: 속성이 물리 3종(참격·타격·관통)과 마법 3종(이치·심상·공명)으로 나뉘고, 마법 속성 공격은 모두 마법방어로 경감된다. 입은 방어구 세트가 플레이어의 약점을 정하고, 몬스터가 약점을 치면 몬스터와 같은 공식으로 피해 120%·TP 감소·치명 보정이 들어간다. 힘이 부족한 방어구는 민첩을 반으로 깎는다.
 
-- [ ] 4-1. `AttackAttribute` 개편 (0-7, Q15) — `MAGIC` → `ICHI`, `SIMSANG` 추가. CSV 이관: SkillDB `Attribute`(HS1 화염구·HS3 마력 폭풍 등), MonsterStatDB `Weakness/AttackAttribute`(감시자·정예·보스 등 `MAGIC` 행 전부), EquipDB 무기 `Attribute`(Q25 — 지팡이·책·수정구는 ICHI/SIMSANG, 핵은 RESONANCE 등 무기마다 지정). `BattleActions.AttributeName` 표기와 로컬라이즈 키 `attr.<enum>` 추가
-- [ ] 4-2. `BattleActions.IsMagic(AttackAttribute)` 갱신 — 1-2에서 만든 헬퍼의 판정을 `ICHI·SIMSANG·RESONANCE`로 바꾼다. 방어 스탯 선택이 `IsMagic`을 쓰는지 양쪽(`DamageToPlayer`, `DamageToMonster`) 확인. 공명 공격(Boss_Geras 등)이 마법방어로 경감되는지 확인
-- [ ] 4-3. `ArmorTypeDB.csv` + 로더 (0-6). `EquipDB` 갑옷·투구·신발 행에 `ArmorType`·`RequireStr`을 채운다 (중갑 높음 / 경갑 낮음 / 로브 0)
-- [ ] 4-4. `GamePlayer.GetWeaknesses()` (Q16) — 갑옷·투구·신발 3부위의 `ArmorType`을 모아 세트 규칙(0-6)으로 약점 집합을 만든다: 미착용 부위 있음 → 전 속성 / 1종 → 그 종류 약점 / 2종 → 합집합 / 3종 → 전 속성. 그다음 약점 상쇄 옵션의 속성을 뺀다 (Phase 5-12). 착탈 시 갱신(SyncVar 또는 계산 프로퍼티).
+- [x] 4-1. `AttackAttribute` 개편 (0-7, Q15) — `MAGIC` → `ICHI`, `SIMSANG` 추가. CSV 이관: SkillDB `Attribute`(HS1 화염구·HS3 마력 폭풍 등), MonsterStatDB `Weakness/AttackAttribute`(감시자·정예·보스 등 `MAGIC` 행 전부), EquipDB 무기 `Attribute`(Q25 — 지팡이·책·수정구는 ICHI/SIMSANG, 핵은 RESONANCE 등 무기마다 지정). `BattleActions.AttributeName` 표기와 로컬라이즈 키 `attr.<enum>` 추가
+- [x] 4-2. `BattleActions.IsMagic(AttackAttribute)` 갱신 — 1-2에서 만든 헬퍼의 판정을 `ICHI·SIMSANG·RESONANCE`로 바꾼다. 방어 스탯 선택이 `IsMagic`을 쓰는지 양쪽(`DamageToPlayer`, `DamageToMonster`) 확인. 공명 공격(Boss_Geras 등)이 마법방어로 경감되는지 확인
+- [x] 4-3. `ArmorTypeDB.csv` + 로더 (0-6). `EquipDB` 갑옷·투구·신발 행에 `ArmorType`·`RequireStr`을 채운다 (중갑 높음 / 경갑 낮음 / 로브 0)
+- [x] 4-4. `GamePlayer.GetWeaknesses()` (Q16) — 갑옷·투구·신발 3부위의 `ArmorType`을 모아 세트 규칙(0-6)으로 약점 집합을 만든다: 미착용 부위 있음 → 전 속성 / 1종 → 그 종류 약점 / 2종 → 합집합 / 3종 → 전 속성. 그다음 약점 상쇄 옵션의 속성을 뺀다 (Phase 5-12). 착탈 시 갱신(SyncVar 또는 계산 프로퍼티).
       `CharacterStatDB` `Weakness/Resist` 컬럼과 `CharacterStatData.weakness/resist` 삭제 (Q17)
-- [ ] 4-5. 힘 요구치 패널티 (Q42) — 착용한 방어구 중 `RequireStr` > **현재 힘(`TotalStrength` = 기본 힘 + `STRENGTH` 옵션 + `STAT_STRENGTH` 버프. 무기 공격력·공격력 버프 제외)** 인 부위가 하나라도 있으면 `TotalAgility`에 `ARMOR_STR_PENALTY_AGI_PERCENT`(50%) 적용 (1회). 힘 버프로 요구치를 넘으면 그동안 패널티가 풀린다 — 비전투에서는 `GamePlayer`만 보고, 전투 중에는 `TargetObject`의 `STAT_STRENGTH` 버프를 더해 계산하는 조회 함수(`CurrentStrengthForRequirement`)를 둔다. TP 충전(`GetUnitTpGain`)이 매 틱 `TotalAgility`를 읽으므로 자동 반영 — 확인만
-- [ ] 4-6. 플레이어 약점 피격 (Q18, Q30) — `ResolveHit`의 약점 판정이 대상이 플레이어면 `GetWeaknesses()`를 본다. 피해 120%·`ApplyWeaknessTpDamage`(플레이어 TP, 반복 체감 포함)·몬스터 치명 +`WEAKNESS_CRIT_BONUS` 모두 몬스터 피격과 같은 코드·같은 BalanceDB 키
-- [ ] 4-7. 표시 — 전투 OnGUI 약점 힌트에 플레이어 현재 약점(세트 상태 포함), 스탯창에 힘 부족 패널티 표시. 몬스터 행동 예고에 공격 속성 표시(구 워크플로우 2C-3)를 함께 진행 권장 — 약점 회피를 위한 장비·대열 선택의 근거가 된다 (`NextActionIndicator` 확장, 데이터는 `MonsterStatDB.AttackAttribute`)
+- [x] 4-5. 힘 요구치 패널티 (Q42) — 착용한 방어구 중 `RequireStr` > **현재 힘(`TotalStrength` = 기본 힘 + `STRENGTH` 옵션 + `STAT_STRENGTH` 버프. 무기 공격력·공격력 버프 제외)** 인 부위가 하나라도 있으면 `TotalAgility`에 `ARMOR_STR_PENALTY_AGI_PERCENT`(50%) 적용 (1회). 힘 버프로 요구치를 넘으면 그동안 패널티가 풀린다 — 비전투에서는 `GamePlayer`만 보고, 전투 중에는 `TargetObject`의 `STAT_STRENGTH` 버프를 더해 계산하는 조회 함수(`CurrentStrengthForRequirement`)를 둔다. TP 충전(`GetUnitTpGain`)이 매 틱 `TotalAgility`를 읽으므로 자동 반영 — 확인만
+- [x] 4-6. 플레이어 약점 피격 (Q18, Q30) — `ResolveHit`의 약점 판정이 대상이 플레이어면 `GetWeaknesses()`를 본다. 피해 120%·`ApplyWeaknessTpDamage`(플레이어 TP, 반복 체감 포함)·몬스터 치명 +`WEAKNESS_CRIT_BONUS` 모두 몬스터 피격과 같은 코드·같은 BalanceDB 키
+- [x] 4-7. 표시 — 전투 OnGUI 약점 힌트에 플레이어 현재 약점(세트 상태 포함), 스탯창에 힘 부족 패널티 표시. 몬스터 행동 예고에 공격 속성 표시(구 워크플로우 2C-3)를 함께 진행 권장 — 약점 회피를 위한 장비·대열 선택의 근거가 된다 (`NextActionIndicator` 확장, 데이터는 `MonsterStatDB.AttackAttribute`)
 
 **완료 기준**
 - 중갑 3부위 착용 캐릭터가 공명 공격을 맞으면 마법방어로 경감되고, 피해 120%·TP 감소가 들어간다. 참격 공격에는 약점이 없다
 - 투구를 벗으면 모든 속성이 약점이 된다. 중갑 2 + 로브 1이면 타격·공명·참격·이치가 약점이다
 - 힘이 부족한 캐릭터가 중갑을 입으면 민첩이 반으로 줄고 TP 충전이 느려진다
+
+**구현 (2026-10-19)** — 컴파일 확인. **인게임 플레이 확인은 아직.**
+- `AttackAttribute { NONE, SLASH, STRIKE, PIERCE, ICHI, SIMSANG, RESONANCE }` — CSV 이관: SkillDB HS1·HS3, MonsterStatDB 10행(ITEMS §1 표 그대로), EquipDB(지팡이 ICHI, 책·수정구 SIMSANG), EquipOptionDB 약점 상쇄 풀. 프리팹의 직렬화 값은 NPC `attackAttribute: 0`(NONE)뿐이라 enum 순서 변경 영향 없음
+- `CharacterStatDB` `Weakness/Resist/AttackStat/BasicAttackAttribute` 컬럼·필드 삭제 (Description 앞에 Base* 보조 스탯 컬럼 재배치)
+- `BattleActions.IsMagic` = 이치·심상·공명. `AttributeName`은 로컬라이즈 `attr.<enum>`(ko·en), `AttributeListName` 추가
+- `ArmorTypeDB.csv` + `DB/ArmorTypeData.cs`(`GetWeaknesses(type)`, `AllAttributes`). `GamePlayer.GetWeaknesses()` 세트 규칙 + 약점 상쇄 차감, `IsWeakTo`가 플레이어 대상에 사용 → 피해 120%·약점 TP(반복 체감)·치명 +10%p가 몬스터와 같은 코드
+- 힘 요구치: `CurrentStrengthForRequirement()`(= TotalStrength + 전투 중 STAT_STRENGTH 버프), `IsStrengthRequirementUnmet`, `TotalAgility`에 `ARMOR_STR_PENALTY_AGI_PERCENT`(50) 1회 적용 — TP 충전(`GetUnitTpGain`)이 매 틱 읽는다
+- 표시: 전투 상태줄에 행동 캐릭터 약점·힘 부족, 몬스터 TP 라벨에 공격 속성, 장비 창 헤더·스탯 창에 약점/요구치
 - 기존 `MAGIC` 속성이 `ICHI`로 이관되어 몬스터 약점 판정이 이전과 같다 (회귀 없음)
 
 ---

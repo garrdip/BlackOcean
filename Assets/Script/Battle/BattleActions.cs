@@ -92,17 +92,18 @@ public static class BattleActions
 
     // ------------------------------------------------------------- 속성 · 약점 -------------------------------------------------------------//
 
-    /// <summary>마법 속성인지 — 마법방어로 경감된다. Phase 4(4-2)에서 ICHI·SIMSANG·RESONANCE로 바뀐다 (지금은 MAGIC·RESONANCE)</summary>
+    /// <summary>마법 속성인지 — 이치·심상·공명은 마법방어로 경감된다 (기획 「속성」, Phase 4-2)</summary>
     public static bool IsMagic(AttackAttribute attribute)
     {
-        return attribute == AttackAttribute.MAGIC || attribute == AttackAttribute.RESONANCE;
+        return attribute == AttackAttribute.ICHI || attribute == AttackAttribute.SIMSANG || attribute == AttackAttribute.RESONANCE;
     }
 
-    /// <summary>대상의 약점 속성 목록 — 몬스터 MonsterStatDB Weakness. 플레이어 약점은 Phase 4(방어구 세트, GamePlayer.GetWeaknesses)에서 붙는다 (캐릭터 고유 약점은 폐기 — Q17)</summary>
+    /// <summary>대상이 그 속성에 약한지 — 몬스터는 MonsterStatDB Weakness, 플레이어는 방어구 세트 약점(GamePlayer.GetWeaknesses — 약점 상쇄 옵션 반영, Q16·Q18). 캐릭터 고유 약점은 없다 (Q17)</summary>
     public static bool IsWeakTo(TargetObject target, AttackAttribute attribute)
     {
         if (target == null || attribute == AttackAttribute.NONE) return false;
         if (target.monster != null && target.monster.monster != null) return target.monster.monster.weaknesses.Contains(attribute);
+        if (target.player != null) return target.player.GetWeaknesses().Contains(attribute);
         return false;
     }
 
@@ -307,17 +308,28 @@ public static class BattleActions
         return Mathf.Max(0, defenseStat * BalanceData.Get("CRIT_DEFENSE_PERCENT", 50) / 100 - BalanceData.Get("CRIT_DEFENSE_FLAT_REDUCE", 10));
     }
 
-    /// <summary>속성 한글 표기 (임시 UI/로그용 — 정식 로컬라이제이션은 Phase 8)</summary>
+    /// <summary>속성 표기 — 로컬라이즈 키 `attr.&lt;enum&gt;` (ko 기본값은 아래 한글)</summary>
     public static string AttributeName(AttackAttribute attribute)
     {
+        string fallback;
         switch (attribute)
         {
-            case AttackAttribute.SLASH: return "참격";
-            case AttackAttribute.STRIKE: return "타격";
-            case AttackAttribute.PIERCE: return "관통";
-            case AttackAttribute.MAGIC: return "마법";
-            case AttackAttribute.RESONANCE: return "공명";
-            default: return "무속성";
+            case AttackAttribute.SLASH: fallback = "참격"; break;
+            case AttackAttribute.STRIKE: fallback = "타격"; break;
+            case AttackAttribute.PIERCE: fallback = "관통"; break;
+            case AttackAttribute.ICHI: fallback = "이치"; break;
+            case AttackAttribute.SIMSANG: fallback = "심상"; break;
+            case AttackAttribute.RESONANCE: fallback = "공명"; break;
+            default: fallback = "무속성"; break;
         }
+        return M_LanguageManager.Get($"attr.{attribute}", fallback);
+    }
+
+    /// <summary>속성 집합 표기 — "타격·공명" (비면 "없음")</summary>
+    public static string AttributeListName(IEnumerable<AttackAttribute> attributes)
+    {
+        var names = new List<string>();
+        foreach (AttackAttribute attribute in attributes) names.Add(AttributeName(attribute));
+        return names.Count == 0 ? "없음" : string.Join("·", names);
     }
 }

@@ -29,7 +29,7 @@ BattleActions.IsMagic(a) = a is ICHI | SIMSANG | RESONANCE   // 마법방어로 
     | `MonsterStatDB.csv` | Boss_Apates `Weakness` | SLASH\|MAGIC | SLASH\|ICHI |
     | `CharacterStatDB.csv` | `Weakness`, `Resist`, `BasicAttackAttribute`, `AttackStat` 컬럼 | — | **컬럼 삭제** (Q17, Q25 — 기본 공격은 무기가 정한다) |
     | `EquipDB.csv` | 무기 행 `Attribute` | (신설) | 무기마다 지정 (§4) |
-- 이관 전(Phase 1~3)에는 `IsMagic`이 `MAGIC`·`RESONANCE`를 마법으로 취급한다.
+- **이관 완료 (2026-10-19, Phase 4-1)** — 위 표대로 실행. `IsMagic` = ICHI·SIMSANG·RESONANCE.
 
 ## 2. 보조 스탯·방어 스탯 컬럼 [Phase 1·2]
 

@@ -4,7 +4,7 @@ using UnityEngine;
 using ProjectD;
 
 /// <summary>
-/// 캐릭터별 기본 스탯/성장치/약점·내성/전투 자원 테이블 (Resources/DB/CharacterStatDB.csv) — 모든 캐릭터 스탯의 단일 관리 지점.
+/// 캐릭터별 기본 스탯/성장치/보조 스탯/전투 자원 테이블 (Resources/DB/CharacterStatDB.csv) — 모든 캐릭터 스탯의 단일 관리 지점.
 /// 스탯 6종 + HP: 힘(물리 공격력)/민첩(TP 속도)/지능(마법 공격력)/방어력/마법방어/제어(MP 회복·분노 생성) + 최대 HP(BaseHP = 1레벨 최대 HP).
 /// (구 '체력(Vit)' 스탯은 최대 HP 외 용도가 없어 폐기 — 2026-08-31. HP가 직접 성장/스킬트리 대상이 된다)
 /// 레벨업(GamePlayer.AddExp): GrowX = 1레벨 → 최대 레벨(LevelDB)까지의 "총" 성장치 (GrowHP = 최대 HP 총 성장치). 레벨별 상승량은 LevelGrowthTable이 시드 기반으로 랜덤 분배하고
@@ -21,12 +21,9 @@ public static class CharacterStatData
         public int baseStr, baseAgi, baseInt, baseDef, baseMdef, baseCtrl;          // 1레벨 기본치
         public int growHP;                                                          // 1레벨 → 최대 레벨까지 최대 HP 총 성장치
         public int growStr, growAgi, growInt, growDef, growMdef, growCtrl;          // 1레벨 → 최대 레벨까지 총 성장치 (레벨별 분배는 LevelGrowthTable)
-        public AttackAttribute weakness; // 피격 시 약점 속성
-        public AttackAttribute resist;   // 피격 시 내성 속성
+        // (캐릭터 고유 약점·내성(Weakness/Resist)과 기본 공격 계수·속성(AttackStat/BasicAttackAttribute) 컬럼은 아이템 개편 Phase 4에서 삭제 — 약점은 방어구 세트(GamePlayer.GetWeaknesses), 평타는 장착 무기가 정한다 (Q17·Q25))
         public BattleResourceType resource; // 전투 자원 종류 (분노/MP/HP)
         public int baseResource;            // 자원 최대치 (HP형은 0 — 자신의 HP를 소모)
-        public bool attackScalesWithInt;    // 공격 계수 스탯 — true면 지능, false면 힘 (CSV AttackStat: INT/STR) — Phase 3(Q46)에서 무기 ScaleStat으로 대체
-        public AttackAttribute basicAttack; // 기본 공격(무기) 속성 — 검(참격)/지팡이(마법)/크리스털 코어(공명) — Phase 3(Q25)에서 무기 Attribute로 대체
         // 보조 스탯 (아이템 개편 Phase 1-1, 기획 「보조 스탯」 — 레벨 성장 없음). 컬럼이 없으면 기본값 5 / 95 / 5
         public int baseEvade = 5;           // 회피율 %
         public int baseAccuracy = 95;       // 명중률 %
@@ -55,12 +52,8 @@ public static class CharacterStatData
                     growStr = row.GetInt("GrowStr"), growAgi = row.GetInt("GrowAgi"),
                     growInt = row.GetInt("GrowInt"), growDef = row.GetInt("GrowDef"), growMdef = row.GetInt("GrowMdef"),
                     growCtrl = row.GetInt("GrowCtrl"),
-                    weakness = (AttackAttribute)Enum.Parse(typeof(AttackAttribute), row.Get("Weakness").Trim()),
-                    resist = (AttackAttribute)Enum.Parse(typeof(AttackAttribute), row.Get("Resist").Trim()),
                     resource = (BattleResourceType)Enum.Parse(typeof(BattleResourceType), row.Get("Resource").Trim()),
                     baseResource = row.GetInt("BaseResource"),
-                    attackScalesWithInt = row.Get("AttackStat").Trim() == "INT",
-                    basicAttack = (AttackAttribute)Enum.Parse(typeof(AttackAttribute), row.Get("BasicAttackAttribute").Trim()),
                 };
                 if (table.HasColumn("BaseEvade")) entry.baseEvade = row.GetInt("BaseEvade");
                 if (table.HasColumn("BaseAccuracy")) entry.baseAccuracy = row.GetInt("BaseAccuracy");

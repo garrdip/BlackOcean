@@ -822,7 +822,9 @@ public partial class M_TurnManager
             bool isCurrentTurn = snapshot.netId == tpCurrentUnitNetId;
             guiTpLabelStyle.normal.textColor = isCurrentTurn ? Color.yellow : Color.white;
             var labelRect = new Rect(screenPos.x - 90f, Screen.height - screenPos.y - 11f, 180f, 22f);
-            string defenseText = unitTarget.monster != null ? $"  방 {unitTarget.GetDefense()} / 마방 {unitTarget.GetMagicDefense()}" : ""; // 몬스터 방어력·마법방어 (위험도 보정 + 버프 — Phase 2-6 임시 표시)
+            string defenseText = unitTarget.monster != null
+                ? $"  방 {unitTarget.GetDefense()} / 마방 {unitTarget.GetMagicDefense()}  공격 {BattleActions.AttributeName(unitTarget.monster.Data != null ? unitTarget.monster.Data.attackAttribute : AttackAttribute.NONE)}"
+                : ""; // 몬스터 방어력·마법방어·공격 속성 (위험도 보정 + 버프 — Phase 2-6·4-7 임시 표시. 약점 회피를 위한 장비·대열 선택 근거)
             GUI.Label(labelRect, (isCurrentTurn ? $"▶ TP {snapshot.tp}" : $"TP {snapshot.tp}") + defenseText, guiTpLabelStyle);
         }
     }
@@ -847,7 +849,7 @@ public partial class M_TurnManager
         GamePlayer actingPlayer = GetActingOwnedPlayer();
         if (actingPlayer != null) myPlayer = actingPlayer;
         GUI.Label(new Rect(x, y - lineHeight, 640f, lineHeight),
-            $"[TP 전투] {turnOwner}  |  {myPlayer.character} HP {myPlayer.HP}/{myPlayer.TotalMaxHP}  자원 {myPlayer.currentResource}/{myPlayer.TotalMaxResource}");
+            $"[TP 전투] {turnOwner}  |  {myPlayer.character} HP {myPlayer.HP}/{myPlayer.TotalMaxHP}  자원 {myPlayer.currentResource}/{myPlayer.TotalMaxResource}  약점 {myPlayer.WeaknessSummary()}{(myPlayer.IsStrengthRequirementUnmet ? "  [힘 부족 — 민첩 ½]" : "")}");
 
         DrawTpGaugeLabels(); // 유닛(플레이어·몬스터) 머리 위 TP 숫자
 

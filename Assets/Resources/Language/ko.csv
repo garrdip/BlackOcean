@@ -160,3 +160,10 @@ ui.msg.hub_heal_not_needed,파티의 체력과 MP가 모두 최대입니다 — 
 ui.msg.skill_cost_short,{0} — 자원이 부족해 사용할 수 없습니다
 ui.msg.skill_innate_used,{0} — 이번 턴에 이미 사용했습니다
 ui.msg.miss,MISS
+attr.NONE,무속성
+attr.SLASH,참격
+attr.STRIKE,타격
+attr.PIERCE,관통
+attr.ICHI,이치
+attr.SIMSANG,심상
+attr.RESONANCE,공명

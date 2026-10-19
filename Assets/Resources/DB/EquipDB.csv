@@ -2,10 +2,10 @@ EquipNo,Name,Slot,WeaponType,ArmorType,Attribute,ScaleStat,RequireLevel,RequireS
 GW1,낡은 대검,WEAPON,GREATSWORD,NONE,SLASH,STR,1,0,3,0,0,0,50,10,게오르크 초기 무기 (참격)
 GW2,대장군의 검,WEAPON,GREATSWORD,NONE,SLASH,STR,5,0,7,0,0,0,200,5,공격력이 높은 상급 대검
 LW1,낡은 장검,WEAPON,LONGSWORD,NONE,PIERCE,STR,1,0,2,1,0,0,50,10,관통 속성 장검
-HW1,낡은 지팡이,WEAPON,STAFF,NONE,MAGIC,INT,1,0,0,3,0,0,50,10,홍단향 초기 무기 (이치)
-HW2,개화 지팡이,WEAPON,STAFF,NONE,MAGIC,INT,5,0,0,6,0,0,200,5,마법공격력이 높은 상급 지팡이
-BW1,낡은 책,WEAPON,BOOK,NONE,MAGIC,INT,1,0,0,2,0,0,50,10,심상 속성 책 (Phase 4까지는 이치)
-OW1,흐린 수정구,WEAPON,ORB,NONE,MAGIC,INT,1,0,1,2,0,0,50,10,심상 속성 수정구 (Phase 4까지는 이치)
+HW1,낡은 지팡이,WEAPON,STAFF,NONE,ICHI,INT,1,0,0,3,0,0,50,10,홍단향 초기 무기 (이치)
+HW2,개화 지팡이,WEAPON,STAFF,NONE,ICHI,INT,5,0,0,6,0,0,200,5,마법공격력이 높은 상급 지팡이
+BW1,낡은 책,WEAPON,BOOK,NONE,SIMSANG,INT,1,0,0,2,0,0,50,10,심상 속성 책
+OW1,흐린 수정구,WEAPON,ORB,NONE,SIMSANG,INT,1,0,1,2,0,0,50,10,심상 속성 수정구
 EW1,흠집 난 코어,WEAPON,CORE,NONE,RESONANCE,STR,1,0,0,3,0,0,50,10,에리스 초기 무기 (공명 — 힘 + 마법공격력)
 EW2,공명 코어,WEAPON,CORE,NONE,RESONANCE,STR,5,0,0,6,0,0,200,5,마법공격력이 높은 상급 코어
 AR1,가죽 갑옷,ARMOR,NONE,LIGHT,NONE,,1,6,0,0,2,1,60,10,경갑. 에리스 초기

@@ -1,0 +1,4 @@
+ArmorType,Weaknesses,NameKey,Description
+HEAVY,STRIKE|RESONANCE,equip.armortype.HEAVY,중갑 — 타격·공명 약점. 힘 요구치 높음
+LIGHT,PIERCE|SIMSANG,equip.armortype.LIGHT,경갑 — 관통·심상 약점. 힘 요구치 낮음
+ROBE,SLASH|ICHI,equip.armortype.ROBE,로브 — 참격·이치 약점. 힘 요구치 없음

@@ -21,8 +21,71 @@ public partial class GamePlayer
     /// <summary>힘 스탯 = 기본 + STRENGTH 옵션 (무기 공격력 제외 — 힘 요구치 비교에도 이 값)</summary>
     public int TotalStrength => strength + EquipOptionSum(EquipOptionType.STRENGTH);
     public int TotalIntelligence => intelligence + EquipOptionSum(EquipOptionType.INTELLIGENCE);
-    /// <summary>민첩 = 기본 + AGILITY 옵션. 힘 요구치 미달 패널티(민첩 ½)는 Phase 4-5에서 곱한다</summary>
-    public int TotalAgility => agility + EquipOptionSum(EquipOptionType.AGILITY);
+    /// <summary>민첩 = (기본 + AGILITY 옵션) × 힘 요구치 미달이면 ARMOR_STR_PENALTY_AGI_PERCENT(50)% (Q16·Q42 — 부위 수와 무관하게 1회). TP 충전이 매 틱 읽으므로 버프로 요구치를 넘으면 그동안 풀린다</summary>
+    public int TotalAgility
+    {
+        get
+        {
+            int value = agility + EquipOptionSum(EquipOptionType.AGILITY);
+            return IsStrengthRequirementUnmet ? value * BalanceData.Get("ARMOR_STR_PENALTY_AGI_PERCENT", 50) / 100 : value;
+        }
+    }
+
+    /// <summary>힘 요구치 비교값 (Q42) = TotalStrength(기본 + STRENGTH 옵션) + 전투 중 STAT_STRENGTH 버프. 무기 공격력·공격력 버프는 제외</summary>
+    public int CurrentStrengthForRequirement()
+    {
+        int value = TotalStrength;
+        TargetObject self = M_TurnManager.instance != null && M_TurnManager.instance.tpBattleActive ? M_TurnManager.instance.GetCurrentPlayerTargetObject(this) : null;
+        if (self != null) value += self.GetBuffValue(BuffType.STAT_STRENGTH);
+        return value;
+    }
+
+    /// <summary>착용 방어구 중 RequireStr > 현재 힘 인 부위가 하나라도 있는지 (민첩 ½ 패널티 조건)</summary>
+    public bool IsStrengthRequirementUnmet
+    {
+        get
+        {
+            int strengthNow = -1;
+            foreach (EquipInstance item in equippedItems)
+            {
+                EquipData.Def def = EquipData.Get(item.equipNo);
+                if (def == null || !def.IsArmorPiece || def.requireStr <= 0) continue;
+                if (strengthNow < 0) strengthNow = CurrentStrengthForRequirement();
+                if (def.requireStr > strengthNow) return true;
+            }
+            return false;
+        }
+    }
+
+    /// <summary>현재 약점 집합 (Q16 — 기획 「방어구」 세트 규칙): 갑옷·투구·신발 중 미착용 부위 있음 → 전 속성 / 1종 → 그 종류 약점 / 2종 → 합집합 / 3종 → 전 속성.
+    /// 그다음 약점 상쇄 옵션(WEAKNESS_NULLIFY)의 속성을 뺀다 — "전 속성" 상태에도 적용 (Q23·A6). 몬스터 약점 판정과 같은 코드·같은 BalanceDB 키 (Q18)</summary>
+    public HashSet<AttackAttribute> GetWeaknesses()
+    {
+        var types = new HashSet<ArmorType>();
+        int pieces = 0;
+        foreach (EquipInstance item in equippedItems)
+        {
+            EquipData.Def def = EquipData.Get(item.equipNo);
+            if (def == null || !def.IsArmorPiece) continue;
+            pieces++;
+            types.Add(def.armorType);
+        }
+        var result = new HashSet<AttackAttribute>();
+        if (pieces < 3 || types.Count >= 3 || types.Contains(ArmorType.NONE))
+            result.UnionWith(ArmorTypeData.AllAttributes);
+        else
+            foreach (ArmorType type in types) result.UnionWith(ArmorTypeData.GetWeaknesses(type));
+        result.ExceptWith(EquipOptionAttributes(EquipOptionType.WEAKNESS_NULLIFY));
+        return result;
+    }
+
+    /// <summary>약점 요약 텍스트 (임시 UI) — "타격·공명" / "전 속성(미착용)" / "없음"</summary>
+    public string WeaknessSummary()
+    {
+        HashSet<AttackAttribute> weaknesses = GetWeaknesses();
+        if (weaknesses.Count >= ArmorTypeData.AllAttributes.Length) return "전 속성";
+        return BattleActions.AttributeListName(weaknesses);
+    }
     public int TotalControl => control + EquipOptionSum(EquipOptionType.CONTROL);
     public int TotalDefense => defense + SumEquipBase(def => def.defense) + EquipOptionSum(EquipOptionType.DEFENSE);
     public int TotalMagicDefense => magicDefense + SumEquipBase(def => def.magicDefense) + EquipOptionSum(EquipOptionType.DEFENSE);
@@ -365,7 +428,7 @@ public partial class GamePlayer
         float windowWidth = 640f;
         float windowHeight = 480f;
         Rect windowRect = new Rect(Screen.width - windowWidth - 10f, 85f, windowWidth, windowHeight);
-        GUI.Box(windowRect, $"{character} 장비  |  힘{TotalStrength} 민첩{TotalAgility} 지능{TotalIntelligence} 방어{TotalDefense} 마방{TotalMagicDefense}  물공{TotalPhysicalAttack} 마공{TotalMagicAttack}  HP {HP}/{TotalMaxHP}");
+        GUI.Box(windowRect, $"{character} 장비  |  힘{TotalStrength} 민첩{TotalAgility}{(IsStrengthRequirementUnmet ? "(힘 부족 ½)" : "")} 지능{TotalIntelligence} 방어{TotalDefense} 마방{TotalMagicDefense}  물공{TotalPhysicalAttack} 마공{TotalMagicAttack}  HP {HP}/{TotalMaxHP}  약점 {WeaknessSummary()}");
 
         guiEquipScroll = GUI.BeginScrollView(
             new Rect(windowRect.x + 10f, windowRect.y + 30f, windowWidth - 20f, windowHeight - 40f),

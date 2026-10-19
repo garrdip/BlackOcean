@@ -5,9 +5,9 @@ GS7,GEORK,기사도,NONE,0,NONE,NONE,20,STR,0,0,10,1,(패시브) 자신을 노�
 GS8,GEORK,약점 찌르기,RAGE,20,SLASH,ENEMY,100,STR,0,0,20,0,적 하나에게 힘의 100%(강화 시 120/140%) 참격 피해를 주고 쇠락(공격력 15 저하 3턴)을 부여한다
 GS9,GEORK,풍차 베기,RAGE,30,SLASH,ENEMY_ALL,40,STR,0,0,10,0,모든 적을 힘의 40%(강화 시 50/60%) 참격으로 두 번 벤다
 GS10,GEORK,범접할 수 없는 힘,RAGE,40,SLASH,ENEMY,120,STR,0,0,20,0,적 하나에게 힘의 120%(강화 시 140/160%) 참격 피해를 준다
-HS1,HONGDANHYANG,화염구,MP,6,MAGIC,ENEMY,140,INT,0,0,0,0,적 하나에게 지능의 140% 마법 피해를 준다
+HS1,HONGDANHYANG,화염구,MP,6,ICHI,ENEMY,140,INT,0,0,0,0,적 하나에게 지능의 140% 이치 피해를 준다
 HS2,HONGDANHYANG,치유의 빛,MP,8,NONE,MEMBER,120,INT,0,0,0,0,아군 하나의 HP를 지능의 120%만큼 회복시킨다
-HS3,HONGDANHYANG,마력 폭풍,MP,12,MAGIC,ENEMY_ALL,80,INT,0,0,0,0,모든 적에게 지능의 80% 마법 피해를 준다
+HS3,HONGDANHYANG,마력 폭풍,MP,12,ICHI,ENEMY_ALL,80,INT,0,0,0,0,모든 적에게 지능의 80% 이치 피해를 준다
 HS4,HONGDANHYANG,수호 축복,MP,8,NONE,MEMBER,100,INT,0,0,0,0,아군 하나에게 지능의 100%만큼 실드를 부여한다
 HU1,HONGDANHYANG,만개,MP,20,NONE,TEAM,150,INT,0,0,0,0,아군 전원의 HP를 지능의 150% 회복시키고 그 절반만큼 실드를 부여한다. 사용 후 자신의 TP가 50 감소한다 (필살기)
 ES5,ERIS,권능 : 찌르기,HP,4,RESONANCE,ENEMY,130,STR,0,0,20,0,적 하나에게 힘의 130%(강화 시 150/170%) 공명 피해를 준다

@@ -12,7 +12,8 @@ namespace ProjectD
     public enum GameLevel { EASY = 0, NORMAL = 1, HARD = 2 }
     public enum RoomType { MONSTER, ELITE, EVENT_POSITIIVE, EVENT_NEGATIVE, CAMP, ITEM_NPC, BOSS, EMPTY, EXIT } // 스테이지 방 종류. EMPTY = 빈 방(입구 포함), EXIT = 출구(비보스 스테이지의 종료 방). (CARD_NPC는 카드 시스템 제거로 폐기)
     /// <summary>공격 속성 (RPG 전환) — 참격/타격/관통/마법/공명/무속성. NONE은 약점 공격 불가 대신 속성 방어의 영향도 받지 않는다</summary>
-    public enum AttackAttribute { NONE, SLASH, STRIKE, PIERCE, MAGIC, RESONANCE }
+    /// <summary>공격 속성 (아이템 개편 Phase 4, Q15) — 물리: 참격 SLASH·타격 STRIKE·관통 PIERCE / 마법: 이치 ICHI·심상 SIMSANG·공명 RESONANCE (BattleActions.IsMagic → 마법방어로 경감). 구 MAGIC은 ICHI로 이관 (2026-10-19)</summary>
+    public enum AttackAttribute { NONE, SLASH, STRIKE, PIERCE, ICHI, SIMSANG, RESONANCE }
     /// <summary>캐릭터별 전투 자원 종류 (RPG 전환) — 게오르크: 분노(피해를 주고받으며 충전), 홍단향: MP, 에리스: HP 소모</summary>
     public enum BattleResourceType { NONE, RAGE, MP, HP }
     /// <summary>TP 턴제 전투의 플레이어 액션 (RPG 전환 — 1턴 1액션)</summary>
