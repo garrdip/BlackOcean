@@ -22,7 +22,7 @@ public class BattleSpawner : InstanceD<BattleSpawner>
                     TargetObject targetObject = avatar.GetComponent<TargetObject>();
                     targetObject.objectType = ProjectD.ObjectType.PLAYER;
                     targetObject.player = gamePlayer;
-                    targetObject.playerMaxHP = gamePlayer.MaxHP;
+                    targetObject.playerMaxHP = gamePlayer.TotalMaxHP; // 고유 최대 HP + 장비 MAX_HP 옵션 (Q43)
                     targetObject.playerHP = gamePlayer.HP;
                     NetworkServer.Spawn(avatar);
 

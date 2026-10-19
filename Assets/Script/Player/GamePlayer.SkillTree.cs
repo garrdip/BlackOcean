@@ -26,10 +26,10 @@ public partial class GamePlayer
         return false;
     }
 
-    /// <summary>스킬 강화 레벨 — 습득한 SKILL_LEVEL 노드 수 + 장비 '스킬레벨' 옵션 (피해 계수에 레벨당 +20%)</summary>
+    /// <summary>스킬 강화 레벨 — 습득한 SKILL_LEVEL 노드 수 (장비 '스킬레벨' 옵션은 아이템 개편 Q1로 폐기 — 크리스털 작업에서 대체)</summary>
     public int GetSkillLevel(string skillNo)
     {
-        int count = EquipSkillLevelBonus;
+        int count = 0;
         foreach (string nodeId in learnedNodes)
         {
             SkillTreeData.Node node = SkillTreeData.Get(nodeId);

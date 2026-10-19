@@ -256,7 +256,7 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
     {
         foreach(PlayerInterface playerInterface in PlayerRegistry.All)
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers)
-                if(gamePlayer != null) gamePlayer.HP = Mathf.Min(gamePlayer.HP + gamePlayer.recoveryValue, gamePlayer.MaxHP);
+                if(gamePlayer != null) gamePlayer.HP = Mathf.Min(gamePlayer.HP + gamePlayer.recoveryValue, gamePlayer.TotalMaxHP);
     }
 
     // 전투 승리 정리 시점(M_TurnManager.NoneBattleEnd)에 호출 — 스테이지 진행 중이면 방 클리어, 아니면 거점 복귀
@@ -383,7 +383,7 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         bool anyoneNeedsHeal = false;
         foreach(PlayerInterface playerInterface in PlayerRegistry.All)
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers)
-                if(gamePlayer != null && (gamePlayer.HP < gamePlayer.MaxHP || NeedsMpRestore(gamePlayer))) anyoneNeedsHeal = true;
+                if(gamePlayer != null && (gamePlayer.HP < gamePlayer.TotalMaxHP || NeedsMpRestore(gamePlayer))) anyoneNeedsHeal = true;
         if(!anyoneNeedsHeal){
             RpcNotice("ui.msg.hub_heal_not_needed", "파티의 체력과 MP가 모두 최대입니다 — 회복이 필요하지 않습니다", "", "#B22222");
             return;
@@ -397,8 +397,8 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         foreach(PlayerInterface playerInterface in PlayerRegistry.All)
             foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers){
                 if(gamePlayer == null) continue;
-                gamePlayer.HP = gamePlayer.MaxHP;
-                if(IsMpCharacter(gamePlayer)) gamePlayer.currentResource = gamePlayer.maxResource;
+                gamePlayer.HP = gamePlayer.TotalMaxHP;
+                if(IsMpCharacter(gamePlayer)) gamePlayer.currentResource = gamePlayer.TotalMaxResource;
             }
         GameSaveService.SaveGame();
         RpcNotice("ui.msg.hub_heal_paid", "{0} 골드를 내고 파티의 체력을 모두 회복했습니다", cost.ToString(), "#2E8B57");
@@ -413,7 +413,7 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
 
     static bool NeedsMpRestore(GamePlayer gamePlayer)
     {
-        return IsMpCharacter(gamePlayer) && gamePlayer.currentResource < gamePlayer.maxResource;
+        return IsMpCharacter(gamePlayer) && gamePlayer.currentResource < gamePlayer.TotalMaxResource;
     }
 
     [Server]

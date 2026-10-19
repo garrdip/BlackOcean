@@ -117,11 +117,10 @@ public partial class TargetObject
         if(attacker == null || attacker == this || attacker.monster == null || attacker.isDying) return;
         int damage = SkillData.CounterDamage(this);
         if(damage <= 0) return;
-        CharacterStatData.Entry stat = CharacterStatData.Get(player.character);
         HitContext counter = new HitContext
         {
             attacker = this, target = attacker, baseDamage = damage,
-            attribute = stat != null ? stat.basicAttack : AttackAttribute.NONE, // 기본 공격 속성 (Phase 3부터 무기 속성)
+            attribute = player.BasicAttackAttribute, // 장착 무기의 속성 (Q25)
             isSecondary = true,
         };
         BattleActions.ResolveHit(counter);

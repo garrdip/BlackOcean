@@ -3,54 +3,153 @@ using UnityEngine;
 using Mirror;
 using ProjectD;
 
-// GamePlayer partial — 장비/소모품 (RPG 전환 Phase 4).
-// 장비는 스탯 가산형(EquipDB): 합산 스탯은 Total* 프로퍼티로 조회하고(전투 코드가 사용),
-// 최대치(MaxHP/MaxResource)는 착탈 시점에 델타로 반영한다. 착탈은 전투 중 불가.
-// UI는 정식 인벤토리 팝업 전까지 OnGUI 임시 창 (스킬트리 아래 '장비' 버튼).
+// GamePlayer partial — 장비/소모품 (아이템 개편 Phase 3, ToDo_RPG_ITEM 3-5~3-10).
+// 장비는 EquipInstance(등급 + 추가 옵션)로 보유·착용하고(SyncList<EquipInstance>), 기본 옵션은 EquipDB가 가진다. 누구나 어떤 장비든 착용할 수 있다 (Q22).
+// 합산 스탯은 Total* 프로퍼티로 조회한다 — 힘·지능 스탯과 무기 공격력은 다른 개념(Q25): TotalStrength는 스탯만, 무기 공격력은 GetAttackPower가 속성에 맞춰 더한다 (Q46).
+// 최대 HP/자원은 고유치(MaxHP/maxResource)만 저장하고 TotalMaxHP/TotalMaxResource를 매번 계산한다 (Q43 — 구 델타 방식 폐기). 착탈은 전투 중 불가.
+// UI는 정식 인벤토리 팝업(Phase 8) 전까지 OnGUI 임시 창 (스킬트리 아래 '장비' 버튼).
 public partial class GamePlayer
 {
-    public readonly SyncList<string> equippedItems = new SyncList<string>();        // 장착 중인 EquipNo (슬롯은 EquipDB에서 해석)
-    public readonly SyncList<string> inventoryEquips = new SyncList<string>();      // 미장착 보유 장비
-    public readonly SyncList<string> inventoryConsumables = new SyncList<string>(); // 보유 소모품 (인스턴스당 1항목 = 중복이 곧 개수)
+    public readonly SyncList<EquipInstance> equippedItems = new SyncList<EquipInstance>();   // 장착 중 (슬롯은 EquipDB에서 해석)
+    public readonly SyncList<EquipInstance> inventoryEquips = new SyncList<EquipInstance>(); // 미장착 보유 장비
+    public readonly SyncList<string> inventoryConsumables = new SyncList<string>();          // 보유 소모품 (인스턴스당 1항목 = 중복이 곧 개수)
 
     const int AccessoryslotCount = 2;
 
     // ------------------------------------------------------------- 합산 스탯 (기본 + 장비) — 전투 코드가 사용 -------------------------------------------------------------//
 
-    public int TotalStrength => strength + EquipAttackBonusFor(false);
-    public int TotalIntelligence => intelligence + EquipAttackBonusFor(true);
-    public int TotalAgility => agility + SumEquip(def => def.agility);
-    public int TotalDefense => defense + SumEquip(def => def.defense);
-    public int TotalMagicDefense => magicDefense + SumEquip(def => def.magicDefense);
-    /// <summary>장비의 '스킬레벨' 옵션 합 — GetSkillLevel(스킬트리)에 가산된다</summary>
-    public int EquipSkillLevelBonus => SumEquip(def => def.skillLevel);
+    /// <summary>힘 스탯 = 기본 + STRENGTH 옵션 (무기 공격력 제외 — 힘 요구치 비교에도 이 값)</summary>
+    public int TotalStrength => strength + EquipOptionSum(EquipOptionType.STRENGTH);
+    public int TotalIntelligence => intelligence + EquipOptionSum(EquipOptionType.INTELLIGENCE);
+    /// <summary>민첩 = 기본 + AGILITY 옵션. 힘 요구치 미달 패널티(민첩 ½)는 Phase 4-5에서 곱한다</summary>
+    public int TotalAgility => agility + EquipOptionSum(EquipOptionType.AGILITY);
+    public int TotalControl => control + EquipOptionSum(EquipOptionType.CONTROL);
+    public int TotalDefense => defense + SumEquipBase(def => def.defense) + EquipOptionSum(EquipOptionType.DEFENSE);
+    public int TotalMagicDefense => magicDefense + SumEquipBase(def => def.magicDefense) + EquipOptionSum(EquipOptionType.DEFENSE);
 
-    // Attack 옵션은 캐릭터의 공격 스탯(힘 또는 지능) 쪽에만 붙는다
-    int EquipAttackBonusFor(bool intelligenceSide)
+    /// <summary>최종 물리공격력 = 힘 + Σ 무기 물리공격력 (스탯창 표시용 — 실제 계산은 GetAttackPower)</summary>
+    public int TotalPhysicalAttack => TotalStrength + WeaponPhysicalAttack;
+    /// <summary>최종 마법공격력 = 지능 + Σ 무기 마법공격력 (스탯창 표시용)</summary>
+    public int TotalMagicAttack => TotalIntelligence + WeaponMagicAttack;
+    public int WeaponPhysicalAttack => SumEquipBase(def => def.physicalAttack);
+    public int WeaponMagicAttack => SumEquipBase(def => def.magicAttack);
+
+    /// <summary>공격력 (Q46) = 계수 스탯(scalesWithInt ? 지능 : 힘) + 속성에 맞는 쪽의 무기 공격력(마법 속성이면 마법공격력, 물리면 물리공격력, NONE은 계수 스탯 쪽).
+    /// 평타는 무기의 ScaleStat·Attribute로, 스킬은 SkillDB의 ScaleStat·Attribute로 부른다 (J1 — 에리스 공명 스킬 = 힘 + 핵 마법공격력)</summary>
+    public int GetAttackPower(bool scalesWithInt, AttackAttribute attribute)
     {
-        CharacterStatData.Entry stat = CharacterStatData.Get(character);
-        bool scalesWithInt = stat != null && stat.attackScalesWithInt;
-        if (scalesWithInt != intelligenceSide) return 0;
-        return SumEquip(def => def.attack);
+        int stat = scalesWithInt ? TotalIntelligence : TotalStrength;
+        bool useMagicAttack = attribute == AttackAttribute.NONE ? scalesWithInt : BattleActions.IsMagic(attribute);
+        return stat + (useMagicAttack ? WeaponMagicAttack : WeaponPhysicalAttack);
     }
 
-    int SumEquip(System.Func<EquipData.Def, int> selector)
+    /// <summary>장착 무기 기본 데이터 (없으면 null)</summary>
+    public EquipData.Def WeaponDef
+    {
+        get
+        {
+            foreach (EquipInstance item in equippedItems)
+            {
+                EquipData.Def def = EquipData.Get(item.equipNo);
+                if (def != null && def.IsWeapon) return def;
+            }
+            return null;
+        }
+    }
+    /// <summary>기본 공격 속성 = 장착 무기의 Attribute (무기 없음 = NONE — Q25, 캐릭터 고정 폐기)</summary>
+    public AttackAttribute BasicAttackAttribute => WeaponDef != null ? WeaponDef.attribute : AttackAttribute.NONE;
+    /// <summary>기본 공격 계수 스탯 = 장착 무기의 ScaleStat (무기 없음 = 힘)</summary>
+    public bool BasicAttackScalesWithInt => WeaponDef != null && WeaponDef.scalesWithInt;
+
+    /// <summary>최대 HP = 고유치(기본 + 성장 + HP 노드) + MAX_HP 옵션 합 (Q43 — 계산 프로퍼티, 세이브에는 MaxHP만)</summary>
+    public int TotalMaxHP => MaxHP + EquipOptionSum(EquipOptionType.MAX_HP);
+    /// <summary>최대 자원 = 고유치 + 자원 종류가 맞는 옵션 합 (MP 캐릭터는 MAX_MP, 분노 캐릭터는 MAX_RAGE — D25). HP 자원(에리스)은 0 유지</summary>
+    public int TotalMaxResource
+    {
+        get
+        {
+            if (maxResource <= 0) return maxResource;
+            CharacterStatData.Entry stat = CharacterStatData.Get(character);
+            BattleResourceType resource = stat != null ? stat.resource : BattleResourceType.NONE;
+            if (resource == BattleResourceType.MP) return maxResource + EquipOptionSum(EquipOptionType.MAX_MP);
+            if (resource == BattleResourceType.RAGE) return maxResource + EquipOptionSum(EquipOptionType.MAX_RAGE);
+            return maxResource;
+        }
+    }
+
+    /// <summary>장착 장비의 기본 옵션(EquipDB) 합</summary>
+    int SumEquipBase(System.Func<EquipData.Def, int> selector)
     {
         int sum = 0;
-        foreach (string equipNo in equippedItems)
+        foreach (EquipInstance item in equippedItems)
         {
-            EquipData.Def def = EquipData.Get(equipNo);
+            EquipData.Def def = EquipData.Get(item.equipNo);
             if (def != null) sum += selector(def);
         }
         return sum;
     }
 
+    /// <summary>장착 장비의 인스턴스 옵션 수치 합 (수치형 — 여러 장비에 같은 옵션이 있으면 합산, 상한 없음 5-13)</summary>
+    public int EquipOptionSum(EquipOptionType type)
+    {
+        int sum = 0;
+        foreach (EquipInstance item in equippedItems) sum += item.OptionSum(type);
+        return sum;
+    }
+
+    /// <summary>플래그 옵션 보유 여부 (FREE_MOVE / NO_ROW_PENALTY — OR)</summary>
+    public bool HasEquipFlag(EquipOptionType type)
+    {
+        foreach (EquipInstance item in equippedItems) if (item.HasOption(type)) return true;
+        return false;
+    }
+
+    /// <summary>속성형 옵션(약점 상쇄)의 속성 집합 — 같은 속성 중복 무효 (A6)</summary>
+    public HashSet<AttackAttribute> EquipOptionAttributes(EquipOptionType type)
+    {
+        var result = new HashSet<AttackAttribute>();
+        foreach (EquipInstance item in equippedItems)
+            for (int i = 0; i < item.OptionCount; i++)
+                if (item.optionTypes[i] == (int)type) result.Add((AttackAttribute)item.OptionValueAt(i));
+        return result;
+    }
+
+    // ------------------------------------------------------------- 조회 -------------------------------------------------------------//
+
+    public bool TryFindEquipped(string instanceId, out EquipInstance found)
+    {
+        foreach (EquipInstance item in equippedItems) if (item.instanceId == instanceId) { found = item; return true; }
+        found = default; return false;
+    }
+
+    public bool TryFindInventory(string instanceId, out EquipInstance found)
+    {
+        foreach (EquipInstance item in inventoryEquips) if (item.instanceId == instanceId) { found = item; return true; }
+        found = default; return false;
+    }
+
+    static int IndexOfInstance(SyncList<EquipInstance> list, string instanceId)
+    {
+        for (int i = 0; i < list.Count; i++) if (list[i].instanceId == instanceId) return i;
+        return -1;
+    }
+
     // ------------------------------------------------------------- 지급/획득 (서버) -------------------------------------------------------------//
 
     [Server]
-    public void ServerAddEquip(string equipNo)
+    public void ServerAddEquip(EquipInstance item)
     {
-        if (EquipData.Get(equipNo) != null) inventoryEquips.Add(equipNo);
+        if (!item.IsValid || EquipData.Get(item.equipNo) == null) return;
+        inventoryEquips.Add(item);
+    }
+
+    /// <summary>장비 생성 + 인벤토리 지급 (드랍·상점·치트 공용)</summary>
+    [Server]
+    public EquipInstance ServerAddEquip(string equipNo, EquipGrade grade)
+    {
+        EquipInstance item = EquipGenerator.Create(equipNo, grade);
+        if (item.IsValid) inventoryEquips.Add(item);
+        return item;
     }
 
     [Server]
@@ -59,15 +158,15 @@ public partial class GamePlayer
         if (ConsumableData.Get(potionNo) != null) inventoryConsumables.Add(potionNo);
     }
 
-    /// <summary>전투 보상 드랍 — 이 캐릭터가 쓸 수 있는 장비 중 요구 레벨을 만족하는 것 하나를 랜덤 지급</summary>
+    /// <summary>전투 보상 드랍 (임시 — Phase 7 드랍 테이블 전까지): DropWeight 가중 랜덤 장비 1개, 등급은 위험도 기준 EquipGradeDB 굴림. 레벨 필터 없음 (F3)</summary>
     [Server]
     public void ServerAddRandomEquip()
     {
-        List<EquipData.Def> pool = EquipData.GetUsableBy(character).FindAll(def => def.requireLevel <= level + 2); // 근접 레벨대만
-        if (pool.Count == 0) return;
-        EquipData.Def picked = pool[Random.Range(0, pool.Count)];
-        inventoryEquips.Add(picked.equipNo);
-        Debug.Log($"[Equipment] {character} 장비 획득: {picked.equipName}");
+        EquipData.Def picked = EquipData.PickWeighted();
+        if (picked == null) return;
+        int hazard = M_TurnManager.instance != null ? M_TurnManager.instance.currentBattleHazard : 0;
+        EquipInstance item = ServerAddEquip(picked.equipNo, EquipGradeData.RollGrade(MonsterGrade.NORMAL, hazard));
+        Debug.Log($"[Equipment] {character} 장비 획득: [{EquipGradeData.DisplayName(item.grade)}] {picked.equipName} (옵션 {item.OptionCount}개)");
     }
 
     [Server]
@@ -78,79 +177,104 @@ public partial class GamePlayer
         inventoryConsumables.Add(pool[Random.Range(0, pool.Count)].potionNo);
     }
 
-    /// <summary>초기 장비 지급 — 기본 무기 장착 + 물약 (PlayerInterface.GenerateGamePlayer에서 호출, 스폰 전이라 SyncList 초기 상태로 전달됨)</summary>
+    /// <summary>캐릭터별 초기 세트 — 무기 + 같은 종류 방어구 3부위 (A5·Q36: 게오르크 대검+중갑 / 에리스 핵+경갑 / 홍단향 지팡이+로브, 요구치 ≤ 원래 기본 힘)</summary>
+    public static string[] InitialGearFor(Character character)
+    {
+        switch (character)
+        {
+            case Character.GEORK: return new[] { "GW1", "AR2", "HE2", "BO3" };
+            case Character.HONGDANHYANG: return new[] { "HW1", "AR4", "HE4", "BO4" };
+            default: return new[] { "EW1", "AR1", "HE1", "BO1" };
+        }
+    }
+
+    /// <summary>초기 장비 지급 — 초기 세트를 NORMAL 인스턴스로 생성·장착 + 물약 (PlayerInterface.GenerateGamePlayer에서 호출, 스폰 전이라 SyncList 초기 상태로 전달됨)</summary>
     [Server]
     public void ServerGrantInitialGear()
     {
-        string basicWeapon = character == Character.GEORK ? "GW1" : character == Character.HONGDANHYANG ? "HW1" : "EW1";
-        if (EquipData.Get(basicWeapon) != null)
+        foreach (string equipNo in InitialGearFor(character))
         {
-            equippedItems.Add(basicWeapon);
-            ApplyEquipMaxDeltas(EquipData.Get(basicWeapon), +1);
+            EquipInstance item = EquipGenerator.Create(equipNo, EquipGrade.NORMAL);
+            if (item.IsValid) equippedItems.Add(item);
         }
         ServerAddConsumable("PO1");
         ServerAddConsumable("PO1");
+    }
+
+    /// <summary>방어구 빈 부위를 초기 세트로 보충 (구 세이브 변환 — A5). 보충한 수를 반환</summary>
+    [Server]
+    public int ServerFillMissingArmor()
+    {
+        int filled = 0;
+        foreach (string equipNo in InitialGearFor(character))
+        {
+            EquipData.Def def = EquipData.Get(equipNo);
+            if (def == null || !def.IsArmorPiece) continue;
+            bool occupied = false;
+            foreach (EquipInstance worn in equippedItems)
+            {
+                EquipData.Def wornDef = EquipData.Get(worn.equipNo);
+                if (wornDef != null && wornDef.slot == def.slot) { occupied = true; break; }
+            }
+            if (occupied) continue;
+            EquipInstance item = EquipGenerator.Create(equipNo, EquipGrade.NORMAL);
+            if (item.IsValid) { equippedItems.Add(item); filled++; }
+        }
+        return filled;
     }
 
     // ------------------------------------------------------------- 착용/해제 (서버 검증) -------------------------------------------------------------//
 
     [Command]
-    public void CmdEquip(string equipNo)
+    public void CmdEquip(string instanceId)
     {
         if (IsBattleActive()) return; // 전투 중 착탈 불가
-        EquipData.Def def = EquipData.Get(equipNo);
-        if (def == null || !inventoryEquips.Contains(equipNo)) return;
-        if (def.character != Character.NONE && def.character != character) return; // 캐릭터 전용(무기) 검증
-        if (def.requireLevel > level) return;
+        if (!TryFindInventory(instanceId, out EquipInstance item)) return;
+        EquipData.Def def = EquipData.Get(item.equipNo);
+        if (def == null) return;
+        if (def.requireLevel > level) return; // 착용 제한은 요구 레벨뿐 (캐릭터 제한 없음 — Q22)
 
         // 슬롯 자리 확보 — 꽉 찼으면 같은 슬롯의 기존 장비를 해제 (악세사리는 2개까지)
         int slotLimit = def.slot == EquipSlot.ACCESSORY ? AccessoryslotCount : 1;
         var occupants = new List<string>();
-        foreach (string worn in equippedItems)
+        foreach (EquipInstance worn in equippedItems)
         {
-            EquipData.Def wornDef = EquipData.Get(worn);
-            if (wornDef != null && wornDef.slot == def.slot) occupants.Add(worn);
+            EquipData.Def wornDef = EquipData.Get(worn.equipNo);
+            if (wornDef != null && wornDef.slot == def.slot) occupants.Add(worn.instanceId);
         }
         if (occupants.Count >= slotLimit)
             UnequipInternal(occupants[0]);
 
-        inventoryEquips.Remove(equipNo);
-        equippedItems.Add(equipNo);
-        ApplyEquipMaxDeltas(def, +1);
+        inventoryEquips.RemoveAt(IndexOfInstance(inventoryEquips, instanceId));
+        equippedItems.Add(item);
+        ClampToTotals();
     }
 
     [Command]
-    public void CmdUnequip(string equipNo)
+    public void CmdUnequip(string instanceId)
     {
         if (IsBattleActive()) return;
-        if (!equippedItems.Contains(equipNo)) return;
-        UnequipInternal(equipNo);
+        if (!TryFindEquipped(instanceId, out _)) return;
+        UnequipInternal(instanceId);
+        ClampToTotals();
     }
 
     [Server]
-    void UnequipInternal(string equipNo)
+    void UnequipInternal(string instanceId)
     {
-        EquipData.Def def = EquipData.Get(equipNo);
-        equippedItems.Remove(equipNo);
-        inventoryEquips.Add(equipNo);
-        if (def != null) ApplyEquipMaxDeltas(def, -1);
+        int index = IndexOfInstance(equippedItems, instanceId);
+        if (index < 0) return;
+        EquipInstance item = equippedItems[index];
+        equippedItems.RemoveAt(index);
+        inventoryEquips.Add(item);
     }
 
-    // MaxHP/MaxResource 옵션은 착탈 시점에 델타로 반영 (증가분은 현재치도 회복, 감소 시 현재치 클램프)
+    /// <summary>착탈 후 현재치 클램프 — 최대치는 계산 프로퍼티라 저장값은 바뀌지 않는다 (Q43)</summary>
     [Server]
-    void ApplyEquipMaxDeltas(EquipData.Def def, int sign)
+    public void ClampToTotals()
     {
-        if (def.maxHP != 0)
-        {
-            MaxHP += def.maxHP * sign;
-            if (sign > 0) HP += def.maxHP;
-            HP = Mathf.Clamp(HP, 1, MaxHP);
-        }
-        if (def.maxResource != 0)
-        {
-            maxResource = Mathf.Max(0, maxResource + def.maxResource * sign);
-            currentResource = Mathf.Clamp(currentResource, 0, maxResource);
-        }
+        HP = Mathf.Clamp(HP, HP > 0 ? 1 : 0, TotalMaxHP);
+        currentResource = Mathf.Clamp(currentResource, 0, Mathf.Max(0, TotalMaxResource));
     }
 
     // ------------------------------------------------------------- 소모품 사용 -------------------------------------------------------------//
@@ -162,7 +286,7 @@ public partial class GamePlayer
         return inventoryConsumables.Remove(potionNo);
     }
 
-    /// <summary>맵(비전투)에서 물약 사용 — HP 물약만 의미 있음. 전투 중에는 TpAction.ITEM 경로 사용</summary>
+    /// <summary>맵(비전투)에서 물약 사용 — HP 물약만 의미 있음. 전투 중에는 TpAction.ITEM 경로 사용 (Phase 6에서 ServerUseConsumable로 통합)</summary>
     [Command]
     public void CmdUsePotionOnMap(string potionNo)
     {
@@ -175,7 +299,7 @@ public partial class GamePlayer
                 ServerHeal(potion.value, this); // 비전투 회복 — 치명 회복 규칙 공용 (Phase 1-10, Q38)
                 break;
             case ConsumableType.RESTORE_RESOURCE:
-                currentResource = Mathf.Min(maxResource, currentResource + potion.value);
+                currentResource = Mathf.Min(TotalMaxResource, currentResource + potion.value);
                 break;
         }
     }
@@ -185,10 +309,47 @@ public partial class GamePlayer
         return M_TurnManager.instance != null && M_TurnManager.instance.tpBattleActive;
     }
 
+    // ------------------------------------------------------------- 디버그 치트 (서버) -------------------------------------------------------------//
+
+    /// <summary>치트: 등급 지정 랜덤 장비 생성 (슬롯 지정 가능) — 임시 OnGUI 창 버튼</summary>
+    [Command]
+    public void CmdDebugCreateEquip(int grade, int slot)
+    {
+        EquipData.Def picked = EquipData.PickWeighted(def => slot < 0 || def.slot == (EquipSlot)slot);
+        if (picked == null) return;
+        EquipInstance item = ServerAddEquip(picked.equipNo, (EquipGrade)grade);
+        Debug.Log($"[Equipment] 치트 생성: [{EquipGradeData.DisplayName(item.grade)}] {picked.equipName} 옵션 {item.OptionCount}개");
+    }
+
     // ------------------------------------------------------------- 임시 UI (OnGUI) -------------------------------------------------------------//
 
     bool guiEquipOpen;
     Vector2 guiEquipScroll;
+
+    /// <summary>장비 1줄 표기 — [등급] 이름 (종류·속성·요구치) 기본 옵션 / 추가 옵션</summary>
+    public static string DescribeEquip(EquipInstance item)
+    {
+        EquipData.Def def = EquipData.Get(item.equipNo);
+        if (def == null) return item.equipNo;
+        var parts = new List<string>();
+        string kind = EquipData.KindName(def);
+        if (def.IsWeapon)
+        {
+            parts.Add($"{kind}·{BattleActions.AttributeName(def.attribute)}·{(def.scalesWithInt ? "지능" : "힘")}");
+            if (def.physicalAttack != 0) parts.Add($"물공 +{def.physicalAttack}");
+            if (def.magicAttack != 0) parts.Add($"마공 +{def.magicAttack}");
+        }
+        else if (def.IsArmorPiece)
+        {
+            parts.Add(kind + (def.requireStr > 0 ? $" 힘 {def.requireStr}" : ""));
+            if (def.defense != 0) parts.Add($"방어 +{def.defense}");
+            if (def.magicDefense != 0) parts.Add($"마방 +{def.magicDefense}");
+        }
+        for (int i = 0; i < item.OptionCount; i++)
+            parts.Add(EquipOptionData.Format(item.OptionTypeAt(i), item.OptionValueAt(i), item.grade));
+        string gradeTag = item.grade == EquipGrade.NORMAL ? "" : $"[{EquipGradeData.DisplayName(item.grade)}] ";
+        return $"{gradeTag}{def.equipName} ({string.Join(", ", parts)})";
+    }
 
     // 스킬트리 OnGUI(GamePlayer.SkillTree.cs)와 같은 컴포넌트라 별도 메서드로 분리해 거기서 호출한다
     void DrawEquipmentGUI()
@@ -201,41 +362,44 @@ public partial class GamePlayer
         }
         if (!guiEquipOpen) return;
 
-        float windowWidth = 560f;
-        float windowHeight = 430f;
+        float windowWidth = 640f;
+        float windowHeight = 480f;
         Rect windowRect = new Rect(Screen.width - windowWidth - 10f, 85f, windowWidth, windowHeight);
-        GUI.Box(windowRect, $"{character} 장비  |  힘{TotalStrength} 민첩{TotalAgility} 지능{TotalIntelligence} 방어{TotalDefense} 마방{TotalMagicDefense}");
+        GUI.Box(windowRect, $"{character} 장비  |  힘{TotalStrength} 민첩{TotalAgility} 지능{TotalIntelligence} 방어{TotalDefense} 마방{TotalMagicDefense}  물공{TotalPhysicalAttack} 마공{TotalMagicAttack}  HP {HP}/{TotalMaxHP}");
 
         guiEquipScroll = GUI.BeginScrollView(
             new Rect(windowRect.x + 10f, windowRect.y + 30f, windowWidth - 20f, windowHeight - 40f),
-            guiEquipScroll, new Rect(0, 0, windowWidth - 40f, 900f));
+            guiEquipScroll, new Rect(0, 0, windowWidth - 40f, 1200f));
 
         float y = 0f;
         bool inBattle = IsBattleActive();
+        GUIStyle gradeStyle = new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleLeft, fontSize = 11 };
 
-        GUI.Label(new Rect(0, y, 300f, 24f), "◆ 장착 중"); y += 26f;
-        foreach (string equipNo in new List<string>(equippedItems))
+        GUI.Label(new Rect(0, y, 300f, 24f), "◆ 장착 중 (클릭 = 해제)"); y += 26f;
+        foreach (EquipInstance item in new List<EquipInstance>(equippedItems))
         {
-            EquipData.Def def = EquipData.Get(equipNo);
+            EquipData.Def def = EquipData.Get(item.equipNo);
             if (def == null) continue;
             GUI.enabled = !inBattle;
-            if (GUI.Button(new Rect(20f, y, 480f, 24f), $"[{def.slot}] {def.equipName} — {def.description} (해제)"))
-                CmdUnequip(equipNo);
+            gradeStyle.normal.textColor = EquipGradeData.Get(item.grade)?.Color ?? Color.white;
+            if (GUI.Button(new Rect(20f, y, 580f, 24f), $"[{EquipData.SlotName(def.slot)}] {DescribeEquip(item)}", gradeStyle))
+                CmdUnequip(item.instanceId);
             GUI.enabled = true;
             y += 28f;
         }
 
         y += 8f;
         GUI.Label(new Rect(0, y, 300f, 24f), "◆ 인벤토리 (클릭 = 장착)"); y += 26f;
-        foreach (string equipNo in new List<string>(inventoryEquips))
+        foreach (EquipInstance item in new List<EquipInstance>(inventoryEquips))
         {
-            EquipData.Def def = EquipData.Get(equipNo);
+            EquipData.Def def = EquipData.Get(item.equipNo);
             if (def == null) continue;
-            bool usable = (def.character == Character.NONE || def.character == character) && def.requireLevel <= level;
+            bool usable = def.requireLevel <= level;
             GUI.enabled = usable && !inBattle;
+            gradeStyle.normal.textColor = EquipGradeData.Get(item.grade)?.Color ?? Color.white;
             string lockNote = usable ? "" : $" — Lv.{def.requireLevel} 필요";
-            if (GUI.Button(new Rect(20f, y, 480f, 24f), $"[{def.slot}] {def.equipName} — {def.description}{lockNote}"))
-                CmdEquip(equipNo);
+            if (GUI.Button(new Rect(20f, y, 580f, 24f), $"[{EquipData.SlotName(def.slot)}] {DescribeEquip(item)}{lockNote}", gradeStyle))
+                CmdEquip(item.instanceId);
             GUI.enabled = true;
             y += 28f;
         }
@@ -253,11 +417,23 @@ public partial class GamePlayer
             ConsumableData.Def potion = ConsumableData.Get(entry.Key);
             if (potion == null) continue;
             GUI.enabled = !inBattle;
-            if (GUI.Button(new Rect(20f, y, 480f, 24f), $"{potion.potionName} x{entry.Value} — {potion.description}"))
+            if (GUI.Button(new Rect(20f, y, 580f, 24f), $"{potion.potionName} x{entry.Value} — {potion.description}"))
                 CmdUsePotionOnMap(entry.Key);
             GUI.enabled = true;
             y += 28f;
         }
+
+        y += 8f;
+        GUI.Label(new Rect(0, y, 400f, 24f), "◆ 치트: 장비 생성 (등급 / 슬롯 랜덤)"); y += 26f;
+        float bx = 20f;
+        foreach (EquipGrade grade in new[] { EquipGrade.NORMAL, EquipGrade.ADVANCED, EquipGrade.RARE, EquipGrade.LEGEND })
+        {
+            if (GUI.Button(new Rect(bx, y, 90f, 24f), EquipGradeData.DisplayName(grade))) CmdDebugCreateEquip((int)grade, -1);
+            bx += 95f;
+        }
+        if (GUI.Button(new Rect(bx, y, 100f, 24f), "전설 무기")) CmdDebugCreateEquip((int)EquipGrade.LEGEND, (int)EquipSlot.WEAPON);
+        bx += 105f;
+        if (GUI.Button(new Rect(bx, y, 110f, 24f), "전설 악세사리")) CmdDebugCreateEquip((int)EquipGrade.LEGEND, (int)EquipSlot.ACCESSORY);
         GUI.EndScrollView();
     }
 }

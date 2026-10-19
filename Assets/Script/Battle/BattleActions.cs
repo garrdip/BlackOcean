@@ -26,7 +26,7 @@ public static class BattleActions
     public static int SkillDamage(TargetObject user, SkillData.SkillDef skill, int extraFlatAttack = 0)
     {
         if (user == null || user.player == null) return 0;
-        int stat = skill.scalesWithInt ? user.GetMagicAttack() : user.GetPhysicalAttack(); // 장비 합산치 + 공격력 버프 (철귀 +3, 쇠락, 북방의 위대한 투사 스택, 공격력 물약)
+        int stat = user.GetAttackPower(skill.scalesWithInt, skill.attribute); // 계수 스탯 + 속성에 맞는 무기 공격력 (Q46·J1) + 공격력 버프 (철귀 +3, 쇠락, 북방의 위대한 투사 스택, 공격력 물약)
         stat = Mathf.Max(0, stat + extraFlatAttack); // extraFlatAttack = 범접할 수 없는 힘의 스택 2배분
         int skillLevel = user.player.GetSkillLevel(skill.skillNo); // 스킬트리 SKILL_LEVEL 노드 + 장비 스킬레벨 옵션
         int power = skill.power;
@@ -45,13 +45,12 @@ public static class BattleActions
         return damage * user.ErisAttackPercent() / 100;
     }
 
-    /// <summary>기본 공격 데미지 = 캐릭터 공격 스탯(+ 공격력 버프) x BASIC_ATTACK_POWER% x 대열 보정 x 변신 배율.
-    /// 계수 스탯은 Phase 3(Q46)까지 CharacterStatDB AttackStat, 이후 장착 무기의 ScaleStat·Attribute가 정한다</summary>
+    /// <summary>기본 공격 데미지 = 평타 공격력(장착 무기의 ScaleStat 스탯 + 속성에 맞는 무기 공격력 + 공격력 버프 — Q46) x BASIC_ATTACK_POWER% x 대열 보정 x 변신 배율.
+    /// 속성은 무기의 Attribute (GamePlayer.BasicAttackAttribute). 무기가 없으면 힘만</summary>
     public static int BasicAttackDamage(TargetObject user)
     {
         if (user == null || user.player == null) return 0;
-        CharacterStatData.Entry stat = CharacterStatData.Get(user.player.character);
-        int attackStat = (stat != null && stat.attackScalesWithInt) ? user.GetMagicAttack() : user.GetPhysicalAttack();
+        int attackStat = user.GetAttackPower(user.player.BasicAttackScalesWithInt, user.player.BasicAttackAttribute);
         return ScaleByErisMode(user, ScaleByRow(user, Mathf.Max(1, attackStat * BalanceData.Get("BASIC_ATTACK_POWER", 100) / 100)));
     }
 
@@ -268,7 +267,7 @@ public static class BattleActions
         if (player == null || amount <= 0) return;
         CharacterStatData.Entry stat = CharacterStatData.Get(player.character);
         if (stat == null || stat.resource != BattleResourceType.RAGE) return;
-        player.currentResource = Mathf.Min(player.maxResource, player.currentResource + amount);
+        player.currentResource = Mathf.Min(player.TotalMaxResource, player.currentResource + amount);
     }
 
     /// <summary>분노 생성 공식 (RPG_CONVERSION_BATTLE) — (데미지/기준 최대HP, 1 상한) x 변환제어(제어 + RAGE_CONTROL_OFFSET).
@@ -279,9 +278,9 @@ public static class BattleActions
         CharacterStatData.Entry stat = CharacterStatData.Get(player.character);
         if (stat == null || stat.resource != BattleResourceType.RAGE) return;
         float ratio = Mathf.Min(1f, (float)damage / referenceMaxHP);
-        int convertedControl = player.control + BalanceData.Get("RAGE_CONTROL_OFFSET", 50); // 변환제어
+        int convertedControl = player.TotalControl + BalanceData.Get("RAGE_CONTROL_OFFSET", 50); // 변환제어 (제어 + 장비 CONTROL 옵션)
         int amount = Mathf.RoundToInt(ratio * convertedControl);
-        player.currentResource = Mathf.Min(player.maxResource, player.currentResource + amount);
+        player.currentResource = Mathf.Min(player.TotalMaxResource, player.currentResource + amount);
     }
 
     // ------------------------------------------------------------- 방어 공식 -------------------------------------------------------------//

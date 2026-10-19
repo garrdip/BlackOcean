@@ -30,8 +30,7 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     // 각 클라이언트에서 참조할 현재 전투에 생성된 몬스터들의 타겟오브젝트 목록
     public readonly SyncList<uint> spawnedMonsterSyncList = new SyncList<uint>();
 
-    // 파티 공용 아티팩트 목록 — 지역거점 클리어 보상으로 획득하며, 발동 시점마다 모든 플레이어에게 효과가 적용된다
-    public readonly SyncList<Item> teamArtifacts = new SyncList<Item>();
+    // (파티 공용 아티팩트 teamArtifacts는 아이템 개편 Phase 3-1에서 유물 시스템과 함께 삭제 — Q2·Q21)
 
     public Vector3[] targetObjectPosition = {
         new Vector3(-15,-3,0),
@@ -108,22 +107,6 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
     }
 
     // -------------------------------------------------------------------- Server Method ---------------------------------------------------------------------//
-
-    // 공용 아티팩트 지급 (서버) — 지역거점 클리어 보상 지점에서 호출. ONCEGET 효과는 즉시 모든 플레이어에게 발동한다.
-    [Server]
-    public void AddTeamArtifact(Item artifact)
-    {
-        teamArtifacts.Add(artifact);
-        if(artifact.effectTime != ItemEffectTime.ONCEGET) return;
-        foreach(PlayerInterface playerInterface in PlayerRegistry.All)
-        {
-            foreach(GamePlayer gamePlayer in playerInterface.ownedPlayers)
-            {
-                GamePlayerItem gamePlayerItem = gamePlayer.GetComponent<GamePlayerItem>();
-                gamePlayerItem.InvokeSingleEffect(artifact, gamePlayer.GetComponent<GamePlayerTarget>().GetTargetObject());
-            }
-        }
-    }
 
     // 플레이어 오더 스왑 — TP 행동 '이동'(전투)과 거점 배너 교환(CmdSwapPlayerOrderInHub)이 사용
     [Server]
@@ -291,16 +274,9 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
         }
     }
 
-    // 전투 시작 — 시작 시점 아이템/아티팩트 효과 발동 후 TP 턴제 루프 진입 (M_TurnManager.TpBattle.cs)
+    // 전투 시작 — TP 턴제 루프 진입 (M_TurnManager.TpBattle.cs). 구 유물 시작 효과는 Phase 3-1에서 삭제, 장비 옵션의 전투 시작 효과(보호막 등)는 Phase 5
     public void BattleInitialize()
     {
-        foreach(TargetObject player in spawnedPlayerList)
-        {
-            // 전투 시작 시점 효과 발동 — 개인 아이템은 소유자에게, 공용 아티팩트는 모든 플레이어에게
-            GamePlayerItem gamePlayerItem = player.player.GetComponent<GamePlayerItem>();
-            gamePlayerItem.InvokeItemEffects(ItemEffectTime.STARTBATTLE, player);
-            gamePlayerItem.InvokeEffects(teamArtifacts, ItemEffectTime.STARTBATTLE, player);
-        }
         StartTpBattle();
     }
 

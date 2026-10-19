@@ -165,7 +165,7 @@ public class PlayerInterface : NetworkBehaviour
         }
         // 신규 시작 기본값 — 프로필을 복원한 경우 저장된 HP/골드를 덮어쓰지 않는다
         if(!profileRestored){
-            gamePlayer.HP = gamePlayer.MaxHP;
+            gamePlayer.HP = gamePlayer.TotalMaxHP; // 초기 장비 옵션 포함 (초기 세트는 옵션 없음)
             gamePlayer.gold = BalanceData.Get("PLAYER_INIT_GOLD", 100);
         }
         gamePlayer.recoveryValue = BalanceData.Get("PLAYER_INIT_RECOVERY", 15);

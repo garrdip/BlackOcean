@@ -57,18 +57,25 @@ public partial class TargetObject
         return GetBuffValue(BuffType.ICHI_ATTACK) + GetBuffValue(BuffType.BOOKBANG) + GetBuffValue(BuffType.STAT_ATTACK);
     }
 
-    /// <summary>물리 공격력 (플레이어) — 힘(장비 합산) + 공격력 버프. Phase 3(Q46)에서 무기 공격력이 더해진다</summary>
+    /// <summary>공격력 (플레이어, Q46) = GamePlayer.GetAttackPower(계수 스탯 + 속성에 맞는 무기 공격력) + 공격력 버프. 평타·스킬·회복·실드 계수가 전부 이것을 쓴다</summary>
+    public int GetAttackPower(bool scalesWithInt, AttackAttribute attribute)
+    {
+        if (player == null) return 0;
+        return Mathf.Max(0, player.GetAttackPower(scalesWithInt, attribute) + GetAttackBuff());
+    }
+
+    /// <summary>최종 물리공격력 (표시용) — 힘 + Σ무기 물리공격력 + 공격력 버프</summary>
     public int GetPhysicalAttack()
     {
         if (player == null) return 0;
-        return Mathf.Max(0, player.TotalStrength + GetAttackBuff());
+        return Mathf.Max(0, player.TotalPhysicalAttack + GetAttackBuff());
     }
 
-    /// <summary>마법 공격력 (플레이어) — 지능(장비 합산) + 공격력 버프. Phase 3(Q46)에서 무기 공격력이 더해진다</summary>
+    /// <summary>최종 마법공격력 (표시용) — 지능 + Σ무기 마법공격력 + 공격력 버프</summary>
     public int GetMagicAttack()
     {
         if (player == null) return 0;
-        return Mathf.Max(0, player.TotalIntelligence + GetAttackBuff());
+        return Mathf.Max(0, player.TotalMagicAttack + GetAttackBuff());
     }
 
     // ------------------------------------------------------------- 회복 · 실드 부여 (서버) -------------------------------------------------------------//

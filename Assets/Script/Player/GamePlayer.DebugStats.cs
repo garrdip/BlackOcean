@@ -47,10 +47,10 @@ public partial class GamePlayer
 
         int required = LevelData.GetRequiredExp(level);
         Line($"Lv.{level} / {LevelData.MaxLevel}    EXP {exp} / {(required > 0 ? required.ToString() : "MAX")}    스킬 포인트 {skillPoints}    골드 {gold}");
-        Line($"HP {HP} / {MaxHP}");
+        Line($"HP {HP} / {TotalMaxHP}  (고유 {MaxHP} + 장비 {TotalMaxHP - MaxHP})    물리공격력 {TotalPhysicalAttack}  마법공격력 {TotalMagicAttack}  평타 {BattleActions.AttributeName(BasicAttackAttribute)}/{(BasicAttackScalesWithInt ? "지능" : "힘")}");
         CharacterStatData.Entry stat = CharacterStatData.Get(character);
         string resourceName = stat != null ? stat.resource.ToString() : "자원";
-        Line(maxResource > 0 ? $"{resourceName} {currentResource} / {maxResource}" : $"{resourceName} — 자원 대신 HP 소모");
+        Line(maxResource > 0 ? $"{resourceName} {currentResource} / {TotalMaxResource}  (고유 {maxResource})" : $"{resourceName} — 자원 대신 HP 소모");
         y += 8f;
 
         Row("스탯", "기본", "장비", "합계");
@@ -59,7 +59,7 @@ public partial class GamePlayer
         StatRow("지능", intelligence, TotalIntelligence);
         StatRow("방어력", defense, TotalDefense);
         StatRow("마법방어", magicDefense, TotalMagicDefense);
-        StatRow("제어", control, control); // 제어는 장비 옵션 없음
+        StatRow("제어", control, TotalControl);
         // 보조 스탯 (아이템 개편 Phase 1-13) — 기본치(CharacterStatDB, 레벨 성장 없음) + 장비 옵션(Phase 5). 전투 중 STAT_* 버프는 TargetObject.Get*이 더한다
         CharacterStatData.Entry subStat = CharacterStatData.Get(character);
         StatRow("회피율 %", subStat != null ? subStat.baseEvade : 5, TotalEvade);

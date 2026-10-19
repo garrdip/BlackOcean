@@ -1,0 +1,5 @@
+Grade,OptionCountMin,OptionCountMax,LegendOptionCount,AccessoryOptionCountMin,AccessoryOptionCountMax,DropWeight,EliteBonusWeight,BossBonusWeight,MinHazard,SellPercent,ColorHex,NameKey,Description
+NORMAL,0,0,0,1,1,60,20,0,0,30,#FFFFFF,equip.grade.NORMAL,일반 — 기본 옵션만 (악세사리는 추가 옵션 1개)
+ADVANCED,1,2,0,1,2,30,40,30,0,40,#4CAF50,equip.grade.ADVANCED,고급 — 추가 옵션 1~2개 (수치 낮음)
+RARE,1,2,0,1,2,9,30,50,3,50,#2196F3,equip.grade.RARE,희귀 — 추가 옵션 1~2개 (수치 중간). 위험도 3 이상
+LEGEND,2,2,1,2,2,1,10,20,8,60,#FF9800,equip.grade.LEGEND,전설 — 일반 옵션 2개 + 전설 옵션 1개. 위험도 8 이상

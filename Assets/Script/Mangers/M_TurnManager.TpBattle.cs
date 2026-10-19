@@ -157,8 +157,8 @@ public partial class M_TurnManager
             if (playerTarget == null || playerTarget.player == null) continue;
             CharacterStatData.Entry endStat = CharacterStatData.Get(playerTarget.player.character);
             if (endStat != null && endStat.resource == BattleResourceType.MP)
-                playerTarget.player.currentResource = Mathf.Min(playerTarget.player.maxResource,
-                    playerTarget.player.currentResource + playerTarget.player.control);
+                playerTarget.player.currentResource = Mathf.Min(playerTarget.player.TotalMaxResource,
+                    playerTarget.player.currentResource + playerTarget.player.TotalControl);
         }
 
         tpBattleActive = false;
@@ -282,8 +282,8 @@ public partial class M_TurnManager
         // MP(홍단향) 자기 턴 시작 회복 = 제어/2 (RPG_CONVERSION_BATTLE MP 회복 공식 — 전투 종료 후에는 제어 전량)
         CharacterStatData.Entry statEntry = CharacterStatData.Get(unit.target.player.character);
         if (statEntry != null && statEntry.resource == BattleResourceType.MP)
-            unit.target.player.currentResource = Mathf.Min(unit.target.player.maxResource,
-                unit.target.player.currentResource + unit.target.player.control / Mathf.Max(1, BalanceData.Get("MP_REGEN_CONTROL_DIVISOR", 2)));
+            unit.target.player.currentResource = Mathf.Min(unit.target.player.TotalMaxResource,
+                unit.target.player.currentResource + unit.target.player.TotalControl / Mathf.Max(1, BalanceData.Get("MP_REGEN_CONTROL_DIVISOR", 2)));
         ApplyPlayerTurnStartEffects(unit.target); // 북방의 위대한 투사 스택 누적 등
 
         tpUsedFreeSkillNo = "";
@@ -312,8 +312,7 @@ public partial class M_TurnManager
                 TargetObject target = ResolveEnemyTarget(targetNetId);
                 if (target != null)
                 {
-                    CharacterStatData.Entry stat = CharacterStatData.Get(gamePlayer.character);
-                    AttackAttribute attribute = stat != null ? stat.basicAttack : AttackAttribute.NONE;
+                    AttackAttribute attribute = gamePlayer.BasicAttackAttribute; // 장착 무기의 속성 (Q25 — 무기가 없으면 NONE)
                     PlayPlayerActionAnimation(unit.target, "Attack0"); // 기본 공격 모션
                     yield return BattleActions.AttackTarget(unit.target, target, BattleActions.BasicAttackDamage(unit.target), attribute);
                 }
@@ -366,7 +365,7 @@ public partial class M_TurnManager
                             gamePlayer.ServerHeal(potion.value, gamePlayer); // 치명 회복 규칙 공용 (Phase 1-10 — 전투 중이라 TargetObject.Heal로 위임)
                             break;
                         case ConsumableType.RESTORE_RESOURCE:
-                            gamePlayer.currentResource = Mathf.Min(gamePlayer.maxResource, gamePlayer.currentResource + potion.value);
+                            gamePlayer.currentResource = Mathf.Min(gamePlayer.TotalMaxResource, gamePlayer.currentResource + potion.value);
                             break;
                     }
                     yield return new WaitForSeconds(0.3f);
@@ -848,7 +847,7 @@ public partial class M_TurnManager
         GamePlayer actingPlayer = GetActingOwnedPlayer();
         if (actingPlayer != null) myPlayer = actingPlayer;
         GUI.Label(new Rect(x, y - lineHeight, 640f, lineHeight),
-            $"[TP 전투] {turnOwner}  |  {myPlayer.character} HP {myPlayer.HP}/{myPlayer.MaxHP}  자원 {myPlayer.currentResource}/{myPlayer.maxResource}");
+            $"[TP 전투] {turnOwner}  |  {myPlayer.character} HP {myPlayer.HP}/{myPlayer.TotalMaxHP}  자원 {myPlayer.currentResource}/{myPlayer.TotalMaxResource}");
 
         DrawTpGaugeLabels(); // 유닛(플레이어·몬스터) 머리 위 TP 숫자
 

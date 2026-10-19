@@ -115,7 +115,7 @@ public partial class GamePlayer : NetworkBehaviour
             if(targetObject != null && targetObject.player != null){
                 targetObject.playerHP += recoveryValue; // 전투 아바타가 있으면 아바타 HP 경유 (GamePlayer.HP로 동기화됨)
             }else{
-                targetPlayer.HP = Mathf.Min(targetPlayer.HP + recoveryValue, targetPlayer.MaxHP); // 거점(아바타 없음): GamePlayer HP 직접 회복
+                targetPlayer.HP = Mathf.Min(targetPlayer.HP + recoveryValue, targetPlayer.TotalMaxHP); // 거점(아바타 없음): GamePlayer HP 직접 회복
             }
             recoveryLimitCount--;
             RpcHpRecovery(targetPlayerNetId);
@@ -207,7 +207,7 @@ public partial class GamePlayer : NetworkBehaviour
     {
         if(amount == 0) return;
         MaxHP += amount;
-        HP = amount > 0 ? HP + amount : Mathf.Min(HP, MaxHP);
+        HP = amount > 0 ? HP + amount : Mathf.Min(HP, TotalMaxHP); // 클램프 기준은 장비 포함 최대치 (Q43)
     }
 
     [Server]

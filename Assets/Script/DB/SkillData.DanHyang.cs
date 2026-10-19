@@ -38,7 +38,7 @@ public static partial class SkillData
     public static IEnumerator HS2(SkillCast cast)
     {
         if (cast.targets.Count == 0) yield break;
-        int heal = Mathf.Max(1, cast.user.GetMagicAttack() * cast.def.power / 100);
+        int heal = Mathf.Max(1, cast.user.GetAttackPower(cast.def.scalesWithInt, cast.def.attribute) * cast.def.power / 100); // 속성 NONE → 지능 + 무기 마법공격력 (Q46)
         cast.targets[0].Heal(cast.Scale(heal), cast.user);
         yield return new WaitForSeconds(0.3f);
     }
@@ -58,7 +58,7 @@ public static partial class SkillData
     public static IEnumerator HS4(SkillCast cast)
     {
         if (cast.targets.Count == 0) yield break;
-        int shield = Mathf.Max(1, cast.user.GetMagicAttack() * cast.def.power / 100);
+        int shield = Mathf.Max(1, cast.user.GetAttackPower(cast.def.scalesWithInt, cast.def.attribute) * cast.def.power / 100);
         cast.targets[0].GainShield(cast.Scale(shield), cast.user);
         yield return new WaitForSeconds(0.3f);
     }
@@ -67,7 +67,7 @@ public static partial class SkillData
     public static IEnumerator HU1(SkillCast cast)
     {
         TargetObject user = cast.user;
-        int heal = cast.Scale(Mathf.Max(1, user.GetMagicAttack() * cast.def.power / 100));
+        int heal = cast.Scale(Mathf.Max(1, user.GetAttackPower(cast.def.scalesWithInt, cast.def.attribute) * cast.def.power / 100));
         foreach (TargetObject ally in cast.targets)
         {
             if (ally == null || ally.isDying) continue;

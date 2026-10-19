@@ -39,7 +39,7 @@ public partial class GamePlayer
         bool crit = healer != null && BattleActions.RollChance(healer.TotalCritRate);
         if (crit) value = value * (healer != null ? healer.TotalCritDamage : BalanceData.Get("CRIT_DAMAGE_PERCENT", 150)) / 100;
         value = Mathf.Max(1, value);
-        HP = Mathf.Min(MaxHP, HP + value);
+        HP = Mathf.Min(TotalMaxHP, HP + value);
         if (crit) Debug.Log($"[Heal] 치명 회복(비전투)! {character} +{value}");
         return value;
     }

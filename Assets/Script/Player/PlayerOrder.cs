@@ -125,8 +125,7 @@ public class PlayerOrder : NetworkBehaviour
         }
 
         if(textStats == null || statGamePlayer == null) return;
-        CharacterStatData.Entry stat = CharacterStatData.Get(statGamePlayer.character);
-        int attack = (stat != null && stat.attackScalesWithInt) ? statGamePlayer.TotalIntelligence : statGamePlayer.TotalStrength; // 캐릭터 공격 계수 스탯 (장비 합산)
+        int attack = statGamePlayer.GetAttackPower(statGamePlayer.BasicAttackScalesWithInt, statGamePlayer.BasicAttackAttribute); // 평타 공격력 = 무기 계수 스탯 + 속성에 맞는 무기 공격력 (Q46)
         int defenseValue = statGamePlayer.TotalDefense;
         if(attack == lastShownAttack && defenseValue == lastShownDefense) return;
         lastShownAttack = attack;

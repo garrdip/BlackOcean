@@ -17,7 +17,7 @@ namespace ProjectD
     public enum BattleResourceType { NONE, RAGE, MP, HP }
     /// <summary>TP 턴제 전투의 플레이어 액션 (RPG 전환 — 1턴 1액션)</summary>
     public enum TpAction { ATTACK, DEFEND, SKILL, ITEM, MOVE }
-    /// <summary>장비 슬롯 (RPG 전환) — 무기(캐릭터 고정) + 방어구 4종. ACCESSORY는 2개까지 장착 가능</summary>
+    /// <summary>장비 슬롯 (RPG 전환) — 무기 + 갑옷·투구·신발 + 악세사리(2개까지). 착용 제한 없음 (아이템 개편 Q22)</summary>
     public enum EquipSlot { WEAPON, ARMOR, HELMET, BOOTS, ACCESSORY }
     /// <summary>소모품 효과 종류 (RPG 전환) — HP 회복 / 전투 자원(MP·분노) 회복</summary>
     public enum ConsumableType { HEAL_HP, RESTORE_RESOURCE }
@@ -31,10 +31,22 @@ namespace ProjectD
                             // STAT_STRENGTH(힘 스탯 — 힘 요구치 판정에 포함)와 STAT_ATTACK(공격력 가산)은 다르다. ICHI_ATTACK/ICHI_DEFENSE는 기존 스킬 호환용으로만 남는다 (버프 개편에서 정리)
                             STAT_ATTACK, STAT_STRENGTH, STAT_DEFENSE, STAT_MAGIC_DEFENSE, STAT_CRIT_RATE, STAT_EVADE, STAT_ACCURACY
                             }
-    public enum ItemEffectTime { STARTBATTLE, CHANGEPOSITION, DEAD, ENDBATTLE, KILLMONSTER, ALWAYS, MOVETOROOM, STARTTURN, HOOKHP, ONCEGET }
-    // ITEM: 개인 아이템(상인·이벤트 보상, 소유자에게만 효과) / ARTIFACT: 공용 아티팩트(지역거점 클리어 보상, 전원에게 효과)
-    public enum ItemType {ITEM, ARTIFACT, LEGACY}
-    public enum ItemGrade {NORMAL, RARE, UNIQUE, LEGEND}
+    // (구 유물 시스템 enum ItemEffectTime/ItemType/ItemGrade는 아이템 개편 Phase 3-1에서 삭제 — Q2·Q21)
+    /// <summary>장비 등급 (아이템 개편 Phase 3) — 등급별 옵션 개수·드랍 가중치는 EquipGradeDB.csv</summary>
+    public enum EquipGrade { NORMAL, ADVANCED, RARE, LEGEND }
+    /// <summary>장비 추가 옵션 종류 — 일반 8종 + 전설 14종 (기획 「장비 옵션」). 슬롯별 허용·수치 범위는 EquipOptionDB.csv</summary>
+    public enum EquipOptionType
+    {
+        STRENGTH, INTELLIGENCE, AGILITY, CONTROL, MAX_HP, MAX_MP, DEFENSE, SHIELD,
+        LIFE_STEAL, SKILL_DAMAGE, COMBO_DAMAGE, CRIT_DAMAGE, REFLECT_FLAT, REFLECT_PERCENT, HEAL_RECEIVED,
+        WEAKNESS_NULLIFY, CRIT_RATE, ACCURACY, EVADE, FREE_MOVE, NO_ROW_PENALTY, MAX_RAGE
+    }
+    /// <summary>옵션 값 종류 — NUMBER 수치 / ATTRIBUTE 속성(값 = (int)AttackAttribute, 약점 상쇄) / FLAG 보유 여부(값 1)</summary>
+    public enum EquipValueKind { NUMBER, ATTRIBUTE, FLAG }
+    /// <summary>무기 종류 — 대검·장검·지팡이·책·수정구·핵 (착용 제한 없음, Q22)</summary>
+    public enum WeaponType { NONE, GREATSWORD, LONGSWORD, STAFF, BOOK, ORB, CORE }
+    /// <summary>방어구 종류 — 중갑·경갑·로브 (세트 약점은 ArmorTypeDB, Phase 4)</summary>
+    public enum ArmorType { NONE, HEAVY, LIGHT, ROBE }
     public enum ValidTarget { NONE, ENEMY, ENEMY_ALL, MEMBER, TEAM , ALL}
     public enum ErisMode {NORMAL, ANGER, MAD}
     public enum MonsterGrade {NORMAL, ELITE, BOSS} // 처치 집계용 몬스터 등급
@@ -71,7 +83,5 @@ namespace ProjectD
     /// <summary>스킬 실행 델리게이트 (RPG 전환) — SkillDB.csv의 SkillNo와 동명의 SkillData 정적 메서드에 리플렉션 바인딩된다.
     /// 인자는 SkillCast(정의·시전자·대상 + 콤보 배율 슬롯 — 아이템 개편 Phase 1-4, A9)</summary>
     public delegate IEnumerator ExecuteSkill(SkillData.SkillCast cast);
-    // owner: 아이템 소유 플레이어(전투 밖에서도 유효), sender: 전투 중 해당 플레이어의 타겟오브젝트(비전투 시점 발동이면 null)
-    public delegate void ItemEventHanddler(GamePlayerItem owner, TargetObject sender, Item item);
 
 }
