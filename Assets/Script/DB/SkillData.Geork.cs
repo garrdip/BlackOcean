@@ -9,7 +9,7 @@ using ProjectD;
 // 구 테스트 스킬(강타 GS2 등)은 제거됨.
 public static partial class SkillData
 {
-    // 고행길 (기본 스킬) — 자신의 HP를 잃고 분노 획득
+    // 고행길 (기본 스킬 — 턴을 소모한다, 2026-09-14) — 자신의 HP를 잃고 분노 획득
     public static IEnumerator GS1(SkillDef skill, TargetObject user, List<TargetObject> targets)
     {
         int hpCost = BalanceData.Get("GS1_HP_COST", 8);

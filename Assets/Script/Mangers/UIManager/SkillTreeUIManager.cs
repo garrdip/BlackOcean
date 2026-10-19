@@ -208,7 +208,7 @@ public class SkillTreeUIManager : InstanceD<SkillTreeUIManager>
                 title = skill != null ? skill.skillName : selected.description;
                 if (skill != null)
                 {
-                    body.AppendLine(skill.passive ? "[패시브]" : skill.innate ? "[기본 스킬 — 턴 소모 없음]" : "[액티브]");
+                    body.AppendLine(skill.passive ? "[패시브]" : skill.innate ? (skill.freeAction ? "[기본 스킬 — 턴 소모 없음]" : "[기본 스킬]") : "[액티브]");
                     body.AppendLine(skill.description);
                     if (!skill.passive && skill.costType != BattleResourceType.NONE)
                         body.AppendLine($"소모: {ResourceDisplayName(skill.costType)} {skill.cost}");

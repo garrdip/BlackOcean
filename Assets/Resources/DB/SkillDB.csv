@@ -1,31 +1,31 @@
-SkillNo,Character,Name,CostType,Cost,Attribute,ValidTarget,Power,ScaleStat,Innate,PowerPerLevel,Passive,Description
-GS1,GEORK,고행길,NONE,0,NONE,NONE,0,STR,1,0,0,자신의 HP를 8 잃고 분노를 40 얻는다 (기본 스킬)
-GS6,GEORK,연속 베기,RAGE,15,SLASH,ENEMY,70,STR,0,10,0,적 하나를 힘의 70%(강화 시 80/90%) 참격으로 두 번 벤다
-GS7,GEORK,기사도,NONE,0,NONE,NONE,20,STR,0,10,1,(패시브) 자신을 노리는 적에게 주는 피해가 20%(강화 시 30/40%) 증가한다
-GS8,GEORK,약점 찌르기,RAGE,20,SLASH,ENEMY,100,STR,0,20,0,적 하나에게 힘의 100%(강화 시 120/140%) 참격 피해를 주고 쇠락(공격력 15 저하 3턴)을 부여한다
-GS9,GEORK,풍차 베기,RAGE,30,SLASH,ENEMY_ALL,40,STR,0,10,0,모든 적을 힘의 40%(강화 시 50/60%) 참격으로 두 번 벤다
-GS10,GEORK,범접할 수 없는 힘,RAGE,40,SLASH,ENEMY,120,STR,0,20,0,적 하나에게 힘의 120%(강화 시 140/160%) 참격 피해를 준다
-HS1,HONGDANHYANG,화염구,MP,6,MAGIC,ENEMY,140,INT,0,0,0,적 하나에게 지능의 140% 마법 피해를 준다
-HS2,HONGDANHYANG,치유의 빛,MP,8,NONE,MEMBER,120,INT,0,0,0,아군 하나의 HP를 지능의 120%만큼 회복시킨다
-HS3,HONGDANHYANG,마력 폭풍,MP,12,MAGIC,ENEMY_ALL,80,INT,0,0,0,모든 적에게 지능의 80% 마법 피해를 준다
-HS4,HONGDANHYANG,수호 축복,MP,8,NONE,MEMBER,100,INT,0,0,0,아군 하나에게 지능의 100%만큼 실드를 부여한다
-HU1,HONGDANHYANG,만개,MP,20,NONE,TEAM,150,INT,0,0,0,아군 전원의 HP를 지능의 150% 회복시키고 그 절반만큼 실드를 부여한다. 사용 후 자신의 TP가 50 감소한다 (필살기)
-ES5,ERIS,권능 : 찌르기,HP,4,RESONANCE,ENEMY,130,STR,0,20,0,적 하나에게 힘의 130%(강화 시 150/170%) 공명 피해를 준다
-ES6,ERIS,부서지세요,HP,5,RESONANCE,ENEMY,90,STR,0,10,0,적 하나에게 힘의 90%(강화 시 100/110%) 공명 피해를 주고 방어력을 10(강화 시 15/20) 낮춘다 (3턴)
-ES7,ERIS,권능 : 파괴,HP,5,RESONANCE,ENEMY,50,STR,0,10,0,적 하나에게 힘의 50%(강화 시 60/70%) 공명 피해를 준다. 전투 중 사용할 때마다 이 스킬의 계수가 30%씩 오른다
-ES8,ERIS,얼마나 버틸까요,HP,6,RESONANCE,ENEMY,100,STR,0,0,0,적 하나의 방어력을 50(강화 시 100/150) 낮춘 뒤 힘의 100% 공명 피해를 준다 (1턴)
-ES9,ERIS,압력 분출,HP,8,RESONANCE,ENEMY_ALL,50,STR,0,10,0,모든 적에게 힘의 50%(강화 시 60/70%) 공명 피해를 준다. 이 공격으로 적이 사망하면 반복한다
-ES10,ERIS,찢어 줄게요,HP,10,RESONANCE,ENEMY,150,STR,0,50,0,적 하나에게 힘의 150%(강화 시 200/250%) 공명 피해를 준다. 1차 변신 상태에서 2회, 광기 상태에서 3회 반복한다
-HS0,HONGDANHYANG,철귀 이동,NONE,0,NONE,MEMBER,0,INT,1,0,0,철귀를 아군 하나에게 보낸다. 자신의 턴이 끝날 때 철귀가 붙은 아군이 실드 10과 공격력 +3(다음 턴까지)을 얻는다 (기본 스킬 — 턴을 소모하지 않음)
-ES1,ERIS,피의 질주,NONE,0,NONE,NONE,0,STR,1,0,0,자신의 최대 HP의 10%만큼 HP를 잃고 TP를 50 회복한다 (HP 1 미만으로는 내려가지 않음). 기본 스킬 — 턴을 소모하지 않음
-GS17,GEORK,쇠락,RAGE,10,NONE,ENEMY,15,STR,0,5,0,적 하나의 공격력을 15(강화 시 20/25) 낮춘다 (3턴)
-GS18,GEORK,압도의 일격,RAGE,20,SLASH,ENEMY,90,STR,0,10,0,적 하나에게 힘의 90%(강화 시 100/110%) 참격 피해를 주고 TP를 10(강화 시 20/30) 깎는다
-GS19,GEORK,북방의 위대한 투사,RAGE,20,NONE,NONE,2,STR,0,2,0,이번 전투 동안 자기 턴이 시작할 때마다 공격력이 2(강화 시 4/6)씩 누적 상승한다 (사용 즉시 1회 적용)
-GS20,GEORK,기도,RAGE,15,NONE,MEMBER,10,STR,0,5,0,아군 하나의 공격력을 10(강화 시 15/20) 올린다 (3턴)
-GS21,GEORK,절대자,NONE,0,NONE,NONE,0,STR,0,0,1,(패시브) 북방의 위대한 투사의 턴당 공격력 상승량이 2배가 된다
-GS11,GEORK,보호,RAGE,15,NONE,MEMBER,20,STR,0,20,0,아군 하나가 받는 피해의 20%(강화 시 40/60%)를 대신 받는다 (3턴)
-GS12,GEORK,도발,RAGE,10,NONE,ENEMY,0,STR,0,0,0,적 하나의 다음 공격 대상을 자신으로 돌린다 (1턴 — 그 적의 다음 행동)
-GS13,GEORK,반격,NONE,0,NONE,NONE,10,STR,0,10,1,(패시브) HP 피해를 입으면 자신을 공격한 적에게 기본 공격력의 10%(강화 시 20/30%) 피해를 돌려준다
-GS14,GEORK,빈틈없는 자세,RAGE,15,NONE,NONE,10,STR,0,10,0,자신의 방어력을 10(강화 시 20/30) 올린다 (3턴)
-GS15,GEORK,찌르고 막기,RAGE,20,PIERCE,ENEMY,80,STR,0,20,0,적 하나에게 힘의 80%(강화 시 100/120%) 관통 피해를 주고 자신의 방어력을 15(강화 시 20/25) 올린다 (1턴)
-GS16,GEORK,고통 수집,RAGE,30,SLASH,ENEMY_ALL,50,STR,0,10,0,모든 적에게 힘의 50%(강화 시 60/70%) 참격 피해를 주고 자신의 방어력을 15(강화 시 20/25) 올린다 (1턴)
+SkillNo,Character,Name,CostType,Cost,Attribute,ValidTarget,Power,ScaleStat,Innate,FreeAction,PowerPerLevel,Passive,Description
+GS1,GEORK,고행길,NONE,0,NONE,NONE,0,STR,1,0,0,0,자신의 HP를 8 잃고 분노를 40 얻는다 (기본 스킬)
+GS6,GEORK,연속 베기,RAGE,15,SLASH,ENEMY,70,STR,0,0,10,0,적 하나를 힘의 70%(강화 시 80/90%) 참격으로 두 번 벤다
+GS7,GEORK,기사도,NONE,0,NONE,NONE,20,STR,0,0,10,1,(패시브) 자신을 노리는 적에게 주는 피해가 20%(강화 시 30/40%) 증가한다
+GS8,GEORK,약점 찌르기,RAGE,20,SLASH,ENEMY,100,STR,0,0,20,0,적 하나에게 힘의 100%(강화 시 120/140%) 참격 피해를 주고 쇠락(공격력 15 저하 3턴)을 부여한다
+GS9,GEORK,풍차 베기,RAGE,30,SLASH,ENEMY_ALL,40,STR,0,0,10,0,모든 적을 힘의 40%(강화 시 50/60%) 참격으로 두 번 벤다
+GS10,GEORK,범접할 수 없는 힘,RAGE,40,SLASH,ENEMY,120,STR,0,0,20,0,적 하나에게 힘의 120%(강화 시 140/160%) 참격 피해를 준다
+HS1,HONGDANHYANG,화염구,MP,6,MAGIC,ENEMY,140,INT,0,0,0,0,적 하나에게 지능의 140% 마법 피해를 준다
+HS2,HONGDANHYANG,치유의 빛,MP,8,NONE,MEMBER,120,INT,0,0,0,0,아군 하나의 HP를 지능의 120%만큼 회복시킨다
+HS3,HONGDANHYANG,마력 폭풍,MP,12,MAGIC,ENEMY_ALL,80,INT,0,0,0,0,모든 적에게 지능의 80% 마법 피해를 준다
+HS4,HONGDANHYANG,수호 축복,MP,8,NONE,MEMBER,100,INT,0,0,0,0,아군 하나에게 지능의 100%만큼 실드를 부여한다
+HU1,HONGDANHYANG,만개,MP,20,NONE,TEAM,150,INT,0,0,0,0,아군 전원의 HP를 지능의 150% 회복시키고 그 절반만큼 실드를 부여한다. 사용 후 자신의 TP가 50 감소한다 (필살기)
+ES5,ERIS,권능 : 찌르기,HP,4,RESONANCE,ENEMY,130,STR,0,0,20,0,적 하나에게 힘의 130%(강화 시 150/170%) 공명 피해를 준다
+ES6,ERIS,부서지세요,HP,5,RESONANCE,ENEMY,90,STR,0,0,10,0,적 하나에게 힘의 90%(강화 시 100/110%) 공명 피해를 주고 방어력을 10(강화 시 15/20) 낮춘다 (3턴)
+ES7,ERIS,권능 : 파괴,HP,5,RESONANCE,ENEMY,50,STR,0,0,10,0,적 하나에게 힘의 50%(강화 시 60/70%) 공명 피해를 준다. 전투 중 사용할 때마다 이 스킬의 계수가 30%씩 오른다
+ES8,ERIS,얼마나 버틸까요,HP,6,RESONANCE,ENEMY,100,STR,0,0,0,0,적 하나의 방어력을 50(강화 시 100/150) 낮춘 뒤 힘의 100% 공명 피해를 준다 (1턴)
+ES9,ERIS,압력 분출,HP,8,RESONANCE,ENEMY_ALL,50,STR,0,0,10,0,모든 적에게 힘의 50%(강화 시 60/70%) 공명 피해를 준다. 이 공격으로 적이 사망하면 반복한다
+ES10,ERIS,찢어 줄게요,HP,10,RESONANCE,ENEMY,150,STR,0,0,50,0,"적 하나에게 힘의 150%(강화 시 200/250%) 공명 피해를 준다. 1차 변신 상태에서 2회, 광기 상태에서 3회 반복한다"
+HS0,HONGDANHYANG,철귀 이동,NONE,0,NONE,MEMBER,0,INT,1,1,0,0,철귀를 아군 하나에게 보낸다. 자신의 턴이 끝날 때 철귀가 붙은 아군이 실드 10과 공격력 +3(다음 턴까지)을 얻는다 (기본 스킬 — 턴을 소모하지 않음)
+ES1,ERIS,피의 질주,NONE,0,NONE,NONE,0,STR,1,0,0,0,자신의 최대 HP의 10%만큼 HP를 잃고 TP를 50 회복한다 (HP 1 미만으로는 내려가지 않음). 기본 스킬
+GS17,GEORK,쇠락,RAGE,10,NONE,ENEMY,15,STR,0,0,5,0,적 하나의 공격력을 15(강화 시 20/25) 낮춘다 (3턴)
+GS18,GEORK,압도의 일격,RAGE,20,SLASH,ENEMY,90,STR,0,0,10,0,적 하나에게 힘의 90%(강화 시 100/110%) 참격 피해를 주고 TP를 10(강화 시 20/30) 깎는다
+GS19,GEORK,북방의 위대한 투사,RAGE,20,NONE,NONE,2,STR,0,0,2,0,이번 전투 동안 자기 턴이 시작할 때마다 공격력이 2(강화 시 4/6)씩 누적 상승한다 (사용 즉시 1회 적용)
+GS20,GEORK,기도,RAGE,15,NONE,MEMBER,10,STR,0,0,5,0,아군 하나의 공격력을 10(강화 시 15/20) 올린다 (3턴)
+GS21,GEORK,절대자,NONE,0,NONE,NONE,0,STR,0,0,0,1,(패시브) 북방의 위대한 투사의 턴당 공격력 상승량이 2배가 된다
+GS11,GEORK,보호,RAGE,15,NONE,MEMBER,20,STR,0,0,20,0,아군 하나가 받는 피해의 20%(강화 시 40/60%)를 대신 받는다 (3턴)
+GS12,GEORK,도발,RAGE,10,NONE,ENEMY,0,STR,0,0,0,0,적 하나의 다음 공격 대상을 자신으로 돌린다 (1턴 — 그 적의 다음 행동)
+GS13,GEORK,반격,NONE,0,NONE,NONE,10,STR,0,0,10,1,(패시브) HP 피해를 입으면 자신을 공격한 적에게 기본 공격력의 10%(강화 시 20/30%) 피해를 돌려준다
+GS14,GEORK,빈틈없는 자세,RAGE,15,NONE,NONE,10,STR,0,0,10,0,자신의 방어력을 10(강화 시 20/30) 올린다 (3턴)
+GS15,GEORK,찌르고 막기,RAGE,20,PIERCE,ENEMY,80,STR,0,0,20,0,적 하나에게 힘의 80%(강화 시 100/120%) 관통 피해를 주고 자신의 방어력을 15(강화 시 20/25) 올린다 (1턴)
+GS16,GEORK,고통 수집,RAGE,30,SLASH,ENEMY_ALL,50,STR,0,0,10,0,모든 적에게 힘의 50%(강화 시 60/70%) 참격 피해를 주고 자신의 방어력을 15(강화 시 20/25) 올린다 (1턴)

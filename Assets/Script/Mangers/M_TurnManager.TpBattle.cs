@@ -49,7 +49,7 @@ public partial class M_TurnManager
     public uint tpCurrentUnitNetId; // 액션 입력을 기다리는 플레이어 유닛(TargetObject)의 netId. 0 = 대기 없음
 
     [SyncVar]
-    public string tpUsedInnateSkillNo = ""; // 이번 턴에 이미 사용한 기본 스킬(innate) — 턴당 1회 제한 (서버가 판정, 클라 GUI는 버튼 비활성)
+    public string tpUsedFreeSkillNo = ""; // 이번 턴에 이미 사용한 턴 미소모 스킬(SkillDB FreeAction=1 — 철귀 이동) — 턴당 1회 제한 (서버가 판정, 클라 GUI는 버튼 비활성)
 
     /// <summary>클라이언트 표시용 TP 스냅샷 (유닛 netId + 현재 TP). 게이지 진행/턴/브레이크 시점마다 서버가 갱신</summary>
     public struct TpGaugeSnapshot
@@ -237,8 +237,8 @@ public partial class M_TurnManager
                 unit.target.player.currentResource + unit.target.player.control / Mathf.Max(1, BalanceData.Get("MP_REGEN_CONTROL_DIVISOR", 2)));
         ApplyPlayerTurnStartEffects(unit.target); // 북방의 위대한 투사 스택 누적 등
 
-        tpUsedInnateSkillNo = "";
-        while (true) // 기본 스킬(innate — 고행길/철귀 이동/자해)은 턴을 소모하지 않는다: 사용 후 다시 입력을 기다린다 (턴당 1회)
+        tpUsedFreeSkillNo = "";
+        while (true) // 턴 미소모 스킬(SkillDB FreeAction=1 — 홍단향 철귀 이동만)은 사용 후 다시 입력을 기다린다 (턴당 1회). 고행길/피의 질주는 기본 스킬(innate)이지만 턴을 소모한다 (2026-09-14)
         {
         tpActionSubmitted = false;
         tpCurrentUnitNetId = unit.target.netId;
@@ -282,18 +282,18 @@ public partial class M_TurnManager
                 SkillData.SkillDef skill = SkillData.Get(skillNo);
                 if (skill != null && gamePlayer.KnowsSkill(skillNo)) // 스킬트리 습득 여부 서버 검증
                 {
-                    if (skill.innate && tpUsedInnateSkillNo == skill.skillNo)
-                        TargetInnateSkillAlreadyUsed(gamePlayer.connectionToClient, skill.skillName); // 기본 스킬은 턴당 1회
+                    if (skill.freeAction && tpUsedFreeSkillNo == skill.skillNo)
+                        TargetInnateSkillAlreadyUsed(gamePlayer.connectionToClient, skill.skillName); // 턴 미소모 스킬은 턴당 1회
                     else if (PayCost(unit.target, skill))
                     {
                         PlayPlayerActionAnimation(unit.target, SkillData.GetMotion(skill)); // 스킬 모션 — 기본 Attack1(임시 공용), 예외는 SkillData.skillMotions (고행길 Defense0 등)
                         yield return skill.execute(skill, unit.target, ResolveSkillTargets(skill, targetNetId));
-                        if (skill.innate) tpUsedInnateSkillNo = skill.skillNo;
+                        if (skill.freeAction) tpUsedFreeSkillNo = skill.skillNo;
                     }
                     else
                         TargetSkillCostRefused(gamePlayer.connectionToClient, skill.skillName); // 자원 부족 — 침묵 대신 요청자에게 토스트
                 }
-                if (skill != null && skill.innate) freeAction = true; // 기본 스킬은 성공/거부와 무관하게 턴을 소모하지 않는다
+                if (skill != null && skill.freeAction) freeAction = true; // 턴 미소모 스킬은 성공/거부와 무관하게 턴을 소모하지 않는다
                 break;
             }
             case TpAction.MOVE:
@@ -323,7 +323,7 @@ public partial class M_TurnManager
                 break;
             }
         }
-        if (!freeAction) break; // 일반 행동 → 턴 종료. 기본 스킬이었으면 다시 입력 대기
+        if (!freeAction) break; // 일반 행동 → 턴 종료. 턴 미소모 스킬이었으면 다시 입력 대기
         }
         TickTimedDebuffs(unit.target); // 자신에게 걸린 지속 버프/디버프(기도·철귀 공격력 등) 턴 감소 — 몬스터와 같이 자기 턴 종료 기준. 철귀 재부여보다 먼저
         tpActingUnit = null; // 턴 종료 효과(철귀 재부여)는 "자기 턴 중"으로 치지 않는다 — 다음 자기 턴 종료에 정상 감소
@@ -351,7 +351,7 @@ public partial class M_TurnManager
         AnimIronDemon("Buff0", user);
     }
 
-    // 기본 스킬 턴당 1회 제한 안내 — 요청한 플레이어에게만 토스트
+    // 턴 미소모 스킬(FreeAction) 턴당 1회 제한 안내 — 요청한 플레이어에게만 토스트
     // (이름 주의: 'TargetInnateAlreadyUsed'는 SpawnedMonster.RpcPlayHitAnimation과 Mirror 16비트 RPC 해시가 충돌해 몬스터 피격 RPC가 유실됐음 — 2026-09-01 개명)
     [TargetRpc]
     void TargetInnateSkillAlreadyUsed(NetworkConnectionToClient conn, string skillName)
@@ -814,7 +814,7 @@ public partial class M_TurnManager
             buttonX += 95f;
             foreach (SkillData.SkillDef skill in myPlayer.GetUsableSkills()) // 기본 스킬 + 스킬트리 습득분만 표시
             {
-                GUI.enabled = CanPayCost(currentUnit, skill) && !(skill.innate && tpUsedInnateSkillNo == skill.skillNo); // 자원 부족·이번 턴에 이미 쓴 기본 스킬은 비활성 (서버와 같은 규칙)
+                GUI.enabled = CanPayCost(currentUnit, skill) && !(skill.freeAction && tpUsedFreeSkillNo == skill.skillNo); // 자원 부족·이번 턴에 이미 쓴 턴 미소모 스킬은 비활성 (서버와 같은 규칙)
                 bool pressed = GUI.Button(new Rect(buttonX, y, 130f, lineHeight), $"{skill.skillName}({skill.cost})");
                 GUI.enabled = true;
                 if (pressed)

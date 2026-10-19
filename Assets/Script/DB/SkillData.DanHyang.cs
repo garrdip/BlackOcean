@@ -5,7 +5,7 @@ using ProjectD;
 
 // SkillData partial — 홍단향 스킬 효과 구현 (MP 자원 — 자기 턴 시작 시 소량 회복, 물약은 Phase 4).
 // 메서드명 = SkillDB.csv의 SkillNo. 서버 코루틴에서만 실행된다.
-// 기본 스킬 '철귀 이동'(HS0, 턴 소모 없음): 철귀를 아군에게 붙이고, 턴 종료 효과(M_TurnManager.ApplyPlayerTurnEndEffects)가 그 아군에게 실드·공격 버프를 준다 (2026-09-01).
+// 기본 스킬 '철귀 이동'(HS0, 턴 소모 없음 — SkillDB FreeAction=1, 세 기본 스킬 중 유일): 철귀를 아군에게 붙이고, 턴 종료 효과(M_TurnManager.ApplyPlayerTurnEndEffects)가 그 아군에게 실드·공격 버프를 준다 (2026-09-01).
 public static partial class SkillData
 {
     // 철귀 이동 (기본 스킬, 턴 소모 없음) — 철귀를 아군 하나에게 보낸다 (자신 포함). 연출은 카드 전투의 IronDemonReturnProcess와 같은 텔레포트 순서.

@@ -23,7 +23,8 @@ public static partial class SkillData
         public ValidTarget validTarget;   // ENEMY(단일)/ENEMY_ALL(전체)/NONE(자신·대상 불필요)
         public int power;                 // 계수 % (스탯 x power / 100) — 스킬 레벨 1 기준
         public bool scalesWithInt;        // true면 지능, false면 힘 계수
-        public bool innate;               // 기본 스킬 — 스킬트리 습득 없이 사용 가능 (고행길/피의 가속)
+        public bool innate;               // 기본 스킬 — 스킬트리 습득 없이 사용 가능 (고행길/철귀 이동/피의 질주)
+        public bool freeAction;           // 턴을 소모하지 않는 스킬 (FreeAction=1 — 철귀 이동만). 사용 후 다시 입력 대기, 턴당 1회. 고행길/피의 질주는 기본 스킬이지만 턴을 소모한다 (2026-09-14)
         public int powerPerLevel;         // 스킬 레벨(SKILL_LEVEL 노드)당 계수 % 증가량 — 0이면 구 방식(+20%/레벨) 사용
         public bool passive;              // 패시브 스킬 (기사도 등) — 전투 액션 목록에 표시하지 않으며 execute는 호출되지 않는다
         public string description;
@@ -53,6 +54,7 @@ public static partial class SkillData
                     power = row.GetInt("Power"),
                     scalesWithInt = row.Get("ScaleStat").Trim() == "INT",
                     innate = row.Get("Innate").Trim() == "1",
+                    freeAction = table.HasColumn("FreeAction") && row.Get("FreeAction").Trim() == "1",
                     powerPerLevel = int.TryParse(row.Get("PowerPerLevel"), out int perLevel) ? perLevel : 0,
                     passive = row.Get("Passive").Trim() == "1",
                     description = row.Get("Description"),
