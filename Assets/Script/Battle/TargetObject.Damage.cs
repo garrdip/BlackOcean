@@ -88,7 +88,7 @@ public partial class TargetObject
             player.HP = playerHP;
             // 맞을 때 분노 — 모든 계산이 끝나 HP에 들어간 최종 피해 기준 (실드 흡수분 제외, Q32): (데미지/자신의 최대HP) x 변환제어
             if(isServer && M_TurnManager.instance.tpBattleActive) BattleActions.GainRageByDamage(player, remind, playerMaxHP);
-            if(isServer) CounterAttack(); // 반격 (게오르크 GS13 패시브) — HP 피해를 입었을 때만
+            if(isServer) CounterAttack(remind); // 반격 (게오르크 GS13 패시브) + 반사 옵션 — HP 피해를 입었을 때만
             return remind; // HP에 실제로 가해진 피해 (실드 관통분)
         }
     }
@@ -108,14 +108,16 @@ public partial class TargetObject
         return shared;
     }
 
-    // 반격 (게오르크 GS13 패시브) — HP 피해를 입으면 지금 행동 중인 몬스터(M_TurnManager.tpActingUnit)에게 기본 공격력의 (10/20/30)% 반사.
-    // 별도의 HitContext로 2차 판정(명중·치명·r)을 거친다 (Q27). isSecondary — 반격의 반격은 없다. 서버 전용
-    void CounterAttack()
+    // 반격 (게오르크 GS13 패시브 — 기본 공격력의 10/20/30%) + 반사 옵션 (REFLECT_FLAT 고정 + 받은 HP 피해 × REFLECT_PERCENT%, 5-6) 합산 —
+    // HP 피해를 입으면 지금 행동 중인 몬스터(M_TurnManager.tpActingUnit)에게 별도의 HitContext로 2차 판정(명중·치명·r)을 거쳐 돌려준다 (Q27). isSecondary — 반격의 반격은 없다. 서버 전용
+    void CounterAttack(int hpDamageTaken)
     {
         if(M_TurnManager.instance == null || !M_TurnManager.instance.tpBattleActive) return;
         TargetObject attacker = M_TurnManager.instance.tpActingUnit;
         if(attacker == null || attacker == this || attacker.monster == null || attacker.isDying) return;
         int damage = SkillData.CounterDamage(this);
+        damage += player.EquipOptionSum(ProjectD.EquipOptionType.REFLECT_FLAT);
+        damage += hpDamageTaken * player.EquipOptionSum(ProjectD.EquipOptionType.REFLECT_PERCENT) / 100;
         if(damage <= 0) return;
         HitContext counter = new HitContext
         {

@@ -7,19 +7,22 @@ using ProjectD;
 public partial class GamePlayer
 {
     // ------------------------------------------------------------- 보조 스탯 (기본치 + 장비 옵션 — 레벨 성장 없음) -------------------------------------------------------------//
-    // 장비 옵션(EVADE/ACCURACY/CRIT_RATE/CRIT_DAMAGE) 가산은 Phase 5에서 EquipOptionSum으로 붙는다
+    // 장비 옵션(EVADE/ACCURACY/CRIT_RATE/CRIT_DAMAGE — 전설 옵션, Phase 5-1·5-2)은 EquipOptionSum으로 가산. 전투 중 STAT_* 버프는 TargetObject.Get*이 더한다
 
-    /// <summary>회피율 % — CharacterStatDB BaseEvade (게오르크·홍단향 5 / 에리스 10)</summary>
-    public int TotalEvade => CharacterStatData.Get(character)?.baseEvade ?? 5;
+    /// <summary>회피율 % — CharacterStatDB BaseEvade (게오르크·홍단향 5 / 에리스 10) + 회피율 옵션</summary>
+    public int TotalEvade => (CharacterStatData.Get(character)?.baseEvade ?? 5) + EquipOptionSum(EquipOptionType.EVADE);
 
-    /// <summary>명중률 % — CharacterStatDB BaseAccuracy (전원 95)</summary>
-    public int TotalAccuracy => CharacterStatData.Get(character)?.baseAccuracy ?? 95;
+    /// <summary>명중률 % — CharacterStatDB BaseAccuracy (전원 95) + 명중률 옵션</summary>
+    public int TotalAccuracy => (CharacterStatData.Get(character)?.baseAccuracy ?? 95) + EquipOptionSum(EquipOptionType.ACCURACY);
 
-    /// <summary>치명타율 % — CharacterStatDB BaseCrit (게오르크·홍단향 5 / 에리스 10)</summary>
-    public int TotalCritRate => CharacterStatData.Get(character)?.baseCrit ?? 5;
+    /// <summary>치명타율 % — CharacterStatDB BaseCrit (게오르크·홍단향 5 / 에리스 10) + 치명타 확률 옵션</summary>
+    public int TotalCritRate => (CharacterStatData.Get(character)?.baseCrit ?? 5) + EquipOptionSum(EquipOptionType.CRIT_RATE);
 
-    /// <summary>치명 배수 % — BalanceDB CRIT_DAMAGE_PERCENT(150). 피해·회복·실드 부여 공용 (Q29)</summary>
-    public int TotalCritDamage => BalanceData.Get("CRIT_DAMAGE_PERCENT", 150);
+    /// <summary>치명 배수 % — BalanceDB CRIT_DAMAGE_PERCENT(150) + 치명타 데미지 옵션(%p). 피해·회복·실드 부여 공용 (Q29)</summary>
+    public int TotalCritDamage => BalanceData.Get("CRIT_DAMAGE_PERCENT", 150) + EquipOptionSum(EquipOptionType.CRIT_DAMAGE);
+
+    /// <summary>받는 회복량 배율 % — 100 + HEAL_RECEIVED 옵션 합 (전투·비전투 공용, Q38)</summary>
+    public int HealReceivedPercent => 100 + EquipOptionSum(EquipOptionType.HEAL_RECEIVED);
 
     // ------------------------------------------------------------- 회복 (전투·비전투 공용 진입점) -------------------------------------------------------------//
 
@@ -35,7 +38,8 @@ public partial class GamePlayer
             TargetObject healerTarget = healer != null ? (healer == this ? self : M_TurnManager.instance.GetCurrentPlayerTargetObject(healer)) : null;
             return self.Heal(value, healerTarget);
         }
-        // 비전투 — TargetObject 없음. 치명률은 healer의 Total* 기준
+        // 비전투 — TargetObject 없음. 받는 회복량 옵션 → 치명 (healer의 Total* 기준)
+        value = value * HealReceivedPercent / 100;
         bool crit = healer != null && BattleActions.RollChance(healer.TotalCritRate);
         if (crit) value = value * (healer != null ? healer.TotalCritDamage : BalanceData.Get("CRIT_DAMAGE_PERCENT", 150)) / 100;
         value = Mathf.Max(1, value);

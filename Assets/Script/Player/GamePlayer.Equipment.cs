@@ -384,6 +384,21 @@ public partial class GamePlayer
         Debug.Log($"[Equipment] 치트 생성: [{EquipGradeData.DisplayName(item.grade)}] {picked.equipName} 옵션 {item.OptionCount}개");
     }
 
+    /// <summary>치트 (5-14): 특정 옵션 하나만 붙은 전설 악세사리 생성 — 옵션 효과 검증용. value &lt; 0이면 그 옵션의 LEGEND 최대치(속성형은 랜덤 속성)</summary>
+    [Command]
+    public void CmdDebugCreateOptionEquip(int optionType, int value)
+    {
+        EquipOptionType type = (EquipOptionType)optionType;
+        EquipOptionData.Def option = EquipOptionData.Get(type, EquipGrade.LEGEND);
+        if (option == null) return;
+        EquipInstance item = EquipGenerator.Create("AC1", EquipGrade.LEGEND);
+        if (!item.IsValid) return;
+        item.optionTypes = new[] { optionType };
+        item.optionValues = new[] { value >= 0 ? value : (option.valueKind == EquipValueKind.NUMBER ? option.maxValue : option.RollValue()) };
+        inventoryEquips.Add(item);
+        Debug.Log($"[Equipment] 치트 생성(옵션 단일): {DescribeEquip(item)}");
+    }
+
     // ------------------------------------------------------------- 임시 UI (OnGUI) -------------------------------------------------------------//
 
     bool guiEquipOpen;
@@ -432,7 +447,7 @@ public partial class GamePlayer
 
         guiEquipScroll = GUI.BeginScrollView(
             new Rect(windowRect.x + 10f, windowRect.y + 30f, windowWidth - 20f, windowHeight - 40f),
-            guiEquipScroll, new Rect(0, 0, windowWidth - 40f, 1200f));
+            guiEquipScroll, new Rect(0, 0, windowWidth - 40f, 1500f));
 
         float y = 0f;
         bool inBattle = IsBattleActive();
@@ -497,6 +512,16 @@ public partial class GamePlayer
         if (GUI.Button(new Rect(bx, y, 100f, 24f), "전설 무기")) CmdDebugCreateEquip((int)EquipGrade.LEGEND, (int)EquipSlot.WEAPON);
         bx += 105f;
         if (GUI.Button(new Rect(bx, y, 110f, 24f), "전설 악세사리")) CmdDebugCreateEquip((int)EquipGrade.LEGEND, (int)EquipSlot.ACCESSORY);
+        y += 28f;
+        GUI.Label(new Rect(0, y, 500f, 24f), "◆ 치트: 옵션 1개짜리 전설 악세사리 (최대치) — 옵션 효과 검증용"); y += 26f;
+        bx = 20f;
+        int column = 0;
+        foreach (EquipOptionType type in System.Enum.GetValues(typeof(EquipOptionType)))
+        {
+            if (GUI.Button(new Rect(bx, y, 140f, 22f), EquipOptionData.DisplayName(type))) CmdDebugCreateOptionEquip((int)type, -1);
+            bx += 145f;
+            if (++column % 4 == 0) { bx = 20f; y += 24f; }
+        }
         GUI.EndScrollView();
     }
 }

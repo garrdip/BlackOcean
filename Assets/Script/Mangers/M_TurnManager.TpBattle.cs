@@ -54,6 +54,9 @@ public partial class M_TurnManager
     [SyncVar]
     public string tpUsedFreeSkillNo = ""; // 이번 턴에 이미 사용한 턴 미소모 스킬(SkillDB FreeAction=1 — 철귀 이동) — 턴당 1회 제한 (서버가 판정, 클라 GUI는 버튼 비활성)
 
+    [SyncVar]
+    public bool tpUsedFreeMove; // 이번 턴에 '이동 시 턴 소모 제거' 옵션(FREE_MOVE)으로 무료 이동을 썼는지 — 턴당 1회 (5-11)
+
     /// <summary>클라이언트 표시용 TP 스냅샷 (유닛 netId + 현재 TP). 게이지 진행/턴/브레이크 시점마다 서버가 갱신</summary>
     public struct TpGaugeSnapshot
     {
@@ -95,6 +98,9 @@ public partial class M_TurnManager
             if (stat != null && stat.resource == BattleResourceType.RAGE)
                 player.player.currentResource = 0;
             player.UpdateErisMode(); // 에리스 — 저체력으로 전투에 들어오면 시작부터 변신 상태 (스폰 전 HP 대입은 판정에서 제외되므로 여기서 1회)
+            // 보호막 옵션 (5-9) — 전투 시작 시 옵션 합만큼 실드 1회 부여 (소진까지 지속, 새 실드가 들어오면 덮어쓰임 — Q37·Q41)
+            int shieldOption = player.player.EquipOptionSum(EquipOptionType.SHIELD);
+            if (shieldOption > 0) player.GainShield(shieldOption, player);
         }
         foreach (TargetObject monster in spawnedMonsterList)
         {
@@ -287,7 +293,8 @@ public partial class M_TurnManager
         ApplyPlayerTurnStartEffects(unit.target); // 북방의 위대한 투사 스택 누적 등
 
         tpUsedFreeSkillNo = "";
-        while (true) // 턴 미소모 스킬(SkillDB FreeAction=1 — 홍단향 철귀 이동만)은 사용 후 다시 입력을 기다린다 (턴당 1회). 고행길/피의 질주는 기본 스킬(innate)이지만 턴을 소모한다 (2026-09-14)
+        tpUsedFreeMove = false;
+        while (true) // 턴 미소모 스킬(SkillDB FreeAction=1 — 홍단향 철귀 이동만)·무료 이동(FREE_MOVE 옵션)은 사용 후 다시 입력을 기다린다 (턴당 1회). 고행길/피의 질주는 기본 스킬(innate)이지만 턴을 소모한다 (2026-09-14)
         {
         tpActionSubmitted = false;
         tpCurrentUnitNetId = unit.target.netId;
@@ -350,7 +357,15 @@ public partial class M_TurnManager
             {
                 int myIndex = playerOrder.IndexOf(gamePlayer.netId);
                 if (myIndex >= 0 && row >= 0 && row < playerOrder.Count && myIndex != row)
+                {
                     SwapPlayerOrder(myIndex, row);
+                    // 무료 이동 (턴당 1회, 사용 후 다시 입력 대기): 중열(playerOrder[1])에서 출발하는 이동은 기획 "중열: 위치 변환 코스트 삭제"(Q9), 또는 이동 시 턴 소모 제거 옵션(FREE_MOVE, 5-11)
+                    if (!tpUsedFreeMove && (myIndex == 1 || gamePlayer.HasEquipFlag(EquipOptionType.FREE_MOVE)))
+                    {
+                        tpUsedFreeMove = true;
+                        freeAction = true;
+                    }
+                }
                 break;
             }
             case TpAction.ITEM:
@@ -896,9 +911,10 @@ public partial class M_TurnManager
             // 이동 (전열/중열/후열) + 아이템 — 전열 = playerOrder[2] (몬스터와 가까운 위치)
             string[] rowNames = { "전열", "중열", "후열" };
             int[] rowTargetIndex = { 2, 1, 0 };
+            bool freeMoveReady = !tpUsedFreeMove && (playerOrder.IndexOf(myPlayer.netId) == 1 || myPlayer.HasEquipFlag(EquipOptionType.FREE_MOVE)); // 중열 출발(Q9) 또는 이동 시 턴 소모 제거 옵션 — 이번 턴 무료 이동 가능 (*)
             for (int row = 0; row < rowNames.Length; row++)
             {
-                if (GUI.Button(new Rect(x + row * 65f, y + lineHeight + 4f, 60f, lineHeight - 6f), rowNames[row]))
+                if (GUI.Button(new Rect(x + row * 65f, y + lineHeight + 4f, 60f, lineHeight - 6f), rowNames[row] + (freeMoveReady ? "*" : "")))
                     CmdSubmitTpAction(myPlayer.netId, (int)TpAction.MOVE, "", 0, rowTargetIndex[row]);
             }
             if (myPlayer.inventoryConsumables.Count > 0

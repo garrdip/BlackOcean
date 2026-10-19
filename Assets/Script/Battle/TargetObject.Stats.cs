@@ -86,6 +86,7 @@ public partial class TargetObject
     public int Heal(int value, TargetObject healer)
     {
         if (value <= 0 || isDying) return 0;
+        if (player != null) value = value * player.HealReceivedPercent / 100; // 받는 회복량 옵션 (5-7) — 치명 배율과 곱
         bool crit = BattleActions.RollCritical(healer, 0);
         if (crit) value = value * (healer != null ? healer.GetCritDamage() : BalanceData.Get("CRIT_DAMAGE_PERCENT", 150)) / 100;
         value = Mathf.Max(1, value);

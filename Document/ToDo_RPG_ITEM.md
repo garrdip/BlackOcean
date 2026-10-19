@@ -373,23 +373,31 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 
 | 옵션 | 적용 지점 | 항목 |
 |---|---|---|
-| 치명타 확률 / 명중률 / 회피율 | 1-2 공용 스탯 조회에 가산 | [ ] 5-1 |
-| 치명타 데미지 | 1-2 `GetCritDamage`에 가산 | [ ] 5-2 |
-| 생명력 흡수 | `ResolveHit` — HP에 실제로 들어간 피해(1-3 피격 함수 반환값) × % → 공격자 `Heal` (치명 회복 판정 포함) | [ ] 5-3 |
-| 스킬 추가 데미지 | `HitContext.bonusPercent` (스킬 타격만, 기본 공격 제외) | [ ] 5-4 |
-| 콤보 추가 데미지 | `HitContext`에 콤보 보너스로 합산해 두고, **콤보 배율(`powerMultiplier`)이 1.0을 넘을 때만** 적용 — 연계 구현 전에는 효과 없음 (Q10). 스탯창 표시 | [ ] 5-5 |
-| 반사 데미지 (고정 / 비례) | `TargetObject.DamageToPlayer` — HP 피해 후 `tpActingUnit` 몬스터에 고정치 + 받은 피해 × %를 **별도 `HitContext`로 `ResolveHit`** (명중·치명·r 2차 판정, Q27). 반격(GS13)도 같은 경로로 옮기고 합산 | [ ] 5-6 |
-| 받는 회복량 증가 | `Heal`/`GamePlayer.ServerHeal` — 대상 옵션 합으로 배율 (치명 회복 배율과 곱). **비전투 회복(물약·캠프·류진솔)에도 적용** (Q38) | [ ] 5-7 |
-| 분노 최대치 증가 | `TotalMaxResource` (3-8, Q43) — 자원이 RAGE인 캐릭터만 | [ ] 5-8 |
-| 보호막 (갑옷·악세사리 추가 옵션) | 전투 시작(`BattleInitialize`) 시 플레이어 `GainShield(옵션 합)` — 보호막 옵션이 여럿이면 합산한 값으로 1회 부여(5-13). 실드는 소진까지 지속하므로(Q37, 1-14) 첫 자기 턴에 사라지지 않지만, 전투 중 수호 축복 등 새 실드가 들어오면 덮어쓰인다 (Q41) | [ ] 5-9 |
-| 포지션 패널티 제거 | `BattleActions.RowAttackPercent`(후열 80 → 100) / `RowIncomingDamagePercent`(전열 120 → 100) — 보너스 유지 (Q8) | [ ] 5-10 |
-| 이동 시 턴 소모 제거 | `M_TurnManager.ExecutePlayerTpTurn` `TpAction.MOVE` — 옵션 보유 시 `freeAction = true`, 턴당 1회. 턴 미소모 스킬 플래그 `tpUsedFreeSkillNo`(철귀 이동)와 별도로 `tpUsedFreeMove`(bool SyncVar)를 신설. 중열 무료 이동(기획)도 같은 분기 (Q9) | [ ] 5-11 |
-| 약점 상쇄 (속성 지정) | `GetWeaknesses()`에서 옵션이 지정한 속성을 뺀다 (Q23, A6) | [ ] 5-12 |
+| 치명타 확률 / 명중률 / 회피율 | 1-2 공용 스탯 조회에 가산 | [x] 5-1 |
+| 치명타 데미지 | 1-2 `GetCritDamage`에 가산 | [x] 5-2 |
+| 생명력 흡수 | `ResolveHit` — HP에 실제로 들어간 피해(1-3 피격 함수 반환값) × % → 공격자 `Heal` (치명 회복 판정 포함) | [x] 5-3 |
+| 스킬 추가 데미지 | `HitContext.bonusPercent` (스킬 타격만, 기본 공격 제외) | [x] 5-4 |
+| 콤보 추가 데미지 | `HitContext`에 콤보 보너스로 합산해 두고, **콤보 배율(`powerMultiplier`)이 1.0을 넘을 때만** 적용 — 연계 구현 전에는 효과 없음 (Q10). 스탯창 표시 | [x] 5-5 |
+| 반사 데미지 (고정 / 비례) | `TargetObject.DamageToPlayer` — HP 피해 후 `tpActingUnit` 몬스터에 고정치 + 받은 피해 × %를 **별도 `HitContext`로 `ResolveHit`** (명중·치명·r 2차 판정, Q27). 반격(GS13)도 같은 경로로 옮기고 합산 | [x] 5-6 |
+| 받는 회복량 증가 | `Heal`/`GamePlayer.ServerHeal` — 대상 옵션 합으로 배율 (치명 회복 배율과 곱). **비전투 회복(물약·캠프·류진솔)에도 적용** (Q38) | [x] 5-7 |
+| 분노 최대치 증가 | `TotalMaxResource` (3-8, Q43) — 자원이 RAGE인 캐릭터만 | [x] 5-8 |
+| 보호막 (갑옷·악세사리 추가 옵션) | 전투 시작(`BattleInitialize`) 시 플레이어 `GainShield(옵션 합)` — 보호막 옵션이 여럿이면 합산한 값으로 1회 부여(5-13). 실드는 소진까지 지속하므로(Q37, 1-14) 첫 자기 턴에 사라지지 않지만, 전투 중 수호 축복 등 새 실드가 들어오면 덮어쓰인다 (Q41) | [x] 5-9 |
+| 포지션 패널티 제거 | `BattleActions.RowAttackPercent`(후열 80 → 100) / `RowIncomingDamagePercent`(전열 120 → 100) — 보너스 유지 (Q8) | [x] 5-10 |
+| 이동 시 턴 소모 제거 | `M_TurnManager.ExecutePlayerTpTurn` `TpAction.MOVE` — 옵션 보유 시 `freeAction = true`, 턴당 1회. 턴 미소모 스킬 플래그 `tpUsedFreeSkillNo`(철귀 이동)와 별도로 `tpUsedFreeMove`(bool SyncVar)를 신설. 중열 무료 이동(기획)도 같은 분기 (Q9) | [x] 5-11 |
+| 약점 상쇄 (속성 지정) | `GetWeaknesses()`에서 옵션이 지정한 속성을 뺀다 (Q23, A6) | [x] 5-12 |
 
-- [ ] 5-13. 옵션 스택 규칙 — 수치형은 합산, 플래그형(`FREE_MOVE/NO_ROW_PENALTY`)은 OR, 속성형(`WEAKNESS_NULLIFY`)은 속성 합집합. 퍼센트 옵션 상한은 BalanceDB(`EVADE_CAP` 등)로 두되 1차는 무제한
-- [ ] 5-14. 검증용 치트 — 특정 옵션 하나만 붙은 전설 장비 생성 (옵션 타입·속성 지정)
+- [x] 5-13. 옵션 스택 규칙 — 수치형은 합산, 플래그형(`FREE_MOVE/NO_ROW_PENALTY`)은 OR, 속성형(`WEAKNESS_NULLIFY`)은 속성 합집합. 퍼센트 옵션 상한은 BalanceDB(`EVADE_CAP` 등)로 두되 1차는 무제한
+- [x] 5-14. 검증용 치트 — 특정 옵션 하나만 붙은 전설 장비 생성 (옵션 타입·속성 지정)
 
 **완료 기준**: 옵션 14종 + 보호막 각각을 치트 장비로 붙여 전투 로그에서 효과를 확인한다 (콤보 추가 데미지는 스탯 표시만). 옵션 없는 장비의 전투 결과는 Phase 4와 같다 (회귀 없음).
+
+**구현 (2026-10-19)** — 컴파일 확인. **인게임 확인은 아직** (장비 창의 "옵션 1개짜리 전설 악세사리" 치트로 옵션마다 확인).
+- 5-1·5-2: `GamePlayer.TotalEvade/TotalAccuracy/TotalCritRate/TotalCritDamage`에 옵션 가산. 5-7: `HealReceivedPercent` — `TargetObject.Heal`·`ServerHeal`(비전투) 양쪽
+- 5-3·5-4·5-5: `ResolveHit`에서 생명력 흡수(HP 피해 × % → 공격자 `Heal`), 스킬 추가 데미지(`isSkill`), 콤보 추가 데미지(`powerMultiplier > 1`일 때만)
+- 5-6: `CounterAttack(hpDamageTaken)` = 반격 + 반사 고정 + 받은 피해 × %를 한 `HitContext`(2차 판정)로
+- 5-9: TP 루프 시작에서 `GainShield(SHIELD 옵션 합)` 1회. 5-10: `RowAttackPercent`(후열)·`RowIncomingDamagePercent`(전열)에서 `NO_ROW_PENALTY`면 100
+- 5-11: `tpUsedFreeMove` SyncVar, MOVE 분기에서 `FREE_MOVE` 옵션 **또는 중열 출발**(기획 "중열: 위치 변환 코스트 삭제", Q9)이면 턴 미소모 (턴당 1회). OnGUI 이동 버튼에 `*` 표시
+- 5-14: `CmdDebugCreateOptionEquip(optionType, value)` — 옵션 하나만 붙은 전설 악세사리 (OnGUI 22개 버튼). 스탯 창에 옵션 요약 줄
 
 ---
 

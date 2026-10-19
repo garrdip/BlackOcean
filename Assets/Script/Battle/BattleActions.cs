@@ -65,7 +65,8 @@ public static class BattleActions
         switch (GetRowIndex(user))
         {
             case 2: return BalanceData.Get("ROW_FRONT_ATTACK_PERCENT", 120); // 전열 — 몬스터와 가까운 쪽
-            case 0: return BalanceData.Get("ROW_BACK_ATTACK_PERCENT", 80);  // 후열
+            case 0: // 후열 — 포지션 패널티 제거 옵션이면 100 (보너스는 유지, Q8·5-10)
+                return user.player != null && user.player.HasEquipFlag(EquipOptionType.NO_ROW_PENALTY) ? 100 : BalanceData.Get("ROW_BACK_ATTACK_PERCENT", 80);
             default: return 100;
         }
     }
@@ -76,7 +77,8 @@ public static class BattleActions
         int index = M_TurnManager.instance != null ? M_TurnManager.instance.playerOrder.IndexOf(player.netId) : -1;
         switch (index)
         {
-            case 2: return BalanceData.Get("ROW_FRONT_TAKEN_PERCENT", 120); // 전열 — 몬스터와 가까운 쪽
+            case 2: // 전열 — 포지션 패널티 제거 옵션이면 100 (Q8·5-10)
+                return player.HasEquipFlag(EquipOptionType.NO_ROW_PENALTY) ? 100 : BalanceData.Get("ROW_FRONT_TAKEN_PERCENT", 120);
             case 0: return BalanceData.Get("ROW_BACK_TAKEN_PERCENT", 80);  // 후열
             default: return 100;
         }
@@ -157,6 +159,12 @@ public static class BattleActions
         ctx.critical = RollCritical(from, ctx.weakness ? BalanceData.Get("WEAKNESS_CRIT_BONUS", 10) : 0);
 
         // 5. 피해 조립 — 기본 피해 × 추가% × 콤보 배율 × (100 + r)% × 약점 × 치명 (정수 절삭은 단계마다 — 기존 공식 관례)
+        //    추가%: 기사도(호출부) + 스킬 추가 데미지 옵션(스킬 타격만, 5-4) + 콤보 추가 데미지 옵션(콤보 배율 > 1.0일 때만, 5-5 — 연계 전에는 효과 없음)
+        if (from.player != null)
+        {
+            if (ctx.isSkill) ctx.bonusPercent += from.player.EquipOptionSum(EquipOptionType.SKILL_DAMAGE);
+            if (ctx.powerMultiplier > 1f) ctx.bonusPercent += from.player.EquipOptionSum(EquipOptionType.COMBO_DAMAGE);
+        }
         int damage = ctx.baseDamage;
         if (ctx.bonusPercent != 0) damage = damage * (100 + ctx.bonusPercent) / 100;
         if (!Mathf.Approximately(ctx.powerMultiplier, 1f)) damage = Mathf.RoundToInt(damage * ctx.powerMultiplier);
@@ -181,6 +189,13 @@ public static class BattleActions
         // 8. 때릴 때 분노 (게오르크) — HP에 들어간 최종 피해 기준 (Q32), 기준 최대 HP = 대상 몬스터
         if (from.player != null && to.monster != null && ctx.dealt > 0)
             GainRageByDamage(from.player, ctx.dealt, to.monster.MAXHP);
+
+        // 9. 생명력 흡수 옵션 (5-3) — HP에 실제로 들어간 피해 × % 를 공격자가 회복 (치명 회복 판정 포함)
+        if (from.player != null && ctx.dealt > 0 && !from.isDying)
+        {
+            int lifeSteal = from.player.EquipOptionSum(EquipOptionType.LIFE_STEAL);
+            if (lifeSteal > 0) from.Heal(Mathf.Max(1, ctx.dealt * lifeSteal / 100), from);
+        }
 
         Debug.Log($"[Hit] {UnitName(from)} → {UnitName(to)}  기본 {ctx.baseDamage}  r {ctx.randomPercent:+0;-0;0}%{(ctx.weakness ? " 약점" : "")}{(ctx.critical ? " 치명" : "")}  → {ctx.finalDamage}  HP 피해 {ctx.dealt}  (MISS {missChance}% / 치명 {from.GetCritRate() + (ctx.weakness ? BalanceData.Get("WEAKNESS_CRIT_BONUS", 10) : 0)}%)");
         return ctx.dealt;
