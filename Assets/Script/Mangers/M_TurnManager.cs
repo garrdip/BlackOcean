@@ -208,6 +208,17 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
 
     public int battleExpPool = 0; // 이번 전투에서 처치한 몬스터의 경험치 합 (서버 전용) — 전투 시작 시 0, 종료 시 RewardService가 소비
 
+    /// <summary>이번 전투에서 처치한 몬스터 기록 (서버 전용, 아이템 개편 Phase 7-1) — 드랍 테이블 굴림용. 전투 시작 시 비우고 종료 시 RewardService가 소비</summary>
+    public readonly List<(string name, MonsterGrade grade, string dropTable)> battleKilledMonsters = new List<(string, MonsterGrade, string)>();
+
+    [Server]
+    public List<(string name, MonsterGrade grade, string dropTable)> ConsumeKilledMonsters()
+    {
+        var killed = new List<(string, MonsterGrade, string)>(battleKilledMonsters);
+        battleKilledMonsters.Clear();
+        return killed;
+    }
+
     // 전투 종료 보상용 경험치 인출 (처치 몬스터 경험치 합, 0이면 BalanceDB 폴백은 호출부에서)
     [Server]
     public int ConsumeBattleExp()
@@ -260,9 +271,12 @@ public partial class M_TurnManager : NetworkSingletonD<M_TurnManager>
                         M_HubManager.instance.RaiseHazard(BalanceData.Get("HAZARD_RISE_BOSS_KILL", 5));
                     }
                 }
-                // 처치 경험치 적립 (MonsterStatDB Exp) — 전투 종료 시 파티 전원에게 합산 지급
+                // 처치 경험치 적립 (MonsterStatDB Exp) — 전투 종료 시 파티 전원에게 합산 지급. 드랍 테이블용 처치 기록 (Phase 7-1)
                 if(monster.monster != null && monster.monster.monster != null)
+                {
                     battleExpPool += monster.monster.monster.exp;
+                    battleKilledMonsters.Add((monster.monster.monsterName, monster.monster.monsterGrade, monster.monster.monster.dropTable));
+                }
                 // 실제 오브젙트 삭제 과정
                 spawnedMonsterList.Remove(monster);
                 spawnedMonsterSyncList.Remove(monster.netId);

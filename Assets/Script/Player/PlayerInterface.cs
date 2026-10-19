@@ -38,6 +38,26 @@ public class PlayerInterface : NetworkBehaviour
     [SyncVar]
     public ulong steamID;
 
+    /// <summary>플레이어(접속자) 단위 공유 골드 (아이템 개편 Q35·7-10) — 싱글은 파티 3인 공유, 멀티는 플레이어별(2캐릭터면 2캐릭터 공유). GamePlayer.gold가 여기로 위임한다. 세이브는 PlayerGoldData(steamId)</summary>
+    [SyncVar (hook = nameof(OnChangeGold))]
+    public int gold;
+    bool goldInitialized; // 서버 — 첫 GamePlayer 생성 시 1회 (세이브 또는 PLAYER_INIT_GOLD)
+
+    void OnChangeGold(int oldVal, int newVal)
+    {
+        foreach(GamePlayer gamePlayer in FindObjectsByType<GamePlayer>(FindObjectsSortMode.None))
+            if(gamePlayer.objectOwner == this) gamePlayer.NotifyGoldChanged(newVal);
+    }
+
+    // 공유 골드 초기화 (서버, 1회) — 이어하기면 세이브의 플레이어 골드(구 세이브는 같은 SteamID 프로필 골드 합), 아니면 PLAYER_INIT_GOLD
+    [Server]
+    void EnsureGoldInitialized()
+    {
+        if(goldInitialized) return;
+        goldInitialized = true;
+        gold = GameSaveService.TryGetPlayerGold(steamID, out int savedGold) ? savedGold : BalanceData.Get("PLAYER_INIT_GOLD", 100);
+    }
+
     [SyncVar]
     public string steamPersonaName;
 
@@ -163,11 +183,11 @@ public class PlayerInterface : NetworkBehaviour
         }else{
             gamePlayer.MaxHP = BalanceData.Get("PLAYER_INIT_HP", 50);
         }
-        // 신규 시작 기본값 — 프로필을 복원한 경우 저장된 HP/골드를 덮어쓰지 않는다
+        // 신규 시작 기본값 — 프로필을 복원한 경우 저장된 HP를 덮어쓰지 않는다. 골드는 플레이어 공유(EnsureGoldInitialized — 세이브 또는 초기 골드 1회)
         if(!profileRestored){
             gamePlayer.HP = gamePlayer.TotalMaxHP; // 초기 장비 옵션 포함 (초기 세트는 옵션 없음)
-            gamePlayer.gold = BalanceData.Get("PLAYER_INIT_GOLD", 100);
         }
+        EnsureGoldInitialized();
         gamePlayer.recoveryValue = BalanceData.Get("PLAYER_INIT_RECOVERY", 15);
         NetworkServer.Spawn(gamePlayerObject, connectionToClient);
 

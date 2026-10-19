@@ -1,19 +1,19 @@
-Monster_Name,Weakness,AttackAttribute,Agility,Exp,Evade,Accuracy,CritRate,Defense,MagicDefense,HazardAtk,HazardDef,HazardMdef,HazardHp,Description
-Soldier_Axe,SLASH,SLASH,6,50,5,95,0,5,2,0.3,0,0,2,도끼병 — 참격 약점
-Soldier_Shield,STRIKE,STRIKE,4,50,5,95,0,15,5,0,0.5,0.2,3.5,방패병 — 갑옷형은 타격에 약함 (방어력 높음)
-Soldier_Spear,SLASH,PIERCE,7,50,5,95,0,6,3,0.4,0.3,0,2,창병
-WacherA,ICHI,ICHI,6,16,5,95,0,3,10,0,0,0.3,1,감시자A — 마법방어 위주
-WacherB,ICHI,ICHI,6,16,5,95,0,5,12,0,0.5,0.3,1,감시자B — 마법방어 위주
-Devourer,PIERCE,STRIKE,5,22,5,95,0,8,4,0.5,0,0,2.5,포식자 — 연체형은 관통에 약함
-GiantSoldier,STRIKE,STRIKE,3,26,0,95,0,18,4,1,0.6,0,5,거인병 — 느리지만 강함 (회피 0)
-SpearManA,SLASH,PIERCE,8,14,10,95,0,4,2,0.7,0,0,1.5,창잡이A — 빠름 (회피 10)
-SpearManB,SLASH,PIERCE,8,14,10,95,0,6,4,0.3,0.3,0,1.5,창잡이B — 빠름 (회피 10)
-Guardian,PIERCE|ICHI,STRIKE,4,24,5,95,0,20,8,0.7,0.4,0.2,2.5,수호자 — 방패형은 관통에 약함 (방어력 높음)
-치유사,STRIKE,ICHI,7,18,5,95,0,3,12,0,0,0.3,5,치유사 — 마법방어 위주
-Happy,RESONANCE,ICHI,7,60,5,95,0,12,12,2,2,1,10,해피 (엘리트) — 공격 속성 심상으로 바꿀지는 몬스터 기획에서
-Saddy,RESONANCE,ICHI,7,60,5,95,0,15,10,1,3,1,10,새디 (엘리트) — 공격 속성 심상으로 바꿀지는 몬스터 기획에서
-E3,ICHI,SLASH,6,50,5,95,0,10,10,0.5,1,1,10,정예3
-E4,ICHI,PIERCE,6,50,5,95,0,10,10,0.5,1,1,10,정예4
-Boss_Momos,RESONANCE,ICHI,7,200,5,95,0,20,25,3,0,0,100,보스 모모스
-Boss_Apates,SLASH|ICHI,STRIKE,6,200,5,95,0,30,15,3,0,0,100,보스 아파테스
-Boss_Geras,PIERCE,RESONANCE,8,220,5,95,0,25,20,3,0,0,100,보스 게라스
+Monster_Name,Weakness,AttackAttribute,Agility,Exp,Evade,Accuracy,CritRate,Defense,MagicDefense,HazardAtk,HazardDef,HazardMdef,HazardHp,DropTable,Description
+Soldier_Axe,SLASH,SLASH,6,50,5,95,0,5,2,0.3,0,0,2,,도끼병 — 참격 약점
+Soldier_Shield,STRIKE,STRIKE,4,50,5,95,0,15,5,0,0.5,0.2,3.5,SOLDIER_SHIELD,방패병 — 갑옷형은 타격에 약함 (방어력 높음)
+Soldier_Spear,SLASH,PIERCE,7,50,5,95,0,6,3,0.4,0.3,0,2,,창병
+WacherA,ICHI,ICHI,6,16,5,95,0,3,10,0,0,0.3,1,WACHER,감시자A — 마법방어 위주
+WacherB,ICHI,ICHI,6,16,5,95,0,5,12,0,0.5,0.3,1,WACHER,감시자B — 마법방어 위주
+Devourer,PIERCE,STRIKE,5,22,5,95,0,8,4,0.5,0,0,2.5,,포식자 — 연체형은 관통에 약함
+GiantSoldier,STRIKE,STRIKE,3,26,0,95,0,18,4,1,0.6,0,5,,거인병 — 느리지만 강함 (회피 0)
+SpearManA,SLASH,PIERCE,8,14,10,95,0,4,2,0.7,0,0,1.5,,창잡이A — 빠름 (회피 10)
+SpearManB,SLASH,PIERCE,8,14,10,95,0,6,4,0.3,0.3,0,1.5,,창잡이B — 빠름 (회피 10)
+Guardian,PIERCE|ICHI,STRIKE,4,24,5,95,0,20,8,0.7,0.4,0.2,2.5,,수호자 — 방패형은 관통에 약함 (방어력 높음)
+치유사,STRIKE,ICHI,7,18,5,95,0,3,12,0,0,0.3,5,,치유사 — 마법방어 위주
+Happy,RESONANCE,ICHI,7,60,5,95,0,12,12,2,2,1,10,,해피 (엘리트) — 공격 속성 심상으로 바꿀지는 몬스터 기획에서
+Saddy,RESONANCE,ICHI,7,60,5,95,0,15,10,1,3,1,10,,새디 (엘리트) — 공격 속성 심상으로 바꿀지는 몬스터 기획에서
+E3,ICHI,SLASH,6,50,5,95,0,10,10,0.5,1,1,10,,정예3
+E4,ICHI,PIERCE,6,50,5,95,0,10,10,0.5,1,1,10,,정예4
+Boss_Momos,RESONANCE,ICHI,7,200,5,95,0,20,25,3,0,0,100,,보스 모모스
+Boss_Apates,SLASH|ICHI,STRIKE,6,200,5,95,0,30,15,3,0,0,100,,보스 아파테스
+Boss_Geras,PIERCE,RESONANCE,8,220,5,95,0,25,20,3,0,0,100,,보스 게라스

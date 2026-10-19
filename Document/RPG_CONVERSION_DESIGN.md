@@ -18,6 +18,7 @@
 - 소피아 ( 위험도 제어 돈으로 위험도를 낮출 수 있음, 저장 )
 - 메르크리우스 상단 ( 콤보카드 가챠, 악세사리 가챠 )
     - 구현 형식 (2026-10-19, Phase 0): 1차는 상점(기본 장비·물약 구매, 장비 판매) — `ShopDB.csv`(`ShopId, Kind, ItemNo, Price, Description`), 판매가 = `EquipDB.Price × EquipGradeDB.SellPercent`, 장착 중 판매 불가. 가챠는 후순위. `RPG_CONVERSION_ITEMS.md` §10.
+    - 구현 (2026-10-19, Phase 7): `ShopPanel`(런타임 팝업) + `M_HubManager.CmdShopBuy/CmdShopSell`. 골드는 플레이어(접속자) 단위 공유(`PlayerInterface.gold`).
 - 그림자꾼 ( 스킬 초기화, 크리스털 가챠 )
 
 ## 맵 

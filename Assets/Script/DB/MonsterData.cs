@@ -108,6 +108,7 @@ public class MonsterData : SingletonD<MonsterData>
                 monster.evade = GetIntOptional(statTable, row, "Evade", 5);
                 monster.accuracy = GetIntOptional(statTable, row, "Accuracy", 95);
                 monster.critRate = GetIntOptional(statTable, row, "CritRate", 0);
+                monster.dropTable = statTable.HasColumn("DropTable") ? row.Get("DropTable").Trim() : ""; // 드랍 테이블 (Phase 7) — 비면 등급별 기본
             }
             catch (Exception e)
             {

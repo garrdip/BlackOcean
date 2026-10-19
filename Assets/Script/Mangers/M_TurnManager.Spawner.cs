@@ -36,6 +36,7 @@ public partial class M_TurnManager
 
         ClearTargetObject();                                                      // 2) 검은 화면 뒤 — 거점/스테이지 잔여 오브젝트 정리, 전투 루트로 전환, 오브젝트 로딩
         battleExpPool = 0;                                                        //    이번 전투 처치 경험치 적립 시작
+        battleKilledMonsters.Clear();                                             //    이번 전투 처치 기록 (드랍 테이블) 시작
         currentBattleHazard = hazard;                                             //    이번 전투 위험도 기록 (보상 배율용)
         RpcSetView(HubView.Battle);
         BattleSpawner.instance.GeneratePlayerUnit();

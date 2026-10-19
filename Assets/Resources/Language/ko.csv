@@ -164,6 +164,18 @@ ui.msg.potion_battle_only,{0} — 전투 중에만 사용할 수 있습니다
 ui.msg.potion_resource_mismatch,{0} — 이 캐릭터는 사용할 수 없습니다 (자원 종류가 다름)
 ui.msg.potion_battle_only_short,전투 전용
 ui.msg.potion_resource_mismatch_short,자원 불일치
+ui.NPC_Mercurius.ButtonShop_Label,상점
+ui.shop.title,메르크리우스 상단
+ui.shop.gold,보유 골드 {0}
+ui.shop.tab_buy,구매
+ui.shop.tab_sell,판매
+ui.shop.close,닫기
+ui.shop.row_price,{0} 골드
+ui.shop.empty_buy,판매 중인 물품이 없습니다
+ui.shop.empty_sell,팔 수 있는 장비가 없습니다 (장착 중인 장비는 팔 수 없음)
+ui.msg.shop_bought,{0} 구매 완료
+ui.msg.shop_sold,{0} 판매 완료
+ui.msg.shop_no_gold,골드가 부족합니다 (가격 {0} 골드)
 attr.NONE,무속성
 attr.SLASH,참격
 attr.STRIKE,타격

@@ -434,21 +434,21 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 
 **목표**: 몬스터마다 다른 드랍 테이블로 장비·물약이 떨어지고, 등급은 `EquipGradeDB`로 굴린다. 멀티에서는 드랍 확률이 1.5배다. 메르크리우스에서 기본 장비를 사고, 인벤토리 장비를 판다. 골드는 플레이어(접속자) 단위로 공유한다.
 
-- [ ] 7-1. 처치 기록 — `M_TurnManager`에 이번 전투에서 처치한 몬스터 목록(`battleKilledMonsters`)을 `battleExpPool` 적립 지점에 함께 기록. 전투 시작 시 초기화 (`M_TurnManager.Spawner`)
-- [ ] 7-2. `DropTableDB.csv` + `DB/DropTableData.cs` (0-12), `MonsterStatDB.DropTable` 로드
-- [ ] 7-3. 드랍 판정 (Q39, Q34) — `RewardService.DistributeBattleRewards`가 처치 몬스터마다 테이블 항목을 굴린다. **굴림 단위: 싱글 = 파티 1회, 멀티 = 캐릭터(`GamePlayer`)마다** (Q39, F6 — 캐릭터 2개를 쓰는 플레이어는 2번 굴린다). 확률 = `Chance` × (멀티면 `ITEM_DROP_MULTIPLAYER_PERCENT`/100). 100 이하 확정분 + 넘는 몫은 추가 1회 판정 (Q24). `MinHazard` 미만 항목은 건너뜀. 드랍 장비의 수령 캐릭터: 싱글은 선택 중인 캐릭터(`currentGamePlayer`), 멀티는 굴린 캐릭터의 인벤토리 (착용 제한이 없으므로 누구 인벤토리든 쓸 수 있다). 기존 `EQUIP_DROP_PERCENT/POTION_DROP_PERCENT/EQUIP_DROP_MIN_HAZARD` 경로 삭제
-- [ ] 7-4. 등급 굴림 `EquipGenerator.RollGrade(monsterGrade, hazard)` — `EquipGradeDB`의 `DropWeight` + 엘리트/보스 보너스 가중치, `MinHazard` 미만 등급 제외 (위험도 하한 보상). 풀 지정자는 `DropWeight` 가중 추출. 요구 레벨 필터(현 `level + 2`)는 **폐지** (Q34, F3 — 테이블·위험도로만 제어)
-- [ ] 7-5. 보상 목록 표시 — `Reward_Type`에 `Equip/Potion` 추가(이미 지급된 항목은 수령 버튼 없는 표시 전용), `BattleResultPopUp`/`RewardListItem`에 이름·등급 색 표시 (현재는 `Debug.Log`만)
-- [ ] 7-6. 드랍 테이블 초안 — 일반 몬스터(물약 위주 + 낮은 확률 장비), 엘리트(장비 확정 1 + 등급 보너스), 보스(장비 150% 등). 방패병은 방어구, 감시자는 지팡이류처럼 몬스터 특색을 준다
-- [ ] 7-7. `ShopDB.csv` + 로더 (0-14, A8)
-- [ ] 7-8. `M_HubManager.CmdShopBuy(gamePlayerNetId, shopId, itemNo)` / `CmdShopSell(gamePlayerNetId, instanceId)` — `CmdReduceHazard` 패턴의 서버 검증(거점 상태·골드·소유·장착 여부). 구매는 NORMAL 인스턴스 생성(옵션 굴림 — 악세사리 노멀은 옵션 1개), 판매가 = `Price × SellPercent`. 골드는 7-10의 **플레이어 공유 골드**에서 내고 받는다 (Q35). 거래 후 자동 저장
-- [ ] 7-10. **골드 공유 단위 전환** (Q35) — 골드를 `GamePlayer.gold`(캐릭터별)에서 **`PlayerInterface` 단위 공유**로 옮긴다. 싱글 = 3캐릭터 공유, 멀티 = 플레이어별(한 플레이어가 2캐릭터를 쓰면 2캐릭터 공유).
+- [x] 7-1. 처치 기록 — `M_TurnManager`에 이번 전투에서 처치한 몬스터 목록(`battleKilledMonsters`)을 `battleExpPool` 적립 지점에 함께 기록. 전투 시작 시 초기화 (`M_TurnManager.Spawner`)
+- [x] 7-2. `DropTableDB.csv` + `DB/DropTableData.cs` (0-12), `MonsterStatDB.DropTable` 로드
+- [x] 7-3. 드랍 판정 (Q39, Q34) — `RewardService.DistributeBattleRewards`가 처치 몬스터마다 테이블 항목을 굴린다. **굴림 단위: 싱글 = 파티 1회, 멀티 = 캐릭터(`GamePlayer`)마다** (Q39, F6 — 캐릭터 2개를 쓰는 플레이어는 2번 굴린다). 확률 = `Chance` × (멀티면 `ITEM_DROP_MULTIPLAYER_PERCENT`/100). 100 이하 확정분 + 넘는 몫은 추가 1회 판정 (Q24). `MinHazard` 미만 항목은 건너뜀. 드랍 장비의 수령 캐릭터: 싱글은 선택 중인 캐릭터(`currentGamePlayer`), 멀티는 굴린 캐릭터의 인벤토리 (착용 제한이 없으므로 누구 인벤토리든 쓸 수 있다). 기존 `EQUIP_DROP_PERCENT/POTION_DROP_PERCENT/EQUIP_DROP_MIN_HAZARD` 경로 삭제
+- [x] 7-4. 등급 굴림 `EquipGenerator.RollGrade(monsterGrade, hazard)` — `EquipGradeDB`의 `DropWeight` + 엘리트/보스 보너스 가중치, `MinHazard` 미만 등급 제외 (위험도 하한 보상). 풀 지정자는 `DropWeight` 가중 추출. 요구 레벨 필터(현 `level + 2`)는 **폐지** (Q34, F3 — 테이블·위험도로만 제어)
+- [x] 7-5. 보상 목록 표시 — `Reward_Type`에 `Equip/Potion` 추가(이미 지급된 항목은 수령 버튼 없는 표시 전용), `BattleResultPopUp`/`RewardListItem`에 이름·등급 색 표시 (현재는 `Debug.Log`만)
+- [x] 7-6. 드랍 테이블 초안 — 일반 몬스터(물약 위주 + 낮은 확률 장비), 엘리트(장비 확정 1 + 등급 보너스), 보스(장비 150% 등). 방패병은 방어구, 감시자는 지팡이류처럼 몬스터 특색을 준다
+- [x] 7-7. `ShopDB.csv` + 로더 (0-14, A8)
+- [x] 7-8. `M_HubManager.CmdShopBuy(gamePlayerNetId, shopId, itemNo)` / `CmdShopSell(gamePlayerNetId, instanceId)` — `CmdReduceHazard` 패턴의 서버 검증(거점 상태·골드·소유·장착 여부). 구매는 NORMAL 인스턴스 생성(옵션 굴림 — 악세사리 노멀은 옵션 1개), 판매가 = `Price × SellPercent`. 골드는 7-10의 **플레이어 공유 골드**에서 내고 받는다 (Q35). 거래 후 자동 저장
+- [x] 7-10. **골드 공유 단위 전환** (Q35) — 골드를 `GamePlayer.gold`(캐릭터별)에서 **`PlayerInterface` 단위 공유**로 옮긴다. 싱글 = 3캐릭터 공유, 멀티 = 플레이어별(한 플레이어가 2캐릭터를 쓰면 2캐릭터 공유).
       - `PlayerInterface.gold` SyncVar(훅으로 UI 갱신) 신설. `GamePlayer.gold`는 `objectOwner.gold`로 위임하는 프로퍼티로 남겨 호출부를 단계적으로 옮긴다
       - `RewardService.DistributeBattleRewards`: 골드 보상 지급 횟수는 **드랍과 같은 규칙 — 싱글 1회, 멀티는 캐릭터마다** (G4 확정. 현재는 GamePlayer마다 전액이라 싱글이 3배 받는다). 보상 목록의 Gold 항목도 같은 횟수. 경험치는 지금처럼 캐릭터마다 전액
       - 류진솔 회복(`HealPartyFull`)·소피아 위험도(`ReduceHazard`)·상점(7-8)이 플레이어 골드를 쓴다
       - 세이브: `ProfileData.gold`를 플레이어 단위(`PlayerGoldData { steamId, gold }`)로 옮긴다. 구 세이브(버전 0)는 같은 SteamID 프로필들의 골드 합으로 변환. 싱글 세이브의 캐릭터를 멀티로 들고 올 때 골드는 **전액** (F5)
       - `PlayerOrder` 파티 배너·거점 UI의 골드 표시를 플레이어 골드로
-- [ ] 7-9. 메르크리우스 UI — `NPC_Mercurius`에서 숨긴 구 카드 버튼 중 하나를 "상점"으로 살린다 (나머지는 후순위 콤보카드 가챠·악세사리 가챠 자리로 남겨 둠). 클래스 주석 '기획: 장비 제작'을 기획대로 고친다. 상점 팝업은 런타임 구성(`SaveSlotPanel` 패턴)으로 구매 탭 / 판매 탭 (현재 선택 캐릭터 기준 골드·인벤토리).
+- [x] 7-9. 메르크리우스 UI — `NPC_Mercurius`에서 숨긴 구 카드 버튼 중 하나를 "상점"으로 살린다 (나머지는 후순위 콤보카드 가챠·악세사리 가챠 자리로 남겨 둠). 클래스 주석 '기획: 장비 제작'을 기획대로 고친다. 상점 팝업은 런타임 구성(`SaveSlotPanel` 패턴)으로 구매 탭 / 판매 탭 (현재 선택 캐릭터 기준 골드·인벤토리).
       ※ `NPC_ShadowMan.buttonItemShop` → `ItemShopPopUp`(빈 팝업)은 그림자꾼 스킬 초기화·크리스털 가챠 UI로 바뀔 때까지 그대로 둔다
 
 **완료 기준**
@@ -457,6 +457,15 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 - 위험도가 낮으면 전설이 나오지 않는다. 엘리트 처치 후 고급 이상 비율이 오른다
 - 싱글에서 전투 승리 골드가 한 번만 들어오고, 세 캐릭터 누구를 선택해도 같은 골드가 보인다. 멀티에서는 플레이어마다 골드가 따로다
 - 메르크리우스에서 기본 장비를 사면 골드가 줄고 NORMAL 장비가 들어온다. 인벤토리 장비를 팔면 등급에 따라 골드를 받는다. 장착 중인 장비는 팔 수 없다
+
+**구현 (2026-10-19)** — 컴파일·정적 검증 완료 (드랍 굴림 100회: DEFAULT_BOSS 장비 153개 ≈ 150%, 멀티 ×1.5·위험도 5에서 305개; 상점 17항목; GW2 희귀 판매가 100). **인게임 확인은 아직.**
+- 7-1: `M_TurnManager.battleKilledMonsters`(이름·등급·테이블) — 사망 처리에서 기록, 전투 진입 시 초기화, `ConsumeKilledMonsters`
+- 7-2: `DropTableDB.csv` + `DB/DropTableData.cs`(`TableFor`, `Roll(tableId, hazard, 배율%)` — 100 초과분 추가 1회 판정, 풀 지정자 `ANY_*` DropWeight 추출). `MonsterStatDB.DropTable` 컬럼(방패병 SOLDIER_SHIELD, 감시자 WACHER)
+- 7-3·7-4·7-6: `RewardService.DistributeBattleRewards` 재작성 — 싱글은 `currentGamePlayer` 1회 / 멀티는 캐릭터마다, `ITEM_DROP_MULTIPLAYER_PERCENT`(150), 등급 `EquipGradeData.RollGrade(처치 등급, 위험도)`. `EQUIP_DROP_PERCENT/POTION_DROP_PERCENT/EQUIP_DROP_MIN_HAZARD` 삭제. 골드 보상도 같은 횟수(G4), 경험치는 캐릭터마다 전액
+- 7-5: `Reward_Type.Equip/Potion` + `rewardName/rewardColorHex`, `RewardListItem`이 런타임 이름 라벨(등급 색) 생성 — 클릭 = 목록에서 제거(이미 지급됨)
+- 7-7·7-8: `ShopDB.csv` + `DB/ShopData.cs`(`SellPrice` = Price × SellPercent), `M_HubManager.CmdShopBuy/CmdShopSell` (거점·골드·인벤토리 검증, 거래 후 저장, 토스트)
+- 7-9: `UI/PopUpComponent/ShopPanel.cs` 런타임 팝업(구매/판매 탭, 인벤토리·골드 변화 구독). `NPC_Mercurius`의 `buttonCardShop`을 "상점"으로 (`ui.NPC_Mercurius.ButtonShop_Label`)
+- 7-10: `PlayerInterface.gold` SyncVar(훅 → 소유 캐릭터 `NotifyGoldChanged` → `PlayerOrder`), `GamePlayer.gold`는 위임 프로퍼티, `EnsureGoldInitialized`(세이브 `PlayerGoldData` 또는 초기 골드 — 싱글 파티는 100 공유). 세이브 `RpgSaveData.playerGolds`, 버전 0은 SteamID별 프로필 골드 합(`TryGetPlayerGold`). 싱글 → 멀티 이관은 같은 SteamID라 전액(F5)
 
 ---
 

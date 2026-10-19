@@ -41,10 +41,19 @@ public static class GameSaveService
     /// <summary>현재 세이브 형식 버전 (R11). 0 = 필드 없는 구 세이브(문자열 장비·최대치에 장비 델타 포함) → 로드 시 1회 변환. 1 = 장비 인스턴스·고유 최대치 (2026-10-19)</summary>
     public const int CurrentSaveVersion = 1;
 
+    /// <summary>플레이어(접속자) 단위 공유 골드 (아이템 개편 Q35·7-10) — SteamID 키. 버전 1부터</summary>
+    [System.Serializable]
+    public class PlayerGoldData
+    {
+        public string steamId;
+        public int gold;
+    }
+
     [System.Serializable]
     public class RpgSaveData
     {
         public int saveVersion = 0;        // 세이브 형식 버전 — 구 세이브(필드 없음)는 0 (R11)
+        public List<PlayerGoldData> playerGolds = new List<PlayerGoldData>(); // 플레이어 공유 골드 (버전 1). 버전 0은 프로필별 gold의 SteamID 합으로 변환
         public int unlockedStageCount = 1; // 해금된 스테이지 수 (StageDB 행 순서) — 파티 공용 진행도, 호스트 저장
         public int hazardLevel = 0; // 전역 위험도 (위험도 시스템) — 파티 공용, 호스트 저장. 구 세이브(필드 없음)는 0
         public string savedAt = ""; // 저장 시각 "yyyy-MM-dd HH:mm" — 슬롯 선택 UI 표시용. 구 세이브(필드 없음)는 빈 문자열
@@ -214,6 +223,26 @@ public static class GameSaveService
         return loaded.profiles.Find(profile => profile.steamId == key && profile.character == character);
     }
 
+    /// <summary>플레이어 공유 골드 조회 (Q35·F5) — 버전 1은 PlayerGoldData, 버전 0은 같은 SteamID 프로필들의 골드 합(싱글 3캐릭터 → 1). 로드된 세이브가 없거나 해당 플레이어가 없으면 false.
+    /// 싱글 세이브의 캐릭터를 멀티로 들고 올 때도 같은 SteamID이므로 전액이 따라온다</summary>
+    public static bool TryGetPlayerGold(ulong steamId, out int gold)
+    {
+        gold = 0;
+        if (loaded == null) return false;
+        string key = steamId.ToString();
+        if (loaded.saveVersion >= 1)
+        {
+            PlayerGoldData found = loaded.playerGolds.Find(entry => entry.steamId == key);
+            if (found == null) return false;
+            gold = found.gold;
+            return true;
+        }
+        bool any = false;
+        foreach (ProfileData profile in loaded.profiles)
+            if (profile.steamId == key) { gold += profile.gold; any = true; }
+        return any;
+    }
+
     /// <summary>현재 서버 상태를 파일로 저장 (호스트 전용). 전투 종료 후 거점 복귀 시점에 호출된다</summary>
     public static void SaveGame()
     {
@@ -225,6 +254,7 @@ public static class GameSaveService
         data.hazardLevel = M_HubManager.instance != null ? M_HubManager.instance.hazardLevel : 0;
         foreach (PlayerInterface playerInterface in PlayerRegistry.All)
         {
+            data.playerGolds.Add(new PlayerGoldData { steamId = playerInterface.steamID.ToString(), gold = playerInterface.gold }); // 플레이어 공유 골드 (Q35)
             foreach (GamePlayer gamePlayer in playerInterface.ownedPlayers)
             {
                 if (gamePlayer == null) continue;
@@ -321,7 +351,7 @@ public static class GameSaveService
         gamePlayer.maxResource = maxResource;
         gamePlayer.HP = Mathf.Clamp(profile.HP, 1, gamePlayer.TotalMaxHP); // 빈사 저장이어도 1로 복원. 상한은 장비 포함 최대치
         gamePlayer.currentResource = Mathf.Clamp(profile.currentResource, 0, Mathf.Max(0, gamePlayer.TotalMaxResource));
-        gamePlayer.gold = profile.gold;
+        // (골드는 프로필이 아니라 플레이어 단위 PlayerGoldData — PlayerInterface.EnsureGoldInitialized가 TryGetPlayerGold로 복원)
         gamePlayer.inventoryConsumables.Clear();
         foreach (string potionNo in profile.inventoryConsumables)
         {

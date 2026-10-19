@@ -8,8 +8,8 @@ using Mirror;
 using Spine.Unity;
 
 
-// 거점 NPC 메르크리우스 상단 — 기획: 장비 제작 (RPG_CONVERSION_DESIGN). 구 카드 상점/카드 강화/카드 제거 메뉴는 카드 시스템 제거로 삭제됨 (2026-09-01).
-// 프리팹의 메뉴 버튼 3개는 장비 제작 UI가 생기기 전까지 Awake에서 숨긴다.
+// 거점 NPC 메르크리우스 상단 — 기획: 상점(기본 장비·물약 구매, 장비 판매 — 아이템 개편 Phase 7-9, Q20·A8), 콤보카드 가챠·악세사리 가챠는 후순위.
+// 구 카드 상점/카드 강화/카드 제거 메뉴는 카드 시스템 제거로 삭제됨 (2026-09-01). 프리팹 버튼 중 buttonCardShop을 "상점"으로 살리고(ShopPanel), 나머지 둘은 가챠 자리로 숨겨 둔다.
 public class NPC_Mercurius : SpawnedMonster
 {
     private IEnumerator minionVoiceCoroutine;
@@ -36,9 +36,33 @@ public class NPC_Mercurius : SpawnedMonster
         StartCoroutine(ToddAnimationBlend());
         AddEventTrigger();
         minionVoiceCoroutine = PlayMinionsVoice();
-        if(buttonCardShop != null) buttonCardShop.gameObject.SetActive(false);
-        if(buttonCardEnhance != null) buttonCardEnhance.gameObject.SetActive(false);
-        if(buttonCardRemove != null) buttonCardRemove.gameObject.SetActive(false);
+        if(buttonCardShop != null){
+            buttonCardShop.gameObject.SetActive(true);
+            buttonCardShop.onClick.RemoveAllListeners();
+            buttonCardShop.onClick.AddListener(OnClickShopButton);
+            RelabelButton(buttonCardShop, "ui.NPC_Mercurius.ButtonShop_Label", "상점"); // 프리팹의 '카드 상점' 라벨/번역 키를 코드에서 교체
+        }
+        if(buttonCardEnhance != null) buttonCardEnhance.gameObject.SetActive(false); // (후순위 — 콤보카드 가챠 자리)
+        if(buttonCardRemove != null) buttonCardRemove.gameObject.SetActive(false);   // (후순위 — 악세사리 가챠 자리)
+    }
+
+    // "상점" — 거점(비전투)에서만. 런타임 구성 팝업(ShopPanel) — 구매 탭(ShopDB MERCURIUS) / 판매 탭(선택 캐릭터 인벤토리)
+    public void OnClickShopButton()
+    {
+        if(M_HubManager.instance == null || M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;
+        ShopPanel.Open("MERCURIUS");
+        expandableButtonGroup.HideExpandableButtonGroup();
+        isOpenExpandableButtons = false;
+    }
+
+    // 프리팹 버튼 라벨을 다른 키/문구로 교체 (NPC_RyuJinSol과 같은 방식)
+    static void RelabelButton(Button button, string key, string fallback)
+    {
+        TMPro.TMP_Text label = button.GetComponentInChildren<TMPro.TMP_Text>(true);
+        if(label == null) return;
+        TextUpdater updater = label.GetComponent<TextUpdater>();
+        if(updater != null) updater.key = key;
+        label.text = M_LanguageManager.Get(key, fallback);
     }
 
     public override void Start()

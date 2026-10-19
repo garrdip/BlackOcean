@@ -222,6 +222,16 @@ public partial class GamePlayer
         if (ConsumableData.Get(potionNo) != null) inventoryConsumables.Add(potionNo);
     }
 
+    /// <summary>인벤토리(미장착) 장비 1개 제거 — 상점 판매 (Phase 7-8). 없으면 false</summary>
+    [Server]
+    public bool ServerRemoveInventoryEquip(string instanceId)
+    {
+        int index = IndexOfInstance(inventoryEquips, instanceId);
+        if (index < 0) return false;
+        inventoryEquips.RemoveAt(index);
+        return true;
+    }
+
     /// <summary>전투 보상 드랍 (임시 — Phase 7 드랍 테이블 전까지): DropWeight 가중 랜덤 장비 1개, 등급은 위험도 기준 EquipGradeDB 굴림. 레벨 필터 없음 (F3)</summary>
     [Server]
     public void ServerAddRandomEquip()

@@ -16,6 +16,7 @@ public class Monster
     public AttackAttribute attackAttribute = AttackAttribute.NONE;         // 이 몬스터의 공격 속성
     public int agility = 5;                                                // 민첩 — TP(턴 게이지) 충전 속도
     public int exp = 10;                                                   // 처치 경험치 (MonsterStatDB Exp) — 전투 종료 시 파티 전원에게 합산 지급
+    public string dropTable = "";                                          // 드랍 테이블 ID (MonsterStatDB DropTable — 비면 등급별 DEFAULT_*, 아이템 개편 Phase 7)
 
     // 보조 스탯 (아이템 개편 Phase 1-1, MonsterStatDB Evade/Accuracy/CritRate — 컬럼이 없으면 기본값). 약점 피격 시 치명 +WEAKNESS_CRIT_BONUS는 ResolveHit이 더한다
     public int evade = 5;                                                  // 회피율 %

@@ -15,8 +15,12 @@ public partial class GamePlayer : NetworkBehaviour
 
     public GamePlayerDeck gamePlayerDeck; // GamePlayerDeck 참조값 (인스펙터 할당)
 
-    [SyncVar (hook = nameof(OnChangePlayerGold))]
-    public int gold = 0; // 현재 플레이어 보유 골드
+    /// <summary>골드 — 플레이어(접속자) 단위 공유 (PlayerInterface.gold, 아이템 개편 Q35·7-10): 싱글은 3캐릭터 공유, 멀티는 플레이어별. 서버에서만 대입. 변화 알림은 PlayerInterface 훅 → onChangeGold</summary>
+    public int gold
+    {
+        get => objectOwner != null ? objectOwner.gold : 0;
+        set { if(objectOwner != null) objectOwner.gold = value; }
+    }
 
     [SyncVar (hook = nameof(OnChangHpValue))]
     public int HP; // 체력
@@ -318,7 +322,8 @@ public partial class GamePlayer : NetworkBehaviour
 
     // ---------------------------------------------------------------- SyncVar Hook Method ----------------------------------------------------------//
 
-    public void OnChangePlayerGold(int oldVal, int newVal)
+    /// <summary>공유 골드 변화 알림 (PlayerInterface.OnChangeGold가 소유 캐릭터마다 호출) — PlayerOrder 배너 등 구독자 갱신</summary>
+    public void NotifyGoldChanged(int newVal)
     {
         onChangeGold?.Invoke(newVal);
     }

@@ -366,6 +366,53 @@ public class M_HubManager : NetworkSingletonD<M_HubManager>
         RpcNotice("ui.msg.hazard_reduced", "위험도를 {0}(으)로 낮췄습니다", hazardLevel.ToString(), "#2E8B57");
     }
 
+    // ------------------------------------------------------------ 메르크리우스 상점 (아이템 개편 Phase 7-8, Q20·Q35·A8) ------------------------------------------------------------ //
+
+    // 구매 — 요청 캐릭터의 플레이어(접속자) 공유 골드에서 지불, 장비는 NORMAL 인스턴스(악세사리는 옵션 1개), 물약은 1개. 거점에서만
+    [Command(requiresAuthority = false)]
+    public void CmdShopBuy(uint gamePlayerNetId, string shopId, string itemNo)
+    {
+        ServerShopBuy(gamePlayerNetId, shopId, itemNo);
+    }
+
+    [Server]
+    public void ServerShopBuy(uint gamePlayerNetId, string shopId, string itemNo)
+    {
+        if(!isInHub || M_TurnManager.instance.isSceneTransitioning || M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;
+        GamePlayer gamePlayer = NetLookup.Server<GamePlayer>(gamePlayerNetId);
+        ShopData.Entry entry = ShopData.Find(shopId, itemNo);
+        if(gamePlayer == null || entry == null) return;
+        if(gamePlayer.gold < entry.price){
+            RpcNotice("ui.msg.shop_no_gold", "골드가 부족합니다 (가격 {0} 골드)", entry.price.ToString(), "#B22222");
+            return;
+        }
+        gamePlayer.gold -= entry.price;
+        if(entry.kind == ShopData.Kind.EQUIP) gamePlayer.ServerAddEquip(entry.itemNo, EquipGrade.NORMAL);
+        else gamePlayer.ServerAddConsumable(entry.itemNo);
+        GameSaveService.SaveGame();
+        RpcNotice("ui.msg.shop_bought", "{0} 구매 완료", $"{entry.DisplayName} ({entry.price} G)", "#2E8B57");
+    }
+
+    // 판매 — 요청 캐릭터의 **인벤토리(미장착)** 장비만. 판매가 = EquipDB.Price × 등급 SellPercent. 골드는 플레이어 공유 골드로
+    [Command(requiresAuthority = false)]
+    public void CmdShopSell(uint gamePlayerNetId, string instanceId)
+    {
+        ServerShopSell(gamePlayerNetId, instanceId);
+    }
+
+    [Server]
+    public void ServerShopSell(uint gamePlayerNetId, string instanceId)
+    {
+        if(!isInHub || M_TurnManager.instance.isSceneTransitioning || M_TurnManager.instance.phase != BattleTurn.NONE_BATTLE_SCENE) return;
+        GamePlayer gamePlayer = NetLookup.Server<GamePlayer>(gamePlayerNetId);
+        if(gamePlayer == null || !gamePlayer.TryFindInventory(instanceId, out EquipInstance item)) return; // 장착 중인 장비는 인벤토리에 없으므로 팔 수 없다
+        int price = ShopData.SellPrice(item);
+        if(!gamePlayer.ServerRemoveInventoryEquip(instanceId)) return;
+        gamePlayer.gold += price;
+        GameSaveService.SaveGame();
+        RpcNotice("ui.msg.shop_sold", "{0} 판매 완료", $"{EquipData.Get(item.equipNo)?.equipName ?? item.equipNo} (+{price} G)", "#2E8B57");
+    }
+
     // 류진솔 "회복" — 요청한 플레이어가 골드(BalanceDB HUB_HEAL_COST)를 내고 파티 전원의 HP·MP를 최대치로 회복 (거점에서만). 구 '골드 전달' 메뉴 대체 (2026-08-31)
     // 파티 전원의 HP와 MP가 이미 최대이면 골드를 받지 않고 거절한다 (2026-09-01). 분노(게오르크)는 0이 기본값이라 회복 대상도, 거절 판정 대상도 아니다
     [Command(requiresAuthority = false)]
