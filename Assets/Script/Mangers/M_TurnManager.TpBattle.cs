@@ -370,21 +370,8 @@ public partial class M_TurnManager
             }
             case TpAction.ITEM:
             {
-                // 소모품 사용 — skillNo 파라미터에 PotionNo를 실어 보낸다
-                ConsumableData.Def potion = ConsumableData.Get(skillNo);
-                if (potion != null && gamePlayer.ServerConsumePotion(skillNo))
-                {
-                    switch (potion.type)
-                    {
-                        case ConsumableType.HEAL_HP:
-                            gamePlayer.ServerHeal(potion.value, gamePlayer); // 치명 회복 규칙 공용 (Phase 1-10 — 전투 중이라 TargetObject.Heal로 위임)
-                            break;
-                        case ConsumableType.RESTORE_RESOURCE:
-                            gamePlayer.currentResource = Mathf.Min(gamePlayer.TotalMaxResource, gamePlayer.currentResource + potion.value);
-                            break;
-                    }
-                    yield return new WaitForSeconds(0.3f);
-                }
+                // 소모품 사용 — skillNo 파라미터에 PotionNo를 실어 보낸다. 검증·효과는 GamePlayer.ServerUseConsumable 한 곳 (Phase 6-3). 1차 대상은 자신
+                yield return gamePlayer.ServerUseConsumable(skillNo, gamePlayer);
                 break;
             }
         }
@@ -936,12 +923,17 @@ public partial class M_TurnManager
             {
                 ConsumableData.Def potion = ConsumableData.Get(entry.Key);
                 if (potion == null) continue;
-                if (GUI.Button(new Rect(buttonX, y, 170f, lineHeight), $"{potion.potionName} x{entry.Value}"))
+                bool usable = ConsumableData.CanUse(potion, myPlayer, true, out string reasonKey); // 사용 불가(자원 불일치 등)는 비활성 + 사유 (6-7, 서버와 같은 규칙)
+                GUI.enabled = usable;
+                string label = usable ? $"{potion.potionName} x{entry.Value}" : $"{potion.potionName} x{entry.Value} [{ConsumableData.ReasonText(reasonKey)}]";
+                bool pressed = GUI.Button(new Rect(buttonX, y, 190f, lineHeight), label);
+                GUI.enabled = true;
+                if (pressed)
                 {
                     CmdSubmitTpAction(myPlayer.netId, (int)TpAction.ITEM, entry.Key, 0, 0);
                     guiSelectedAction = -1;
                 }
-                buttonX += 175f;
+                buttonX += 195f;
             }
             if (GUI.Button(new Rect(buttonX, y, 70f, lineHeight), "취소"))
                 guiSelectedAction = -1;

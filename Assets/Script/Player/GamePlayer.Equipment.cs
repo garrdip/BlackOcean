@@ -1,9 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using ProjectD;
 
-// GamePlayer partial — 장비/소모품 (아이템 개편 Phase 3, ToDo_RPG_ITEM 3-5~3-10).
+// GamePlayer partial — 장비/소모품 (아이템 개편 Phase 3, ToDo_RPG_ITEM 3-5~3-10 / 소모품 사용 경로는 Phase 6-3).
 // 장비는 EquipInstance(등급 + 추가 옵션)로 보유·착용하고(SyncList<EquipInstance>), 기본 옵션은 EquipDB가 가진다. 누구나 어떤 장비든 착용할 수 있다 (Q22).
 // 합산 스탯은 Total* 프로퍼티로 조회한다 — 힘·지능 스탯과 무기 공격력은 다른 개념(Q25): TotalStrength는 스탯만, 무기 공격력은 GetAttackPower가 속성에 맞춰 더한다 (Q46).
 // 최대 HP/자원은 고유치(MaxHP/maxResource)만 저장하고 TotalMaxHP/TotalMaxResource를 매번 계산한다 (Q43 — 구 델타 방식 폐기). 착탈은 전투 중 불가.
@@ -235,9 +236,8 @@ public partial class GamePlayer
     [Server]
     public void ServerAddRandomConsumable()
     {
-        List<ConsumableData.Def> pool = ConsumableData.GetAll();
-        if (pool.Count == 0) return;
-        inventoryConsumables.Add(pool[Random.Range(0, pool.Count)].potionNo);
+        ConsumableData.Def picked = ConsumableData.PickWeighted(); // DropWeight 가중 (임시 — Phase 7 드랍 테이블 전까지)
+        if (picked != null) inventoryConsumables.Add(picked.potionNo);
     }
 
     /// <summary>캐릭터별 초기 세트 — 무기 + 같은 종류 방어구 3부위 (A5·Q36: 게오르크 대검+중갑 / 에리스 핵+경갑 / 홍단향 지팡이+로브, 요구치 ≤ 원래 기본 힘)</summary>
@@ -262,6 +262,7 @@ public partial class GamePlayer
         }
         ServerAddConsumable("PO1");
         ServerAddConsumable("PO1");
+        if (character == Character.GEORK) ServerAddConsumable("PO4"); // 분노의 물약 시험 지급 (6-6 — 테스트 후 결정)
     }
 
     /// <summary>방어구 빈 부위를 초기 세트로 보충 (구 세이브 변환 — A5). 보충한 수를 반환</summary>
@@ -349,22 +350,52 @@ public partial class GamePlayer
         return inventoryConsumables.Remove(potionNo);
     }
 
-    /// <summary>맵(비전투)에서 물약 사용 — HP 물약만 의미 있음. 전투 중에는 TpAction.ITEM 경로 사용 (Phase 6에서 ServerUseConsumable로 통합)</summary>
+    /// <summary>
+    /// 소모품 사용의 단일 경로 (Phase 6-3, Q38) — 전투 ITEM 액션(TpBattle이 yield)과 비전투(CmdUsePotionOnMap이 코루틴 시작)가 모두 이것을 부른다.
+    /// 검증: 보유 · BattleOnly · UsableResource · ValidTarget(1차 NONE = 자신만). 전투 중이면 대상의 TargetObject를 구해 효과에 넘긴다 (비전투 null)
+    /// </summary>
+    [Server]
+    public IEnumerator ServerUseConsumable(string potionNo, GamePlayer target)
+    {
+        ConsumableData.Def potion = ConsumableData.Get(potionNo);
+        if (potion == null) yield break;
+        if (target == null || potion.validTarget == ValidTarget.NONE) target = this; // NONE = 자신 (R10)
+        bool inBattle = IsBattleActive();
+        if (!ConsumableData.CanUse(potion, target, inBattle, out string reasonKey))
+        {
+            if (connectionToClient != null) TargetPotionRefused(connectionToClient, reasonKey, potion.potionName);
+            yield break;
+        }
+        if (!ServerConsumePotion(potionNo)) yield break; // 미보유
+        TargetObject targetUnit = inBattle && M_TurnManager.instance != null ? M_TurnManager.instance.GetCurrentPlayerTargetObject(target) : null;
+        Debug.Log($"[Consumable] {character} → {target.character} {potion.potionName} ({potion.effectName}, {(inBattle ? "전투" : "비전투")})");
+        yield return potion.execute(potion, this, target, targetUnit);
+    }
+
+    /// <summary>맵(비전투)에서 물약 사용 — 버프 물약 등 전투 전용은 거부(토스트). 전투 중에는 TpAction.ITEM 경로</summary>
     [Command]
     public void CmdUsePotionOnMap(string potionNo)
     {
         if (IsBattleActive()) return;
-        ConsumableData.Def potion = ConsumableData.Get(potionNo);
-        if (potion == null || !ServerConsumePotion(potionNo)) return;
-        switch (potion.type)
-        {
-            case ConsumableType.HEAL_HP:
-                ServerHeal(potion.value, this); // 비전투 회복 — 치명 회복 규칙 공용 (Phase 1-10, Q38)
-                break;
-            case ConsumableType.RESTORE_RESOURCE:
-                currentResource = Mathf.Min(TotalMaxResource, currentResource + potion.value);
-                break;
-        }
+        StartCoroutine(ServerUseConsumable(potionNo, this));
+    }
+
+    // 소모품 사용 거부 안내 — 요청한 플레이어에게만 토스트 (사유: 전투 전용 / 자원 불일치)
+    [TargetRpc]
+    void TargetPotionRefused(NetworkConnectionToClient conn, string reasonKey, string potionName)
+    {
+        string fallback = reasonKey == "ui.msg.potion_battle_only" ? "{0} — 전투 중에만 사용할 수 있습니다"
+            : reasonKey == "ui.msg.potion_resource_mismatch" ? "{0} — 이 캐릭터는 사용할 수 없습니다 (자원 종류가 다름)" : "{0} — 사용할 수 없습니다";
+        string text = M_LanguageManager.Get(reasonKey, fallback).Replace("{0}", potionName);
+        M_MessageManager.instance
+            .MakeToast()
+            .Position(ToastPosition.Top)
+            .FadeInTime(1f)
+            .FadeOutTime(1f)
+            .MessageBoxColor(ColorUtils.HexToColor("#B22222"))
+            .TextColor(Color.white)
+            .Text(text)
+            .Show();
     }
 
     bool IsBattleActive()
@@ -494,8 +525,10 @@ public partial class GamePlayer
         {
             ConsumableData.Def potion = ConsumableData.Get(entry.Key);
             if (potion == null) continue;
-            GUI.enabled = !inBattle;
-            if (GUI.Button(new Rect(20f, y, 580f, 24f), $"{potion.potionName} x{entry.Value} — {potion.description}"))
+            bool usable = ConsumableData.CanUse(potion, this, false, out string reasonKey); // 비전투 규칙 (전투 전용·자원 불일치는 비활성 + 사유)
+            GUI.enabled = usable && !inBattle;
+            string reason = usable ? "" : $" [{ConsumableData.ReasonText(reasonKey)}]";
+            if (GUI.Button(new Rect(20f, y, 580f, 24f), $"{potion.potionName} x{entry.Value} — {potion.description}{reason}"))
                 CmdUsePotionOnMap(entry.Key);
             GUI.enabled = true;
             y += 28f;

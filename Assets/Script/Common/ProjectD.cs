@@ -20,8 +20,7 @@ namespace ProjectD
     public enum TpAction { ATTACK, DEFEND, SKILL, ITEM, MOVE }
     /// <summary>장비 슬롯 (RPG 전환) — 무기 + 갑옷·투구·신발 + 악세사리(2개까지). 착용 제한 없음 (아이템 개편 Q22)</summary>
     public enum EquipSlot { WEAPON, ARMOR, HELMET, BOOTS, ACCESSORY }
-    /// <summary>소모품 효과 종류 (RPG 전환) — HP 회복 / 전투 자원(MP·분노) 회복</summary>
-    public enum ConsumableType { HEAL_HP, RESTORE_RESOURCE }
+    // (소모품 효과 enum ConsumableType은 아이템 개편 Phase 6에서 폐기 — ConsumableDB Effect 컬럼이 ConsumableEffects의 동명 메서드에 리플렉션 바인딩된다)
     /// <summary>전투 상태 — NONE_BATTLE_SCENE(거점/미로) → BATTLE_INITIALIZE(시작 효과 후 TP 루프) → BATTLE_END(보상) → NONE_BATTLE_END(복귀). 구 카드 페이즈(드로우/액티브/몬스터 순서)는 폐기</summary>
     public enum BattleTurn { NONE_BATTLE_SCENE, NONE_BATTLE_END, BATTLE_INITIALIZE, BATTLE_END }
     public enum BuffType { NONE, IRONDEMON, DEFENSE, ICHI_ATTACK, ICHI_DEFENSE , MOMISPOWERFUL, FLOWERPOWDER, FLOWER, CARDCOSTONE, SOIRAK, APDO, THEREISNOJABI, BOONGGUI, BYEOLMURI, SUHOJA, BLADETRIMMING, IMANGRY, GROWTHSPURT, FURYOFFLOWER, FURYOFIRON,
@@ -84,5 +83,8 @@ namespace ProjectD
     /// <summary>스킬 실행 델리게이트 (RPG 전환) — SkillDB.csv의 SkillNo와 동명의 SkillData 정적 메서드에 리플렉션 바인딩된다.
     /// 인자는 SkillCast(정의·시전자·대상 + 콤보 배율 슬롯 — 아이템 개편 Phase 1-4, A9)</summary>
     public delegate IEnumerator ExecuteSkill(SkillData.SkillCast cast);
+    /// <summary>소모품 효과 델리게이트 (아이템 개편 Phase 6, Q38·R1) — ConsumableDB Effect와 동명의 ConsumableEffects 정적 메서드.
+    /// user/target은 GamePlayer 기준(거점·미로에도 있다), targetUnit은 전투 중에만 채워지는 대상 TargetObject (비전투 null — 추후 몬스터 대상은 target null + targetUnit 몬스터)</summary>
+    public delegate IEnumerator ExecuteConsumable(ConsumableData.Def def, GamePlayer user, GamePlayer target, TargetObject targetUnit);
 
 }

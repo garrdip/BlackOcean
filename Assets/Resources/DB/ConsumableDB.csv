@@ -1,4 +1,8 @@
-PotionNo,Name,Type,Value,Price,Description
-PO1,HP 물약,HEAL_HP,30,30,HP를 30 회복한다
-PO2,상급 HP 물약,HEAL_HP,60,80,HP를 60 회복한다
-PO3,MP 물약,RESTORE_RESOURCE,15,40,전투 자원(MP·분노)을 15 회복한다
+PotionNo,Name,Effect,ValidTarget,Value,Duration,BattleOnly,UsableResource,Price,DropWeight,Description
+PO1,HP 물약,HEAL_HP,NONE,30,0,0,ANY,30,10,HP를 30 회복한다
+PO2,상급 HP 물약,HEAL_HP,NONE,60,0,0,ANY,80,4,HP를 60 회복한다
+PO3,MP 물약,RESTORE_MP,NONE,15,0,0,MP,40,6,MP를 15 회복한다 (MP 캐릭터만)
+PO4,분노의 물약,RESTORE_RAGE,NONE,30,0,1,RAGE,40,6,분노를 30 얻는다 (전투 중 — 분노 캐릭터만)
+PO5,공격력 물약,BUFF_ATTACK,NONE,5,3,1,ANY,60,4,사용 턴 다음부터 3턴 동안 공격력 +5 (전투 중)
+PO6,치명타 물약,BUFF_CRIT_RATE,NONE,15,3,1,ANY,60,4,사용 턴 다음부터 3턴 동안 치명타율 +15%p (전투 중)
+PO7,회피율 물약,BUFF_EVADE,NONE,15,3,1,ANY,60,4,사용 턴 다음부터 3턴 동안 회피율 +15%p (전투 중)

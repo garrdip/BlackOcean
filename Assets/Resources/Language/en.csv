@@ -246,6 +246,10 @@ ui.msg.hub_heal_not_needed,The party's HP and MP are already full — no healing
 ui.msg.skill_cost_short,{0} — not enough resources to use,{0} — 자원이 부족해 사용할 수 없습니다
 ui.msg.skill_innate_used,{0} — already used this turn,{0} — 이번 턴에 이미 사용했습니다
 ui.msg.miss,MISS,MISS
+ui.msg.potion_battle_only,{0} — can only be used in battle,{0} — 전투 중에만 사용할 수 있습니다
+ui.msg.potion_resource_mismatch,{0} — this character cannot use it (different resource type),{0} — 이 캐릭터는 사용할 수 없습니다 (자원 종류가 다름)
+ui.msg.potion_battle_only_short,Battle only,전투 전용
+ui.msg.potion_resource_mismatch_short,Resource mismatch,자원 불일치
 attr.NONE,Neutral,무속성
 attr.SLASH,Slash,참격
 attr.STRIKE,Strike,타격

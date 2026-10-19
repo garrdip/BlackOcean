@@ -323,7 +323,12 @@ public static class GameSaveService
         gamePlayer.currentResource = Mathf.Clamp(profile.currentResource, 0, Mathf.Max(0, gamePlayer.TotalMaxResource));
         gamePlayer.gold = profile.gold;
         gamePlayer.inventoryConsumables.Clear();
-        foreach (string potionNo in profile.inventoryConsumables) gamePlayer.inventoryConsumables.Add(potionNo);
+        foreach (string potionNo in profile.inventoryConsumables)
+        {
+            // 버전 0: 구 PO3(MP·분노 공용 RESTORE_RESOURCE)은 소지 캐릭터의 자원 종류에 맞춰 PO3(MP) / PO4(분노) / PO1(HP 캐릭터)로 (6-4, R13)
+            string mapped = version < 1 && potionNo == "PO3" ? MapLegacyPotion(profile.character) : potionNo;
+            if (ConsumableData.Get(mapped) != null) gamePlayer.inventoryConsumables.Add(mapped);
+        }
         Debug.Log($"[GameSaveService] 프로필 복원 — {profile.character} Lv.{profile.level} (세이브 버전 {version})");
     }
 
@@ -340,6 +345,19 @@ public static class GameSaveService
             case "AC1": return (15, 0);
             case "AC2": return (0, 10);
             default: return (0, 0);
+        }
+    }
+
+    // 구 PO3(자원 공용) → 자원 종류별 물약 (6-4, R13)
+    static string MapLegacyPotion(Character character)
+    {
+        CharacterStatData.Entry stat = CharacterStatData.Get(character);
+        if (stat == null) return "PO3";
+        switch (stat.resource)
+        {
+            case BattleResourceType.RAGE: return "PO4";
+            case BattleResourceType.MP: return "PO3";
+            default: return "PO1";
         }
     }
 

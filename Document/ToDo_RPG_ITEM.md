@@ -405,22 +405,28 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 
 **목표**: 소모품이 "CSV 행 + 효과 메서드"로 추가되는 구조가 되고, 1차 물약 6종(HP·MP·분노·공격력·치명타·회피)이 전투와 비전투(거점·미로)에서 작동한다. 대상은 1차에 자신뿐이지만, 효과 코드는 몬스터 대상에도 그대로 쓸 수 있다.
 
-- [ ] 6-1. `ConsumableData` 개편 (0-9) — `Def`에 `effect, validTarget, duration, battleOnly, usableResource, dropWeight`. `ConsumableType` enum 삭제. 로드 시 `Effect` 이름으로 `ConsumableEffects`의 정적 메서드를 리플렉션 바인딩하고, 없으면 에러 로그 (SkillData와 같은 방식)
-- [ ] 6-2. **`ConsumableEffects`** (Q5, Q6, Q38, R1) — `IEnumerator <Effect>(ConsumableDef def, GamePlayer user, GamePlayer target, TargetObject targetUnit)`. `targetUnit`은 전투 중에만 채워지고(비전투는 null), 추후 몬스터 대상은 `target = null, targetUnit = 몬스터`로 넘긴다. 효과는 대상이 플레이어인지 몬스터인지 가정하지 않고 1-2·1-10의 공용 함수(`GamePlayer.ServerHeal` / `TargetObject.Heal`, 스탯 버프, `DamageTpTo` 등)만 쓴다. 1차 효과:
+- [x] 6-1. `ConsumableData` 개편 (0-9) — `Def`에 `effect, validTarget, duration, battleOnly, usableResource, dropWeight`. `ConsumableType` enum 삭제. 로드 시 `Effect` 이름으로 `ConsumableEffects`의 정적 메서드를 리플렉션 바인딩하고, 없으면 에러 로그 (SkillData와 같은 방식)
+- [x] 6-2. **`ConsumableEffects`** (Q5, Q6, Q38, R1) — `IEnumerator <Effect>(ConsumableDef def, GamePlayer user, GamePlayer target, TargetObject targetUnit)`. `targetUnit`은 전투 중에만 채워지고(비전투는 null), 추후 몬스터 대상은 `target = null, targetUnit = 몬스터`로 넘긴다. 효과는 대상이 플레이어인지 몬스터인지 가정하지 않고 1-2·1-10의 공용 함수(`GamePlayer.ServerHeal` / `TargetObject.Heal`, 스탯 버프, `DamageTpTo` 등)만 쓴다. 1차 효과:
       - `HEAL_HP`: `ServerHeal` 경유 → 치명 회복·받는 회복량 옵션이 전투·비전투 모두 적용 (Q38)
       - `RESTORE_MP` / `RESTORE_RAGE`: 자원 종류가 맞는 대상만 (`BattleActions.GainRage` 등)
       - `BUFF_ATTACK / BUFF_CRIT_RATE / BUFF_EVADE`: `STAT_ATTACK / STAT_CRIT_RATE / STAT_EVADE` 지속 버프 (0-13 — `ICHI_ATTACK` 미사용, Q15). 전투 전용(`targetUnit` 필요). 지속은 **사용 턴을 제외한 n턴** (Q33 — `ApplyTimedDebuffTo`의 `skipFirstTick` 그대로)
-- [ ] 6-3. 사용 로직 통합 — `GamePlayer.ServerUseConsumable(potionNo, GamePlayer target)` 한 곳으로 모은다. 검증: 보유·`BattleOnly`·`ValidTarget`(1차 `NONE` = 자신만)·`UsableResource`. 전투 중이면 `M_TurnManager.GetCurrentPlayerTargetObject(target)`로 `targetUnit`을 구해 넘긴다. 전투 ITEM 분기(TpBattle)와 `CmdUsePotionOnMap`의 중복 switch를 이 함수 호출로 교체. 비전투 HP 회복도 같은 규칙
-- [ ] 6-4. `ConsumableDB.csv` 1차 행 — HP 물약·상급 HP 물약·MP 물약·분노의 물약·공격력 물약·치명타 물약·회피율 물약. PO3(구 `RESTORE_RESOURCE`, MP·분노 공용)는 `RESTORE_MP`로 이관. 구 세이브의 PO3은 소지 캐릭터의 자원 종류에 따라 **MP → PO3 / RAGE → PO4 / HP(에리스) → PO1**로 변환 (R13 — 그대로 두면 게오르크·에리스가 쓸 수 없는 물약이 남는다)
-- [ ] 6-5. 비전투 사용 제한 — `BattleOnly=1`은 거부 (토스트 `ui.msg.potion_battle_only`)
-- [ ] 6-6. 초기 지급 — HP 물약 2개 유지, 게오르크에게 분노의 물약 1개 시험 지급 (테스트 후 결정)
-- [ ] 6-7. 전투 UI(OnGUI 아이템 목록) — 사용할 수 없는 물약은 비활성 + 사유 표시 (자원 불일치·비전투 전용 등)
+- [x] 6-3. 사용 로직 통합 — `GamePlayer.ServerUseConsumable(potionNo, GamePlayer target)` 한 곳으로 모은다. 검증: 보유·`BattleOnly`·`ValidTarget`(1차 `NONE` = 자신만)·`UsableResource`. 전투 중이면 `M_TurnManager.GetCurrentPlayerTargetObject(target)`로 `targetUnit`을 구해 넘긴다. 전투 ITEM 분기(TpBattle)와 `CmdUsePotionOnMap`의 중복 switch를 이 함수 호출로 교체. 비전투 HP 회복도 같은 규칙
+- [x] 6-4. `ConsumableDB.csv` 1차 행 — HP 물약·상급 HP 물약·MP 물약·분노의 물약·공격력 물약·치명타 물약·회피율 물약. PO3(구 `RESTORE_RESOURCE`, MP·분노 공용)는 `RESTORE_MP`로 이관. 구 세이브의 PO3은 소지 캐릭터의 자원 종류에 따라 **MP → PO3 / RAGE → PO4 / HP(에리스) → PO1**로 변환 (R13 — 그대로 두면 게오르크·에리스가 쓸 수 없는 물약이 남는다)
+- [x] 6-5. 비전투 사용 제한 — `BattleOnly=1`은 거부 (토스트 `ui.msg.potion_battle_only`)
+- [x] 6-6. 초기 지급 — HP 물약 2개 유지, 게오르크에게 분노의 물약 1개 시험 지급 (테스트 후 결정)
+- [x] 6-7. 전투 UI(OnGUI 아이템 목록) — 사용할 수 없는 물약은 비활성 + 사유 표시 (자원 불일치·비전투 전용 등)
 
 **완료 기준**
 - 치명타 물약을 쓰면 사용 턴 다음부터 n턴 동안 치명률 상승이 스탯창에 보이고, 만료되면 원복된다
 - 비전투에서는 버프 물약이 사용되지 않는다. 에리스는 MP 물약을 쓸 수 없다
 - 거점에서 HP 물약을 쓰면 받는 회복량 옵션·치명 회복이 적용된다
 - 새 효과를 추가하는 절차가 "CSV 행 + `ConsumableEffects` 메서드 1개"뿐임을 확인한다 (테스트용 더미 효과로 검증 후 삭제)
+
+**구현 (2026-10-19)** — 컴파일·바인딩 확인. **인게임 확인은 아직.**
+- `ConsumableData` 재작성 (0-9 헤더, `ExecuteConsumable` 리플렉션 바인딩, `CanUse(def, user, inBattle, out reasonKey)`·`ReasonText`·`PickWeighted`), `ConsumableType` enum 삭제. 신규 `DB/ConsumableEffects.cs` — `HEAL_HP`(ServerHeal)·`RESTORE_MP`·`RESTORE_RAGE`·`BUFF_ATTACK/BUFF_CRIT_RATE/BUFF_EVADE`(`ApplyTimedStatBuff`, 출처 = 물약 번호)
+- `GamePlayer.ServerUseConsumable(potionNo, target)` 단일 경로 (보유·BattleOnly·UsableResource·NONE = 자신). TpBattle ITEM 분기는 이것을 yield, `CmdUsePotionOnMap`은 코루틴 시작. 거부는 `TargetPotionRefused` 토스트 (`ui.msg.potion_battle_only` / `ui.msg.potion_resource_mismatch`)
+- `ConsumableDB.csv` PO1~PO7 (ITEMS §7 초안). 초기 지급 PO1×2 + 게오르크 PO4×1. 세이브 버전 0의 PO3 → 자원별 PO3/PO4/PO1 (`MapLegacyPotion`)
+- OnGUI(전투 아이템 목록·장비 창 소모품)에서 사용 불가 물약 비활성 + 사유
 
 ---
 
