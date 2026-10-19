@@ -26,7 +26,10 @@ namespace ProjectD
     public enum BuffType { NONE, IRONDEMON, DEFENSE, ICHI_ATTACK, ICHI_DEFENSE , MOMISPOWERFUL, FLOWERPOWDER, FLOWER, CARDCOSTONE, SOIRAK, APDO, THEREISNOJABI, BOONGGUI, BYEOLMURI, SUHOJA, BLADETRIMMING, IMANGRY, GROWTHSPURT, FURYOFFLOWER, FURYOFIRON,
                             FRAGRANT, GREATMAN , HERO,
                             GOHANG3, GOHANG2_DEBUFF ,GOHANG3_DEBUFF, BOOKBANG, GOTONG, BRILLIANTCURSE, UGLYKNIGHT, ABSOLUTEDOMINATOR, WRAPWINGS, CLOSEPOSE, WISDOMOFOLDSOLDIER, MELODYOFHERO,
-                            ERIS_NORMAL, ERIS_2ND, ERIS_3RD, POWEROFDESTRUCTION, POWEROFCREATION, TEMPESTOSO, ECLIPSE, REPEATMARK, SIGNOFEND, ENDOFDISTORTION, ENHANCESKIN, DEATHTHROES, DICHOTOMY
+                            ERIS_NORMAL, ERIS_2ND, ERIS_3RD, POWEROFDESTRUCTION, POWEROFCREATION, TEMPESTOSO, ECLIPSE, REPEATMARK, SIGNOFEND, ENDOFDISTORTION, ENHANCESKIN, DEATHTHROES, DICHOTOMY,
+                            // 스탯 버프 (아이템 개편 Phase 1, ToDo_RPG_ITEM 0-13·Q15·Q45) — 양수 = 상승, 음수 = 하락. 출처(스킬·행동·물약)가 다르면 합산 (M_TurnManager.ApplyTimedStatBuff).
+                            // STAT_STRENGTH(힘 스탯 — 힘 요구치 판정에 포함)와 STAT_ATTACK(공격력 가산)은 다르다. ICHI_ATTACK/ICHI_DEFENSE는 기존 스킬 호환용으로만 남는다 (버프 개편에서 정리)
+                            STAT_ATTACK, STAT_STRENGTH, STAT_DEFENSE, STAT_MAGIC_DEFENSE, STAT_CRIT_RATE, STAT_EVADE, STAT_ACCURACY
                             }
     public enum ItemEffectTime { STARTBATTLE, CHANGEPOSITION, DEAD, ENDBATTLE, KILLMONSTER, ALWAYS, MOVETOROOM, STARTTURN, HOOKHP, ONCEGET }
     // ITEM: 개인 아이템(상인·이벤트 보상, 소유자에게만 효과) / ARTIFACT: 공용 아티팩트(지역거점 클리어 보상, 전원에게 효과)
@@ -65,8 +68,9 @@ namespace ProjectD
         }
     }
 
-    /// <summary>스킬 실행 델리게이트 (RPG 전환) — SkillDB.csv의 SkillNo와 동명의 SkillData 정적 메서드에 리플렉션 바인딩된다</summary>
-    public delegate IEnumerator ExecuteSkill(SkillData.SkillDef skill, TargetObject user, List<TargetObject> targets);
+    /// <summary>스킬 실행 델리게이트 (RPG 전환) — SkillDB.csv의 SkillNo와 동명의 SkillData 정적 메서드에 리플렉션 바인딩된다.
+    /// 인자는 SkillCast(정의·시전자·대상 + 콤보 배율 슬롯 — 아이템 개편 Phase 1-4, A9)</summary>
+    public delegate IEnumerator ExecuteSkill(SkillData.SkillCast cast);
     // owner: 아이템 소유 플레이어(전투 밖에서도 유효), sender: 전투 중 해당 플레이어의 타겟오브젝트(비전투 시점 발동이면 null)
     public delegate void ItemEventHanddler(GamePlayerItem owner, TargetObject sender, Item item);
 

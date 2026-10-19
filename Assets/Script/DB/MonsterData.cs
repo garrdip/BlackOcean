@@ -75,7 +75,8 @@ public class MonsterData : SingletonD<MonsterData>
     // MonsterStatDB에 없는 몬스터는 기본값(약점 없음/무속성/실드 0)으로 동작한다.
     void LoadMonsterStatFromDB()
     {
-        foreach(CsvTable.Row row in CsvTable.LoadFromResources("DB/MonsterStatDB").rows)
+        CsvTable statTable = CsvTable.LoadFromResources("DB/MonsterStatDB");
+        foreach(CsvTable.Row row in statTable.rows)
         {
             try
             {
@@ -100,6 +101,10 @@ public class MonsterData : SingletonD<MonsterData>
                 monster.hazardAtkBonus = GetFloat(row, "HazardAtk");
                 monster.hazardDefBonus = GetFloat(row, "HazardDef");
                 monster.hazardHpBonus = GetFloat(row, "HazardHp");
+                // 보조 스탯 (아이템 개편 Phase 1-1, Q4) — 컬럼이 없거나 비면 회피 5 / 명중 95 / 치명 0
+                monster.evade = GetIntOptional(statTable, row, "Evade", 5);
+                monster.accuracy = GetIntOptional(statTable, row, "Accuracy", 95);
+                monster.critRate = GetIntOptional(statTable, row, "CritRate", 0);
             }
             catch (Exception e)
             {
@@ -136,6 +141,13 @@ public class MonsterData : SingletonD<MonsterData>
     T GetEnumData<T>(string data)
     {
         return (T)Enum.Parse(typeof(T),data);
+    }
+
+    // 선택 컬럼의 정수 파싱 — 컬럼 없음(로그 없이)/빈 값/파싱 실패는 fallback
+    static int GetIntOptional(CsvTable table, CsvTable.Row row, string column, int fallback)
+    {
+        if(!table.HasColumn(column)) return fallback;
+        return int.TryParse(row.Get(column), out int value) ? value : fallback;
     }
 
     // 선택 컬럼의 실수 파싱 — 컬럼 없음/빈 값/파싱 실패는 0

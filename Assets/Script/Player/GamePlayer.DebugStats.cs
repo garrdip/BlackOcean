@@ -18,7 +18,7 @@ public partial class GamePlayer
         if (!guiStatsOpen) return;
 
         float windowWidth = 560f;
-        float windowHeight = 420f;
+        float windowHeight = 560f;
         Rect windowRect = new Rect(Screen.width - windowWidth - 10f, 85f, windowWidth, windowHeight);
         GUI.Box(windowRect, $"{character} 스탯");
 
@@ -60,7 +60,19 @@ public partial class GamePlayer
         StatRow("방어력", defense, TotalDefense);
         StatRow("마법방어", magicDefense, TotalMagicDefense);
         StatRow("제어", control, control); // 제어는 장비 옵션 없음
+        // 보조 스탯 (아이템 개편 Phase 1-13) — 기본치(CharacterStatDB, 레벨 성장 없음) + 장비 옵션(Phase 5). 전투 중 STAT_* 버프는 TargetObject.Get*이 더한다
+        CharacterStatData.Entry subStat = CharacterStatData.Get(character);
+        StatRow("회피율 %", subStat != null ? subStat.baseEvade : 5, TotalEvade);
+        StatRow("명중률 %", subStat != null ? subStat.baseAccuracy : 95, TotalAccuracy);
+        StatRow("치명타율 %", subStat != null ? subStat.baseCrit : 5, TotalCritRate);
+        StatRow("치명 배수 %", BalanceData.Get("CRIT_DAMAGE_PERCENT", 150), TotalCritDamage);
         y += 8f;
+        // 전투 판정 치트 (호스트 서버에서만 효과 — BattleActions 정적 플래그)
+        GUI.Label(new Rect(x, y, 110f, lineHeight), "판정 치트");
+        BattleActions.debugForcePlayerCrit = GUI.Toggle(new Rect(x + 110f, y, 130f, lineHeight), BattleActions.debugForcePlayerCrit, "치명 100%");
+        BattleActions.debugForcePlayerEvade = GUI.Toggle(new Rect(x + 240f, y, 130f, lineHeight), BattleActions.debugForcePlayerEvade, "회피 100%");
+        BattleActions.debugNoRandom = GUI.Toggle(new Rect(x + 370f, y, 150f, lineHeight), BattleActions.debugNoRandom, "랜덤 보정 0");
+        y += lineHeight + 8f;
 
         // 다음 레벨 성장치 — 시드 기반 분배라 미리 확정되어 있다 (LevelGrowthTable)
         if (required > 0)

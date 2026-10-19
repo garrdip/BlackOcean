@@ -245,3 +245,18 @@ ui.msg.hub_heal_no_gold,Not enough gold (healing costs {0} gold),골드가 부�
 ui.msg.hub_heal_not_needed,The party's HP and MP are already full — no healing needed,파티의 체력과 MP가 모두 최대입니다 — 회복이 필요하지 않습니다
 ui.msg.skill_cost_short,{0} — not enough resources to use,{0} — 자원이 부족해 사용할 수 없습니다
 ui.msg.skill_innate_used,{0} — already used this turn,{0} — 이번 턴에 이미 사용했습니다
+ui.msg.miss,MISS,MISS
+buff.STAT_ATTACK.name,Attack Up/Down,공격력 변화
+buff.STAT_ATTACK.desc,Attack changes by the shown value (applies to basic attacks and skill damage).,공격력이 표시 수치만큼 증가/감소합니다 (기본 공격과 스킬 피해에 적용).
+buff.STAT_STRENGTH.name,Strength Up/Down,힘 변화
+buff.STAT_STRENGTH.desc,Strength changes by the shown value (counts toward armor strength requirements).,힘이 표시 수치만큼 증가/감소합니다 (방어구 힘 요구치 판정에 포함).
+buff.STAT_DEFENSE.name,Defense Up/Down,방어력 변화
+buff.STAT_DEFENSE.desc,Physical defense changes by the shown value (Defend and the Iron Demon's buff fade at the start of your next turn).,물리 방어력이 표시 수치만큼 증가/감소합니다 (방어 행동·철귀는 다음 자기 턴 시작에 사라집니다).
+buff.STAT_MAGIC_DEFENSE.name,Magic Defense Up/Down,마법방어 변화
+buff.STAT_MAGIC_DEFENSE.desc,Magic defense changes by the shown value.,마법 방어력이 표시 수치만큼 증가/감소합니다.
+buff.STAT_CRIT_RATE.name,Crit Rate Up/Down,치명타율 변화
+buff.STAT_CRIT_RATE.desc,Critical rate changes by the shown %p.,치명타율이 표시 수치%p만큼 증가/감소합니다.
+buff.STAT_EVADE.name,Evasion Up/Down,회피율 변화
+buff.STAT_EVADE.desc,Evasion changes by the shown %p.,회피율이 표시 수치%p만큼 증가/감소합니다.
+buff.STAT_ACCURACY.name,Accuracy Up/Down,명중률 변화
+buff.STAT_ACCURACY.desc,Accuracy changes by the shown %p.,명중률이 표시 수치%p만큼 증가/감소합니다.

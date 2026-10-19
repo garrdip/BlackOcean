@@ -58,6 +58,10 @@ public partial class TargetObject : NetworkBehaviour
     [SyncVar]
     public int overkillDamageDisplay;
 
+    // 치명 표시 — 서버가 HP를 바꾸기 직전 설정 (피해·회복 공통, 아이템 개편 Phase 1-11). 같은 배치에서 훅보다 먼저 적용되도록 _playerHP보다 먼저 선언
+    [SyncVar]
+    public bool critDamageDisplay;
+
     [SyncVar (hook = nameof(OnChangedPlayerHP))]
     public int _playerHP;
     public int playerHP{
@@ -300,7 +304,7 @@ public partial class TargetObject : NetworkBehaviour
         if(oldVal > 0){
             int hpLoss = oldVal - newVal;
             int shown = (hpLoss > 0 && overkillDamageDisplay > hpLoss) ? overkillDamageDisplay : hpLoss; // 과잉 피해는 실제 피해량 표시
-            M_EffectManager.instance.DisPlayeDamage(this, shown); // 데미지 or 회복 표시 이펙트 생성
+            M_EffectManager.instance.DisPlayeDamage(this, shown, critDamageDisplay); // 데미지 or 회복 표시 이펙트 생성 (치명이면 강조)
             if(newVal > 0){
                 selectedNamePlate.SetHpValue(newVal, playerMaxHP, this);
                 if((oldVal - newVal) > 0){

@@ -210,10 +210,10 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 
 **목표**: 플레이어 → 몬스터와 몬스터 → 플레이어가 **같은 함수·같은 공식**으로 계산된다. 기본치만으로 MISS·치명타·데미지 편차가 발생하고, 약점 공격이 09-28 공식대로 TP를 깎는다. 모든 스킬 수치가 콤보 배율 슬롯을 거친다 (배율 1.0 — 동작 변화 없음).
 
-- [ ] 1-1. 보조 스탯 로드 — `CharacterStatData.Entry`에 `baseEvade/baseAccuracy/baseCrit`, `MonsterData`에 `evade/accuracy/critRate` (0-10 컬럼, 컬럼이 없으면 기본값)
-- [ ] 1-2. **공용 스탯 조회** — `TargetObject`(플레이어·몬스터 공통)에 `GetEvade / GetAccuracy / GetCritRate / GetCritDamage / GetDefense / GetMagicDefense / GetPhysicalAttack / GetMagicAttack`을 둔다. 플레이어는 `GamePlayer.Total*` + 스탯 버프, 몬스터는 `MonsterStatDB` + 위험도 보정 + 스탯 버프. 보조 스탯은 레벨 성장이 없다 (기획).
+- [x] 1-1. 보조 스탯 로드 — `CharacterStatData.Entry`에 `baseEvade/baseAccuracy/baseCrit`, `MonsterData`에 `evade/accuracy/critRate` (0-10 컬럼, 컬럼이 없으면 기본값)
+- [x] 1-2. **공용 스탯 조회** — `TargetObject`(플레이어·몬스터 공통)에 `GetEvade / GetAccuracy / GetCritRate / GetCritDamage / GetDefense / GetMagicDefense / GetPhysicalAttack / GetMagicAttack`을 둔다. 플레이어는 `GamePlayer.Total*` + 스탯 버프, 몬스터는 `MonsterStatDB` + 위험도 보정 + 스탯 버프. 보조 스탯은 레벨 성장이 없다 (기획).
       `BattleActions.IsMagic(AttackAttribute)` 헬퍼도 여기서 만든다 (R6 — Phase 2가 쓴다). Phase 4 전까지는 `MAGIC`·`RESONANCE`를 마법으로 취급하고, 4-1에서 `ICHI·SIMSANG·RESONANCE`로 바꾼다
-- [ ] 1-3. **`HitContext` + `BattleActions.ResolveHit(ctx)`** (Q10, Q18, R5) — 한 번의 타격을 표현하는 컨텍스트: 공격자·대상·기본 피해·속성·스킬 여부·r·결과 플래그(miss/crit/weakness)·`powerMultiplier`(콤보 배율 슬롯, 기본 1.0)·`bonusPercent`(스킬 추가 데미지 등).
+- [x] 1-3. **`HitContext` + `BattleActions.ResolveHit(ctx)`** (Q10, Q18, R5) — 한 번의 타격을 표현하는 컨텍스트: 공격자·대상·기본 피해·속성·스킬 여부·r·결과 플래그(miss/crit/weakness)·`powerMultiplier`(콤보 배율 슬롯, 기본 1.0)·`bonusPercent`(스킬 추가 데미지 등).
       **ResolveHit은 공격 측 계산까지만 한다**: 명중·회피 단일 판정(1-6) → (MISS면 종료 — 부가 효과도 생략, Q27) → r 굴림 → 약점 판정(피해 120%) → 치명 판정(약점 보정 포함) → 배율 적용 → **대상 종류별 피격 함수 호출** → 약점 TP + 치명 TP → 결과 표시.
       **방어 측은 피격 함수가 담당한다**: `DamageToPlayer(damage, attribute, isCritical)` = 대열 보정 → 보호 분담 → 실드(방어 공식 무시, Q29) → 남은 피해에 방어 공식(치명이면 50% − 10) → HP 적용 → 분노(최종 피해 기준, Q32). `DamageToMonster(damage, from, attribute, isCritical)` = 방어 공식(Phase 2) → HP 적용. 두 함수 모두 **HP에 실제로 들어간 피해(int)를 반환**한다 (분노·생명력 흡수·반사의 기준값).
       - 보호 분담(`RedirectToGuardian`)은 원 대상에서 판정이 끝난 피해를 나누기만 한다 — 보호자에게 약점·치명을 다시 판정하지 않는다
@@ -221,22 +221,22 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
       호출부 이관:
       - 플레이어 → 몬스터: `BattleActions.AttackTarget` 내부를 `ResolveHit`로 교체 (기사도 배율은 ctx 가산)
       - 몬스터 → 플레이어: `SpawnedMonster.GeneralAttack`이 `DamageToPlayer`를 직접 부르지 않고 `ResolveHit`을 거친다
-- [ ] 1-4. **`SkillCast` 도입** (Q10, A9) — 스킬 위임을 `ExecuteSkill(SkillCast cast)`로 바꾼다 (`cast.def / user / targets / powerMultiplier / comboOrder`). `SkillData.Geork/Eris/DanHyang` 전 메서드를 한 커밋으로 기계적으로 이관한다.
+- [x] 1-4. **`SkillCast` 도입** (Q10, A9) — 스킬 위임을 `ExecuteSkill(SkillCast cast)`로 바꾼다 (`cast.def / user / targets / powerMultiplier / comboOrder`). `SkillData.Geork/Eris/DanHyang` 전 메서드를 한 커밋으로 기계적으로 이관한다.
       피해·실드·회복·버프 수치는 모두 `cast.Scale(value)`를 거친다. 공격은 `cast`에서 만든 `HitContext`로 `ResolveHit` 호출. 퍼센트·지속 턴 등 배율을 곱하지 않을 수치는 주석으로 표시.
       ※ 착수 전에 워킹 트리의 미커밋 변경(SkillDB `FreeAction` 컬럼·`SkillDef.freeAction`·`tpUsedFreeSkillNo` 개명)을 먼저 커밋한다 (R7)
-- [ ] 1-5. 일반 데미지 랜덤 보정 (Q11) — `ResolveHit` 안에서 타격마다 −`DAMAGE_RANDOM_PERCENT` ~ +`DAMAGE_RANDOM_PERCENT` 정수를 서버에서 굴려 피해 × (100 + r)/100. 다단 공격(연속 베기·풍차 베기·찢어 줄게요 반복 등)은 `ResolveHit`을 타수만큼 호출하므로 자동으로 타마다 굴린다. 몬스터 예고 수치는 이미 숨겨져 있다 (`NextActionIndicator.ShowActionValue = false`)
-- [ ] 1-6. 명중·회피 (Q26, Q27) — **단일 판정**: MISS 확률 = max(0, 대상 회피 + (100 − 공격자 명중)). 명중 105% vs 회피 5%면 0%, 기본(95/5)이면 10%. MISS면 피해·분노·약점 TP·치명 TP·피격 모션·**그 타격에 딸린 부가 효과(디버프·TP 감소)** 를 모두 생략한다 (기획 "약점 공격 Miss 시 TP 피해 없음"). 광역 공격은 **대상마다 개별 판정**
-- [ ] 1-7. 치명 — 치명률 + (약점이면 `WEAKNESS_CRIT_BONUS`). 피해 × 치명 배수. 방어 공식은 `ApplyDefenseFormula(damage, defenseStat, defensePercent, flatReduce)`로 시그니처를 확장해 치명이면 50% 적용 후 −10 (0 하한). **몬스터 대상에도 적용** (Q14 — 몬스터 방어력은 Phase 2 전까지 0이라 효과 없음, 경로만 연결). 몬스터 기본 치명 0 + 약점 보정 10%는 의도 (Q28)
-- [ ] 1-8. 약점 TP (Q12, Q30) — `ApplyTpBreakTo`를 `ApplyWeaknessTpDamage(target, r)`로 교체: TP 감소 = (`WEAKNESS_TP_FIXED` + `WEAKNESS_TP_RATIO` × r / 10) × (`WEAKNESS_TP_REPEAT_PERCENT`/100)^(이번 전투에서 그 대상이 약점 피격된 횟수), 하한 `WEAKNESS_TP_MIN`. `tpWeaknessHits` 집계는 유지. **플레이어 `TpUnit`도 같은 규칙(반복 체감 포함)으로 처리** (Phase 4의 플레이어 약점 피격용)
-- [ ] 1-9. 치명 TP (Q13) — 치명이면 `DamageTpTo(target, CRIT_TP_DAMAGE)`. 약점 TP와 합산, 반복 체감 없음
-- [ ] 1-10. 회복·실드 부여 치명 (Q29, Q41) — `TargetObject.Heal(value, healer)` / `GainShield(value, giver)`: 시전자 치명률로 굴려 `CRIT_DAMAGE_PERCENT` 배수 적용 (판정 순서 "회복 : 치명"). **`GainShield`는 기존 실드를 지우고 새 값으로 교체한다** (합산 아님 — 100에 10을 부여하면 10). 수호 축복·만개·보호막 옵션·HP 물약이 이 경로. 기존 `GainDefense`(가산)는 제거. 몬스터 회복도 같은 함수를 쓸 수 있게 TargetObject 공통으로 둔다 (Q5 대비).
+- [x] 1-5. 일반 데미지 랜덤 보정 (Q11) — `ResolveHit` 안에서 타격마다 −`DAMAGE_RANDOM_PERCENT` ~ +`DAMAGE_RANDOM_PERCENT` 정수를 서버에서 굴려 피해 × (100 + r)/100. 다단 공격(연속 베기·풍차 베기·찢어 줄게요 반복 등)은 `ResolveHit`을 타수만큼 호출하므로 자동으로 타마다 굴린다. 몬스터 예고 수치는 이미 숨겨져 있다 (`NextActionIndicator.ShowActionValue = false`)
+- [x] 1-6. 명중·회피 (Q26, Q27) — **단일 판정**: MISS 확률 = max(0, 대상 회피 + (100 − 공격자 명중)). 명중 105% vs 회피 5%면 0%, 기본(95/5)이면 10%. MISS면 피해·분노·약점 TP·치명 TP·피격 모션·**그 타격에 딸린 부가 효과(디버프·TP 감소)** 를 모두 생략한다 (기획 "약점 공격 Miss 시 TP 피해 없음"). 광역 공격은 **대상마다 개별 판정**
+- [x] 1-7. 치명 — 치명률 + (약점이면 `WEAKNESS_CRIT_BONUS`). 피해 × 치명 배수. 방어 공식은 `ApplyDefenseFormula(damage, defenseStat, defensePercent, flatReduce)`로 시그니처를 확장해 치명이면 50% 적용 후 −10 (0 하한). **몬스터 대상에도 적용** (Q14 — 몬스터 방어력은 Phase 2 전까지 0이라 효과 없음, 경로만 연결). 몬스터 기본 치명 0 + 약점 보정 10%는 의도 (Q28)
+- [x] 1-8. 약점 TP (Q12, Q30) — `ApplyTpBreakTo`를 `ApplyWeaknessTpDamage(target, r)`로 교체: TP 감소 = (`WEAKNESS_TP_FIXED` + `WEAKNESS_TP_RATIO` × r / 10) × (`WEAKNESS_TP_REPEAT_PERCENT`/100)^(이번 전투에서 그 대상이 약점 피격된 횟수), 하한 `WEAKNESS_TP_MIN`. `tpWeaknessHits` 집계는 유지. **플레이어 `TpUnit`도 같은 규칙(반복 체감 포함)으로 처리** (Phase 4의 플레이어 약점 피격용)
+- [x] 1-9. 치명 TP (Q13) — 치명이면 `DamageTpTo(target, CRIT_TP_DAMAGE)`. 약점 TP와 합산, 반복 체감 없음
+- [x] 1-10. 회복·실드 부여 치명 (Q29, Q41) — `TargetObject.Heal(value, healer)` / `GainShield(value, giver)`: 시전자 치명률로 굴려 `CRIT_DAMAGE_PERCENT` 배수 적용 (판정 순서 "회복 : 치명"). **`GainShield`는 기존 실드를 지우고 새 값으로 교체한다** (합산 아님 — 100에 10을 부여하면 10). 수호 축복·만개·보호막 옵션·HP 물약이 이 경로. 기존 `GainDefense`(가산)는 제거. 몬스터 회복도 같은 함수를 쓸 수 있게 TargetObject 공통으로 둔다 (Q5 대비).
       **비전투 회복은 TargetObject가 없다** (R1) — `GamePlayer.ServerHeal(value, healerGamePlayer)`를 두고, 전투 중이면 TargetObject의 `Heal`로 위임, 비전투면 `HP` 직접 가산. 치명·받는 회복량 옵션(5-7)은 양쪽에 적용된다 (Q38)
-- [ ] 1-11. 표시 — `M_EffectManager.DisPlayeDamage` 확장: MISS 텍스트(피격 모션·셰이크 없음), 치명타 숫자 강조(색·크기). `RpcDisplayZeroDamage` 패턴으로 `RpcDisplayMiss` (RPC 해시 충돌 확인)
-- [ ] 1-12. 스탯 버프 훅 (0-13, Q15, Q37) — 1-2 조회 함수가 `STAT_*` 버프를 가산한다. 지속 규칙은 기존 `ApplyTimedDebuffTo` 그대로 — **n턴, 대상의 자기 턴 종료 시 1 차감, 자기 턴 중 부여면 그 턴은 세지 않음**(사용 턴 제외 n턴, Q33).
+- [x] 1-11. 표시 — `M_EffectManager.DisPlayeDamage` 확장: MISS 텍스트(피격 모션·셰이크 없음), 치명타 숫자 강조(색·크기). `RpcDisplayZeroDamage` 패턴으로 `RpcDisplayMiss` (RPC 해시 충돌 확인)
+- [x] 1-12. 스탯 버프 훅 (0-13, Q15, Q37) — 1-2 조회 함수가 `STAT_*` 버프를 가산한다. 지속 규칙은 기존 `ApplyTimedDebuffTo` 그대로 — **n턴, 대상의 자기 턴 종료 시 1 차감, 자기 턴 중 부여면 그 턴은 세지 않음**(사용 턴 제외 n턴, Q33).
       **중첩 규칙 (Q45)**: `STAT_*` 버프는 **출처(스킬·행동·물약 종류)별로 따로 관리해 합산**한다 — 같은 출처를 다시 쓰면 그 출처의 수치·지속만 갱신, 다른 출처는 더한다 (예: 방어 행동 + 철귀 방어력 = 둘 다 적용, 치명타 물약 + 홍단향 치명타 증가 = 합산). `TpTimedDebuff`에 `sourceId`(스킬 번호·`DEFEND`·`HS0`·물약 번호)를 두고 (target, type, sourceId)로 찾는다. 기존 `ICHI_*`의 "같은 종류는 강한 쪽만" 규칙은 버프 개편 때 같은 원칙으로 바꾼다 이후 물약(Phase 6)·홍단향 마법 트리(치명타 증가·회피율 증가·스쿤다)·몬스터 방어 행동 임시 전환(Phase 2)·몬스터의 플레이어 방어 저하(Q31)가 이 훅을 쓴다. `ICHI_*`는 기존 스킬 호환용으로만 남긴다
-- [ ] 1-13. 디버그 — `GamePlayer.DebugStats`에 보조 스탯 4종 표시·조정, 치명/회피 100% 치트, 랜덤 보정 0 고정 치트, 몬스터 스탯 확인
-- [ ] 1-14. **실드 지속 규칙 변경** (Q37, Q41) — 실드는 전부 소진될 때까지 지속한다. TP 루프의 자기 턴 시작 리셋(`next.target.defense = 0`)을 제거한다 (예외 없음 — 방어 행동이 더 이상 실드를 만들지 않으므로). 실드를 만드는 것은 수호 축복(HS4)·만개(HU1)·보호막 옵션(5-9)뿐이며 모두 1-10 `GainShield`(덮어쓰기)를 쓴다. 허물 강화(ENHANCESKIN)의 회복→실드 가산 분기는 쓰는 곳이 없으므로 `Heal`로 옮기면서 제거한다 (버프 개편 삭제 대상)
-- [ ] 1-15. **방어 행동·철귀 전환** (Q40, Q41) — `TpAction.DEFEND`를 "실드 획득"에서 **"물리 방어력 임시 버프"** 로 바꾼다. 증가량 = `DEFEND_DEFENSE_UP_BASE`(10) + 레벨 × `DEFEND_DEFENSE_UP_PER_LEVEL`(1) (임시 수치, 9-4에서 조정). 마법방어는 오르지 않는다. `DEFEND_BASE_VALUE`·`ICHI_DEFENSE` 가산 경로 삭제.
+- [x] 1-13. 디버그 — `GamePlayer.DebugStats`에 보조 스탯 4종 표시·조정, 치명/회피 100% 치트, 랜덤 보정 0 고정 치트, 몬스터 스탯 확인
+- [x] 1-14. **실드 지속 규칙 변경** (Q37, Q41) — 실드는 전부 소진될 때까지 지속한다. TP 루프의 자기 턴 시작 리셋(`next.target.defense = 0`)을 제거한다 (예외 없음 — 방어 행동이 더 이상 실드를 만들지 않으므로). 실드를 만드는 것은 수호 축복(HS4)·만개(HU1)·보호막 옵션(5-9)뿐이며 모두 1-10 `GainShield`(덮어쓰기)를 쓴다. 허물 강화(ENHANCESKIN)의 회복→실드 가산 분기는 쓰는 곳이 없으므로 `Heal`로 옮기면서 제거한다 (버프 개편 삭제 대상)
+- [x] 1-15. **방어 행동·철귀 전환** (Q40, Q41) — `TpAction.DEFEND`를 "실드 획득"에서 **"물리 방어력 임시 버프"** 로 바꾼다. 증가량 = `DEFEND_DEFENSE_UP_BASE`(10) + 레벨 × `DEFEND_DEFENSE_UP_PER_LEVEL`(1) (임시 수치, 9-4에서 조정). 마법방어는 오르지 않는다. `DEFEND_BASE_VALUE`·`ICHI_DEFENSE` 가산 경로 삭제.
       **만료 시점은 "다음 자기 턴이 올 때까지"(턴 시작 만료)** — 기존 `ApplyTimedDebuffTo`는 턴 **종료** 차감이라 그대로 쓸 수 없다. `TpTimedDebuff`에 `expireOnOwnTurnStart` 플래그를 추가하고, TP 루프의 턴 실행 직전(지금 `defense = 0` 리셋이 있던 자리)에서 그 플래그가 켜진 버프를 상쇄 제거한다. 다른 지속 버프(3턴, 턴 종료 차감)는 영향 없음.
       철귀 턴 종료 효과(`ApplyPlayerTurnEndEffects`)의 `GainDefense(HS0_DEFENSE)`도 같은 방식의 **`STAT_DEFENSE` +10 임시 버프**(그 아군의 다음 턴 시작에 만료)로 바꾼다. 공격력 +3(`HS0_ATTACK`)은 기존 지속 그대로. 방어 행동과 철귀 버프가 같은 아군에 겹치면 **합산한다** (Q45 — 다른 출처의 버프는 합산, 철귀를 능동적으로 쓰게 하기 위함). 1-12의 출처별 중첩 규칙을 따른다. SkillDB HS0 설명문·파티 TP 기획(철귀 버프 부여 시 +1)의 "실드" 표현 정리
 
@@ -250,6 +250,14 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 - 방어 행동을 하면 실드가 생기지 않고 방어력이 (10 + 레벨)만큼 오른 채로 다음 자기 턴이 올 때까지 유지되며, 자기 턴이 시작되면 사라진다. 마법 공격에는 효과가 없다. 철귀가 붙은 아군도 턴 종료에 같은 방어력 버프 10을 받는다
 - 게오르크 분노가 실드가 흡수한 피해로는 오르지 않고, 방어 적용 후 HP에 들어간 피해로만 오른다
 - `SkillCast` 이관 전후로 전 스킬의 결과가 같다 (배율 1.0 회귀 확인)
+
+**구현 (2026-10-19)** — 컴파일·정적 검증 완료(방어 공식 치명 분기, BalanceDB 신규 키, CharacterStatDB 보조 스탯, SkillDB 30행 `SkillCast` 바인딩). **인게임 플레이 확인은 아직** — 위 완료 기준을 1스테이지 전투로 확인해야 한다.
+- 신규: `Battle/HitContext.cs`, `Battle/TargetObject.Stats.cs`(Get* 조회·`Heal`·`GainShield`·`RpcDisplayMiss`), `Player/GamePlayer.Combat.cs`(`TotalEvade/Accuracy/CritRate/CritDamage`·`ServerHeal`)
+- `BattleActions.ResolveHit`(명중·r·약점·치명·배율 → 피격 함수 → 약점 TP·치명 TP → 분노) — `AttackTarget`(플레이어)·`SpawnedMonster.ResolveAttack`(몬스터)·`CounterAttack`(2차 판정) 공용. `LastHitLanded`로 MISS 시 부가 효과 생략 (GS8·GS18·ES6)
+- `DamageToPlayer/DamageToMonster(…, attribute, isCritical)`가 int(HP 피해) 반환. 몬스터 실드(`defense`)·`GainDefense`는 Phase 2까지 유지
+- `ApplyTimedStatBuff(target, type, value, turns, from, sourceId, expireOnOwnTurnStart)` — 출처별 합산. 방어 행동 `"DEFEND"`·철귀 `"HS0"`은 턴 시작 만료. 구 `ApplyTimedDebuffTo`(ICHI_* 등)는 `sourceId == null`로 분리 유지
+- 방어 행동 모션은 캐릭터별 이름이 달라 미재생(0.3초 대기만). 치명 표시는 `critDamageDisplay` SyncVar(HP 훅 전 선언) 패턴, MISS는 `RpcDisplayMiss` → `M_EffectManager.DisplayMiss`. 로컬라이즈 `ui.msg.miss`·`buff.STAT_*`는 ko(BuffDB)·en만 — 나머지 로케일은 8-1
+- 디버그 치트(치명 100% / 회피 100% / 랜덤 0)는 `BattleActions` 정적 플래그 — 호스트에서만 효과
 
 ---
 

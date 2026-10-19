@@ -36,16 +36,37 @@ public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
         spineObject.AnimationState.SetAnimation(0, animationName, false);
     }
 
-    // 데미지 표시 트위닝
-    public void DisPlayeDamage(TargetObject targetObject, int damage)
+    // MISS 표시 — 회색 "MISS" 텍스트만 (피격 파티클/셰이크/피격 모션 없음). 아이템 개편 Phase 1-11
+    public void DisplayMiss(TargetObject targetObject)
+    {
+        GameObject missText = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
+        missText.transform.SetParent(EffectCanvas.transform);
+        missText.transform.position = targetObject.transform.position + new Vector3(0f, 6f, 0f);
+        missText.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        missText.GetComponent<TextMeshProUGUI>().color = ColorUtils.HexToColor("#B0B0B0");
+        missText.GetComponent<TextMeshProUGUI>().text = M_LanguageManager.Get("ui.msg.miss", "MISS");
+
+        Tween moveTween = missText.transform.DOMoveY(9f, 1.2f).SetEase(Ease.OutSine);
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(moveTween);
+        sequence.Join(missText.GetComponent<CanvasGroup>().DOFade(1f, 0.3f));
+        sequence.Append(missText.GetComponent<CanvasGroup>().DOFade(0f, 0.4f))
+            .OnComplete(() => {
+                missText.transform.DOKill();
+                Destroy(missText);
+            });
+    }
+
+    // 데미지 표시 트위닝 — isCritical이면 숫자 강조(색·크기·"!") (아이템 개편 Phase 1-11). 회복(음수)도 치명 회복이면 강조
+    public void DisPlayeDamage(TargetObject targetObject, int damage, bool isCritical = false)
     {
         if(damage < 0){ // 데미지가 음수 이면 회복 텍스트
             GameObject hpRecoverText = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
             hpRecoverText.transform.SetParent(EffectCanvas.transform);
-            hpRecoverText.transform.localScale = Vector3.one;
+            hpRecoverText.transform.localScale = isCritical ? new Vector3(1.4f, 1.4f, 1.4f) : Vector3.one;
             hpRecoverText.transform.position = targetObject.transform.position + new Vector3(0f, 8f, 0f);
-            hpRecoverText.GetComponent<TextMeshProUGUI>().color = Color.green;
-            hpRecoverText.GetComponent<TextMeshProUGUI>().text = "+" + Mathf.Abs(damage).ToString();
+            hpRecoverText.GetComponent<TextMeshProUGUI>().color = isCritical ? ColorUtils.HexToColor("#CCFF33") : Color.green;
+            hpRecoverText.GetComponent<TextMeshProUGUI>().text = "+" + Mathf.Abs(damage).ToString() + (isCritical ? "!" : "");
             
             Tween moveTween = hpRecoverText.transform.DOMoveY(3f, 1f).SetEase(Ease.OutSine);
             Sequence sequence = DOTween.Sequence();
@@ -64,8 +85,9 @@ public partial class M_EffectManager : NetworkSingletonD<M_EffectManager>
             GameObject floatingDamage = Instantiate(FloatingDamageText, Vector3.zero, Quaternion.identity);
             floatingDamage.transform.SetParent(EffectCanvas.transform);
             floatingDamage.transform.position = targetObject.transform.position + new Vector3(0f, 6f, 0f);
-            floatingDamage.transform.localScale = new Vector3(2.5f, 2.5f, 2.5f);
-            floatingDamage.GetComponent<TextMeshProUGUI>().text = damage.ToString();
+            floatingDamage.transform.localScale = isCritical ? new Vector3(3.5f, 3.5f, 3.5f) : new Vector3(2.5f, 2.5f, 2.5f);
+            if(isCritical) floatingDamage.GetComponent<TextMeshProUGUI>().color = ColorUtils.HexToColor("#FF7A00"); // 치명타 — 주황 강조
+            floatingDamage.GetComponent<TextMeshProUGUI>().text = damage.ToString() + (isCritical ? "!" : "");
 
             bool reversePath = Random.Range(0, 2) == 0; // 좌측커브 or 우측커브 랜덤 결정
             Vector3 endPoint = reversePath ? floatingDamage.transform.position + new Vector3(-3f, -12f, 0f) : floatingDamage.transform.position + new Vector3(3f, -12f, 0f);

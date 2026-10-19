@@ -25,8 +25,12 @@ public static class CharacterStatData
         public AttackAttribute resist;   // 피격 시 내성 속성
         public BattleResourceType resource; // 전투 자원 종류 (분노/MP/HP)
         public int baseResource;            // 자원 최대치 (HP형은 0 — 자신의 HP를 소모)
-        public bool attackScalesWithInt;    // 공격 계수 스탯 — true면 지능, false면 힘 (CSV AttackStat: INT/STR)
-        public AttackAttribute basicAttack; // 기본 공격(무기) 속성 — 검(참격)/지팡이(마법)/크리스털 코어(공명)
+        public bool attackScalesWithInt;    // 공격 계수 스탯 — true면 지능, false면 힘 (CSV AttackStat: INT/STR) — Phase 3(Q46)에서 무기 ScaleStat으로 대체
+        public AttackAttribute basicAttack; // 기본 공격(무기) 속성 — 검(참격)/지팡이(마법)/크리스털 코어(공명) — Phase 3(Q25)에서 무기 Attribute로 대체
+        // 보조 스탯 (아이템 개편 Phase 1-1, 기획 「보조 스탯」 — 레벨 성장 없음). 컬럼이 없으면 기본값 5 / 95 / 5
+        public int baseEvade = 5;           // 회피율 %
+        public int baseAccuracy = 95;       // 명중률 %
+        public int baseCrit = 5;            // 치명타율 %
     }
 
     static Dictionary<Character, Entry> entries;
@@ -58,6 +62,9 @@ public static class CharacterStatData
                     attackScalesWithInt = row.Get("AttackStat").Trim() == "INT",
                     basicAttack = (AttackAttribute)Enum.Parse(typeof(AttackAttribute), row.Get("BasicAttackAttribute").Trim()),
                 };
+                if (table.HasColumn("BaseEvade")) entry.baseEvade = row.GetInt("BaseEvade");
+                if (table.HasColumn("BaseAccuracy")) entry.baseAccuracy = row.GetInt("BaseAccuracy");
+                if (table.HasColumn("BaseCrit")) entry.baseCrit = row.GetInt("BaseCrit");
                 entries[entry.character] = entry;
             }
             catch (Exception e)

@@ -29,6 +29,10 @@ public class SpawnedMonster : NetworkBehaviour
     [SyncVar]
     public int overkillDamageDisplay;
 
+    // 치명 표시 — 서버가 HP를 깎기 직전 설정 (아이템 개편 Phase 1-11). 반드시 _HP보다 먼저 선언
+    [SyncVar]
+    public bool critDamageDisplay;
+
     [SyncVar (hook = nameof(OnChangedHpValue))]
     public int _HP;
     public int HP{
@@ -325,7 +329,7 @@ public class SpawnedMonster : NetworkBehaviour
     }
 
     /// <summary>현재 예고된 공격 1타의 표시/적용 피해 = (위험도 보정 공격력 + 힘 버프) x 모으기 배율. 인디케이터와 GeneralAttack이 공용</summary>
-    public int CurrentAttackDamage(int actionValue) => (ScaledAttack(actionValue) + parent.GetBuffValue(BuffType.ICHI_ATTACK)) * chargeMultiplier;
+    public int CurrentAttackDamage(int actionValue) => (ScaledAttack(actionValue) + parent.GetAttackBuff()) * chargeMultiplier;
 
     // ------------------------------------------------------------------ Rpc Method ------------------------------------------------------------------------//
     
@@ -413,7 +417,7 @@ public class SpawnedMonster : NetworkBehaviour
             M_EffectManager.instance.OnHitEffectParticle(transform.position + new Vector3(0f, 3f, 0f));
             int hpLoss = oldHpValue - newHpValue;
             int shown = (hpLoss > 0 && overkillDamageDisplay > hpLoss) ? overkillDamageDisplay : hpLoss; // 과잉 피해는 실제 피해량 표시
-            M_EffectManager.instance.DisPlayeDamage(targetObject, shown);
+            M_EffectManager.instance.DisPlayeDamage(targetObject, shown, critDamageDisplay);
             targetObject.selectedNamePlate.SetHpValue(newHpValue, MAXHP, targetObject);
         }
     }
@@ -456,12 +460,14 @@ public class SpawnedMonster : NetworkBehaviour
         }
     }
 
+    // 몬스터 → 플레이어 일반 공격 — 플레이어 공격과 같은 판정 파이프라인(BattleActions.ResolveHit: 명중·회피·r·약점·치명)을 거친다 (아이템 개편 Phase 1-3).
+    // 광역은 대상마다 개별 판정. MISS(0 데미지)면 피격 모션을 생략한다
     public void GeneralAttack()
     {
         if(nextTarget == ActionTarget.FIXEDPLAYER)
         {
             // 고정 상대일경우 수정 필요!!//
-            int dealt = nextTargetObject.DamageToPlayer(CurrentAttackDamage(nextAction.actionValue), monster.attackAttribute);
+            int dealt = ResolveAttack(nextTargetObject);
             if(dealt <= 0) return; // 완전 경감(0 데미지) — 피격 모션 생략 (숫자 "0"만 표시)
             M_TurnManager.instance.StartAnimation(nextTargetObject,0,"Defense",false);
             if(nextTargetObject.player.character == Character.HONGDANHYANG && nextTargetObject.ironDemonLocation == nextTargetObject)
@@ -474,8 +480,8 @@ public class SpawnedMonster : NetworkBehaviour
                 if(tar == null) return;
                 else if(tar.playerHP == 0)return;
 
-                // 피해를 먼저 적용하고 유효 타격일 때만 피격 모션 재생 — 완전 경감(0)은 숫자 "0"만 표시
-                int dealt = tar.DamageToPlayer(CurrentAttackDamage(nextAction.actionValue), monster.attackAttribute);
+                // 피해를 먼저 적용하고 유효 타격일 때만 피격 모션 재생 — 완전 경감(0)·MISS는 텍스트만 표시
+                int dealt = ResolveAttack(tar);
                 if(dealt <= 0) continue;
 
                 switch(tar.player.character)
@@ -495,6 +501,20 @@ public class SpawnedMonster : NetworkBehaviour
                     tar.ironDemon.GetComponent<SkeletonAnimation>().state.SetAnimation(0,"Defense",false);
             }
         }
+    }
+
+    /// <summary>현재 예고 공격 1타를 대상에게 판정·적용 — 반환 = HP에 들어간 피해 (MISS·완전 경감 0)</summary>
+    [Server]
+    int ResolveAttack(TargetObject target)
+    {
+        if(target == null) return 0;
+        HitContext ctx = new HitContext
+        {
+            attacker = parent, target = target,
+            baseDamage = CurrentAttackDamage(nextAction.actionValue),
+            attribute = monster.attackAttribute,
+        };
+        return BattleActions.ResolveHit(ctx);
     }
 
 }

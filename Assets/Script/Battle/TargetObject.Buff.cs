@@ -103,6 +103,7 @@ public partial class TargetObject
     }
 
 
+    // 실드 가산 — **몬스터 실드 행동 전용** (Phase 2-3에서 방어력 버프로 전환되며 삭제 예정). 플레이어 실드는 TargetObject.Stats의 GainShield(덮어쓰기·치명)를 쓴다 (Q41)
     public void GainDefense(int value)
     {
         // 위험도 가중치 — 몬스터의 방어 획득량 보정 (몬스터별 MonsterStatDB HazardDef x 위험도, 위험도 시스템)

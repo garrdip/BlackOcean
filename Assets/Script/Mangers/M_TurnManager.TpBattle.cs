@@ -28,14 +28,17 @@ public partial class M_TurnManager
     readonly Dictionary<TargetObject, int> tpWeaknessHits = new Dictionary<TargetObject, int>(); // 대상별 약점 피격 횟수 (TP 브레이크 체감용)
 
     // 지속 턴 디버프 (쇠락 등 — 서버 전용). 대상의 턴이 끝날 때마다 남은 턴이 줄고, 0이 되면 버프를 상쇄 제거한다.
-    // 버프 규칙 (RPG_CONVERSION_SKILLS): 중첩되지 않으며 지속 턴만 갱신, 효과는 강한 쪽으로 남는다
+    // 버프 규칙 (RPG_CONVERSION_SKILLS): 기존 ICHI_* 등은 중첩되지 않으며 지속 턴만 갱신, 효과는 강한 쪽으로 남는다 (sourceId == null).
+    // STAT_* 스탯 버프(아이템 개편 Phase 1-12, Q45)는 출처(sourceId)별로 따로 관리해 합산한다 — 같은 출처는 갱신, 다른 출처는 더한다.
     class TpTimedDebuff
     {
         public TargetObject target;
         public BuffType type;
         public int value;
         public int turnsLeft;
-        public bool skipFirstTick; // 대상이 자기 턴 중에 스스로 건 버프(빈틈없는 자세 등) — 이번 턴 종료 감소는 건너뛰어 "N턴"이 온전히 남게 한다
+        public bool skipFirstTick;          // 대상이 자기 턴 중에 스스로 건 버프(빈틈없는 자세 등) — 이번 턴 종료 감소는 건너뛰어 "N턴"이 온전히 남게 한다
+        public string sourceId;             // 출처 (스킬 번호 · "DEFEND" · "HS0" · 물약 번호). null = 구 규칙(종류별 하나)
+        public bool expireOnOwnTurnStart;   // 대상의 다음 자기 턴 **시작**에 만료 (방어 행동·철귀 방어력 — Q40·Q41). 턴 종료 차감을 하지 않는다
     }
     readonly List<TpTimedDebuff> tpTimedDebuffs = new List<TpTimedDebuff>();
 
@@ -135,7 +138,7 @@ public partial class M_TurnManager
 
             // 턴 실행 — 넘친 TP는 이월된다 (민첩이 높으면 자연히 다회 턴)
             next.tp -= 100f;
-            next.target.defense = 0; // 방어(실드)는 자기 다음 턴까지 유지 — 자기 턴 시작에 리셋
+            ExpireTurnStartBuffs(next.target); // 방어 행동·철귀 방어력 버프 만료 (실드는 소진까지 지속 — 턴 시작 리셋 없음, Q37·Q40)
             SyncTpGauges();
             tpActingUnit = next.target;
             if (next.target.objectType == ObjectType.PLAYER)
@@ -195,7 +198,7 @@ public partial class M_TurnManager
     public void ApplyTimedDebuffTo(TargetObject target, BuffType type, int value, int turns, TargetObject from)
     {
         if (target == null || turns <= 0) return;
-        TpTimedDebuff existing = tpTimedDebuffs.Find(debuff => debuff.target == target && debuff.type == type);
+        TpTimedDebuff existing = tpTimedDebuffs.Find(debuff => debuff.target == target && debuff.type == type && debuff.sourceId == null);
         if (existing != null)
         {
             existing.turnsLeft = Mathf.Max(existing.turnsLeft, turns);
@@ -211,18 +214,64 @@ public partial class M_TurnManager
         tpTimedDebuffs.Add(new TpTimedDebuff { target = target, type = type, value = value, turnsLeft = turns, skipFirstTick = target == tpActingUnit });
     }
 
-    // 대상의 턴 종료 시 지속 디버프 감소 — 만료되면 버프를 상쇄 제거
+    /// <summary>
+    /// 스탯 버프 부여 (STAT_* — 아이템 개편 Phase 1-12·1-15, Q45). 출처(sourceId)가 다르면 **합산**, 같은 출처를 다시 쓰면 그 출처의 수치·지속만 갱신.
+    /// 지속: turns턴, 대상의 자기 턴 종료 시 1 차감, 자기 턴 중 부여면 그 턴은 세지 않음 (Q33·Q37).
+    /// expireOnOwnTurnStart = true면 턴 수 대신 "대상의 다음 자기 턴이 올 때까지" (방어 행동·철귀 방어력 — Q40·Q41). value는 양수 = 상승, 음수 = 하락
+    /// </summary>
+    [Server]
+    public void ApplyTimedStatBuff(TargetObject target, BuffType type, int value, int turns, TargetObject from, string sourceId, bool expireOnOwnTurnStart = false)
+    {
+        if (target == null || target.isDying || value == 0 || string.IsNullOrEmpty(sourceId)) return;
+        if (!expireOnOwnTurnStart && turns <= 0) return;
+        TpTimedDebuff existing = tpTimedDebuffs.Find(debuff => debuff.target == target && debuff.type == type && debuff.sourceId == sourceId);
+        if (existing != null)
+        {
+            // 같은 출처 갱신 — 수치는 새 값으로 교체(차액 반영), 지속은 긴 쪽
+            if (existing.value != value)
+            {
+                target.GainBuff(type, value - existing.value, value < 0, false, false, false, from);
+                existing.value = value;
+            }
+            existing.turnsLeft = Mathf.Max(existing.turnsLeft, turns);
+            existing.expireOnOwnTurnStart = expireOnOwnTurnStart;
+            if (target == tpActingUnit) existing.skipFirstTick = true;
+            return;
+        }
+        target.GainBuff(type, value, value < 0, false, false, false, from); // 같은 종류의 다른 출처와 합산된다 (GainBuff isSeparate=false — 표시는 합계)
+        tpTimedDebuffs.Add(new TpTimedDebuff
+        {
+            target = target, type = type, value = value, turnsLeft = turns, sourceId = sourceId,
+            expireOnOwnTurnStart = expireOnOwnTurnStart, skipFirstTick = target == tpActingUnit,
+        });
+    }
+
+    // 대상의 자기 턴 시작 — expireOnOwnTurnStart 버프(방어 행동·철귀 방어력)를 상쇄 제거 (지금 실드 리셋이 있던 자리)
+    [Server]
+    void ExpireTurnStartBuffs(TargetObject target)
+    {
+        for (int i = tpTimedDebuffs.Count - 1; i >= 0; i--)
+        {
+            TpTimedDebuff debuff = tpTimedDebuffs[i];
+            if (debuff.target != target || !debuff.expireOnOwnTurnStart) continue;
+            if (debuff.target != null && !debuff.target.isDying)
+                debuff.target.GainBuff(debuff.type, -debuff.value, debuff.value < 0, false, false, false, debuff.target);
+            tpTimedDebuffs.RemoveAt(i);
+        }
+    }
+
+    // 대상의 턴 종료 시 지속 디버프 감소 — 만료되면 버프를 상쇄 제거. 턴 시작 만료형(expireOnOwnTurnStart)은 세지 않는다
     [Server]
     void TickTimedDebuffs(TargetObject target)
     {
         for (int i = tpTimedDebuffs.Count - 1; i >= 0; i--)
         {
             TpTimedDebuff debuff = tpTimedDebuffs[i];
-            if (debuff.target != target) continue;
+            if (debuff.target != target || debuff.expireOnOwnTurnStart) continue;
             if (debuff.skipFirstTick) { debuff.skipFirstTick = false; continue; } // 자기 턴 중 건 버프는 이번 턴 종료를 세지 않는다
             if (--debuff.turnsLeft > 0) continue;
             if (debuff.target != null && !debuff.target.isDying)
-                debuff.target.GainBuff(debuff.type, -debuff.value, true, false, false, false, debuff.target); // 상쇄 → 값 0이 되며 제거
+                debuff.target.GainBuff(debuff.type, -debuff.value, debuff.value < 0, false, false, false, debuff.target); // 상쇄 → 값 0이 되며 제거
             tpTimedDebuffs.RemoveAt(i);
         }
     }
@@ -272,9 +321,11 @@ public partial class M_TurnManager
             }
             case TpAction.DEFEND:
             {
-                // 방어: 방어력 스탯(장비 합산) + 기본치만큼 실드 획득 (자기 다음 턴 시작까지 유지)
-                // ※실드가 깎일 때는 방어력 공식 미적용 — 대열 보정된 원 데미지 그대로 소모된다 (TargetObject.DamageToPlayer)
-                unit.target.GainDefense(gamePlayer.TotalDefense + Mathf.Max(0, unit.target.GetBuffValue(BuffType.ICHI_DEFENSE)) + BalanceData.Get("DEFEND_BASE_VALUE", 5)); // 방어력 상승 버프(빈틈없는 자세 등 ICHI_DEFENSE 양수)도 실드량에 가산
+                // 방어 행동 (Q40): 실드가 아니라 **물리 방어력 임시 버프** — 증가량 = DEFEND_DEFENSE_UP_BASE(10) + 레벨 x DEFEND_DEFENSE_UP_PER_LEVEL(1) (임시 수치),
+                // 다음 자기 턴이 올 때까지(턴 시작 만료). 마법방어는 오르지 않는다. 철귀 방어력 버프와는 출처가 달라 합산된다 (Q45)
+                int defenseUp = BalanceData.Get("DEFEND_DEFENSE_UP_BASE", 10) + gamePlayer.level * BalanceData.Get("DEFEND_DEFENSE_UP_PER_LEVEL", 1);
+                ApplyTimedStatBuff(unit.target, BuffType.STAT_DEFENSE, defenseUp, 1, unit.target, "DEFEND", true);
+                yield return new WaitForSeconds(0.3f); // 버프 표시 템포 (방어 모션은 캐릭터별 이름이 달라 미재생 — 정식 UI에서)
                 break;
             }
             case TpAction.SKILL:
@@ -287,7 +338,7 @@ public partial class M_TurnManager
                     else if (PayCost(unit.target, skill))
                     {
                         PlayPlayerActionAnimation(unit.target, SkillData.GetMotion(skill)); // 스킬 모션 — 기본 Attack1(임시 공용), 예외는 SkillData.skillMotions (고행길 Defense0 등)
-                        yield return skill.execute(skill, unit.target, ResolveSkillTargets(skill, targetNetId));
+                        yield return skill.execute(new SkillData.SkillCast { def = skill, user = unit.target, targets = ResolveSkillTargets(skill, targetNetId) }); // 콤보 배율 1.0 (연계 기획 전)
                         if (skill.freeAction) tpUsedFreeSkillNo = skill.skillNo;
                     }
                     else
@@ -312,7 +363,7 @@ public partial class M_TurnManager
                     switch (potion.type)
                     {
                         case ConsumableType.HEAL_HP:
-                            unit.target.HealPlayer(potion.value);
+                            gamePlayer.ServerHeal(potion.value, gamePlayer); // 치명 회복 규칙 공용 (Phase 1-10 — 전투 중이라 TargetObject.Heal로 위임)
                             break;
                         case ConsumableType.RESTORE_RESOURCE:
                             gamePlayer.currentResource = Mathf.Min(gamePlayer.maxResource, gamePlayer.currentResource + potion.value);
@@ -338,7 +389,7 @@ public partial class M_TurnManager
         if (user.HasBuff(BuffType.BOOKBANG)) SkillData.GainNorthWarriorStack(user);
     }
 
-    // 턴 종료 효과 — 홍단향 철귀: 자기 턴이 끝날 때 철귀가 붙어 있는 아군(기본은 자신)에게 실드(HS0_DEFENSE)와
+    // 턴 종료 효과 — 홍단향 철귀: 자기 턴이 끝날 때 철귀가 붙어 있는 아군(기본은 자신)에게 방어력 버프(HS0_DEFENSE, STAT_DEFENSE — 그 아군의 다음 턴 시작까지, 방어 행동과 합산 Q41·Q45)와
     // 공격력 버프(HS0_ATTACK, ICHI_ATTACK — 그 아군의 다음 턴 종료까지)를 준다. 철귀 위치는 기본 스킬 '철귀 이동'(HS0)이 바꾼다
     [Server]
     void ApplyPlayerTurnEndEffects(TargetObject user)
@@ -346,7 +397,7 @@ public partial class M_TurnManager
         if (user == null || user.player == null || user.player.character != Character.HONGDANHYANG) return;
         TargetObject holder = user.ironDemonLocation != null ? user.ironDemonLocation : user;
         if (holder.isDying || holder.objectType != ObjectType.PLAYER || holder.playerHP <= 0) return;
-        holder.GainDefense(BalanceData.Get("HS0_DEFENSE", 10));
+        ApplyTimedStatBuff(holder, BuffType.STAT_DEFENSE, BalanceData.Get("HS0_DEFENSE", 10), 1, user, "HS0", true);
         ApplyTimedDebuffTo(holder, BuffType.ICHI_ATTACK, BalanceData.Get("HS0_ATTACK", 3), 1, user);
         AnimIronDemon("Buff0", user);
     }
@@ -491,17 +542,21 @@ public partial class M_TurnManager
         return null;
     }
 
-    /// <summary>약점 피격 시 대상 TP 감소 — 같은 대상에게 반복될수록 효과가 절반씩 줄어든다 (BattleActions가 호출)</summary>
+    /// <summary>약점 피격 시 대상 TP 감소 (09-28 공식, Q12·Q30 — BattleActions.ResolveHit이 호출. 플레이어·몬스터 공통):
+    /// 감소량 = (WEAKNESS_TP_FIXED + WEAKNESS_TP_RATIO x r/10) x (WEAKNESS_TP_REPEAT_PERCENT/100)^(이번 전투에서 그 대상이 약점 피격된 횟수), 하한 WEAKNESS_TP_MIN (0 = 없음)</summary>
     [Server]
-    public void ApplyTpBreakTo(TargetObject target)
+    public void ApplyWeaknessTpDamage(TargetObject target, int randomPercent)
     {
         TpUnit unit = tpUnits.Find(u => u.target == target);
         if (unit == null) return;
         tpWeaknessHits.TryGetValue(target, out int hits);
         tpWeaknessHits[target] = hits + 1;
-        int amount = Mathf.Max(BalanceData.Get("TP_BREAK_MIN", 5), BalanceData.Get("TP_BREAK_BASE", 30) >> hits);
-        unit.tp = Mathf.Max(0f, unit.tp - amount);
-        Debug.Log($"[TpBattle] 약점 브레이크! {target.monster?.monsterName} TP -{amount}");
+        float amount = BalanceData.Get("WEAKNESS_TP_FIXED", 15) + BalanceData.Get("WEAKNESS_TP_RATIO", 5) * randomPercent / 10f;
+        amount *= Mathf.Pow(BalanceData.Get("WEAKNESS_TP_REPEAT_PERCENT", 50) / 100f, hits);
+        int min = BalanceData.Get("WEAKNESS_TP_MIN", 5);
+        int tpDamage = Mathf.Max(min > 0 ? min : 0, Mathf.FloorToInt(amount));
+        unit.tp = Mathf.Max(0f, unit.tp - tpDamage);
+        Debug.Log($"[TpBattle] 약점 브레이크! {(target.monster != null ? target.monster.monsterName : target.player?.character.ToString())} TP -{tpDamage} (r {randomPercent:+0;-0;0}%, 반복 {hits}회째)");
     }
 
     /// <summary>TP 즉시 증가 (에리스 '피의 가속' 등 스킬 효과용)</summary>

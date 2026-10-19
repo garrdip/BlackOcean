@@ -172,7 +172,7 @@ public partial class GamePlayer
         switch (potion.type)
         {
             case ConsumableType.HEAL_HP:
-                HP = Mathf.Min(MaxHP, HP + potion.value);
+                ServerHeal(potion.value, this); // 비전투 회복 — 치명 회복 규칙 공용 (Phase 1-10, Q38)
                 break;
             case ConsumableType.RESTORE_RESOURCE:
                 currentResource = Mathf.Min(maxResource, currentResource + potion.value);

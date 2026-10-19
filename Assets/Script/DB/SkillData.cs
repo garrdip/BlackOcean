@@ -31,6 +31,23 @@ public static partial class SkillData
         public ExecuteSkill execute;
     }
 
+    /// <summary>
+    /// 스킬 1회 시전 컨텍스트 (아이템 개편 Phase 1-4, A9) — 효과 메서드는 이것 하나를 받는다.
+    /// powerMultiplier = 콤보 배율 슬롯 (후속 연계 기획 「후속 검토」 전까지 항상 1.0 — 동작 변화 없음). 피해·회복·실드·버프 수치는 Scale()을 거치고,
+    /// 공격 타격은 BattleActions.AttackTarget(cast, …)이 HitContext에 배율을 싣는다. 퍼센트(보호 분담 %)·지속 턴·도발 대상 수처럼 곱하기 애매한 수치는 배율을 곱하지 않는다
+    /// </summary>
+    public class SkillCast
+    {
+        public SkillDef def;
+        public TargetObject user;
+        public List<TargetObject> targets;
+        public float powerMultiplier = 1f;
+        public int comboOrder;            // 연계 순서 (0 = 단독) — 연계 기획 확정 전까지 미사용
+
+        /// <summary>수치형 효과(회복·실드·버프량·TP 증감·고정 피해)에 콤보 배율 적용 — 배율 1.0이면 그대로</summary>
+        public int Scale(int value) => Mathf.Approximately(powerMultiplier, 1f) ? value : Mathf.RoundToInt(value * powerMultiplier);
+    }
+
     static Dictionary<string, SkillDef> skills;
 
     static void EnsureLoaded()
