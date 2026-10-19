@@ -11,11 +11,13 @@
 ## 멀티플레이어 변경점
 - 획득 경험치량, 아이템 드랍 1.5배.
 - 싱글플레이 세이브 파일에서, 3개의 캐릭터 중 한개 또는 두개의 캐릭터를 들고 올 수 있음.
+- 구현 형식 (2026-10-19, Phase 0): 골드는 플레이어(접속자) 단위 공유 — 싱글 3캐릭터 공유, 멀티 플레이어별. 보상 골드·드랍 굴림은 싱글 파티 1회 / 멀티 캐릭터마다 × 1.5배. 싱글 → 멀티 이관 시 골드 전액. `RPG_CONVERSION_ITEMS.md` §8.
 
 ## 거점
 - 류진솔 ( 출정 관리 / 회복 — 골드 20(`BalanceDB HUB_HEAL_COST`)을 내면 파티 전원 HP 전량 회복. 구 '골드 전달' 메뉴 대체 2026-08-31 )
 - 소피아 ( 위험도 제어 돈으로 위험도를 낮출 수 있음, 저장 )
 - 메르크리우스 상단 ( 콤보카드 가챠, 악세사리 가챠 )
+    - 구현 형식 (2026-10-19, Phase 0): 1차는 상점(기본 장비·물약 구매, 장비 판매) — `ShopDB.csv`(`ShopId, Kind, ItemNo, Price, Description`), 판매가 = `EquipDB.Price × EquipGradeDB.SellPercent`, 장착 중 판매 불가. 가챠는 후순위. `RPG_CONVERSION_ITEMS.md` §10.
 - 그림자꾼 ( 스킬 초기화, 크리스털 가챠 )
 
 ## 맵 
@@ -64,6 +66,7 @@
     - 판정식 (2026-10-19 확정): **단일 판정** — MISS 확률 = max(0, 대상 회피율 + (100 − 공격자 명중률)). 기본 상태(95 / 5)는 10% MISS. 명중 실패와 회피를 따로 굴리지 않는다. 광역 공격은 대상마다 따로 판정하고, MISS 난 타격은 피해·TP 피해·부가 효과(디버프 등)를 모두 생략한다.
 - 치명타율 기본 5%, 에리스만 10%
 - 치명타 배수 150%
+- 구현 형식 (2026-10-19, Phase 0): `CharacterStatDB` `BaseEvade/BaseAccuracy/BaseCrit`, `MonsterStatDB` `Evade/Accuracy/CritRate`(없으면 5/95/0)·`Defense/MagicDefense`·`HazardMdef`. 플레이어·몬스터 공통 조회 `TargetObject.Get*` = 기본치 + 장비 옵션 + `STAT_*` 버프(출처별 합산). BalanceDB `DAMAGE_RANDOM_PERCENT / CRIT_DAMAGE_PERCENT / CRIT_DEFENSE_PERCENT / CRIT_DEFENSE_FLAT_REDUCE / CRIT_TP_DAMAGE`. `RPG_CONVERSION_ITEMS.md` §2·§3.
 
 ## 일반 데미지
 - 공격력 100% + ( -10% ~ + 10% (랜덤보정값))
@@ -77,6 +80,7 @@
 ## 속성 ( 물리/엘리멘탈 )
 - 물리 : 참격, 타격, 관통
 - 마법 : 이치, 심상, 공명
+- 구현 형식 (2026-10-19, Phase 0): `AttackAttribute { NONE, SLASH, STRIKE, PIERCE, ICHI, SIMSANG, RESONANCE }`, `IsMagic()` = 이치·심상·공명 → 마법방어로 경감. 기존 `MAGIC`은 `ICHI`로 이관 (SkillDB HS1·HS3, MonsterStatDB 10행). 로컬라이즈 `attr.<enum>`. `RPG_CONVERSION_ITEMS.md` §1.
 
 ## 기본 공격 속성 ( 평타 )
 - 기본 공격의 속성과 계수는 **장착한 무기가 정한다** (2026-10-19 확정 — 캐릭터 고정 폐기. 무기 착용 제한이 없으므로 무기를 바꾸면 평타가 바뀐다)
@@ -92,6 +96,7 @@
 *약점TP고정계수 : 15 (언제든 수정 가능하도록 설계)
 *약점TP비율계수 : 5
 *약점치명보정계수 : 10
+- 구현 형식 (2026-10-19, Phase 0): BalanceDB `WEAKNESS_DAMAGE_PERCENT`(120) / `WEAKNESS_TP_FIXED`(15) / `WEAKNESS_TP_RATIO`(5) / `WEAKNESS_CRIT_BONUS`(10) / `WEAKNESS_TP_REPEAT_PERCENT`(50 — 같은 대상 반복 체감, 플레이어 대상 포함) / `WEAKNESS_TP_MIN`(5). 플레이어·몬스터 같은 공식·같은 키. 플레이어 약점은 방어구 세트가 정한다 (「방어구」). `RPG_CONVERSION_ITEMS.md` §3·§6.
 
 
 # 판정 순서 
@@ -115,6 +120,7 @@
 ## 무기
 - 기본적으로 캐릭터별 착용 제한은 없음
 - 대검, 장검, 지팡이, 책, 수정구, 핵
+- 구현 형식 (2026-10-19, Phase 0): `WeaponType { NONE, GREATSWORD, LONGSWORD, STAFF, BOOK, ORB, CORE }`. `EquipDB.csv` 무기 행 = `WeaponType, Attribute(기본 공격 속성), PhysicalAttack, MagicAttack`(둘 다 가짐, 0 허용). 최종 물리공격력 = 힘 + 무기 물리공격력, 최종 마법공격력 = 지능 + 무기 마법공격력. 평타 계수는 무기 속성이 물리면 물리공격력, 마법이면 마법공격력 (※ 에리스 핵은 확인 중 — ITEMS §4-1). `RPG_CONVERSION_ITEMS.md` §4.
 
 ## 방어구
 중갑 : 타격, 공명 약점
@@ -136,6 +142,7 @@
 
 - 악세사리1
 - 악세사리2
+- 구현 형식 (2026-10-19, Phase 0): `ArmorType { NONE, HEAVY, LIGHT, ROBE }`, `ArmorTypeDB.csv`(`ArmorType, Weaknesses, NameKey` — HEAVY = STRIKE|RESONANCE, LIGHT = PIERCE|SIMSANG, ROBE = SLASH|ICHI). 갑옷·투구·신발 행마다 `ArmorType`·`RequireStr`. 세트 규칙은 코드(`GamePlayer.GetWeaknesses`): 미착용 부위 있음 → 전 속성 / 1종 → 그 종류 약점 / 2종 → 합집합 / 3종 → 전 속성, 그다음 약점 상쇄 옵션 속성을 뺀다. 힘 요구치 비교값 = 힘 스탯(기본 + 힘 옵션 + 힘 버프, 무기 공격력 제외), 미달 부위가 하나라도 있으면 민첩 × `ARMOR_STR_PENALTY_AGI_PERCENT`(50)% 1회. 새 캐릭터는 같은 종류 3부위 세트 지급 (게오르크 중갑 / 에리스 경갑 / 홍단향 로브, 요구치 ≤ 기본 힘). `RPG_CONVERSION_ITEMS.md` §6.
 
 ## 장비 옵션
 # 등급
@@ -158,12 +165,14 @@
 전설 옵션 : 회피율 상승, 이동시 턴 소모제거, 포지션 패널티 제거, 
 - 악세사리 : 방어력, 민첩, 힘, 지능, 제어, HP, MP, 보호막, 
 전설 옵션 : 분노 최대치 증가, 포지션 패널티 제거, 이동시 턴 소모 제거, 생명력 흡수, 스킬 추가 데미지, 콤보 추가 데미지, 반사데미지(고정), 반사데미지(데미지비례), 받는 회복량증가, 치명타 확률, 회피율, 치명타 데미지, 약점 상쇄
+- 구현 형식 (2026-10-19, Phase 0): `EquipGrade { NORMAL, ADVANCED, RARE, LEGEND }` + `EquipGradeDB.csv`(등급별 옵션 개수·드랍 가중치·엘리트/보스 보너스·위험도 하한·판매율·색). `EquipOptionType` 22종(일반 8 + 전설 14) + `EquipOptionDB.csv`(옵션 × 등급마다 `Slots, MinValue, MaxValue, IsPercent, ValueKind(NUMBER|ATTRIBUTE|FLAG), Weight, AttributePool` — 등급마다 수치 범위가 다름, 약점 상쇄는 속성 1가지 랜덤). 드랍 시 범위 안에서 굴려 장비 인스턴스(`EquipInstance { instanceId, equipNo, grade, optionTypes[], optionValues[] }`)로 보유·동기화·저장. 최대 HP/MP/분노 옵션은 고유치에 더해 매번 계산(`TotalMaxHP`)하고 세이브에는 고유치만 저장. 스택: 수치 합산 / 플래그 OR / 속성 합집합. `RPG_CONVERSION_ITEMS.md` §5.
 
 
 ## 아이템
 - HP물약 
 - MP물약 
 - 버프 물약 ( 치명타 확률 물약, 회피율 상승 물약, 공격력 상승 물약, 분노의 물약, 극약(자신의 피를 1만남김),  )
+- 구현 형식 (2026-10-19, Phase 0): `ConsumableDB.csv`(`PotionNo, Name, Effect, ValidTarget, Value, Duration, BattleOnly, UsableResource, Price, DropWeight, Description`). `Effect` = `ConsumableEffects`의 같은 이름 정적 메서드(스킬과 같은 리플렉션 바인딩) — 새 효과 = CSV 행 + 메서드 1개, 변형(HP 30/60)은 행만. 1차는 자신 대상(`ValidTarget=NONE`)만, 효과 인자는 `GamePlayer` 기준이라 거점·미로에서도 쓴다(전투 중엔 TargetObject 보강). 버프 물약은 전투 전용, 사용 턴 제외 n턴. MP/분노 물약은 자원 종류가 맞는 캐릭터만. 극약은 후순위. 드랍은 몬스터별 `DropTableDB.csv`(`TableId, Kind, ItemNo, Chance(100 초과 = 추가 판정), MinHazard`). `RPG_CONVERSION_ITEMS.md` §7·§9.
 
 ## 스킬 (RPG_CONVERSION_SKILLS.md 참조)
 - 스킬트리 ( 드퀘식 )

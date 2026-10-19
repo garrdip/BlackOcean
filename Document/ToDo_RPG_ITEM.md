@@ -146,12 +146,12 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 **목표**: 판정·몬스터 방어·인스턴스 장비·옵션·방어구·소모품·드랍 데이터 형식을 확정해, 이후 Phase가 CSV만 채우면 되게 한다.
 ※ 이 Phase는 **설계와 기획서 기록만** 한다. CSV 파일의 헤더를 실제로 바꾸면 로더(`EquipData`·`ConsumableData`·`MonsterData`)가 깨지므로 파일 변경은 Phase 3·6·7에서 로더와 함께 한다.
 
-- [ ] 0-1. `EquipGrade` enum + **`EquipGradeDB.csv`** (Q3): `Grade, OptionCountMin, OptionCountMax, LegendOptionCount, AccessoryOptionCountMin, AccessoryOptionCountMax, DropWeight, EliteBonusWeight, BossBonusWeight, MinHazard, SellPercent, ColorHex, NameKey`
+- [x] 0-1. `EquipGrade` enum + **`EquipGradeDB.csv`** (Q3): `Grade, OptionCountMin, OptionCountMax, LegendOptionCount, AccessoryOptionCountMin, AccessoryOptionCountMax, DropWeight, EliteBonusWeight, BossBonusWeight, MinHazard, SellPercent, ColorHex, NameKey`
       기획 기본값: NORMAL 0개(악세사리 1개) / ADVANCED 1~2개 / RARE 1~2개 / LEGEND 일반 2개 + 전설 1개. 수치 높낮이는 0-3의 등급별 범위가 정한다
-- [ ] 0-2. `EquipOptionType` enum 초안 (`Common/ProjectD.cs`)
+- [x] 0-2. `EquipOptionType` enum 초안 (`Common/ProjectD.cs`)
       - 일반: `STRENGTH, INTELLIGENCE, AGILITY, CONTROL, MAX_HP, MAX_MP, DEFENSE, SHIELD`
       - 전설 14종: `LIFE_STEAL, SKILL_DAMAGE, COMBO_DAMAGE, CRIT_DAMAGE, REFLECT_FLAT, REFLECT_PERCENT, HEAL_RECEIVED, WEAKNESS_NULLIFY, CRIT_RATE, ACCURACY, EVADE, FREE_MOVE, NO_ROW_PENALTY, MAX_RAGE`
-- [ ] 0-3. **`EquipOptionDB.csv`** — 옵션 × 등급마다 한 행 (Q3): `OptionType, Grade, Slots('|' — WEAPON|ARMOR|HELMET|BOOTS|ACCESSORY), MinValue, MaxValue, IsPercent(0/1), ValueKind(NUMBER|ATTRIBUTE|FLAG), Weight, NameKey`
+- [x] 0-3. **`EquipOptionDB.csv`** — 옵션 × 등급마다 한 행 (Q3): `OptionType, Grade, Slots('|' — WEAPON|ARMOR|HELMET|BOOTS|ACCESSORY), MinValue, MaxValue, IsPercent(0/1), ValueKind(NUMBER|ATTRIBUTE|FLAG), Weight, NameKey`
       - 전설 옵션은 `Grade=LEGEND` 행만 둔다. 한 옵션이 등급마다 다른 범위를 가질 수 있다 (예: 민첩 ADVANCED 1~3 / RARE 3~5 / LEGEND 5~8)
       - `WEAKNESS_NULLIFY`는 `ValueKind=ATTRIBUTE` — 굴린 값이 `AttackAttribute`(Q23). 후보 속성과 가중치는 `AttributePool` 컬럼('|' 구분) 또는 별도 행으로 둔다
       - `FREE_MOVE`/`NO_ROW_PENALTY`는 `ValueKind=FLAG` (값 없음)
@@ -163,27 +163,27 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
       | 투구 | 힘·지능·HP·MP | 치명타 확률·명중률 |
       | 신발 | 민첩·HP·MP·제어 | 회피율·이동 시 턴 소모 제거·포지션 패널티 제거 |
       | 악세사리 | 방어력·민첩·힘·지능·제어·HP·MP·보호막 | 분노 최대치·포지션 패널티 제거·이동 턴 소모 제거·생명력 흡수·스킬 추가 데미지·콤보 추가 데미지·반사(고정)·반사(비례)·받는 회복량·치명타 확률·회피율·치명타 데미지·약점 상쇄 |
-- [ ] 0-4. `EquipDB.csv` 개편안 — 기본 옵션만 남긴다: `EquipNo, Name, Slot, WeaponType, ArmorType, Attribute, RequireLevel, RequireStr, PhysicalAttack, MagicAttack, Defense, MagicDefense, Price, DropWeight, Description`
+- [x] 0-4. `EquipDB.csv` 개편안 — 기본 옵션만 남긴다: `EquipNo, Name, Slot, WeaponType, ArmorType, Attribute, RequireLevel, RequireStr, PhysicalAttack, MagicAttack, Defense, MagicDefense, Price, DropWeight, Description`
       - 삭제: `Character`(착용 제한 없음), `Grade`(인스턴스가 가짐), `Agility/MaxHP/MaxResource`(추가 옵션으로 이관), `SkillLevel`(Q1)
       - 무기: **모든 무기 행이 `PhysicalAttack`·`MagicAttack`을 둘 다 가진다** (Q22 — 값은 무기마다 CSV로 조절, 0 허용). **`Attribute`(무기 행만, Q25)** = 기본 공격 속성 — `CharacterStatDB.BasicAttackAttribute`는 폐기. 무기 공격력은 힘·지능 스탯에 더하지 않고 `TotalPhysicalAttack/TotalMagicAttack`으로 따로 합산한다 (3-6)
       - 갑옷·투구·신발: `ArmorType` + `RequireStr` + 방어력·마법방어. 악세사리: 기본 옵션 없음 (노멀도 추가 옵션 1개)
-- [ ] 0-5. `WeaponType { NONE, GREATSWORD, LONGSWORD, STAFF, BOOK, ORB, CORE }` (대검·장검·지팡이·책·수정구·핵) / `ArmorType { NONE, HEAVY, LIGHT, ROBE }` (중갑·경갑·로브)
-- [ ] 0-6. **`ArmorTypeDB.csv`**: `ArmorType, Weaknesses('|'), NameKey` — HEAVY = STRIKE|RESONANCE, LIGHT = PIERCE|SIMSANG, ROBE = SLASH|ICHI.
+- [x] 0-5. `WeaponType { NONE, GREATSWORD, LONGSWORD, STAFF, BOOK, ORB, CORE }` (대검·장검·지팡이·책·수정구·핵) / `ArmorType { NONE, HEAVY, LIGHT, ROBE }` (중갑·경갑·로브)
+- [x] 0-6. **`ArmorTypeDB.csv`**: `ArmorType, Weaknesses('|'), NameKey` — HEAVY = STRIKE|RESONANCE, LIGHT = PIERCE|SIMSANG, ROBE = SLASH|ICHI.
       세트 규칙(기획서 「방어구」)은 코드 규칙으로 두고 기획서 절에 "구현 형식"으로 적는다: 3부위(갑옷·투구·신발) 중 미착용 부위가 있으면 전 속성 / 착용 종류 1개 = 그 종류 약점 / 2개 = 두 종류 약점 합집합 / 3개 = 전 속성
-- [ ] 0-7. `AttackAttribute` 개편안 (Q15): `{ NONE, SLASH, STRIKE, PIERCE, ICHI, SIMSANG, RESONANCE }` + `IsMagic()` = ICHI·SIMSANG·RESONANCE. 기존 CSV의 `MAGIC` 값을 `ICHI`로 바꾸는 이관 목록 작성 (SkillDB `Attribute`, MonsterStatDB `Weakness/AttackAttribute`, EquipDB 무기 `Attribute` — `CharacterStatDB.BasicAttackAttribute`는 Q25로 삭제)
-- [ ] 0-8. 장비 인스턴스 형식: `EquipInstance { string instanceId; string equipNo; EquipGrade grade; int[] optionTypes; int[] optionValues; }`
+- [x] 0-7. `AttackAttribute` 개편안 (Q15): `{ NONE, SLASH, STRIKE, PIERCE, ICHI, SIMSANG, RESONANCE }` + `IsMagic()` = ICHI·SIMSANG·RESONANCE. 기존 CSV의 `MAGIC` 값을 `ICHI`로 바꾸는 이관 목록 작성 (SkillDB `Attribute`, MonsterStatDB `Weakness/AttackAttribute`, EquipDB 무기 `Attribute` — `CharacterStatDB.BasicAttackAttribute`는 Q25로 삭제)
+- [x] 0-8. 장비 인스턴스 형식: `EquipInstance { string instanceId; string equipNo; EquipGrade grade; int[] optionTypes; int[] optionValues; }`
       `optionValues`는 `ValueKind`에 따라 수치 / `AttackAttribute` 정수 / 1(플래그)을 담는다. Mirror `SyncList<EquipInstance>` — 필드가 기본형·배열뿐이라 Weaver 자동 직렬화가 된다 (`List<>` 필드 금지)
-- [ ] 0-9. **소모품 구조** (Q5, Q6) — `ConsumableDB.csv`: `PotionNo, Name, Effect, ValidTarget, Value, Duration, BattleOnly(0/1), UsableResource(ANY|MP|RAGE|HP), Price, DropWeight, Description`
+- [x] 0-9. **소모품 구조** (Q5, Q6) — `ConsumableDB.csv`: `PotionNo, Name, Effect, ValidTarget, Value, Duration, BattleOnly(0/1), UsableResource(ANY|MP|RAGE|HP), Price, DropWeight, Description`
       - `Effect` = 효과 메서드 이름. 스킬(`SkillData`)과 같은 **리플렉션 바인딩** — `ConsumableEffects.<Effect>(ConsumableDef def, TargetObject user, TargetObject target)`
       - 같은 효과의 변형(HP 물약 30/60 등)은 **CSV 행만** 추가, 새 효과는 **CSV 행 + 같은 이름의 메서드** 추가
       - `ValidTarget`은 스킬과 같은 enum을 재사용한다. 스킬이 `NONE`을 "자신·대상 불필요"로 쓰므로 **소모품도 `NONE` = 자신**으로 통일한다 (`SELF`를 따로 추가하지 않는다 — R10). 1차는 `NONE`만 허용, 추후 `MEMBER/ENEMY`를 열면 대상 선택 UI만 붙이면 되게 한다
       - 효과 메서드의 사용자·대상 인자는 **`GamePlayer` 기준**이다 (Q38, R1). 거점·미로에는 TargetObject가 없다. 전투 중에는 `M_TurnManager.GetCurrentPlayerTargetObject`로 TargetObject를 찾아 전투 전용 효과(스탯 버프·치명 회복)를 보강한다. 몬스터 대상(추후)은 TargetObject만 있으므로 "유닛" 추상(`GamePlayer` 또는 `TargetObject`를 감싸는 `IBattleUnit`)을 두는 것을 검토
       - 1차 효과: `HEAL_HP, RESTORE_MP, RESTORE_RAGE, BUFF_ATTACK, BUFF_CRIT_RATE, BUFF_EVADE`. 극약(`POISON_TO_ONE`)은 후순위 (Q6)
       - `ConsumableType` enum은 폐기한다 (`Effect` 문자열 바인딩으로 대체)
-- [ ] 0-10. 보조 스탯·방어 스탯 컬럼
+- [x] 0-10. 보조 스탯·방어 스탯 컬럼
       - `CharacterStatDB.csv`: `BaseEvade, BaseAccuracy, BaseCrit` 추가 (게오르크·홍단향 5/95/5, 에리스 10/95/10), `Weakness/Resist` 삭제 (Q17), `BasicAttackAttribute`·`AttackStat` 삭제 (Q25 — 무기 속성이 기본 공격의 속성과 계수를 모두 정한다)
       - `MonsterStatDB.csv`: `Evade, Accuracy, CritRate`(없으면 5/95/0, Q4), **`Defense, MagicDefense`**(Q14), `HazardMdef` 추가, `HazardDef` 의미 변경 (A3), `DropTable` 추가 (0-12). 미사용 `TPShield` 컬럼은 삭제 여부를 확인한다 (`Monster.tpShield` 로드만 되고 참조 없음)
-- [ ] 0-11. BalanceDB 키 목록 확정 (플레이어·몬스터 공용 — Q18)
+- [x] 0-11. BalanceDB 키 목록 확정 (플레이어·몬스터 공용 — Q18)
       - 판정: `DAMAGE_RANDOM_PERCENT`(10), `CRIT_DAMAGE_PERCENT`(150 — 피해·회복·실드 부여 공용, Q29), `CRIT_DEFENSE_PERCENT`(50), `CRIT_DEFENSE_FLAT_REDUCE`(10), `CRIT_TP_DAMAGE`(5)
       - 방어 행동 (Q40): `DEFEND_DEFENSE_UP_BASE`(10)·`DEFEND_DEFENSE_UP_PER_LEVEL`(1) — 방어 행동 시 물리 방어력 +(기본 + 레벨 × 레벨당), 임시 수치. `DEFEND_BASE_VALUE` 폐기. 철귀: `HS0_DEFENSE`(10)의 의미를 실드량 → 방어력 버프량으로 (Q41)
       - 약점: `WEAKNESS_DAMAGE_PERCENT`(120, 기존), `WEAKNESS_TP_FIXED`(15), `WEAKNESS_TP_RATIO`(5), `WEAKNESS_CRIT_BONUS`(10), **`WEAKNESS_TP_REPEAT_PERCENT`**(50 — 반복 체감률, Q12. 플레이어 대상에도 적용 — Q30), `WEAKNESS_TP_MIN`(구 `TP_BREAK_MIN` 개명, 0이면 하한 없음)
@@ -191,15 +191,16 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
       - 드랍: `ITEM_DROP_MULTIPLAYER_PERCENT`(150)
       - 폐기: `TP_BREAK_BASE`, `TP_BREAK_MIN`(개명), `EQUIP_DROP_PERCENT`·`POTION_DROP_PERCENT`·`EQUIP_DROP_MIN_HAZARD`(드랍 테이블로 대체, Q24), `SKILL_LEVEL_BONUS_PERCENT`(Q1 — 크리스털 작업과 함께 정리), `DEFEND_BASE_VALUE`(Q40)
       - 등급 가중치·전설 위험도 하한·옵션 배율 키는 **만들지 않는다** — `EquipGradeDB`/`EquipOptionDB`가 가진다 (Q3)
-- [ ] 0-12. **드랍 테이블** (Q24) — `DropTableDB.csv`: `TableId, Kind(EQUIP|POTION), ItemNo, Chance, MinHazard, Description`
+- [x] 0-12. **드랍 테이블** (Q24) — `DropTableDB.csv`: `TableId, Kind(EQUIP|POTION), ItemNo, Chance, MinHazard, Description`
       - `ItemNo`는 특정 `EquipNo/PotionNo` 또는 풀 지정자(`ANY_EQUIP`, `ANY_WEAPON`, `ANY_ARMOR`, `ANY_ACCESSORY`, `ANY_POTION` — `DropWeight` 가중 추출)
       - `Chance`는 %이며 100을 넘을 수 있다. 판정: 100 이하 부분은 확정, 넘는 몫은 추가 1회 판정 확률 (예: 150 → 1개 확정 + 50%로 1개 더)
       - `MonsterStatDB.DropTable`로 몬스터마다 테이블을 지정한다 (없으면 `DEFAULT_NORMAL/ELITE/BOSS` 테이블)
-- [ ] 0-13. **스탯 버프 타입** (Q15) — 이 워크플로우가 새로 쓰는 버프는 `ICHI_*`가 아니라 스탯 이름 기반으로 정의한다: `STAT_ATTACK, STAT_STRENGTH, STAT_DEFENSE, STAT_MAGIC_DEFENSE, STAT_CRIT_RATE, STAT_EVADE, STAT_ACCURACY` (양수 = 상승, 음수 = 하락). `STAT_STRENGTH`(힘 버프)는 `STAT_ATTACK`(공격력 버프)과 다르다 — 힘 요구치 판정(Q42)에는 힘 버프만 들어간다.
+- [x] 0-13. **스탯 버프 타입** (Q15) — 이 워크플로우가 새로 쓰는 버프는 `ICHI_*`가 아니라 스탯 이름 기반으로 정의한다: `STAT_ATTACK, STAT_STRENGTH, STAT_DEFENSE, STAT_MAGIC_DEFENSE, STAT_CRIT_RATE, STAT_EVADE, STAT_ACCURACY` (양수 = 상승, 음수 = 하락). `STAT_STRENGTH`(힘 버프)는 `STAT_ATTACK`(공격력 버프)과 다르다 — 힘 요구치 판정(Q42)에는 힘 버프만 들어간다.
       버프 개편 작업과 이름·구조를 맞춘다 — 개편이 먼저 끝나면 그 타입을 쓴다. `BuffDB.csv`·`buff.<enum>.name` 로컬라이즈 행 포함
-- [ ] 0-14. `ShopDB.csv` (Q20, A8): `ShopId, Kind(EQUIP|POTION), ItemNo, Price(비우면 DB Price), Description` — 1차 `ShopId=MERCURIUS`
+- [x] 0-14. `ShopDB.csv` (Q20, A8): `ShopId, Kind(EQUIP|POTION), ItemNo, Price(비우면 DB Price), Description` — 1차 `ShopId=MERCURIUS`
 
 **완료 기준**: 위 CSV 헤더·enum·세트 규칙이 기획서 「장비 옵션」「아이템」「속성」「방어구」「약점 공격」 절에 "구현 형식" 줄로 적혀 있다.
+**완료 (2026-10-19)** — 상세 형식은 `RPG_CONVERSION_ITEMS.md` §1~§11, 기획서 9개 절(「멀티플레이어 변경점」「거점」「보조 스탯」「속성」「약점 공격」「무기」「방어구」「장비 옵션」「아이템」)에 "구현 형식 (2026-10-19, Phase 0)" 줄 추가. 수치는 전부 초안(9-4). 에리스 평타 계수(ITEMS §4-1)는 검토 문서 I1로 확인 중 — Phase 3-6에서 반영.
 
 ---
 
