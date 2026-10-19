@@ -26,7 +26,7 @@ public class Guardian : SpawnedMonster
                 yield return new WaitForSeconds(0.867f);
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList){
                     RpcStartSkillEffect(1, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Devourer, 2, "Effect");
-                    tar.GainDefense(ScaledDefense(nextAction.actionValue)); // 실드 = ActionValue(위험도 보정)
+                    GainDefenseBuff(tar, nextAction.actionValue); // 방어력 +ActionValue 3턴 (Phase 2 임시 전환 — 위험도 보정은 기본 방어력 스탯에)
                 }
                 yield return new WaitForSeconds(0.8f);
                 ReturnToIdleAnimation();
@@ -57,7 +57,7 @@ public class Guardian : SpawnedMonster
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,CurrentAttackDamage(nextAction.actionValue).ToString());
                 break;
             case "광역방어" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,true,ActionTarget.WHOLE_ALLY,ScaledDefense(nextAction.actionValue).ToString());
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,true,ActionTarget.WHOLE_ALLY,nextAction.actionValue.ToString());
                 break;
         }
     }

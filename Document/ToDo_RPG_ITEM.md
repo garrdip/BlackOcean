@@ -265,18 +265,18 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 
 **목표**: 몬스터가 실드 대신 방어력·마법방어 스탯을 가지고, 플레이어의 공격이 몬스터 방어 공식으로 경감된다. 실드를 쓰던 몬스터 7종은 임시 행동으로 돌아가고, 정식 리워크를 기다린다.
 
-- [ ] 2-1. 로드 — `MonsterData`에 `defense/magicDefense/hazardMdefBonus` 추가. `hazardDefBonus`는 방어력 스탯 보정으로 의미 변경 (A3 확정, Q44). `SpawnedMonster.ScaledDefense`를 "위험도 보정 방어력 스탯"으로 재정의하고, 1-2의 `GetDefense/GetMagicDefense`가 쓴다
-- [ ] 2-2. 몬스터 피격 방어 공식 — `DamageToMonster(damage, from, attribute, isCritical)`가 `ApplyDefenseFormula`(1-2 `IsMagic`이면 마법방어)를 적용한다 (1-3 역할 분담). `DamageToMonster`·`StaticDamageToMonster`·`THEREISNOJABI` 경로의 실드(`defense`) 분기를 모두 제거한다 (몬스터의 `defense` SyncVar는 쓰지 않음). `StaticDamageToMonster`는 방어 무시 유지
-- [ ] 2-3. 몬스터 실드 행동 임시 전환 (A1 확정, Q37) — `Soldier_Shield`, `WacherB`, `Guardian`, `SpearManB`, `GiantSoldier`(SinglePattern 리터럴 10/15/20도 MonsterDB로), `Happy`, `Saddy`의 `GainDefense` 호출을 `ApplyTimedDebuffTo(STAT_DEFENSE, +ActionValue, 3턴)`으로 바꾼다 (자기 턴 종료 차감 — 1-12 규칙). 예고 아이콘은 DEFENSE 유지. `TargetObject.GainDefense`의 몬스터 분기(`ScaledDefense` 보정)는 제거
-- [ ] 2-4. 스킬·몬스터 행동 이관 (Q31) — 에리스 부서지세요(ES6)·얼마나 버틸까요(ES8): "현재 실드 즉시 삭감 + 방어 획득량 감소 디버프(`ICHI_DEFENSE` 음수)" → **몬스터 방어력 디버프**(`STAT_DEFENSE` 음수, 수치·지속은 기존 BalanceDB `ERIS_BREAK_*`/`ERIS_ENDURE_*`). SkillDB 설명문과 `RPG_CONVERSION_SKILLS.md` 구현 줄을 고친다.
+- [x] 2-1. 로드 — `MonsterData`에 `defense/magicDefense/hazardMdefBonus` 추가. `hazardDefBonus`는 방어력 스탯 보정으로 의미 변경 (A3 확정, Q44). `SpawnedMonster.ScaledDefense`를 "위험도 보정 방어력 스탯"으로 재정의하고, 1-2의 `GetDefense/GetMagicDefense`가 쓴다
+- [x] 2-2. 몬스터 피격 방어 공식 — `DamageToMonster(damage, from, attribute, isCritical)`가 `ApplyDefenseFormula`(1-2 `IsMagic`이면 마법방어)를 적용한다 (1-3 역할 분담). `DamageToMonster`·`StaticDamageToMonster`·`THEREISNOJABI` 경로의 실드(`defense`) 분기를 모두 제거한다 (몬스터의 `defense` SyncVar는 쓰지 않음). `StaticDamageToMonster`는 방어 무시 유지
+- [x] 2-3. 몬스터 실드 행동 임시 전환 (A1 확정, Q37) — `Soldier_Shield`, `WacherB`, `Guardian`, `SpearManB`, `GiantSoldier`(SinglePattern 리터럴 10/15/20도 MonsterDB로), `Happy`, `Saddy`의 `GainDefense` 호출을 `ApplyTimedDebuffTo(STAT_DEFENSE, +ActionValue, 3턴)`으로 바꾼다 (자기 턴 종료 차감 — 1-12 규칙). 예고 아이콘은 DEFENSE 유지. `TargetObject.GainDefense`의 몬스터 분기(`ScaledDefense` 보정)는 제거
+- [x] 2-4. 스킬·몬스터 행동 이관 (Q31) — 에리스 부서지세요(ES6)·얼마나 버틸까요(ES8): "현재 실드 즉시 삭감 + 방어 획득량 감소 디버프(`ICHI_DEFENSE` 음수)" → **몬스터 방어력 디버프**(`STAT_DEFENSE` 음수, 수치·지속은 기존 BalanceDB `ERIS_BREAK_*`/`ERIS_ENDURE_*`). SkillDB 설명문과 `RPG_CONVERSION_SKILLS.md` 구현 줄을 고친다.
       전수 점검 목록 (R8):
       - `WacherA` 방어 저하(플레이어 대상 `ICHI_DEFENSE` 음수 → 실드 획득량 감소) → `STAT_DEFENSE` 음수 **3턴** (Q31 — 방어력과 실드는 다른 개념)
       - `SpearManB` 방어 행동의 `ICHI_DEFENSE` 가산 → `STAT_DEFENSE` 버프 합산으로
       - `TargetObject.GainDefense`의 `ICHI_DEFENSE` 음수 차감 — 플레이어 실드 획득량 감소 경로는 Q31로 쓰이지 않게 되므로 제거 (`GainDefense` 자체는 1-10 `GainShield`로 대체)
       - 게오르크 빈틈없는 자세(GS14)·찌르고 막기(GS15)·고통 수집(GS16)의 `ICHI_DEFENSE` 양수 → `STAT_DEFENSE` 양수로 옮기면 1-2 `GetDefense`가 자동 가산 (버프 개편과 겹치면 개편 쪽에서)
       - `ICHI_ATTACK`(Devourer·Saddy·SpearManB·WacherB·기도·철귀·쇠락)은 **버프 개편 범위 — 이 Phase에서 건드리지 않는다**
-- [ ] 2-5. 수치 초안 — `MonsterStatDB`에 몬스터별 `Defense/MagicDefense`를 채운다 (방패병·거인병·수호자는 높게, 감시자·치유사는 마법방어 위주). 기존 `WacherB` 등의 실드 수치를 참고해 1스테이지 전투 길이가 크게 변하지 않게 맞춘다
-- [ ] 2-6. 표시 — 몬스터 이름표/디버그에 방어력·마법방어 표시 (실드 게이지는 몬스터에게 더 이상 뜨지 않음)
+- [x] 2-5. 수치 초안 — `MonsterStatDB`에 몬스터별 `Defense/MagicDefense`를 채운다 (방패병·거인병·수호자는 높게, 감시자·치유사는 마법방어 위주). 기존 `WacherB` 등의 실드 수치를 참고해 1스테이지 전투 길이가 크게 변하지 않게 맞춘다
+- [x] 2-6. 표시 — 몬스터 이름표/디버그에 방어력·마법방어 표시 (실드 게이지는 몬스터에게 더 이상 뜨지 않음)
 
 **완료 기준**
 - 방패병을 공격하면 방어 공식으로 경감된 피해가 들어가고, 치명타는 방어를 50% − 10으로 계산한다
@@ -284,6 +284,14 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 - 부서지세요가 몬스터 방어력을 낮춰 이후 피해가 늘어난다
 - 감시자A의 방어 저하를 받은 플레이어는 3턴 동안 방어 공식의 방어력이 낮아진다 (실드량은 영향 없음)
 - 플레이어의 방어 행동(방어력 버프)·수호 축복 실드는 그대로 작동한다 (Q40·Q41)
+
+**구현 (2026-10-19)** — 컴파일 확인. **인게임 플레이 확인은 아직** (Phase 1과 함께 1스테이지 전투로 확인).
+- `MonsterStatDB.csv` 헤더 교체: `TPShield` 삭제, `Evade/Accuracy/CritRate/Defense/MagicDefense/HazardMdef` 추가 (DropTable은 Phase 7). 방어 수치는 초안 — 방패병 15/5, 수호자 20/8, 거인병 18/4, 감시자 3~5/10~12, 보스 20~30/15~25
+- `SpawnedMonster.ScaledDefense()/ScaledMagicDefense()` = 스탯 + Hazard × 위험도 (구 `ScaledDefense(int)` 폐기). 원격 클라이언트는 `Data`(monsterName → MonsterDB)로 조회. `TargetObject.GetDefense/GetMagicDefense`가 몬스터 분기로 사용, 0 하한
+- `DamageToMonster`·`StaticDamageToMonster`에서 실드(`defense`) 분기 삭제, `TargetObject.GainDefense` 삭제 (유물 `ItemMethods`는 `GainShield`로 임시 연결 — 3-1에서 삭제)
+- 실드 몬스터 7종 → `SpawnedMonster.GainDefenseBuff(target, amount)` = `STAT_DEFENSE` +amount 3턴 (출처 `{몬스터명}_DEFEND`). 거인병 10/15/20은 BalanceDB `GIANTSOLDIER_DEFENSE_UP_BASE/PER_STEP`. 창잡이B의 누적 +2는 `STAT_DEFENSE` 영구 버프
+- 2-4: 부서지세요·얼마나 버틸까요 → `STAT_DEFENSE` 음수(출처 = 스킬 번호), 감시자A 방어감소 → `STAT_DEFENSE` 음수 3턴, 빈틈없는 자세·찌르고 막기·고통 수집 → `STAT_DEFENSE` 양수(출처 = 스킬 번호). 플레이어 `GetDefense`의 `ICHI_DEFENSE` 가산 제거. `ICHI_ATTACK`은 미변경
+- 2-6: 전투 OnGUI TP 라벨에 몬스터 `방 x / 마방 y` 표시. 몬스터 실드 게이지는 더 이상 변하지 않는다 (`OnBreakedShield` 경로는 남아 있으나 호출되지 않음)
 
 ※ 몬스터 행동 정식 리워크(실드 몬스터 7종의 새 패턴)는 몬스터 기획이 나온 뒤 별도 작업이다. 이 Phase는 게임이 돌아가는 임시 상태까지다.
 

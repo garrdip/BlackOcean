@@ -159,11 +159,11 @@ public static partial class SkillData
         yield break;
     }
 
-    // 빈틈없는 자세 — 자신의 방어력 +(10/20/30) 3턴 (ICHI_DEFENSE 양수 — 받는 피해 방어 공식에 가산. 버프 개편/Phase 2-4에서 STAT_DEFENSE로)
+    // 빈틈없는 자세 — 자신의 방어력 +(10/20/30) 3턴 (STAT_DEFENSE, 출처 GS14 — 방어 행동·철귀·찌르고 막기와 합산, Q45. Phase 2-4에서 ICHI_DEFENSE → STAT_DEFENSE)
     public static IEnumerator GS14(SkillCast cast)
     {
-        M_TurnManager.instance.ApplyTimedDebuffTo(cast.user, BuffType.ICHI_DEFENSE, cast.Scale(SkillLevelValue(cast.user, cast.def.skillNo)),
-            BalanceData.Get("GEORK_STANCE_DURATION", 3), cast.user);
+        M_TurnManager.instance.ApplyTimedStatBuff(cast.user, BuffType.STAT_DEFENSE, cast.Scale(SkillLevelValue(cast.user, cast.def.skillNo)),
+            BalanceData.Get("GEORK_STANCE_DURATION", 3), cast.user, cast.def.skillNo);
         yield return new WaitForSeconds(0.4f);
     }
 
@@ -195,7 +195,7 @@ public static partial class SkillData
         if (user == null || user.player == null || user.isDying) return;
         int level = Mathf.Min(2, user.player.GetSkillLevel(cast.def.skillNo));
         int amount = BalanceData.Get("GEORK_PARRY_DEFENSE_UP", 15) + BalanceData.Get("GEORK_PARRY_DEFENSE_UP_PER_LEVEL", 5) * level;
-        M_TurnManager.instance.ApplyTimedDebuffTo(user, BuffType.ICHI_DEFENSE, cast.Scale(amount), BalanceData.Get("GEORK_PARRY_DURATION", 1), user);
+        M_TurnManager.instance.ApplyTimedStatBuff(user, BuffType.STAT_DEFENSE, cast.Scale(amount), BalanceData.Get("GEORK_PARRY_DURATION", 1), user, cast.def.skillNo); // STAT_DEFENSE, 출처 = 스킬 번호 (Phase 2-4)
     }
 
     /// <summary>반격(GS13) 반사 피해량 = 기본 공격력 x (10/20/30)%. 반격을 모르면 0 — TargetObject.CounterAttack이 호출 (2차 판정은 CounterAttack 쪽 HitContext)</summary>

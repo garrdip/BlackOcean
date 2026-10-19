@@ -23,7 +23,7 @@ public class WacherB : SpawnedMonster
             case "방어" :
                 DoAnimation("Buff0");
                 yield return new WaitForSeconds(0.5f);
-                parent.GainDefense(nextAction.actionValue); // 수치 = MonsterDB ActionValue
+                GainDefenseBuff(parent, nextAction.actionValue); // 방어력 +ActionValue 3턴 (Phase 2 임시 전환 — 구 실드)
                 RpcStartSkillEffect(1, "Eff05_Shield", parent.transform.position, SFX_TYPE.Normal_Axe, 6, "Effect"); ;
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();

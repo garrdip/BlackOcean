@@ -71,8 +71,8 @@ public class MonsterData : SingletonD<MonsterData>
         }
     }
 
-    // RPG 확장 스탯(약점/공격 속성/TP 실드) 로드 — MonsterDB의 3컬럼 반복 위치 기반 포맷을 건드리지 않도록 별도 CSV로 분리.
-    // MonsterStatDB에 없는 몬스터는 기본값(약점 없음/무속성/실드 0)으로 동작한다.
+    // RPG 확장 스탯(약점/공격 속성/민첩/방어 스탯/보조 스탯/위험도 보정) 로드 — MonsterDB의 3컬럼 반복 위치 기반 포맷을 건드리지 않도록 별도 CSV로 분리.
+    // MonsterStatDB에 없는 몬스터는 기본값(약점 없음/무속성/방어 0)으로 동작한다.
     void LoadMonsterStatFromDB()
     {
         CsvTable statTable = CsvTable.LoadFromResources("DB/MonsterStatDB");
@@ -94,13 +94,16 @@ public class MonsterData : SingletonD<MonsterData>
                 }
                 string attribute = row.Get("AttackAttribute").Trim();
                 monster.attackAttribute = (attribute.Length == 0) ? AttackAttribute.NONE : GetEnumData<AttackAttribute>(attribute);
-                monster.tpShield = row.GetInt("TPShield");
                 monster.agility = row.GetInt("Agility");
                 monster.exp = row.GetInt("Exp");
                 // 위험도 보너스 스탯 (위험도 시스템) — 컬럼이 없거나 비어 있으면 0 (위험도에 영향받지 않음)
                 monster.hazardAtkBonus = GetFloat(row, "HazardAtk");
                 monster.hazardDefBonus = GetFloat(row, "HazardDef");
                 monster.hazardHpBonus = GetFloat(row, "HazardHp");
+                monster.hazardMdefBonus = GetFloat(row, "HazardMdef");
+                // 방어 스탯 (아이템 개편 Phase 2, Q14) — 컬럼이 없거나 비면 0
+                monster.defense = GetIntOptional(statTable, row, "Defense", 0);
+                monster.magicDefense = GetIntOptional(statTable, row, "MagicDefense", 0);
                 // 보조 스탯 (아이템 개편 Phase 1-1, Q4) — 컬럼이 없거나 비면 회피 5 / 명중 95 / 치명 0
                 monster.evade = GetIntOptional(statTable, row, "Evade", 5);
                 monster.accuracy = GetIntOptional(statTable, row, "Accuracy", 95);

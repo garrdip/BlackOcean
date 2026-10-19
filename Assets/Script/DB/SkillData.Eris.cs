@@ -38,7 +38,7 @@ public static partial class SkillData
         if (!BattleActions.LastHitLanded) yield break;
         int level = Mathf.Min(2, user.player.GetSkillLevel(skill.skillNo));
         int defenseDown = BalanceData.Get("ERIS_BREAK_DEF_DOWN", 10) + BalanceData.Get("ERIS_BREAK_DEF_DOWN_PER_LEVEL", 5) * level;
-        ReduceMonsterDefense(target, cast.Scale(defenseDown), BalanceData.Get("ERIS_BREAK_DURATION", 3), user);
+        ReduceMonsterDefense(target, cast.Scale(defenseDown), BalanceData.Get("ERIS_BREAK_DURATION", 3), user, skill.skillNo);
     }
 
     // 권능 : 파괴 — 힘의 (50/60/70)% 공명 피해. 전투 중 사용할 때마다 계수 +30%p (TargetObject.erisDestroyUses — 전투마다 새 스폰이라 자연 리셋)
@@ -60,7 +60,7 @@ public static partial class SkillData
         TargetObject target = targets[0];
         int level = Mathf.Min(2, user.player.GetSkillLevel(skill.skillNo));
         int defenseDown = BalanceData.Get("ERIS_ENDURE_DEF_DOWN", 50) + BalanceData.Get("ERIS_ENDURE_DEF_DOWN_PER_LEVEL", 50) * level;
-        ReduceMonsterDefense(target, cast.Scale(defenseDown), BalanceData.Get("ERIS_ENDURE_DURATION", 1), user); // 피해보다 먼저 — 실드를 벗겨낸 뒤 때린다
+        ReduceMonsterDefense(target, cast.Scale(defenseDown), BalanceData.Get("ERIS_ENDURE_DURATION", 1), user, skill.skillNo); // 피해보다 먼저 — 방어력을 낮춘 뒤 때린다
         yield return BattleActions.AttackTarget(cast, target, BattleActions.SkillDamage(user, skill));
     }
 
@@ -95,12 +95,11 @@ public static partial class SkillData
         }
     }
 
-    // 몬스터 방어력 저하 — 현재 실드(defense)를 즉시 깎고, 지속 턴 동안 방어 획득량을 낮추는 디버프(ICHI_DEFENSE 음수, TargetObject.GainDefense가 반영)를 건다.
-    // Phase 2-4에서 몬스터 방어력 스탯 디버프(STAT_DEFENSE 음수)로 바뀐다
-    static void ReduceMonsterDefense(TargetObject target, int amount, int turns, TargetObject from)
+    // 몬스터 방어력 저하 — 방어력 스탯 디버프(STAT_DEFENSE 음수, 대상 턴 종료 차감. 아이템 개편 Phase 2-4·Q31). TargetObject.GetDefense가 0 하한으로 반영한다.
+    // 출처 = 스킬 번호 — 부서지세요와 얼마나 버틸까요가 겹치면 합산, 같은 스킬을 다시 쓰면 갱신 (Q45)
+    static void ReduceMonsterDefense(TargetObject target, int amount, int turns, TargetObject from, string sourceId)
     {
         if (target == null || target.isDying || amount <= 0) return;
-        target.defense = Mathf.Max(0, target.defense - amount);
-        M_TurnManager.instance.ApplyTimedDebuffTo(target, BuffType.ICHI_DEFENSE, -amount, turns, from);
+        M_TurnManager.instance.ApplyTimedStatBuff(target, BuffType.STAT_DEFENSE, -amount, turns, from, sourceId);
     }
 }

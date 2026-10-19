@@ -822,8 +822,9 @@ public partial class M_TurnManager
 
             bool isCurrentTurn = snapshot.netId == tpCurrentUnitNetId;
             guiTpLabelStyle.normal.textColor = isCurrentTurn ? Color.yellow : Color.white;
-            var labelRect = new Rect(screenPos.x - 50f, Screen.height - screenPos.y - 11f, 100f, 22f);
-            GUI.Label(labelRect, isCurrentTurn ? $"▶ TP {snapshot.tp}" : $"TP {snapshot.tp}", guiTpLabelStyle);
+            var labelRect = new Rect(screenPos.x - 90f, Screen.height - screenPos.y - 11f, 180f, 22f);
+            string defenseText = unitTarget.monster != null ? $"  방 {unitTarget.GetDefense()} / 마방 {unitTarget.GetMagicDefense()}" : ""; // 몬스터 방어력·마법방어 (위험도 보정 + 버프 — Phase 2-6 임시 표시)
+            GUI.Label(labelRect, (isCurrentTurn ? $"▶ TP {snapshot.tp}" : $"TP {snapshot.tp}") + defenseText, guiTpLabelStyle);
         }
     }
 

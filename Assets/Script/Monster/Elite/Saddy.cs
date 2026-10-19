@@ -35,7 +35,7 @@ public class Saddy : SpawnedMonster
             case "방어" :
                 DoAnimation("Beff0");
                 yield return new WaitForSeconds(0.8f);
-                parent.GainDefense(ScaledDefense(nextAction.actionValue)); // 실드 = ActionValue(위험도 보정)
+                GainDefenseBuff(parent, nextAction.actionValue); // 방어력 +ActionValue 3턴 (Phase 2 임시 전환 — 구 실드)
                 yield return new WaitForSeconds(0.867f);
                 ReturnToIdleAnimation();
                 break;

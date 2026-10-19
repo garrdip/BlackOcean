@@ -23,7 +23,7 @@
       TargetObject.DamageToPlayer → RedirectToGuardian이 대열 보정 전 피해의 N%를 게오르크의 DamageToPlayer로 보낸다 (게오르크 쪽 대열/실드/방어력 적용).
       도발 = SpawnedMonster.TauntBy — 예고 행동이 플레이어 공격이면 nextTarget을 FIXEDPLAYER(대상 = 게오르크)로 바꾼다. 다음 행동 1회, 방어/모으기 예고에는 효과 없음. 타겟 인디케이터에 FIXEDPLAYER 표시 추가.
       반격 = 패시브. HP 피해를 입을 때 지금 행동 중인 몬스터(M_TurnManager.tpActingUnit)에게 기본 공격력 x (10/20/30)% (TargetObject.CounterAttack, 실드 전량 흡수 시 미발동).
-      빈틈없는 자세/찌르고 막기/고통 수집 = 자신에게 ICHI_DEFENSE 양수 지속 버프 (3턴 / 1턴 / 1턴, GEORK_STANCE_DURATION·GEORK_PARRY_*). 플레이어의 ICHI_DEFENSE 양수는 받는 피해 방어 공식과 방어 행동 실드량에 가산 (음수는 기존대로 방어 획득량 감소).
+      빈틈없는 자세/찌르고 막기/고통 수집 = 자신에게 STAT_DEFENSE 양수 지속 버프 (3턴 / 1턴 / 1턴, GEORK_STANCE_DURATION·GEORK_PARRY_* — 2026-10-19 아이템 개편 Phase 2에서 ICHI_DEFENSE → STAT_DEFENSE, 출처별 합산). 플레이어의 ICHI_DEFENSE 양수는 받는 피해 방어 공식과 방어 행동 실드량에 가산 (음수는 기존대로 방어 획득량 감소).
       자기 턴 중에 스스로 건 지속 버프는 이번 턴 종료 감소를 건너뛴다 (TpTimedDebuff.skipFirstTick) — 1턴 버프가 즉시 사라지는 문제 방지.
 
 - 투사
@@ -129,8 +129,8 @@
     - 구현 (2026-09-01): SkillDB ES5~ES10 + SkillTreeDB 공격 트리 EKA1~EKA8 (게오르크 공격 트리와 같은 방식 — 항목당 노드 1개, [N] = Cost, 스킬 레벨은 장비 '스킬레벨' 옵션, PowerPerLevel로 레벨별 계수).
       구 임시 스킬(흡혈 베기/피의 가속/별무리 파편/은하수 일격/초신성)과 구 트리(은하수/별무리)는 제거. 코스트(HP 4/5/5/6/8/10)는 문서에 수치가 없어 임시 배정.
       '공격력' = 힘 계수(에리스 기본 공격 스탯), 속성 공명. 변신 배율(1차 +20%/광기 +50%)은 BattleActions가 모든 피해에 상시 적용.
-      방어력 저하(부서지세요 10/15/20 3턴, 얼마나 버틸까요 50/100/150 1턴 — BalanceDB ERIS_BREAK_*/ERIS_ENDURE_*): 몬스터의 방어력은 TP 전투에서 방어 행동으로 얻는 실드뿐이라
-      현재 실드를 즉시 깎고 + 지속 턴 동안 방어 획득량을 낮추는 디버프(ICHI_DEFENSE 음수 → TargetObject.GainDefense가 차감)를 함께 건다.
+      방어력 저하(부서지세요 10/15/20 3턴, 얼마나 버틸까요 50/100/150 1턴 — BalanceDB ERIS_BREAK_*/ERIS_ENDURE_*): 몬스터 방어력 스탯(MonsterStatDB Defense + 위험도 보정)에
+      STAT_DEFENSE 음수 지속 디버프(출처 = 스킬 번호, 0 하한)를 건다 — 2026-10-19 아이템 개편 Phase 2 (구 "실드 즉시 삭감 + 방어 획득량 감소"는 몬스터 실드 폐지로 삭제).
       권능 : 파괴의 계수 상승은 전투 단위(TargetObject.erisDestroyUses, BalanceDB ERIS_DESTROY_RAMP_PERCENT 30). 압력 분출은 처치 발생 시 살아있는 적에게 반복(상한 10회).
       기본 스킬 '자해'(턴 소모 없음)는 미구현 — 소모량 확정 후 Innate 스킬로 추가 예정.
 - 회복 

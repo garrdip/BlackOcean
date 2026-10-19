@@ -39,6 +39,6 @@ public partial class ItemData : SingletonD<ItemData>
     void EffectGainDefense(TargetObject sender, int value)
     {
         if(sender == null) return;
-        sender.GainDefense(value);
+        sender.GainShield(value, sender); // 구 GainDefense 삭제(Phase 2) — 유물 시스템 자체는 Phase 3-1에서 삭제 예정
     }
 }

@@ -178,8 +178,8 @@ public partial class TargetObject
     }
 
 
-    // 몬스터 피격 (방어 측) — 실드(Phase 2에서 제거 예정) → 방어 공식(몬스터 방어력 스탯은 Phase 2 전까지 0 + STAT_DEFENSE 버프, 치명이면 50% − 10) → HP.
-    // 반환: HP에 실제로 들어간 피해 (실드 흡수·완전 경감은 0)
+    // 몬스터 피격 (방어 측) — 방어 공식(몬스터 방어력·마법방어 스탯 + 위험도 보정 + STAT_DEFENSE 버프, 치명이면 50% − 10) → HP. 몬스터에게 실드는 없다 (Phase 2, Q14).
+    // 반환: HP에 실제로 들어간 피해 (완전 경감은 0 — 숫자 "0" 표시)
     public int DamageToMonster(int damage, TargetObject from, AttackAttribute attribute = AttackAttribute.NONE, bool isCritical = false)
     {
         // 붕괴 적용
@@ -190,18 +190,14 @@ public partial class TargetObject
         // 개화꽃 적용
         foreach(TargetObject target in M_TurnManager.instance.spawnedPlayerList)
             damage += GetBuffValue(BuffType.FLOWER,target);
-        // 실드 적용 (방어 공식 무시 선차감)
-        if(defense >= damage)
+        // 방어 공식 — 마법 속성이면 마법방어, 그 외 방어력 (TargetObject.Stats)
+        int defenseStat = BattleActions.IsMagic(attribute) ? GetMagicDefense() : GetDefense();
+        int remind = BattleActions.ApplyDefenseFormula(damage, defenseStat, isCritical);
+        if(remind <= 0)
         {
-            defense -= damage;
+            if(isServer) RpcDisplayZeroDamage();
             return 0;
         }
-        int remind = damage - defense;
-        defense = 0;
-        // 방어 공식 — 마법 속성이면 마법방어, 그 외 방어력 (TargetObject.Stats — 위험도 보정 스탯은 Phase 2)
-        int defenseStat = BattleActions.IsMagic(attribute) ? GetMagicDefense() : GetDefense();
-        remind = BattleActions.ApplyDefenseFormula(remind, defenseStat, isCritical);
-        if(remind <= 0) return 0;
         if(isServer)
         {
             monster.overkillDamageDisplay = (remind > monster.HP) ? remind : 0; // 과잉 피해 — 실제 피해량 표시 (HP 대입 전에 설정)
@@ -216,29 +212,20 @@ public partial class TargetObject
     }
 
 
-    // 고정 피해 (자비란 없다 등) — 판정·랜덤·방어 없음, 실드만 거친다
+    // 고정 피해 (자비란 없다 등) — 판정·랜덤·방어 없음 (방어 무시, Q27)
     public void StaticDamageToMonster(int damage)
     {
-        // 방어력 적용
-        if(defense >= damage)
+        if(damage <= 0) return;
+        if(isServer)
         {
-            defense -= damage;
+            monster.overkillDamageDisplay = (damage > monster.HP) ? damage : 0; // 과잉 피해 — 실제 피해량 표시 (HP 대입 전에 설정)
+            monster.critDamageDisplay = false;
         }
-        else
-        {
-            int remind = damage - defense;
-            defense = 0;
-            if(isServer)
-            {
-                monster.overkillDamageDisplay = (remind > monster.HP) ? remind : 0; // 과잉 피해 — 실제 피해량 표시 (HP 대입 전에 설정)
-                monster.critDamageDisplay = false;
-            }
-            if(isServer && monster.HP <= remind){
-                isDying = true;
-                RpcMonsterDissolve();
-            }
-            monster.HP -= remind;
+        if(isServer && monster.HP <= damage){
+            isDying = true;
+            RpcMonsterDissolve();
         }
+        monster.HP -= damage;
     }
 
 

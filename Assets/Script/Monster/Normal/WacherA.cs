@@ -45,7 +45,7 @@ public class WacherA : SpawnedMonster
                 yield return new WaitForSeconds(0.5f);
                 foreach(TargetObject tar in M_TurnManager.instance.GetTargetObjectFromActionTarget(nextTarget)){
                     RpcStartSkillEffect(0, "Eff2_Bang", tar.transform.position, SFX_TYPE.Elite_Watcher, 3, "Effect");
-                    tar.GainBuff(BuffType.ICHI_DEFENSE,-nextAction.actionValue,true,false,false,false,parent); // 감소량 = MonsterDB ActionValue
+                    M_TurnManager.instance.ApplyTimedStatBuff(tar, BuffType.STAT_DEFENSE, -nextAction.actionValue, 3, parent, "WacherA"); // 방어력 저하 3턴 (Q31 — 방어력과 실드는 다른 개념. 감소량 = MonsterDB ActionValue)
                 }
                 yield return new WaitForSeconds(0.833f);
                 ReturnToIdleAnimation();

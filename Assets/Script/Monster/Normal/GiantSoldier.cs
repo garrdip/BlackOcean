@@ -4,23 +4,15 @@ using UnityEngine;
 using ProjectD;
 using Mirror;
 
+// 거인병 — MonsterDB: SinglePattern(30, FRONT). 방어 x3(방어력 +10/+15/+20 3턴 — BalanceDB GIANTSOLDIER_DEFENSE_UP_BASE/PER_STEP) 뒤 강공격의 4단계 순환.
+// 아이템 개편 Phase 2: 실드 → 방어력 버프 임시 전환 (실드 파괴 시 단계 리셋 규칙은 실드와 함께 폐지)
 public class GiantSoldier : SpawnedMonster
 {
     [SyncVar]
     int currentLevel = 0;
 
-    public override void OnBreakedShield()
-    {
-        if(isServer)
-            currentLevel = 0;
-        OnBreakedShieldRPC();
-    }
-
-    [ClientRpc]
-    void OnBreakedShieldRPC()
-    {
-        OnChangedNextTarget(nextTarget,nextTarget);
-    }
+    // 단계별 방어력 상승량 — 10/15/20 (구 실드 리터럴을 BalanceDB로)
+    static int DefenseStep(int level) => BalanceData.Get("GIANTSOLDIER_DEFENSE_UP_BASE", 10) + level * BalanceData.Get("GIANTSOLDIER_DEFENSE_UP_PER_STEP", 5);
 
     public override IEnumerator DoAction()
     {
@@ -29,28 +21,12 @@ public class GiantSoldier : SpawnedMonster
                 switch(currentLevel)
                 {
                     case 0 :
-                        DoAnimation("Buff0");
-                        yield return new WaitForSeconds(0.5f);
-                        RpcStartSkillEffect(0, "Eff05_Shield", parent.transform.position, SFX_TYPE.Normal_Axe, 6, "Effect");
-                        parent.GainDefense(10);
-                        yield return new WaitForSeconds(0.5f);
-                        currentLevel++;
-                        ReturnToIdleAnimation();
-                        break;
                     case 1 :
-                        DoAnimation("Buff0");
-                        yield return new WaitForSeconds(0.5f);
-                        RpcStartSkillEffect(0, "Eff05_Shield", parent.transform.position, SFX_TYPE.Normal_Axe, 6, "Effect");
-                        parent.GainDefense(15);
-                        yield return new WaitForSeconds(0.5f);
-                        currentLevel++;
-                        ReturnToIdleAnimation();
-                        break;
                     case 2 :
                         DoAnimation("Buff0");
                         yield return new WaitForSeconds(0.5f);
                         RpcStartSkillEffect(0, "Eff05_Shield", parent.transform.position, SFX_TYPE.Normal_Axe, 6, "Effect");
-                        parent.GainDefense(20);
+                        GainDefenseBuff(parent, DefenseStep(currentLevel)); // 방어력 +10/15/20 3턴 (Phase 2 임시 전환 — 구 실드)
                         yield return new WaitForSeconds(0.5f);
                         currentLevel++;
                         ReturnToIdleAnimation();
@@ -72,11 +48,10 @@ public class GiantSoldier : SpawnedMonster
         yield return new WaitForSeconds(1f);
         isActive = false;
     }
-    
+
     public override void OnStartClient()
     {
         base.OnStartClient();
-        Debug.Log("위치 조정!");
         parent.nextActionIndicator.GetComponent<Transform>().position += new Vector3(0,1,0);
     }
 
@@ -112,17 +87,12 @@ public class GiantSoldier : SpawnedMonster
 
     public override void OnChangedNextTarget(ActionTarget oldVal, ActionTarget newVal)
     {
-        Debug.Log("Changed Next Target");
         switch(currentLevel)
         {
             case 0 :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,ScaledDefense(10).ToString());
-                break;
             case 1 :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,ScaledDefense(15).ToString());
-                break;
             case 2 :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,ScaledDefense(20).ToString());
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,false,nextTarget,DefenseStep(currentLevel).ToString());
                 break;
             case 3 :
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,ActionTarget.FRONT,ScaledAttack(nextAction.actionValue).ToString());

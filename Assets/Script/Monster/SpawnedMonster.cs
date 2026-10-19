@@ -439,8 +439,30 @@ public class SpawnedMonster : NetworkBehaviour
     /// <summary>위험도 공격력 가중치 적용 (몬스터별 MonsterStatDB HazardAtk x 위험도) — 공격 피해와 인디케이터 표시가 공용</summary>
     public int ScaledAttack(int value) => value + Mathf.RoundToInt(hazard * (monster != null ? monster.hazardAtkBonus : 0f));
 
-    /// <summary>위험도 방어력 가중치 적용 (몬스터별 MonsterStatDB HazardDef x 위험도) — 방어 획득량과 인디케이터 표시가 공용</summary>
-    public int ScaledDefense(int value) => value + Mathf.RoundToInt(hazard * (monster != null ? monster.hazardDefBonus : 0f));
+    /// <summary>몬스터 데이터 — 서버는 monster 참조, 원격 클라이언트는 monster가 비어 있으므로 monsterName(SyncVar)으로 MonsterDB에서 찾는다 (표시용)</summary>
+    public Monster Data => monster ?? (MonsterData.instance != null ? MonsterData.instance.monsterDataList.Find(m => m.name == monsterName) : null);
+
+    /// <summary>위험도 보정 물리 방어력 스탯 = MonsterStatDB Defense + HazardDef x 위험도 (아이템 개편 Phase 2, Q14·Q44 — 구 "실드 획득량 보정"). TargetObject.GetDefense가 쓴다</summary>
+    public int ScaledDefense()
+    {
+        Monster data = Data;
+        return data == null ? 0 : data.defense + Mathf.RoundToInt(hazard * data.hazardDefBonus);
+    }
+
+    /// <summary>위험도 보정 마법 방어력 스탯 = MagicDefense + HazardMdef x 위험도</summary>
+    public int ScaledMagicDefense()
+    {
+        Monster data = Data;
+        return data == null ? 0 : data.magicDefense + Mathf.RoundToInt(hazard * data.hazardMdefBonus);
+    }
+
+    /// <summary>몬스터 방어 행동 (임시 전환, Phase 2-3·A1) — 실드 대신 대상에게 STAT_DEFENSE +amount 3턴 (대상의 자기 턴 종료 차감). 정식 리워크 전까지의 동작</summary>
+    [Server]
+    protected void GainDefenseBuff(TargetObject target, int amount)
+    {
+        if(target == null || target.isDying || amount <= 0) return;
+        M_TurnManager.instance.ApplyTimedStatBuff(target, BuffType.STAT_DEFENSE, amount, 3, parent, monsterName + "_DEFEND");
+    }
 
     /// <summary>도발 (게오르크 GS12) — 예고된 행동이 플레이어 공격이면 대상을 도발자로 고정한다. 다음 행동 1회 — 행동 후 SetNextAction이 다시 정한다.
     /// 방어/모으기 등 공격이 아닌 예고에는 효과 없음</summary>

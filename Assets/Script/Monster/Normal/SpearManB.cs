@@ -26,8 +26,8 @@ public class SpearManB : SpawnedMonster
                 foreach(TargetObject tar in M_TurnManager.instance.spawnedMonsterList)
                 {
                     RpcStartSkillEffect(0, "Eff05_Shield", tar.transform.position, SFX_TYPE.Normal_Axe, 6, "Effect");
-                    tar.GainDefense(nextAction.actionValue + parent.GetBuffValue(BuffType.ICHI_DEFENSE));
-                    tar.GainBuff(BuffType.ICHI_DEFENSE,2,false,false,false,false,parent);
+                    GainDefenseBuff(tar, nextAction.actionValue);                               // 방어력 +ActionValue 3턴 (Phase 2 임시 전환 — 구 실드)
+                    tar.GainBuff(BuffType.STAT_DEFENSE,2,false,false,false,false,parent);     // 전투 동안 누적 방어력 +2 (구 ICHI_DEFENSE 가산 → STAT_DEFENSE 합산, 2-4)
                 }
                 yield return new WaitForSeconds(0.8f);
                 ReturnToIdleAnimation();
@@ -58,7 +58,7 @@ public class SpearManB : SpawnedMonster
                 parent.nextActionIndicator.SetNextTargetAction(ActionType.ATTACK,true,nextTarget,CurrentAttackDamage(nextAction.actionValue).ToString());
                 break;
             case "광방어후버프" :
-                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,true,ActionTarget.WHOLE_ALLY,ScaledDefense(nextAction.actionValue).ToString());
+                parent.nextActionIndicator.SetNextTargetAction(ActionType.DEFENSE,true,ActionTarget.WHOLE_ALLY,nextAction.actionValue.ToString());
                 break;
         }
     }

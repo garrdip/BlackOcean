@@ -36,19 +36,19 @@ public partial class TargetObject
         return player != null ? player.TotalCritDamage : BalanceData.Get("CRIT_DAMAGE_PERCENT", 150);
     }
 
-    /// <summary>물리 방어력 — 플레이어 TotalDefense + 방어력 상승 버프(ICHI_DEFENSE 양수 — 빈틈없는 자세 등, 버프 개편 전 호환) + STAT_DEFENSE 버프(방어 행동·철귀).
-    /// 몬스터는 Phase 2 전까지 스탯 0 + STAT_DEFENSE 버프 (실드 defense는 별도)</summary>
+    /// <summary>물리 방어력 — 플레이어 TotalDefense / 몬스터 MonsterStatDB Defense + 위험도 보정, 양쪽 모두 + STAT_DEFENSE 버프
+    /// (방어 행동·철귀·빈틈없는 자세·몬스터 방어 행동·부서지세요 등 — 출처별 합산). 0 하한</summary>
     public int GetDefense()
     {
-        int baseValue = player != null ? player.TotalDefense + Mathf.Max(0, GetBuffValue(BuffType.ICHI_DEFENSE)) : 0;
-        return baseValue + GetBuffValue(BuffType.STAT_DEFENSE);
+        int baseValue = player != null ? player.TotalDefense : (monster != null ? monster.ScaledDefense() : 0);
+        return Mathf.Max(0, baseValue + GetBuffValue(BuffType.STAT_DEFENSE));
     }
 
-    /// <summary>마법 방어력 — 플레이어 TotalMagicDefense + STAT_MAGIC_DEFENSE 버프. 몬스터는 Phase 2 전까지 0 + 버프</summary>
+    /// <summary>마법 방어력 — 플레이어 TotalMagicDefense / 몬스터 MagicDefense + 위험도 보정, + STAT_MAGIC_DEFENSE 버프. 0 하한</summary>
     public int GetMagicDefense()
     {
-        int baseValue = player != null ? player.TotalMagicDefense : 0;
-        return baseValue + GetBuffValue(BuffType.STAT_MAGIC_DEFENSE);
+        int baseValue = player != null ? player.TotalMagicDefense : (monster != null ? monster.ScaledMagicDefense() : 0);
+        return Mathf.Max(0, baseValue + GetBuffValue(BuffType.STAT_MAGIC_DEFENSE));
     }
 
     /// <summary>공격력 버프 합 (플레이어·몬스터 공용) — 기존 ICHI_ATTACK(철귀·쇠락·감시자 등) + BOOKBANG(북방의 위대한 투사 스택) + STAT_ATTACK(공격력 물약 등). 계수 스탯에 플랫 가감</summary>
