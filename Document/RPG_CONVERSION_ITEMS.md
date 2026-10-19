@@ -65,6 +65,7 @@ GetEvade / GetAccuracy / GetCritRate / GetCritDamage / GetDefense / GetMagicDefe
     | `TotalDefense` / `TotalMagicDefense` | 방어·마방 + 장비 기본 옵션 합 + `DEFENSE` 옵션 합 |
     | `TotalPhysicalAttack` | `TotalStrength` + Σ 무기 `PhysicalAttack` |
     | `TotalMagicAttack` | `TotalIntelligence` + Σ 무기 `MagicAttack` |
+    | `GetAttackPower(scalesWithInt, attribute)` | (scalesWithInt ? `TotalIntelligence` : `TotalStrength`) + (`IsMagic(attribute)` ? Σ 무기 `MagicAttack` : Σ 무기 `PhysicalAttack`) — **실제 피해 계산은 전부 이 함수** (Q46). 평타는 무기의 `ScaleStat`·`Attribute`, 스킬은 SkillDB의 `ScaleStat`·`Attribute`로 부른다 (J1 확정). `NONE`은 scalesWithInt 쪽. `TotalPhysicalAttack/TotalMagicAttack`은 스탯창 표시용 |
     | `TotalMaxHP` | `MaxHP`(고유치: 기본 + 성장 + HP 노드) + `MAX_HP` 옵션 합 |
     | `TotalMaxResource` | `maxResource` + (자원이 MP면 `MAX_MP`, RAGE면 `MAX_RAGE` 옵션 합) |
     | `TotalEvade / TotalAccuracy / TotalCritRate` | 기본치 + `EVADE / ACCURACY / CRIT_RATE` 옵션 합 (%) |
@@ -105,7 +106,7 @@ STAT_ATTACK, STAT_STRENGTH, STAT_DEFENSE, STAT_MAGIC_DEFENSE, STAT_CRIT_RATE, ST
 
 ## 4. 장비 기본 데이터 `EquipDB.csv` [Phase 3]
 
-새 헤더: `EquipNo, Name, Slot, WeaponType, ArmorType, Attribute, RequireLevel, RequireStr, PhysicalAttack, MagicAttack, Defense, MagicDefense, Price, DropWeight, Description`
+새 헤더: `EquipNo, Name, Slot, WeaponType, ArmorType, Attribute, ScaleStat, RequireLevel, RequireStr, PhysicalAttack, MagicAttack, Defense, MagicDefense, Price, DropWeight, Description`
 
 ```
 enum EquipSlot  { WEAPON, ARMOR, HELMET, BOOTS, ACCESSORY }          // 기존
@@ -113,45 +114,46 @@ enum WeaponType { NONE, GREATSWORD, LONGSWORD, STAFF, BOOK, ORB, CORE } // 대�
 enum ArmorType  { NONE, HEAVY, LIGHT, ROBE }                          // 중갑·경갑·로브
 ```
 - 삭제 컬럼: `Character`(착용 제한 없음 — Q22), `Grade`(인스턴스가 가짐), `Agility/MaxHP/MaxResource`(추가 옵션으로 이관), `SkillLevel`(Q1), `Attack`(→ `PhysicalAttack/MagicAttack`)
-- 무기 행: `WeaponType` + `Attribute`(기본 공격 속성, Q25) + `PhysicalAttack`·`MagicAttack` 둘 다 (0 허용). `ArmorType=NONE`, `RequireStr=0`, 방어 0.
-    - 기본 공격의 계수: `IsMagic(Attribute)`면 `TotalMagicAttack`, 아니면 `TotalPhysicalAttack` (F1). 스킬은 SkillDB `ScaleStat` 그대로.
+- 무기 행: `WeaponType` + `Attribute`(기본 공격 속성, Q25) + `ScaleStat`(평타 계수 스탯 STR/INT — SkillDB와 같은 값, Q46) + `PhysicalAttack`·`MagicAttack` 둘 다 (0 허용). `ArmorType=NONE`, `RequireStr=0`, 방어 0.
+    - 기본 공격 = `GetAttackPower(ScaleStat == INT, Attribute)` = **`ScaleStat` 스탯 + 속성에 맞는 쪽의 무기 공격력** (Q46). 대검·장검 = 힘 + 물리공격력, 지팡이·책·수정구 = 지능 + 마법공격력, **핵 = 힘 + 마법공격력(공명 — 마법방어로 경감)**. 무기가 없으면 STR·NONE(힘만). 스킬은 SkillDB `ScaleStat`·`Attribute`로 같은 함수 (J1 확정 — 에리스 공명 스킬 = 힘 + 핵 마법공격력).
     - 힘 + 무기 물리공격력 = 최종 물리공격력. 무기 공격력은 힘 스탯·힘 요구치에 들어가지 않는다.
 - 방어구 행(ARMOR/HELMET/BOOTS): `ArmorType` + `RequireStr` + `Defense`·`MagicDefense`. `WeaponType=NONE`, `Attribute=NONE`, 공격 0.
 - 악세사리 행: 기본 옵션 없음 (전 수치 0). 노멀도 추가 옵션 1개 (§5).
 - `DropWeight`: 풀 지정자(`ANY_*`) 드랍·상점 가중치. 0이면 풀에서 제외(퀘스트·전용 드랍).
 - 요구 레벨: 착용 조건에만 쓴다. 드랍 레벨 필터는 없다 (F3).
-- 행 초안 `[초안]` — 무기 종류 6종 × 1 이상, 방어구 3종 × 3부위, 악세사리 4종. 구 16행은 아래로 이관하고 AC3 숙련의 부적은 삭제(세이브 변환기에서 AC4로 대체 매핑):
-    | EquipNo | Name | Slot | WeaponType | ArmorType | Attribute | ReqLv | ReqStr | PAtk | MAtk | Def | Mdef | Price | DropW | 비고 |
-    |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-    | GW1 | 낡은 대검 | WEAPON | GREATSWORD | NONE | SLASH | 1 | 0 | 3 | 0 | 0 | 0 | 50 | 10 | 게오르크 초기 (구 GW1) |
-    | GW2 | 대장군의 검 | WEAPON | GREATSWORD | NONE | SLASH | 5 | 0 | 7 | 0 | 0 | 0 | 200 | 5 | 구 GW2 (방어 1 → 옵션으로) |
-    | LW1 | 낡은 장검 | WEAPON | LONGSWORD | NONE | PIERCE | 1 | 0 | 2 | 1 | 0 | 0 | 50 | 10 | 신규 |
-    | HW1 | 낡은 지팡이 | WEAPON | STAFF | NONE | ICHI | 1 | 0 | 0 | 3 | 0 | 0 | 50 | 10 | 홍단향 초기 (구 HW1) |
-    | HW2 | 개화 지팡이 | WEAPON | STAFF | NONE | ICHI | 5 | 0 | 0 | 6 | 0 | 0 | 200 | 5 | 구 HW2 (MP 5·마방 1 → 옵션으로) |
-    | BW1 | 낡은 책 | WEAPON | BOOK | NONE | SIMSANG | 1 | 0 | 0 | 2 | 0 | 0 | 50 | 10 | 신규 |
-    | OW1 | 흐린 수정구 | WEAPON | ORB | NONE | SIMSANG | 1 | 0 | 1 | 2 | 0 | 0 | 50 | 10 | 신규 |
-    | EW1 | 흠집 난 코어 | WEAPON | CORE | NONE | RESONANCE | 1 | 0 | 3 | 0 | 0 | 0 | 50 | 10 | 에리스 초기 (구 EW1) — ※ §4-1 |
-    | EW2 | 공명 코어 | WEAPON | CORE | NONE | RESONANCE | 5 | 0 | 6 | 0 | 0 | 0 | 200 | 5 | 구 EW2 (민첩 2 → 옵션으로) |
-    | AR1 | 가죽 갑옷 | ARMOR | NONE | LIGHT | NONE | 1 | 6 | 0 | 0 | 2 | 1 | 60 | 10 | 구 AR1 (HP 5 → 옵션으로). 에리스 초기 |
-    | AR2 | 철 갑옷 | ARMOR | NONE | HEAVY | NONE | 1 | 10 | 0 | 0 | 4 | 1 | 60 | 10 | 게오르크 초기 (구 AR2는 AR3으로) |
-    | AR3 | 강철 갑옷 | ARMOR | NONE | HEAVY | NONE | 4 | 14 | 0 | 0 | 6 | 2 | 220 | 5 | 구 AR2 (민첩 −1·HP 10 폐기) |
-    | AR4 | 낡은 로브 | ARMOR | NONE | ROBE | NONE | 1 | 0 | 0 | 0 | 1 | 3 | 60 | 10 | 홍단향 초기 |
-    | HE1 | 가죽 투구 | HELMET | NONE | LIGHT | NONE | 1 | 6 | 0 | 0 | 1 | 1 | 40 | 10 | 구 HE1. 에리스 초기 |
-    | HE2 | 철 투구 | HELMET | NONE | HEAVY | NONE | 1 | 10 | 0 | 0 | 2 | 0 | 40 | 10 | 게오르크 초기 |
-    | HE3 | 현자의 관 | HELMET | NONE | ROBE | NONE | 4 | 0 | 0 | 0 | 1 | 4 | 200 | 5 | 구 HE2 (MP 10 → 옵션으로) |
-    | HE4 | 낡은 두건 | HELMET | NONE | ROBE | NONE | 1 | 0 | 0 | 0 | 0 | 2 | 40 | 10 | 홍단향 초기 |
-    | BO1 | 여행자 신발 | BOOTS | NONE | LIGHT | NONE | 1 | 6 | 0 | 0 | 1 | 1 | 40 | 10 | 구 BO1 (민첩 1 → 옵션으로). 에리스 초기 |
-    | BO2 | 질풍의 신발 | BOOTS | NONE | LIGHT | NONE | 4 | 8 | 0 | 0 | 2 | 1 | 220 | 5 | 구 BO2 (민첩 3 → 옵션으로) |
-    | BO3 | 철 장화 | BOOTS | NONE | HEAVY | NONE | 1 | 10 | 0 | 0 | 2 | 0 | 40 | 10 | 게오르크 초기 |
-    | BO4 | 천 신발 | BOOTS | NONE | ROBE | NONE | 1 | 0 | 0 | 0 | 0 | 1 | 40 | 10 | 홍단향 초기 |
-    | AC1 | 생명의 반지 | ACCESSORY | NONE | NONE | NONE | 2 | 0 | 0 | 0 | 0 | 0 | 120 | 10 | 구 AC1 (HP 15 → 옵션으로. 노멀은 옵션 1개) |
-    | AC2 | 마력의 목걸이 | ACCESSORY | NONE | NONE | NONE | 2 | 0 | 0 | 0 | 0 | 0 | 120 | 10 | 구 AC2 (자원 10 → 옵션으로) |
-    | AC4 | 수호의 팔찌 | ACCESSORY | NONE | NONE | NONE | 3 | 0 | 0 | 0 | 0 | 0 | 150 | 10 | 구 AC4 (방어 2·마방 2 → 옵션으로). AC3 대체 매핑 대상 |
-    | AC5 | 철귀의 부적 | ACCESSORY | NONE | NONE | NONE | 6 | 0 | 0 | 0 | 0 | 0 | 400 | 3 | 구 AC3 자리 (스킬레벨 폐기 — 옵션으로만) |
-    - `RequireStr` 초안은 **원래 밸런스의 기본 힘**(게오르크 10 / 에리스 7 / 홍단향 4) 기준이다 (Q36). 초기 세트(게오르크 AR2·HE2·BO3 / 에리스 AR1·HE1·BO1 / 홍단향 AR4·HE4·BO4)는 요구치 ≤ 기본 힘이라 패널티가 없다. 테스트용 5배 상향(게오르크 힘 50)을 원복하기 전까지는 게오르크가 모든 요구치를 넘는다.
+- 행 초안 `[초안]` — 무기 종류 6종 × 1 이상, 방어구 3종 × 3부위, 악세사리 4종. 구 16행은 아래로 이관하고 AC3 숙련의 부적은 삭제. **세이브 변환기 매핑: AC3 → AC4, 구 AR2(철 갑옷 Lv4) → AR3, 구 HE2(현자의 관) → HE3** — 새 AR2·HE2는 초기 세트용 다른 장비라 번호가 겹친다 (R13):
+    | EquipNo | Name | Slot | WeaponType | ArmorType | Attribute | Scale | ReqLv | ReqStr | PAtk | MAtk | Def | Mdef | Price | DropW | 비고 |
+    |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+    | GW1 | 낡은 대검 | WEAPON | GREATSWORD | NONE | SLASH | STR | 1 | 0 | 3 | 0 | 0 | 0 | 50 | 10 | 게오르크 초기 (구 GW1) |
+    | GW2 | 대장군의 검 | WEAPON | GREATSWORD | NONE | SLASH | STR | 5 | 0 | 7 | 0 | 0 | 0 | 200 | 5 | 구 GW2 (방어 1 → 옵션으로) |
+    | LW1 | 낡은 장검 | WEAPON | LONGSWORD | NONE | PIERCE | STR | 1 | 0 | 2 | 1 | 0 | 0 | 50 | 10 | 신규 |
+    | HW1 | 낡은 지팡이 | WEAPON | STAFF | NONE | ICHI | INT | 1 | 0 | 0 | 3 | 0 | 0 | 50 | 10 | 홍단향 초기 (구 HW1) |
+    | HW2 | 개화 지팡이 | WEAPON | STAFF | NONE | ICHI | INT | 5 | 0 | 0 | 6 | 0 | 0 | 200 | 5 | 구 HW2 (MP 5·마방 1 → 옵션으로) |
+    | BW1 | 낡은 책 | WEAPON | BOOK | NONE | SIMSANG | INT | 1 | 0 | 0 | 2 | 0 | 0 | 50 | 10 | 신규 |
+    | OW1 | 흐린 수정구 | WEAPON | ORB | NONE | SIMSANG | INT | 1 | 0 | 1 | 2 | 0 | 0 | 50 | 10 | 신규 |
+    | EW1 | 흠집 난 코어 | WEAPON | CORE | NONE | RESONANCE | STR | 1 | 0 | 0 | 3 | 0 | 0 | 50 | 10 | 에리스 초기 (구 EW1). 공격력은 `MagicAttack` 쪽 (Q46) |
+    | EW2 | 공명 코어 | WEAPON | CORE | NONE | RESONANCE | STR | 5 | 0 | 0 | 6 | 0 | 0 | 200 | 5 | 구 EW2 (민첩 2 → 옵션으로) |
+    | AR1 | 가죽 갑옷 | ARMOR | NONE | LIGHT | NONE | - | 1 | 6 | 0 | 0 | 2 | 1 | 60 | 10 | 구 AR1 (HP 5 → 옵션으로). 에리스 초기 |
+    | AR2 | 철 갑옷 | ARMOR | NONE | HEAVY | NONE | - | 1 | 8 | 0 | 0 | 4 | 1 | 60 | 10 | 게오르크 초기 (구 AR2는 AR3으로) |
+    | AR3 | 강철 갑옷 | ARMOR | NONE | HEAVY | NONE | - | 4 | 14 | 0 | 0 | 6 | 2 | 220 | 5 | 구 AR2 (민첩 −1·HP 10 폐기) |
+    | AR4 | 낡은 로브 | ARMOR | NONE | ROBE | NONE | - | 1 | 0 | 0 | 0 | 1 | 3 | 60 | 10 | 홍단향 초기 |
+    | HE1 | 가죽 투구 | HELMET | NONE | LIGHT | NONE | - | 1 | 6 | 0 | 0 | 1 | 1 | 40 | 10 | 구 HE1. 에리스 초기 |
+    | HE2 | 철 투구 | HELMET | NONE | HEAVY | NONE | - | 1 | 8 | 0 | 0 | 2 | 0 | 40 | 10 | 게오르크 초기 |
+    | HE3 | 현자의 관 | HELMET | NONE | ROBE | NONE | - | 4 | 0 | 0 | 0 | 1 | 4 | 200 | 5 | 구 HE2 (MP 10 → 옵션으로) |
+    | HE4 | 낡은 두건 | HELMET | NONE | ROBE | NONE | - | 1 | 0 | 0 | 0 | 0 | 2 | 40 | 10 | 홍단향 초기 |
+    | BO1 | 여행자 신발 | BOOTS | NONE | LIGHT | NONE | - | 1 | 6 | 0 | 0 | 1 | 1 | 40 | 10 | 구 BO1 (민첩 1 → 옵션으로). 에리스 초기 |
+    | BO2 | 질풍의 신발 | BOOTS | NONE | LIGHT | NONE | - | 4 | 8 | 0 | 0 | 2 | 1 | 220 | 5 | 구 BO2 (민첩 3 → 옵션으로) |
+    | BO3 | 철 장화 | BOOTS | NONE | HEAVY | NONE | - | 1 | 8 | 0 | 0 | 2 | 0 | 40 | 10 | 게오르크 초기 |
+    | BO4 | 천 신발 | BOOTS | NONE | ROBE | NONE | - | 1 | 0 | 0 | 0 | 0 | 1 | 40 | 10 | 홍단향 초기 |
+    | AC1 | 생명의 반지 | ACCESSORY | NONE | NONE | NONE | - | 2 | 0 | 0 | 0 | 0 | 0 | 120 | 10 | 구 AC1 (HP 15 → 옵션으로. 노멀은 옵션 1개) |
+    | AC2 | 마력의 목걸이 | ACCESSORY | NONE | NONE | NONE | - | 2 | 0 | 0 | 0 | 0 | 0 | 120 | 10 | 구 AC2 (자원 10 → 옵션으로) |
+    | AC4 | 수호의 팔찌 | ACCESSORY | NONE | NONE | NONE | - | 3 | 0 | 0 | 0 | 0 | 0 | 150 | 10 | 구 AC4 (방어 2·마방 2 → 옵션으로). AC3 대체 매핑 대상 |
+    | AC5 | 철귀의 부적 | ACCESSORY | NONE | NONE | NONE | - | 6 | 0 | 0 | 0 | 0 | 0 | 400 | 3 | 구 AC3 자리 (스킬레벨 폐기 — 옵션으로만) |
+    - `RequireStr` 초안은 **원래 밸런스의 기본 힘**(게오르크 **8** — `CharacterStatDB` 주석 "기본 8/성장 3이 원래 값", 현재 CSV 10은 테스트 상향 / 에리스 7 / 홍단향 4) 기준이다 (Q36, R15). 초기 세트(게오르크 AR2·HE2·BO3 요구치 8 / 에리스 AR1·HE1·BO1 요구치 6 / 홍단향 AR4·HE4·BO4 요구치 0)는 요구치 ≤ 원래 기본 힘이라 원복 후에도 패널티가 없다. 테스트 상향을 원복하기 전까지는 게오르크가 더 많은 요구치를 넘는다.
 
-### 4-1. ※ 확인 필요 — 에리스 기본 공격의 계수 (F1 파생)
-핵(공명)은 마법 속성이라 F1 규칙대로면 에리스 평타는 **지능 + 핵 마법공격력**이 된다. 에리스는 힘·민첩 성장 캐릭터(기본 힘 7 / 지능 4)이고 공명 스킬(ES5~ES10)은 SkillDB에서 힘 계수라, 같은 공명인데 평타만 지능 기준이 된다. 선택지는 `ToDo_RPG_ITEM_REVIEW.md` 「7.」 I1 참조. 결정 전까지 이 표의 EW1·EW2는 물리공격력 쪽에 값을 둔 상태다.
+### 4-1. 에리스 기본 공격의 계수 — 확정 (I1 → Q46, 2026-10-19 4차)
+답변: **힘 + 마법공격력을 쓰고, 결과는 마법(공명) 공격.** 그래서 무기 행에 `ScaleStat`(STR/INT)을 두어 "계수 스탯"과 "속성(어느 방어로 막히나·어느 무기 공격력을 더하나)"을 분리했다. 핵 = `RESONANCE` + `STR` → 힘 + 핵 `MagicAttack`, 마법방어로 경감. 위 표의 EW1·EW2는 `MagicAttack` 쪽에 값을 둔다.
+- **스킬도 같은 규칙 (J1 확정, 10-19 4차)** — 스킬 피해·회복 = SkillDB `ScaleStat` 스탯 + (스킬 `Attribute`가 마법이면 무기 마법공격력, 물리면 물리공격력). 에리스 공명 스킬 ES5~ES10 = 힘 + 핵 마법공격력, 화염구 = 지능 + 지팡이 마법공격력, 연속 베기 = 힘 + 대검 물리공격력. 속성 `NONE` 스킬(치유의 빛·수호 축복 등 회복·실드)은 `ScaleStat` 쪽 무기 공격력 (지능이면 마법공격력).
 
 ## 5. 장비 등급·옵션 [Phase 3]
 
@@ -223,7 +225,7 @@ struct EquipInstance { string instanceId; string equipNo; EquipGrade grade; int[
 class EquipInstanceSave { string instanceId; string equipNo; int grade; int[] optionTypes; int[] optionValues; }  // JSON
 ```
 - `instanceId` = 서버 GUID 문자열. 착탈·판매는 `instanceId` 기준. 같은 슬롯은 자동 교체, 악세사리 2칸, 전투 중 착탈 불가 (기존).
-- 세이브 `RpgSaveData.saveVersion` (없음 = 0). 0 → 1 변환: 문자열 장비 → NORMAL 옵션 0개 인스턴스, AC3 → AC4 매핑, 구 EquipDB `MaxHP/MaxResource` 델타를 저장된 최대치에서 차감(변환기 상수표), 방어구 빈 부위 기본 세트 보충, PO3 → `RESTORE_MP`, 캐릭터별 골드 → 플레이어 골드 합산.
+- 세이브 `RpgSaveData.saveVersion` (없음 = 0). 0 → 1 변환: 문자열 장비 → NORMAL 옵션 0개 인스턴스, 대체 장비 매핑(**AC3 → AC4, 구 AR2 → AR3, 구 HE2 → HE3** — R13), 구 EquipDB `MaxHP/MaxResource` 델타를 저장된 최대치에서 차감(변환기 상수표), 방어구 빈 부위 기본 세트 보충, 구 PO3(자원 공용) → 소지 캐릭터 자원별 **PO3(MP) / PO4(RAGE) / PO1(HP)** (R13), 캐릭터별 골드 → 플레이어 골드 합산.
 
 ## 6. 방어구 종류·약점 [Phase 4]
 

@@ -35,6 +35,7 @@
     - 힘 요구치 판정에 힘 버프 포함 — 버프로 요구치를 넘으면 패널티 해제 (Q42)
     - 기획서 「자원」「기본 공격 속성」「보조 스탯」「치명타」「전투」 절을 이 결정에 맞춰 수정 (F7)
 - **2026-10-19 (3차) G1~G4 답변 반영** — 방어 행동 = 물리 방어력 +(10 + 레벨), 다음 자기 턴이 올 때까지 (턴 시작 만료 — 1-15에 `expireOnOwnTurnStart` 추가). 철귀 턴 종료 효과 = 방어력 +10 같은 방식. 실드 덮어쓰기는 항상 교체. 보상 골드는 드랍과 같은 횟수. H1 답변 — **다른 출처의 `STAT_*` 버프는 합산** (Q45, 1-12 출처별 중첩). **미결 없음**
+- **2026-10-19 (4차) Phase 0 검토·I1 답변 반영 — Q46 추가** — 에리스 평타 = **힘 + 핵 마법공격력, 결과는 공명(마법)**. 일반화: 무기 행에 `ScaleStat`(STR/INT) 컬럼, 공격력 = 계수 스탯 + 속성에 맞는 쪽의 무기 공격력 (`GamePlayer.GetAttackPower`). **스킬도 같은 함수를 쓴다 (J1 확정 — 적용)**. Phase 0 문서 검토에서 구 세이브 변환 매핑 누락(구 AR2 → AR3 · 구 HE2 → HE3 · PO3 자원별 분기 — R13)과 초기 중갑 세트 `RequireStr`이 원래 기본 힘 8을 넘던 문제(R15) 수정
 
 ---
 
@@ -104,7 +105,7 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 | D23/Q23 | 약점 상쇄 옵션 | 옵션마다 **속성 1가지**를 지정해 그 속성의 약점만 무효화한다 (예: "약점 상쇄 : 공명") | 0-3, 5-12 |
 | D24/Q24 | 드랍 | **몬스터별 아이템 드랍 테이블**을 만든다. 멀티 1.5배 적용 후 100%를 넘는 몫은 추가 1회 판정 확률로 처리 | 0-12, 7-1~7-4 |
 | D25 | 최대 MP | **가정대로 진행 (09-29 확인)** — MP 옵션은 MP 캐릭터(홍단향)에게만 유효, 분노 최대치는 전설 옵션 `MAX_RAGE`로만 오른다. 최대 MP 레벨 성장(`GrowMP`)은 밸런스 테스트 후 결정 | 3-8 |
-| Q25 (10-19) | 힘·무기 공격력 분리 / 무기 속성 | **힘과 무기 공격력은 다른 개념.** 최종 물리공격력 = 힘 + 무기 `PhysicalAttack`, 최종 마법공격력 = 지능 + 무기 `MagicAttack` (`TotalPhysicalAttack/TotalMagicAttack`). `TotalStrength/TotalIntelligence`는 스탯(기본 + 옵션)만. **무기 행마다 `Attribute` 컬럼** — 기본 공격 속성은 캐릭터가 아니라 무기 속성을 따른다 (`CharacterStatDB.BasicAttackAttribute` 폐기). 기본 공격의 계수는 **무기 속성으로 선택 (F1 확정)** — `IsMagic(무기 속성)`이면 `TotalMagicAttack`, 아니면 `TotalPhysicalAttack`. 스킬은 SkillDB `ScaleStat` 그대로 | 0-4, 3-6, 4-5 |
+| Q25 (10-19) | 힘·무기 공격력 분리 / 무기 속성 | **힘과 무기 공격력은 다른 개념.** 최종 물리공격력 = 힘 + 무기 `PhysicalAttack`, 최종 마법공격력 = 지능 + 무기 `MagicAttack` (`TotalPhysicalAttack/TotalMagicAttack`). `TotalStrength/TotalIntelligence`는 스탯(기본 + 옵션)만. **무기 행마다 `Attribute` 컬럼** — 기본 공격 속성은 캐릭터가 아니라 무기 속성을 따른다 (`CharacterStatDB.BasicAttackAttribute` 폐기). 기본 공격의 계수는 F1(무기 속성으로 선택)에서 출발해 **Q46으로 확정** — 계수 스탯은 무기 행 `ScaleStat`, 무기 공격력은 속성에 맞는 쪽 | 0-4, 3-6, 4-5 |
 | Q26 (10-19) | 명중·회피 공식 | **단일 판정.** MISS 확률 = max(0, 대상 회피 + (100 − 공격자 명중)). 명중 105% vs 회피 5% = 0% MISS, 기본(95/5) = 10% MISS. 명중 실패를 따로 굴리지 않는다 | 1-6 |
 | Q27 (10-19) | 판정을 거치는 범위 | MISS면 그 타격의 **부가 효과(디버프·TP 감소 등)도 생략**. 광역 공격은 **대상마다 개별 판정**. 반격(GS13)·반사 옵션은 **2차 판정(명중·치명·r)을 거친다**. 개화꽃 같은 고정 피해는 판정·방어 없음 | 1-3, 1-6, 5-6 |
 | Q28 (10-19) | 몬스터 치명 | 몬스터 기본 치명 0 + 약점 보정 10%는 **의도**. 몬스터에게도 약점을 보완하는 세팅이 추후 요구될 예정. 치명 배수는 플레이어와 공용 | 1-7, 4-6 |
@@ -125,6 +126,7 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 | Q43 (10-19 2차) | 최대치 합산 방식 | **계산 프로퍼티 (F2 — 제안 B).** `MaxHP/maxResource`는 캐릭터 고유치(성장·스킬트리 노드 포함)만 저장하고, `TotalMaxHP = MaxHP + MAX_HP 옵션 합`, `TotalMaxResource = maxResource + (자원 종류가 맞는 MAX_MP/MAX_RAGE 옵션 합)`을 매번 계산한다. `ApplyEquipMaxDeltas` 폐기. 구 세이브는 로드 때 1회 구 EquipDB 표로 델타를 뺀다 | 3-8, 3-11, 5-8, 9-1 |
 | Q44 (10-19 2차) | 위험도 방어 보정 (A3) | `MonsterStatDB.HazardDef` = **위험도 1당 방어력 스탯 +**, `HazardMdef` 컬럼 추가 (F9 확정). 예: 방패병 방어 10 · HazardDef 0.5 · 위험도 6 → 13 | 2-1 |
 | Q45 (10-19 3차) | 버프 중첩 | **출처가 다른 `STAT_*` 버프는 합산한다** (H1 — 방어 행동 + 철귀 방어력이 둘 다 적용. 철귀를 능동적으로 쓰게 하기 위함). 같은 출처를 다시 쓰면 갱신. 기존 "같은 종류는 강한 쪽만" 규칙(`ApplyTimedDebuffTo`)은 `STAT_*`에는 쓰지 않고, `ICHI_*`는 버프 개편에서 같은 원칙으로 | 1-12, 1-15, 6-2 |
+| Q46 (10-19 4차) | 에리스 평타 계수 (I1) | **힘 + 핵 마법공격력을 쓰고, 결과는 마법(공명) 공격.** 일반화: 무기 행에 **`ScaleStat`(STR/INT)** 컬럼을 두고(SkillDB와 같은 이름·값), **공격력 = `ScaleStat` 스탯 + (속성이 마법이면 Σ무기 `MagicAttack`, 물리면 Σ무기 `PhysicalAttack`)** — `GamePlayer.GetAttackPower(bool scalesWithInt, AttackAttribute attribute)` 한 함수. 평타는 무기의 `ScaleStat`·`Attribute`로 부른다 (핵 = RESONANCE·STR → 힘 + 핵 마법공격력, 마법방어로 경감 / 대검 = SLASH·STR → 힘 + 물리공격력 / 지팡이 = ICHI·INT → 지능 + 마법공격력). **스킬도 SkillDB의 `ScaleStat`·`Attribute`로 같은 함수를 쓴다 (J1 확정)** — 에리스 공명 스킬 = 힘 + 핵 마법공격력, 화염구 = 지능 + 지팡이 마법공격력, 연속 베기 = 힘 + 대검 물리공격력. 속성 `NONE`(치유의 빛·수호 축복 등)은 `ScaleStat` 쪽 — INT면 마법공격력, STR이면 물리공격력. `TotalPhysicalAttack/TotalMagicAttack`은 스탯창 표시용으로 남긴다. 핵 행의 공격력은 `MagicAttack` 쪽에 둔다 (EW1 0/3, EW2 0/6) | 0-4, 3-6 |
 
 ### 결정에서 파생된 가정 (10-19 2차: 전부 확정 — A2는 Q41, A3는 Q44, A4는 Q42로 교체)
 | # | 항목 | 가정 |
@@ -163,9 +165,9 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
       | 투구 | 힘·지능·HP·MP | 치명타 확률·명중률 |
       | 신발 | 민첩·HP·MP·제어 | 회피율·이동 시 턴 소모 제거·포지션 패널티 제거 |
       | 악세사리 | 방어력·민첩·힘·지능·제어·HP·MP·보호막 | 분노 최대치·포지션 패널티 제거·이동 턴 소모 제거·생명력 흡수·스킬 추가 데미지·콤보 추가 데미지·반사(고정)·반사(비례)·받는 회복량·치명타 확률·회피율·치명타 데미지·약점 상쇄 |
-- [x] 0-4. `EquipDB.csv` 개편안 — 기본 옵션만 남긴다: `EquipNo, Name, Slot, WeaponType, ArmorType, Attribute, RequireLevel, RequireStr, PhysicalAttack, MagicAttack, Defense, MagicDefense, Price, DropWeight, Description`
+- [x] 0-4. `EquipDB.csv` 개편안 — 기본 옵션만 남긴다: `EquipNo, Name, Slot, WeaponType, ArmorType, Attribute, ScaleStat, RequireLevel, RequireStr, PhysicalAttack, MagicAttack, Defense, MagicDefense, Price, DropWeight, Description` (`ScaleStat`은 10-19 4차 Q46에서 추가)
       - 삭제: `Character`(착용 제한 없음), `Grade`(인스턴스가 가짐), `Agility/MaxHP/MaxResource`(추가 옵션으로 이관), `SkillLevel`(Q1)
-      - 무기: **모든 무기 행이 `PhysicalAttack`·`MagicAttack`을 둘 다 가진다** (Q22 — 값은 무기마다 CSV로 조절, 0 허용). **`Attribute`(무기 행만, Q25)** = 기본 공격 속성 — `CharacterStatDB.BasicAttackAttribute`는 폐기. 무기 공격력은 힘·지능 스탯에 더하지 않고 `TotalPhysicalAttack/TotalMagicAttack`으로 따로 합산한다 (3-6)
+      - 무기: **모든 무기 행이 `PhysicalAttack`·`MagicAttack`을 둘 다 가진다** (Q22 — 값은 무기마다 CSV로 조절, 0 허용). **`Attribute`(무기 행만, Q25)** = 기본 공격 속성 — `CharacterStatDB.BasicAttackAttribute`는 폐기. **`ScaleStat`(무기 행만, STR/INT — Q46)** = 평타 계수 스탯 (대검·장검·핵 STR / 지팡이·책·수정구 INT) — `CharacterStatDB.AttackStat`은 폐기. 평타 공격력 = `ScaleStat` 스탯 + 속성에 맞는 쪽의 무기 공격력 (핵 = 힘 + 마법공격력). 무기 공격력은 힘·지능 스탯에 더하지 않는다 (3-6)
       - 갑옷·투구·신발: `ArmorType` + `RequireStr` + 방어력·마법방어. 악세사리: 기본 옵션 없음 (노멀도 추가 옵션 1개)
 - [x] 0-5. `WeaponType { NONE, GREATSWORD, LONGSWORD, STAFF, BOOK, ORB, CORE }` (대검·장검·지팡이·책·수정구·핵) / `ArmorType { NONE, HEAVY, LIGHT, ROBE }` (중갑·경갑·로브)
 - [x] 0-6. **`ArmorTypeDB.csv`**: `ArmorType, Weaknesses('|'), NameKey` — HEAVY = STRIKE|RESONANCE, LIGHT = PIERCE|SIMSANG, ROBE = SLASH|ICHI.
@@ -181,7 +183,7 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
       - 1차 효과: `HEAL_HP, RESTORE_MP, RESTORE_RAGE, BUFF_ATTACK, BUFF_CRIT_RATE, BUFF_EVADE`. 극약(`POISON_TO_ONE`)은 후순위 (Q6)
       - `ConsumableType` enum은 폐기한다 (`Effect` 문자열 바인딩으로 대체)
 - [x] 0-10. 보조 스탯·방어 스탯 컬럼
-      - `CharacterStatDB.csv`: `BaseEvade, BaseAccuracy, BaseCrit` 추가 (게오르크·홍단향 5/95/5, 에리스 10/95/10), `Weakness/Resist` 삭제 (Q17), `BasicAttackAttribute`·`AttackStat` 삭제 (Q25 — 무기 속성이 기본 공격의 속성과 계수를 모두 정한다)
+      - `CharacterStatDB.csv`: `BaseEvade, BaseAccuracy, BaseCrit` 추가 (게오르크·홍단향 5/95/5, 에리스 10/95/10), `Weakness/Resist` 삭제 (Q17), `BasicAttackAttribute`·`AttackStat` 삭제 (Q25·Q46 — 무기 행의 `Attribute`·`ScaleStat`이 기본 공격의 속성과 계수를 정한다)
       - `MonsterStatDB.csv`: `Evade, Accuracy, CritRate`(없으면 5/95/0, Q4), **`Defense, MagicDefense`**(Q14), `HazardMdef` 추가, `HazardDef` 의미 변경 (A3), `DropTable` 추가 (0-12). 미사용 `TPShield` 컬럼은 삭제 여부를 확인한다 (`Monster.tpShield` 로드만 되고 참조 없음)
 - [x] 0-11. BalanceDB 키 목록 확정 (플레이어·몬스터 공용 — Q18)
       - 판정: `DAMAGE_RANDOM_PERCENT`(10), `CRIT_DAMAGE_PERCENT`(150 — 피해·회복·실드 부여 공용, Q29), `CRIT_DEFENSE_PERCENT`(50), `CRIT_DEFENSE_FLAT_REDUCE`(10), `CRIT_TP_DAMAGE`(5)
@@ -200,7 +202,7 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 - [x] 0-14. `ShopDB.csv` (Q20, A8): `ShopId, Kind(EQUIP|POTION), ItemNo, Price(비우면 DB Price), Description` — 1차 `ShopId=MERCURIUS`
 
 **완료 기준**: 위 CSV 헤더·enum·세트 규칙이 기획서 「장비 옵션」「아이템」「속성」「방어구」「약점 공격」 절에 "구현 형식" 줄로 적혀 있다.
-**완료 (2026-10-19)** — 상세 형식은 `RPG_CONVERSION_ITEMS.md` §1~§11, 기획서 9개 절(「멀티플레이어 변경점」「거점」「보조 스탯」「속성」「약점 공격」「무기」「방어구」「장비 옵션」「아이템」)에 "구현 형식 (2026-10-19, Phase 0)" 줄 추가. 수치는 전부 초안(9-4). 에리스 평타 계수(ITEMS §4-1)는 검토 문서 I1로 확인 중 — Phase 3-6에서 반영.
+**완료 (2026-10-19)** — 상세 형식은 `RPG_CONVERSION_ITEMS.md` §1~§11, 기획서 9개 절(「멀티플레이어 변경점」「거점」「보조 스탯」「속성」「약점 공격」「무기」「방어구」「장비 옵션」「아이템」)에 "구현 형식 (2026-10-19, Phase 0)" 줄 추가. 수치는 전부 초안(9-4). 에리스 평타 계수는 I1 답변으로 확정 (Q46 — 무기 행 `ScaleStat` 컬럼 추가, ITEMS §4-1). **10-19 4차 Phase 0 문서 검토**: 구 세이브 변환 매핑(구 AR2 → AR3 · 구 HE2 → HE3 · PO3 자원별 분기 — R13)과 초기 중갑 세트 `RequireStr` 10 → 8(원래 기본 힘 — R15)을 수정. 스킬의 무기 공격력 선택(R14)은 J1 답변으로 확정(스킬도 `GetAttackPower`) — 3-6에서 구현. **미결 없음.**
 
 ---
 
@@ -289,22 +291,23 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 - [ ] 3-4. `EquipDB.csv` 개편 (0-4) + `EquipData.Def` 정리. 기존 16행을 새 컬럼으로 이관한다. 무기 종류 6종마다 최소 1행, 방어구는 3종류 × 3부위 = 최소 9행 (Phase 4에서 `ArmorType`·`RequireStr` 채움). AC3 숙련의 부적은 다른 악세사리로 교체 (Q1)
 - [ ] 3-5. 착용 제한 제거 — `CmdEquip`의 캐릭터 전용 검증, `EquipData.GetUsableBy`, OnGUI 착용 가능 표시, `ServerAddRandomEquip` 드랍 풀의 캐릭터 조건 제거
 - [ ] 3-6. 무기 공격력·속성 (Q22, Q25) — **힘과 무기 공격력은 다른 개념.** `TotalStrength/TotalIntelligence`는 스탯(기본 + `STRENGTH/INTELLIGENCE` 옵션)만 합산하고, 무기 공격력은 `TotalPhysicalAttack = TotalStrength + Σ 무기 PhysicalAttack`, `TotalMagicAttack = TotalIntelligence + Σ 무기 MagicAttack`으로 따로 둔다 (캐릭터와 무관, 모든 무기가 두 값을 모두 가짐). `EquipAttackBonusFor`는 삭제.
-      `BattleActions.SkillDamage`는 `scalesWithInt`에 따라 `TotalMagicAttack/TotalPhysicalAttack`을 쓴다. `BasicAttackDamage`의 속성은 **장착 무기의 `Attribute`**(무기가 없으면 NONE)이고, 계수는 **`IsMagic(무기 속성)`이면 `TotalMagicAttack`, 아니면 `TotalPhysicalAttack`** (F1 확정 — 홍단향이 대검(참격)을 들면 평타는 힘 + 대검 물리공격력의 참격, 화염구는 그대로 지능 + 대검 마법공격력의 이치). TpBattle `TpAction.ATTACK` 분기의 `stat.basicAttack` 참조를 무기 속성으로 교체. `PlayerOrder`·`DebugStats` 표시도 공격력/스탯을 구분
+      공격력 조회는 한 함수 **`GamePlayer.GetAttackPower(bool scalesWithInt, AttackAttribute attribute)` = (scalesWithInt ? `TotalIntelligence` : `TotalStrength`) + (`IsMagic(attribute)` ? Σ무기 `MagicAttack` : Σ무기 `PhysicalAttack`)** (Q46. 속성 `NONE`은 scalesWithInt 쪽 — INT면 마법공격력, STR이면 물리공격력. **스킬에도 적용 — J1 확정**). `BasicAttackDamage`는 **장착 무기의 `ScaleStat`·`Attribute`**(무기가 없으면 STR·NONE)로, `BattleActions.SkillDamage`는 스킬의 `scalesWithInt`·`attribute`로 이 함수를 부른다. 예: 홍단향이 대검(참격·STR)을 들면 평타는 힘 + 대검 물리공격력의 참격, 화염구는 지능 + 대검 마법공격력의 이치. **에리스 핵(공명·STR)은 평타·공명 스킬 모두 힘 + 핵 마법공격력**이고 마법방어로 경감된다 (I1). `TotalPhysicalAttack/TotalMagicAttack`은 스탯창 표시용. TpBattle `TpAction.ATTACK` 분기의 `stat.basicAttack` 참조를 무기 속성으로 교체. `PlayerOrder`·`DebugStats` 표시도 공격력/스탯을 구분
 - [ ] 3-7. `EquipInstance` 구조체 + `EquipGenerator`(서버 전용 static) — `Create(equipNo, grade)`: `EquipGradeDB`의 옵션 개수를 굴리고, 해당 등급 행에서 Weight 가중 무중복 추출 후 Min~Max를 굴린다. 전설은 마지막 1개를 전설 옵션 풀에서. `ValueKind=ATTRIBUTE`는 속성을 굴린다 (A6). 악세사리는 악세사리 옵션 개수 컬럼 사용
 - [ ] 3-8. `GamePlayer.Equipment.cs` 전환 — `equippedItems / inventoryEquips`를 `SyncList<EquipInstance>`로. `CmdEquip/CmdUnequip`은 `instanceId` 기준. `SumEquip`이 기본 옵션(EquipDB)과 인스턴스 옵션을 함께 합산하고 `EquipOptionSum(type)` / `EquipOptionAttributes(type)`(속성형 옵션 목록) 조회 함수를 둔다
       - `Total*`에 옵션 가산: 힘·지능·민첩·제어·방어
       - `TotalControl` 신설 — `BattleActions.GainRageByDamage`와 TpBattle MP 회복(턴 시작·전투 종료)이 `control` 대신 사용
       - `MAX_HP/MAX_MP/MAX_RAGE`는 **계산 프로퍼티** (Q43 — `ApplyEquipMaxDeltas` 델타 방식 폐기): `MaxHP/maxResource`는 캐릭터 고유치(성장·노드 포함)만 저장하고 `TotalMaxHP = MaxHP + Σ MAX_HP`, `TotalMaxResource = maxResource + Σ(자원 종류가 맞는 MAX_MP/MAX_RAGE)` 프로퍼티를 신설. `TargetObject.playerMaxHP`·`PlayerOrder`·`DebugStats`·류진솔 회복·캠프 회복·`AddMaxHP`의 HP 클램프가 `Total*`을 쓴다. 착탈 시 현재 HP/자원은 `Total*`로 클램프만 한다. **`MAX_MP`는 자원이 MP인 캐릭터에게만** (D25)
 - [ ] 3-9. Q1 반영 — `EquipSkillLevelBonus` 삭제, `GamePlayer.SkillTree.GetSkillLevel`에서 장비 가산 제거, `BattleActions.SkillDamage` 주석 수정
-- [ ] 3-10. 초기 지급 `ServerGrantInitialGear` (Q36) — 무기 + 방어구 3부위 세트(A5)를 NORMAL 인스턴스로 생성·장착. 캐릭터별 기본 무기는 무기 종류 기준으로 다시 지정 (게오르크 대검 / 홍단향 지팡이 / 에리스 핵). 초기 세트의 `RequireStr`은 **캐릭터 기본 힘(원래 밸런스) 이하**로 두어 패널티가 없게 하고, 성능은 최하로
+- [ ] 3-10. 초기 지급 `ServerGrantInitialGear` (Q36) — 무기 + 방어구 3부위 세트(A5)를 NORMAL 인스턴스로 생성·장착. 캐릭터별 기본 무기는 무기 종류 기준으로 다시 지정 (게오르크 대검 / 홍단향 지팡이 / 에리스 핵). 초기 세트의 `RequireStr`은 **캐릭터 기본 힘(원래 밸런스) 이하**로 두어 패널티가 없게 하고, 성능은 최하로. 게오르크의 원래 기본 힘은 CharacterStatDB 주석대로 **8**(현재 CSV 10은 테스트 상향)이므로 초기 중갑 세트(AR2·HE2·BO3)는 `RequireStr` 8 (R15)
 - [ ] 3-11. 세이브 — `GameSaveService.ProfileData`의 `equippedItems/inventoryEquips`를 `List<EquipInstanceSave>`로 (instanceId·equipNo·grade·옵션 배열). **`RpgSaveData.saveVersion` 추가** (R11) — 구 세이브(필드 없음 = 0)는 로드 시 1회 변환하고 현재 버전으로 저장한다.
-      **구 세이브 호환 (버전 0 → 1)**: 문자열 항목 → NORMAL 옵션 0개 인스턴스, 삭제된 행(AC3 등) → 대체 장비 매핑, 방어구 부위가 비어 있으면 기본 세트 보충 (A5), 구 EquipDB의 `MaxHP/MaxResource` 델타를 저장된 최대치에서 1회 차감 (Q43 — 장착 중이던 구 장비의 값만. 구 EquipDB 16행의 `MaxHP/MaxResource`는 변환기에 상수표로 남긴다)
+      **구 세이브 호환 (버전 0 → 1)**: 문자열 항목 → NORMAL 옵션 0개 인스턴스, 삭제·번호가 바뀐 행 → 대체 장비 매핑 (**AC3 → AC4, 구 AR2 철 갑옷 → AR3 강철 갑옷, 구 HE2 현자의 관 → HE3** — 새 AR2·HE2는 다른 장비다, R13), 방어구 부위가 비어 있으면 기본 세트 보충 (A5), 구 EquipDB의 `MaxHP/MaxResource` 델타를 저장된 최대치에서 1회 차감 (Q43 — 장착 중이던 구 장비의 값만. 구 EquipDB 16행의 `MaxHP/MaxResource`는 변환기에 상수표로 남긴다)
 - [ ] 3-12. 임시 OnGUI 창(`DrawEquipmentGUI`) — 등급 색·무기/방어구 종류·옵션 목록 표시 (정식 UI는 Phase 8). 디버그 치트: 등급·옵션 지정 장비 생성
 
 **완료 기준**
 - 치트로 만든 전설 장비가 옵션 3개를 갖고, 착용하면 스탯창 수치가 오른다. 같은 옵션이라도 등급에 따라 수치 범위가 다르다
 - 저장·이어하기 후에도 옵션이 그대로다
 - 홍단향이 대검을 착용할 수 있고, 대검의 물리·마법 공격력이 각각 `TotalPhysicalAttack/TotalMagicAttack`에 더해진다. 힘·지능 스탯 자체는 변하지 않는다. 기본 공격 속성이 대검의 속성으로 바뀐다
+- 에리스의 평타와 공명 스킬이 힘 + 핵 마법공격력으로 계산되고 마법방어로 경감된다. 핵을 벗으면 힘만으로 친다. 홍단향 화염구는 지능 + 지팡이 마법공격력 (Q46)
 - 게오르크가 MP 옵션 장비를 껴도 분노 최대치는 100 그대로다
 - 멀티 클라이언트가 호스트 캐릭터의 장비 옵션을 같은 값으로 본다
 - 유물 관련 코드·데이터가 남아 있지 않고 콘솔에 Missing Script가 없다
@@ -368,7 +371,7 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
       - `RESTORE_MP` / `RESTORE_RAGE`: 자원 종류가 맞는 대상만 (`BattleActions.GainRage` 등)
       - `BUFF_ATTACK / BUFF_CRIT_RATE / BUFF_EVADE`: `STAT_ATTACK / STAT_CRIT_RATE / STAT_EVADE` 지속 버프 (0-13 — `ICHI_ATTACK` 미사용, Q15). 전투 전용(`targetUnit` 필요). 지속은 **사용 턴을 제외한 n턴** (Q33 — `ApplyTimedDebuffTo`의 `skipFirstTick` 그대로)
 - [ ] 6-3. 사용 로직 통합 — `GamePlayer.ServerUseConsumable(potionNo, GamePlayer target)` 한 곳으로 모은다. 검증: 보유·`BattleOnly`·`ValidTarget`(1차 `NONE` = 자신만)·`UsableResource`. 전투 중이면 `M_TurnManager.GetCurrentPlayerTargetObject(target)`로 `targetUnit`을 구해 넘긴다. 전투 ITEM 분기(TpBattle)와 `CmdUsePotionOnMap`의 중복 switch를 이 함수 호출로 교체. 비전투 HP 회복도 같은 규칙
-- [ ] 6-4. `ConsumableDB.csv` 1차 행 — HP 물약·상급 HP 물약·MP 물약·분노의 물약·공격력 물약·치명타 물약·회피율 물약. PO3(구 `RESTORE_RESOURCE`)는 `RESTORE_MP`로 이관
+- [ ] 6-4. `ConsumableDB.csv` 1차 행 — HP 물약·상급 HP 물약·MP 물약·분노의 물약·공격력 물약·치명타 물약·회피율 물약. PO3(구 `RESTORE_RESOURCE`, MP·분노 공용)는 `RESTORE_MP`로 이관. 구 세이브의 PO3은 소지 캐릭터의 자원 종류에 따라 **MP → PO3 / RAGE → PO4 / HP(에리스) → PO1**로 변환 (R13 — 그대로 두면 게오르크·에리스가 쓸 수 없는 물약이 남는다)
 - [ ] 6-5. 비전투 사용 제한 — `BattleOnly=1`은 거부 (토스트 `ui.msg.potion_battle_only`)
 - [ ] 6-6. 초기 지급 — HP 물약 2개 유지, 게오르크에게 분노의 물약 1개 시험 지급 (테스트 후 결정)
 - [ ] 6-7. 전투 UI(OnGUI 아이템 목록) — 사용할 수 없는 물약은 비활성 + 사유 표시 (자원 불일치·비전투 전용 등)
@@ -437,7 +440,7 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 
 ## Phase 9 — 세이브·멀티·밸런스 검증
 
-- [ ] 9-1. 구 세이브 3슬롯 로드 회귀 (`saveVersion` 0 → 현재) — 문자열 장비 → NORMAL 인스턴스, AC3 등 삭제 장비 대체 매핑, 방어구 빈 부위 기본 세트 보충(A5), 최대치 델타 차감(3-11, F2), PO3 → `RESTORE_MP`, 캐릭터별 골드 → 플레이어 골드 합산(7-10). 변환 후 저장하면 현재 버전으로 기록되는지
+- [ ] 9-1. 구 세이브 3슬롯 로드 회귀 (`saveVersion` 0 → 현재) — 문자열 장비 → NORMAL 인스턴스, 대체 장비 매핑(AC3 → AC4 · 구 AR2 → AR3 · 구 HE2 → HE3, R13), 방어구 빈 부위 기본 세트 보충(A5), 최대치 델타 차감(3-11, F2), 구 PO3 → 자원 종류별 PO3/PO4/PO1(6-4), 캐릭터별 골드 → 플레이어 골드 합산(7-10). 변환 후 저장하면 현재 버전으로 기록되는지
 - [ ] 9-2. ParrelSync 2클라이언트 — 클라이언트 캐릭터의 드랍·착탈·상점 거래·소모품 사용이 호스트 검증을 거쳐 반영되는지. `SyncList<EquipInstance>` 초기 동기화(늦게 들어온 클라이언트), MISS·치명 표시 RPC, 몬스터 방어 버프 표시
 - [ ] 9-3. RPC 해시 충돌 점검 — 새 `Cmd*/Rpc*`(`RpcDisplayMiss`, `CmdShopBuy/CmdShopSell`, `CmdEquip` 시그니처 변경 등) 추가 후 콘솔 "have the same hash" 확인
 - [ ] 9-4. 밸런스 초안 — 1스테이지 플레이로 조정하고 결과를 `RPG_CONVERSION_DESIGN.md`에 기록
