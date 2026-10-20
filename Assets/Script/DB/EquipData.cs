@@ -109,39 +109,53 @@ public static class EquipData
         return pool[pool.Count - 1];
     }
 
-    /// <summary>슬롯 한글 표기 (임시 UI)</summary>
-    public static string SlotName(EquipSlot slot)
+    /// <summary>장비 표시 이름 — 로컬라이즈 `equip.&lt;EquipNo&gt;.name`, 없으면 CSV 한국어 Name</summary>
+    public static string DisplayName(Def def)
     {
-        switch (slot)
-        {
-            case EquipSlot.WEAPON: return "무기";
-            case EquipSlot.ARMOR: return "갑옷";
-            case EquipSlot.HELMET: return "투구";
-            case EquipSlot.BOOTS: return "신발";
-            case EquipSlot.ACCESSORY: return "악세사리";
-            default: return slot.ToString();
-        }
+        if (def == null) return "";
+        return M_LanguageManager.Get($"equip.{def.equipNo}.name", def.equipName);
     }
 
-    /// <summary>무기/방어구 종류 한글 표기 (임시 UI — 정식 로컬라이즈는 Phase 8)</summary>
+    /// <summary>슬롯 표기 — 로컬라이즈 `equip.slot.&lt;enum&gt;` (ko 기본값은 코드)</summary>
+    public static string SlotName(EquipSlot slot)
+    {
+        string fallback;
+        switch (slot)
+        {
+            case EquipSlot.WEAPON: fallback = "무기"; break;
+            case EquipSlot.ARMOR: fallback = "갑옷"; break;
+            case EquipSlot.HELMET: fallback = "투구"; break;
+            case EquipSlot.BOOTS: fallback = "신발"; break;
+            case EquipSlot.ACCESSORY: fallback = "악세사리"; break;
+            default: fallback = slot.ToString(); break;
+        }
+        return M_LanguageManager.Get($"equip.slot.{slot}", fallback);
+    }
+
+    /// <summary>무기/방어구 종류 표기 — 로컬라이즈 `equip.weapontype.&lt;enum&gt;` / `equip.armortype.&lt;enum&gt;` (ko 기본값은 코드)</summary>
     public static string KindName(Def def)
     {
         if (def == null) return "";
         switch (def.weaponType)
         {
-            case WeaponType.GREATSWORD: return "대검";
-            case WeaponType.LONGSWORD: return "장검";
-            case WeaponType.STAFF: return "지팡이";
-            case WeaponType.BOOK: return "책";
-            case WeaponType.ORB: return "수정구";
-            case WeaponType.CORE: return "핵";
+            case WeaponType.GREATSWORD: return M_LanguageManager.Get("equip.weapontype.GREATSWORD", "대검");
+            case WeaponType.LONGSWORD: return M_LanguageManager.Get("equip.weapontype.LONGSWORD", "장검");
+            case WeaponType.STAFF: return M_LanguageManager.Get("equip.weapontype.STAFF", "지팡이");
+            case WeaponType.BOOK: return M_LanguageManager.Get("equip.weapontype.BOOK", "책");
+            case WeaponType.ORB: return M_LanguageManager.Get("equip.weapontype.ORB", "수정구");
+            case WeaponType.CORE: return M_LanguageManager.Get("equip.weapontype.CORE", "핵");
         }
-        switch (def.armorType)
+        return ArmorTypeName(def.armorType);
+    }
+
+    public static string ArmorTypeName(ArmorType armorType)
+    {
+        switch (armorType)
         {
-            case ArmorType.HEAVY: return "중갑";
-            case ArmorType.LIGHT: return "경갑";
-            case ArmorType.ROBE: return "로브";
+            case ArmorType.HEAVY: return M_LanguageManager.Get("equip.armortype.HEAVY", "중갑");
+            case ArmorType.LIGHT: return M_LanguageManager.Get("equip.armortype.LIGHT", "경갑");
+            case ArmorType.ROBE: return M_LanguageManager.Get("equip.armortype.ROBE", "로브");
+            default: return "";
         }
-        return "";
     }
 }

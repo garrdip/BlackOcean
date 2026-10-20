@@ -116,8 +116,13 @@ public static class EquipOptionData
         return defs.Find(def => def.type == type && def.grade == grade);
     }
 
-    /// <summary>옵션 한글 표기 (임시 — 정식 로컬라이즈는 Phase 8 `equip.option.<enum>.name`)</summary>
+    /// <summary>옵션 표기 — 로컬라이즈 `equip.option.&lt;enum&gt;.name` (ko 기본값은 코드)</summary>
     public static string DisplayName(EquipOptionType type)
+    {
+        return M_LanguageManager.Get($"equip.option.{type}.name", KoreanName(type));
+    }
+
+    static string KoreanName(EquipOptionType type)
     {
         switch (type)
         {

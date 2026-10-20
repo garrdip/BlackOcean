@@ -18,7 +18,7 @@ public static class ShopData
         public string itemNo;
         public int price; // 확정 구매가 (CSV 비면 DB 가격)
 
-        public string DisplayName => kind == Kind.EQUIP ? EquipData.Get(itemNo)?.equipName ?? itemNo : ConsumableData.Get(itemNo)?.potionName ?? itemNo;
+        public string DisplayName => kind == Kind.EQUIP ? (EquipData.Get(itemNo) != null ? EquipData.DisplayName(EquipData.Get(itemNo)) : itemNo) : (ConsumableData.Get(itemNo) != null ? ConsumableData.DisplayName(ConsumableData.Get(itemNo)) : itemNo);
     }
 
     static Dictionary<string, List<Entry>> shops;

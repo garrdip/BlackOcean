@@ -283,3 +283,130 @@ buff.STAT_EVADE.name,Evasion Up/Down,회피율 변화
 buff.STAT_EVADE.desc,Evasion changes by the shown %p.,회피율이 표시 수치%p만큼 증가/감소합니다.
 buff.STAT_ACCURACY.name,Accuracy Up/Down,명중률 변화
 buff.STAT_ACCURACY.desc,Accuracy changes by the shown %p.,명중률이 표시 수치%p만큼 증가/감소합니다.
+equip.slot.WEAPON,Weapon,무기
+equip.slot.ARMOR,Armor,갑옷
+equip.slot.HELMET,Helmet,투구
+equip.slot.BOOTS,Boots,신발
+equip.slot.ACCESSORY,Accessory,악세사리
+equip.grade.NORMAL,Common,일반
+equip.grade.ADVANCED,Fine,고급
+equip.grade.RARE,Rare,희귀
+equip.grade.LEGEND,Legendary,전설
+equip.weapontype.GREATSWORD,Greatsword,대검
+equip.weapontype.LONGSWORD,Longsword,장검
+equip.weapontype.STAFF,Staff,지팡이
+equip.weapontype.BOOK,Tome,책
+equip.weapontype.ORB,Orb,수정구
+equip.weapontype.CORE,Core,핵
+equip.armortype.HEAVY,Heavy armor,중갑
+equip.armortype.LIGHT,Light armor,경갑
+equip.armortype.ROBE,Robe,로브
+equip.option.STRENGTH.name,Strength,힘
+equip.option.INTELLIGENCE.name,Intelligence,지능
+equip.option.AGILITY.name,Agility,민첩
+equip.option.CONTROL.name,Control,제어
+equip.option.MAX_HP.name,Max HP,최대 HP
+equip.option.MAX_MP.name,Max MP,최대 MP
+equip.option.DEFENSE.name,Defense,방어력
+equip.option.SHIELD.name,Barrier,보호막
+equip.option.LIFE_STEAL.name,Life Steal,생명력 흡수
+equip.option.SKILL_DAMAGE.name,Skill Damage,스킬 추가 데미지
+equip.option.COMBO_DAMAGE.name,Combo Damage,콤보 추가 데미지
+equip.option.CRIT_DAMAGE.name,Critical Damage,치명타 데미지
+equip.option.REFLECT_FLAT.name,Reflect (flat),반사 데미지(고정)
+equip.option.REFLECT_PERCENT.name,Reflect (%),반사 데미지(비례)
+equip.option.HEAL_RECEIVED.name,Healing Received,받는 회복량
+equip.option.WEAKNESS_NULLIFY.name,Weakness Nullify,약점 상쇄
+equip.option.CRIT_RATE.name,Critical Rate,치명타 확률
+equip.option.ACCURACY.name,Accuracy,명중률
+equip.option.EVADE.name,Evasion,회피율
+equip.option.FREE_MOVE.name,Free Move,이동 시 턴 소모 제거
+equip.option.NO_ROW_PENALTY.name,No Row Penalty,포지션 패널티 제거
+equip.option.MAX_RAGE.name,Max Rage,분노 최대치
+equip.GW1.name,Worn Greatsword,낡은 대검
+equip.GW2.name,General's Sword,대장군의 검
+equip.LW1.name,Worn Longsword,낡은 장검
+equip.HW1.name,Worn Staff,낡은 지팡이
+equip.HW2.name,Blooming Staff,개화 지팡이
+equip.BW1.name,Worn Tome,낡은 책
+equip.OW1.name,Cloudy Orb,흐린 수정구
+equip.EW1.name,Scratched Core,흠집 난 코어
+equip.EW2.name,Resonance Core,공명 코어
+equip.AR1.name,Leather Armor,가죽 갑옷
+equip.AR2.name,Iron Armor,철 갑옷
+equip.AR3.name,Steel Armor,강철 갑옷
+equip.AR4.name,Worn Robe,낡은 로브
+equip.HE1.name,Leather Helm,가죽 투구
+equip.HE2.name,Iron Helm,철 투구
+equip.HE3.name,Sage's Crown,현자의 관
+equip.HE4.name,Worn Hood,낡은 두건
+equip.BO1.name,Traveler's Shoes,여행자 신발
+equip.BO2.name,Gale Shoes,질풍의 신발
+equip.BO3.name,Iron Greaves,철 장화
+equip.BO4.name,Cloth Shoes,천 신발
+equip.AC1.name,Ring of Life,생명의 반지
+equip.AC2.name,Mana Necklace,마력의 목걸이
+equip.AC4.name,Guardian Bracelet,수호의 팔찌
+equip.AC5.name,Iron Demon Charm,철귀의 부적
+potion.PO1.name,HP Potion,HP 물약
+potion.PO1.desc,Restores 30 HP.,HP를 30 회복한다
+potion.PO2.name,Greater HP Potion,상급 HP 물약
+potion.PO2.desc,Restores 60 HP.,HP를 60 회복한다
+potion.PO3.name,MP Potion,MP 물약
+potion.PO3.desc,Restores 15 MP (MP characters only).,MP를 15 회복한다 (MP 캐릭터만)
+potion.PO4.name,Rage Potion,분노의 물약
+potion.PO4.desc,Gain 30 Rage (in battle — Rage characters only).,분노를 30 얻는다 (전투 중 — 분노 캐릭터만)
+potion.PO5.name,Attack Potion,공격력 물약
+potion.PO5.desc,Attack +5 for 3 turns after the turn used (in battle).,사용 턴 다음부터 3턴 동안 공격력 +5 (전투 중)
+potion.PO6.name,Critical Potion,치명타 물약
+potion.PO6.desc,Critical rate +15%p for 3 turns after the turn used (in battle).,사용 턴 다음부터 3턴 동안 치명타율 +15%p (전투 중)
+potion.PO7.name,Evasion Potion,회피율 물약
+potion.PO7.desc,Evasion +15%p for 3 turns after the turn used (in battle).,사용 턴 다음부터 3턴 동안 회피율 +15%p (전투 중)
+ui.inventory.title,Equipment · Stats,장비 · 스탯
+ui.inventory.equipped,Equipped,장착 중
+ui.inventory.tab_equip,Equipment,장비
+ui.inventory.tab_potion,Consumables,소모품
+ui.inventory.equip,Equip,장착
+ui.inventory.unequip,Unequip,해제
+ui.inventory.use,Use,사용
+ui.inventory.close,Close,닫기
+ui.inventory.empty,Empty,비어 있음
+ui.inventory.empty_list,Nothing here,보유한 항목이 없습니다
+ui.inventory.select_hint,Select an item,항목을 선택하세요
+ui.inventory.in_battle,Cannot change equipment during battle,전투 중에는 착탈할 수 없습니다
+ui.inventory.in_battle_item,Use the Item action during battle,전투 중에는 아이템 액션으로 사용
+ui.item.level_req,Requires Lv.{0},Lv.{0} 필요
+ui.item.level_short,Level too low,레벨 부족
+ui.item.str_req,Strength requirement {0},힘 요구치 {0}
+ui.item.str_req_short,Str. req.,힘 요구치
+ui.item.str_short,Not enough Strength — Agility ½,힘 부족 — 민첩 ½
+ui.item.scale_int,Intelligence scaling,지능 계수
+ui.item.scale_str,Strength scaling,힘 계수
+ui.item.physical_attack,Physical Attack,물리공격력
+ui.item.magic_attack,Magic Attack,마법공격력
+ui.item.defense,Defense,방어력
+ui.item.magic_defense,Magic Defense,마법방어
+ui.item.weak_list,weak to {0},{0} 약점
+ui.item.weak_now,Weaknesses: {0},약점 {0}
+ui.item.weak_all,All attributes,전 속성
+ui.item.option_invalid,(no effect — resource mismatch),(무효 — 자원 불일치)
+ui.item.set_status,Set: {0},현재 세트: {0}
+ui.item.set_missing,Missing pieces — weak to all attributes,미착용 부위 있음 — 전 속성 약점
+ui.item.set_single,{0} set,{0} 세트
+ui.item.set_mixed,Mixed set ({0}) — weaknesses combined,혼합 세트({0}) — 약점 합산
+ui.item.set_triple,Three types mixed — weak to all attributes,3종 혼합 — 전 속성 약점
+ui.item.equipped_now,Equipped: {0},장착 중: {0}
+ui.item.compare_same,Same base stats,기본 옵션 동일
+ui.stat.str,Strength,힘
+ui.stat.agi,Agility,민첩
+ui.stat.int,Intelligence,지능
+ui.stat.def,Defense,방어력
+ui.stat.mdef,Magic Defense,마법방어
+ui.stat.ctrl,Control,제어
+ui.stat.basic_attack,Basic attack,평타
+ui.stat.evade,Evasion %,회피율 %
+ui.stat.accuracy,Accuracy %,명중률 %
+ui.stat.crit,Critical rate %,치명타율 %
+ui.stat.crit_damage,Critical multiplier %,치명 배수 %
+ui.battle.item_title,Use item,사용할 아이템
+ui.battle.cancel,Cancel,취소

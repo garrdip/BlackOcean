@@ -478,18 +478,26 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
       - `equip.weapontype.<WeaponType>`, `equip.armortype.<ArmorType>`, `attr.<AttackAttribute>`
       - `potion.<PotionNo>.name/.desc`, `buff.STAT_*.name`, `ui.msg.miss`, `ui.msg.potion_battle_only`, `ui.shop.*`
       - 현재 장비·물약 이름은 CSV 한국어를 그대로 표시한다
-- [ ] 8-2. 장비 툴팁 컴포넌트 — 이름·등급·슬롯·무기 종류·방어구 종류와 힘 요구치·기본 옵션(물리/마법 공격력)·추가 옵션(전설 옵션 별색)·요구 레벨. 표시:
+- [x] 8-2. 장비 툴팁 컴포넌트 — 이름·등급·슬롯·무기 종류·방어구 종류와 힘 요구치·기본 옵션(물리/마법 공격력)·추가 옵션(전설 옵션 별색)·요구 레벨. 표시:
       - 방어구 약점과 세트 상태 (예: "중갑 — 타격·공명 약점", "세트 혼합 — 약점 합산")
       - 힘 요구치 미달 경고 ("힘 부족 — 민첩 ½")
       - 자원 불일치로 무효인 옵션 (MP 옵션을 비MP 캐릭터가 착용 등)
       - 무기 공격 계수 불일치 경고는 **띄우지 않는다** (Q22)
-- [ ] 8-3. 인벤토리 팝업(`UI/PopUpComponent/InventoryPopUp`) — 슬롯 6칸 + 보유 장비 그리드 + 소모품 탭 + 현재 약점 요약. `PopUpUIManager` 등록, 스킬트리 팝업과 상호 배타. 비교 표시(장착 중 vs 선택)
-- [ ] 8-4. 메르크리우스 상점 팝업 정식화 (7-9의 런타임 팝업 교체)
-- [ ] 8-5. 전투 아이템 액션 — OnGUI 목록을 소모품 버튼 바로 교체 (아이콘·수량·비활성 사유). 대상 선택(ValidTarget)은 후순위지만 버튼 구조는 대상 선택 단계를 끼울 수 있게 둔다 (Q5)
-- [ ] 8-6. 스탯창(`DebugStats`) 정리 — 보조 스탯 4종·제어·현재 약점·힘 부족 패널티를 정식 표시로, 장비 기여분은 괄호로
-- [ ] 8-7. `DrawEquipmentGUI` OnGUI 제거
+- [x] 8-3. 인벤토리 팝업(`UI/PopUpComponent/InventoryPopUp`) — 슬롯 6칸 + 보유 장비 그리드 + 소모품 탭 + 현재 약점 요약. `PopUpUIManager` 등록, 스킬트리 팝업과 상호 배타. 비교 표시(장착 중 vs 선택)
+- [x] 8-4. 메르크리우스 상점 팝업 정식화 (7-9의 런타임 팝업 교체)
+- [x] 8-5. 전투 아이템 액션 — OnGUI 목록을 소모품 버튼 바로 교체 (아이콘·수량·비활성 사유). 대상 선택(ValidTarget)은 후순위지만 버튼 구조는 대상 선택 단계를 끼울 수 있게 둔다 (Q5)
+- [x] 8-6. 스탯창(`DebugStats`) 정리 — 보조 스탯 4종·제어·현재 약점·힘 부족 패널티를 정식 표시로, 장비 기여분은 괄호로
+- [x] 8-7. `DrawEquipmentGUI` OnGUI 제거
 
 **완료 기준**: OnGUI 없이 장비 착탈·물약 사용·상점 거래·툴팁 확인이 가능하다. 로케일을 바꾸면 옵션·속성·방어구 종류 이름이 바뀐다.
+
+**구현 (2026-10-20, 런타임 구성 방식 — 사용자 확인)** — 컴파일 확인. 인게임 확인은 Phase 9에서.
+- 8-2: `UI/EquipTooltip.cs` — `Build(item, viewer)`(이름·등급·슬롯·종류·요구 레벨/힘(미달 경고)·기본/추가 옵션(전설 ★ 별색, 자원 불일치 무효)·방어구 종류 약점·보는 캐릭터의 세트 상태), `CompareBase`(같은 슬롯 장착품과 기본 옵션 차이). 계수 불일치 경고 없음 (Q22)
+- 8-3·8-6: `UI/PopUpComponent/InventoryPopUp.cs` — 런타임 캔버스 3열(스탯: 6종 기본+장비 괄호·보조 4종·물공/마공·평타·약점·세트·힘 패널티·옵션 요약 / 장착 슬롯 6칸 + 상세·장착/해제 / 보유 장비·소모품 탭). 현재 조작 캐릭터 추적, SyncList·골드·로케일 변화에 갱신, 스킬트리 팝업과 상호 배타. 우상단 OnGUI '장비' 버튼이 토글. (`PopUpUIManager` 등록 대신 정적 Open/Close — 다른 런타임 팝업과 같은 방식)
+- 8-4: 상점은 7-9의 `ShopPanel`을 정식으로 유지 (표시명 로컬라이즈 연결)
+- 8-5: `UI/BattleItemBar.cs` — '아이템' 버튼이 여는 런타임 바(수량·비활성 사유), 선택 → ITEM 액션 제출. 대상 선택 단계를 끼울 수 있게 선택/제출 분리
+- 8-7: `DrawEquipmentGUI` 삭제. 치트 버튼은 디버그 창(`DebugStats`, 버튼명 '디버그')으로 이동
+- 로컬라이즈: `EquipData.DisplayName/SlotName/KindName/ArmorTypeName`, `EquipGradeData.DisplayName`, `EquipOptionData.DisplayName`, `ConsumableData.DisplayName/DisplayDescription`이 `equip.*`/`potion.*` 키를 읽고 CSV 한국어로 폴백. en.csv에 장비 26·물약 7·등급/슬롯/종류·옵션 22·UI 키 등록, 나머지 로케일은 한국어 폴백 (ko 원문은 CSV·코드)
 
 ---
 

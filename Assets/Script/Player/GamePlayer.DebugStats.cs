@@ -10,15 +10,15 @@ public partial class GamePlayer
 
     void DrawStatsGUI()
     {
-        if (GUI.Button(new Rect(Screen.width - 600f, 10f, 140f, 30f), guiStatsOpen ? "스탯 닫기" : "스탯"))
+        if (GUI.Button(new Rect(Screen.width - 600f, 10f, 140f, 30f), guiStatsOpen ? "디버그 닫기" : "디버그"))
         {
             guiStatsOpen = !guiStatsOpen;
-            if (guiStatsOpen) { SkillTreeUIManager.instance?.Show(false); guiEquipOpen = false; } // 같은 자리 — 상호 배타 (스킬트리는 캔버스 팝업)
+            if (guiStatsOpen) { SkillTreeUIManager.instance?.Show(false); InventoryPopUp.Close(); } // 같은 자리 — 상호 배타 (정식 스탯 표시는 InventoryPopUp, 여기는 디버그·치트)
         }
         if (!guiStatsOpen) return;
 
-        float windowWidth = 560f;
-        float windowHeight = 560f;
+        float windowWidth = 640f;
+        float windowHeight = 700f;
         Rect windowRect = new Rect(Screen.width - windowWidth - 10f, 85f, windowWidth, windowHeight);
         GUI.Box(windowRect, $"{character} 스탯");
 
@@ -88,6 +88,29 @@ public partial class GamePlayer
            + $"/{Total(LevelGrowthTable.Stat.DEF)}/{Total(LevelGrowthTable.Stat.MDEF)}/{Total(LevelGrowthTable.Stat.CTRL)}");
         y += 8f;
         Line($"장착 {equippedItems.Count}개    인벤토리 장비 {inventoryEquips.Count}개 / 소모품 {inventoryConsumables.Count}개    습득 노드 {learnedNodes.Count}개");
+        y += 8f;
+        // 치트: 장비 생성 (등급 / 슬롯 랜덤, 옵션 1개짜리 전설 악세사리) — 구 OnGUI 장비 창에서 이동 (8-7)
+        GUI.Label(new Rect(x, y, 200f, lineHeight), "치트: 장비 생성");
+        float bx = x + 120f;
+        foreach (EquipGrade grade in new[] { EquipGrade.NORMAL, EquipGrade.ADVANCED, EquipGrade.RARE, EquipGrade.LEGEND })
+        {
+            if (GUI.Button(new Rect(bx, y, 70f, lineHeight), EquipGradeData.DisplayName(grade))) CmdDebugCreateEquip((int)grade, -1);
+            bx += 74f;
+        }
+        if (GUI.Button(new Rect(bx, y, 90f, lineHeight), "전설 무기")) CmdDebugCreateEquip((int)EquipGrade.LEGEND, (int)EquipSlot.WEAPON);
+        bx += 94f;
+        if (GUI.Button(new Rect(bx, y, 100f, lineHeight), "전설 악세사리")) CmdDebugCreateEquip((int)EquipGrade.LEGEND, (int)EquipSlot.ACCESSORY);
+        y += lineHeight + 4f;
+        GUI.Label(new Rect(x, y, 400f, lineHeight), "치트: 옵션 1개짜리 전설 악세사리 (최대치)");
+        y += lineHeight;
+        int column = 0;
+        bx = x;
+        foreach (EquipOptionType type in System.Enum.GetValues(typeof(EquipOptionType)))
+        {
+            if (GUI.Button(new Rect(bx, y, 140f, 22f), EquipOptionData.DisplayName(type))) CmdDebugCreateOptionEquip((int)type, -1);
+            bx += 144f;
+            if (++column % 4 == 0) { bx = x; y += 24f; }
+        }
     }
 
     int Growth(LevelGrowthTable.Stat stat, int reachedLevel) => LevelGrowthTable.GetGrowth(growthSeed, character, stat, reachedLevel);

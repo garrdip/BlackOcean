@@ -86,15 +86,17 @@ public static class EquipGradeData
         return EquipGrade.NORMAL;
     }
 
-    /// <summary>등급 한글 표기 (임시 — 정식 로컬라이즈는 Phase 8 nameKey)</summary>
+    /// <summary>등급 표기 — 로컬라이즈 `equip.grade.&lt;enum&gt;` (ko 기본값은 코드)</summary>
     public static string DisplayName(EquipGrade grade)
     {
+        string fallback;
         switch (grade)
         {
-            case EquipGrade.ADVANCED: return "고급";
-            case EquipGrade.RARE: return "희귀";
-            case EquipGrade.LEGEND: return "전설";
-            default: return "일반";
+            case EquipGrade.ADVANCED: fallback = "고급"; break;
+            case EquipGrade.RARE: fallback = "희귀"; break;
+            case EquipGrade.LEGEND: fallback = "전설"; break;
+            default: fallback = "일반"; break;
         }
+        return M_LanguageManager.Get($"equip.grade.{grade}", fallback);
     }
 }

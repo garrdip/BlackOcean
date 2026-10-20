@@ -117,8 +117,11 @@ public partial class GamePlayer
         if (!Application.isPlaying || !isOwned) return;
         if (PlayerRegistry.Local == null || PlayerRegistry.Local.currentGamePlayer != this) return;
 
-        DrawEquipmentGUI(); // 장비/인벤토리 창 (GamePlayer.Equipment.cs — 같은 컴포넌트라 OnGUI는 여기 하나로 합친다)
-        DrawStatsGUI();     // 디버그 스탯 창 (GamePlayer.DebugStats.cs — 위험도 버튼 왼쪽 '스탯' 버튼)
+        DrawStatsGUI();     // 디버그 스탯·치트 창 (GamePlayer.DebugStats.cs — 위험도 버튼 왼쪽 '디버그' 버튼)
+
+        // 장비·스탯 팝업 (InventoryPopUp — 런타임 구성 정식 UI, 아이템 개편 Phase 8-3). 구 OnGUI 장비 창은 제거됨 (8-7)
+        if (GUI.Button(new Rect(Screen.width - 150f, 45f, 140f, 30f), InventoryPopUp.IsOpen ? "장비 닫기" : $"장비 ({inventoryEquips.Count + inventoryConsumables.Count})"))
+            InventoryPopUp.Toggle();
 
         // 디버그 위험도 상승 버튼 — 전역 위험도 +1 (레벨업 버튼 왼쪽)
         if (M_HubManager.instance != null
@@ -138,7 +141,7 @@ public partial class GamePlayer
         {
             treeOpen = !treeOpen;
             treeUI?.Show(treeOpen);
-            if (treeOpen) { guiEquipOpen = false; guiStatsOpen = false; } // 장비/스탯 창과 상호 배타 (같은 자리 사용)
+            if (treeOpen) { InventoryPopUp.Close(); guiStatsOpen = false; } // 장비 팝업/디버그 창과 상호 배타 (같은 자리 사용)
         }
     }
 }

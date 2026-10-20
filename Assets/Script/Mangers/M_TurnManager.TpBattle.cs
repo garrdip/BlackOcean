@@ -859,6 +859,7 @@ public partial class M_TurnManager
         if (!isMyTurn)
         {
             guiSelectedAction = -1;
+            BattleItemBar.Close(); // 내 턴이 끝나면 아이템 바도 닫는다
             return;
         }
 
@@ -906,37 +907,19 @@ public partial class M_TurnManager
             }
             if (myPlayer.inventoryConsumables.Count > 0
                 && GUI.Button(new Rect(x + rowNames.Length * 65f + 10f, y + lineHeight + 4f, 100f, lineHeight - 6f), $"아이템({myPlayer.inventoryConsumables.Count})"))
+            {
+                // 소모품 선택 — 런타임 캔버스 바(BattleItemBar, Phase 8-5): 사용 불가 비활성 + 사유, 선택 시 ITEM 액션 제출 (1차 대상 = 자신)
                 guiSelectedAction = 3;
+                GamePlayer picker = myPlayer;
+                BattleItemBar.Open(picker,
+                    potionNo => { CmdSubmitTpAction(picker.netId, (int)TpAction.ITEM, potionNo, 0, 0); guiSelectedAction = -1; },
+                    () => guiSelectedAction = -1);
+            }
         }
         else if (guiSelectedAction == 3)
         {
-            // 2단계: 소모품 선택
-            GUI.Label(new Rect(x, y - lineHeight * 2f, 400f, lineHeight), "사용할 아이템:");
-            var potionCounts = new Dictionary<string, int>();
-            foreach (string potionNo in myPlayer.inventoryConsumables)
-            {
-                potionCounts.TryGetValue(potionNo, out int count);
-                potionCounts[potionNo] = count + 1;
-            }
-            float buttonX = x;
-            foreach (KeyValuePair<string, int> entry in potionCounts)
-            {
-                ConsumableData.Def potion = ConsumableData.Get(entry.Key);
-                if (potion == null) continue;
-                bool usable = ConsumableData.CanUse(potion, myPlayer, true, out string reasonKey); // 사용 불가(자원 불일치 등)는 비활성 + 사유 (6-7, 서버와 같은 규칙)
-                GUI.enabled = usable;
-                string label = usable ? $"{potion.potionName} x{entry.Value}" : $"{potion.potionName} x{entry.Value} [{ConsumableData.ReasonText(reasonKey)}]";
-                bool pressed = GUI.Button(new Rect(buttonX, y, 190f, lineHeight), label);
-                GUI.enabled = true;
-                if (pressed)
-                {
-                    CmdSubmitTpAction(myPlayer.netId, (int)TpAction.ITEM, entry.Key, 0, 0);
-                    guiSelectedAction = -1;
-                }
-                buttonX += 195f;
-            }
-            if (GUI.Button(new Rect(buttonX, y, 70f, lineHeight), "취소"))
-                guiSelectedAction = -1;
+            // 소모품 선택 중 — BattleItemBar가 표시 중 (Esc/취소로 닫힘). 턴이 넘어가면 닫는다
+            if (!BattleItemBar.IsOpen) guiSelectedAction = -1;
         }
         else if (guiSelectedAction == 2)
         {

@@ -80,12 +80,30 @@ public partial class GamePlayer
         return result;
     }
 
-    /// <summary>약점 요약 텍스트 (임시 UI) — "타격·공명" / "전 속성(미착용)" / "없음"</summary>
+    /// <summary>약점 요약 텍스트 — "타격·공명" / "전 속성" / "없음"</summary>
     public string WeaknessSummary()
     {
         HashSet<AttackAttribute> weaknesses = GetWeaknesses();
-        if (weaknesses.Count >= ArmorTypeData.AllAttributes.Length) return "전 속성";
+        if (weaknesses.Count >= ArmorTypeData.AllAttributes.Length) return M_LanguageManager.Get("ui.item.weak_all", "전 속성");
         return BattleActions.AttributeListName(weaknesses);
+    }
+
+    /// <summary>방어구 세트 상태 텍스트 (8-2 툴팁·스탯) — "미착용 부위 있음 — 전 속성 약점" / "중갑 세트" / "혼합 세트(중갑+로브) — 약점 합산" / "3종 혼합 — 전 속성 약점"</summary>
+    public string ArmorSetStatus()
+    {
+        var types = new List<ArmorType>();
+        int pieces = 0;
+        foreach (EquipInstance item in equippedItems)
+        {
+            EquipData.Def def = EquipData.Get(item.equipNo);
+            if (def == null || !def.IsArmorPiece) continue;
+            pieces++;
+            if (!types.Contains(def.armorType)) types.Add(def.armorType);
+        }
+        if (pieces < 3 || types.Contains(ArmorType.NONE)) return M_LanguageManager.Get("ui.item.set_missing", "미착용 부위 있음 — 전 속성 약점");
+        if (types.Count == 1) return M_LanguageManager.Get("ui.item.set_single", "{0} 세트").Replace("{0}", EquipData.ArmorTypeName(types[0]));
+        if (types.Count == 2) return M_LanguageManager.Get("ui.item.set_mixed", "혼합 세트({0}) — 약점 합산").Replace("{0}", EquipData.ArmorTypeName(types[0]) + "+" + EquipData.ArmorTypeName(types[1]));
+        return M_LanguageManager.Get("ui.item.set_triple", "3종 혼합 — 전 속성 약점");
     }
     public int TotalControl => control + EquipOptionSum(EquipOptionType.CONTROL);
     public int TotalDefense => defense + SumEquipBase(def => def.defense) + EquipOptionSum(EquipOptionType.DEFENSE);
@@ -442,8 +460,6 @@ public partial class GamePlayer
 
     // ------------------------------------------------------------- 임시 UI (OnGUI) -------------------------------------------------------------//
 
-    bool guiEquipOpen;
-    Vector2 guiEquipScroll;
 
     /// <summary>장비 1줄 표기 — [등급] 이름 (종류·속성·요구치) 기본 옵션 / 추가 옵션</summary>
     public static string DescribeEquip(EquipInstance item)
@@ -467,104 +483,7 @@ public partial class GamePlayer
         for (int i = 0; i < item.OptionCount; i++)
             parts.Add(EquipOptionData.Format(item.OptionTypeAt(i), item.OptionValueAt(i), item.grade));
         string gradeTag = item.grade == EquipGrade.NORMAL ? "" : $"[{EquipGradeData.DisplayName(item.grade)}] ";
-        return $"{gradeTag}{def.equipName} ({string.Join(", ", parts)})";
+        return $"{gradeTag}{EquipData.DisplayName(def)} ({string.Join(", ", parts)})";
     }
 
-    // 스킬트리 OnGUI(GamePlayer.SkillTree.cs)와 같은 컴포넌트라 별도 메서드로 분리해 거기서 호출한다
-    void DrawEquipmentGUI()
-    {
-        Rect toggleRect = new Rect(Screen.width - 150f, 45f, 140f, 30f);
-        if (GUI.Button(toggleRect, guiEquipOpen ? "장비 닫기" : $"장비 ({inventoryEquips.Count + inventoryConsumables.Count})"))
-        {
-            guiEquipOpen = !guiEquipOpen;
-            if (guiEquipOpen) { SkillTreeUIManager.instance?.Show(false); guiStatsOpen = false; } // 스킬트리 팝업/스탯 창과 상호 배타 (같은 자리 사용)
-        }
-        if (!guiEquipOpen) return;
-
-        float windowWidth = 640f;
-        float windowHeight = 480f;
-        Rect windowRect = new Rect(Screen.width - windowWidth - 10f, 85f, windowWidth, windowHeight);
-        GUI.Box(windowRect, $"{character} 장비  |  힘{TotalStrength} 민첩{TotalAgility}{(IsStrengthRequirementUnmet ? "(힘 부족 ½)" : "")} 지능{TotalIntelligence} 방어{TotalDefense} 마방{TotalMagicDefense}  물공{TotalPhysicalAttack} 마공{TotalMagicAttack}  HP {HP}/{TotalMaxHP}  약점 {WeaknessSummary()}");
-
-        guiEquipScroll = GUI.BeginScrollView(
-            new Rect(windowRect.x + 10f, windowRect.y + 30f, windowWidth - 20f, windowHeight - 40f),
-            guiEquipScroll, new Rect(0, 0, windowWidth - 40f, 1500f));
-
-        float y = 0f;
-        bool inBattle = IsBattleActive();
-        GUIStyle gradeStyle = new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleLeft, fontSize = 11 };
-
-        GUI.Label(new Rect(0, y, 300f, 24f), "◆ 장착 중 (클릭 = 해제)"); y += 26f;
-        foreach (EquipInstance item in new List<EquipInstance>(equippedItems))
-        {
-            EquipData.Def def = EquipData.Get(item.equipNo);
-            if (def == null) continue;
-            GUI.enabled = !inBattle;
-            gradeStyle.normal.textColor = EquipGradeData.Get(item.grade)?.Color ?? Color.white;
-            if (GUI.Button(new Rect(20f, y, 580f, 24f), $"[{EquipData.SlotName(def.slot)}] {DescribeEquip(item)}", gradeStyle))
-                CmdUnequip(item.instanceId);
-            GUI.enabled = true;
-            y += 28f;
-        }
-
-        y += 8f;
-        GUI.Label(new Rect(0, y, 300f, 24f), "◆ 인벤토리 (클릭 = 장착)"); y += 26f;
-        foreach (EquipInstance item in new List<EquipInstance>(inventoryEquips))
-        {
-            EquipData.Def def = EquipData.Get(item.equipNo);
-            if (def == null) continue;
-            bool usable = def.requireLevel <= level;
-            GUI.enabled = usable && !inBattle;
-            gradeStyle.normal.textColor = EquipGradeData.Get(item.grade)?.Color ?? Color.white;
-            string lockNote = usable ? "" : $" — Lv.{def.requireLevel} 필요";
-            if (GUI.Button(new Rect(20f, y, 580f, 24f), $"[{EquipData.SlotName(def.slot)}] {DescribeEquip(item)}{lockNote}", gradeStyle))
-                CmdEquip(item.instanceId);
-            GUI.enabled = true;
-            y += 28f;
-        }
-
-        y += 8f;
-        GUI.Label(new Rect(0, y, 400f, 24f), "◆ 소모품 (클릭 = 맵에서 사용, 전투는 아이템 액션)"); y += 26f;
-        var counts = new Dictionary<string, int>();
-        foreach (string potionNo in inventoryConsumables)
-        {
-            counts.TryGetValue(potionNo, out int count);
-            counts[potionNo] = count + 1;
-        }
-        foreach (KeyValuePair<string, int> entry in counts)
-        {
-            ConsumableData.Def potion = ConsumableData.Get(entry.Key);
-            if (potion == null) continue;
-            bool usable = ConsumableData.CanUse(potion, this, false, out string reasonKey); // 비전투 규칙 (전투 전용·자원 불일치는 비활성 + 사유)
-            GUI.enabled = usable && !inBattle;
-            string reason = usable ? "" : $" [{ConsumableData.ReasonText(reasonKey)}]";
-            if (GUI.Button(new Rect(20f, y, 580f, 24f), $"{potion.potionName} x{entry.Value} — {potion.description}{reason}"))
-                CmdUsePotionOnMap(entry.Key);
-            GUI.enabled = true;
-            y += 28f;
-        }
-
-        y += 8f;
-        GUI.Label(new Rect(0, y, 400f, 24f), "◆ 치트: 장비 생성 (등급 / 슬롯 랜덤)"); y += 26f;
-        float bx = 20f;
-        foreach (EquipGrade grade in new[] { EquipGrade.NORMAL, EquipGrade.ADVANCED, EquipGrade.RARE, EquipGrade.LEGEND })
-        {
-            if (GUI.Button(new Rect(bx, y, 90f, 24f), EquipGradeData.DisplayName(grade))) CmdDebugCreateEquip((int)grade, -1);
-            bx += 95f;
-        }
-        if (GUI.Button(new Rect(bx, y, 100f, 24f), "전설 무기")) CmdDebugCreateEquip((int)EquipGrade.LEGEND, (int)EquipSlot.WEAPON);
-        bx += 105f;
-        if (GUI.Button(new Rect(bx, y, 110f, 24f), "전설 악세사리")) CmdDebugCreateEquip((int)EquipGrade.LEGEND, (int)EquipSlot.ACCESSORY);
-        y += 28f;
-        GUI.Label(new Rect(0, y, 500f, 24f), "◆ 치트: 옵션 1개짜리 전설 악세사리 (최대치) — 옵션 효과 검증용"); y += 26f;
-        bx = 20f;
-        int column = 0;
-        foreach (EquipOptionType type in System.Enum.GetValues(typeof(EquipOptionType)))
-        {
-            if (GUI.Button(new Rect(bx, y, 140f, 22f), EquipOptionData.DisplayName(type))) CmdDebugCreateOptionEquip((int)type, -1);
-            bx += 145f;
-            if (++column % 4 == 0) { bx = 20f; y += 24f; }
-        }
-        GUI.EndScrollView();
-    }
 }

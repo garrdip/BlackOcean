@@ -113,6 +113,12 @@ public static class ConsumableData
         return true;
     }
 
+    /// <summary>물약 표시 이름 — 로컬라이즈 `potion.&lt;PotionNo&gt;.name`, 없으면 CSV 한국어</summary>
+    public static string DisplayName(Def def) => def == null ? "" : M_LanguageManager.Get($"potion.{def.potionNo}.name", def.potionName);
+
+    /// <summary>물약 설명 — 로컬라이즈 `potion.&lt;PotionNo&gt;.desc`, 없으면 CSV 한국어</summary>
+    public static string DisplayDescription(Def def) => def == null ? "" : M_LanguageManager.Get($"potion.{def.potionNo}.desc", def.description);
+
     /// <summary>사용 불가 사유 짧은 표기 (임시 UI)</summary>
     public static string ReasonText(string reasonKey)
     {
