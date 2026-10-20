@@ -424,7 +424,9 @@ public class InventoryPopUp : MonoBehaviour
         listLayout.childForceExpandHeight = false;
         GameObject tabsGo = new GameObject("Tabs", typeof(RectTransform));
         tabsGo.transform.SetParent(listColumn.transform, false);
-        tabsGo.AddComponent<LayoutElement>().preferredHeight = 36;
+        LayoutElement tabsElement = tabsGo.AddComponent<LayoutElement>();
+        tabsElement.preferredHeight = 36;
+        tabsElement.flexibleHeight = 0; // 가로 레이아웃 그룹이 flexibleHeight 1을 보고해 탭이 세로로 늘어나는 것을 막는다
         HorizontalLayoutGroup tabs = tabsGo.AddComponent<HorizontalLayoutGroup>();
         tabs.spacing = 8;
         tabs.childControlWidth = true;

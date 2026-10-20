@@ -81,8 +81,9 @@ public class RewardService : InstanceD<RewardService>
                 // 경험치 보상 — 선택 없이 서버가 즉시 지급, 캐릭터마다 전액 (레벨업/스킬 포인트는 GamePlayer.AddExp)
                 gamePlayer.AddExp(battleExp);
 
-                // 플레이어 보상 상태 데이터 세팅
-                gamePlayerDeck.TargetPlayerRewarded(gamePlayerDeck.GetComponent<NetworkIdentity>().connectionToClient);
+                // 플레이어 보상 상태 데이터 세팅 — 보상 목록이 있는 캐릭터만 (싱글은 수령 캐릭터 1명). 목록이 없는 캐릭터를 등록하면 보상 팝업이 그 탭을 끝낼 방법이 없어 멈춘다 (2026-10-20 플레이 검증)
+                if(gamePlayerDeck.rewards.Count > 0)
+                    gamePlayerDeck.TargetPlayerRewarded(gamePlayerDeck.GetComponent<NetworkIdentity>().connectionToClient);
             }
         }
     }

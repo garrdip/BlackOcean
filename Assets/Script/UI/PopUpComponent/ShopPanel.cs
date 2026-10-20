@@ -224,7 +224,9 @@ public class ShopPanel : MonoBehaviour
         // 탭
         GameObject tabsGo = new GameObject("Tabs", typeof(RectTransform));
         tabsGo.transform.SetParent(panel, false);
-        tabsGo.AddComponent<LayoutElement>().preferredHeight = 40;
+        LayoutElement tabsElement = tabsGo.AddComponent<LayoutElement>();
+        tabsElement.preferredHeight = 40;
+        tabsElement.flexibleHeight = 0; // 가로 레이아웃 그룹의 flexibleHeight 보고로 탭이 세로로 늘어나는 것을 막는다
         HorizontalLayoutGroup tabs = tabsGo.AddComponent<HorizontalLayoutGroup>();
         tabs.spacing = 8;
         tabs.childControlWidth = true;

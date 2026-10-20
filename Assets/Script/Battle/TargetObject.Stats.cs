@@ -102,7 +102,7 @@ public partial class TargetObject
             monster.overkillDamageDisplay = 0;
             monster.HP = Mathf.Min(monster.HP + value, monster.MAXHP);
         }
-        if (crit) Debug.Log($"[Heal] 치명 회복! {name} +{value}");
+        if (crit) Debug.Log($"[Heal] 치명 회복! {(player != null ? player.character.ToString() : monster != null ? monster.monsterName : name)} +{value}");
         return value;
     }
 
@@ -117,7 +117,7 @@ public partial class TargetObject
         if (crit) value = value * (giver != null ? giver.GetCritDamage() : BalanceData.Get("CRIT_DAMAGE_PERCENT", 150)) / 100;
         value = Mathf.Max(1, value);
         defense = value; // 교체 (같은 값이면 SyncVar 변화가 없어 표시만 생략된다)
-        if (crit) Debug.Log($"[Shield] 치명 실드! {name} = {value}");
+        if (crit) Debug.Log($"[Shield] 치명 실드! {(player != null ? player.character.ToString() : monster != null ? monster.monsterName : name)} = {value}");
         return value;
     }
 

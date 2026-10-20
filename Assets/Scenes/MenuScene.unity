@@ -2982,6 +2982,20 @@ MonoBehaviour:
       Value: {fileID: 21300000, guid: 435c93ffcfe32ae45a360f3a0da3d70a, type: 3}
     - Key: 47
       Value: {fileID: 21300000, guid: 49d39d9f23fcbea47bb01c4c67b82b32, type: 3}
+    - Key: 48
+      Value: {fileID: 21300000, guid: ecd125432031ad946bca405a04693a1c, type: 3}
+    - Key: 49
+      Value: {fileID: 21300000, guid: ecd125432031ad946bca405a04693a1c, type: 3}
+    - Key: 52
+      Value: {fileID: 21300000, guid: ecd125432031ad946bca405a04693a1c, type: 3}
+    - Key: 54
+      Value: {fileID: 21300000, guid: ecd125432031ad946bca405a04693a1c, type: 3}
+    - Key: 50
+      Value: {fileID: 21300000, guid: 0784089335a528543b8f9a0b5f68b68b, type: 3}
+    - Key: 51
+      Value: {fileID: 21300000, guid: 0784089335a528543b8f9a0b5f68b68b, type: 3}
+    - Key: 53
+      Value: {fileID: 21300000, guid: 0784089335a528543b8f9a0b5f68b68b, type: 3}
 --- !u!4 &593957587
 Transform:
   m_ObjectHideFlags: 0
