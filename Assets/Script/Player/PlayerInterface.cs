@@ -58,6 +58,21 @@ public class PlayerInterface : NetworkBehaviour
         gold = GameSaveService.TryGetPlayerGold(steamID, out int savedGold) ? savedGold : BalanceData.Get("PLAYER_INIT_GOLD", 100);
     }
 
+    /// <summary>플레이어(접속자) 단위 공유 인벤토리 — 미장착 장비·소모품 (2026-11-02). 골드(Q35)와 같은 단위: 싱글은 파티 3인이 한 가방을 쓰고, 멀티는 플레이어별(2캐릭터면 2캐릭터 공유).
+    /// 착용 중인 장비(GamePlayer.equippedItems)만 캐릭터에 남는다. GamePlayer.inventoryEquips/inventoryConsumables가 여기로 위임하므로 보상·상점·착탈·UI 호출부는 그대로다. 세이브는 PlayerInventoryData(steamId, 버전 2)</summary>
+    public readonly SyncList<EquipInstance> inventoryEquips = new SyncList<EquipInstance>();
+    public readonly SyncList<string> inventoryConsumables = new SyncList<string>();
+    bool inventoryInitialized; // 서버 — 첫 GamePlayer 생성 시 1회
+
+    // 공유 인벤토리 초기화 (서버, 1회) — 버전 2 세이브의 플레이어 인벤토리를 복원. 버전 0·1은 캐릭터별 프로필 목록을 ApplyProfile이 여기로 합친다. 새 게임은 빈 상태(초기 물약은 ServerGrantInitialGear)
+    [Server]
+    void EnsureInventoryInitialized()
+    {
+        if(inventoryInitialized) return;
+        inventoryInitialized = true;
+        GameSaveService.RestorePlayerInventory(this);
+    }
+
     [SyncVar]
     public string steamPersonaName;
 
@@ -172,13 +187,16 @@ public class PlayerInterface : NetworkBehaviour
             gamePlayer.maxResource = stat.baseResource;
             gamePlayer.currentResource = (stat.resource == ProjectD.BattleResourceType.MP) ? stat.baseResource : 0; // MP는 가득, 분노는 0에서 시작
             gamePlayer.skillPoints = BalanceData.Get("STARTING_SKILL_POINTS", 1); // 시작 포인트 — 첫 스킬을 바로 찍을 수 있게
-            gamePlayer.ServerGrantInitialGear(); // 기본 무기 장착 + HP 물약 2개 (스폰 전이라 SyncList 초기 상태로 전달)
+            EnsureInventoryInitialized(); // 플레이어 공유 인벤토리 (세이브 복원 1회) — 초기 물약·프로필 합치기보다 먼저
 
             // 이어서 하기: 저장된 프로필이 있으면 기본 초기화를 덮어쓴다 (SteamID + 캐릭터 매칭 — 싱글은 같은 SteamID로 3인을 저장하므로 캐릭터까지 맞춘다. 새 파티원은 신규 초기화 유지)
+            // 초기 장비·물약은 프로필이 없는 캐릭터에게만 — 물약은 플레이어 공유 가방에 들어가므로 프로필 복원 캐릭터가 또 받으면 중복된다
             GameSaveService.ProfileData profile = GameSaveService.FindProfile(steamID, character);
             if(profile != null){
                 GameSaveService.ApplyProfile(gamePlayer, profile);
                 profileRestored = true;
+            }else{
+                gamePlayer.ServerGrantInitialGear(); // 기본 세트 장착(스폰 전이라 SyncList 초기 상태로 전달) + HP 물약 2개(공유 가방)
             }
         }else{
             gamePlayer.MaxHP = BalanceData.Get("PLAYER_INIT_HP", 50);

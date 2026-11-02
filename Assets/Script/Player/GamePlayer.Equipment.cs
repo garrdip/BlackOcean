@@ -6,14 +6,18 @@ using ProjectD;
 
 // GamePlayer partial — 장비/소모품 (아이템 개편 Phase 3, ToDo_RPG_ITEM 3-5~3-10 / 소모품 사용 경로는 Phase 6-3).
 // 장비는 EquipInstance(등급 + 추가 옵션)로 보유·착용하고(SyncList<EquipInstance>), 기본 옵션은 EquipDB가 가진다. 누구나 어떤 장비든 착용할 수 있다 (Q22).
+// 착용 중인 장비(equippedItems)는 캐릭터별, 미장착 장비·소모품 가방은 플레이어(접속자) 단위 공유 — PlayerInterface.inventoryEquips/inventoryConsumables로 위임 (2026-11-02, 골드 Q35와 같은 단위).
+// 싱글은 파티 3인이 한 가방을 쓰고 멀티는 플레이어별. 이 파일의 지급/판매/착탈/사용 코드는 위임 프로퍼티를 통해 그대로 공유 가방을 다룬다.
 // 합산 스탯은 Total* 프로퍼티로 조회한다 — 힘·지능 스탯과 무기 공격력은 다른 개념(Q25): TotalStrength는 스탯만, 무기 공격력은 GetAttackPower가 속성에 맞춰 더한다 (Q46).
 // 최대 HP/자원은 고유치(MaxHP/maxResource)만 저장하고 TotalMaxHP/TotalMaxResource를 매번 계산한다 (Q43 — 구 델타 방식 폐기). 착탈은 전투 중 불가.
 // UI는 정식 인벤토리 팝업(Phase 8) 전까지 OnGUI 임시 창 (스킬트리 아래 '장비' 버튼).
 public partial class GamePlayer
 {
-    public readonly SyncList<EquipInstance> equippedItems = new SyncList<EquipInstance>();   // 장착 중 (슬롯은 EquipDB에서 해석)
-    public readonly SyncList<EquipInstance> inventoryEquips = new SyncList<EquipInstance>(); // 미장착 보유 장비
-    public readonly SyncList<string> inventoryConsumables = new SyncList<string>();          // 보유 소모품 (인스턴스당 1항목 = 중복이 곧 개수)
+    public readonly SyncList<EquipInstance> equippedItems = new SyncList<EquipInstance>();   // 장착 중 (슬롯은 EquipDB에서 해석) — 캐릭터별
+    /// <summary>미장착 보유 장비 — 플레이어 공유 가방 (PlayerInterface.inventoryEquips 위임). 소유 인터페이스가 아직 없으면 빈 임시 목록</summary>
+    public SyncList<EquipInstance> inventoryEquips => objectOwner != null ? objectOwner.inventoryEquips : SharedInventoryFallback.Equips;
+    /// <summary>보유 소모품 — 플레이어 공유 가방 (PlayerInterface.inventoryConsumables 위임). 인스턴스당 1항목 = 중복이 곧 개수</summary>
+    public SyncList<string> inventoryConsumables => objectOwner != null ? objectOwner.inventoryConsumables : SharedInventoryFallback.Consumables;
 
     const int AccessoryslotCount = 2;
 
@@ -279,7 +283,8 @@ public partial class GamePlayer
         }
     }
 
-    /// <summary>초기 장비 지급 — 초기 세트를 NORMAL 인스턴스로 생성·장착 + 물약 (PlayerInterface.GenerateGamePlayer에서 호출, 스폰 전이라 SyncList 초기 상태로 전달됨)</summary>
+    /// <summary>초기 장비 지급 — 초기 세트를 NORMAL 인스턴스로 생성·장착 + 물약 (PlayerInterface.ServerSpawnGamePlayer에서 프로필이 없는 캐릭터에게만 호출.
+    /// 장착 목록은 스폰 전이라 SyncList 초기 상태로 전달되고, 물약은 이미 스폰된 PlayerInterface의 공유 가방에 들어간다 — 싱글 파티는 캐릭터 3인분이 한 가방에 모인다)</summary>
     [Server]
     public void ServerGrantInitialGear()
     {
@@ -486,4 +491,12 @@ public partial class GamePlayer
         return $"{gradeTag}{EquipData.DisplayName(def)} ({string.Join(", ", parts)})";
     }
 
+}
+
+/// <summary>objectOwner가 아직 없는 GamePlayer가 가방을 조회할 때 돌려주는 빈 목록 (읽기 전용 용도 — 동기화되지 않는다).
+/// NetworkBehaviour 바깥에 둔 이유: Mirror Weaver는 NetworkBehaviour의 static SyncObject 필드를 허용하지 않는다</summary>
+static class SharedInventoryFallback
+{
+    public static readonly SyncList<EquipInstance> Equips = new SyncList<EquipInstance>();
+    public static readonly SyncList<string> Consumables = new SyncList<string>();
 }

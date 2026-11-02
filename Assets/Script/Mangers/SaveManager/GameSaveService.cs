@@ -9,7 +9,7 @@ using ProjectD;
 /// 구조: 호스트가 세이브 파일을 소유하고, 파티원 프로필은 SteamID 키로 전원분 저장한다.
 /// 슬롯(2026-08-31): 슬롯 3개(rpg_save_1~3.json). 메뉴/방 만들기에서 SaveSlotPanel로 슬롯을 고르면(BeginNewGame/BeginContinue) CurrentSlot이 정해지고,
 /// 이후 모든 자동/수동 저장(SaveGame)이 그 슬롯에 쓴다. 구 단일 파일(rpg_save.json)은 최초 접근 시 슬롯 1로 이관.
-/// - PlayerProfile: 레벨/EXP/스탯/스킬트리/장비/소모품/골드/HP/자원 (캐릭터별)
+/// - PlayerProfile: 레벨/EXP/스탯/스킬트리/착용 장비/HP/자원 (캐릭터별). 골드(PlayerGoldData)와 미장착 장비·소모품 가방(PlayerInventoryData)은 플레이어(SteamID) 단위
 /// 맵 타일 시스템 제거(거점 전환)로 월드 상태 저장은 없다 — 거점은 항상 같은 화면이므로 프로필만 복원하면 된다.
 /// 저장 시점: 전투 종료 후 거점 복귀(M_TurnManager.NoneBattleEnd). 로드: 메뉴 '이어서 하기' → pendingLoad → M_HubManager.OnStartServer.
 /// 기존 M_SaveManager(카드 런 스냅샷)와는 독립 — 구 시스템은 카드 제거와 함께 정리 예정.
@@ -34,12 +34,13 @@ public static class GameSaveService
         public List<string> equippedItems = new List<string>();   // (버전 0 — 장비 번호 문자열. 버전 1부터는 비어 있고 equippedInstances를 쓴다)
         public List<string> inventoryEquips = new List<string>(); // (버전 0)
         public List<EquipInstanceSave> equippedInstances = new List<EquipInstanceSave>();   // 버전 1 — 장비 인스턴스 (등급·옵션 포함, 아이템 개편 Phase 3-11)
-        public List<EquipInstanceSave> inventoryInstances = new List<EquipInstanceSave>();  // 버전 1
-        public List<string> inventoryConsumables = new List<string>();
+        public List<EquipInstanceSave> inventoryInstances = new List<EquipInstanceSave>();  // (버전 1 — 캐릭터별 가방. 버전 2부터는 비어 있고 PlayerInventoryData를 쓴다)
+        public List<string> inventoryConsumables = new List<string>();                      // (버전 0·1 — 캐릭터별 소모품. 버전 2부터는 비어 있다)
     }
 
-    /// <summary>현재 세이브 형식 버전 (R11). 0 = 필드 없는 구 세이브(문자열 장비·최대치에 장비 델타 포함) → 로드 시 1회 변환. 1 = 장비 인스턴스·고유 최대치 (2026-10-19)</summary>
-    public const int CurrentSaveVersion = 1;
+    /// <summary>현재 세이브 형식 버전 (R11). 0 = 필드 없는 구 세이브(문자열 장비·최대치에 장비 델타 포함) → 로드 시 1회 변환. 1 = 장비 인스턴스·고유 최대치 (2026-10-19).
+    /// 2 = 미장착 장비·소모품 가방을 플레이어(SteamID) 단위 PlayerInventoryData로 (2026-11-02) — 버전 0·1의 캐릭터별 가방은 로드 시 같은 SteamID로 합친다</summary>
+    public const int CurrentSaveVersion = 2;
 
     /// <summary>플레이어(접속자) 단위 공유 골드 (아이템 개편 Q35·7-10) — SteamID 키. 버전 1부터</summary>
     [System.Serializable]
@@ -49,11 +50,21 @@ public static class GameSaveService
         public int gold;
     }
 
+    /// <summary>플레이어(접속자) 단위 공유 가방 — 미장착 장비 인스턴스 + 소모품. SteamID 키. 버전 2부터 (PlayerInterface.inventoryEquips/inventoryConsumables)</summary>
+    [System.Serializable]
+    public class PlayerInventoryData
+    {
+        public string steamId;
+        public List<EquipInstanceSave> inventoryInstances = new List<EquipInstanceSave>();
+        public List<string> inventoryConsumables = new List<string>();
+    }
+
     [System.Serializable]
     public class RpgSaveData
     {
         public int saveVersion = 0;        // 세이브 형식 버전 — 구 세이브(필드 없음)는 0 (R11)
         public List<PlayerGoldData> playerGolds = new List<PlayerGoldData>(); // 플레이어 공유 골드 (버전 1). 버전 0은 프로필별 gold의 SteamID 합으로 변환
+        public List<PlayerInventoryData> playerInventories = new List<PlayerInventoryData>(); // 플레이어 공유 가방 (버전 2). 버전 0·1은 프로필별 가방을 SteamID로 합쳐 변환
         public int unlockedStageCount = 1; // 해금된 스테이지 수 (StageDB 행 순서) — 파티 공용 진행도, 호스트 저장
         public int hazardLevel = 0; // 전역 위험도 (위험도 시스템) — 파티 공용, 호스트 저장. 구 세이브(필드 없음)는 0
         public string savedAt = ""; // 저장 시각 "yyyy-MM-dd HH:mm" — 슬롯 선택 UI 표시용. 구 세이브(필드 없음)는 빈 문자열
@@ -243,6 +254,23 @@ public static class GameSaveService
         return any;
     }
 
+    /// <summary>플레이어 공유 가방 복원 (서버 — PlayerInterface.EnsureInventoryInitialized, 첫 GamePlayer 생성 시 1회). 버전 2의 PlayerInventoryData만 다룬다.
+    /// 버전 0·1은 캐릭터별 프로필 가방이라 ApplyProfile이 캐릭터마다 공유 가방에 더해 합친다. 로드된 세이브가 없거나 해당 플레이어가 없으면 아무것도 하지 않는다</summary>
+    public static void RestorePlayerInventory(PlayerInterface playerInterface)
+    {
+        if (loaded == null || loaded.saveVersion < 2 || playerInterface == null) return;
+        string key = playerInterface.steamID.ToString();
+        PlayerInventoryData found = loaded.playerInventories.Find(entry => entry.steamId == key);
+        if (found == null) return;
+        playerInterface.inventoryEquips.Clear();
+        playerInterface.inventoryConsumables.Clear();
+        foreach (EquipInstanceSave save in found.inventoryInstances)
+            if (EquipData.Get(save.equipNo) != null) playerInterface.inventoryEquips.Add(EquipInstance.FromSave(save));
+        foreach (string potionNo in found.inventoryConsumables)
+            if (ConsumableData.Get(potionNo) != null) playerInterface.inventoryConsumables.Add(potionNo);
+        Debug.Log($"[GameSaveService] 플레이어 가방 복원 — {key}: 장비 {playerInterface.inventoryEquips.Count}개 / 소모품 {playerInterface.inventoryConsumables.Count}개");
+    }
+
     /// <summary>현재 서버 상태를 파일로 저장 (호스트 전용). 전투 종료 후 거점 복귀 시점에 호출된다</summary>
     public static void SaveGame()
     {
@@ -255,6 +283,9 @@ public static class GameSaveService
         foreach (PlayerInterface playerInterface in PlayerRegistry.All)
         {
             data.playerGolds.Add(new PlayerGoldData { steamId = playerInterface.steamID.ToString(), gold = playerInterface.gold }); // 플레이어 공유 골드 (Q35)
+            var inventory = new PlayerInventoryData { steamId = playerInterface.steamID.ToString(), inventoryConsumables = new List<string>(playerInterface.inventoryConsumables) }; // 플레이어 공유 가방 (버전 2)
+            foreach (EquipInstance item in playerInterface.inventoryEquips) inventory.inventoryInstances.Add(item.ToSave());
+            data.playerInventories.Add(inventory);
             foreach (GamePlayer gamePlayer in playerInterface.ownedPlayers)
             {
                 if (gamePlayer == null) continue;
@@ -278,10 +309,9 @@ public static class GameSaveService
                     maxResource = gamePlayer.maxResource,
                     gold = gamePlayer.gold,
                     learnedNodes = new List<string>(gamePlayer.learnedNodes),
-                    inventoryConsumables = new List<string>(gamePlayer.inventoryConsumables),
+                    // (미장착 장비·소모품은 프로필이 아니라 플레이어 단위 PlayerInventoryData — 버전 2)
                 };
                 foreach (EquipInstance item in gamePlayer.equippedItems) profile.equippedInstances.Add(item.ToSave());
-                foreach (EquipInstance item in gamePlayer.inventoryEquips) profile.inventoryInstances.Add(item.ToSave());
                 data.profiles.Add(profile);
             }
         }
@@ -298,10 +328,12 @@ public static class GameSaveService
         }
     }
 
-    /// <summary>저장된 프로필을 GamePlayer에 반영 (서버 — GenerateGamePlayer의 기본 초기화를 덮어쓴다). 구 세이브(버전 0)는 여기서 1회 변환한다 (3-11·9-1)</summary>
+    /// <summary>저장된 프로필을 GamePlayer에 반영 (서버 — GenerateGamePlayer의 기본 초기화를 덮어쓴다). 구 세이브(버전 0)는 여기서 1회 변환한다 (3-11·9-1).
+    /// 미장착 장비·소모품: 버전 0·1은 캐릭터별 가방이므로 비우지 않고 플레이어 공유 가방(objectOwner)에 더해 합친다. 버전 2는 RestorePlayerInventory가 복원했으므로 건드리지 않는다</summary>
     public static void ApplyProfile(GamePlayer gamePlayer, ProfileData profile)
     {
         int version = loaded != null ? loaded.saveVersion : 0;
+        int mergedEquips = 0, mergedPotions = 0; // 버전 0·1 → 공유 가방 합치기 집계
         gamePlayer.level = profile.level;
         gamePlayer.exp = profile.exp;
         gamePlayer.skillPoints = profile.skillPoints;
@@ -317,7 +349,6 @@ public static class GameSaveService
         gamePlayer.learnedNodes.Clear();
         foreach (string nodeId in profile.learnedNodes) gamePlayer.learnedNodes.Add(nodeId);
         gamePlayer.equippedItems.Clear();
-        gamePlayer.inventoryEquips.Clear();
         if (version < 1)
         {
             // 버전 0 → 1 (Q43·R13): 저장된 최대치에는 장착 중이던 구 장비의 MaxHP/MaxResource 델타가 더해져 있다 → 구 EquipDB 상수표로 1회 차감 (고유치만 남긴다).
@@ -333,7 +364,7 @@ public static class GameSaveService
             foreach (string equipNo in profile.inventoryEquips)
             {
                 EquipInstance item = EquipGenerator.Create(MapLegacyEquipNo(equipNo), EquipGrade.NORMAL);
-                if (item.IsValid) gamePlayer.inventoryEquips.Add(item);
+                if (item.IsValid) { gamePlayer.inventoryEquips.Add(item); mergedEquips++; }
             }
             CharacterStatData.Entry stat = CharacterStatData.Get(profile.character);
             if (stat != null) { maxHP = Mathf.Max(stat.baseHP, maxHP); maxResource = Mathf.Max(stat.baseResource > 0 ? 1 : 0, maxResource); }
@@ -344,21 +375,22 @@ public static class GameSaveService
         {
             foreach (EquipInstanceSave save in profile.equippedInstances)
                 if (EquipData.Get(save.equipNo) != null) gamePlayer.equippedItems.Add(EquipInstance.FromSave(save));
-            foreach (EquipInstanceSave save in profile.inventoryInstances)
-                if (EquipData.Get(save.equipNo) != null) gamePlayer.inventoryEquips.Add(EquipInstance.FromSave(save));
+            foreach (EquipInstanceSave save in profile.inventoryInstances) // 버전 1 캐릭터별 가방 → 공유 가방 (버전 2 프로필은 비어 있다)
+                if (EquipData.Get(save.equipNo) != null) { gamePlayer.inventoryEquips.Add(EquipInstance.FromSave(save)); mergedEquips++; }
         }
         gamePlayer.MaxHP = maxHP;
         gamePlayer.maxResource = maxResource;
         gamePlayer.HP = Mathf.Clamp(profile.HP, 1, gamePlayer.TotalMaxHP); // 빈사 저장이어도 1로 복원. 상한은 장비 포함 최대치
         gamePlayer.currentResource = Mathf.Clamp(profile.currentResource, 0, Mathf.Max(0, gamePlayer.TotalMaxResource));
         // (골드는 프로필이 아니라 플레이어 단위 PlayerGoldData — PlayerInterface.EnsureGoldInitialized가 TryGetPlayerGold로 복원)
-        gamePlayer.inventoryConsumables.Clear();
-        foreach (string potionNo in profile.inventoryConsumables)
+        foreach (string potionNo in profile.inventoryConsumables) // 버전 0·1 캐릭터별 소모품 → 공유 가방 (비우지 않는다 — 다른 캐릭터 분이 이미 들어 있다)
         {
             // 버전 0: 구 PO3(MP·분노 공용 RESTORE_RESOURCE)은 소지 캐릭터의 자원 종류에 맞춰 PO3(MP) / PO4(분노) / PO1(HP 캐릭터)로 (6-4, R13)
             string mapped = version < 1 && potionNo == "PO3" ? MapLegacyPotion(profile.character) : potionNo;
-            if (ConsumableData.Get(mapped) != null) gamePlayer.inventoryConsumables.Add(mapped);
+            if (ConsumableData.Get(mapped) != null) { gamePlayer.inventoryConsumables.Add(mapped); mergedPotions++; }
         }
+        if (mergedEquips + mergedPotions > 0)
+            Debug.Log($"[GameSaveService] 구 세이브(버전 {version}) 캐릭터별 가방 → 플레이어 공유 가방 합치기 — {profile.character}: 장비 {mergedEquips}개 / 소모품 {mergedPotions}개");
         Debug.Log($"[GameSaveService] 프로필 복원 — {profile.character} Lv.{profile.level} (세이브 버전 {version})");
     }
 

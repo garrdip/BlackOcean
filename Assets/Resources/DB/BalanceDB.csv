@@ -63,7 +63,7 @@ ERIS_ATTACK_HIT_DELAY_MS,1000,에리스 공격 모션 시작 후 피격(피해 �
 GEORK_ATTACK0_HIT_DELAY_MS,600,게오르크 일반 공격(Attack0) 모션 시작 후 피격까지의 지연 ms
 GEORK_ATTACK1_HIT_DELAY_MS,500,게오르크 스킬 공격(Attack1 — 찌르기 계열) 모션 시작 후 피격까지의 지연 ms (모션별 키가 없는 캐릭터는 {캐릭터}_ATTACK_HIT_DELAY_MS 공통 키 사용)
 HS0_DEFENSE,10,홍단향 철귀 — 자기 턴 종료 시 철귀가 붙은 아군이 얻는 방어력 버프량 (STAT_DEFENSE — 그 아군의 다음 턴 시작까지. 방어 행동과 합산. 구 실드량 Q41)
-HS0_ATTACK,3,홍단향 철귀 — 자기 턴 종료 시 철귀가 붙은 아군이 얻는 공격력(다음 자기 턴 종료까지, ICHI_ATTACK)
+HS0_ATTACK_POWER,100,홍단향 철귀 — 자기 턴 종료 시 철귀가 적에게 붙어 있으면 그 적을 공격. 피해 = 홍단향 마법공격력(지능 + 무기 마공) × 이 값% (속성 심상). 구 HS0_ATTACK(아군 공격력 +3)은 폐지 (2026-11-02)
 ERIS_SELF_HARM_PERCENT,10,에리스 자해(기본 스킬) — 최대 HP 대비 잃는 HP % (HP 1 미만 불가)
 ES1_TP_GAIN,50,에리스 피의 질주(기본 스킬 자해) — 사용 시 회복하는 TP
 GEORK_ATTACK2_HIT_DELAY_MS,500,게오르크 스킬 공격(Attack2 — 압도의 일격) 모션 시작 후 피격까지의 지연 ms

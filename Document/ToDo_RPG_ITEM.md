@@ -466,6 +466,7 @@ D = 초안의 가정, Q = 확정 답변. 확정된 내용이 워크플로우에 
 - 7-7·7-8: `ShopDB.csv` + `DB/ShopData.cs`(`SellPrice` = Price × SellPercent), `M_HubManager.CmdShopBuy/CmdShopSell` (거점·골드·인벤토리 검증, 거래 후 저장, 토스트)
 - 7-9: `UI/PopUpComponent/ShopPanel.cs` 런타임 팝업(구매/판매 탭, 인벤토리·골드 변화 구독). `NPC_Mercurius`의 `buttonCardShop`을 "상점"으로 (`ui.NPC_Mercurius.ButtonShop_Label`)
 - 7-10: `PlayerInterface.gold` SyncVar(훅 → 소유 캐릭터 `NotifyGoldChanged` → `PlayerOrder`), `GamePlayer.gold`는 위임 프로퍼티, `EnsureGoldInitialized`(세이브 `PlayerGoldData` 또는 초기 골드 — 싱글 파티는 100 공유). 세이브 `RpgSaveData.playerGolds`, 버전 0은 SteamID별 프로필 골드 합(`TryGetPlayerGold`). 싱글 → 멀티 이관은 같은 SteamID라 전액(F5)
+- **(2026-11-02) 가방 공유 단위 전환** — 싱글에서 캐릭터별로 나뉘던 미장착 장비·소모품 가방을 골드와 같은 **플레이어(`PlayerInterface`) 단위 공유**로. `PlayerInterface.inventoryEquips/inventoryConsumables` SyncList 신설, `GamePlayer.inventoryEquips/inventoryConsumables`는 `objectOwner`로 위임하는 프로퍼티(보상·상점·착탈·물약·UI 호출부 변경 없음). 초기 장비·물약은 프로필이 없는 캐릭터에게만(`ServerSpawnGamePlayer` — 복원 캐릭터가 또 받으면 공유 가방에 중복). 세이브 **버전 2**: `RpgSaveData.playerInventories`(`PlayerInventoryData`), `RestorePlayerInventory`(플레이어당 1회); 버전 0·1의 프로필별 가방은 `ApplyProfile`이 비우지 않고 공유 가방에 더해 합친다
 
 ---
 

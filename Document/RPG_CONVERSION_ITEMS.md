@@ -284,6 +284,7 @@ result −= 착용 장비의 WEAKNESS_NULLIFY 속성들 (Q23·A6 — "전 속성
 ## 8. 골드·드랍 단위 (Q35·Q39·G4)
 - 골드는 **플레이어(`PlayerInterface`) 단위 공유** — 싱글 3캐릭터 공유, 멀티는 플레이어별(2캐릭터면 2캐릭터 공유). 세이브 `PlayerGoldData { steamId, gold }`. 싱글 → 멀티 캐릭터 이관 시 전액.
 - 전투 보상 골드·드랍 굴림 횟수: **싱글 = 파티 1회, 멀티 = 캐릭터(GamePlayer)마다**. 멀티 드랍 확률 × `ITEM_DROP_MULTIPLAYER_PERCENT`/100. 경험치는 캐릭터마다 전액 (기존).
+- **미장착 장비·소모품 가방도 플레이어(`PlayerInterface`) 단위 공유** (2026-11-02) — 골드와 같은 단위. 싱글은 파티 3인이 한 가방을 쓰고(어느 캐릭터 탭에서도 같은 목록, 드랍·구매가 바로 전원에게 보임), 멀티는 플레이어별. 착용 중인 장비(`equippedItems`)만 캐릭터별. 세이브 `PlayerInventoryData { steamId, inventoryInstances, inventoryConsumables }`(버전 2) — 버전 0·1의 캐릭터별 가방은 로드 시 같은 SteamID로 합친다.
 
 ## 9. 드랍 테이블 `DropTableDB.csv` [Phase 7]
 

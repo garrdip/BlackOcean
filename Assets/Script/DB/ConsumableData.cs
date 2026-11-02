@@ -8,7 +8,7 @@ using ProjectD;
 /// 소모품 테이블 (Resources/DB/ConsumableDB.csv — 아이템 개편 Phase 6, ToDo_RPG_ITEM 0-9·6-1) + 효과 리플렉션 바인딩.
 /// Effect 컬럼 = ConsumableEffects의 정적 메서드 이름 (SkillData와 같은 방식 — 새 효과는 CSV 행 + 메서드 1개, 같은 효과의 변형은 행만).
 /// ValidTarget은 스킬과 같은 enum이며 NONE = 자신 (1차는 NONE만). BattleOnly = 전투 전용, UsableResource = 자원 종류가 맞는 캐릭터만 (ANY = 제한 없음).
-/// 보유는 GamePlayer.inventoryConsumables(SyncList, 인스턴스당 1행 = 중복이 곧 개수), 사용은 GamePlayer.ServerUseConsumable 한 곳.
+/// 보유는 GamePlayer.inventoryConsumables(플레이어 공유 가방 PlayerInterface.inventoryConsumables로 위임 — SyncList, 인스턴스당 1행 = 중복이 곧 개수), 사용은 GamePlayer.ServerUseConsumable 한 곳.
 /// </summary>
 public static class ConsumableData
 {

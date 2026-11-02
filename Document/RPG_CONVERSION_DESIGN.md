@@ -236,7 +236,7 @@
 - 세 기본 스킬이 파티 TP를 채우는 유일한 수단이다 (「파티 TP·연계」 항목 참조).
 
 - 구현 (2026-09-01, 턴 소모 분리 2026-09-14): 기본 스킬(SkillDB `Innate=1` — GS1 고행길 / HS0 철귀 이동 / ES1 피의 질주)은 스킬트리 습득 없이 사용 가능. 턴 소모 여부는 별도 컬럼 `FreeAction`으로 정한다 — **HS0 철귀 이동만 `FreeAction=1`(턴 미소모)**, 고행길·피의 질주는 일반 행동처럼 턴을 소모한다. `M_TurnManager.ExecutePlayerTpTurn`은 FreeAction 스킬 실행 후 다시 입력을 기다리며 턴당 1회(`tpUsedFreeSkillNo`, 재사용 시 토스트·버튼 비활성, 로컬라이즈 `ui.msg.skill_innate_used`).
-  철귀 이동(HS0, MEMBER 대상, MP 0): 철귀를 아군에게 텔레포트(`ironDemonLocation`, 카드 전투 철귀 연출 재사용). 홍단향의 턴이 끝날 때마다 철귀가 붙은 아군(기본 자신)이 실드 `HS0_DEFENSE`(10) + 공격력 `HS0_ATTACK`(3, ICHI_ATTACK — 그 아군의 다음 턴 종료까지)을 얻는다(`ApplyPlayerTurnEndEffects`).
+  철귀 이동(HS0, ALL 대상 = 아군 또는 적 단일, MP 0): 철귀를 아군이나 적에게 텔레포트(`ironDemonLocation`, 카드 전투 철귀 연출 재사용). **입력은 버튼이 아니라 캐릭터 직접 클릭** (2026-11-02): 홍단향 자기 턴에 행동을 고르지 않은 상태에서 아군 캐릭터(`CharactorSelector`) 또는 몬스터(`SpawnedMonster`)를 클릭하면 `M_TurnManager.SubmitIronDemonTarget`이 HS0을 제출한다. 마우스 오버 시 아웃라인, 철귀가 이미 붙은 대상은 후보에서 제외, 위치가 실제로 바뀐 경우에만 턴당 1회를 소모한다. **턴 종료 효과(`ApplyPlayerTurnEndEffects`, 2026-11-02 개편)**: 홍단향의 턴이 끝날 때 철귀가 **아군**(기본 자신)에 붙어 있으면 그 아군이 방어력 `HS0_DEFENSE`(10, STAT_DEFENSE — 다음 자기 턴 시작까지 = 1턴, 방어 행동과 합산)을 얻고, **적**에 붙어 있으면 철귀가 그 적을 공격한다 — 피해 = 홍단향 마법공격력(지능 + 무기 마공 + 공격력 버프) × `HS0_ATTACK_POWER`%(100), 속성 심상, 명중·치명·약점은 일반 공격 판정, 대열 보정 없음. 구 아군 공격력 버프(`HS0_ATTACK` +3, ICHI_ATTACK)는 폐지.
   피의 질주(ES1 — '자해'의 임시 이름, SkillDB에서 변경 가능): 최대 HP의 `ERIS_SELF_HARM_PERCENT`(10)%를 잃고(HP 1 미만 불가) TP `ES1_TP_GAIN`(50) 회복. 플레이어의 공격력 버프/디버프(ICHI_ATTACK)는 `BattleActions`가 계수 스탯에 플랫 가감하도록 추가(감시자의 공격 저하도 이제 TP 전투에서 유효). 수치는 임시.
 
 ## 에리스 변신 매커니즘

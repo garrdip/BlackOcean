@@ -40,7 +40,8 @@ public class RewardService : InstanceD<RewardService>
         foreach(NetworkConnectionToClient conn in NetworkServer.connections.Values){
             PlayerInterface playerInterface = NetLookup.Server<PlayerInterface>(conn.identity.netId);
             if(playerInterface == null) continue;
-            // 굴림 단위 (Q39·G4): 싱글 = 파티 1회 → 선택 중인 캐릭터(currentGamePlayer, 없으면 첫 캐릭터)가 받는다. 멀티 = 캐릭터마다
+            // 굴림 단위 (Q39·G4): 싱글 = 파티 1회 → 선택 중인 캐릭터(currentGamePlayer, 없으면 첫 캐릭터)의 보상 목록에 표시. 멀티 = 캐릭터마다.
+            // 드랍 아이템 자체는 어느 캐릭터로 지급해도 그 플레이어의 공유 가방(PlayerInterface.inventoryEquips/inventoryConsumables)에 들어간다 (2026-11-02)
             GamePlayer singleReceiver = null;
             if(!multiplayer){
                 singleReceiver = playerInterface.currentGamePlayer;

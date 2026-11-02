@@ -12,6 +12,7 @@ using ProjectD;
 // 연결선(SkillTreeLink)은 양 끝 노드를 모두 습득하면 RED — 배운 경로가 중앙에서부터 이어진다.
 // 습득/포인트 판정은 노드가 속한 캐릭터의 소유 GamePlayer 기준 (멀티에서 미소유 캐릭터 트리는 회색·습득 불가).
 // 우상단 '스킬트리' 디버그 버튼(GamePlayer.SkillTree.cs OnGUI)이 토글한다.
+// 팝업 좌상단에 보유 캐릭터 탭(CharacterTabBar, 런타임 생성)이 있어 배너 없이도 창 안에서 캐릭터를 바꿀 수 있다 (2026-11-02).
 public class SkillTreeUIManager : InstanceD<SkillTreeUIManager>
 {
     static readonly Color LearnedColor = Color.red;
@@ -34,11 +35,30 @@ public class SkillTreeUIManager : InstanceD<SkillTreeUIManager>
     Image[] linkImages;                // links와 같은 순서의 Image 캐시
     string selectedNodeId;
     Character lastCharacter = Character.NONE; // 캐릭터가 바뀌면 선택을 초기화하기 위한 추적값
+    CharacterTabBar characterTabs;            // 팝업 좌상단 — 보유 캐릭터 전환 탭 (런타임 생성, 장비창과 공용 컴포넌트)
 
     public bool IsOpen => skillTreePopUp != null && skillTreePopUp.activeSelf;
 
     void Start()
     {
+        // 씬에 팝업이 켜진 채 저장되어 있어도 게임은 항상 닫힌 상태로 시작한다 (우상단 버튼으로만 연다)
+        if (skillTreePopUp != null) skillTreePopUp.SetActive(false);
+
+        // 창 안 좌상단 보유 캐릭터 탭 — 클릭하면 조작 캐릭터가 바뀌고 Refresh가 그 캐릭터의 트리로 전환한다 (파티 배너 클릭과 같은 효과).
+        // 부모는 팝업 루트(화면 전체 스트레치)가 아니라 보이는 창 패널(Background — skillPointText의 부모, 2809×1909 단위)이라 장비창처럼 창 안에 들어온다.
+        // 좌측 설명 패널(SkillInfoPanel, y ≤ 427) 위쪽이 비어 있어 그 자리에 둔다. 크기·글자는 이 좌표계에 맞춰 장비창의 약 2.5배
+        if (skillTreePopUp != null)
+        {
+            Transform windowPanel = skillPointText != null && skillPointText.transform.parent != null && skillPointText.transform.parent != skillTreePopUp.transform
+                ? skillPointText.transform.parent : skillTreePopUp.transform;
+            characterTabs = CharacterTabBar.Create(windowPanel, fitContent: true, tabWidth: 360f, tabHeight: 90f, fontSize: 44f);
+            RectTransform tabsRect = characterTabs.GetComponent<RectTransform>();
+            tabsRect.anchorMin = tabsRect.anchorMax = new Vector2(0f, 1f);
+            tabsRect.pivot = new Vector2(0f, 1f);
+            tabsRect.anchoredPosition = new Vector2(70f, -70f);
+            characterTabs.onSelected = Refresh;
+        }
+
         nodeButtons = skillTreePopUp != null
             ? skillTreePopUp.GetComponentsInChildren<SkillTreeNodeButton>(true)
             : new SkillTreeNodeButton[0];
@@ -120,8 +140,9 @@ public class SkillTreeUIManager : InstanceD<SkillTreeUIManager>
     {
         GamePlayer current = CurrentPlayer;
         Character currentCharacter = current != null ? current.character : Character.NONE;
+        if (characterTabs != null) characterTabs.Refresh();
 
-        // 배너로 캐릭터를 바꾸면 표시 트리를 전환하고 노드 선택을 초기화한다
+        // 배너·좌상단 탭으로 캐릭터를 바꾸면 표시 트리를 전환하고 노드 선택을 초기화한다
         if (currentCharacter != lastCharacter)
         {
             lastCharacter = currentCharacter;

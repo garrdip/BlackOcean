@@ -119,7 +119,7 @@ public class SpawnedMonster : NetworkBehaviour
     void OnMouseEnter()
     {
         TargetIndicatorController.instance.EnalbleTargetIndicatorByMonster(nextTarget, parent.netId);
-        if(IsSelectableEnemyTarget()) SetTargetOutline(true); // TP 전투 대상 선택 중 — 마우스 오버 아웃라인
+        if(IsSelectableEnemyTarget() || IsIronDemonMoveTarget()) SetTargetOutline(true); // TP 전투 대상 선택 중 / 홍단향 턴 철귀 이동 후보 — 마우스 오버 아웃라인
     }
 
     void OnMouseExit()
@@ -131,9 +131,22 @@ public class SpawnedMonster : NetworkBehaviour
     // TP 전투 대상 선택 중 몬스터를 직접 클릭해 공격/스킬 대상 확정 (클라이언트 — 적 버튼 목록 대신)
     void OnMouseDown()
     {
-        if(!IsSelectableEnemyTarget()) return;
-        SetTargetOutline(false);
-        M_TurnManager.instance.SubmitEnemyTarget(parent.netId);
+        if(IsSelectableEnemyTarget()){
+            SetTargetOutline(false);
+            M_TurnManager.instance.SubmitEnemyTarget(parent.netId);
+        }else if(IsIronDemonMoveTarget()){
+            // 홍단향 턴에 행동을 고르지 않은 상태로 몬스터 클릭 = 철귀를 이 적에게 보낸다 (HS0 — 버튼 없음, 2026-11-02)
+            SetTargetOutline(false);
+            M_TurnManager.instance.SubmitIronDemonTarget(parent);
+        }
+    }
+
+    // 지금 이 몬스터를 클릭하면 철귀가 이동하는지 (M_TurnManager.CanMoveIronDemonTo — 홍단향 자기 턴·행동 선택 전·이번 턴 미사용·철귀가 아직 여기 없음)
+    bool IsIronDemonMoveTarget()
+    {
+        if(M_TurnManager.instance == null || parent == null) return false;
+        if(parent.objectType != ObjectType.ENEMY || parent.isDying || HP <= 0) return false;
+        return M_TurnManager.instance.CanMoveIronDemonTo(parent);
     }
 
     // 지금 이 몬스터를 클릭해 대상으로 고를 수 있는지 — 내 턴에 공격/적 단일 스킬을 고른 상태이고 살아있는 적일 때

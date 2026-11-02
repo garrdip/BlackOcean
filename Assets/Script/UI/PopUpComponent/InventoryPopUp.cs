@@ -8,8 +8,9 @@ using ProjectD;
 
 /// <summary>
 /// 인벤토리·장비·스탯 팝업 (아이템 개편 Phase 8-3·8-6) — 씬/프리팹 참조 없이 런타임에 구성한다 (SaveSlotPanel·ShopPanel과 같은 방식).
+/// 머리줄 좌측: 보유 캐릭터 탭(CharacterTabBar) — 클릭하면 조작 캐릭터가 바뀌고 창 전체가 그 캐릭터로 전환된다 (파티 배너 클릭과 같은 효과).
 /// 왼쪽: 현재 조작 캐릭터(currentGamePlayer)의 스탯(기본 + 장비 기여분 괄호)·보조 스탯·약점·힘 요구치·옵션 요약.
-/// 가운데: 장착 슬롯 6칸(무기/갑옷/투구/신발/악세사리 2) — 클릭 = 선택 → 상세(툴팁)·해제. 오른쪽: 보유 장비 / 소모품 탭 — 클릭 = 선택 → 상세·비교·장착/사용.
+/// 가운데: 장착 슬롯 6칸(무기/갑옷/투구/신발/악세사리 2) — 클릭 = 선택 → 상세(툴팁)·해제. 오른쪽: 보유 장비 / 소모품 탭(플레이어 공유 가방 — 싱글은 3캐릭터가 같은 목록을 본다) — 클릭 = 선택 → 상세·비교·장착/사용.
 /// 전투 중에는 착탈 버튼이 비활성(서버도 거부). 스킬트리 팝업과 상호 배타. Esc/바깥 클릭/닫기 = 닫기. 우상단 OnGUI '장비' 버튼(GamePlayer.SkillTree)이 토글한다.
 /// </summary>
 public class InventoryPopUp : MonoBehaviour
@@ -40,6 +41,7 @@ public class InventoryPopUp : MonoBehaviour
     RectTransform slotsRoot, listContent;
     Image equipTabImage, potionTabImage;
     Button actionButton;
+    CharacterTabBar characterTabs; // 머리줄 좌측 — 보유 캐릭터 전환 탭
 
     // ------------------------------------------------------------------ 진입점 ------------------------------------------------------------------ //
 
@@ -128,6 +130,7 @@ public class InventoryPopUp : MonoBehaviour
     void Refresh()
     {
         if (player == null || PlayerRegistry.Local == null || PlayerRegistry.Local.currentGamePlayer != player) Bind(); // 캐릭터 전환 추적
+        characterTabs.Refresh();
         titleText.text = M_LanguageManager.Get("ui.inventory.title", "장비 · 스탯") + (player != null ? $"  —  {M_LanguageManager.GetCharacterName(player.character)}  |  {M_LanguageManager.Get("ui.shop.gold", "보유 골드 {0}").Replace("{0}", player.gold.ToString())}" : "");
         statsText.text = player != null ? BuildStats(player) : "";
         equipTabImage.color = consumableTab ? TabOffColor : TabOnColor;
@@ -350,8 +353,23 @@ public class InventoryPopUp : MonoBehaviour
         outline.effectColor = GoldColor;
         outline.effectDistance = new Vector2(2, -2);
 
-        titleText = CreateText("Title", panel, 26, GoldColor, TextAlignmentOptions.Center, FontStyles.Bold);
-        titleText.gameObject.AddComponent<LayoutElement>().preferredHeight = 36;
+        // 머리줄: 좌측 보유 캐릭터 탭(클릭 = 조작 캐릭터 전환) + 우측 제목
+        GameObject headerGo = new GameObject("Header", typeof(RectTransform));
+        headerGo.transform.SetParent(panel, false);
+        LayoutElement headerElement = headerGo.AddComponent<LayoutElement>();
+        headerElement.preferredHeight = 36;
+        headerElement.flexibleHeight = 0;
+        HorizontalLayoutGroup header = headerGo.AddComponent<HorizontalLayoutGroup>();
+        header.spacing = 16;
+        header.childAlignment = TextAnchor.MiddleLeft;
+        header.childControlWidth = true;
+        header.childControlHeight = true;
+        header.childForceExpandWidth = false;
+        header.childForceExpandHeight = true;
+        characterTabs = CharacterTabBar.Create(headerGo.transform, fitContent: false);
+        characterTabs.onSelected = Refresh; // 탭으로 캐릭터를 바꾸면 Refresh → Bind가 새 currentGamePlayer를 따라간다
+        titleText = CreateText("Title", headerGo.transform, 26, GoldColor, TextAlignmentOptions.Center, FontStyles.Bold);
+        titleText.gameObject.AddComponent<LayoutElement>().flexibleWidth = 1;
 
         // 3열
         GameObject columnsGo = new GameObject("Columns", typeof(RectTransform));

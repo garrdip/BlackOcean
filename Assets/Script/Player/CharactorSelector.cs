@@ -17,6 +17,7 @@ public class CharactorSelector : MonoBehaviour
 
     void OnMouseEnter()
     {
+        if(IsIronDemonMoveTarget() || IsSkillAllyTarget()){ skeletonRendererCustomMaterials.enabled = true; return; } // 철귀 이동 / 아군·자신 스킬 대상 후보 — 아웃라인
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player;
         if(IsServerAuthorityPlayer() && !IsOpenedPopUpExist()){
             skeletonRendererCustomMaterials.enabled = true;
@@ -27,6 +28,7 @@ public class CharactorSelector : MonoBehaviour
 
     void OnMouseExit()
     {
+        if(IsIronDemonMoveTarget() || IsSkillAllyTarget()){ skeletonRendererCustomMaterials.enabled = false; return; }
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player;
         if(IsServerAuthorityPlayer() && !IsOpenedPopUpExist()){
             skeletonRendererCustomMaterials.enabled = false;
@@ -37,6 +39,18 @@ public class CharactorSelector : MonoBehaviour
 
     void OnMouseDown()
     {
+        // 홍단향 턴에 아군 캐릭터 클릭 = 철귀 이동 (HS0 — 버튼 없음, 2026-11-02). 호스트의 캐릭터 전환 클릭보다 우선한다
+        if(IsIronDemonMoveTarget()){
+            skeletonRendererCustomMaterials.enabled = false;
+            M_TurnManager.instance.SubmitIronDemonTarget(transform.parent.GetComponent<TargetObject>());
+            return;
+        }
+        // 스킬 버튼을 누른 뒤 아군 캐릭터 클릭 = 아군·자신 대상 스킬(보호·치유·기도·자세 등) 확정 (2026-11-02 — 아군 버튼 목록 대체)
+        if(IsSkillAllyTarget()){
+            skeletonRendererCustomMaterials.enabled = false;
+            M_TurnManager.instance.SubmitAllyTarget(transform.parent.GetComponent<TargetObject>());
+            return;
+        }
         PlayerInterface playerInterface = PlayerRegistry.Local;
         GamePlayer targetPlayer = transform.parent.GetComponent<TargetObject>().player; // 클릭한 캐릭터의 GamePlayer 인스턴스
         GamePlayer localPlayer = playerInterface.currentGamePlayer; // 로컬 플레이어의 GamePlayer 인스턴스
@@ -57,6 +71,20 @@ public class CharactorSelector : MonoBehaviour
         }
         TargetIndicatorController.instance.SetPlayerSelectable(false);
         skeletonRendererCustomMaterials.enabled = false;
+    }
+
+    // 지금 이 아군을 클릭하면 철귀가 이동하는지 — 홍단향 자기 턴·행동 선택 전·이번 턴 미사용·철귀가 아직 여기 없음 (M_TurnManager.CanMoveIronDemonTo)
+    private bool IsIronDemonMoveTarget()
+    {
+        if(M_TurnManager.instance == null || IsOpenedPopUpExist()) return false;
+        return M_TurnManager.instance.CanMoveIronDemonTo(transform.parent.GetComponent<TargetObject>());
+    }
+
+    // 지금 이 아군을 클릭하면 선택 중인 아군·자신 대상 스킬의 대상이 되는지 (M_TurnManager.CanTargetAlly — 보호 등 MEMBER/TEAM은 아군 누구나, NONE은 행동 중인 자신만)
+    private bool IsSkillAllyTarget()
+    {
+        if(M_TurnManager.instance == null || IsOpenedPopUpExist()) return false;
+        return M_TurnManager.instance.CanTargetAlly(transform.parent.GetComponent<TargetObject>());
     }
 
     // 팝업 UI에 등록된 팝업목록들중 활성화된 팝업이 있으면 캐릭터 클릭되지 않도록 조건 체크

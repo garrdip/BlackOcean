@@ -104,6 +104,7 @@ public static partial class SkillData
     static readonly Dictionary<string, string> skillMotions = new Dictionary<string, string>
     {
         { "GS1", "Defense0" }, // 고행길 — 자해·분노 충전이라 방어 자세
+        { "GS6", "Attack0" },  // 연속 베기 — 베기 모션(일반 공격과 같은 Attack0)을 타마다 1회, 총 2회 재생 (찌르기 계열 Attack1 → 변경 2026-11-02). 피격 지연 GEORK_ATTACK0_HIT_DELAY_MS
         { "HS0", "Buff0" },    // 철귀 이동 — 소환수 지시
         { "ES1", "Buff0" },    // 자해 — 자기 HP 소모 (임시 — 전용 모션 확정 전)
         { "GS17", "Buff1" },   // 쇠락 — 적 약화 (버프 모션)

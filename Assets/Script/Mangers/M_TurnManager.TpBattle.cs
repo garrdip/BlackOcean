@@ -344,8 +344,11 @@ public partial class M_TurnManager
                     else if (PayCost(unit.target, skill))
                     {
                         PlayPlayerActionAnimation(unit.target, SkillData.GetMotion(skill)); // 스킬 모션 — 기본 Attack1(임시 공용), 예외는 SkillData.skillMotions (고행길 Defense0 등)
+                        TargetObject ironDemonBefore = unit.target.ironDemonLocation;
                         yield return skill.execute(new SkillData.SkillCast { def = skill, user = unit.target, targets = ResolveSkillTargets(skill, targetNetId) }); // 콤보 배율 1.0 (연계 기획 전)
-                        if (skill.freeAction) tpUsedFreeSkillNo = skill.skillNo;
+                        // 철귀 이동은 실제로 위치가 바뀌었을 때만 턴당 1회를 소모한다 — 이미 붙어 있는 대상/무효 대상 클릭이 기회를 날리지 않게 (2026-11-02)
+                        bool ironDemonNoop = skill.skillNo == SkillData.IronDemonMoveSkillNo && unit.target.ironDemonLocation == ironDemonBefore;
+                        if (skill.freeAction && !ironDemonNoop) tpUsedFreeSkillNo = skill.skillNo;
                     }
                     else
                         TargetSkillCostRefused(gamePlayer.connectionToClient, skill.skillName); // 자원 부족 — 침묵 대신 요청자에게 토스트
@@ -379,7 +382,7 @@ public partial class M_TurnManager
         }
         TickTimedDebuffs(unit.target); // 자신에게 걸린 지속 버프/디버프(기도·철귀 공격력 등) 턴 감소 — 몬스터와 같이 자기 턴 종료 기준. 철귀 재부여보다 먼저
         tpActingUnit = null; // 턴 종료 효과(철귀 재부여)는 "자기 턴 중"으로 치지 않는다 — 다음 자기 턴 종료에 정상 감소
-        ApplyPlayerTurnEndEffects(unit.target);
+        yield return ApplyPlayerTurnEndEffects(unit.target); // 철귀가 적에게 붙어 있으면 공격 연출·타격 템포가 있어 코루틴
     }
 
     // 턴 시작 효과 — 게오르크 북방의 위대한 투사(GS19): 버프가 켜져 있으면 자기 턴 시작마다 공격력 스택 누적 (절대자 GS21이면 2배). 수치는 SkillData.Geork
@@ -390,17 +393,30 @@ public partial class M_TurnManager
         if (user.HasBuff(BuffType.BOOKBANG)) SkillData.GainNorthWarriorStack(user);
     }
 
-    // 턴 종료 효과 — 홍단향 철귀: 자기 턴이 끝날 때 철귀가 붙어 있는 아군(기본은 자신)에게 방어력 버프(HS0_DEFENSE, STAT_DEFENSE — 그 아군의 다음 턴 시작까지, 방어 행동과 합산 Q41·Q45)와
-    // 공격력 버프(HS0_ATTACK, ICHI_ATTACK — 그 아군의 다음 턴 종료까지)를 준다. 철귀 위치는 기본 스킬 '철귀 이동'(HS0)이 바꾼다
+    // 턴 종료 효과 — 홍단향 철귀 (2026-11-02 개편): 자기 턴이 끝날 때 철귀가 붙어 있는 대상에 따라 갈린다. 철귀 위치는 기본 스킬 '철귀 이동'(HS0 — 캐릭터 클릭)이 바꾼다
+    //  · 아군(기본은 자신): 방어력 버프 HS0_DEFENSE (STAT_DEFENSE — 그 아군의 다음 자기 턴 시작까지 = 1턴, 방어 행동과 합산 Q41·Q45). 구 공격력 버프(HS0_ATTACK, ICHI_ATTACK +3)는 폐지
+    //  · 적: 철귀가 그 적을 공격 — 피해 = 홍단향 마법공격력(지능 + 무기 마공 + 공격력 버프) × HS0_ATTACK_POWER%, 속성 심상(SIMSANG — 기획 「철귀의 공격 {심상} 속성」).
+    //    명중·치명·약점은 일반 공격 판정(BattleActions.ResolveHit)과 같다. 대열 보정은 받지 않는다 (철귀는 적 곁에 있다). 적이 죽으면 몬스터 사망 처리가 철귀를 복귀시킨다
     [Server]
-    void ApplyPlayerTurnEndEffects(TargetObject user)
+    IEnumerator ApplyPlayerTurnEndEffects(TargetObject user)
     {
-        if (user == null || user.player == null || user.player.character != Character.HONGDANHYANG) return;
+        if (user == null || user.player == null || user.player.character != Character.HONGDANHYANG) yield break;
         TargetObject holder = user.ironDemonLocation != null ? user.ironDemonLocation : user;
-        if (holder.isDying || holder.objectType != ObjectType.PLAYER || holder.playerHP <= 0) return;
-        ApplyTimedStatBuff(holder, BuffType.STAT_DEFENSE, BalanceData.Get("HS0_DEFENSE", 10), 1, user, "HS0", true);
-        ApplyTimedDebuffTo(holder, BuffType.ICHI_ATTACK, BalanceData.Get("HS0_ATTACK", 3), 1, user);
-        AnimIronDemon("Buff0", user);
+        if (holder == null || holder.isDying) yield break;
+        if (holder.objectType == ObjectType.PLAYER)
+        {
+            if (holder.playerHP <= 0) yield break;
+            ApplyTimedStatBuff(holder, BuffType.STAT_DEFENSE, BalanceData.Get("HS0_DEFENSE", 10), 1, user, "HS0", true);
+            AnimIronDemon("Buff0", user);
+        }
+        else if (holder.objectType == ObjectType.ENEMY)
+        {
+            int damage = Mathf.Max(1, user.GetAttackPower(true, AttackAttribute.SIMSANG) * BalanceData.Get("HS0_ATTACK_POWER", 100) / 100);
+            AnimIronDemon("Attack0", user); // 적 버전 스켈레톤(ironDemonData[1])의 공격 모션
+            yield return new WaitForSeconds(0.4f); // 모션 → 타격 시점
+            yield return BattleActions.AttackTarget(user, holder, damage, AttackAttribute.SIMSANG, true);
+            if (!holder.isDying) AnimIronDemon("Idle", user); // 적이 죽었으면 복귀 연출(IronDemonReturnProcess)이 이어받는다
+        }
     }
 
     // 턴 미소모 스킬(FreeAction) 턴당 1회 제한 안내 — 요청한 플레이어에게만 토스트
@@ -521,6 +537,14 @@ public partial class M_TurnManager
                 foreach (TargetObject player in spawnedPlayerList)
                     if (!player.isDying && player.playerHP > 0)
                         targets.Add(player);
+                break;
+            }
+            case ValidTarget.ALL: // 아군 또는 적 단일 (철귀 이동 — 클릭한 캐릭터 그대로, 폴백 없음)
+            {
+                foreach (TargetObject player in spawnedPlayerList)
+                    if (player.netId == targetNetId && !player.isDying && player.playerHP > 0) { targets.Add(player); return targets; }
+                foreach (TargetObject monster in spawnedMonsterList)
+                    if (monster.netId == targetNetId && monster.objectType == ObjectType.ENEMY && !monster.isDying) { targets.Add(monster); return targets; }
                 break;
             }
         }
@@ -757,8 +781,35 @@ public partial class M_TurnManager
 
     // ------------------------------------------------------------- 클라이언트: 임시 전투 UI (OnGUI) -------------------------------------------------------------//
 
-    int guiSelectedAction = -1;      // -1 없음 / 0 공격 / 1 스킬 (적 대상 선택 대기 — 몬스터 클릭) / 2 아군 선택 / 3 아이템
+    int guiSelectedAction = -1;      // -1 없음 / 0 공격 (몬스터 클릭) / 1 적 스킬 (몬스터 클릭 — ENEMY·ENEMY_ALL) / 2 아군·자신 스킬 (아군 캐릭터 클릭 — MEMBER·TEAM·NONE) / 3 아이템
     string guiSelectedSkillNo;
+
+    /// <summary>클라이언트: 아군·자신 대상 스킬의 대상 클릭 대기 중인지 (스킬 버튼을 누른 뒤) — CharactorSelector가 마우스 오버 아웃라인·클릭 판정에 사용 (2026-11-02, 아군 버튼 목록 대체)</summary>
+    public bool IsSelectingAllyTarget()
+    {
+        if (!tpBattleActive || !NetworkClient.active || guiSelectedAction != 2) return false;
+        return IsLocalPlayerTurn();
+    }
+
+    /// <summary>클라이언트: 이 아군을 지금 클릭하면 선택 중인 스킬의 대상이 되는지 — 살아 있는 아군, 자신(NONE) 스킬이면 행동 중인 캐릭터 자신만 (보호·치유 등 MEMBER/TEAM은 아군 누구나)</summary>
+    public bool CanTargetAlly(TargetObject ally)
+    {
+        if (ally == null || ally.player == null || ally.isDying || ally.playerHP <= 0 || !IsSelectingAllyTarget()) return false;
+        SkillData.SkillDef skill = SkillData.Get(guiSelectedSkillNo);
+        if (skill == null) return false;
+        if (skill.validTarget == ValidTarget.NONE) return ally.netId == tpCurrentUnitNetId;
+        return skill.validTarget == ValidTarget.MEMBER || skill.validTarget == ValidTarget.TEAM;
+    }
+
+    /// <summary>클라이언트: 아군 캐릭터 클릭으로 아군·자신 대상 스킬 제출 (CharactorSelector.OnMouseDown)</summary>
+    public void SubmitAllyTarget(TargetObject ally)
+    {
+        if (!CanTargetAlly(ally)) return;
+        GamePlayer myPlayer = GetActingOwnedPlayer();
+        if (myPlayer == null) return;
+        CmdSubmitTpAction(myPlayer.netId, (int)TpAction.SKILL, guiSelectedSkillNo, ally.netId, 0);
+        guiSelectedAction = -1;
+    }
 
     /// <summary>클라이언트: 적 대상 선택 대기 중인지 (내 턴에 공격/적 단일 스킬을 고른 상태) — SpawnedMonster가 마우스 오버 아웃라인·클릭 판정에 사용</summary>
     public bool IsSelectingEnemyTarget()
@@ -782,6 +833,36 @@ public partial class M_TurnManager
         TargetObject currentUnit = identity.GetComponent<TargetObject>();
         if (currentUnit == null || currentUnit.player == null || !currentUnit.player.isOwned) return null;
         return currentUnit.player;
+    }
+
+    /// <summary>클라이언트: 철귀 이동 대상 클릭을 받을 상태인지 — 홍단향 자기 턴, 행동 선택 전(버튼을 누르지 않은 기본 상태), 이번 턴 미사용.
+    /// 철귀 이동은 스킬 버튼이 없고 아군 캐릭터/몬스터를 직접 클릭해 보낸다 (CharactorSelector·SpawnedMonster — 2026-11-02)</summary>
+    public bool IsSelectingIronDemonTarget()
+    {
+        if (!tpBattleActive || !NetworkClient.active || guiSelectedAction >= 0) return false;
+        GamePlayer acting = GetActingOwnedPlayer();
+        if (acting == null || acting.character != Character.HONGDANHYANG) return false;
+        if (!acting.KnowsSkill(SkillData.IronDemonMoveSkillNo) || tpUsedFreeSkillNo == SkillData.IronDemonMoveSkillNo) return false;
+        return true;
+    }
+
+    /// <summary>클라이언트: 이 캐릭터(아군/몬스터)를 지금 클릭하면 철귀가 이동하는지 — 선택 상태 + 살아 있음 + 지금 철귀가 붙어 있는 대상이 아님 (마우스 오버 아웃라인·클릭 판정 공용)</summary>
+    public bool CanMoveIronDemonTo(TargetObject target)
+    {
+        if (target == null || target.isDying || !IsSelectingIronDemonTarget()) return false;
+        if (target.objectType == ObjectType.PLAYER && target.playerHP <= 0) return false;
+        TargetObject acting = NetworkClient.spawned.TryGetValue(tpCurrentUnitNetId, out NetworkIdentity identity) && identity != null ? identity.GetComponent<TargetObject>() : null;
+        if (acting != null && acting.ironDemonLocation == target) return false; // 이미 그곳에 있음
+        return true;
+    }
+
+    /// <summary>클라이언트: 아군/몬스터 클릭으로 철귀 이동 제출 (HS0 — 턴 미소모, 턴당 1회. 서버가 ValidTarget ALL로 대상을 해석한다)</summary>
+    public void SubmitIronDemonTarget(TargetObject target)
+    {
+        if (!CanMoveIronDemonTo(target)) return;
+        GamePlayer myPlayer = GetActingOwnedPlayer();
+        if (myPlayer == null) return;
+        CmdSubmitTpAction(myPlayer.netId, (int)TpAction.SKILL, SkillData.IronDemonMoveSkillNo, target.netId, 0);
     }
 
     /// <summary>클라이언트: 몬스터 클릭으로 대상 확정 (SpawnedMonster.OnMouseDown) — 선택 중이던 공격/스킬을 서버에 제출</summary>
@@ -872,27 +953,21 @@ public partial class M_TurnManager
             if (GUI.Button(new Rect(buttonX, y, 90f, lineHeight), "방어"))
                 CmdSubmitTpAction(myPlayer.netId, (int)TpAction.DEFEND, "", 0, 0);
             buttonX += 95f;
+            // 철귀 이동(HS0)은 버튼이 없다 — 아군 캐릭터/몬스터를 직접 클릭 (IsSelectingIronDemonTarget). 안내만 표시
+            if (IsSelectingIronDemonTarget())
+                GUI.Label(new Rect(x, y - lineHeight * 2f, 640f, lineHeight), "[철귀 이동] 아군이나 적을 클릭하면 철귀가 이동합니다 (턴 미소모, 턴당 1회)");
             foreach (SkillData.SkillDef skill in myPlayer.GetUsableSkills()) // 기본 스킬 + 스킬트리 습득분만 표시
             {
+                if (skill.skillNo == SkillData.IronDemonMoveSkillNo) continue; // 클릭 방식 — 버튼 생략
                 GUI.enabled = CanPayCost(currentUnit, skill) && !(skill.freeAction && tpUsedFreeSkillNo == skill.skillNo); // 자원 부족·이번 턴에 이미 쓴 턴 미소모 스킬은 비활성 (서버와 같은 규칙)
                 bool pressed = GUI.Button(new Rect(buttonX, y, 130f, lineHeight), $"{skill.skillName}({skill.cost})");
                 GUI.enabled = true;
                 if (pressed)
                 {
-                    if (skill.validTarget == ValidTarget.ENEMY)
-                    {
-                        guiSelectedAction = 1; // 적 단일 대상 → 대상 선택 단계로
-                        guiSelectedSkillNo = skill.skillNo;
-                    }
-                    else if (skill.validTarget == ValidTarget.MEMBER)
-                    {
-                        guiSelectedAction = 2; // 아군 단일 대상 → 아군 선택 단계로
-                        guiSelectedSkillNo = skill.skillNo;
-                    }
-                    else
-                    {
-                        CmdSubmitTpAction(myPlayer.netId, (int)TpAction.SKILL, skill.skillNo, 0, 0); // 전체/자신 — 대상 불필요
-                    }
+                    // 모든 스킬은 캐릭터 클릭으로 대상을 확정한다 (2026-11-02): 적 계열(ENEMY·ENEMY_ALL)은 몬스터 클릭, 아군 계열(MEMBER·TEAM — 보호·치유 등)은 아군 클릭, 자신(NONE)은 자기 캐릭터 클릭.
+                    // 전체·자신 대상은 클릭이 확인 역할만 한다 (서버 ResolveSkillTargets는 ENEMY_ALL/TEAM/NONE에서 대상 netId를 쓰지 않는다)
+                    guiSelectedSkillNo = skill.skillNo;
+                    guiSelectedAction = skill.validTarget == ValidTarget.ENEMY || skill.validTarget == ValidTarget.ENEMY_ALL ? 1 : 2;
                 }
                 buttonX += 135f;
             }
@@ -923,30 +998,23 @@ public partial class M_TurnManager
         }
         else if (guiSelectedAction == 2)
         {
-            // 2단계: 아군 대상 선택 (회복/실드 스킬)
-            GUI.Label(new Rect(x, y - lineHeight * 2f, 400f, lineHeight), "아군을 선택하세요:");
-            float buttonX = x;
-            foreach (uint playerNetId in spawnedPlayerSyncList)
-            {
-                if (playerNetId == 0) continue; // 빈 슬롯
-                if (!NetworkClient.spawned.TryGetValue(playerNetId, out NetworkIdentity playerIdentity) || playerIdentity == null) continue;
-                TargetObject ally = playerIdentity.GetComponent<TargetObject>();
-                if (ally == null || ally.player == null || ally.playerHP <= 0) continue;
-                if (GUI.Button(new Rect(buttonX, y, 170f, lineHeight), $"{ally.player.character} ({ally.playerHP}/{ally.playerMaxHP})"))
-                {
-                    CmdSubmitTpAction(myPlayer.netId, (int)TpAction.SKILL, guiSelectedSkillNo, playerNetId, 0);
-                    guiSelectedAction = -1;
-                }
-                buttonX += 175f;
-            }
-            if (GUI.Button(new Rect(buttonX, y, 70f, lineHeight), "취소"))
+            // 2단계: 아군·자신 대상 — 아군 캐릭터를 직접 클릭해 확정 (CharactorSelector.OnMouseDown → SubmitAllyTarget). 마우스 오버 시 아웃라인. 자신(NONE) 스킬은 자기 캐릭터만 후보
+            SkillData.SkillDef selected = SkillData.Get(guiSelectedSkillNo);
+            string skillName = selected?.skillName ?? "스킬";
+            string hint = selected != null && selected.validTarget == ValidTarget.NONE ? "자신(행동 중인 캐릭터)을 클릭하세요"
+                : selected != null && selected.validTarget == ValidTarget.TEAM ? "아군 하나를 클릭하면 파티 전원에게 시전합니다"
+                : "대상 아군을 클릭하세요";
+            GUI.Label(new Rect(x, y - lineHeight * 2f, 640f, lineHeight), $"[{skillName}] {hint}");
+            if (GUI.Button(new Rect(x, y, 70f, lineHeight), "취소"))
                 guiSelectedAction = -1;
         }
         else
         {
-            // 2단계: 적 대상 선택 (공격/단일 스킬) — 몬스터를 직접 클릭해 확정 (SpawnedMonster.OnMouseDown → SubmitEnemyTarget). 마우스 오버 시 아웃라인 표시
-            string actionName = guiSelectedAction == 0 ? "공격" : (SkillData.Get(guiSelectedSkillNo)?.skillName ?? "스킬");
-            GUI.Label(new Rect(x, y - lineHeight * 2f, 500f, lineHeight), $"[{actionName}] 대상 몬스터를 클릭하세요");
+            // 2단계: 적 대상 선택 (공격/적 스킬) — 몬스터를 직접 클릭해 확정 (SpawnedMonster.OnMouseDown → SubmitEnemyTarget). 마우스 오버 시 아웃라인 표시. 전체 스킬은 클릭이 확인 역할
+            SkillData.SkillDef selected = guiSelectedAction == 0 ? null : SkillData.Get(guiSelectedSkillNo);
+            string actionName = guiSelectedAction == 0 ? "공격" : (selected?.skillName ?? "스킬");
+            string hint = selected != null && selected.validTarget == ValidTarget.ENEMY_ALL ? "적 하나를 클릭하면 적 전체에게 시전합니다" : "대상 몬스터를 클릭하세요";
+            GUI.Label(new Rect(x, y - lineHeight * 2f, 640f, lineHeight), $"[{actionName}] {hint}");
             if (GUI.Button(new Rect(x, y, 70f, lineHeight), "취소"))
                 guiSelectedAction = -1;
         }

@@ -21,7 +21,8 @@ public static partial class SkillData
 
     // ------------------------------------------------------------- 공격 트리 (GS6~GS10) -------------------------------------------------------------//
 
-    // 연속 베기 — 기본공격력의 (70/80/90)% 참격으로 같은 대상을 두 번 공격 (타마다 판정·랜덤 보정이 따로 굴려진다)
+    // 연속 베기 — 기본공격력의 (70/80/90)% 참격으로 같은 대상을 두 번 공격 (타마다 판정·랜덤 보정이 따로 굴려진다).
+    // 모션은 베기(Attack0 — skillMotions 등록)를 타마다 1회씩 총 2회 재생: 1타는 스킬 시작 시 M_TurnManager가, 2타는 여기서 같은 모션을 다시 건다 (2026-11-02)
     public static IEnumerator GS6(SkillCast cast)
     {
         SkillDef skill = cast.def; TargetObject user = cast.user; List<TargetObject> targets = cast.targets;
@@ -29,7 +30,7 @@ public static partial class SkillData
         for (int hit = 0; hit < 2; hit++)
         {
             if (targets[0] == null || targets[0].isDying) yield break; // 첫 타로 사망하면 종료
-            if (hit > 0) M_TurnManager.instance.PlayPlayerActionAnimation(user, "Attack1"); // 2타 — 공격 모션 다시 재생 (1타 모션은 스킬 시작 시 M_TurnManager가 건다)
+            if (hit > 0) M_TurnManager.instance.PlayPlayerActionAnimation(user, GetMotion(skill)); // 2타 — 같은 베기 모션 다시 재생 (피격 지연도 다시 적용)
             yield return BattleActions.AttackTarget(cast, targets[0], BattleActions.SkillDamage(user, skill));
         }
     }

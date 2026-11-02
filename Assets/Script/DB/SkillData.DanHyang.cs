@@ -5,13 +5,18 @@ using ProjectD;
 
 // SkillData partial — 홍단향 스킬 효과 구현 (MP 자원 — 자기 턴 시작 시 소량 회복).
 // 메서드명 = SkillDB.csv의 SkillNo. 서버 코루틴에서만 실행된다. 시그니처는 SkillCast 하나 (아이템 개편 Phase 1-4 — 수치는 cast.Scale, 타격은 AttackTarget(cast, …)).
-// 기본 스킬 '철귀 이동'(HS0, 턴 소모 없음 — SkillDB FreeAction=1, 세 기본 스킬 중 유일): 철귀를 아군에게 붙이고, 턴 종료 효과(M_TurnManager.ApplyPlayerTurnEndEffects)가
-// 그 아군에게 방어력·공격력 버프를 준다 (실드 → 방어력 버프로 변경, Q41 — 2026-10-19).
+// 기본 스킬 '철귀 이동'(HS0, 턴 소모 없음 — SkillDB FreeAction=1, 세 기본 스킬 중 유일): 철귀를 아군 또는 적에게 붙이고, 턴 종료 효과(M_TurnManager.ApplyPlayerTurnEndEffects)가
+// 아군이면 방어력 버프(실드 → 방어력 버프로 변경, Q41 — 2026-10-19), 적이면 철귀 공격(2026-11-02)을 수행한다.
 // 회복·실드는 TargetObject.Heal / GainShield — 시전자 치명률로 치명 회복·치명 실드 (Q29), 실드는 덮어쓰기·소진까지 지속 (Q41).
 public static partial class SkillData
 {
-    // 철귀 이동 (기본 스킬, 턴 소모 없음) — 철귀를 아군 하나에게 보낸다 (자신 포함). 연출은 카드 전투의 IronDemonReturnProcess와 같은 텔레포트 순서.
-    // 효과: 자기 턴 종료마다 철귀가 붙은 아군이 방어력 +HS0_DEFENSE(다음 자기 턴 시작까지) + 공격력 +HS0_ATTACK(다음 자기 턴 종료까지) — BalanceDB
+    /// <summary>철귀 이동 스킬 번호 — 전투 UI가 버튼 대신 아군/적 캐릭터 직접 클릭으로 처리하는 유일한 스킬 (M_TurnManager.IsSelectingIronDemonTarget, 2026-11-02)</summary>
+    public const string IronDemonMoveSkillNo = "HS0";
+
+    // 철귀 이동 (기본 스킬, 턴 소모 없음) — 철귀를 아군 또는 적 하나에게 보낸다 (자신 포함, SkillDB ValidTarget=ALL). 연출은 카드 전투의 IronDemonReturnProcess와 같은 텔레포트 순서.
+    // 입력: 스킬 버튼이 아니라 홍단향 턴에 아군 캐릭터/몬스터를 직접 클릭 (CharactorSelector·SpawnedMonster.OnMouseDown → M_TurnManager.SubmitIronDemonTarget — 2026-11-02).
+    // 효과(M_TurnManager.ApplyPlayerTurnEndEffects): 자기 턴 종료마다 철귀가 아군에 붙어 있으면 그 아군 방어력 +HS0_DEFENSE(다음 자기 턴 시작까지 = 1턴),
+    // 적에 붙어 있으면 철귀가 그 적을 공격 (마법공격력 × HS0_ATTACK_POWER%, 심상 속성) — BalanceDB. 구 아군 공격력 버프(HS0_ATTACK)는 폐지 (2026-11-02)
     public static IEnumerator HS0(SkillCast cast)
     {
         TargetObject user = cast.user; List<TargetObject> targets = cast.targets;

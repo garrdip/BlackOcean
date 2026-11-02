@@ -14,11 +14,13 @@ using System.Linq;
 public partial class M_TurnManager
 {
 
+    // 철귀 복귀 (서버) — 철귀가 붙어 있던 아군/몬스터가 죽었을 때 홍단향 곁으로. 위치(ironDemonLocation SyncVar)도 함께 되돌린다 (클라의 CanMoveIronDemonTo 판정이 이 값을 본다)
     public IEnumerator IronDemonReturnProcess(TargetObject target)
     {
+        target.ironDemonLocation = target;
         M_TurnManager.instance.AnimIronDemon("TeleportGo",target); // 철귀 사라짐
         yield return new WaitForSeconds(0.333f); // 철귀 완전히 사라지는 시간
-        M_TurnManager.instance.MoveIronDemon(target,target); // 철귀 적으로 이동
+        M_TurnManager.instance.MoveIronDemon(target,target); // 철귀 홍단향 곁으로 이동
         M_TurnManager.instance.AnimIronDemon("TeleportBack",target); // 철귀 나타나기 시작
         yield return new WaitForSeconds(0.2f); // 적당히 나타날때까지 기다림
         M_TurnManager.instance.AnimIronDemon("Idle",target); // 철귀 나타나기 시작
